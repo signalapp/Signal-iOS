@@ -87,8 +87,6 @@
     
     [self performUpdateCheck];
     
-    [self prepareScreenshotProtection];
-    
     self.notificationTracker = [NotificationTracker notificationTracker];
     
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
@@ -119,6 +117,8 @@
     self.window.rootViewController = viewController;
     
     [self.window makeKeyAndVisible];
+    
+    [self prepareScreenshotProtection];
     
     [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
         if (latestCall == nil){
@@ -245,6 +245,10 @@
     }
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application{
+    [self protectScreen];
+}
+
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
     if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
         [self.callPickUpFuture trySetResult:@YES];
@@ -264,33 +268,36 @@
 
 - (void)prepareScreenshotProtection{
     self.blankWindow = ({
-        UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
-        window.hidden = YES;
-        window.opaque = YES;
+        UIWindow *window              = [[UIWindow alloc] initWithFrame:self.window.bounds];
+        window.hidden                 = YES;
+        window.opaque                 = YES;
         window.userInteractionEnabled = NO;
-        window.windowLevel = CGFLOAT_MAX;
+        window.windowLevel            = CGFLOAT_MAX;
+        
+        // There appears to be no more reliable way to get the launchscreen image from an asset bundle
+        NSDictionary *dict = @{@"320x480" : @"LaunchImage-700", @"320x568" : @"LaunchImage-700-568h", @"375x667" : @"LaunchImage-800-667h", @"414x736" : @"LaunchImage-800-Portrait-736h"};
+        NSString *key = [NSString stringWithFormat:@"%dx%d", (int)[UIScreen mainScreen].bounds.size.width, (int)[UIScreen mainScreen].bounds.size.height];
+        UIImage *launchImage = [UIImage imageNamed:dict[key]];
+        UIImageView *imgView = [[UIImageView alloc] initWithImage:launchImage];
+        UIViewController *vc = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+        vc.view.frame        = [[UIScreen mainScreen] bounds];
+        imgView.frame        = [[UIScreen mainScreen] bounds];
+        [vc.view addSubview:imgView];
+        [vc.view setBackgroundColor:[UIColor blackColor]];
+        window.rootViewController = vc;
+        
         window;
     });
 }
 
 - (void)protectScreen{
-    if (Environment.preferences.screenSecurityIsEnabled) {
-        self.blankWindow.rootViewController = [UIViewController new];
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.blankWindow.bounds];
-        if (self.blankWindow.bounds.size.height == 568) {
-            imageView.image = [UIImage imageNamed:@"Default-568h"];
-        } else {
-            imageView.image = [UIImage imageNamed:@"Default"];
-        }
-        imageView.opaque = YES;
-        [self.blankWindow.rootViewController.view addSubview:imageView];
+    if (Environment.preferences.screenSecurityIsEnabled){
         self.blankWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection{
     if (Environment.preferences.screenSecurityIsEnabled) {
-        self.blankWindow.rootViewController = nil;
         self.blankWindow.hidden = YES;
     }
 }

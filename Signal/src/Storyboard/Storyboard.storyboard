@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="kts-vO-ui1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -2393,51 +2393,28 @@ Licensed under the GPLv3</string>
                             </tableViewSection>
                             <tableViewSection id="JqD-8c-dMF">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="60" id="quP-Cu-8LE" customClass="SettingsTableViewCell">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="enableScreenSecurity" rowHeight="60" id="quP-Cu-8LE" customClass="SettingsTableViewCell">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="quP-Cu-8LE" id="i03-Ww-QZz">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="skL-aj-42C">
+                                                    <rect key="frame" x="-25" y="-15" width="51" height="31"/>
+                                                </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Screen Security" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ExV-2K-JEg">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPe-St-tVT">
-                                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="21" id="s6d-wF-wNd"/>
-                                                        <constraint firstAttribute="width" constant="36" id="yPj-mV-IsZ"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="s6d-wF-wNd"/>
-                                                            <exclude reference="yPj-mV-IsZ"/>
-                                                        </mask>
-                                                    </variation>
-                                                    <variation key="heightClass=regular-widthClass=compact">
-                                                        <mask key="constraints">
-                                                            <include reference="s6d-wF-wNd"/>
-                                                            <include reference="yPj-mV-IsZ"/>
-                                                        </mask>
+                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="15" y="19" width="307" height="20.5"/>
                                                     </variation>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="skL-aj-42C">
-                                                    <rect key="frame" x="-25" y="-15" width="51" height="31"/>
-                                                </switch>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="ExV-2K-JEg" firstAttribute="top" secondItem="i03-Ww-QZz" secondAttribute="topMargin" constant="3" id="2lQ-r0-TpV"/>
                                                 <constraint firstItem="skL-aj-42C" firstAttribute="leading" secondItem="ExV-2K-JEg" secondAttribute="trailing" constant="21" id="Ato-ay-iFe">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="8"/>
-                                                </constraint>
-                                                <constraint firstItem="iPe-St-tVT" firstAttribute="leading" secondItem="i03-Ww-QZz" secondAttribute="leadingMargin" constant="7" id="Ivh-ka-fEi"/>
-                                                <constraint firstItem="iPe-St-tVT" firstAttribute="top" secondItem="ExV-2K-JEg" secondAttribute="bottom" constant="-1.5" id="OqC-7a-g2P">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="-0.5"/>
                                                 </constraint>
                                                 <constraint firstAttribute="trailingMargin" secondItem="ExV-2K-JEg" secondAttribute="trailing" constant="70" id="UfF-zB-xdk"/>
                                                 <constraint firstItem="skL-aj-42C" firstAttribute="trailing" secondItem="i03-Ww-QZz" secondAttribute="trailingMargin" id="cKU-qh-Qkr">
@@ -2452,16 +2429,13 @@ Licensed under the GPLv3</string>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
-                                                    <exclude reference="ExV-2K-JEg"/>
-                                                    <exclude reference="iPe-St-tVT"/>
                                                     <exclude reference="skL-aj-42C"/>
+                                                    <exclude reference="ExV-2K-JEg"/>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <exclude reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <exclude reference="mEj-Hr-RsU"/>
-                                                    <exclude reference="Ivh-ka-fEi"/>
-                                                    <exclude reference="OqC-7a-g2P"/>
                                                     <exclude reference="Ato-ay-iFe"/>
                                                     <exclude reference="cKU-qh-Qkr"/>
                                                     <exclude reference="dRq-w1-9Ed"/>
@@ -2469,16 +2443,13 @@ Licensed under the GPLv3</string>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="subviews">
-                                                    <include reference="ExV-2K-JEg"/>
-                                                    <include reference="iPe-St-tVT"/>
                                                     <include reference="skL-aj-42C"/>
+                                                    <include reference="ExV-2K-JEg"/>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <include reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <include reference="mEj-Hr-RsU"/>
-                                                    <include reference="Ivh-ka-fEi"/>
-                                                    <include reference="OqC-7a-g2P"/>
                                                     <include reference="Ato-ay-iFe"/>
                                                     <include reference="cKU-qh-Qkr"/>
                                                     <include reference="dRq-w1-9Ed"/>
@@ -2550,40 +2521,20 @@ Licensed under the GPLv3</string>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xqr-ce-rni" id="b4l-um-jXd">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V8I-9d-kbu">
+                                                    <rect key="frame" x="-25" y="-15" width="51" height="31"/>
+                                                </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable Debugging Logs" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2iY-pe-fva">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabled" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g8U-Fp-OSv">
-                                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="21" id="KcQ-uK-I5A"/>
-                                                        <constraint firstAttribute="width" constant="83" id="huD-gF-Wt1"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="KcQ-uK-I5A"/>
-                                                            <exclude reference="huD-gF-Wt1"/>
-                                                        </mask>
-                                                    </variation>
-                                                    <variation key="heightClass=regular-widthClass=compact">
-                                                        <mask key="constraints">
-                                                            <include reference="KcQ-uK-I5A"/>
-                                                            <include reference="huD-gF-Wt1"/>
-                                                        </mask>
+                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="15" y="19" width="307" height="20.5"/>
                                                     </variation>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V8I-9d-kbu">
-                                                    <rect key="frame" x="-25" y="-15" width="51" height="31"/>
-                                                </switch>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="g8U-Fp-OSv" firstAttribute="top" secondItem="2iY-pe-fva" secondAttribute="bottom" constant="-1.5" id="6nN-Nh-Kdf"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="2iY-pe-fva" secondAttribute="trailing" constant="70" id="BKh-xT-hZ0"/>
                                                 <constraint firstItem="V8I-9d-kbu" firstAttribute="trailing" secondItem="b4l-um-jXd" secondAttribute="trailingMargin" id="GK1-fQ-8Ke">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="-13"/>
@@ -2591,7 +2542,6 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="2iY-pe-fva" firstAttribute="leading" secondItem="b4l-um-jXd" secondAttribute="leadingMargin" id="TGm-qt-Uiv">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
                                                 </constraint>
-                                                <constraint firstItem="g8U-Fp-OSv" firstAttribute="leading" secondItem="b4l-um-jXd" secondAttribute="leadingMargin" constant="7" id="UbN-P7-3pB"/>
                                                 <constraint firstItem="V8I-9d-kbu" firstAttribute="top" secondItem="b4l-um-jXd" secondAttribute="topMargin" constant="-2" id="ZKW-Ii-Gj8">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="6"/>
                                                 </constraint>
@@ -2602,16 +2552,13 @@ Licensed under the GPLv3</string>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
-                                                    <exclude reference="2iY-pe-fva"/>
-                                                    <exclude reference="g8U-Fp-OSv"/>
                                                     <exclude reference="V8I-9d-kbu"/>
+                                                    <exclude reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <exclude reference="TGm-qt-Uiv"/>
                                                     <exclude reference="cu5-wT-Hnb"/>
-                                                    <exclude reference="6nN-Nh-Kdf"/>
-                                                    <exclude reference="UbN-P7-3pB"/>
                                                     <exclude reference="GK1-fQ-8Ke"/>
                                                     <exclude reference="ZKW-Ii-Gj8"/>
                                                     <exclude reference="iyJ-5o-NUy"/>
@@ -2619,16 +2566,13 @@ Licensed under the GPLv3</string>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="subviews">
-                                                    <include reference="2iY-pe-fva"/>
-                                                    <include reference="g8U-Fp-OSv"/>
                                                     <include reference="V8I-9d-kbu"/>
+                                                    <include reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <include reference="TGm-qt-Uiv"/>
                                                     <include reference="cu5-wT-Hnb"/>
-                                                    <include reference="6nN-Nh-Kdf"/>
-                                                    <include reference="UbN-P7-3pB"/>
                                                     <include reference="GK1-fQ-8Ke"/>
                                                     <include reference="ZKW-Ii-Gj8"/>
                                                     <include reference="iyJ-5o-NUy"/>
@@ -3040,6 +2984,6 @@ Licensed under the GPLv3</string>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="qCk-gl-KCX"/>
+        <segue reference="QK8-XK-Wd3"/>
     </inferredMetricsTieBreakers>
 </document>

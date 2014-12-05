@@ -8,11 +8,14 @@
 
 #import "SettingsTableViewCell.h"
 
+#import "Environment.h"
+#import "PreferencesUtil.h"
+
 @implementation SettingsTableViewCell
 
 - (void)awakeFromNib {
     // Initialization code
-    
+    [self.toggle setOn:[Environment.preferences screenSecurityIsEnabled]];
     [self.toggle addTarget:self action:@selector(toggleSetting:) forControlEvents:UIControlEventValueChanged];
 
 }
@@ -27,9 +30,8 @@
 
 -(void)toggleSetting:(id)sender
 {
-    if ([self.reuseIdentifier isEqualToString:@"hideContactImages"])
-    {
-        self.state.text = self.toggle.isOn ? @"Yes" : @"No";
+    if ([self.reuseIdentifier isEqualToString:@"enableScreenSecurity"]) {
+        [Environment.preferences setScreenSecurity:self.toggle.isOn];
     }
 }
 
