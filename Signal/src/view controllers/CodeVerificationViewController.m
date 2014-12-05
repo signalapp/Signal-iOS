@@ -24,7 +24,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self initializeKeyboardHandlers];
 }
@@ -37,7 +36,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -48,7 +46,7 @@
     
     [self registerWithSuccess:^{
         [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-        [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSError *error) {
         [self showAlertForError:error];
         [_challengeButton setEnabled:YES];

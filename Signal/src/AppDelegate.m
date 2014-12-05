@@ -104,14 +104,7 @@
     }
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
-    
-    UIViewController *viewController;
-    
-    if (![TSAccountManager isRegistered]) {
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"RegisterInitialViewController"];
-    } else{
-        viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
-    }
+    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = viewController;
@@ -163,7 +156,7 @@
 -(BOOL) application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation {
     if ([url.scheme isEqualToString:@"sgnl"]) {
         if ([url.host hasPrefix:@"verify"] && ![TSAccountManager isRegistered]) {
-            UIViewController *controller = self.window.rootViewController.presentedViewController.presentedViewController;
+            UIViewController *controller = [[Environment getCurrent].signUpFlowNavigationController.childViewControllers lastObject];
             if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
                 CodeVerificationViewController *cvvc = (CodeVerificationViewController*)controller;
                 NSString *verificationCode           = [url.path substringFromIndex:1];

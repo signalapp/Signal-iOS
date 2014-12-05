@@ -474,6 +474,7 @@
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
+		FC18803C1A31D94D0044CE86 /* SignalTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */; };
 		FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90BF1A22342B004F8253 /* group_photo@2x.png */; };
 		FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C41A223991004F8253 /* settings_tab@2x.png */; };
 		FC1F90C71A223991004F8253 /* signals_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C51A223991004F8253 /* signals_tab@2x.png */; };
@@ -1133,6 +1134,8 @@
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
+		FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalTabBarController.h; path = "view controllers/SignalTabBarController.h"; sourceTree = "<group>"; };
+		FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalTabBarController.m; path = "view controllers/SignalTabBarController.m"; sourceTree = "<group>"; };
 		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
 		FC1F90C41A223991004F8253 /* settings_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_tab@2x.png"; sourceTree = "<group>"; };
 		FC1F90C51A223991004F8253 /* signals_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signals_tab@2x.png"; sourceTree = "<group>"; };
@@ -1303,6 +1306,8 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */,
+				FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */,
 				FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
@@ -2694,7 +2699,6 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
-						DevelopmentTeam = U68MSDN6DR;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -3099,6 +3103,7 @@
 				B6B0968F1A1D25ED008BFAA6 /* TSYapDatabaseObject.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */,
+				FC18803C1A31D94D0044CE86 /* SignalTabBarController.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
