@@ -2573,6 +2573,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:changeSet.databaseIdentifier
 				                                                     ownerCount:ownerCount
 				                                                         record:sanitizedRecord];
+				
+				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
 			}
 			
 			if (parentConnection->changeset_recordTableInfo == nil)

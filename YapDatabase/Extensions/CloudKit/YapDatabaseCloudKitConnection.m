@@ -405,7 +405,7 @@
 		
 		[cleanRecordTableInfoCache removeObjectsForKeys:keysToRemove];
 		
-		for (NSString *key in keysToRemove)
+		for (NSString *key in keysToUpdate)
 		{
 			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [in_changeset_recordTableInfo objectForKey:key];
 			
