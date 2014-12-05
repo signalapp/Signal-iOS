@@ -44,6 +44,7 @@
 @property (nonatomic, readonly) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
 
 @property (nonatomic, readonly) SignalsViewController *signalsViewController;
+@property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
 
 +(SecureEndPoint*) getMasterServerSecureEndPoint;
 +(SecureEndPoint*) getSecureEndPointToDefaultRelayServer;
@@ -81,6 +82,7 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 +(void)resetAppData;
 
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController;
+- (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
 + (void)messageIdentifier:(NSString*)identifier;
 

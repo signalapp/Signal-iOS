@@ -167,6 +167,10 @@ phoneDirectoryManager;
     _signalsViewController = signalsViewController;
 }
 
+- (void)setSignUpFlowNavigationController:(UINavigationController *)navigationController {
+    _signUpFlowNavigationController = navigationController;
+}
+
 + (void)messageIdentifier:(NSString*)identifier{
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;

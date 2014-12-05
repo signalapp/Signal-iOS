@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
@@ -103,7 +103,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="-261"/>
+            <point key="canvasLocation" x="2290.5" y="-261"/>
         </scene>
         <!--Messages View Controller-->
         <scene sceneID="QqV-z2-xRW">
@@ -114,7 +114,7 @@
                         <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -125,7 +125,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2245.5" y="-261"/>
+            <point key="canvasLocation" x="3163.5" y="-261"/>
         </scene>
         <!--Fingerprint View Controller-->
         <scene sceneID="ldP-mt-Vsq">
@@ -535,7 +535,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3082.5" y="-261"/>
+            <point key="canvasLocation" x="4000.5" y="-261"/>
         </scene>
         <!--Initial View Controller-->
         <scene sceneID="t5l-Kr-ojc">
@@ -819,10 +819,12 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <navigationItem key="navigationItem" id="Rd1-Bh-zFj"/>
+                    <nil key="simulatedTopBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m6j-Wp-Kgl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2856" y="62.25"/>
+            <point key="canvasLocation" x="-1342.5" y="62.25"/>
         </scene>
         <!--Registration View Controller-->
         <scene sceneID="okO-46-HuB">
@@ -1024,7 +1026,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="kts-vO-ui1" kind="show" id="uBk-Pr-lOq"/>
+                                    <segue destination="63r-gX-zar" kind="unwind" unwindAction="unwindToInitial:" id="Cs8-mu-nrN"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1156,6 +1158,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="countryCodeButton" destination="ngV-Kv-6Ax" id="2Hi-eD-y6U"/>
                         <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
@@ -1166,8 +1169,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rfK-ej-7ve" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="63r-gX-zar" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1995" y="62.25"/>
+            <point key="canvasLocation" x="-1342.5" y="940.5"/>
         </scene>
         <!--Code Verification View Controller-->
         <scene sceneID="44F-BV-mQs">
@@ -1287,7 +1291,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="sL4-Zw-2Og" kind="show" id="qCk-gl-KCX"/>
+                                    <segue destination="ZUP-dD-a8s" kind="unwind" unwindAction="unwindToChangeNumber:" id="4Dh-Ef-EAM"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HYX-Cr-u0w">
@@ -1398,20 +1402,21 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="challengeButton" destination="PHu-da-Fan" id="hd0-4C-XqL"/>
                         <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
-                        <segue destination="QKN-cj-wuH" kind="show" identifier="verifiedSegue" id="Wd2-mW-FfR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WLS-Zq-ncm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="ZUP-dD-a8s" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1267.5" y="62.25"/>
+            <point key="canvasLocation" x="-475.5" y="940.5"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Signal Tab Bar Controller-->
         <scene sceneID="dB1-7w-8YS">
             <objects>
-                <tabBarController storyboardIdentifier="UserInitialViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QKN-cj-wuH" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="UserInitialViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QKN-cj-wuH" customClass="SignalTabBarController" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" translucent="NO" id="JT6-cn-7qk">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
@@ -1424,18 +1429,19 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <segue destination="voG-nJ-5AE" kind="relationship" relationship="viewControllers" id="n5v-AN-H5v"/>
                         <segue destination="tuk-0x-yCb" kind="relationship" relationship="viewControllers" id="gmL-g3-5EN"/>
                         <segue destination="hxR-Pc-Gxm" kind="relationship" relationship="viewControllers" id="a4H-Ax-JAL"/>
+                        <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" id="IRa-F6-tmc"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hgl-9i-kQr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-475.5" y="62.25"/>
+            <point key="canvasLocation" x="442.5" y="62.25"/>
         </scene>
         <!--Contacts-->
         <scene sceneID="P9O-s1-2L3">
             <objects>
                 <tableViewController id="6mY-1Q-YBT" customClass="ContactsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="GqA-oC-CJa">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
@@ -1457,14 +1463,14 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="392.25"/>
+            <point key="canvasLocation" x="2290.5" y="392.25"/>
         </scene>
         <!--Contact Detail Table View Controller-->
         <scene sceneID="cYN-Tc-52p">
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -2000,7 +2006,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="srg-3q-gF9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2236.5" y="392.25"/>
+            <point key="canvasLocation" x="3154.5" y="392.25"/>
         </scene>
         <!--Full Image View Controller-->
         <scene sceneID="Awx-pS-RDJ">
@@ -2171,7 +2177,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a5y-ji-0eO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3082.5" y="392.25"/>
+            <point key="canvasLocation" x="4000.5" y="392.25"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
@@ -2195,7 +2201,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6tU-Dy-HQe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="454.5" y="-261"/>
+            <point key="canvasLocation" x="1372.5" y="-261"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="d9M-87-JHc">
@@ -2216,7 +2222,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rcU-oi-2J6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="459" y="392.25"/>
+            <point key="canvasLocation" x="1377" y="392.25"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8zg-9i-Ja1">
@@ -2244,7 +2250,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="n1f-7Y-906" customClass="SettingsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="FhQ-dM-1mj">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="Ezq-Cw-na2">
@@ -2406,9 +2412,6 @@ Licensed under the GPLv3</string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="15" y="19" width="307" height="20.5"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -2529,9 +2532,6 @@ Licensed under the GPLv3</string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="15" y="19" width="307" height="20.5"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -2966,6 +2966,25 @@ Licensed under the GPLv3</string>
             </objects>
             <point key="canvasLocation" x="3930" y="-906.75"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="kfT-eG-hkf">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="lIF-0m-2N3" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="l1Z-lc-H46">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="kts-vO-ui1" kind="relationship" relationship="rootViewController" id="QHW-G2-aiZ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-321" y="62.25"/>
+        </scene>
     </scenes>
     <resources>
         <image name="DefaultContactImage.png" width="505" height="314"/>
@@ -2983,7 +3002,4 @@ Licensed under the GPLv3</string>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="QK8-XK-Wd3"/>
-    </inferredMetricsTieBreakers>
 </document>

@@ -7,6 +7,7 @@
 //
 
 #import "InitialViewController.h"
+#import "Environment.h"
 
 @interface InitialViewController ()
 
@@ -16,13 +17,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    NSLog(@"%@",self.navigationController);
+
+    [[Environment getCurrent]setSignUpFlowNavigationController:self.navigationController];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+#pragma mark - Unwind segues
+
+- (IBAction)unwindToInitial:(UIStoryboardSegue*)sender
+{
+    
+}
+
 
 /*
 #pragma mark - Navigation
