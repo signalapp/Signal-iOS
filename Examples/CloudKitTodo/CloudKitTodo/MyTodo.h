@@ -3,9 +3,9 @@
 #import "MyDatabaseObject.h"
 
 typedef NS_ENUM(NSInteger, TodoPriority) {
-	TodoPriorityLow     = 1,
-	TodoPriorityNormal  = 2,
-	TodoPriorityHigh    = 3,
+	TodoPriorityLow     = -1,
+	TodoPriorityNormal  =  0,
+	TodoPriorityHigh    =  1,
 };
 
 @interface MyTodo : MyDatabaseObject <NSCoding, NSCopying>
@@ -18,8 +18,6 @@ typedef NS_ENUM(NSInteger, TodoPriority) {
 @property (nonatomic, copy, readonly) NSString *uuid;
 
 @property (nonatomic, copy, readwrite) NSString *title;
-@property (nonatomic, copy, readwrite) NSString *notes;
-
 @property (nonatomic, assign, readwrite) TodoPriority priority;
 @property (nonatomic, assign, readwrite) BOOL isDone;
 

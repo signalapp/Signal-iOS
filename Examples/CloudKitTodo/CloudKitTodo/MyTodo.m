@@ -6,7 +6,7 @@
 static NSString *const k_version      = @"version";
 static NSString *const k_uuid         = @"uuid";
 static NSString *const k_title        = @"title";
-static NSString *const k_notes        = @"notes";
+static NSString *const k_priority     = @"priority";
 static NSString *const k_isDone       = @"isDone";
 static NSString *const k_creationDate = @"created";
 static NSString *const k_lastModified = @"lastModified";
@@ -16,7 +16,7 @@ static NSString *const k_lastModified = @"lastModified";
 
 @synthesize uuid = uuid;
 @synthesize title = title;
-@synthesize notes = notes;
+@synthesize priority = priority;
 @synthesize isDone = isDone;
 @synthesize creationDate = creationDate;
 @synthesize lastModified = lastModified;
@@ -35,6 +35,7 @@ static NSString *const k_lastModified = @"lastModified";
 		else
 			uuid = [[NSUUID UUID] UUIDString];
 		
+		priority = TodoPriorityNormal;
 		creationDate = lastModified = [NSDate date];
 	}
 	return self;
@@ -48,15 +49,12 @@ static NSString *const k_lastModified = @"lastModified";
 		return nil;                                                      // For release builds
 	}
 	
-	
-	
 	if ((self = [super init]))
 	{
 		uuid = record.recordID.recordName;
 		
 		title = [record objectForKey:@"title"];
-		notes = [record objectForKey:@"notes"];
-		
+		priority = [[record objectForKey:@"priority"] integerValue];
 		isDone = [[record objectForKey:@"isDone"] boolValue];
 		
 		creationDate = [record objectForKey:@"created"];
@@ -78,7 +76,7 @@ static NSString *const k_lastModified = @"lastModified";
 		
 		uuid = [decoder decodeObjectForKey:k_uuid];
 		title = [decoder decodeObjectForKey:k_title];
-		notes = [decoder decodeObjectForKey:k_notes];
+		priority = [decoder decodeIntegerForKey:k_priority];
 		isDone = [decoder decodeBoolForKey:k_isDone];
 		creationDate = [decoder decodeObjectForKey:k_creationDate];
 		lastModified = [decoder decodeObjectForKey:k_lastModified];
@@ -92,7 +90,7 @@ static NSString *const k_lastModified = @"lastModified";
 	
 	[coder encodeObject:uuid forKey:k_uuid];
 	[coder encodeObject:title forKey:k_title];
-	[coder encodeObject:notes forKey:k_notes];
+	[coder encodeInteger:priority forKey:k_priority];
 	[coder encodeBool:isDone forKey:k_isDone];
 	[coder encodeObject:creationDate forKey:k_creationDate];
 	[coder encodeObject:lastModified forKey:k_lastModified];
@@ -105,7 +103,7 @@ static NSString *const k_lastModified = @"lastModified";
 	MyTodo *copy = [super copyWithZone:zone]; // Be sure to invoke [MyDatabaseObject copyWithZone:] !
 	copy->uuid = uuid;
 	copy->title = title;
-	copy->notes = notes;
+	copy->priority = priority;
 	copy->isDone = isDone;
 	copy->creationDate = creationDate;
 	copy->lastModified = lastModified;
