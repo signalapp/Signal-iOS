@@ -995,7 +995,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	       options:0
 	         range:NSMakeRange(0, [rcd1 length]) remainingRange:NULL];
 	
-	CC_SHA1_Update(&ctx, buffer, used);
+	CC_SHA1_Update(&ctx, buffer, (CC_LONG)used);
 	
 	[rcd2 getBytes:buffer
 	     maxLength:maxLen
@@ -1004,7 +1004,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	       options:0
 	         range:NSMakeRange(0, [rcd2 length]) remainingRange:NULL];
 	
-	CC_SHA1_Update(&ctx, buffer, used);
+	CC_SHA1_Update(&ctx, buffer, (CC_LONG)used);
 	
 	[rcd3 getBytes:buffer
 	     maxLength:maxLen
@@ -1013,7 +1013,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	       options:0
 	         range:NSMakeRange(0, [rcd3 length]) remainingRange:NULL];
 	
-	CC_SHA1_Update(&ctx, buffer, used);
+	CC_SHA1_Update(&ctx, buffer, (CC_LONG)used);
 	
 	if (dbid)
 	{
@@ -1026,7 +1026,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		       options:0
 		         range:NSMakeRange(0, [dbid length]) remainingRange:NULL];
 		
-		CC_SHA1_Update(&ctx, buffer, (used + 1));
+		CC_SHA1_Update(&ctx, buffer, (CC_LONG)(used + 1));
 	}
 	
 	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
