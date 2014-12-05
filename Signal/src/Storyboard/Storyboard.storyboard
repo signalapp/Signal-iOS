@@ -2429,6 +2429,9 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="ExV-2K-JEg" firstAttribute="leading" secondItem="i03-Ww-QZz" secondAttribute="leadingMargin" id="mEj-Hr-RsU">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="ExV-2K-JEg" secondAttribute="centerY" constant="8.5" id="uFa-F9-dpA">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
@@ -2439,6 +2442,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <exclude reference="mEj-Hr-RsU"/>
+                                                    <exclude reference="uFa-F9-dpA"/>
                                                     <exclude reference="Ato-ay-iFe"/>
                                                     <exclude reference="cKU-qh-Qkr"/>
                                                     <exclude reference="dRq-w1-9Ed"/>
@@ -2450,9 +2454,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="ExV-2K-JEg"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="2lQ-r0-TpV"/>
+                                                    <exclude reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <include reference="mEj-Hr-RsU"/>
+                                                    <include reference="uFa-F9-dpA"/>
                                                     <include reference="Ato-ay-iFe"/>
                                                     <include reference="cKU-qh-Qkr"/>
                                                     <include reference="dRq-w1-9Ed"/>
@@ -2471,7 +2476,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Clear History Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ge3-su-Oww">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="JCs-ZU-Cia"/>
+                                                        <constraint firstAttribute="width" constant="307" id="JCs-ZU-Cia">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2492,6 +2499,7 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="ge3-su-Oww" firstAttribute="top" secondItem="TLw-od-YLh" secondAttribute="topMargin" constant="3" id="N0U-5v-psp">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="11"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="ge3-su-Oww" secondAttribute="centerY" constant="0.5" id="ff3-A9-MxW"/>
                                                 <constraint firstItem="ge3-su-Oww" firstAttribute="leading" secondItem="TLw-od-YLh" secondAttribute="leadingMargin" id="ii2-b8-DzC">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
                                                 </constraint>
@@ -2503,6 +2511,7 @@ Licensed under the GPLv3</string>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <exclude reference="N0U-5v-psp"/>
+                                                    <exclude reference="ff3-A9-MxW"/>
                                                     <exclude reference="ii2-b8-DzC"/>
                                                     <exclude reference="uV4-Qx-pcp"/>
                                                 </mask>
@@ -2512,7 +2521,8 @@ Licensed under the GPLv3</string>
                                                     <include reference="ge3-su-Oww"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="N0U-5v-psp"/>
+                                                    <exclude reference="N0U-5v-psp"/>
+                                                    <include reference="ff3-A9-MxW"/>
                                                     <include reference="ii2-b8-DzC"/>
                                                     <exclude reference="uV4-Qx-pcp"/>
                                                 </mask>
@@ -2535,6 +2545,9 @@ Licensed under the GPLv3</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="centerY" secondItem="2iY-pe-fva" secondAttribute="centerY" constant="8.5" id="3qC-6T-mjy">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                                 <constraint firstAttribute="trailingMargin" secondItem="2iY-pe-fva" secondAttribute="trailing" constant="70" id="BKh-xT-hZ0"/>
                                                 <constraint firstItem="V8I-9d-kbu" firstAttribute="trailing" secondItem="b4l-um-jXd" secondAttribute="trailingMargin" id="GK1-fQ-8Ke">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="-13"/>
@@ -2556,6 +2569,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <exclude reference="3qC-6T-mjy"/>
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <exclude reference="TGm-qt-Uiv"/>
                                                     <exclude reference="cu5-wT-Hnb"/>
@@ -2570,9 +2584,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <include reference="3qC-6T-mjy"/>
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <include reference="TGm-qt-Uiv"/>
-                                                    <include reference="cu5-wT-Hnb"/>
+                                                    <exclude reference="cu5-wT-Hnb"/>
                                                     <include reference="GK1-fQ-8Ke"/>
                                                     <include reference="ZKW-Ii-Gj8"/>
                                                     <include reference="iyJ-5o-NUy"/>
@@ -2588,7 +2603,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Submit Debug Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bky-Zv-3If">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="9SX-bZ-YXh"/>
+                                                        <constraint firstAttribute="width" constant="307" id="9SX-bZ-YXh">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2606,6 +2623,7 @@ Licensed under the GPLv3</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="centerY" secondItem="Bky-Zv-3If" secondAttribute="centerY" constant="0.5" id="MMP-L4-uaR"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Bky-Zv-3If" secondAttribute="trailing" constant="70" id="VRe-Vg-wkG"/>
                                                 <constraint firstItem="Bky-Zv-3If" firstAttribute="leading" secondItem="b4g-jW-QGg" secondAttribute="leadingMargin" id="dPx-S9-St5">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
@@ -2619,6 +2637,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="Bky-Zv-3If"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <exclude reference="MMP-L4-uaR"/>
                                                     <exclude reference="VRe-Vg-wkG"/>
                                                     <exclude reference="dPx-S9-St5"/>
                                                     <exclude reference="uCQ-eF-qQZ"/>
@@ -2629,9 +2648,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="Bky-Zv-3If"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <include reference="MMP-L4-uaR"/>
                                                     <exclude reference="VRe-Vg-wkG"/>
                                                     <include reference="dPx-S9-St5"/>
-                                                    <include reference="uCQ-eF-qQZ"/>
+                                                    <exclude reference="uCQ-eF-qQZ"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
@@ -2644,7 +2664,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unregister" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sfh-Oe-zHD">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="1K4-4S-8z2"/>
+                                                        <constraint firstAttribute="width" constant="307" id="1K4-4S-8z2">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2669,6 +2691,9 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="Sfh-Oe-zHD" firstAttribute="top" secondItem="1uC-gH-Uix" secondAttribute="topMargin" constant="3" id="MLH-1z-7aq">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="11"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="Sfh-Oe-zHD" secondAttribute="centerY" constant="0.5" id="xmN-mx-T5t">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
@@ -2678,6 +2703,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2Yi-Ys-ktP"/>
                                                     <exclude reference="9g3-QT-YQ4"/>
                                                     <exclude reference="MLH-1z-7aq"/>
+                                                    <exclude reference="xmN-mx-T5t"/>
                                                 </mask>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
@@ -2687,7 +2713,8 @@ Licensed under the GPLv3</string>
                                                 <mask key="constraints">
                                                     <exclude reference="2Yi-Ys-ktP"/>
                                                     <include reference="9g3-QT-YQ4"/>
-                                                    <include reference="MLH-1z-7aq"/>
+                                                    <exclude reference="MLH-1z-7aq"/>
+                                                    <include reference="xmN-mx-T5t"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
