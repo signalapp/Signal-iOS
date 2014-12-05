@@ -55,6 +55,23 @@
 **/
 
 
+/**
+ * You can use this macro to fetch the CloudKit key for a given property.
+ * For example, say your class is configured with the following syncablePropertyMappings:
+ * @{ @"uuid"  : @"uuid"
+ *    @"color" : @"ck_color"
+ * }
+ *
+ * Then:
+ * - CKKey(uuid)  => [self.syncablePropertyMappings objectForKey:@"ivar"] => @"uuid"
+ * - CKKey(color) => [self.syncablePropertyMappings objectForKey:@"color"] => @"ck_color"
+ * 
+ * In other words, it returns the name of the corresponding ivar within the CKRecord.
+**/
+#define CKKey(ivar) [self.syncablePropertyMappings objectForKey:@"" # ivar]
+// translation  ==> [self.syncablePropertyMappings objectForKey:@"ivar"]
+
+
 @interface MyDatabaseObject : NSObject <NSCopying>
 
 // Immutability

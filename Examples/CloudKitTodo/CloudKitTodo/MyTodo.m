@@ -53,12 +53,24 @@ static NSString *const k_lastModified = @"lastModified";
 	{
 		uuid = record.recordID.recordName;
 		
-		title = [record objectForKey:@"title"];
-		priority = [[record objectForKey:@"priority"] integerValue];
-		isDone = [[record objectForKey:@"isDone"] boolValue];
+		// Notes:
+		//
+		// The CKKey macro translates as follows:
+		//
+		// - CKKey(title)        => [self.syncablePropertyMappings objectForKey:@"title"]        => @"title"
+		// - CKKey(priority)     => [self.syncablePropertyMappings objectForKey:@"priority"]     => @"priority"
+		// - CKKey(isDone)       => [self.syncablePropertyMappings objectForKey:@"isDone"]       => @"isDone"
+		// - CKKey(creationDate) => [self.syncablePropertyMappings objectForKey:@"creationDate"] => @"created"
+		// - CKKey(lastModified) => [self.syncablePropertyMappings objectForKey:@"lastModified"] => @"lastModified"
+		//
+		// Notice the one that's different:
+		// - CKKey(creationDate) => @"created"
 		
-		creationDate = [record objectForKey:@"created"];
-		lastModified = [record objectForKey:@"lastModified"];
+		title = [record objectForKey:CKKey(title)];
+		priority = [[record objectForKey:CKKey(priority)] integerValue];
+		isDone = [[record objectForKey:CKKey(isDone)] boolValue];
+		creationDate = [record objectForKey:CKKey(creationDate)];
+		lastModified = [record objectForKey:CKKey(lastModified)];
 	}
 	return self;
 }
@@ -88,10 +100,10 @@ static NSString *const k_lastModified = @"lastModified";
 {
 	[coder encodeInt:1 forKey:k_version];
 	
-	[coder encodeObject:uuid forKey:k_uuid];
-	[coder encodeObject:title forKey:k_title];
-	[coder encodeInteger:priority forKey:k_priority];
-	[coder encodeBool:isDone forKey:k_isDone];
+	[coder encodeObject:uuid         forKey:k_uuid];
+	[coder encodeObject:title        forKey:k_title];
+	[coder encodeInteger:priority    forKey:k_priority];
+	[coder encodeBool:isDone         forKey:k_isDone];
 	[coder encodeObject:creationDate forKey:k_creationDate];
 	[coder encodeObject:lastModified forKey:k_lastModified];
 }
