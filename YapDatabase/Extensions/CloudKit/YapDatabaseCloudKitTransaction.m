@@ -1085,7 +1085,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			else
 				newRecordTableHash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
 			
-			if ([newRecordTableHash isEqualToString:recordTableHash])
+			if (![newRecordTableHash isEqualToString:recordTableHash])
 			{
 				// Rowid is now associated with a different record.
 				recordTableHashChangedForRowid = YES;
