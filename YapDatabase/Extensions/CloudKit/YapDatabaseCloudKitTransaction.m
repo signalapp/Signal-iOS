@@ -3701,7 +3701,9 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	// First we start with any previous commits.
 	
 	BOOL hasPendingChanges =
-	  [parentConnection->parent->masterQueue mergeChangesForRecordID:recordID intoRecord:pendingLocalRecord];
+	  [parentConnection->parent->masterQueue mergeChangesForRecordID:recordID
+	                                              databaseIdentifier:databaseIdentifier
+	                                                      intoRecord:pendingLocalRecord];
 	
 	// And then we check changes from this readWriteTransaction, just in case.
 	

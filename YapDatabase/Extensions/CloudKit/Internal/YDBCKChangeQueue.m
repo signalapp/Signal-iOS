@@ -295,7 +295,9 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
  * 
  * Returns YES if there were any pending records in the pendingChangeSetsFromPreviousCommits.
 **/
-- (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID intoRecord:(CKRecord *)record
+- (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID
+             databaseIdentifier:(NSString *)databaseIdentifier
+                     intoRecord:(CKRecord *)record
 {
 	BOOL hasPendingChanges = NO;
 	
@@ -304,18 +306,21 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
 		{
-			YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
-			if (prevRecord)
+			if (CompareDatabaseIdentifiers(databaseIdentifier, prevChangeSet.databaseIdentifier))
 			{
-				for (NSString *changedKey in prevRecord.record.changedKeys)
+				YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
+				if (prevRecord)
 				{
-					id value = [prevRecord.record valueForKey:changedKey];
-					if (value) {
-						[record setValue:value forKey:changedKey];
+					for (NSString *changedKey in prevRecord.record.changedKeys)
+					{
+						id value = [prevRecord.record valueForKey:changedKey];
+						if (value) {
+							[record setValue:value forKey:changedKey];
+						}
 					}
+					
+					hasPendingChanges = YES;
 				}
-				
-				hasPendingChanges = YES;
 			}
 		}
 	}

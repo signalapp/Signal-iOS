@@ -99,7 +99,9 @@
  * 
  * Returns YES if there were any pending records in the pendingChangeSetsFromPreviousCommits.
 **/
-- (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID intoRecord:(CKRecord *)record;
+- (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID
+             databaseIdentifier:(NSString *)databaseIdentifier
+                     intoRecord:(CKRecord *)record;
 
 #pragma mark Transaction Handling
 
