@@ -437,18 +437,6 @@
 		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
-<<<<<<< HEAD
-		E1370BEA18A0689000826894 /* AppIcon29x29.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F418A05734001A532A /* AppIcon29x29.jpg */; };
-		E1370BEB18A0689000826894 /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F518A05734001A532A /* AppIcon29x29.png */; };
-		E1370BEC18A0689000826894 /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F618A05734001A532A /* AppIcon29x29@2x.png */; };
-		E1370BED18A0689000826894 /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F718A05734001A532A /* AppIcon40x40.png */; };
-		E1370BEE18A0689000826894 /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F818A05734001A532A /* AppIcon40x40@2x.png */; };
-		E1370BEF18A0689000826894 /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3F918A05734001A532A /* AppIcon60x60.png */; };
-		E1370BF018A0689000826894 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FA18A05734001A532A /* AppIcon60x60@2x.png */; };
-		E1370BF118A0689000826894 /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FB18A05734001A532A /* AppIcon76x76.png */; };
-		E1370BF218A0689000826894 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AB3FC18A05734001A532A /* AppIcon76x76@2x.png */; };
-=======
->>>>>>> upstream/textSecure
 		E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
 		E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
 		E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
