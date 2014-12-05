@@ -125,6 +125,32 @@
     return error;
 }
 
+//#pragma mark - Send codes again
+//- (IBAction)sendCodeSMSAction:(id)sender {
+//  
+//  [_sendCodeButton setEnabled:NO];
+//
+//  [SignalKeyingStorage setLocalNumberTo:localNumber];
+//  
+//  [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+//
+//    [_sendCodeButton setEnabled:YES];
+//  } failure:^(NSURLSessionDataTask *task, NSError *error) {
+//    
+//    DDLogError(@"Registration failed with information %@", error.description);
+//    
+//    UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+//                                                                 message:REGISTER_ERROR_ALERT_VIEW_BODY
+//                                                                delegate:nil
+//                                                       cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+//                                                       otherButtonTitles:nil, nil];
+//    
+//    [registrationErrorAV show];
+//    
+//    [_sendCodeButton setEnabled:YES];
+//  }];
+
+
 
 #pragma mark - Keyboard notifications
 
