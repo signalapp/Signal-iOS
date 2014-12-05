@@ -3684,9 +3684,15 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	// Make sanitized copies of the remoteRecord.
 	// Sanitized == copy of the system fields only, without any values.
+	//
+	// We will be storing:
+	// - sanitizedRemoteRecord : if there are no pending changes for the record
+	// - newLocalRecord : if there are pending changes, and we passed the info to the merge block
 	
-	CKRecord *pendingLocalRecord = [YapDatabaseCKRecord sanitizedRecord:remoteRecord];
-	CKRecord *newLocalRecord = [pendingLocalRecord copy];
+	CKRecord *sanitizedRemoteRecord = [YapDatabaseCKRecord sanitizedRecord:remoteRecord];
+	
+	CKRecord *pendingLocalRecord = sanitizedRemoteRecord;
+	CKRecord *newLocalRecord = [sanitizedRemoteRecord copy];
 	
 	// And then infuse the localRecord with any key/value pairs that are pending upload.
 	//
@@ -3735,7 +3741,11 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 		YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 		
-		dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		if (hasPendingChanges)
+			dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		else
+			dirtyRecordTableInfo.dirty_record = sanitizedRemoteRecord;
+		
 		dirtyRecordTableInfo.remoteMerge = YES;
 		
 		[parentConnection->cleanRecordTableInfoCache removeObjectForKey:hash];
@@ -3746,7 +3756,11 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
 		  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
 		
-		dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		if (hasPendingChanges)
+			dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		else
+			dirtyRecordTableInfo.dirty_record = sanitizedRemoteRecord;
+		
 		dirtyRecordTableInfo.remoteMerge = YES;
 	}
 }
