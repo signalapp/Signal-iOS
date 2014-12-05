@@ -31,13 +31,10 @@
 static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
 
-@interface SignalsViewController () {
-    NSArray * _dataArray;
-    NSUInteger numberOfCells;
-    
-}
+@interface SignalsViewController ()
 
 @property (strong, nonatomic) UILabel * emptyViewLabel;
+@property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 
@@ -52,9 +49,13 @@ static NSString *const kSegueIndentifier = @"showSegue";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self tableViewSetUp];
+    
+    self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
+    
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     
-    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSThreadGroup]
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
                                                                      view:TSThreadDatabaseViewExtensionName];
     
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -106,7 +107,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [cell configureWithThread:thread];
-    [cell configureForState:_segmentedControl.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
+    [cell configureForState:_inboxArchiveSwitch.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
     
     return cell;
 }
@@ -131,11 +132,19 @@ static NSString *const kSegueIndentifier = @"showSegue";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     
-    [thread remove];
+    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [thread removeWithTransaction:transaction];
+    }];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
-    NSLog(@"Archive");
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    TSThread    *thread    = [self threadForIndexPath:indexPath];
+    thread.archivalDate    = [NSDate date];
+    
+    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [thread saveWithTransaction:transaction];
+    }];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -165,18 +174,23 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 -(IBAction)segmentDidChange:(id)sender
 {
-    switch (_segmentedControl.selectedSegmentIndex) {
+    switch (_inboxArchiveSwitch.selectedSegmentIndex) {
         case 0:
-            numberOfCells=5;
-            [self.tableView reloadData];
+            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
+                                                                             view:TSThreadDatabaseViewExtensionName];
             break;
             
         case 1:
-            numberOfCells=3;
-            [self.tableView reloadData];
+            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
+                                                                             view:TSThreadDatabaseViewExtensionName];
             break;
-            
     }
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+        [self.threadMappings updateWithTransaction:transaction];
+    }];
+    [self.tableView reloadData];
+    [self updateTableViewHeader];
 }
 
 #pragma mark Database delegates
@@ -275,10 +289,10 @@ static NSString *const kSegueIndentifier = @"showSegue";
     {
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.text = @"You have no messages yet.";
         _emptyViewLabel.textColor = [UIColor grayColor];
         _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        _emptyViewLabel.text = @"You have no messages yet.";
         self.tableView.tableHeaderView = _emptyViewLabel;
     } else {
         _emptyViewLabel = nil;

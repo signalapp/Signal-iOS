@@ -61,6 +61,7 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
 
 @property (getter=isBlocked) BOOL blocked;
 @property (nonatomic) uint64_t lastMessageId;
+@property NSDate *archivalDate;
 
 - (NSDate*)lastMessageDate;
 

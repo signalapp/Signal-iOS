@@ -10,7 +10,8 @@
 
 @interface TSDatabaseView : NSObject
 
-extern NSString *TSThreadGroup;
+extern NSString *TSInboxGroup;
+extern NSString *TSArchiveGroup;
 
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;

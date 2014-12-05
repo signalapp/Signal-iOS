@@ -15,10 +15,11 @@
 #import "TSStorageManager.h"
 #import "TSRecipient.h"
 
-NSString *TSThreadGroup = @"TSThreadGroup";
+NSString *TSInboxGroup   = @"TSInboxGroup";
+NSString *TSArchiveGroup = @"TSArchiveGroup";
 
-NSString *TSThreadDatabaseViewExtensionName     = @"TSThreadDatabaseViewExtensionName";
-NSString *TSMessageDatabaseViewExtensionName    = @"TSMessageDatabaseViewExtensionName";
+NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
+NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
@@ -31,24 +32,18 @@ NSString *TSMessageDatabaseViewExtensionName    = @"TSMessageDatabaseViewExtensi
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSThread class]]){
             TSThread *thread = (TSThread*)object;
+            
             if (thread.lastMessageDate) {
-                return TSThreadGroup;
+                if (thread.archivalDate) {
+                    return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
+                }
+                return TSInboxGroup;
             }
         }
         return nil;
     }];
     
-    YapDatabaseViewSorting *viewSorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(NSString *group, NSString *collection1, NSString *key1, id object1, NSString *collection2, NSString *key2, id object2) {
-        if ([group isEqualToString:TSThreadGroup]) {
-            if ([object1 isKindOfClass:[TSThread class]] && [object2 isKindOfClass:[TSThread class]]){
-                TSThread *thread1 = (TSThread*)object1;
-                TSThread *thread2 = (TSThread*)object2;
-                
-                return [thread2.lastMessageDate compare:thread1.lastMessageDate];
-            }
-        }
-        return NSOrderedSame;
-    }];
+    YapDatabaseViewSorting *viewSorting = [self threadSorting];
     
     YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
     options.isPersistent = YES;
@@ -96,6 +91,41 @@ NSString *TSMessageDatabaseViewExtensionName    = @"TSMessageDatabaseViewExtensi
                                                               options:options];
     
     return [[TSStorageManager sharedManager].database registerExtension:view withName:TSMessageDatabaseViewExtensionName];
+}
+
+
+/**
+ *  Determines whether a thread belongs to the archive or inbox
+ *
+ *  @param thread TSThread
+ *
+ *  @return Inbox if true, Archive if false
+ */
+
++ (BOOL)threadShouldBeInInbox:(TSThread*)thread {
+    NSDate *lastMessage  = thread.lastMessageDate;
+    NSDate *archivalDate = thread.archivalDate;
+    
+    if (lastMessage&&archivalDate) {
+        return ([lastMessage timeIntervalSinceDate:archivalDate]>0)?YES:NO;
+    }
+    
+    return YES;
+}
+
++ (YapDatabaseViewSorting*)threadSorting {
+    return [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(NSString *group, NSString *collection1, NSString *key1, id object1, NSString *collection2, NSString *key2, id object2) {
+        if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
+            if ([object1 isKindOfClass:[TSThread class]] && [object2 isKindOfClass:[TSThread class]]){
+                TSThread *thread1 = (TSThread*)object1;
+                TSThread *thread2 = (TSThread*)object2;
+                
+                return [thread2.lastMessageDate compare:thread1.lastMessageDate];
+            }
+        }
+        return NSOrderedSame;
+    }];
+
 }
 
 @end
