@@ -704,7 +704,7 @@
 				__unsafe_unretained YapDatabaseViewRowChange *rowChange =
 				  (YapDatabaseViewRowChange *)change;
 				
-				if ([rowChange->originalGroup isEqualToString:group])
+				if ([rowChange->originalGroup isEqualToString:group] || [rowChange->finalGroup isEqualToString:group])
 				{
 					return YES;
 				}
@@ -748,7 +748,7 @@
 				__unsafe_unretained YapDatabaseViewRowChange *rowChange =
 				  (YapDatabaseViewRowChange *)change;
 				
-				if ([groups containsObject:rowChange->originalGroup])
+				if ([groups containsObject:rowChange->originalGroup] || [groups containsObject:rowChange->finalGroup])
 				{
 					return YES;
 				}
