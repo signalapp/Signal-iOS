@@ -1312,6 +1312,45 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <include reference="EoB-jn-bwV"/>
                                     </mask>
                                 </variation>
+                                <connections>
+                                    <action selector="sendCodeSMSAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="jWS-dh-jsO"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="80G-wF-Ki5">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="87" y="733" width="225" height="21"/>
+                                </variation>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I5-tm-rMi">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="102" id="UiP-hG-L0t"/>
+                                    <constraint firstAttribute="height" constant="30" id="UzF-a6-vRO"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                                <state key="normal" title="Call me instead">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="UzF-a6-vRO"/>
+                                        <exclude reference="UiP-hG-L0t"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                    <rect key="frame" x="87" y="695" width="225" height="30"/>
+                                    <mask key="constraints">
+                                        <include reference="UzF-a6-vRO"/>
+                                        <include reference="UiP-hG-L0t"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="sendCodeVoiceAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="YWt-aa-RUW"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1345,6 +1384,8 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="PHu-da-Fan"/>
                                 <exclude reference="IVn-LE-fmp"/>
                                 <exclude reference="HYX-Cr-u0w"/>
+                                <exclude reference="80G-wF-Ki5"/>
+                                <exclude reference="2I5-tm-rMi"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="601-ZF-xlq"/>
@@ -1375,6 +1416,8 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="PHu-da-Fan"/>
                                 <include reference="IVn-LE-fmp"/>
                                 <include reference="HYX-Cr-u0w"/>
+                                <include reference="80G-wF-Ki5"/>
+                                <include reference="2I5-tm-rMi"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="601-ZF-xlq"/>
@@ -1401,6 +1444,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     <connections>
                         <outlet property="challengeButton" destination="PHu-da-Fan" id="hd0-4C-XqL"/>
                         <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
+                        <outlet property="phoneNumberEntered" destination="80G-wF-Ki5" id="rRv-vj-0Eo"/>
+                        <outlet property="sendCodeViaSMSAgainButton" destination="HYX-Cr-u0w" id="80C-tQ-khX"/>
+                        <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
                         <segue destination="QKN-cj-wuH" kind="show" identifier="verifiedSegue" id="Wd2-mW-FfR"/>
                     </connections>
                 </viewController>
@@ -2978,6 +3024,6 @@ Licensed under the GPLv3</string>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QK8-XK-Wd3"/>
+        <segue reference="qCk-gl-KCX"/>
     </inferredMetricsTieBreakers>
 </document>

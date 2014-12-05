@@ -12,8 +12,16 @@
 
 @property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
+@property (nonatomic, strong) IBOutlet UILabel* phoneNumberEntered;
+
 @property(nonatomic, strong) IBOutlet UIButton* challengeButton;
 
+@property(nonatomic, strong) IBOutlet UIButton* sendCodeViaSMSAgainButton;
+
+@property(nonatomic, strong) IBOutlet UIButton* sendCodeViaVoiceButton;
+
 - (IBAction)verifyChallengeAction:(id)sender;
+- (IBAction)sendCodeSMSAction:(id)sender;
+- (IBAction)sendCodeVoiceAction:(id)sender;
 
 @end
