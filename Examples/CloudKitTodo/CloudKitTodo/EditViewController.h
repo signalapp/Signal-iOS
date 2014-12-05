@@ -12,4 +12,6 @@
 @property (nonatomic, weak) IBOutlet UILabel *creationDateLabel;
 @property (nonatomic, weak) IBOutlet UILabel *lastModifiedLabel;
 
+@property (nonatomic, weak) IBOutlet UILabel *baseRecordLabel;
+
 @end

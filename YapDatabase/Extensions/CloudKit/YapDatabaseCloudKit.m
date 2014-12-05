@@ -499,6 +499,11 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 		NSArray *recordsToSave = changeSet.recordsToSave_noCopy;
 		NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
 		
+		YDBLogVerbose(@"CKModifyRecordsOperation UPLOADING: databaseIdentifier = %@:\n"
+					  @"  recordsToSave: %@\n"
+					  @"  recordIDsToDelete: %@",
+					  changeSet.databaseIdentifier, recordsToSave, recordIDsToDelete);
+		
 		CKModifyRecordsOperation *modifyRecordsOperation =
 		  [[CKModifyRecordsOperation alloc] initWithRecordsToSave:recordsToSave recordIDsToDelete:recordIDsToDelete];
 		modifyRecordsOperation.database = database;
@@ -532,7 +537,7 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 			}
 			else
 			{
-				YDBLogVerbose(@"CKModifyRecordsOperation complete: databaseIdentifier = %@:\n"
+				YDBLogVerbose(@"CKModifyRecordsOperation COMPLETE: databaseIdentifier = %@:\n"
 				              @"  savedRecords: %@\n"
 				              @"  deletedRecordIDs: %@",
 				              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);

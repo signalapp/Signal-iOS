@@ -17,6 +17,8 @@
 @synthesize creationDateLabel = creationDateLabel;
 @synthesize lastModifiedLabel = lastModifiedLabel;
 
+@synthesize baseRecordLabel = baseRecordLabel;
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
@@ -62,11 +64,13 @@
 - (void)updateView
 {
 	__block MyTodo *todo = nil;
+	__block CKRecord *record = nil;
 	if (todoID)
 	{
 		[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 			
 			todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
+			record = [[transaction ext:Ext_CloudKit] recordForKey:todoID inCollection:Collection_Todos];
 		}];
 	}
 	
@@ -89,6 +93,8 @@
 		
 		creationDateLabel.text = [df stringFromDate:todo.creationDate];
 		lastModifiedLabel.text = [df stringFromDate:todo.lastModified];
+		
+		baseRecordLabel.text = [record description];
 	}
 	else
 	{
@@ -98,6 +104,8 @@
 		uuidLabel.text = [[NSUUID UUID] UUIDString];
 		creationDateLabel.text = @"<now>";
 		lastModifiedLabel.text = @"<now>";
+		
+		baseRecordLabel.text = @"<New CKRecord>";
 	}
 }
 
