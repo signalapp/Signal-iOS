@@ -65,11 +65,7 @@
 
 - (NSException *)immutableExceptionForKey:(NSString *)key;
 
-+ (NSMutableSet *)monitoredProperties;
-
 // Tracking what changed
-
-@property (nonatomic, readonly) NSSet *monitoredProperties;
 
 @property (nonatomic, readonly) NSSet *changedProperties;
 @property (nonatomic, readonly) BOOL hasChangedProperties;
@@ -78,11 +74,17 @@
 
 // Tracking what changed (the sync-able subset)
 
-+ (NSMutableDictionary *)syncablePropertyMappings;
-
 @property (nonatomic, readonly) NSSet *allSyncableProperties;
 
 @property (nonatomic, readonly) NSSet *changedSyncableProperties;
 @property (nonatomic, readonly) BOOL hasChangedSyncableProperties;
+
+// Class configuration
+
++ (NSMutableSet *)monitoredProperties;
+@property (nonatomic, readonly) NSSet *monitoredProperties;
+
++ (NSMutableDictionary *)syncablePropertyMappings;
+@property (nonatomic, readonly) NSDictionary *syncablePropertyMappings;
 
 @end

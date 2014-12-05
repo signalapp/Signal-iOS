@@ -104,7 +104,13 @@
 
 - (NSSet *)monitoredProperties
 {
-	return [[self class] monitoredProperties];
+	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSMutableSet *monitoredProperties = [[self class] monitoredProperties];
+	
+	objc_setAssociatedObject([self class], _cmd, monitoredProperties, OBJC_ASSOCIATION_COPY);
+	return monitoredProperties;
 }
 
 - (NSSet *)changedProperties
@@ -112,7 +118,7 @@
 	if ([changedProperties count] == 0) return nil;
 	
 	// Remove untracked properties from the list.
-	[changedProperties intersectSet:[[self class] monitoredProperties]];
+	[changedProperties intersectSet:[self monitoredProperties]];
 	
 	// And return immutable copy
 	return [changedProperties copy];
@@ -123,9 +129,23 @@
 	return ([changedProperties count] > 0);
 }
 
+- (NSDictionary *)syncablePropertyMappings
+{
+	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	
+	objc_setAssociatedObject([self class], _cmd, syncablePropertyMappings, OBJC_ASSOCIATION_COPY);
+	return syncablePropertyMappings;
+}
+
 - (NSSet *)allSyncableProperties
 {
-	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
 	NSMutableSet *allSyncableProperties = [NSMutableSet setWithCapacity:syncablePropertyMappings.count];
 	
 	for (NSString *syncablePropertyName in [syncablePropertyMappings objectEnumerator])
@@ -133,6 +153,7 @@
 		[allSyncableProperties addObject:syncablePropertyName];
 	}
 	
+	objc_setAssociatedObject([self class], _cmd, allSyncableProperties, OBJC_ASSOCIATION_COPY);
 	return allSyncableProperties;
 }
 
@@ -141,7 +162,7 @@
 	if ([changedProperties count] == 0) return nil;
 	
 	NSMutableSet *changedSyncableProperties = [NSMutableSet setWithCapacity:changedProperties.count];
-	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
 	
 	for (NSString *propertyName in changedProperties)
 	{
@@ -158,7 +179,7 @@
 {
 	if ([changedProperties count] == 0) return NO;
 	
-	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
+	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
 	
 	for (NSString *propertyName in changedProperties)
 	{
