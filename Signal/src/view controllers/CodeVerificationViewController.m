@@ -178,8 +178,7 @@
 -(void)enableServerActions:(BOOL)enabled {
     [_challengeButton setEnabled:enabled];
     [_sendCodeViaSMSAgainButton setEnabled:enabled];
-    [_sendCodeViaVoiceButton setEnabled:enabled];
-    
+    [_sendCodeViaVoiceButton setEnabled:enabled];    
 }
 
 
