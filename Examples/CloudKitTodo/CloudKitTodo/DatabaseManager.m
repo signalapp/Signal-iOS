@@ -350,6 +350,7 @@ DatabaseManager *MyDatabaseManager;
 		if ([remoteRecord.recordType isEqualToString:@"todo"])
 		{
 			MyTodo *todo = [transaction objectForKey:key inCollection:collection];
+			todo = [todo copy]; // make mutable copy
 			
 			NSSet *remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
 			NSMutableSet *localChangedKeys = [NSMutableSet setWithArray:pendingLocalRecord.changedKeys];
@@ -366,6 +367,8 @@ DatabaseManager *MyDatabaseManager;
 				id localChangedValue = [pendingLocalRecord valueForKey:localChangedKey];
 				[newLocalRecord setValue:localChangedValue forKey:localChangedKey];
 			}
+			
+			[transaction setObject:todo forKey:key inCollection:collection];
 		}
 	};
 	
