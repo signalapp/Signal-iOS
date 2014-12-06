@@ -16,6 +16,8 @@
 
 + (UIFont*) ows_regularFontWithSize:(CGFloat)size;
 
++ (UIFont*) ows_mediumFontWithSize:(CGFloat)size;
+
 + (UIFont*) ows_boldFontWithSize:(CGFloat)size;
 
 @end

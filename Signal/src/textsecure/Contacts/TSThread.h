@@ -26,7 +26,11 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
     TSLastActionMessageSent,
     TSLastActionMessageDelivered,
     
-    TSLastActionMessageIncoming
+    TSLastActionMessageIncomingRead,
+    TSLastActionMessageIncomingUnread,
+    
+    TSLastActionInfoMessage,
+    TSLastActionErrorMessage
 };
 
 /**
@@ -69,6 +73,6 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
 
 - (TSLastActionType)lastAction;
 
-- (int)unreadMessages;
+- (BOOL)hasUnreadMessages;
 
 @end
