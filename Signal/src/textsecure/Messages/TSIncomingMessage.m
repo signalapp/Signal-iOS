@@ -20,7 +20,7 @@
     
     if (self) {
         _authorId = authorId;
-        _read     = false;
+        _read     = NO;
     }
     
     return self;
@@ -35,7 +35,7 @@
     
     if (self) {
         _authorId = nil;
-        _read     = false;
+        _read     = NO;
     }
     
     return self;

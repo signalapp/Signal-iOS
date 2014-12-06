@@ -52,6 +52,8 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
+    
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             NSLog(@"Currently unsupported");
@@ -85,7 +87,7 @@ dispatch_queue_t sendingQueue() {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [recipient saveWithTransaction:transaction];
                 }];
-                [self handleMessageSent:message inThread:thread];
+                [self handleMessageSent:message];
                 
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -116,18 +118,12 @@ dispatch_queue_t sendingQueue() {
             }];
         }];
     } else{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [message setMessageState:TSOutgoingMessageStateUnsent];
-            [message saveWithTransaction:transaction];
-        }];
+        [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
     }
 }
 
-- (void)handleMessageSent:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message setMessageState:TSOutgoingMessageStateSent];
-        [message saveWithTransaction:transaction];
-    }];
+- (void)handleMessageSent:(TSOutgoingMessage*)message {
+    [self saveMessage:message withState:TSOutgoingMessageStateSent];
 }
 
 - (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient completion:(messagesQueue)sendMessages{
@@ -209,6 +205,13 @@ dispatch_queue_t sendingQueue() {
         return TSEncryptedWhisperMessageType;
     }
     return TSUnknownMessageType;
+}
+
+- (void)saveMessage:(TSOutgoingMessage*)message withState:(TSOutgoingMessageState)state{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message setMessageState:state];
+        [message saveWithTransaction:transaction];
+    }];
 }
 
 - (NSData*)plainTextForMessage:(TSOutgoingMessage*)message{

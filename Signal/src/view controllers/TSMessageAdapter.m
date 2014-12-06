@@ -60,7 +60,7 @@
             NSString *contactId       = ((TSContactThread*)thread).contactIdentifier;
             adapter.senderId          = contactId;
             adapter.senderDisplayName = contactId;
-            adapter.messageType = TSIncomingMessageAdapter;
+            adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = @"Me";
@@ -86,12 +86,12 @@
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
         TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
         adapter.infoMessageType = infoMessage.messageType;
-        adapter.messageBody = @"Placeholder for InfoMessage";
+        adapter.messageBody = infoMessage.description;
         adapter.messageType = TSInfoMessageAdapter;
     } else {
         TSErrorMessage * errorMessage = (TSErrorMessage*)interaction;
         adapter.infoMessageType = errorMessage.errorType;
-        adapter.messageBody = @"Placeholder for ErrorMessage";
+        adapter.messageBody = errorMessage.description;
         adapter.messageType = TSErrorMessageAdapter;
     }
     
