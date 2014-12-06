@@ -32,7 +32,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [_challengeButton setEnabled:YES];
+    [self enableServerActions:YES];
     [_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
 }
 
@@ -44,7 +44,7 @@
 
 - (IBAction)verifyChallengeAction:(id)sender {
     
-    [_challengeButton setEnabled:NO];
+    [self enableServerActions:NO];
     [_challengeTextField resignFirstResponder];
     
     [self registerWithSuccess:^{
@@ -52,7 +52,7 @@
         [self performSegueWithIdentifier:@"verifiedSegue" sender:self];
     } failure:^(NSError *error) {
         [self showAlertForError:error];
-        [_challengeButton setEnabled:YES];
+        [self enableServerActions:YES];
     }];
 }
 
@@ -129,36 +129,36 @@
 #pragma mark - Send codes again
 - (IBAction)sendCodeSMSAction:(id)sender {
   
-  [_sendCodeViaSMSAgainButton setEnabled:NO];
+    [self enableServerActions:NO];
 
   
-  [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
 
-    [_sendCodeViaSMSAgainButton setEnabled:YES];
-  } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [self enableServerActions:YES];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
     
-    DDLogError(@"Registration failed with information %@", error.description);
+        DDLogError(@"Registration failed with information %@", error.description);
     
-    UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+        UIAlertView *registrationErrorAV = [[UIAlertView alloc]initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
                                                                  message:REGISTER_ERROR_ALERT_VIEW_BODY
                                                                 delegate:nil
                                                        cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
                                                        otherButtonTitles:nil, nil];
     
-    [registrationErrorAV show];
+        [registrationErrorAV show];
     
-    [_sendCodeViaSMSAgainButton setEnabled:YES];
-  }];
+        [self enableServerActions:YES];
+    }];
 }
 
 - (IBAction)sendCodeVoiceAction:(id)sender {
     
-    [_sendCodeViaVoiceButton setEnabled:NO];
+    [self enableServerActions:NO];
     
     
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCodeWithVoice] success:^(NSURLSessionDataTask *task, id responseObject) {
         
-        [_sendCodeViaVoiceButton setEnabled:YES];
+        [self enableServerActions:YES];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
         DDLogError(@"Registration failed with information %@", error.description);
@@ -171,8 +171,15 @@
         
         [registrationErrorAV show];
         
-        [_sendCodeViaVoiceButton setEnabled:YES];
+        [self enableServerActions:YES];
     }];
+}
+
+-(void)enableServerActions:(BOOL)enabled {
+    [_challengeButton setEnabled:enabled];
+    [_sendCodeViaSMSAgainButton setEnabled:enabled];
+    [_sendCodeViaVoiceButton setEnabled:enabled];
+    
 }
 
 

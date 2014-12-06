@@ -24,4 +24,7 @@
 - (IBAction)sendCodeSMSAction:(id)sender;
 - (IBAction)sendCodeVoiceAction:(id)sender;
 
+// This ensures the user doesn't keep creating server requests before the server has responded for all buttons that result in server requests
+-(void)enableServerActions:(BOOL)enabled;
+
 @end
