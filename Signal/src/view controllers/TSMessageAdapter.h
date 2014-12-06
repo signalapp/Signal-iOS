@@ -15,13 +15,6 @@
 
 #define ME_MESSAGE_IDENTIFIER @"Me";
 
-typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
-    TSIncomingMessageAdapter,
-    TSOutgoingMessageAdapter,
-    TSCallAdapter,
-    TSInfoMessageAdapter,
-    TSErrorMessageAdapter
-};
 
 @interface TSMessageAdapter : NSObject <JSQMessageData>
 

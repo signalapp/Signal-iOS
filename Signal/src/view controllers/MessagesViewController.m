@@ -65,6 +65,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, retain) NSTimer *readTimer;
 
+@property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
+
 @end
 
 @implementation MessagesViewController
@@ -397,6 +399,7 @@ typedef enum : NSUInteger {
 {
     if ([self shouldShowMessageStatusAtIndexPath:indexPath])
     {
+        _lastDeliveredMessageIndexPath = indexPath;
         NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
         textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
         NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
@@ -444,7 +447,7 @@ typedef enum : NSUInteger {
         }
     }
     
-    BOOL isUnsent = messageItem.messageState == TSOutgoingMessageStateUnsent || messageItem.messageState == TSOutgoingMessageStateAttemptingOut;
+    BOOL isUnsent = messageItem.messageState == TSOutgoingMessageStateAttemptingOut && [messageItem.senderId isEqualToString:self.senderId];
     
     if (isMessage && isUnsent)
     {
@@ -645,7 +648,7 @@ typedef enum : NSUInteger {
             }
             case YapDatabaseViewChangeUpdate :
             {
-                [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath , _lastDeliveredMessageIndexPath]];
                 break;
             }
         }
