@@ -33,6 +33,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
     if (![TSAccountManager isRegistered]){
         [self performSegueWithIdentifier:@"showSignupFlow" sender:self];
     }
