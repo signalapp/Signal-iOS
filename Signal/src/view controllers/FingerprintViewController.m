@@ -15,6 +15,9 @@
 #import "DJWActionSheet.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+#import "PresentIdentityQRCodeViewController.h"
+#import "ScanIdentityBarcodeViewController.h"
+#include "NSData+Base64.h"
 
 #import "TSFingerprintGenerator.h"
 
@@ -55,6 +58,15 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(NSData*) getMyPublicIdentityKey {
+    return [[TSStorageManager sharedManager] identityKeyPair].publicKey;
+}
+
+-(NSData*) getTheirPublicIdentityKey {
+    return [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
+    
 }
 
 #pragma mark - Initializers
@@ -99,11 +111,31 @@
                       }];
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if([[segue identifier] isEqualToString:@"PresentIdentityQRCodeViewSegue"]){
+        [segue.destinationViewController setIdentityKey:[[self getMyPublicIdentityKey] prependKeyType]];
+    }
+    else if([[segue identifier] isEqualToString:@"ScanIdentityBarcodeViewSegue"]){
+        [segue.destinationViewController setIdentityKey:[[self getTheirPublicIdentityKey] prependKeyType]];
+    }
+    
+}
+
+
+- (IBAction)unwindToIdentityKeyWasVerified:(UIStoryboardSegue *)segue{
+    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+}
+
+
+- (IBAction)unwindCancel:(UIStoryboardSegue *)segue{
+    NSLog(@"action cancelled");
+    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+}
+
 #pragma mark - Shredding & Deleting
 
-- (void)shredAndDelete
-{
-    
+- (void)shredAndDelete {
+#warning unimplemented: shredAndDelete
 }
 
 @end
