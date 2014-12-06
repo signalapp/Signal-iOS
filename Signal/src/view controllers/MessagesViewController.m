@@ -694,16 +694,6 @@ typedef enum : NSUInteger {
         {
             switch (rowChange.type)
             {
-                case YapDatabaseViewChangeDelete :
-                {
-                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    break;
-                }
-                case YapDatabaseViewChangeInsert :
-                {
-                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    break;
-                }
                 case YapDatabaseViewChangeMove :
                 {
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
@@ -712,12 +702,7 @@ typedef enum : NSUInteger {
                 }
                 case YapDatabaseViewChangeUpdate :
                 {
-                    NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
-                    if (_lastDeliveredMessageIndexPath) {
-                        [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
-                    }
-                    
-                    [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
+                    [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath , _lastDeliveredMessageIndexPath]];
                     break;
                 }
             }
