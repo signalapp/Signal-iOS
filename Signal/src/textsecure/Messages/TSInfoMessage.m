@@ -11,7 +11,7 @@
 @implementation TSInfoMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSContactThread *)contact messageType:(TSInfoMessageType)infoMessage{
-    self = [super initWithTimestamp:timestamp inThread:contact messageBody:nil attachements:nil];
+    self = [super initWithTimestamp:timestamp inThread:contact messageBody:@"Placeholder for info message." attachements:nil];
     
     if (self) {
         _messageType = infoMessage;
