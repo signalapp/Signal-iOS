@@ -12,11 +12,14 @@
 
 extern NSString *TSInboxGroup;
 extern NSString *TSArchiveGroup;
+extern NSString *TSUnreadIncomingMessagesGroup;
 
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
+extern NSString *TSUnreadDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
++ (BOOL)registerUnreadDatabaseView;
 
 @end

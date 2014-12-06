@@ -51,13 +51,13 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     };
     
     _database = [[YapDatabase alloc] initWithPath:[self dbPath]
-                                     objectSerializer:NULL
-                                   objectDeserializer:NULL
-                                   metadataSerializer:NULL
-                                 metadataDeserializer:NULL
-                                      objectSanitizer:NULL
-                                    metadataSanitizer:NULL
-                                              options:options];
+                                 objectSerializer:NULL
+                               objectDeserializer:NULL
+                               metadataSerializer:NULL
+                             metadataDeserializer:NULL
+                                  objectSanitizer:NULL
+                                metadataSanitizer:NULL
+                                          options:options];
     _dbConnection = self.newDatabaseConnection;
     return self;
 }
@@ -65,6 +65,8 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 - (void)setupDatabase {
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
+    [TSDatabaseView registerUnreadDatabaseView];
+    
     [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
@@ -73,16 +75,16 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
  */
 
 - (void)protectDatabaseFile{
-
+    
     NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
     NSError *error;
-
-
+    
+    
     [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:[self dbPath] error:&error];
     [[NSURL fileURLWithPath:[self dbPath]] setResourceValue:@YES
                                                      forKey:NSURLIsExcludedFromBackupKey
                                                       error:&error];
-
+    
     if (error) {
         DDLogError(@"Error while removing log files from backup: %@", error.description);
         UIAlertView *alert  = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")

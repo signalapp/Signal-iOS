@@ -33,6 +33,7 @@
 #import <YapDatabase/YapDatabaseView.h>
 #import "TSInteraction.h"
 #import "TSMessageAdapter.h"
+#import "TSIncomingMessage.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -55,18 +56,21 @@ typedef enum : NSUInteger {
 }
 
 @property (nonatomic, retain) TSThread *thread;
-@property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, strong) YapDatabaseConnection   *editingDatabaseConnection;
+@property (nonatomic, strong) YapDatabaseConnection   *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *incomingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingBubbleImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage  *incomingBubbleImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingMessageFailedImageData;
+
+@property (nonatomic, retain) NSTimer *readTimer;
 
 @end
 
 @implementation MessagesViewController
 
 - (void)setupWithTSIdentifier:(NSString *)identifier{
-    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSContactThread threadWithContactId:identifier transaction:transaction];
     }];
 }
@@ -77,16 +81,20 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self markAllMessagesAsRead];
     
     isGroupConversation = NO; // TODO: Support Group Conversations
     
     [self initializeBubbles];
     
-    self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId] view:TSMessageDatabaseViewExtensionName];
+    self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
+                                                                      view:TSMessageDatabaseViewExtensionName];
     
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    
+    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
     
     [self initializeNavigationBar];
     [self initializeCollectionViewLayout];
@@ -94,13 +102,6 @@ typedef enum : NSUInteger {
     self.senderId = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
 }
-
-- (void)didPressBack{
-    [self dismissViewControllerAnimated:YES completion:^{
-        [self.navigationController.parentViewController.presentingViewController.navigationController pushViewController:self animated:NO];
-    }];
-}
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -156,6 +157,7 @@ typedef enum : NSUInteger {
 
 -(void)showFingerprint
 {
+    [self markAllMessagesAsRead];
     [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
 }
 
@@ -271,8 +273,7 @@ typedef enum : NSUInteger {
 -(JSQMessagesCollectionViewCell*)loadIncomingMessageCellForMessage:(id<JSQMessageData>)message atIndexPath:(NSIndexPath*)indexPath
 {
     JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
-    if (!message.isMediaMessage)
-    {
+    if (!message.isMediaMessage) {
         cell.textView.textColor = [UIColor blackColor];
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
@@ -412,8 +413,7 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
     
-    if (msg.messageType == TSOutgoingMessageAdapter)
-    {
+    if (msg.messageType == TSOutgoingMessageAdapter) {
         return 16.0f;
     }
     
@@ -565,7 +565,7 @@ typedef enum : NSUInteger {
         NSError *err                             = NULL;
         CMTime time                              = CMTimeMake(2, 1);
         CGImageRef snapshotRef                   = [generate1 copyCGImageAtTime:time actualTime:NULL error:&err];
-        __unused UIImage *snapshot                        = [[UIImage alloc] initWithCGImage:snapshotRef];
+        __unused UIImage *snapshot               = [[UIImage alloc] initWithCGImage:snapshotRef];
         
         JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
         JSQMessage * videoMessage = [JSQMessage messageWithSenderId:self.senderId
@@ -591,8 +591,7 @@ typedef enum : NSUInteger {
 
 #pragma mark Storage access
 
-- (YapDatabaseConnection *)uiDatabaseConnection
-{
+- (YapDatabaseConnection*)uiDatabaseConnection {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
@@ -603,6 +602,13 @@ typedef enum : NSUInteger {
                                                    object:nil];
     }
     return _uiDatabaseConnection;
+}
+
+- (YapDatabaseConnection*)editingDatabaseConnection {
+    if (!_editingDatabaseConnection) {
+        _editingDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    }
+    return _editingDatabaseConnection;
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
@@ -617,7 +623,34 @@ typedef enum : NSUInteger {
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
-    [self.collectionView reloadData];
+    for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
+    {
+        switch (rowChange.type)
+        {
+            case YapDatabaseViewChangeDelete :
+            {
+                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                break;
+            }
+            case YapDatabaseViewChangeInsert :
+            {
+                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                break;
+            }
+            case YapDatabaseViewChangeMove :
+            {
+                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
+                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
+                break;
+            }
+            case YapDatabaseViewChangeUpdate :
+            {
+                [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                break;
+            }
+        }
+    }
+    
     [self finishReceivingMessage];
 }
 
@@ -683,6 +716,24 @@ typedef enum : NSUInteger {
                               }
                           }
                       }];
+}
+
+- (void)markAllMessagesAsRead {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
+        NSUInteger numberOfItemsInSection = [viewTransaction numberOfItemsInGroup:self.thread.uniqueId];
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+            for (NSUInteger i = 0; i < numberOfItemsInSection; i++) {
+                TSIncomingMessage *message = [viewTransaction objectAtIndex:i inGroup:self.thread.uniqueId];
+                message.read               = YES;
+                [message saveWithTransaction:writeTransaction];
+            }
+        }];
+    }];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [self.readTimer invalidate];
 }
 
 @end
