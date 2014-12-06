@@ -5,7 +5,7 @@
 #import "PreferencesUtil.h"
 #import "Util.h"
 #import "InitiateSignal.pb.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 
 #define MessagePropertyKey @"m"
 #define RelayPortKey       @"p"
@@ -72,8 +72,8 @@
     checkOperation(parsedPayload.initiator != nil);
     checkOperation(parsedPayload.serverName != nil);
 
-    int32_t interopVersion = parsedPayload.version;
-    int64_t sessionId = parsedPayload.sessionId;
+    unsigned int interopVersion = parsedPayload.version;
+    unsigned long long sessionId = parsedPayload.sessionId;
     in_port_t relayUdpPort = (in_port_t)parsedPayload.port;
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [PhoneNumber phoneNumberFromE164:parsedPayload.initiator];
@@ -89,7 +89,7 @@
     checkOperation(data.length >= HMAC_TRUNCATED_SIZE);
     NSData* includedMac     = [data takeLast:HMAC_TRUNCATED_SIZE];
     NSData* payload         = [data skipLast:HMAC_TRUNCATED_SIZE];
-    NSData* signalingMacKey = SGNKeychainUtil.signalingMacKey;
+    NSData* signalingMacKey = SignalKeyingStorage.signalingMacKey;
     require(signalingMacKey != nil);
     NSData* computedMac     = [[payload hmacWithSha1WithKey:signalingMacKey] takeLast:HMAC_TRUNCATED_SIZE];
     checkOperation([includedMac isEqualToData_TimingSafe:computedMac]);
@@ -98,7 +98,7 @@
 +(NSData*) decryptRemoteNotificationData:(NSData*)data {
     require(data != nil);
     checkOperation(data.length >= VERSION_SIZE + IV_SIZE);
-    NSData* cipherKey = SGNKeychainUtil.signalingCipherKey;
+    NSData* cipherKey = SignalKeyingStorage.signalingCipherKey;
     require(cipherKey != nil);
     NSData* iv = [data subdataWithRange:NSMakeRange(VERSION_SIZE, IV_SIZE)];
     NSData* cipherText = [data skip:VERSION_SIZE+IV_SIZE];

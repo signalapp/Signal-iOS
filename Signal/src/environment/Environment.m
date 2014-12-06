@@ -9,7 +9,8 @@
 #import "ContactsManager.h"
 #import "PreferencesUtil.h"
 #import "PhoneNumberDirectoryFilterManager.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
+#import "SignalsViewController.h"
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
@@ -147,27 +148,45 @@ phoneDirectoryManager;
     return Environment.getCurrent.logging;
 }
 
-+(BOOL)isRegistered{
++(BOOL)isRedPhoneRegistered{
     // Attributes that need to be set
-    NSData *signalingKey = SGNKeychainUtil.signalingCipherKey;
-    NSData *macKey       = SGNKeychainUtil.signalingMacKey;
-    NSData *extra        = SGNKeychainUtil.signalingExtraKey;
-    NSString *serverAuth = SGNKeychainUtil.serverAuthPassword;
-    BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:isRegisteredUserDefaultString] boolValue];
+    NSData *signalingKey = SignalKeyingStorage.signalingCipherKey;
+    NSData *macKey       = SignalKeyingStorage.signalingMacKey;
+    NSData *extra        = SignalKeyingStorage.signalingExtraKey;
+    NSString *serverAuth = SignalKeyingStorage.serverAuthPassword;
     
-    return signalingKey && macKey && extra && serverAuth && registered;
-}
-
-+(void)setRegistered:(BOOL)status{
-    [NSUserDefaults.standardUserDefaults setObject:status?@YES:@NO forKey:isRegisteredUserDefaultString];
+    return signalingKey && macKey && extra && serverAuth;
 }
 
 +(PropertyListPreferences*)preferences{
     return [PropertyListPreferences new];
 }
 
-+(void)resetAppData{
-    [SGNKeychainUtil wipeKeychain];
+
+- (void)setSignalsViewController:(SignalsViewController *)signalsViewController{
+    _signalsViewController = signalsViewController;
+}
+
++ (void)messageIdentifier:(NSString*)identifier{
+    Environment *env          = [self getCurrent];
+    SignalsViewController *vc = env.signalsViewController;
+    
+    if (vc.presentedViewController) {
+        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [vc.navigationController popToRootViewControllerAnimated:YES];
+    vc.contactIdentifierFromCompose = identifier;
+    [vc performSegueWithIdentifier:@"showSegue" sender:nil];
+    
+    UITabBarController *tabBarController = (UITabBarController*)vc.parentViewController.parentViewController;
+    if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
+        tabBarController.selectedIndex = 1;
+    }
+}
+
++ (void)resetAppData{
+    [SignalKeyingStorage wipeKeychain];
     [Environment.preferences clear];
     if (self.preferences.loggingIsEnabled) {
         [DebugLogger.sharedInstance wipeLogs];

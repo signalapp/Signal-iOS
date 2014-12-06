@@ -12,7 +12,7 @@
 #import "DataUtil.h"
 #import "Environment.h"
 #import "HostNameEndPoint.h"
-#import "SGNKeychainUtil.h"
+#import "SignalKeyingStorage.h"
 #import "Util.h"
 
 #import "AFHTTPSessionManager+SignalMethods.h"
@@ -34,15 +34,14 @@ MacrosSingletonImplemention
     if (self) {
         HostNameEndPoint *endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
-        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.defaultSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
-        self.operationManager.responseSerializer                      = [AFJSONResponseSerializer serializer];
+        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
-        NSString *certPath = [NSBundle.mainBundle pathForResource:@"whisperReal" ofType:@"cer"];
+        NSString *certPath = [NSBundle.mainBundle pathForResource:@"redphone" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
         self.operationManager.securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        self.operationManager.securityPolicy.SSLPinningMode     = AFSSLPinningModeCertificate;
     }
     return self;
 }
@@ -83,14 +82,12 @@ MacrosSingletonImplemention
     TOCFutureSource *requestFutureSource = [TOCFutureSource new];
     
     [self performRequest:apiCall success:^(NSURLSessionDataTask *task, id responseObject) {
-        NSLog(@"ResponseObject: %@", responseObject);
         [requestFutureSource trySetResult:task.response];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [requestFutureSource trySetFailure:error];
     }];
     
     return [requestFutureSource future];
-    
 }
 
 @end

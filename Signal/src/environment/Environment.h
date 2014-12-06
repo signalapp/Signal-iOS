@@ -23,6 +23,7 @@
 @class ContactsManager;
 @class PhoneManager;
 @class PhoneNumberDirectoryFilterManager;
+@class SignalsViewController;
 
 @interface Environment : NSObject
 @property (nonatomic, readonly) in_port_t serverPort;
@@ -41,6 +42,8 @@
 @property (nonatomic, readonly) NSData* zrtpVersionId;
 @property (nonatomic, readonly) ContactsManager *contactsManager;
 @property (nonatomic, readonly) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
+
+@property (nonatomic, readonly) SignalsViewController *signalsViewController;
 
 +(SecureEndPoint*) getMasterServerSecureEndPoint;
 +(SecureEndPoint*) getSecureEndPointToDefaultRelayServer;
@@ -74,8 +77,11 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 
 +(PropertyListPreferences*)preferences;
 
-+(BOOL)isRegistered;
-+(void)setRegistered:(BOOL)status;
++(BOOL)isRedPhoneRegistered;
 +(void)resetAppData;
+
+- (void)setSignalsViewController:(SignalsViewController *)signalsViewController;
+
++ (void)messageIdentifier:(NSString*)identifier;
 
 @end

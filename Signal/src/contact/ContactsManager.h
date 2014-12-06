@@ -19,38 +19,36 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @interface ContactsManager : NSObject {
 @private TOCFuture* futureAddressBook;
 @private ObservableValueController* observableContactsController;
-@private ObservableValueController* observableWhisperUsersController;
-@private ObservableValueController* observableFavouritesController;
+@private ObservableValueController* observableRedPhoneUsersController;
+@private ObservableValueController* observableTextSecureUsersController;
 @private TOCCancelTokenSource* life;
 @private NSDictionary *latestContactsById;
 @private NSDictionary *latestWhisperUsersById;
 }
 
 -(ObservableValue *) getObservableContacts;
--(ObservableValue *) getObservableWhisperUsers;
--(ObservableValue *) getObservableFavourites;
+-(ObservableValue *) getObservableRedPhoneUsers;
+
+- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber*)phoneNumber;
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 -(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
 -(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
 -(NSArray*) latestContactsWithSearchString:(NSString *)searchString;
 
--(void) toggleFavourite:(Contact *)contact;
--(NSArray*) contactsForContactIds:(NSArray *)favouriteIds;
-+(NSArray *)favouritesForAllContacts:(NSArray *)contacts;
-
--(void) addContactsToKnownWhisperUsers:(NSArray*) contacts;
-
 +(NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
 
 +(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 +(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
--(BOOL)isContactRegisteredWithWhisper:(Contact*) contact;
 
--(void) doAfterEnvironmentInitSetup;
+- (NSArray*)allContacts;
+- (NSArray*)textSecureContacts;
 
--(void) enableNewUserNotifications;
--(NSUInteger) getNumberOfUnacknowledgedCurrentUsers;
+- (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact;
 
+-(void)doAfterEnvironmentInitSetup;
+
+- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
+- (UIImage*)imageForPhoneIdentifier:(NSString*)identifier;
 
 @end

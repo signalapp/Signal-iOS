@@ -8,7 +8,7 @@
 
 #define TEST_SERVER_HOST @"master.whispersystems.org"
 #define TEST_SERVER_PORT 31337
-#define TEST_SERVER_CERT_PATH @"whisperReal"
+#define TEST_SERVER_CERT_PATH @"redphone"
 #define TEST_SERVER_CERT_TYPE @"cer"
 
 #define TEST_SERVER_INCORRECT_HOST_TO_SAME_IP @"96.126.120.52"

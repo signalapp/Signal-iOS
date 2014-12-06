@@ -10,7 +10,7 @@
 @implementation SecureEndPointTest
 
 -(void) testCert {
-    Certificate* r = [Certificate certificateFromResourcePath:@"whisperReal"
+    Certificate* r = [Certificate certificateFromResourcePath:@"redphone"
                                                        ofType:@"cer"];
     test(r != nil);
 }

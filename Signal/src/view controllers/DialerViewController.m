@@ -5,7 +5,6 @@
 #import "ContactsManager.h"
 #import "Environment.h"
 #import "InCallViewController.h"
-#import "InviteContactModal.h"
 #import "LocalizableText.h"
 #import "PhoneManager.h"
 #import "PhoneNumberDirectoryFilter.h"
@@ -24,7 +23,6 @@
     NSTimer *_backspaceTimer;
     float _backspaceDuration;
     
-    InviteContactModal* inviteModal;
 }
 
 @end
@@ -43,6 +41,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     if (_phoneNumber) {
         _currentNumberMutable = _phoneNumber.toE164.mutableCopy;
         [self updateNumberLabel];
@@ -111,15 +110,22 @@
 }
 
 - (void)callButtonTapped {
+    
     PhoneNumber *phoneNumber = self.phoneNumberForCurrentInput;
 
     BOOL shouldTryCall = [Environment.getCurrent.phoneDirectoryManager.getCurrentFilter containsPhoneNumber:phoneNumber] || [Environment.getCurrent.recentCallManager isPhoneNumberPresentInRecentCalls:phoneNumber];
     
-    if( shouldTryCall){
+    if (shouldTryCall){
         [self initiateCallToPhoneNumber:phoneNumber];
     }else if(phoneNumber.isValid){
         [self promptToInvitePhoneNumber:phoneNumber];
     }
+}
+
+
+-(IBAction)cancelButtonTapped:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void) initiateCallToPhoneNumber:(PhoneNumber*) phoneNumber {
@@ -143,6 +149,7 @@
 
 - (void)updateNumberLabel {
     NSString* numberText = [_currentNumberMutable copy];
+    
     _numberLabel.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:numberText];
     PhoneNumber* number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:numberText];	
     [self tryUpdateContactForNumber:number];
@@ -186,8 +193,7 @@
 }
 
 -(void) promptToInvitePhoneNumber:(PhoneNumber*) phoneNumber {
-    inviteModal = [InviteContactModal inviteContactModelWithPhoneNumber:phoneNumber andParentViewController:self];
-    [inviteModal presentModalView];
+    // TODO
 }
 
 

@@ -34,7 +34,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 }
 
 -(void) watchForContactUpdatesFrom:(ContactsManager*) contactManager untillCancelled:(TOCCancelToken*) cancelToken{
-    [contactManager.getObservableWhisperUsers watchLatestValue:^(NSArray* latestUsers) {
+    [contactManager.getObservableRedPhoneUsers watchLatestValue:^(NSArray* latestUsers) {
         for (RecentCall* recentCall in _allRecents) {
             if (![contactManager latestContactWithRecordId:recentCall.contactRecordID]) {
                 Contact* contact = [contactManager latestContactForPhoneNumber:recentCall.phoneNumber];
@@ -51,7 +51,7 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
     require(phoneManager != nil);
 
     [phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
-        if (latestCall != nil && Environment.preferences.getHistoryLogEnabled) {
+        if (latestCall != nil) {
             [self addCall:latestCall];
         }
     } onThread:NSThread.mainThread untilCancelled:untilCancelledToken];
@@ -101,7 +101,6 @@ typedef BOOL (^SearchTermConditionalBlock)(RecentCall*, NSUInteger, BOOL*);
 
 - (void)addRecentCall:(RecentCall *)recentCall {
     [_allRecents insertObject:recentCall atIndex:0];
-    [Environment.preferences setFreshInstallTutorialsEnabled:NO];
     [observableRecentsController updateValue:_allRecents.copy];
     [self saveContactsToDefaults];
 }

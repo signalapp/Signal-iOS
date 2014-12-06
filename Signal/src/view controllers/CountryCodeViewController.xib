@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4514" systemVersion="13A2093" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CountryCodeViewController">
@@ -16,51 +16,68 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Aec-ej-ccl">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Aec-ej-ccl">
                     <rect key="frame" x="0.0" y="106" width="320" height="462"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="nKq-1s-Z6A"/>
                         <outlet property="delegate" destination="-1" id="GHU-1n-beB"/>
                     </connections>
                 </tableView>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QFE-w4-1GR">
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QFE-w4-1GR">
                     <rect key="frame" x="0.0" y="22" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <items>
-                        <barButtonItem width="242" style="plain" systemItem="fixedSpace" id="GRQ-uO-YiE"/>
                         <barButtonItem title="Cancel" id="OQ8-LL-GHF">
-                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                            <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="cancelTapped:" destination="-1" id="XXB-Il-GTJ"/>
                             </connections>
                         </barButtonItem>
                     </items>
-                    <color key="barTintColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="barTintColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                 </toolbar>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Choose Country Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWD-Rl-eq5" customClass="HelveticaNeueLTStdBoldLabel">
-                    <rect key="frame" x="20" y="26" width="226" height="36"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
+                <searchBar contentMode="redraw" placeholder="search" translatesAutoresizingMaskIntoConstraints="NO" id="LbU-Dq-i0S">
+                    <rect key="frame" x="0.0" y="62" width="320" height="44"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="KJu-gV-Y08"/>
+                    </connections>
+                </searchBar>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Country Code" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWD-Rl-eq5" customClass="HelveticaNeueLTStdBoldLabel">
+                    <rect key="frame" x="86" y="26" width="226" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="RCx-aJ-Vgd"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <color key="textColor" red="0.0" green="0.73333333329999995" blue="0.87058823529999996" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="localizationKey" value="CHOOSE_COUNTRY_CODE"/>
                     </userDefinedRuntimeAttributes>
                 </label>
-                <searchBar contentMode="redraw" fixedFrame="YES" placeholder="search" translatesAutoresizingMaskIntoConstraints="NO" id="LbU-Dq-i0S">
-                    <rect key="frame" x="0.0" y="62" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="KJu-gV-Y08"/>
-                    </connections>
-                </searchBar>
             </subviews>
-            <color key="backgroundColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Aec-ej-ccl" secondAttribute="trailing" id="7ri-1u-onT"/>
+                <constraint firstItem="LbU-Dq-i0S" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="9HY-c5-seR"/>
+                <constraint firstItem="Aec-ej-ccl" firstAttribute="top" secondItem="1" secondAttribute="top" constant="106" id="Gt2-oz-QpM"/>
+                <constraint firstItem="pWD-Rl-eq5" firstAttribute="top" secondItem="QFE-w4-1GR" secondAttribute="bottom" constant="-40" id="H2r-v2-Oe4"/>
+                <constraint firstAttribute="trailing" secondItem="pWD-Rl-eq5" secondAttribute="trailing" constant="8" id="Kj4-7v-juF"/>
+                <constraint firstAttribute="trailing" secondItem="QFE-w4-1GR" secondAttribute="trailing" id="MC4-oi-i61"/>
+                <constraint firstItem="QFE-w4-1GR" firstAttribute="top" secondItem="1" secondAttribute="top" constant="22" id="ODH-5B-qCb"/>
+                <constraint firstItem="pWD-Rl-eq5" firstAttribute="leading" secondItem="QFE-w4-1GR" secondAttribute="trailing" constant="-234" id="Xvy-83-8bb"/>
+                <constraint firstItem="pWD-Rl-eq5" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="86" id="fg1-iH-OkJ"/>
+                <constraint firstItem="Aec-ej-ccl" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="gaS-xN-W5n"/>
+                <constraint firstAttribute="bottom" secondItem="Aec-ej-ccl" secondAttribute="bottom" id="iqk-df-bOx"/>
+                <constraint firstAttribute="trailing" secondItem="LbU-Dq-i0S" secondAttribute="trailing" id="kJK-l1-VVq"/>
+                <constraint firstItem="QFE-w4-1GR" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="weB-fs-fpo"/>
+                <constraint firstItem="LbU-Dq-i0S" firstAttribute="top" secondItem="QFE-w4-1GR" secondAttribute="bottom" constant="-4" id="y5a-nh-JH0"/>
+            </constraints>
         </view>
     </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

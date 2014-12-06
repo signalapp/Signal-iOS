@@ -52,7 +52,15 @@ static NSInteger connectingFlashCounter = 0;
     [self showCallState];
     [self setupButtonBorders];
     [self localizeButtons];
+    [self linkActions];
+    
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
+}
+
+-(void)linkActions
+{
+    [_muteButton addTarget:self action:@selector(muteButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [_speakerButton addTarget:self action:@selector(speakerButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -165,11 +173,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)setupButtonBorders {
-    _muteButton.layer.borderColor		= [UIUtil blueColor].CGColor;
-    _speakerButton.layer.borderColor	= [UIUtil blueColor].CGColor;
-    _muteButton.layer.borderWidth		= BUTTON_BORDER_WIDTH;
-    _speakerButton.layer.borderWidth	= BUTTON_BORDER_WIDTH;
-
+    
     if (_potentiallyKnownContact) {
 
         if (_potentiallyKnownContact.image) {
@@ -204,6 +208,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 -(void) handleIncomingDetails {
     [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
+        _authenicationStringLabel.textColor = [UIColor colorWithRed:0.f/255.f green:12.f/255.f blue:255.f/255.f alpha:1.0f];
         _authenicationStringLabel.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
@@ -248,10 +253,24 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)muteButtonTapped {
 	_muteButton.selected = [Environment.phoneManager toggleMute];
+    
+    if (_muteButton.isSelected)
+    {
+        _muteLabel.text = @"Mute On";
+    } else {
+        _muteLabel.text = @"Mute Off";
+    }
 }
 
 - (void)speakerButtonTapped {
     _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
+    
+    if (_speakerButton.isSelected)
+    {
+        _speakerLabel.text = @"Speaker On";
+    } else {
+        _speakerLabel.text = @"Speaker Off";
+    }
 }
 
 - (void)answerButtonTapped {
@@ -273,14 +292,14 @@ static NSInteger connectingFlashCounter = 0;
         message = [message stringByAppendingString:[serverMessage text]];
     }
     
-    _endButton.backgroundColor = [UIColor grayColor];
-    _callStatusLabel.textColor = [UIColor redColor];
+    _callStatusLabel.textColor = [UIColor ows_redColor];
     
     [self showConnectingError];
     _callStatusLabel.text = message;
 }
 
 -(void) dismissViewWithOptionalDelay:(BOOL) useDelay {
+    [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
     if(useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]){
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
     }else{
@@ -295,9 +314,15 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) displayAcceptRejectButtons:(BOOL) enable{
+    
     _answerButton.hidden = !enable;
     _rejectButton.hidden = !enable;
-    _endButton.hidden = enable;
+    _endButton.hidden    = enable;
+    
+    _answerLabel.hidden  = !enable;
+    _rejectLabel.hidden  = !enable;
+    _endLabel.hidden     = enable;
+    
     if (_vibrateTimer && enable == false) {
         [_vibrateTimer invalidate];
     }

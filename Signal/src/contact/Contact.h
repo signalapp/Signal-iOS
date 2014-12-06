@@ -10,15 +10,14 @@
 
 @interface Contact : NSObject
 
-@property (readonly,nonatomic) NSString* firstName;
-@property (readonly,nonatomic) NSString* lastName;
-@property (readonly,nonatomic) NSArray* parsedPhoneNumbers;
-@property (readonly,nonatomic) NSArray* userTextPhoneNumbers;
-@property (readonly,nonatomic) NSArray* emails;
-@property (readonly,nonatomic) UIImage* image;
-@property (readonly,nonatomic) NSString *notes;
+@property (readonly,nonatomic) NSString   *firstName;
+@property (readonly,nonatomic) NSString   *lastName;
+@property (readonly,nonatomic) NSArray    *parsedPhoneNumbers;
+@property (readonly,nonatomic) NSArray    *userTextPhoneNumbers;
+@property (readonly,nonatomic) NSArray    *emails;
+@property (readonly,nonatomic) UIImage    *image;
+@property (readonly,nonatomic) NSString   *notes;
 @property (readonly,nonatomic) ABRecordID recordID;
-@property (nonatomic, assign) BOOL isFavourite;
 
 + (Contact*)contactWithFirstName:(NSString*)firstName
                      andLastName:(NSString *)lastName
@@ -32,9 +31,14 @@
                        andEmails:(NSArray*)emails
                         andImage:(UIImage *)image
                     andContactID:(ABRecordID)record
-                  andIsFavourite:(BOOL)isFavourite
                         andNotes:(NSString *)notes;
 
-- (NSString *)fullName;
+- (NSString*)fullName;
+
+- (BOOL)isTextSecureContact;
+- (BOOL)isRedPhoneContact;
+
+- (NSArray*)textSecureIdentifiers;
+- (NSArray*)redPhoneIdentifiers;
 
 @end

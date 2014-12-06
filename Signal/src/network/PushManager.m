@@ -9,6 +9,7 @@
 #import "PushManager.h"
 #import "Environment.h"
 #import "RPServerRequestsManager.h"
+#import "TSAccountManager.h"
 
 @interface PushManager ()
 
@@ -58,22 +59,12 @@
         return;
     }
     
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        
-        // On iOS7, we just need to register for Push Notifications (user notifications are enabled with them)
-        [self registrationForPushWithSuccess:success failure:failure];
-        
-    } else{
-        
-        // On iOS 8+, both Push Notifications and User Notfications need to be registered.
-        
-        [self registrationForPushWithSuccess:^{
-            [self registrationForUserNotificationWithSuccess:success failure:^{
-                [self.missingPermissionsAlertView show];
-                failure();
-            }];
-        } failure:failure];
-    }
+    [self registrationForPushWithSuccess:^(NSData* pushToken){
+        [self registrationForUserNotificationWithSuccess:success failure:^{
+            [self.missingPermissionsAlertView show];
+            failure();
+        }];
+    } failure:failure];
 }
 
 
@@ -108,25 +99,21 @@
 
 -(TOCFuture*)registerPushNotificationFuture{
     self.pushNotificationFutureSource = [TOCFutureSource new];
+    [UIApplication.sharedApplication registerForRemoteNotifications];
     
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        [UIApplication.sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationType)self.mandatoryNotificationTypes];
-        if ([self isMissingMandatoryNotificationTypes]) {
-            [self.pushNotificationFutureSource trySetFailure:@"Missing Types"];
-        }
-    } else {
-        [UIApplication.sharedApplication registerForRemoteNotifications];
-    }
     return self.pushNotificationFutureSource.future;
 }
 
 -(TOCFuture*)registerForUserNotificationsFuture{
     self.userNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes] categories:[NSSet setWithObject:[self userNotificationsCallCategory]]]];
+    NSSet *setOfCategories = [NSSet setWithArray:@[[self userNotificationsCallCategory], [self userNotificationsMessageCategory]]];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                                                             categories:setOfCategories];
+    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     return self.userNotificationFutureSource.future;
 }
 
-- (void)registrationForPushWithSuccess:(void (^)())success failure:(void (^)())failure{
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure{
     TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
@@ -149,9 +136,33 @@
         }];
         
         [registerPushTokenFuture thenDo:^(id value) {
-            success();
+            success(pushToken);
         }];
     }];
+}
+
+
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure{
+    [self registrationForPushWithSuccess:^(NSData *pushToken) {        
+        [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSError *error;
+            
+            NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+            NSString* tsToken = [dictionary objectForKey:@"token"];
+            
+            if (!tsToken || !pushToken || error) {
+                failure();
+                return;
+            }
+            
+            success(pushToken, tsToken);
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            failure();
+        }];
+    } failure:^{
+        failure();
+    }];
+    
 }
 
 - (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)())failure{
@@ -173,11 +184,7 @@
 }
 
 -(BOOL) needToRegisterForRemoteNotifications {
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return self.wantRemoteNotifications;
-    } else{
-        return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
-    }
+    return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
 }
 
 -(BOOL) wantRemoteNotifications {
@@ -191,23 +198,47 @@
     return YES;
 }
 
--(UIUserNotificationCategory*)userNotificationsCallCategory{
+- (UIUserNotificationCategory*)userNotificationsMessageCategory{
+    UIMutableUserNotificationAction *action_accept  = [UIMutableUserNotificationAction new];
+    action_accept.identifier                        = Signal_Message_View_Identifier;
+    action_accept.title                             = NSLocalizedString(@"View", @"");
+    action_accept.activationMode                    = UIUserNotificationActivationModeForeground;
+    action_accept.destructive                       = NO;
+    action_accept.authenticationRequired            = YES;
+
+    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
+    action_decline.identifier                       = Signal_Message_MarkAsRead_Identifier;
+    action_decline.title                            = NSLocalizedString(@"Mark as read", @"");
+    action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
+    action_decline.destructive                      = NO;
+    action_decline.authenticationRequired           = NO;
+    
+    UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
+    messageCategory.identifier = Signal_Call_Category;
+    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
+    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
+    
+    return messageCategory;
+
+}
+
+- (UIUserNotificationCategory*)userNotificationsCallCategory{
     UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
-    action_accept.identifier = Signal_Accept_Identifier;
+    action_accept.identifier = Signal_Call_Accept_Identifier;
     action_accept.title      = NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"");
     action_accept.activationMode = UIUserNotificationActivationModeForeground;
     action_accept.destructive    = NO;
     action_accept.authenticationRequired = NO;
     
     UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier = Signal_Decline_Identifier;
+    action_decline.identifier = Signal_Call_Decline_Identifier;
     action_decline.title      = NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"");
     action_decline.activationMode = UIUserNotificationActivationModeBackground;
     action_decline.destructive    = NO;
     action_decline.authenticationRequired = NO;
     
     UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier = @"Signal_IncomingCall";
+    callCategory.identifier = Signal_Call_Category;
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
     
@@ -216,29 +247,17 @@
 
 -(BOOL)isMissingMandatoryNotificationTypes {
     int mandatoryTypes = self.mandatoryNotificationTypes;
-    int currentTypes;
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        currentTypes = UIApplication.sharedApplication.enabledRemoteNotificationTypes;
-    } else {
-        currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
-    }
+    int currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
+    
     return (mandatoryTypes & currentTypes) != mandatoryTypes;
 }
 
 -(int)allNotificationTypes{
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
-    } else {
-        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
-    }
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
 -(int)mandatoryNotificationTypes{
-    if (SYSTEM_VERSION_LESS_THAN(_iOS_8_0)) {
-        return UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
-    } else {
-        return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
-    }
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
 }
 
 @end
