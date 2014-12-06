@@ -352,7 +352,12 @@ DatabaseManager *MyDatabaseManager;
 			MyTodo *todo = [transaction objectForKey:key inCollection:collection];
 			todo = [todo copy]; // make mutable copy
 			
-			NSSet *remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
+			NSSet *remoteChangedKeys = nil;
+			if (remoteRecord.changedKeys.count > 0)
+				remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
+			else
+				remoteChangedKeys = [NSSet setWithArray:remoteRecord.allKeys];
+			
 			NSMutableSet *localChangedKeys = [NSMutableSet setWithArray:pendingLocalRecord.changedKeys];
 			
 			for (NSString *remoteChangedKey in remoteChangedKeys)
