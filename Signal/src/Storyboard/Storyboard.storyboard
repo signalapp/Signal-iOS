@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
@@ -35,6 +35,9 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="-44" width="410" height="844"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
                                     <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
@@ -87,7 +90,7 @@
                                 <segment title="Archive"/>
                             </segments>
                             <connections>
-                                <action selector="segmentDidChange:" destination="MY2-bB-USa" eventType="valueChanged" id="hEg-ZL-P9U"/>
+                                <action selector="segmentDidChange:" destination="MY2-bB-USa" eventType="valueChanged" id="eE7-lp-jRr"/>
                             </connections>
                         </segmentedControl>
                         <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">
@@ -97,13 +100,13 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="segmentedControl" destination="3zh-Df-ewk" id="WwI-JF-Y2X"/>
+                        <outlet property="inboxArchiveSwitch" destination="3zh-Df-ewk" id="ANJ-FH-ESj"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="-261"/>
+            <point key="canvasLocation" x="2290.5" y="-261"/>
         </scene>
         <!--Messages View Controller-->
         <scene sceneID="QqV-z2-xRW">
@@ -114,7 +117,7 @@
                         <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -125,7 +128,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2245.5" y="-261"/>
+            <point key="canvasLocation" x="3163.5" y="-261"/>
         </scene>
         <!--Fingerprint View Controller-->
         <scene sceneID="ldP-mt-Vsq">
@@ -535,7 +538,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3082.5" y="-261"/>
+            <point key="canvasLocation" x="4000.5" y="-261"/>
         </scene>
         <!--Initial View Controller-->
         <scene sceneID="t5l-Kr-ojc">
@@ -819,10 +822,12 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <navigationItem key="navigationItem" id="Rd1-Bh-zFj"/>
+                    <nil key="simulatedTopBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m6j-Wp-Kgl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2856" y="62.25"/>
+            <point key="canvasLocation" x="-1342.5" y="62.25"/>
         </scene>
         <!--Registration View Controller-->
         <scene sceneID="okO-46-HuB">
@@ -1024,7 +1029,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="kts-vO-ui1" kind="show" id="uBk-Pr-lOq"/>
+                                    <segue destination="63r-gX-zar" kind="unwind" unwindAction="unwindToInitial:" id="Cs8-mu-nrN"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1156,6 +1161,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="countryCodeButton" destination="ngV-Kv-6Ax" id="2Hi-eD-y6U"/>
                         <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
@@ -1166,8 +1172,9 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rfK-ej-7ve" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="63r-gX-zar" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1995" y="62.25"/>
+            <point key="canvasLocation" x="-1342.5" y="940.5"/>
         </scene>
         <!--Code Verification View Controller-->
         <scene sceneID="44F-BV-mQs">
@@ -1180,6 +1187,10 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                     <view key="view" contentMode="scaleToFill" id="Zgb-Uj-73M">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <userGuides>
+                            <userLayoutGuide location="199" affinity="minX"/>
+                            <userLayoutGuide location="199" affinity="minX"/>
+                        </userGuides>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yK6-ad-ihc">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
@@ -1287,7 +1298,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="sL4-Zw-2Og" kind="show" id="qCk-gl-KCX"/>
+                                    <segue destination="ZUP-dD-a8s" kind="unwind" unwindAction="unwindToChangeNumber:" id="4Dh-Ef-EAM"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HYX-Cr-u0w">
@@ -1312,11 +1323,47 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <include reference="EoB-jn-bwV"/>
                                     </mask>
                                 </variation>
+                                <connections>
+                                    <action selector="sendCodeSMSAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="jWS-dh-jsO"/>
+                                </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I5-tm-rMi">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="UiP-hG-L0t"/>
+                                    <constraint firstAttribute="height" constant="30" id="UzF-a6-vRO"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                                <state key="normal" title="Call me instead">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="UiP-hG-L0t"/>
+                                        <exclude reference="UzF-a6-vRO"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="UiP-hG-L0t"/>
+                                        <include reference="UzF-a6-vRO"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="sendCodeVoiceAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="YWt-aa-RUW"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="80G-wF-Ki5">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="49d-7m-0k6" secondAttribute="centerX" id="601-ZF-xlq"/>
+                            <constraint firstAttribute="centerX" secondItem="80G-wF-Ki5" secondAttribute="centerX" id="9Ob-8g-gcU"/>
                             <constraint firstAttribute="centerX" secondItem="PHu-da-Fan" secondAttribute="centerX" id="9hL-iF-RZL"/>
                             <constraint firstAttribute="centerX" secondItem="yK6-ad-ihc" secondAttribute="centerX" id="AIw-5F-Lfj"/>
                             <constraint firstItem="HYX-Cr-u0w" firstAttribute="top" secondItem="49d-7m-0k6" secondAttribute="bottom" constant="8" id="J0Z-pe-1GZ"/>
@@ -1325,9 +1372,12 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             <constraint firstItem="PHu-da-Fan" firstAttribute="top" secondItem="yK6-ad-ihc" secondAttribute="bottom" constant="67" id="M8V-ht-k2s"/>
                             <constraint firstAttribute="centerX" secondItem="260-Dq-fnd" secondAttribute="centerX" id="Mb0-Wd-GVx"/>
                             <constraint firstItem="MHI-1c-yZH" firstAttribute="top" secondItem="IVn-LE-fmp" secondAttribute="bottom" constant="8" id="StQ-SP-FMd"/>
+                            <constraint firstAttribute="centerX" secondItem="2I5-tm-rMi" secondAttribute="centerX" id="Wkv-S5-yMl"/>
                             <constraint firstItem="yK6-ad-ihc" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="c47-uE-awH"/>
+                            <constraint firstAttribute="bottom" secondItem="2I5-tm-rMi" secondAttribute="bottom" constant="75" id="cJz-3Q-q4i"/>
                             <constraint firstItem="49d-7m-0k6" firstAttribute="top" secondItem="OuY-yn-ZQb" secondAttribute="bottom" constant="36" id="dP3-9o-eNP"/>
                             <constraint firstItem="260-Dq-fnd" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="dvC-Xu-1F4"/>
+                            <constraint firstAttribute="bottom" secondItem="80G-wF-Ki5" secondAttribute="bottom" constant="46" id="eco-TD-FoN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="260-Dq-fnd" secondAttribute="trailing" constant="84" id="mNE-hX-tgd"/>
                             <constraint firstAttribute="centerX" secondItem="HYX-Cr-u0w" secondAttribute="centerX" id="oPh-8d-yYT"/>
                             <constraint firstItem="49d-7m-0k6" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" id="oSp-IH-lVa"/>
@@ -1345,17 +1395,23 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="PHu-da-Fan"/>
                                 <exclude reference="IVn-LE-fmp"/>
                                 <exclude reference="HYX-Cr-u0w"/>
+                                <exclude reference="2I5-tm-rMi"/>
+                                <exclude reference="80G-wF-Ki5"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="601-ZF-xlq"/>
                                 <exclude reference="JFF-KZ-h6I"/>
                                 <exclude reference="dP3-9o-eNP"/>
                                 <exclude reference="oSp-IH-lVa"/>
+                                <exclude reference="9Ob-8g-gcU"/>
+                                <exclude reference="eco-TD-FoN"/>
                                 <exclude reference="StQ-SP-FMd"/>
                                 <exclude reference="AIw-5F-Lfj"/>
                                 <exclude reference="LsW-Pq-PRZ"/>
                                 <exclude reference="c47-uE-awH"/>
                                 <exclude reference="yuF-1t-XeW"/>
+                                <exclude reference="Wkv-S5-yMl"/>
+                                <exclude reference="cJz-3Q-q4i"/>
                                 <exclude reference="J0Z-pe-1GZ"/>
                                 <exclude reference="oPh-8d-yYT"/>
                                 <exclude reference="rmZ-rb-JoP"/>
@@ -1375,17 +1431,23 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="PHu-da-Fan"/>
                                 <include reference="IVn-LE-fmp"/>
                                 <include reference="HYX-Cr-u0w"/>
+                                <include reference="2I5-tm-rMi"/>
+                                <include reference="80G-wF-Ki5"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="601-ZF-xlq"/>
                                 <include reference="JFF-KZ-h6I"/>
                                 <include reference="dP3-9o-eNP"/>
                                 <include reference="oSp-IH-lVa"/>
+                                <include reference="9Ob-8g-gcU"/>
+                                <include reference="eco-TD-FoN"/>
                                 <include reference="StQ-SP-FMd"/>
                                 <include reference="AIw-5F-Lfj"/>
                                 <include reference="LsW-Pq-PRZ"/>
                                 <include reference="c47-uE-awH"/>
                                 <include reference="yuF-1t-XeW"/>
+                                <include reference="Wkv-S5-yMl"/>
+                                <include reference="cJz-3Q-q4i"/>
                                 <include reference="J0Z-pe-1GZ"/>
                                 <include reference="oPh-8d-yYT"/>
                                 <include reference="rmZ-rb-JoP"/>
@@ -1398,20 +1460,25 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </mask>
                         </variation>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="challengeButton" destination="PHu-da-Fan" id="hd0-4C-XqL"/>
                         <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
+                        <outlet property="phoneNumberEntered" destination="80G-wF-Ki5" id="rRv-vj-0Eo"/>
+                        <outlet property="sendCodeViaSMSAgainButton" destination="HYX-Cr-u0w" id="80C-tQ-khX"/>
+                        <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
                         <segue destination="QKN-cj-wuH" kind="show" identifier="verifiedSegue" id="Wd2-mW-FfR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WLS-Zq-ncm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="ZUP-dD-a8s" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1267.5" y="62.25"/>
+            <point key="canvasLocation" x="-475.5" y="940.5"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Signal Tab Bar Controller-->
         <scene sceneID="dB1-7w-8YS">
             <objects>
-                <tabBarController storyboardIdentifier="UserInitialViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QKN-cj-wuH" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="UserInitialViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QKN-cj-wuH" customClass="SignalTabBarController" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" translucent="NO" id="JT6-cn-7qk">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
@@ -1424,18 +1491,19 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <segue destination="voG-nJ-5AE" kind="relationship" relationship="viewControllers" id="n5v-AN-H5v"/>
                         <segue destination="tuk-0x-yCb" kind="relationship" relationship="viewControllers" id="gmL-g3-5EN"/>
                         <segue destination="hxR-Pc-Gxm" kind="relationship" relationship="viewControllers" id="a4H-Ax-JAL"/>
+                        <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" id="IRa-F6-tmc"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hgl-9i-kQr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-475.5" y="62.25"/>
+            <point key="canvasLocation" x="442.5" y="62.25"/>
         </scene>
         <!--Contacts-->
         <scene sceneID="P9O-s1-2L3">
             <objects>
                 <tableViewController id="6mY-1Q-YBT" customClass="ContactsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="GqA-oC-CJa">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
@@ -1457,7 +1525,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="392.25"/>
+            <point key="canvasLocation" x="2290.5" y="392.25"/>
         </scene>
         <!--Contact Detail Table View Controller-->
         <scene sceneID="cYN-Tc-52p">
@@ -2000,7 +2068,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="srg-3q-gF9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2236.5" y="392.25"/>
+            <point key="canvasLocation" x="3154.5" y="392.25"/>
         </scene>
         <!--Full Image View Controller-->
         <scene sceneID="Awx-pS-RDJ">
@@ -2171,7 +2239,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a5y-ji-0eO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3082.5" y="392.25"/>
+            <point key="canvasLocation" x="4000.5" y="392.25"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
@@ -2195,7 +2263,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6tU-Dy-HQe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="454.5" y="-261"/>
+            <point key="canvasLocation" x="1372.5" y="-261"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="d9M-87-JHc">
@@ -2216,7 +2284,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rcU-oi-2J6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="459" y="392.25"/>
+            <point key="canvasLocation" x="1377" y="392.25"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8zg-9i-Ja1">
@@ -2244,7 +2312,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="n1f-7Y-906" customClass="SettingsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="FhQ-dM-1mj">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="Ezq-Cw-na2">
@@ -2423,6 +2491,9 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="ExV-2K-JEg" firstAttribute="leading" secondItem="i03-Ww-QZz" secondAttribute="leadingMargin" id="mEj-Hr-RsU">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="ExV-2K-JEg" secondAttribute="centerY" constant="8.5" id="uFa-F9-dpA">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
@@ -2433,6 +2504,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <exclude reference="mEj-Hr-RsU"/>
+                                                    <exclude reference="uFa-F9-dpA"/>
                                                     <exclude reference="Ato-ay-iFe"/>
                                                     <exclude reference="cKU-qh-Qkr"/>
                                                     <exclude reference="dRq-w1-9Ed"/>
@@ -2444,9 +2516,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="ExV-2K-JEg"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="2lQ-r0-TpV"/>
+                                                    <exclude reference="2lQ-r0-TpV"/>
                                                     <exclude reference="UfF-zB-xdk"/>
                                                     <include reference="mEj-Hr-RsU"/>
+                                                    <include reference="uFa-F9-dpA"/>
                                                     <include reference="Ato-ay-iFe"/>
                                                     <include reference="cKU-qh-Qkr"/>
                                                     <include reference="dRq-w1-9Ed"/>
@@ -2465,7 +2538,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Clear History Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ge3-su-Oww">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="JCs-ZU-Cia"/>
+                                                        <constraint firstAttribute="width" constant="307" id="JCs-ZU-Cia">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2486,6 +2561,7 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="ge3-su-Oww" firstAttribute="top" secondItem="TLw-od-YLh" secondAttribute="topMargin" constant="3" id="N0U-5v-psp">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="11"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="ge3-su-Oww" secondAttribute="centerY" constant="0.5" id="ff3-A9-MxW"/>
                                                 <constraint firstItem="ge3-su-Oww" firstAttribute="leading" secondItem="TLw-od-YLh" secondAttribute="leadingMargin" id="ii2-b8-DzC">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
                                                 </constraint>
@@ -2497,6 +2573,7 @@ Licensed under the GPLv3</string>
                                                 </mask>
                                                 <mask key="constraints">
                                                     <exclude reference="N0U-5v-psp"/>
+                                                    <exclude reference="ff3-A9-MxW"/>
                                                     <exclude reference="ii2-b8-DzC"/>
                                                     <exclude reference="uV4-Qx-pcp"/>
                                                 </mask>
@@ -2506,7 +2583,8 @@ Licensed under the GPLv3</string>
                                                     <include reference="ge3-su-Oww"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="N0U-5v-psp"/>
+                                                    <exclude reference="N0U-5v-psp"/>
+                                                    <include reference="ff3-A9-MxW"/>
                                                     <include reference="ii2-b8-DzC"/>
                                                     <exclude reference="uV4-Qx-pcp"/>
                                                 </mask>
@@ -2529,6 +2607,9 @@ Licensed under the GPLv3</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="centerY" secondItem="2iY-pe-fva" secondAttribute="centerY" constant="8.5" id="3qC-6T-mjy">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                                 <constraint firstAttribute="trailingMargin" secondItem="2iY-pe-fva" secondAttribute="trailing" constant="70" id="BKh-xT-hZ0"/>
                                                 <constraint firstItem="V8I-9d-kbu" firstAttribute="trailing" secondItem="b4l-um-jXd" secondAttribute="trailingMargin" id="GK1-fQ-8Ke">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="-13"/>
@@ -2550,6 +2631,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <exclude reference="3qC-6T-mjy"/>
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <exclude reference="TGm-qt-Uiv"/>
                                                     <exclude reference="cu5-wT-Hnb"/>
@@ -2564,9 +2646,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="2iY-pe-fva"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <include reference="3qC-6T-mjy"/>
                                                     <exclude reference="BKh-xT-hZ0"/>
                                                     <include reference="TGm-qt-Uiv"/>
-                                                    <include reference="cu5-wT-Hnb"/>
+                                                    <exclude reference="cu5-wT-Hnb"/>
                                                     <include reference="GK1-fQ-8Ke"/>
                                                     <include reference="ZKW-Ii-Gj8"/>
                                                     <include reference="iyJ-5o-NUy"/>
@@ -2582,7 +2665,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Submit Debug Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bky-Zv-3If">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="9SX-bZ-YXh"/>
+                                                        <constraint firstAttribute="width" constant="307" id="9SX-bZ-YXh">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2600,6 +2685,7 @@ Licensed under the GPLv3</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="centerY" secondItem="Bky-Zv-3If" secondAttribute="centerY" constant="0.5" id="MMP-L4-uaR"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Bky-Zv-3If" secondAttribute="trailing" constant="70" id="VRe-Vg-wkG"/>
                                                 <constraint firstItem="Bky-Zv-3If" firstAttribute="leading" secondItem="b4g-jW-QGg" secondAttribute="leadingMargin" id="dPx-S9-St5">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="7"/>
@@ -2613,6 +2699,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="Bky-Zv-3If"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <exclude reference="MMP-L4-uaR"/>
                                                     <exclude reference="VRe-Vg-wkG"/>
                                                     <exclude reference="dPx-S9-St5"/>
                                                     <exclude reference="uCQ-eF-qQZ"/>
@@ -2623,9 +2710,10 @@ Licensed under the GPLv3</string>
                                                     <include reference="Bky-Zv-3If"/>
                                                 </mask>
                                                 <mask key="constraints">
+                                                    <include reference="MMP-L4-uaR"/>
                                                     <exclude reference="VRe-Vg-wkG"/>
                                                     <include reference="dPx-S9-St5"/>
-                                                    <include reference="uCQ-eF-qQZ"/>
+                                                    <exclude reference="uCQ-eF-qQZ"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
@@ -2638,7 +2726,9 @@ Licensed under the GPLv3</string>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unregister" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sfh-Oe-zHD">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="1K4-4S-8z2"/>
+                                                        <constraint firstAttribute="width" constant="307" id="1K4-4S-8z2">
+                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
+                                                        </constraint>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -2663,6 +2753,9 @@ Licensed under the GPLv3</string>
                                                 <constraint firstItem="Sfh-Oe-zHD" firstAttribute="top" secondItem="1uC-gH-Uix" secondAttribute="topMargin" constant="3" id="MLH-1z-7aq">
                                                     <variation key="heightClass=regular-widthClass=compact" constant="11"/>
                                                 </constraint>
+                                                <constraint firstAttribute="centerY" secondItem="Sfh-Oe-zHD" secondAttribute="centerY" constant="0.5" id="xmN-mx-T5t">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                                </constraint>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="subviews">
@@ -2672,6 +2765,7 @@ Licensed under the GPLv3</string>
                                                     <exclude reference="2Yi-Ys-ktP"/>
                                                     <exclude reference="9g3-QT-YQ4"/>
                                                     <exclude reference="MLH-1z-7aq"/>
+                                                    <exclude reference="xmN-mx-T5t"/>
                                                 </mask>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
@@ -2681,7 +2775,8 @@ Licensed under the GPLv3</string>
                                                 <mask key="constraints">
                                                     <exclude reference="2Yi-Ys-ktP"/>
                                                     <include reference="9g3-QT-YQ4"/>
-                                                    <include reference="MLH-1z-7aq"/>
+                                                    <exclude reference="MLH-1z-7aq"/>
+                                                    <include reference="xmN-mx-T5t"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
@@ -2842,7 +2937,8 @@ Licensed under the GPLv3</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="20" width="400" height="100"/>
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -2896,6 +2992,9 @@ Licensed under the GPLv3</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="128" width="400" height="672"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
@@ -2960,6 +3059,25 @@ Licensed under the GPLv3</string>
             </objects>
             <point key="canvasLocation" x="3930" y="-906.75"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="kfT-eG-hkf">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="lIF-0m-2N3" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="l1Z-lc-H46">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="kts-vO-ui1" kind="relationship" relationship="rootViewController" id="QHW-G2-aiZ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-321" y="62.25"/>
+        </scene>
     </scenes>
     <resources>
         <image name="DefaultContactImage.png" width="505" height="314"/>
@@ -2977,7 +3095,4 @@ Licensed under the GPLv3</string>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="QK8-XK-Wd3"/>
-    </inferredMetricsTieBreakers>
 </document>

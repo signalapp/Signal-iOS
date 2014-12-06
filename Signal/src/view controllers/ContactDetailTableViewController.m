@@ -210,7 +210,8 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
     
     cell.contactName.text = [c fullName];
     
-    cell.contactPhoneNumber.text = [[c userTextPhoneNumbers] firstObject];
+    PhoneNumber * phoneNumber = [[c parsedPhoneNumbers]firstObject];
+    cell.contactPhoneNumber.text = phoneNumber.toE164;
     
     if (c.image) {
         cell.contactImageView.image = c.image;
@@ -232,7 +233,8 @@ static NSString *const kContactDetailSegue   = @"DetailSegue";
 {
     NSInteger i = indexPath.row - [self emailUpperBound] ;
     
-    cell.contactAnnexNumberLabel.text = [_contact.userTextPhoneNumbers objectAtIndex:(NSUInteger)i];
+    PhoneNumber * phoneNumber = [[_contact parsedPhoneNumbers]objectAtIndex:(NSUInteger)i];
+    cell.contactAnnexNumberLabel.text = phoneNumber.toE164;
 }
 
 -(void)setUpNotesCell:(ContactDetailCell*)cell
