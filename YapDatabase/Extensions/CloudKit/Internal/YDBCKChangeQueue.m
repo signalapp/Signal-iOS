@@ -393,10 +393,11 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				{
 					for (NSString *changedKey in prevRecord.record.changedKeys)
 					{
-						id value = [prevRecord.record valueForKey:changedKey];
-						if (value) {
-							[record setValue:value forKey:changedKey];
-						}
+						// Remember: nil is a valid value.
+						// It indicates removal of the value for the key, which is a valid action.
+						
+						id value = [prevRecord.record objectForKey:changedKey];
+						[record setObject:value forKey:changedKey];
 					}
 					
 					hasPendingChanges = YES;
@@ -782,10 +783,10 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				{
 					for (NSString *key in keysToCompare)
 					{
-						id localValue = [localRecord valueForKey:key];
-						id mergedValue = [mergedRecord valueForKey:key];
+						id localValue = [localRecord objectForKey:key];
+						id mergedValue = [mergedRecord objectForKey:key];
 						
-						if ([localValue isEqual:mergedValue])
+						if ((localValue == nil && mergedValue == nil) || [localValue isEqual:mergedValue])
 						{
 							[mergedRecordHandledKeys addObject:key];
 						}
@@ -804,10 +805,11 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					{
 						if (![keysToRemove containsObject:key])
 						{
-							id value = [localRecord valueForKey:key];
-							if (value) {
-								[newLocalRecord setValue:value forKey:key];
-							}
+							// Remember: nil is a valid value.
+							// It indicates removal of the value for the key, which is a valid action.
+							
+							id value = [localRecord objectForKey:key];
+							[newLocalRecord setObject:value forKey:key];
 						}
 					}
 					
@@ -849,10 +851,11 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		
 		for (NSString *key in mergedRecordUnhandledKeys)
 		{
-			id value = [mergedRecord valueForKey:key];
-			if (value) {
-				[newMergedRecord setValue:value forKey:key];
-			}
+			// Remember: nil is a valid value.
+			// It indicates removal of the value for the key, which is a valid action.
+			
+			id value = [mergedRecord objectForKey:key];
+			[newMergedRecord setObject:value forKey:key];
 		}
 		
 		// Add newMergedRecord to a new YDBCKChangeRecord,
@@ -1056,10 +1059,11 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				for (NSString *changedKey in [originalRecord changedKeys])
 				{
+					// Remember: nil is a valid value.
+					// It indicates removal of the value for the key, which is a valid action.
+					
 					id value = [originalRecord objectForKey:changedKey];
-					if (value) {
-						[mergedRecord setObject:value forKey:changedKey];
-					}
+					[mergedRecord setObject:value forKey:changedKey];
 				}
 				
 				pqChangeRecord.record = mergedRecord;

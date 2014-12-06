@@ -3712,10 +3712,11 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	{
 		for (NSString *changedKey in dirtyRecordTableInfo.dirty_record.changedKeys)
 		{
-			id value = [dirtyRecordTableInfo.dirty_record valueForKey:changedKey];
-			if (value) {
-				[pendingLocalRecord setValue:value forKey:changedKey];
-			}
+			// Remember: nil is a valid value.
+			// It indicates removal of the value for the key, which is a valid action.
+			
+			id value = [dirtyRecordTableInfo.dirty_record objectForKey:changedKey];
+			[pendingLocalRecord setObject:value forKey:changedKey];
 		}
 		
 		hasPendingChanges = YES;
