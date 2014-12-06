@@ -76,6 +76,8 @@
 @property (nonatomic, readonly) BOOL isMasterQueue;
 @property (nonatomic, readonly) BOOL isPendingQueue;
 
+#pragma mark Change-Sets Access
+
 /**
  * Each commit that makes one or more changes to a CKRecord (insert/modify/delete)
  * will result in one or more YDBCKChangeSet(s).
@@ -84,8 +86,38 @@
  *
  * Thus a changeSet encompasses all the relavent CloudKit related changes per database, per commit.
 **/
-@property (nonatomic, strong, readonly) NSArray *changeSetsFromPreviousCommits;
-@property (nonatomic, strong, readonly) NSArray *changeSetsFromCurrentCommit;
+- (NSArray *)changeSetsFromPreviousCommits;
+- (NSArray *)changeSetsFromCurrentCommit;
+
+/**
+ * Faster access if you just want to get the counts.
+ *
+ * - numberOfInFlightChangeSets:
+ *     YDBCKChangeSets that have been dispatched to CloudKit Framework.
+ *     These may or may not succeed, depending upon network conditions & other factors.
+ *
+ * - numberOfQueuedChangeSets:
+ *     YDBCKChangeSets that have not been dispatched to CloudKit Framework.
+ *     They are waiting for the current inFlight change-sets to succeed, or for YDBCK to be resumed.
+ *
+ * - numberOfPendingChangeSets:
+ *     Includes all YDBCKChangeSets, both inFlight & queued.
+ *
+ * In mathematical notion, the relationships are:
+ *
+ * numberOfInFlightChangeSets == numberOfPendingChangeSets - numberOfQueuedChangeSets
+ * numberOfQueuedChangeSets   == numberOfPendingChangeSets - numberOfInFlightChangeSets
+ * numberOfPendingChangeSets  == numberOfPendingChangeSets + numberOfQueuedChangeSets
+**/
+@property (atomic, readonly) NSUInteger numberOfInFlightChangeSets;
+@property (atomic, readonly) NSUInteger numberOfQueuedChangeSets;
+@property (atomic, readonly) NSUInteger numberOfPendingChangeSets;
+
+/**
+ * Atomic access to all counts at once.
+**/
+- (void)getNumberOfInFlightChangeSets:(NSUInteger *)numInFlightChangeSetsPtr
+                     queuedChangeSets:(NSUInteger *)numQueuedChangeSetsPtr;
 
 #pragma mark Merge Handling
 
@@ -103,7 +135,7 @@
              databaseIdentifier:(NSString *)databaseIdentifier
                      intoRecord:(CKRecord *)record;
 
-#pragma mark Transaction Handling
+#pragma mark Transaction Commit Handling
 
 /**
  * This method:

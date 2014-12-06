@@ -376,6 +376,43 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 	return [masterQueue changeSetsFromPreviousCommits];
 }
 
+/**
+ * Faster access if you just want to get the counts.
+ *
+ * - numberOfInFlightChangeSets:
+ *     YDBCKChangeSets that have been dispatched to CloudKit Framework.
+ *     These may or may not succeed, depending upon network conditions & other factors.
+ *
+ * - numberOfQueuedChangeSets:
+ *     YDBCKChangeSets that have not been dispatched to CloudKit Framework.
+ *     They are waiting for the current inFlight change-sets to succeed, or for YDBCK to be resumed.
+ *
+ * - numberOfPendingChangeSets:
+ *     Includes all YDBCKChangeSets, both inFlight & queued.
+ *
+ * In mathematical notion, the relationships are:
+ *
+ * numberOfInFlightChangeSets == numberOfPendingChangeSets - numberOfQueuedChangeSets
+ * numberOfQueuedChangeSets   == numberOfPendingChangeSets - numberOfInFlightChangeSets
+ * numberOfPendingChangeSets  == numberOfPendingChangeSets + numberOfQueuedChangeSets
+**/
+- (NSUInteger)numberOfInFlightChangeSets
+{
+	return [masterQueue numberOfInFlightChangeSets];
+}
+- (NSUInteger)numberOfQueuedChangeSets {
+	return [masterQueue numberOfQueuedChangeSets];
+}
+- (NSUInteger)numberOfPendingChangeSets {
+	return [masterQueue numberOfPendingChangeSets];
+}
+- (void)getNumberOfInFlightChangeSets:(NSUInteger *)numInFlightChangeSetsPtr
+                     queuedChangeSets:(NSUInteger *)numQueuedChangeSetsPtr
+{
+	return [masterQueue getNumberOfInFlightChangeSets:numInFlightChangeSetsPtr
+	                                 queuedChangeSets:numQueuedChangeSetsPtr];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapDatabaseExtension Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

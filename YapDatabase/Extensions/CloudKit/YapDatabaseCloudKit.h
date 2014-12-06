@@ -63,6 +63,8 @@ extern NSString *const YapDatabaseCloudKitSuspendCountChangedNotification;
 
 @property (nonatomic, copy, readonly) YapDatabaseCloudKitOptions *options;
 
+#pragma mark Suspend & Resume
+
 /**
  * Returns YES if the upload operation queue is suspended.
  * 
@@ -136,6 +138,8 @@ extern NSString *const YapDatabaseCloudKitSuspendCountChangedNotification;
 **/
 - (NSUInteger)resume;
 
+#pragma mark Change-Sets
+
 /**
  * Returns an array of YDBCKChangeSet objects, which represent the pending (and in-flight) change-sets.
  * The array is ordered, such that:
@@ -150,5 +154,35 @@ extern NSString *const YapDatabaseCloudKitSuspendCountChangedNotification;
  * Then just inspect the change-sets to ensure that everything is working as you expect.
 **/
 - (NSArray *)pendingChangeSets;
+
+/**
+ * Faster access if you just want to get the counts.
+ * 
+ * - numberOfInFlightChangeSets:
+ *     YDBCKChangeSets that have been dispatched to CloudKit Framework.
+ *     These may or may not succeed, depending upon network conditions & other factors.
+ *
+ * - numberOfQueuedChangeSets:
+ *     YDBCKChangeSets that have not been dispatched to CloudKit Framework.
+ *     They are waiting for the current inFlight change-sets to succeed, or for YDBCK to be resumed.
+ *
+ * - numberOfPendingChangeSets:
+ *     Includes all YDBCKChangeSets, both inFlight & queued.
+ * 
+ * In mathematical notion, the relationships are:
+ * 
+ * numberOfInFlightChangeSets == numberOfPendingChangeSets - numberOfQueuedChangeSets
+ * numberOfQueuedChangeSets   == numberOfPendingChangeSets - numberOfInFlightChangeSets
+ * numberOfPendingChangeSets  == numberOfPendingChangeSets + numberOfQueuedChangeSets
+**/
+@property (atomic, readonly) NSUInteger numberOfInFlightChangeSets;
+@property (atomic, readonly) NSUInteger numberOfQueuedChangeSets;
+@property (atomic, readonly) NSUInteger numberOfPendingChangeSets;
+
+/**
+ * Atomic access to all counts at once.
+**/
+- (void)getNumberOfInFlightChangeSets:(NSUInteger *)numInFlightChangeSetsPtr
+                     queuedChangeSets:(NSUInteger *)numQueuedChangeSetsPtr;
 
 @end

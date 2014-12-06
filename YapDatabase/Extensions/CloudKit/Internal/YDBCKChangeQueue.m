@@ -24,9 +24,6 @@
 @dynamic isMasterQueue;
 @dynamic isPendingQueue;
 
-@dynamic changeSetsFromPreviousCommits;
-@dynamic changeSetsFromCurrentCommit;
-
 @synthesize lockUUID;
 
 - (instancetype)initMasterQueue
@@ -261,6 +258,89 @@
 	}
 	
 	return newChangeSets;
+}
+
+/**
+ * See header file for documentation.
+**/
+- (NSUInteger)numberOfInFlightChangeSets
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	NSUInteger count = 0;
+	[masterQueueLock lock];
+	
+	YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+	if (firstChangeSet.isInFlight) {
+		count = 1;
+	}
+	
+	[masterQueueLock unlock];
+	return count;
+}
+
+/**
+ * See header file for documentation.
+**/
+- (NSUInteger)numberOfQueuedChangeSets
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	NSUInteger count = 0;
+	[masterQueueLock lock];
+	
+	count = [oldChangeSets count];
+	
+	YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+	if (firstChangeSet.isInFlight) {
+		count--;
+	}
+	
+	[masterQueueLock unlock];
+	return count;
+}
+
+/**
+ * See header file for documentation.
+**/
+- (NSUInteger)numberOfPendingChangeSets
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	NSUInteger count = 0;
+	[masterQueueLock lock];
+	
+	count = [oldChangeSets count];
+	
+	[masterQueueLock unlock];
+	return count;
+}
+
+/**
+ * Atomic access to all counts at once.
+**/
+- (void)getNumberOfInFlightChangeSets:(NSUInteger *)numInFlightChangeSetsPtr
+                     queuedChangeSets:(NSUInteger *)numQueuedChangeSetsPtr
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	NSUInteger inFlightCount = 0;
+	NSUInteger queuedCount = 0;
+	
+	[masterQueueLock lock];
+	
+	queuedCount = [oldChangeSets count];
+	
+	YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+	if (firstChangeSet.isInFlight) {
+		inFlightCount++;
+		queuedCount--;
+	}
+	
+	[masterQueueLock unlock];
+	
+	if (numInFlightChangeSetsPtr) *numInFlightChangeSetsPtr = inFlightCount;
+	if (numQueuedChangeSetsPtr) *numQueuedChangeSetsPtr = queuedCount;
 }
 
 #pragma mark Utilities

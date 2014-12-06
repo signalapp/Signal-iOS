@@ -175,15 +175,14 @@
 		self.ckTopStatusLabel.text = @"Status: Resumed";
 	}
 	
-	NSArray *changeSets = MyDatabaseManager.cloudKitExtension.pendingChangeSets;
-	
-	YDBCKChangeSet *nextChangeSet = [changeSets firstObject];
-	NSUInteger inFlightCount = nextChangeSet.isInFlight ? 1 : 0;
+	NSUInteger inFlightCount = 0;
+	NSUInteger queuedCount = 0;
+	[MyDatabaseManager.cloudKitExtension getNumberOfInFlightChangeSets:&inFlightCount queuedChangeSets:&queuedCount];
 	
 	self.ckBottomStatusLabel.text =
-	  [NSString stringWithFormat:@"Queue: InFlight(%lu), Pending(%lu)",
+	  [NSString stringWithFormat:@"ChangeSets: InFlight(%lu), Queued(%lu)",
 	   (unsigned long)inFlightCount,
-	   (unsigned long)(changeSets.count - inFlightCount)];
+	   (unsigned long)queuedCount];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
