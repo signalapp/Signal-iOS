@@ -140,7 +140,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
-    thread.archivalDate    = [NSDate date];
+    thread.archivalDate    = _inboxArchiveSwitch.selectedSegmentIndex == 0 ? [NSDate date] : nil ;
     
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];

@@ -9,6 +9,7 @@
 static NSString *const kHelveticaNeueThin    = @"HelveticaNeue-Thin";
 static NSString *const kHelveticaNeueLight   = @"HelveticaNeue-Light";
 static NSString *const kHelveticaNeueRegular = @"HelveticaNeue-Regular";
+static NSString *const kHelveticaNeueMedium  = @"HelveticaNeue-Medium";
 static NSString *const kHelveticaNeueBold    = @"HelveticaNeue-Bold";
 
 #import "UIFont+OWS.h"
@@ -28,6 +29,11 @@ static NSString *const kHelveticaNeueBold    = @"HelveticaNeue-Bold";
 + (UIFont*) ows_regularFontWithSize:(CGFloat)size
 {
     return [UIFont fontWithName:kHelveticaNeueRegular size:size];
+}
+
++ (UIFont*) ows_mediumFontWithSize:(CGFloat)size
+{
+    return [UIFont fontWithName:kHelveticaNeueMedium size:size];
 }
 
 + (UIFont*) ows_boldFontWithSize:(CGFloat)size

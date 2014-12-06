@@ -66,10 +66,11 @@
                                         <color key="textColor" red="0.13725490200000001" green="0.1215686275" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </label>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reply.png" translatesAutoresizingMaskIntoConstraints="NO" id="BV6-Tp-SmZ">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reply.png" translatesAutoresizingMaskIntoConstraints="NO" id="BV6-Tp-SmZ">
                                         <rect key="frame" x="457" y="35" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="FZI-2j-0TT"/>
+                                            <constraint firstAttribute="height" constant="20" id="Skf-jE-LB3"/>
                                         </constraints>
                                     </imageView>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dGa-iy-WtH" userLabel="Archive View">

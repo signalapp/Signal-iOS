@@ -16,6 +16,8 @@
 #import "TSCall.h"
 #import "TSOutgoingMessage.h"
 #import "TSIncomingMessage.h"
+#import "TSInfoMessage.h"
+#import "TSErrorMessage.h"
 
 @implementation TSThread
 
@@ -125,14 +127,27 @@
         }
         
     } else if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        return TSLastActionNone;
+        return self.hasUnreadMessages ? TSLastActionMessageIncomingUnread : TSLastActionMessageIncomingRead ;
+    } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+        return TSLastActionErrorMessage;
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        return TSLastActionInfoMessage;
     } else {
         return TSLastActionNone;
     }
 }
 
-- (int)unreadMessages{
-    return 0;
+- (BOOL)hasUnreadMessages{
+    __block TSInteraction * interaction;
+    __block BOOL hasUnread = NO;
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+        if ([interaction isKindOfClass:[TSIncomingMessage class]]){
+            hasUnread = ![(TSIncomingMessage*)interaction wasRead];
+        }
+    }];
+    
+    return hasUnread;
 }
 
 - (NSString *)name{
