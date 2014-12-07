@@ -1,5 +1,6 @@
 #import "RootViewController.h"
 #import "EditViewController.h"
+#import "TodoCell.h"
 #import "DatabaseManager.h"
 #import "CloudKitManager.h"
 #import "MyTodo.h"
@@ -13,6 +14,7 @@
   static const int ddLogLevel = LOG_LEVEL_ALL;
 #endif
 
+static NSString *const TodoCellIdentifier = @"Todo";
 
 @implementation RootViewController
 {
@@ -24,7 +26,10 @@
 {
 	[super viewDidLoad];
 	
-	// Set tableView insets to be above ckStatusView
+	// Configure tableView
+	
+	self.tableView.rowHeight = UITableViewAutomaticDimension;
+	self.tableView.estimatedRowHeight = 44.0;
 	
 	CGRect ckViewFrame = self.ckStatusView.frame;
 	
@@ -229,27 +234,39 @@
 
 - (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"id"];
-	if (cell == nil)
-	{
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"id"];
-	}
+	TodoCell *cell = (TodoCell *)[self.tableView dequeueReusableCellWithIdentifier:TodoCellIdentifier];
 	
 	MyTodo *todo = [self todoAtIndexPath:indexPath];
 	
-	// Checkmark unicode symbols:
-	// - @"\u2611"
-	// - @"\u2B1C"
-	// - @"\u2705"
-	
-	cell.textLabel.text = todo.title;
+	if (todo.isDone)
+	{
+		UIImage *image = [UIImage imageNamed:@"checkmark-on"];
+		[cell.checkmarkButton setImage:image forState:UIControlStateNormal];
+		
+		NSDictionary *attr = @{NSStrikethroughStyleAttributeName: @(NSUnderlineStyleSingle)};
+		NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:todo.title attributes:attr];
+		
+		cell.titleLabel.attributedText = attrStr;
+	}
+	else
+	{
+		UIImage *image = [UIImage imageNamed:@"checkmark-off"];
+		[cell.checkmarkButton setImage:image forState:UIControlStateNormal];
+		
+		cell.titleLabel.text = todo.title;
+	}
 	
 	switch (todo.priority)
 	{
-		case TodoPriorityLow  : cell.textLabel.textColor = [UIColor darkGrayColor]; break;
-		case TodoPriorityHigh : cell.textLabel.textColor = [UIColor redColor];      break;
-		default               : cell.textLabel.textColor = [UIColor blackColor];    break;
+		case TodoPriorityLow  : cell.titleLabel.textColor = [UIColor darkGrayColor]; break;
+		case TodoPriorityHigh : cell.titleLabel.textColor = [UIColor redColor];      break;
+		default               : cell.titleLabel.textColor = [UIColor blackColor];    break;
 	}
+	
+	cell.delegate = self;
+	
+	[cell setNeedsUpdateConstraints];
+	[cell updateConstraintsIfNeeded];
 	
 	return cell;
 }
@@ -294,6 +311,25 @@
                                          forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	// No statement or algorithm is needed in here. Just the implementation
+}
+
+- (void)didTapImageViewInCell:(TodoCell *)sender
+{
+	NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+	
+	MyTodo *originalTodo = [self todoAtIndexPath:indexPath];
+	NSString *todoID = originalTodo.uuid;
+	BOOL newIsDone = originalTodo.isDone ? NO : YES;
+	
+	[MyDatabaseManager.bgDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		MyTodo *todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
+		todo = [todo copy]; // make mutable copy
+		
+		todo.isDone = newIsDone;
+		
+		[transaction setObject:todo forKey:todoID inCollection:Collection_Todos];
+	}];
 }
 
 @end

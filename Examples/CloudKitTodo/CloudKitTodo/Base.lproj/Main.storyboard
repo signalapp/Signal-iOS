@@ -35,6 +35,48 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Yft-Qg-2YH">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Todo" id="DEc-iV-D5X" customClass="TodoCell">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DEc-iV-D5X" id="S4Y-Fw-wMI">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GdB-2i-Ayi">
+                                                    <rect key="frame" x="8" y="7" width="28" height="28"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="28" id="Fgt-hn-iBH"/>
+                                                        <constraint firstAttribute="width" constant="28" id="gY6-Ti-iMM"/>
+                                                    </constraints>
+                                                    <state key="normal" image="checkmark-on.png">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="didTapImageView:" destination="DEc-iV-D5X" eventType="touchUpInside" id="Wp6-kb-ZnM"/>
+                                                    </connections>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="todo.title" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p45-y8-7NQ">
+                                                    <rect key="frame" x="44" y="11" width="548" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="p45-y8-7NQ" firstAttribute="top" secondItem="S4Y-Fw-wMI" secondAttribute="topMargin" constant="3" id="BCf-jV-ho9"/>
+                                                <constraint firstItem="p45-y8-7NQ" firstAttribute="leading" secondItem="GdB-2i-Ayi" secondAttribute="trailing" constant="8" id="I8v-Lt-4JL"/>
+                                                <constraint firstItem="p45-y8-7NQ" firstAttribute="trailing" secondItem="S4Y-Fw-wMI" secondAttribute="trailingMargin" id="Uac-UT-IYW"/>
+                                                <constraint firstAttribute="centerY" secondItem="GdB-2i-Ayi" secondAttribute="centerY" id="YrZ-F2-Knd"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="p45-y8-7NQ" secondAttribute="bottom" constant="3" id="iCR-pW-7ZL"/>
+                                                <constraint firstItem="GdB-2i-Ayi" firstAttribute="leading" secondItem="S4Y-Fw-wMI" secondAttribute="leadingMargin" id="ktZ-QC-b1Z"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="checkmarkButton" destination="GdB-2i-Ayi" id="RJI-fG-Pc1"/>
+                                            <outlet property="titleLabel" destination="p45-y8-7NQ" id="jDr-KC-Tqy"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="ZMP-7o-CDj" id="Lii-lq-iyd"/>
                                     <outlet property="delegate" destination="ZMP-7o-CDj" id="tuy-Kr-OMv"/>
@@ -134,7 +176,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LDj-cP-95A" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="616" y="367"/>
+            <point key="canvasLocation" x="616" y="365"/>
         </scene>
         <!--Edit View Controller-->
         <scene sceneID="Edl-TL-NCx">
@@ -266,4 +308,7 @@
             <point key="canvasLocation" x="1346" y="367"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="checkmark-on.png" width="434" height="435"/>
+    </resources>
 </document>
