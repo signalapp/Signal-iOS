@@ -237,7 +237,19 @@
 	
 	MyTodo *todo = [self todoAtIndexPath:indexPath];
 	
+	// Checkmark unicode symbols:
+	// - @"\u2611"
+	// - @"\u2B1C"
+	// - @"\u2705"
+	
 	cell.textLabel.text = todo.title;
+	
+	switch (todo.priority)
+	{
+		case TodoPriorityLow  : cell.textLabel.textColor = [UIColor darkGrayColor]; break;
+		case TodoPriorityHigh : cell.textLabel.textColor = [UIColor redColor];      break;
+		default               : cell.textLabel.textColor = [UIColor blackColor];    break;
+	}
 	
 	return cell;
 }
