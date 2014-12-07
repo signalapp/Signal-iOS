@@ -31,7 +31,7 @@
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType{
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachements:nil];
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:@"Placeholder for error message." attachements:nil];
     
     if (self) {
         _errorType = errorMessageType;
