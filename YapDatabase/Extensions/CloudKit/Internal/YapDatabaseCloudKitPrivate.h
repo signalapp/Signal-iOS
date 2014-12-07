@@ -70,7 +70,7 @@ static NSString *const changeset_key_reset            = @"reset";
 - (NSString *)recordTableName;
 - (NSString *)queueTableName;
 
-- (void)asyncMaybeDispatchNextOperation;
+- (void)asyncMaybeDispatchNextOperation:(BOOL)forceNotification;
 
 @end
 

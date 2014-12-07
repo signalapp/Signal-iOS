@@ -48,6 +48,11 @@
 	                                         selector:@selector(cloudKitSuspendCountChanged:)
 	                                             name:YapDatabaseCloudKitSuspendCountChangedNotification
 	                                           object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(cloudKitInFlightChangeSetChanged:)
+	                                             name:YapDatabaseCloudKitInFlightChangeSetChangedNotification
+	                                           object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -143,6 +148,11 @@
 }
 
 - (void)cloudKitSuspendCountChanged:(NSNotification *)notification
+{
+	[self updateStatusLabels];
+}
+
+- (void)cloudKitInFlightChangeSetChanged:(NSNotification *)notification
 {
 	[self updateStatusLabels];
 }

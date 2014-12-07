@@ -15,8 +15,8 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDatabaseCloudKitSuspendCountChanged";
-
+NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YDBCK_SuspendCountChanged";
+NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBCK_InFlightChangeSetChanged";
 
 @implementation YapDatabaseCloudKit
 {
@@ -24,8 +24,6 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 	OSSpinLock suspendCountLock;
 	
 	NSOperationQueue *masterOperationQueue;
-	
-	dispatch_queue_t dispatchOperationQueue;
 	
 	YapDatabaseConnection *completionDatabaseConnection;
 	YapCache *databaseCache;
@@ -178,8 +176,6 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 		masterOperationQueue.maxConcurrentOperationCount = 1;
 		
 		suspendCountLock = OS_SPINLOCK_INIT;
-		
-		dispatchOperationQueue = dispatch_queue_create("YapDatabaseCloudKit_dispatchOperation", DISPATCH_QUEUE_SERIAL);
 	}
 	return self;
 }
@@ -330,8 +326,10 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 		[self postSuspendCountChangedNotification];
 	}
 	
-	if (newSuspendCount == 0 && !underflow) {
-		[self asyncMaybeDispatchNextOperation];
+	if (newSuspendCount == 0 && !underflow)
+	{
+		BOOL forceNotification = NO;
+		[self asyncMaybeDispatchNextOperation:forceNotification];
 	}
 	
 	return newSuspendCount;
@@ -413,6 +411,20 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 	                                 queuedChangeSets:numQueuedChangeSetsPtr];
 }
 
+- (void)postInFlightChangeSetChangedNotification
+{
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		[[NSNotificationCenter defaultCenter]
+		  postNotificationName:YapDatabaseCloudKitInFlightChangeSetChangedNotification object:self];
+	}};
+	
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_async(dispatch_get_main_queue(), block);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark YapDatabaseExtension Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -449,27 +461,45 @@ NSString *const YapDatabaseCloudKitSuspendCountChangedNotification = @"YapDataba
 #pragma mark Private API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)asyncMaybeDispatchNextOperation
+- (void)asyncMaybeDispatchNextOperation:(BOOL)forceNotification
 {
 	YDBLogAutoTrace();
 	
-	dispatch_async(dispatchOperationQueue, ^{ @autoreleasepool {
+	dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_async(bgQueue, ^{ @autoreleasepool {
 		
-		if (self.isSuspended)
+		if (self.isSuspended) // this method is thread-safe
 		{
 			YDBLogVerbose(@"Skipping dispatch operation - suspended");
+			
+			if (forceNotification) [self postInFlightChangeSetChangedNotification];
 			return;
 		}
 		
-		YDBCKChangeSet *nextChangeSet = [masterQueue makeInFlightChangeSet];
+		YDBCKChangeSet *nextChangeSet = [masterQueue makeInFlightChangeSet]; // this method is thread-safe
 		if (nextChangeSet == nil)
 		{
 			YDBLogVerbose(@"Skipping dispatch operation - upload in progress || nothing to upload");
+			
+			if (forceNotification) [self postInFlightChangeSetChangedNotification];
 			return;
 		}
 		
-		YDBLogVerbose(@"Queueing operation: %@", nextChangeSet);
-		[self queueOperationsForChangeSets:@[ nextChangeSet ]];
+		if ([nextChangeSet->deletedRecordIDs count] == 0 &&
+		    [nextChangeSet->modifiedRecords count] == 0)
+		{
+			YDBLogVerbose(@"Dropping empty queuee operation: %@", nextChangeSet);
+			
+			[self handleCompletedOperationWithChangeSet:nextChangeSet savedRecords:nil deletedRecordIDs:nil];
+			[self postInFlightChangeSetChangedNotification];
+		}
+		else
+		{
+			YDBLogVerbose(@"Queueing operation: %@", nextChangeSet);
+			
+			[self queueOperationsForChangeSets:@[ nextChangeSet ]];
+			[self postInFlightChangeSetChangedNotification];
+		}
 	}});
 }
 

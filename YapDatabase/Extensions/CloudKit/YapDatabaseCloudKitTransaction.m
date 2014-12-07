@@ -525,7 +525,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	// Restart the uploads (if needed)
 	
-	[parentConnection->parent asyncMaybeDispatchNextOperation];
+	BOOL forceNotification = NO;
+	[parentConnection->parent asyncMaybeDispatchNextOperation:forceNotification];
 	
 	// Done!
 	return YES;
@@ -2540,10 +2541,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	parentConnection->isOperationCompletionTransaction = YES;
 	
-	// Drop the row in the queue table that was storing all the information for this changeSet.
-	
-	[self removeQueueTableRowWithUUID:changeSet.uuid];
-	
 	// Update any records that were saved.
 	// We need to store the new system fields of the CKRecord.
 	
@@ -2593,6 +2590,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	}
 	
 	// Update other changeSets (if needed)
+	//
+	// Note: Creating a pendingQueue automatically locks the masterQueue
 	
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
@@ -2608,18 +2607,25 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	// Note: No need to updatePendingQueue:withSavedDeletedRecordID:::,
 	// because that method only handles updating the inFlight changeSet.
 	//
-	// But we already dropped the corresponding row from the database anyway,
+	// But we're droping the inFlight changeSet row from the database anyway,
 	// using the removeQueueTableRowWithUUID method.
 	
-	for (YDBCKChangeSet *oldChangeSet in pendingQueue.changeSetsFromPreviousCommits)
+	for (YDBCKChangeSet *queuedChangeSet in pendingQueue.changeSetsFromPreviousCommits)
 	{
-		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
+		if (queuedChangeSet.hasChangesToDeletedRecordIDs || queuedChangeSet.hasChangesToModifiedRecords)
 		{
-			NSAssert(![oldChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
+			NSAssert(![queuedChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
 			
-			[self updateQueueTableRowWithChangeSet:oldChangeSet];
+			[self updateQueueTableRowWithChangeSet:queuedChangeSet];
 		}
 	}
+	
+	// Drop the inFlight changeSet row from the queue table
+	// that was storing all the information for this changeSet.
+	
+	[self removeQueueTableRowWithUUID:changeSet.uuid];
+	
+	// Merge the changes into the masterQueue, and unlock it.
 	
 	[masterQueue mergePendingQueue:pendingQueue];
 }

@@ -188,13 +188,17 @@
 	
 	if (isOperationCompletionTransaction)
 	{
+		BOOL forceNotification = YES;
+		
 		[parent->masterQueue removeCompletedInFlightChangeSet];
-		[parent asyncMaybeDispatchNextOperation];
+		[parent asyncMaybeDispatchNextOperation:forceNotification];
 	}
 	else if (isOperationPartialCompletionTransaction)
 	{
+		BOOL forceNotification = YES;
+		
 		[parent->masterQueue resetFailedInFlightChangeSet];
-		[parent asyncMaybeDispatchNextOperation];
+		[parent asyncMaybeDispatchNextOperation:forceNotification];
 	}
 	else if (changeset_deletedRowids.count    > 0 ||
 	         changeset_deletedHashes.count    > 0 ||
@@ -202,7 +206,8 @@
 	         changeset_recordTableInfo.count  > 0 ||
 	         reset)
 	{
-		[parent asyncMaybeDispatchNextOperation];
+		BOOL forceNotification = NO;
+		[parent asyncMaybeDispatchNextOperation:forceNotification];
 	}
 	
 	dirtyMappingTableInfoDict = nil;

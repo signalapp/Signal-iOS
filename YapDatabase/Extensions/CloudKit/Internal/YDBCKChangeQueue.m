@@ -157,6 +157,7 @@
 	NSAssert([self.lockUUID isEqualToString:pendingQueue.lockUUID], @"Bad state: Not locked for pendingQueue");
 	
 	NSUInteger count = [oldChangeSets count];
+	NSAssert(count == [pendingQueue->oldChangeSets count], @"Logic error !");
 	
 	for (NSUInteger index = 0; index < count; index++)
 	{
@@ -797,40 +798,51 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					}
 				}
 				
-				if (keysToRemove.count > 0)
+				// We need to get the system metadata from the mergedRecord,
+				// and inject the values from the localRecord.
+				CKRecord *newLocalRecord = [YapDatabaseCKRecord sanitizedRecord:mergedRecord];
+				
+				for (NSString *key in localRecord.changedKeys)
 				{
-					CKRecord *newLocalRecord = [YapDatabaseCKRecord sanitizedRecord:localRecord];
-					
-					for (NSString *key in localRecord.changedKeys)
+					if (![keysToRemove containsObject:key])
 					{
-						if (![keysToRemove containsObject:key])
-						{
-							// Remember: nil is a valid value.
-							// It indicates removal of the value for the key, which is a valid action.
-							
-							id value = [localRecord objectForKey:key];
-							[newLocalRecord setObject:value forKey:key];
-						}
-					}
-					
-					YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
-					if (pqPrevChangeSet->modifiedRecords == nil)
-					{
-					#if DEBUG
-						pqPrevChangeSet->modifiedRecords =
-						  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
-						                                       copyItems:YES];
-					#else
-						pqPrevChangeSet->modifiedRecords =
-						  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
-						                                        copyItems:YES];
-					#endif
+						// Remember: nil is a valid value.
+						// It indicates removal of the value for the key, which is a valid action.
 						
-						pqPrevChangeSet.hasChangesToModifiedRecords = YES;
+						id value = [localRecord objectForKey:key];
+						[newLocalRecord setObject:value forKey:key];
 					}
+				}
+				
+				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
+				if (pqPrevChangeSet->modifiedRecords == nil)
+				{
+				#if DEBUG
+					pqPrevChangeSet->modifiedRecords =
+					  [[YapDebugDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
+					                                       copyItems:YES];
+				#else
+					pqPrevChangeSet->modifiedRecords =
+					  [[NSMutableDictionary alloc] initWithDictionary:mqPrevChangeSet->modifiedRecords
+					                                        copyItems:YES];
+				#endif
+					
+					pqPrevChangeSet.hasChangesToModifiedRecords = YES;
+				}
+				
+				if (newLocalRecord.changedKeys.count > 0)
+				{
+					// Update the record using the merged newLocalRecord
 					
 					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 					pqPrevRecord.record = newLocalRecord;
+				}
+				else
+				{
+					// Remove the record from the change-set.
+					// There's no longer any need to upload it since we've dismissed all the queued changes.
+					
+					[pqPrevChangeSet->modifiedRecords removeObjectForKey:recordID];
 				}
 			
 			} // end if (mqPrevRecord)
