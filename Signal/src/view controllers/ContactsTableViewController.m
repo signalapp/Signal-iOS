@@ -125,13 +125,14 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
-    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
-    searchResults = [self.latestContacts filteredArrayUsingPredicate:resultPredicate];
+    
+    NSPredicate *numberPredicate = [NSPredicate predicateWithFormat:@"ANY SELF.userTextPhoneNumbers contains[cd] %@ OR fullName contains[c] %@", searchText, searchText];
+    
+    searchResults = [self.latestContacts filteredArrayUsingPredicate:numberPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) {
         searchResults = self.latestContacts;
     }
 }
-
 
 #pragma mark - Contact functions
 
@@ -180,7 +181,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     
-    if ([[self contactsForSectionIndex:(NSUInteger)section] count]) {
+    if ([[self contactsForSectionIndex:(NSUInteger)section] count] && !self.searchController.isActive) {
         return self.latestSortedAlphabeticalContactKeys[(NSUInteger)section];
     } else {
         return nil;
