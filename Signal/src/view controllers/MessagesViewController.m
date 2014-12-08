@@ -626,6 +626,11 @@ typedef enum : NSUInteger {
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
+    
+    if (!messageRowChanges) {
+        return;
+    }
+    
     for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
     {
         switch (rowChange.type)
