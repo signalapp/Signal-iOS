@@ -3,6 +3,12 @@
 #import "PropertyListPreferences.h"
 #import "Zid.h"
 
+typedef NS_ENUM(NSUInteger, NotificationType) {
+    NotificationNoNameNoPreview,
+    NotificationNameNoPreview,
+    NotificationNamePreview,
+};
+
 @class PhoneNumber;
 
 @interface PropertyListPreferences (PropertyUtil)
@@ -17,6 +23,9 @@
 
 -(BOOL)screenSecurityIsEnabled;
 -(void)setScreenSecurity:(BOOL)flag;
+
+-(NotificationType)notificationPreviewType;
+-(void)setNotificationPreviewType:(NotificationType)type;
 
 -(NSString*)lastRanVersion;
 -(NSString*)setAndGetCurrentVersion;
