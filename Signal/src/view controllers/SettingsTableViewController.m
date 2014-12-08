@@ -23,13 +23,14 @@
 #define kNumberOfSections       2
 
 #define kClearHistoryLogCellRow 1
-#define kSendDebugLogCellRow    3
-#define kUnregisterCell         4
+#define kMessageDisplayCellRow  2
+#define kSendDebugLogCellRow    4
+#define kUnregisterCell         5
 
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 5,
+    kSecurityRows = 6,
 } kRowsForSection;
 
 typedef enum {

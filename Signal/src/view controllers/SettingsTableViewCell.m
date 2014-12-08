@@ -32,6 +32,8 @@
 {
     if ([self.reuseIdentifier isEqualToString:@"enableScreenSecurity"]) {
         [Environment.preferences setScreenSecurity:self.toggle.isOn];
+    } else if ([self.reuseIdentifier isEqualToString:@"displayMessagePreview"]) {
+        //Set preference
     }
 }
 
