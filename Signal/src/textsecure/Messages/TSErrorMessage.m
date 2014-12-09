@@ -12,13 +12,35 @@
 @implementation TSErrorMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType{
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:@"Placeholder for error message." attachements:nil];
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachements:nil];
     
     if (self) {
         _errorType = errorMessageType;
     }
     
     return self;
+}
+
+- (NSString*)description{
+    switch (_errorType) {
+        case TSErrorMessageNoSession:
+            return @"No available session for contact";
+        case TSErrorMessageMissingKeyId:
+            return @"Received a message with unknown PreKey";
+        case TSErrorMessageInvalidMessage:
+            return @"Received a corrupted message";
+        case TSErrorMessageInvalidVersion:
+            return @"Received a message not compatible with this version";
+        case TSErrorMessageDuplicateMessage:
+            return @"Received a duplicated message";
+        case TSErrorMessageInvalidKeyException:
+            return @"The recipient's key is not valid.";
+        case TSErrorMessageWrongTrustedIdentityKey:
+            return @"Your contact's identity key changed. Tap to verify and accept new key";
+        default:
+            return @"An unknown error occured";
+            break;
+    }
 }
 
 + (instancetype)userNotRegisteredErrorMessageInThread:(TSThread*)thread{

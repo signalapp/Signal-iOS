@@ -180,6 +180,13 @@
     } else if (content.attachments.count > 0) {
         DDLogVerbose(@"Received push media message (attachement) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            TSInfoMessage *message = [[TSInfoMessage alloc] initWithTimestamp:incomingMessage.timestamp
+                                                                     inThread:[TSContactThread threadWithContactId:incomingMessage.source transaction:transaction]
+                                                                  messageType:TSInfoMessageTypeUnsupportedMessage];
+            [message saveWithTransaction:transaction];
+        }];
+        
     } else {
         DDLogVerbose(@"Received push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
@@ -231,7 +238,7 @@
 }
 
 - (void)processException:(NSException*)exception pushSignal:(IncomingPushMessageSignal*)signal{
-    NSLog(@"Got exception: %@", exception.description);
+    DDLogError(@"Got exception: %@", exception.description);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:signal.timestamp inThread:[TSContactThread threadWithContactId:signal.source transaction:transaction] failedMessageType:TSErrorMessageNoSession];
         [errorMessage saveWithTransaction:transaction];
