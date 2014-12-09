@@ -66,7 +66,6 @@
     
     NSData *myPublicKey = [self getMyPublicIdentityKey];
     self.userFingerprintLabel.text = [self getFingerprintForDisplay:myPublicKey];
-    
     [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self.view setAlpha:1];
     } completion:nil];

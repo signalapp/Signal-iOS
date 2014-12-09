@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
@@ -35,9 +35,6 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="-44" width="610" height="644"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
                                     <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
@@ -117,7 +114,7 @@
                         <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -148,7 +145,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AAAF197B-768D-436F-9375-7D639285D224" translatesAutoresizingMaskIntoConstraints="NO" id="Yg7-KF-hVR">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="3B2B0E42-02BD-49EA-9F71-E2810F3DAB1F" translatesAutoresizingMaskIntoConstraints="NO" id="Yg7-KF-hVR">
                                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="50e-Dx-c2x"/>
@@ -160,8 +157,7 @@
                                                     <exclude reference="V0L-fC-PuQ"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="280" y="27" width="40" height="40"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="50e-Dx-c2x"/>
                                                     <include reference="V0L-fC-PuQ"/>
@@ -183,8 +179,7 @@
                                                     <exclude reference="vOK-AZ-s3O"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="91" y="535" width="50" height="50"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="fct-hE-flI"/>
                                                     <include reference="vOK-AZ-s3O"/>
@@ -218,9 +213,6 @@
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="113" y="129" width="450" height="20.5"/>
-                                            </variation>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kBW-ix-mdQ">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -238,8 +230,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="jaw-8F-c1C"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="113" y="157.5" width="450" height="46"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="jaw-8F-c1C"/>
                                                 </mask>
@@ -269,9 +260,6 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="113" y="240.5" width="450" height="20.5"/>
-                                            </variation>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e7E-iS-3Oc">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -289,8 +277,7 @@ FA 9C E3 A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="k9r-Fg-1QJ"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="113" y="269" width="450" height="46"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="k9r-Fg-1QJ"/>
                                                 </mask>
@@ -311,8 +298,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                                     <exclude reference="bif-t1-qQO"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="21" y="338" width="542" height="76"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="bif-t1-qQO"/>
                                                 </mask>
@@ -337,8 +323,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                                     <exclude reference="HyD-2g-uiS"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="21" y="535" width="50" height="50"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="3BW-0h-7YP"/>
                                                     <include reference="HyD-2g-uiS"/>
@@ -348,25 +333,29 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                                 <action selector="closeButtonAction:" destination="urv-62-RsD" eventType="touchUpInside" id="m15-1K-9gB"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zey-uD-Tcv">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JFv-Xu-qls">
                                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                            <state key="normal" title="scan theirs">
+                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                            <state key="normal" title="scan their key to compare">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <connections>
-                                                <segue destination="7qX-e8-QDY" kind="show" identifier="ScanIdentityBarcodeViewSegue" id="6ii-fp-8zf"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ltQ-zz-okP">
-                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                            <state key="normal" title="present yours">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="165" y="323" width="94" height="30"/>
+                                            <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                                <rect key="frame" x="21" y="203" width="178" height="30"/>
                                             </variation>
                                             <connections>
-                                                <segue destination="in8-UP-6ff" kind="show" identifier="PresentIdentityQRCodeViewSegue" id="QLM-Ae-vyo"/>
+                                                <segue destination="7qX-e8-QDY" kind="showDetail" identifier="ScanIdentityBarcodeViewSegue" id="UAi-Jm-zU9"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wGB-4p-e1Z">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <state key="normal" title="get my key scanned">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                                <rect key="frame" x="21" y="324" width="138" height="30"/>
+                                            </variation>
+                                            <connections>
+                                                <segue destination="in8-UP-6ff" kind="showDetail" id="586-xP-XOB"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -374,36 +363,31 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <constraint firstItem="HyV-ht-MrM" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="0cP-F5-N4l"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="top" secondItem="5De-Jq-XWv" secondAttribute="bottom" constant="8" id="0jD-kP-zTX"/>
                                         <constraint firstAttribute="trailing" secondItem="e7E-iS-3Oc" secondAttribute="trailing" constant="37" id="5uD-gq-nro"/>
-                                        <constraint firstAttribute="bottom" secondItem="ltQ-zz-okP" secondAttribute="bottom" constant="247" id="B1V-rC-mjO">
-                                            <variation key="heightClass=regular-widthClass=compact" constant="330"/>
-                                        </constraint>
                                         <constraint firstItem="Ii9-7N-hCc" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="129" id="C8D-t9-FSO"/>
                                         <constraint firstItem="DV4-GV-ZPf" firstAttribute="top" secondItem="e7E-iS-3Oc" secondAttribute="bottom" constant="23" id="Cmp-XH-vDT"/>
                                         <constraint firstAttribute="trailing" secondItem="Yoz-ex-1gK" secondAttribute="trailing" constant="21" id="E3H-bc-Xz8"/>
                                         <constraint firstItem="kBW-ix-mdQ" firstAttribute="leading" secondItem="HyV-ht-MrM" secondAttribute="trailing" constant="17" id="GPR-Uo-6ae"/>
-                                        <constraint firstItem="Zey-uD-Tcv" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="202" id="HGf-jA-w7a"/>
                                         <constraint firstAttribute="trailing" secondItem="kBW-ix-mdQ" secondAttribute="trailing" constant="37" id="HNM-I2-zyR"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="leading" secondItem="YOs-e5-ee3" secondAttribute="trailing" constant="17" id="HUa-X1-uUr"/>
                                         <constraint firstItem="5De-Jq-XWv" firstAttribute="leading" secondItem="YOs-e5-ee3" secondAttribute="trailing" constant="17" id="OHR-8T-cxj"/>
                                         <constraint firstItem="kBW-ix-mdQ" firstAttribute="top" secondItem="Ii9-7N-hCc" secondAttribute="bottom" constant="8" id="Pef-ZF-oW5"/>
+                                        <constraint firstItem="JFv-Xu-qls" firstAttribute="top" secondItem="HyV-ht-MrM" secondAttribute="bottom" constant="-1" id="RSd-Na-8dp"/>
                                         <constraint firstItem="aff-6Q-MJH" firstAttribute="centerY" secondItem="Yoz-ex-1gK" secondAttribute="centerY" id="SVg-d7-qTs"/>
                                         <constraint firstAttribute="centerX" secondItem="Yg7-KF-hVR" secondAttribute="centerX" id="SaO-RA-JOe"/>
+                                        <constraint firstItem="wGB-4p-e1Z" firstAttribute="top" secondItem="YOs-e5-ee3" secondAttribute="bottom" constant="8" id="Sj4-2k-mSe"/>
                                         <constraint firstItem="HyV-ht-MrM" firstAttribute="centerX" secondItem="YOs-e5-ee3" secondAttribute="centerX" id="T5m-OK-kvD"/>
                                         <constraint firstItem="DV4-GV-ZPf" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="VHE-LF-wOx"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="top" secondItem="5De-Jq-XWv" secondAttribute="bottom" constant="8" id="WAB-2c-hEF"/>
                                         <constraint firstAttribute="bottom" secondItem="Yoz-ex-1gK" secondAttribute="bottom" constant="15" id="Zcv-rw-YqP"/>
-                                        <constraint firstItem="ltQ-zz-okP" firstAttribute="top" secondItem="e7E-iS-3Oc" secondAttribute="bottom" constant="8" symbolic="YES" id="aHf-4n-6X4"/>
                                         <constraint firstItem="Yoz-ex-1gK" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="27" id="cp2-OL-5R1"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="centerX" secondItem="kBW-ix-mdQ" secondAttribute="centerX" id="diH-aS-cqX"/>
                                         <constraint firstItem="Ii9-7N-hCc" firstAttribute="leading" secondItem="HyV-ht-MrM" secondAttribute="trailing" constant="17" id="eWz-aq-FbT"/>
                                         <constraint firstItem="aff-6Q-MJH" firstAttribute="leading" secondItem="Yoz-ex-1gK" secondAttribute="trailing" constant="22" id="eeg-OU-L4K">
                                             <variation key="heightClass=regular-widthClass=compact" constant="20"/>
                                         </constraint>
-                                        <constraint firstItem="5De-Jq-XWv" firstAttribute="top" secondItem="Zey-uD-Tcv" secondAttribute="bottom" constant="8" symbolic="YES" id="ff5-zD-vs2"/>
                                         <constraint firstItem="YOs-e5-ee3" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="241" id="gJX-7f-ouT"/>
                                         <constraint firstItem="5De-Jq-XWv" firstAttribute="centerX" secondItem="Ii9-7N-hCc" secondAttribute="centerX" id="htv-7j-iii"/>
                                         <constraint firstItem="YOs-e5-ee3" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="iJ5-YY-tdi"/>
-                                        <constraint firstItem="ltQ-zz-okP" firstAttribute="centerX" secondItem="Zey-uD-Tcv" secondAttribute="centerX" id="ikK-zI-LVv"/>
                                         <constraint firstAttribute="bottom" secondItem="aff-6Q-MJH" secondAttribute="bottom" constant="20" id="jEe-vm-hcC"/>
                                         <constraint firstItem="5De-Jq-XWv" firstAttribute="top" secondItem="kBW-ix-mdQ" secondAttribute="bottom" constant="37" id="kPm-bZ-2O1"/>
                                         <constraint firstItem="Yg7-KF-hVR" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="27" id="kgd-eg-JMO"/>
@@ -417,7 +401,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <constraint firstItem="HyV-ht-MrM" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="129" id="oOD-rR-Kfs"/>
                                         <constraint firstAttribute="trailing" secondItem="DV4-GV-ZPf" secondAttribute="trailing" constant="37" id="qbq-AK-HjD"/>
                                         <constraint firstItem="YOs-e5-ee3" firstAttribute="top" secondItem="HyV-ht-MrM" secondAttribute="bottom" constant="37" id="rdE-nO-pjk"/>
-                                        <constraint firstItem="Zey-uD-Tcv" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="175" id="zfp-iA-Dye"/>
                                     </constraints>
                                     <variation key="default">
                                         <mask key="subviews">
@@ -431,8 +414,8 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <exclude reference="e7E-iS-3Oc"/>
                                             <exclude reference="DV4-GV-ZPf"/>
                                             <exclude reference="Yoz-ex-1gK"/>
-                                            <exclude reference="Zey-uD-Tcv"/>
-                                            <exclude reference="ltQ-zz-okP"/>
+                                            <exclude reference="JFv-Xu-qls"/>
+                                            <exclude reference="wGB-4p-e1Z"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="0cP-F5-N4l"/>
@@ -441,31 +424,27 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <exclude reference="C8D-t9-FSO"/>
                                             <exclude reference="eWz-aq-FbT"/>
                                             <exclude reference="nB5-f9-3f8"/>
+                                            <exclude reference="SaO-RA-JOe"/>
+                                            <exclude reference="kgd-eg-JMO"/>
                                             <exclude reference="GPR-Uo-6ae"/>
                                             <exclude reference="HNM-I2-zyR"/>
                                             <exclude reference="Pef-ZF-oW5"/>
+                                            <exclude reference="RSd-Na-8dp"/>
                                             <exclude reference="gJX-7f-ouT"/>
                                             <exclude reference="iJ5-YY-tdi"/>
                                             <exclude reference="rdE-nO-pjk"/>
                                             <exclude reference="OHR-8T-cxj"/>
-                                            <exclude reference="ff5-zD-vs2"/>
                                             <exclude reference="htv-7j-iii"/>
                                             <exclude reference="kPm-bZ-2O1"/>
-                                            <exclude reference="HGf-jA-w7a"/>
-                                            <exclude reference="zfp-iA-Dye"/>
-                                            <exclude reference="SaO-RA-JOe"/>
-                                            <exclude reference="kgd-eg-JMO"/>
                                             <exclude reference="0jD-kP-zTX"/>
                                             <exclude reference="5uD-gq-nro"/>
                                             <exclude reference="HUa-X1-uUr"/>
                                             <exclude reference="WAB-2c-hEF"/>
                                             <exclude reference="diH-aS-cqX"/>
+                                            <exclude reference="Sj4-2k-mSe"/>
                                             <exclude reference="Cmp-XH-vDT"/>
                                             <exclude reference="VHE-LF-wOx"/>
                                             <exclude reference="qbq-AK-HjD"/>
-                                            <exclude reference="B1V-rC-mjO"/>
-                                            <exclude reference="aHf-4n-6X4"/>
-                                            <exclude reference="ikK-zI-LVv"/>
                                             <exclude reference="E3H-bc-Xz8"/>
                                             <exclude reference="Zcv-rw-YqP"/>
                                             <exclude reference="cp2-OL-5R1"/>
@@ -488,8 +467,8 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <include reference="e7E-iS-3Oc"/>
                                             <include reference="DV4-GV-ZPf"/>
                                             <include reference="Yoz-ex-1gK"/>
-                                            <include reference="Zey-uD-Tcv"/>
-                                            <include reference="ltQ-zz-okP"/>
+                                            <include reference="JFv-Xu-qls"/>
+                                            <include reference="wGB-4p-e1Z"/>
                                         </mask>
                                         <mask key="constraints">
                                             <include reference="0cP-F5-N4l"/>
@@ -498,31 +477,27 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                             <include reference="C8D-t9-FSO"/>
                                             <include reference="eWz-aq-FbT"/>
                                             <include reference="nB5-f9-3f8"/>
+                                            <include reference="SaO-RA-JOe"/>
+                                            <include reference="kgd-eg-JMO"/>
                                             <include reference="GPR-Uo-6ae"/>
                                             <include reference="HNM-I2-zyR"/>
                                             <include reference="Pef-ZF-oW5"/>
+                                            <include reference="RSd-Na-8dp"/>
                                             <exclude reference="gJX-7f-ouT"/>
                                             <include reference="iJ5-YY-tdi"/>
                                             <include reference="rdE-nO-pjk"/>
                                             <include reference="OHR-8T-cxj"/>
-                                            <include reference="ff5-zD-vs2"/>
                                             <include reference="htv-7j-iii"/>
                                             <include reference="kPm-bZ-2O1"/>
-                                            <include reference="HGf-jA-w7a"/>
-                                            <include reference="zfp-iA-Dye"/>
-                                            <include reference="SaO-RA-JOe"/>
-                                            <include reference="kgd-eg-JMO"/>
                                             <include reference="0jD-kP-zTX"/>
                                             <include reference="5uD-gq-nro"/>
                                             <include reference="HUa-X1-uUr"/>
                                             <include reference="WAB-2c-hEF"/>
                                             <include reference="diH-aS-cqX"/>
+                                            <include reference="Sj4-2k-mSe"/>
                                             <include reference="Cmp-XH-vDT"/>
                                             <include reference="VHE-LF-wOx"/>
                                             <include reference="qbq-AK-HjD"/>
-                                            <include reference="B1V-rC-mjO"/>
-                                            <include reference="aHf-4n-6X4"/>
-                                            <include reference="ikK-zI-LVv"/>
                                             <exclude reference="E3H-bc-Xz8"/>
                                             <include reference="Zcv-rw-YqP"/>
                                             <exclude reference="cp2-OL-5R1"/>
@@ -535,9 +510,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                     </variation>
                                 </view>
                                 <blurEffect style="dark"/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                </variation>
                             </visualEffectView>
                         </subviews>
                         <constraints>
@@ -609,6 +581,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <viewControllerLayoutGuide type="bottom" id="PWz-Os-GfE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8fX-rK-XSk">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="I4l-hR-EdB">
@@ -681,8 +654,11 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="FVU-rR-RPG"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="RQt-tT-1aT"/>
+                                <exclude reference="k4n-8r-ocu"/>
                                 <exclude reference="gFt-YV-WTg"/>
                                 <exclude reference="jYB-0B-EaG"/>
+                                <exclude reference="4fp-jK-Pgt"/>
                                 <exclude reference="He1-BL-c7O"/>
                                 <exclude reference="Pxb-cA-eFg"/>
                                 <exclude reference="RKJ-Kx-wJz"/>
@@ -690,9 +666,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <exclude reference="dyA-NM-Zc5"/>
                                 <exclude reference="liN-Jx-UaU"/>
                                 <exclude reference="nyu-mu-lcL"/>
-                                <exclude reference="4fp-jK-Pgt"/>
-                                <exclude reference="RQt-tT-1aT"/>
-                                <exclude reference="k4n-8r-ocu"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -702,8 +675,11 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="FVU-rR-RPG"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="RQt-tT-1aT"/>
+                                <include reference="k4n-8r-ocu"/>
                                 <include reference="gFt-YV-WTg"/>
                                 <exclude reference="jYB-0B-EaG"/>
+                                <include reference="4fp-jK-Pgt"/>
                                 <include reference="He1-BL-c7O"/>
                                 <exclude reference="Pxb-cA-eFg"/>
                                 <exclude reference="RKJ-Kx-wJz"/>
@@ -711,9 +687,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <include reference="dyA-NM-Zc5"/>
                                 <exclude reference="liN-Jx-UaU"/>
                                 <include reference="nyu-mu-lcL"/>
-                                <include reference="4fp-jK-Pgt"/>
-                                <exclude reference="RQt-tT-1aT"/>
-                                <include reference="k4n-8r-ocu"/>
                             </mask>
                         </variation>
                     </view>
@@ -735,6 +708,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                         <viewControllerLayoutGuide type="bottom" id="vey-9m-z4V"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Du7-nD-ScY">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bag-cN-IZy">
@@ -826,8 +800,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="9hZ-QN-Rqx"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="40" y="147" width="521" height="38"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="9hZ-QN-Rqx"/>
                                     </mask>
@@ -835,9 +808,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_intro.png" translatesAutoresizingMaskIntoConstraints="NO" id="Mof-iB-rK4">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="136" y="38" width="328" height="101"/>
-                                </variation>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="call_dark.png" translatesAutoresizingMaskIntoConstraints="NO" id="SBQ-kY-h2a">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
@@ -871,8 +841,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="QTM-SF-y1e"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="104" y="230" width="480" height="50"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="QTM-SF-y1e"/>
                                     </mask>
@@ -910,8 +879,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="rfn-zF-hx5"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="108" y="313" width="480" height="55"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="rfn-zF-hx5"/>
                                     </mask>
@@ -949,8 +917,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="ttV-ya-UO2"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="108" y="399" width="480" height="55"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="ttV-ya-UO2"/>
                                     </mask>
@@ -962,9 +929,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <state key="normal" title="Okay, let's do this !">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="241" y="550" width="119" height="30"/>
-                                </variation>
                                 <connections>
                                     <segue destination="sL4-Zw-2Og" kind="show" id="QK8-XK-Wd3"/>
                                 </connections>
@@ -1124,8 +1088,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="pWJ-cK-SKg"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="56" width="543" height="38"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="pWJ-cK-SKg"/>
                                     </mask>
@@ -1144,8 +1107,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="Xsv-9t-hrV"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="269" width="496" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="Xsv-9t-hrV"/>
                                     </mask>
@@ -1164,8 +1126,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="1zZ-ZT-STN"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="526" y="270" width="46" height="21"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="1zZ-ZT-STN"/>
                                     </mask>
@@ -1176,9 +1137,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="269" width="543" height="30"/>
-                                </variation>
                                 <connections>
                                     <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="Ufe-Un-ybV"/>
                                 </connections>
@@ -1195,8 +1153,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="RP7-Cs-dgQ"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="337" width="543" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="RP7-Cs-dgQ"/>
                                     </mask>
@@ -1217,8 +1174,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="46N-WU-jG8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="52" y="102" width="497" height="123"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="46N-WU-jG8"/>
                                     </mask>
@@ -1235,8 +1191,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="LBW-ED-udR"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="376" width="543" height="1"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="LBW-ED-udR"/>
                                     </mask>
@@ -1253,8 +1208,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="LGH-zm-F10"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="29" y="307" width="543" height="1"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="LGH-zm-F10"/>
                                     </mask>
@@ -1276,8 +1230,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="m9I-Yf-d9E"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="260" y="407" width="80" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="8dm-AY-Ix9"/>
                                         <include reference="m9I-Yf-d9E"/>
@@ -1304,8 +1257,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="eRM-bK-EwG"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="269" y="562" width="63" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="KGZ-BJ-hl2"/>
                                         <include reference="eRM-bK-EwG"/>
@@ -1487,8 +1439,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="bfS-CL-Jgh"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="100" y="193" width="400" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="bfS-CL-Jgh"/>
                                     </mask>
@@ -1507,8 +1458,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="mvm-EN-sk0"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="16" y="56" width="568" height="32"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="mvm-EN-sk0"/>
                                     </mask>
@@ -1525,8 +1475,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="O3w-ox-onf"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="100" y="225" width="400" height="1"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="O3w-ox-onf"/>
                                     </mask>
@@ -1548,8 +1497,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="MA2-40-BxI"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="250" y="290" width="100" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="0ec-t9-zwJ"/>
                                         <include reference="MA2-40-BxI"/>
@@ -1578,8 +1526,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="lfU-Qy-gcH"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="187.5" y="562" width="225" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="Ruw-po-bob"/>
                                         <include reference="lfU-Qy-gcH"/>
@@ -1605,8 +1552,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="EoB-jn-bwV"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="249" y="96" width="102" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="4Xo-G3-3yp"/>
                                         <include reference="EoB-jn-bwV"/>
@@ -1632,8 +1578,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="UzF-a6-vRO"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="200" y="495" width="200" height="30"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="UiP-hG-L0t"/>
                                         <include reference="UzF-a6-vRO"/>
@@ -1648,9 +1593,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="282" y="535" width="36" height="19"/>
-                                </variation>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1795,7 +1737,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="6mY-1Q-YBT" customClass="ContactsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="GqA-oC-CJa">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
@@ -1824,7 +1766,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -2379,9 +2321,6 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Neb-cr-TuQ">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="580"/>
-                                        </variation>
                                     </imageView>
                                 </subviews>
                                 <constraints>
@@ -2413,8 +2352,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="wCF-r0-Mcy"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="Neb-cr-TuQ"/>
                                     </mask>
@@ -2443,8 +2381,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="r8b-pK-z62"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="16" y="530" width="50" height="50"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="g8h-b7-vpN"/>
                                         <include reference="r8b-pK-z62"/>
@@ -2469,8 +2406,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
                                         <exclude reference="LMa-lp-yS7"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="86" y="530" width="50" height="50"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="8e9-NC-H21"/>
                                         <include reference="LMa-lp-yS7"/>
@@ -2610,7 +2546,7 @@ Lorem ipsum : Quick explanation of Fingerprints</string>
             <objects>
                 <tableViewController id="n1f-7Y-906" customClass="SettingsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="FhQ-dM-1mj">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="Ezq-Cw-na2">
@@ -2632,8 +2568,7 @@ Licensed under the GPLv3</string>
                                             <exclude reference="kAN-p0-AiW"/>
                                         </mask>
                                     </variation>
-                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                        <rect key="frame" x="8" y="8" width="584" height="40"/>
+                                    <variation key="heightClass=regular-widthClass=compact">
                                         <mask key="constraints">
                                             <include reference="kAN-p0-AiW"/>
                                         </mask>
@@ -2691,8 +2626,7 @@ Licensed under the GPLv3</string>
                                                             <exclude reference="Qtv-Rd-0jb"/>
                                                         </mask>
                                                     </variation>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="58" y="20" width="484" height="29"/>
+                                                    <variation key="heightClass=regular-widthClass=compact">
                                                         <mask key="constraints">
                                                             <include reference="Qtv-Rd-0jb"/>
                                                         </mask>
@@ -2703,9 +2637,6 @@ Licensed under the GPLv3</string>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="58" y="46" width="485" height="20.5"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -2771,18 +2702,12 @@ Licensed under the GPLv3</string>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="skL-aj-42C">
                                                     <rect key="frame" x="-25" y="-15" width="51" height="31"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="530" y="14" width="51" height="31"/>
-                                                    </variation>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Screen Security" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ExV-2K-JEg">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="15" y="19.5" width="507" height="20.5"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -2907,18 +2832,12 @@ Licensed under the GPLv3</string>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V8I-9d-kbu">
                                                     <rect key="frame" x="-25" y="-15" width="51" height="31"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="530" y="14" width="51" height="31"/>
-                                                    </variation>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable Debugging Logs" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2iY-pe-fva">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="15" y="19.5" width="507" height="20.5"/>
-                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -3189,8 +3108,7 @@ Licensed under the GPLv3</string>
                                                 <exclude reference="bKM-dc-IsP"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                            <rect key="frame" x="86" y="35" width="506" height="30"/>
+                                        <variation key="heightClass=regular-widthClass=compact">
                                             <mask key="constraints">
                                                 <include reference="bKM-dc-IsP"/>
                                             </mask>
@@ -3253,8 +3171,7 @@ Licensed under the GPLv3</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="20" width="600" height="100"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -3308,9 +3225,6 @@ Licensed under the GPLv3</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="128" width="600" height="472"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
@@ -3396,7 +3310,7 @@ Licensed under the GPLv3</string>
         </scene>
     </scenes>
     <resources>
-        <image name="AAAF197B-768D-436F-9375-7D639285D224" width="100" height="100">
+        <image name="3B2B0E42-02BD-49EA-9F71-E2810F3DAB1F" width="100" height="100">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
