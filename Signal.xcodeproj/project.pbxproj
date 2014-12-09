@@ -477,6 +477,10 @@
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
+		FC1615181A37935600F1761D /* NotificationPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1615171A37935600F1761D /* NotificationPreviewViewController.m */; };
+		FC16151C1A37945D00F1761D /* notification_no_preview_with_name@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */; };
+		FC16151D1A37945D00F1761D /* notification_no_preview_no_name@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */; };
+		FC16151E1A37945D00F1761D /* notification_with_preview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */; };
 		FC18803C1A31D94D0044CE86 /* SignalTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */; };
 		FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90BF1A22342B004F8253 /* group_photo@2x.png */; };
 		FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C41A223991004F8253 /* settings_tab@2x.png */; };
@@ -1145,6 +1149,11 @@
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
+		FC1615161A37935600F1761D /* NotificationPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationPreviewViewController.h; sourceTree = "<group>"; };
+		FC1615171A37935600F1761D /* NotificationPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationPreviewViewController.m; sourceTree = "<group>"; };
+		FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_with_name@2x.png"; sourceTree = "<group>"; };
+		FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_no_name@2x.png"; sourceTree = "<group>"; };
+		FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_with_preview@2x.png"; sourceTree = "<group>"; };
 		FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalTabBarController.h; path = "view controllers/SignalTabBarController.h"; sourceTree = "<group>"; };
 		FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalTabBarController.m; path = "view controllers/SignalTabBarController.m"; sourceTree = "<group>"; };
 		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
@@ -2131,6 +2140,9 @@
 				FCA52AE41A2B676C00CCADFA /* message_error@2x.png */,
 				B633C5411A1D190B0059AC12 /* mute_off@2x.png */,
 				B633C5421A1D190B0059AC12 /* mute_on@2x.png */,
+				FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */,
+				FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */,
+				FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */,
 				B633C54B1A1D190B0059AC12 /* photo@2x.png */,
 				B633C54C1A1D190B0059AC12 /* quit@2x.png */,
 				B633C54E1A1D190B0059AC12 /* red-delete@2x.png */,
@@ -2590,6 +2602,8 @@
 			children = (
 				FC31962E1A0814130094C78E /* SettingsTableViewController.h */,
 				FC31962F1A0814130094C78E /* SettingsTableViewController.m */,
+				FC1615161A37935600F1761D /* NotificationPreviewViewController.h */,
+				FC1615171A37935600F1761D /* NotificationPreviewViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -2845,7 +2859,9 @@
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
 				FCA52AEB1A2B676C00CCADFA /* checkmark_light@2x.png in Resources */,
+				FC16151C1A37945D00F1761D /* notification_no_preview_with_name@2x.png in Resources */,
 				B633C5D01A1D190B0059AC12 /* red-delete@2x.png in Resources */,
+				FC16151E1A37945D00F1761D /* notification_with_preview@2x.png in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				B633C5B41A1D190B0059AC12 /* keypad@2x.png in Resources */,
 				B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */,
@@ -2866,6 +2882,7 @@
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				FCA52AE71A2B676C00CCADFA /* call_failed@2x.png in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
+				FC16151D1A37945D00F1761D /* notification_no_preview_no_name@2x.png in Resources */,
 				B633C5801A1D190B0059AC12 /* archive@2x.png in Resources */,
 				FC1F90C71A223991004F8253 /* signals_tab@2x.png in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
@@ -3105,6 +3122,7 @@
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
+				FC1615181A37935600F1761D /* NotificationPreviewViewController.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
 				FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */,

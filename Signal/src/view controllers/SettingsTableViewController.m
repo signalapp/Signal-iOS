@@ -22,8 +22,8 @@
 
 #define kNumberOfSections       2
 
-#define kClearHistoryLogCellRow 1
-#define kMessageDisplayCellRow  2
+#define kClearHistoryLogCellRow 2
+#define kMessageDisplayCellRow  3
 #define kSendDebugLogCellRow    4
 #define kUnregisterCell         5
 
