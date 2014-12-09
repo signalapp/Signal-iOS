@@ -99,6 +99,10 @@
         adapter.outgoingMessageStatus = ((TSOutgoingMessage*)interaction).messageState;
     }
     
+    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        adapter.outgoingMessageStatus = ((TSOutgoingMessage*)interaction).messageState;
+    }
+    
     return adapter;
 }
 
