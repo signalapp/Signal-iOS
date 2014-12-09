@@ -96,13 +96,35 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     
-    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
-    
     [self initializeNavigationBar];
     [self initializeCollectionViewLayout];
     
-    self.senderId = ME_MESSAGE_IDENTIFIER
+    
+    self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReadTimer)
+                                                 name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
+                                                 name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)startReadTimer{
+    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
+}
+
+- (void)cancelReadTimer{
+    [self.readTimer invalidate];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [self startReadTimer];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self cancelReadTimer];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -653,7 +675,12 @@ typedef enum : NSUInteger {
             }
             case YapDatabaseViewChangeUpdate :
             {
-                [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath , _lastDeliveredMessageIndexPath]];
+                NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
+                if (_lastDeliveredMessageIndexPath) {
+                    [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
+                }
+        
+                [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                 break;
             }
         }
@@ -740,8 +767,8 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    [self.readTimer invalidate];
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
