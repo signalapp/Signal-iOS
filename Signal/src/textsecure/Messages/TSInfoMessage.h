@@ -11,7 +11,8 @@
 @interface TSInfoMessage : TSMessage
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType){
-    TSInfoMessageTypeSessionDidEnd
+    TSInfoMessageTypeSessionDidEnd,
+    TSInfoMessageTypeUnsupportedMessage
 };
 
 @property TSInfoMessageType messageType;

@@ -20,4 +20,17 @@
     return self;
 }
 
+- (NSString *)description{
+    switch (_messageType) {
+        case TSInfoMessageTypeSessionDidEnd:
+            return @"Secure session ended.";
+        case TSInfoMessageTypeUnsupportedMessage:
+            return @"Media messages are currently not supported.";
+        default:
+            break;
+    }
+    
+    return @"Unknown Info Message Type";
+}
+
 @end

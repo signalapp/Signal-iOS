@@ -146,7 +146,7 @@ typedef enum : NSUInteger {
         [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
         UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
         negativeSeparator.width = -8;
-    
+        
         self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
     } else {
         self.navigationItem.rightBarButtonItem = lockButton;
@@ -160,21 +160,22 @@ typedef enum : NSUInteger {
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_blueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
-
+    
 }
 
 -(void)initializeCollectionViewLayout
 {
-    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
-    
-    self.collectionView.showsVerticalScrollIndicator = NO;
-    self.collectionView.showsHorizontalScrollIndicator = NO;
-    
-    self.automaticallyScrollsToMostRecentMessage = YES;
-    
-    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
-    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
-
+    if (self.collectionView){
+        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
+        
+        self.collectionView.showsVerticalScrollIndicator = NO;
+        self.collectionView.showsHorizontalScrollIndicator = NO;
+        
+        self.automaticallyScrollsToMostRecentMessage = YES;
+        
+        self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+        self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    }
 }
 
 #pragma mark - Fingerprints
@@ -190,7 +191,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)isRedPhoneReachable
 {
-   return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
+    return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
 }
 
 -(PhoneNumber*)phoneNumberForThread
@@ -250,7 +251,7 @@ typedef enum : NSUInteger {
     if ([message.senderId isEqualToString:self.senderId]) {
         if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
             return self.outgoingMessageFailedImageData;
-        } 
+        }
         return self.outgoingBubbleImageData;
     }
     
@@ -317,7 +318,7 @@ typedef enum : NSUInteger {
     }
     
     return cell;
-
+    
 }
 
 -(JSQCallCollectionViewCell*)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath*)indexPath
@@ -381,7 +382,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-
+    
     TSMessageAdapter * currentMessage = [self messageAtIndexPath:indexPath];
     
     if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1)
@@ -393,7 +394,7 @@ typedef enum : NSUInteger {
     {
         return NO;
     }
-        
+    
     TSMessageAdapter * nextMessage = [self nextOutgoingMessage:indexPath];
     return ![self isMessageOutgoingAndDelivered:nextMessage];
 }
@@ -679,7 +680,7 @@ typedef enum : NSUInteger {
                 if (_lastDeliveredMessageIndexPath) {
                     [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                 }
-        
+                
                 [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                 break;
             }
