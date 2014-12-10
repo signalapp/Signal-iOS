@@ -29,6 +29,7 @@
 #import "TSRecipientPrekeyRequest.h"
 
 #import "TSErrorMessage.h"
+#import "TSInfoMessage.h"
 
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -99,7 +100,7 @@ dispatch_queue_t sendingQueue() {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             [recipient removeWithTransaction:transaction];
                             [message setMessageState:TSOutgoingMessageStateUnsent];
-                            [[TSErrorMessage userNotRegisteredErrorMessageInThread:thread] saveWithTransaction:transaction];
+                            [[TSInfoMessage userNotRegisteredMessageInThread:thread transaction:transaction] saveWithTransaction:transaction];
                         }];
                         break;
                     }

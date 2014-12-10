@@ -396,6 +396,7 @@
 		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */; };
+		B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -1041,6 +1042,8 @@
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailCell.h; path = "Signal/src/view controllers/ContactDetailCell.h"; sourceTree = SOURCE_ROOT; };
 		B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailCell.m; path = "Signal/src/view controllers/ContactDetailCell.m"; sourceTree = SOURCE_ROOT; };
+		B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSFingerprintGenerator.h; sourceTree = "<group>"; };
+		B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSFingerprintGenerator.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
@@ -2331,6 +2334,8 @@
 			children = (
 				B6B0963C1A1D25ED008BFAA6 /* SecurityUtils.h */,
 				B6B0963D1A1D25ED008BFAA6 /* SecurityUtils.m */,
+				B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */,
+				B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */,
 			);
 			path = Security;
 			sourceTree = "<group>";
@@ -3194,6 +3199,7 @@
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
 				B6B096901A1D25ED008BFAA6 /* Cryptography.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
+				B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */,
 				B6B096721A1D25ED008BFAA6 /* TSMessage.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,

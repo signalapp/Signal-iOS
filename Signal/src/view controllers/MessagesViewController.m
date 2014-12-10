@@ -31,9 +31,12 @@
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import <YapDatabase/YapDatabaseView.h>
-#import "TSInteraction.h"
+
+
 #import "TSMessageAdapter.h"
+#import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
+#import "TSInteraction.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -451,57 +454,88 @@ typedef enum : NSUInteger {
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter * messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
     
-    BOOL isMessage = (messageItem.messageType == TSIncomingMessageAdapter) || (messageItem.messageType == TSOutgoingMessageAdapter);
-    
-    BOOL isMediaMessage = isMessage ? [messageItem isMediaMessage] : NO;
-    
-    if (isMediaMessage) {
-        id<JSQMessageMediaData> messageMedia = [messageItem media];
+    switch (messageItem.messageType) {
+        case TSOutgoingMessageAdapter:
+            if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
+                [self handleUnsentMessageTap:(TSOutgoingMessage*)interaction];
+            }
+        case TSIncomingMessageAdapter:{
         
-        if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
-            //is a photo
-            tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
-            [self performSegueWithIdentifier:@"fullImage" sender:self];
+            BOOL isMediaMessage = [messageItem isMediaMessage];
             
-        } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
-            //is a video
-        }
+            if (isMediaMessage) {
+                id<JSQMessageMediaData> messageMedia = [messageItem media];
+                
+                if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
+                    //is a photo
+                    tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
+                    [self performSegueWithIdentifier:@"fullImage" sender:self];
+                    
+                } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
+                    //is a video
+                }
+            }
+            
+            break;}
+        case TSErrorMessageAdapter:
+            [self handleErrorMessageTap:(TSErrorMessage*)interaction];
+            break;
+        case TSInfoMessageAdapter:
+            break;
+            
+        default:
+            break;
     }
-    
-    BOOL isUnsent = messageItem.messageState == TSOutgoingMessageStateAttemptingOut && [messageItem.senderId isEqualToString:self.senderId];
-    
-    if (isMessage && isUnsent)
-    {
-        [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+}
+
+#pragma mark Bubble User Actions
+
+- (void)handleUnsentMessageTap:(TSOutgoingMessage*)message{
+    [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+            NSLog(@"User Cancelled");
+        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                [message removeWithTransaction:transaction];
+            }];
+        }else {
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+            [self finishSendingMessage];
+        }
+    }];
+}
+
+- (void)handleErrorMessageTap:(TSErrorMessage*)message{
+    if (message.errorType == TSErrorMessageWrongTrustedIdentityKey) {
+        NSString *newKeyFingerprint = [message newIdentityKey];
+        NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
+        NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
+
+        [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                 NSLog(@"User Cancelled");
             } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                
-                [self.uiDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
-                    TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
+                [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                     [message removeWithTransaction:transaction];
-                    [self finishSendingMessage];
                 }];
-                
-            }else {
+            } else {
                 switch (tappedButtonIndex) {
                     case 0:
-                    {
-                        TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
-                        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-                        [self finishSendingMessage];
+                        [message acceptNewIdentityKey];
                         break;
-                    }
-                        
+                    
+                    case 1:
+                        [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
+                        break;
                     default:
                         break;
                 }
             }
         }];
     }
-    
 }
 
 #pragma mark - Navigation
@@ -514,7 +548,6 @@ typedef enum : NSUInteger {
         
     } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
         FingerprintViewController *vc = [segue destinationViewController];
-        TSContactThread *thread = (TSContactThread*) self.thread;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
         }];
@@ -697,8 +730,7 @@ typedef enum : NSUInteger {
     return numberOfMessages;
 }
 
-- (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath
-{
+- (TSInteraction*)interactionAtIndexPath:(NSIndexPath*)indexPath {
     __block TSInteraction *message = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
@@ -714,7 +746,13 @@ typedef enum : NSUInteger {
         message = [viewTransaction objectAtRow:row inSection:section withMappings:self.messageMappings];
         NSParameterAssert(message != nil);
     }];
-    return [TSMessageAdapter messageViewDataWithInteraction:message inThread:self.thread];
+    
+    return message;
+}
+
+- (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath {
+    TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
 }
 
 #pragma mark Accessory View
