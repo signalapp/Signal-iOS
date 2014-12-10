@@ -454,6 +454,7 @@ typedef enum : NSUInteger {
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
+
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
     
