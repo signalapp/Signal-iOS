@@ -7,11 +7,12 @@
 //
 
 #import "TSInfoMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
 
 @implementation TSInfoMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSContactThread *)contact messageType:(TSInfoMessageType)infoMessage{
-    self = [super initWithTimestamp:timestamp inThread:contact messageBody:@"Placeholder for info message." attachements:nil];
+    self = [super initWithTimestamp:timestamp inThread:contact messageBody:nil attachements:nil];
     
     if (self) {
         _messageType = infoMessage;
@@ -20,12 +21,19 @@
     return self;
 }
 
++ (instancetype)userNotRegisteredMessageInThread:(TSContactThread*)thread transaction:(YapDatabaseReadWriteTransaction*)transaction{
+    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageType:TSInfoMessageUserNotRegistered];
+    
+}
+
 - (NSString *)description{
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
             return @"Secure session ended.";
         case TSInfoMessageTypeUnsupportedMessage:
             return @"Media messages are currently not supported.";
+        case TSInfoMessageUserNotRegistered:
+            return @"The user is not registered.";
         default:
             break;
     }

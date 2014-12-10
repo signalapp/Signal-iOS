@@ -8,6 +8,7 @@
 
 #import "TSMessagesManager.h"
 
+#import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 
 #import "Cryptography.h"
@@ -224,10 +225,12 @@
         TSThread          *thread;
         if (groupId) {
             TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
+            [gThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
             thread = gThread;
         } else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
+            [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];
             thread = cThread;
         }
@@ -238,9 +241,27 @@
 }
 
 - (void)processException:(NSException*)exception pushSignal:(IncomingPushMessageSignal*)signal{
-    DDLogError(@"Got exception: %@", exception.description);
+    DDLogError(@"Got exception: %@ of type: %@", exception.description, exception.name);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:signal.timestamp inThread:[TSContactThread threadWithContactId:signal.source transaction:transaction] failedMessageType:TSErrorMessageNoSession];
+        TSErrorMessage *errorMessage;
+        
+        if ([exception.name isEqualToString:NoSessionException]) {
+            errorMessage = [TSErrorMessage missingSessionWithSignal:signal withTransaction:transaction];
+        } else if ([exception.name isEqualToString:InvalidKeyException]){
+            errorMessage = [TSErrorMessage invalidKeyExceptionWithSignal:signal withTransaction:transaction];
+        } else if ([exception.name isEqualToString:InvalidKeyIdException]){
+            errorMessage = [TSErrorMessage invalidKeyExceptionWithSignal:signal withTransaction:transaction];
+        } else if ([exception.name isEqualToString:DuplicateMessageException]){
+            // Duplicate messages are dismissed
+            return ;
+        } else if ([exception.name isEqualToString:InvalidVersionException]){
+            errorMessage = [TSErrorMessage invalidVersionWithSignal:signal withTransaction:transaction];
+        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]){
+            errorMessage = [TSErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
+        } else {
+            errorMessage = [TSErrorMessage corruptedMessageWithSignal:signal withTransaction:transaction];
+        }
+        
         [errorMessage saveWithTransaction:transaction];
     }];
     
