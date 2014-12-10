@@ -15,6 +15,9 @@
 #import "DJWActionSheet.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+#import "PresentIdentityQRCodeViewController.h"
+#import "ScanIdentityBarcodeViewController.h"
+#include "NSData+Base64.h"
 
 @interface FingerprintViewController ()
 @property TSContactThread *thread;
@@ -58,12 +61,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     self.contactFingerprintTitleLabel.text = self.thread.name;
-    NSData *identityKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
+    NSData *identityKey = [self getTheirPublicIdentityKey];
     self.contactFingerprintLabel.text = [self getFingerprintForDisplay:identityKey];
     
-    NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
+    NSData *myPublicKey = [self getMyPublicIdentityKey];
     self.userFingerprintLabel.text = [self getFingerprintForDisplay:myPublicKey];
-    
     [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self.view setAlpha:1];
     } completion:nil];
@@ -72,6 +74,15 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(NSData*) getMyPublicIdentityKey {
+    return [[TSStorageManager sharedManager] identityKeyPair].publicKey;
+}
+
+-(NSData*) getTheirPublicIdentityKey {
+    return [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
+    
 }
 
 #pragma mark - Initializers
@@ -116,11 +127,31 @@
                       }];
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if([[segue identifier] isEqualToString:@"PresentIdentityQRCodeViewSegue"]){
+        [segue.destinationViewController setIdentityKey:[[self getMyPublicIdentityKey] prependKeyType]];
+    }
+    else if([[segue identifier] isEqualToString:@"ScanIdentityBarcodeViewSegue"]){
+        [segue.destinationViewController setIdentityKey:[[self getTheirPublicIdentityKey] prependKeyType]];
+    }
+    
+}
+
+
+- (IBAction)unwindToIdentityKeyWasVerified:(UIStoryboardSegue *)segue{
+    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+}
+
+
+- (IBAction)unwindCancel:(UIStoryboardSegue *)segue{
+    NSLog(@"action cancelled");
+    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+}
+
 #pragma mark - Shredding & Deleting
 
-- (void)shredAndDelete
-{
-    
+- (void)shredAndDelete {
+#warning unimplemented: shredAndDelete
 }
 
 @end
