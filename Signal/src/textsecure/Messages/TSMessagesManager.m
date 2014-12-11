@@ -31,6 +31,9 @@
 
 #import "NSData+messagePadding.h"
 
+#import "Environment.h"
+#import "PreferencesUtil.h"
+
 #import <CocoaLumberjack/DDLog.h>
 
 #define ddLogLevel LOG_LEVEL_VERBOSE
@@ -276,11 +279,30 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
+    
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, message.body];
+    notification.alertBody = [self alertBodyForNotificationSetting:[Environment.preferences notificationPreviewType] withMessage:message from:name];
     notification.soundName = @"default";
     notification.category  = Signal_Message_Category;
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+}
+
+-(NSString*)alertBodyForNotificationSetting:(NotificationType)setting withMessage:(TSIncomingMessage*)message from:(NSString*)name
+{
+    switch (setting) {
+        case NotificationNoNameNoPreview:
+            return @"New message";
+            break;
+        case NotificationNameNoPreview:
+            return [NSString stringWithFormat:@"New message from %@", name];
+            break;
+        case NotificationNamePreview:
+            return [NSString stringWithFormat:@"%@ : %@", name, message.body];
+            break;
+        default:
+            DDLogWarn(@"Unexpected notification type %ld", setting);
+            break;
+    }
 }
 
 @end
