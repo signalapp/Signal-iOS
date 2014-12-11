@@ -9,6 +9,9 @@
 #import "NotificationPreviewViewController.h"
 #import "UIUtil.h"
 
+#import "PreferencesUtil.h"
+#import "Environment.h"
+
 @interface NotificationPreviewViewController ()
 
 @end
@@ -46,8 +49,24 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    
+    switch (indexPath.section) {
+        case 1:
+            [Environment.preferences setNotificationPreviewType:NotificationNoNameNoPreview];
+            break;
+            
+        case 2:
+            [Environment.preferences setNotificationPreviewType:NotificationNameNoPreview];
+            break;
+            
+        case 3:
+            [Environment.preferences setNotificationPreviewType:NotificationNamePreview];
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
