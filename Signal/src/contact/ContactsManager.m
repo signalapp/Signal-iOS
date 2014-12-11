@@ -398,7 +398,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         if (firstNameOrdering) {
             return [contact1.firstName compare:contact2.firstName];
         } else {
-            return [contact2.lastName compare:contact2.lastName];
+            return [contact1.lastName compare:contact2.lastName];
         }
     }];
 }
