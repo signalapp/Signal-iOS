@@ -13,7 +13,7 @@
 #import "Environment.h"
 
 @interface NotificationPreviewViewController ()
-
+@property (nonatomic) NSIndexPath *defaultSelectedIndexPath;
 @end
 
 @implementation NotificationPreviewViewController
@@ -22,10 +22,19 @@
     [super viewDidLoad];
     self.navigationItem.title = @"Notification Style";
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    self.clearsSelectionOnViewWillAppear = NO;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSInteger currentSetting = (NSInteger)[Environment.preferences notificationPreviewType];
+    _defaultSelectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:currentSetting+1];
+    [self selectRowAtIndexPath:_defaultSelectedIndexPath];
 }
 
 #pragma mark - Table view data source
@@ -48,9 +57,16 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
     
+    if (_defaultSelectedIndexPath != nil && ![_defaultSelectedIndexPath isEqual:indexPath])
+    {
+        [self deselectRowAtIndexPath:_defaultSelectedIndexPath];
+        _defaultSelectedIndexPath = nil;
+    }
+    
+    UITableViewCell * cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+
     switch (indexPath.section) {
         case 1:
             [Environment.preferences setNotificationPreviewType:NotificationNoNameNoPreview];
@@ -67,12 +83,12 @@
         default:
             break;
     }
+
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    
+    UITableViewCell * cell = [self.tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
@@ -85,6 +101,17 @@
     }
 }
 
+#pragma mark - Cell selection proxy
+
+-(void)selectRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    [self.tableView.delegate tableView:self.tableView didSelectRowAtIndexPath:indexPath];
+}
+
+-(void)deselectRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    [self.tableView.delegate tableView:self.tableView didDeselectRowAtIndexPath:indexPath];
+}
 
 
 
