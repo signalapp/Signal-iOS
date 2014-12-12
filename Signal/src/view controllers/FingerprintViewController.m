@@ -23,6 +23,7 @@
 
 @interface FingerprintViewController ()
 @property TSContactThread *thread;
+@property BOOL didShowInfo;
 @end
 
 @implementation FingerprintViewController
@@ -37,7 +38,7 @@
     
     [self.view setAlpha:0];
     
-    [self initializeImageViews];
+    [self hideInfo];
     
 }
 
@@ -57,7 +58,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 -(NSData*) getMyPublicIdentityKey {
@@ -69,20 +69,50 @@
     
 }
 
-#pragma mark - Initializers
-- (void)initializeImageViews
+-(void)showInfo
 {
-    _contactImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
-    _contactImageView.layer.cornerRadius = 75.f/2;
-    _contactImageView.layer.masksToBounds = YES;
-    _contactImageView.layer.borderWidth = 2.0f;
-    _contactImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
+    _didShowInfo = YES;
     
-    _userImageView.image = [UIImage imageNamed:@"defaultConctact_light"];
-    _userImageView.layer.cornerRadius = 75.f/2;
-    _userImageView.layer.masksToBounds = YES;
-    _userImageView.layer.borderWidth = 2.0f;
-    _userImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
+    _infoArrowTop.hidden         = NO;
+    _infoArrowBottom.hidden      = NO;
+    _infoMyFingerprint.hidden    = NO;
+    _infoTheirFingerprint.hidden = NO;
+    _presentationLabel.hidden    = NO;
+    
+    [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
+        _infoArrowTop.alpha         = 1;
+        _infoArrowBottom.alpha      = 1;
+        _infoMyFingerprint.alpha    = 1;
+        _infoTheirFingerprint.alpha = 1;
+        _presentationLabel.alpha    = 1;
+    } completion:nil];
+
+}
+
+-(void)hideInfo
+{
+    
+    _didShowInfo = NO;
+    
+    [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
+        _infoArrowTop.alpha         = 0;
+        _infoArrowBottom.alpha      = 0;
+        _infoMyFingerprint.alpha    = 0;
+        _infoTheirFingerprint.alpha = 0;
+        _presentationLabel.alpha    = 0;
+    } completion:^(BOOL done){
+        
+        if (done) {
+            _infoArrowTop.hidden         = YES;
+            _infoArrowBottom.hidden      = YES;
+            _infoMyFingerprint.hidden    = YES;
+            _infoTheirFingerprint.hidden = YES;
+            _presentationLabel.hidden    = YES;
+        }
+
+    }];
+    
+
 }
 
 #pragma mark - Action
@@ -94,6 +124,15 @@
         [self dismissViewControllerAnimated:YES completion:nil];
     }];
 
+}
+
+- (IBAction)showInfoAction:(id)sender
+{
+    if (!_didShowInfo) {
+        [self showInfo];
+    } else {
+        [self hideInfo];
+    }
 }
 
 - (IBAction)shredAndDelete:(id)sender
