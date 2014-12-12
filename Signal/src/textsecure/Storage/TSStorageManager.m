@@ -10,10 +10,10 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 #import <CocoaLumberjack/DDLog.h>
-#import <UICKeyChainStore/UICKeyChainStore.h>
 #import "CryptoTools.h"
 #import "NSData+Base64.h"
 
+#import <SSKeychain/SSKeychain.h>
 #import "TSDatabaseView.h"
 
 
@@ -138,11 +138,13 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 }
 
 - (NSString*)databasePassword {
-    NSString *dbPassword = [UICKeyChainStore stringForKey:keychainDBPassAccount];
+    [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount];
     
     if (!dbPassword) {
         dbPassword = [[CryptoTools generateSecureRandomData:30] base64EncodedString];
-        [UICKeyChainStore setString:dbPassword forKey:keychainDBPassAccount];
+        [SSKeychain setPassword:dbPassword forService:keychainService account:keychainDBPassAccount];
+        DDLogError(@"Set new password from keychain ...");
     }
     
     return dbPassword;
