@@ -138,11 +138,13 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 }
 
 - (NSString*)databasePassword {
+    DDLogError(@"Missing database password from keychain ...");
     NSString *dbPassword = [UICKeyChainStore stringForKey:keychainDBPassAccount];
     
     if (!dbPassword) {
         dbPassword = [[CryptoTools generateSecureRandomData:30] base64EncodedString];
         [UICKeyChainStore setString:dbPassword forKey:keychainDBPassAccount];
+        DDLogError(@"Set new password from keychain ...");
     }
     
     return dbPassword;
