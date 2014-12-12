@@ -687,40 +687,42 @@ typedef enum : NSUInteger {
         return;
     }
     
-    for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
-    {
-        switch (rowChange.type)
+    [self.collectionView performBatchUpdates:^{
+        for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
-            case YapDatabaseViewChangeDelete :
+            switch (rowChange.type)
             {
-                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                break;
-            }
-            case YapDatabaseViewChangeInsert :
-            {
-                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                break;
-            }
-            case YapDatabaseViewChangeMove :
-            {
-                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
-                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate :
-            {
-                NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
-                if (_lastDeliveredMessageIndexPath) {
-                    [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
+                case YapDatabaseViewChangeDelete :
+                {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    break;
                 }
-                
-                [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
-                break;
+                case YapDatabaseViewChangeInsert :
+                {
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    break;
+                }
+                case YapDatabaseViewChangeMove :
+                {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
+                    break;
+                }
+                case YapDatabaseViewChangeUpdate :
+                {
+                    NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
+                    if (_lastDeliveredMessageIndexPath) {
+                        [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
+                    }
+                    
+                    [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
+                    break;
+                }
             }
         }
-    }
-    
-    [self finishReceivingMessage];
+    } completion:^(BOOL finished) {
+        [self finishReceivingMessage];
+    }];
 }
 
 #pragma mark - UICollectionView DataSource
