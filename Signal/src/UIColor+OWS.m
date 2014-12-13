@@ -46,9 +46,5 @@
     return [UIColor colorWithRed:195.f/255.f green:0 blue:22.f/255.f alpha:1.f];
 }
 
-+ (UIColor *) ows_fadedBlueColor
-{
-    return [UIColor colorWithRed:110.f/255.f green:178.f/255.f blue:1.0f alpha:1.0f];
-}
-
 @end
+

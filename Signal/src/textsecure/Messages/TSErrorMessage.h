@@ -19,21 +19,23 @@ typedef NS_ENUM(int32_t, TSErrorMessageType){
     TSErrorMessageMissingKeyId,
     TSErrorMessageInvalidMessage,
     TSErrorMessageDuplicateMessage,
-    TSErrorMessageInvalidVersion
+    TSErrorMessageInvalidVersion,
 };
 
++ (instancetype)corruptedMessageWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 + (instancetype)invalidVersionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 + (instancetype)missingKeyIdWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 + (instancetype)invalidKeyExceptionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
-+ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 + (instancetype)missingSessionWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
-+ (instancetype)userNotRegisteredErrorMessageInThread:(TSThread*)thread;
+/**
+ *  Methods on TSErrorMessageWrongTrustedIdentityKey error types
+ */
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType;
++ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
-- (NSData*)retryBody;
-- (BOOL)supportsRetry;
+- (void)acceptNewIdentityKey;
+- (NSString*)newIdentityKey;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 

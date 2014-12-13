@@ -6,7 +6,6 @@
 #import "PreferencesUtil.h"
 #import "SignalUtil.h"
 #import "SignalKeyingStorage.h"
-#import <UICKeyChainStore/UICKeyChainStore.h>
 
 @interface HttpRequestResponseTest : XCTestCase
 

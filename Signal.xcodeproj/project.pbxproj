@@ -282,6 +282,8 @@
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
+		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
+		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
@@ -396,6 +398,7 @@
 		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */; };
+		B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -485,6 +488,8 @@
 		FC3BD97C1A2CD385005B96BB /* signal_dotted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC3BD97A1A2CD385005B96BB /* signal_dotted@2x.png */; };
 		FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */; };
 		FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0321A1D46AE00DA100A /* InitialViewController.m */; };
+		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
+		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
 		FCA52AE61A2B676C00CCADFA /* call_canceled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */; };
 		FCA52AE71A2B676C00CCADFA /* call_failed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52ADF1A2B676C00CCADFA /* call_failed@2x.png */; };
 		FCA52AE81A2B676C00CCADFA /* call_incoming@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52AE01A2B676C00CCADFA /* call_incoming@2x.png */; };
@@ -855,6 +860,10 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A569778D1A351BC400173BF2 /* ScanIdentityBarcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanIdentityBarcodeViewController.h; sourceTree = "<group>"; };
+		A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanIdentityBarcodeViewController.m; sourceTree = "<group>"; };
+		A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentIdentityQRCodeViewController.m; sourceTree = "<group>"; };
+		A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresentIdentityQRCodeViewController.h; sourceTree = "<group>"; };
 		B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+millisecondTimeStamp.h"; sourceTree = "<group>"; };
 		B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+millisecondTimeStamp.mm"; sourceTree = "<group>"; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
@@ -1039,6 +1048,8 @@
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactDetailCell.h; path = "Signal/src/view controllers/ContactDetailCell.h"; sourceTree = SOURCE_ROOT; };
 		B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailCell.m; path = "Signal/src/view controllers/ContactDetailCell.m"; sourceTree = SOURCE_ROOT; };
+		B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSFingerprintGenerator.h; sourceTree = "<group>"; };
+		B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSFingerprintGenerator.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
@@ -1151,6 +1162,8 @@
 		FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		FC4FA0311A1D46AE00DA100A /* InitialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialViewController.h; sourceTree = "<group>"; };
 		FC4FA0321A1D46AE00DA100A /* InitialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitialViewController.m; sourceTree = "<group>"; };
+		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
+		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
 		FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_canceled@2x.png"; sourceTree = "<group>"; };
 		FCA52ADF1A2B676C00CCADFA /* call_failed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_failed@2x.png"; sourceTree = "<group>"; };
 		FCA52AE01A2B676C00CCADFA /* call_incoming@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_incoming@2x.png"; sourceTree = "<group>"; };
@@ -2107,6 +2120,7 @@
 				B633C5161A1D190B0059AC12 /* delete_history@2x.png */,
 				B633C5151A1D190B0059AC12 /* delete@2x.png */,
 				B633C51B1A1D190B0059AC12 /* endcall@2x.png */,
+				FC5CDF371A3393DD00B47253 /* error_white@2x.png */,
 				FC1F90BF1A22342B004F8253 /* group_photo@2x.png */,
 				B633C5321A1D190B0059AC12 /* keypad@2x.png */,
 				B633C5341A1D190B0059AC12 /* lock_white@2x.png */,
@@ -2131,6 +2145,7 @@
 				FC1F90C51A223991004F8253 /* signals_tab@2x.png */,
 				B633C5641A1D190B0059AC12 /* speaker_off@2x.png */,
 				B633C5651A1D190B0059AC12 /* speaker_on@2x.png */,
+				FC5CDF381A3393DD00B47253 /* warning_white@2x.png */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -2325,6 +2340,8 @@
 			children = (
 				B6B0963C1A1D25ED008BFAA6 /* SecurityUtils.h */,
 				B6B0963D1A1D25ED008BFAA6 /* SecurityUtils.m */,
+				B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */,
+				B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */,
 			);
 			path = Security;
 			sourceTree = "<group>";
@@ -2580,6 +2597,10 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				A569778D1A351BC400173BF2 /* ScanIdentityBarcodeViewController.h */,
+				A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */,
+				A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */,
+				A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */,
 				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
@@ -2835,6 +2856,7 @@
 				FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */,
 				E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */,
 				B633C5871A1D190B0059AC12 /* call_dark@2x.png in Resources */,
+				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5851A1D190B0059AC12 /* blue-archive@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B633C5921A1D190B0059AC12 /* contacts_tab@2x.png in Resources */,
@@ -2850,6 +2872,7 @@
 				FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */,
 				FCA52AEA1A2B676C00CCADFA /* call_outgoing@2x.png in Resources */,
 				B633C5B61A1D190B0059AC12 /* lock_white@2x.png in Resources */,
+				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				B633C5DF1A1D190B0059AC12 /* signal@2x.png in Resources */,
 				B633C5831A1D190B0059AC12 /* backspace.png in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
@@ -2989,6 +3012,7 @@
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				76EB05F618170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
+				A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */,
 				76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
 				76EB05BA18170B33006006FC /* CommitPacket.m in Sources */,
 				76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
@@ -3030,6 +3054,7 @@
 				E197B61618BBEC1A00F073E5 /* StretchFactorController.m in Sources */,
 				FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */,
 				76EB065018170B34006006FC /* DialerViewController.m in Sources */,
+				A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */,
 				701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */,
 				76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
@@ -3187,6 +3212,7 @@
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
 				B6B096901A1D25ED008BFAA6 /* Cryptography.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
+				B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */,
 				B6B096721A1D25ED008BFAA6 /* TSMessage.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,

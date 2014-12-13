@@ -3,7 +3,6 @@
 #import "ResponderSessionDescriptor.h"
 #import "TestUtil.h"
 #import "Util.h"
-#import <UICKeyChainStore/UICKeyChainStore.h>
 
 @interface SessionDescriptorTest : XCTestCase
 

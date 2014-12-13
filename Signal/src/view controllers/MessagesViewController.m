@@ -31,9 +31,12 @@
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import <YapDatabase/YapDatabaseView.h>
-#import "TSInteraction.h"
+
+
 #import "TSMessageAdapter.h"
+#import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
+#import "TSInteraction.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -65,6 +68,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, retain) NSTimer *readTimer;
 
+@property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
+
 @end
 
 @implementation MessagesViewController
@@ -94,13 +99,35 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     
-    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
-    
     [self initializeNavigationBar];
     [self initializeCollectionViewLayout];
     
-    self.senderId = ME_MESSAGE_IDENTIFIER
+    
+    self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReadTimer)
+                                                 name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
+                                                 name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)startReadTimer{
+    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
+}
+
+- (void)cancelReadTimer{
+    [self.readTimer invalidate];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [self startReadTimer];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self cancelReadTimer];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -122,7 +149,7 @@ typedef enum : NSUInteger {
         [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
         UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
         negativeSeparator.width = -8;
-    
+        
         self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
     } else {
         self.navigationItem.rightBarButtonItem = lockButton;
@@ -136,21 +163,22 @@ typedef enum : NSUInteger {
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_blueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
-
+    
 }
 
 -(void)initializeCollectionViewLayout
 {
-    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
-    
-    self.collectionView.showsVerticalScrollIndicator = NO;
-    self.collectionView.showsHorizontalScrollIndicator = NO;
-    
-    self.automaticallyScrollsToMostRecentMessage = YES;
-    
-    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
-    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
-
+    if (self.collectionView){
+        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_lightFontWithSize:16.0f]];
+        
+        self.collectionView.showsVerticalScrollIndicator = NO;
+        self.collectionView.showsHorizontalScrollIndicator = NO;
+        
+        self.automaticallyScrollsToMostRecentMessage = YES;
+        
+        self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+        self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    }
 }
 
 #pragma mark - Fingerprints
@@ -166,7 +194,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)isRedPhoneReachable
 {
-   return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
+    return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
 }
 
 -(PhoneNumber*)phoneNumberForThread
@@ -226,7 +254,7 @@ typedef enum : NSUInteger {
     if ([message.senderId isEqualToString:self.senderId]) {
         if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
             return self.outgoingMessageFailedImageData;
-        } 
+        }
         return self.outgoingBubbleImageData;
     }
     
@@ -293,7 +321,7 @@ typedef enum : NSUInteger {
     }
     
     return cell;
-
+    
 }
 
 -(JSQCallCollectionViewCell*)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath*)indexPath
@@ -357,7 +385,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-
+    
     TSMessageAdapter * currentMessage = [self messageAtIndexPath:indexPath];
     
     if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1)
@@ -369,7 +397,7 @@ typedef enum : NSUInteger {
     {
         return NO;
     }
-        
+    
     TSMessageAdapter * nextMessage = [self nextOutgoingMessage:indexPath];
     return ![self isMessageOutgoingAndDelivered:nextMessage];
 }
@@ -397,6 +425,7 @@ typedef enum : NSUInteger {
 {
     if ([self shouldShowMessageStatusAtIndexPath:indexPath])
     {
+        _lastDeliveredMessageIndexPath = indexPath;
         NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
         textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
         NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
@@ -425,57 +454,90 @@ typedef enum : NSUInteger {
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter * messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
     
-    BOOL isMessage = (messageItem.messageType == TSIncomingMessageAdapter) || (messageItem.messageType == TSOutgoingMessageAdapter);
-    
-    BOOL isMediaMessage = isMessage ? [messageItem isMediaMessage] : NO;
-    
-    if (isMediaMessage) {
-        id<JSQMessageMediaData> messageMedia = [messageItem media];
+    switch (messageItem.messageType) {
+        case TSOutgoingMessageAdapter:
+            if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
+                [self handleUnsentMessageTap:(TSOutgoingMessage*)interaction];
+            }
+        case TSIncomingMessageAdapter:{
         
-        if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
-            //is a photo
-            tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
-            [self performSegueWithIdentifier:@"fullImage" sender:self];
+            BOOL isMediaMessage = [messageItem isMediaMessage];
             
-        } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
-            //is a video
-        }
+            if (isMediaMessage) {
+                id<JSQMessageMediaData> messageMedia = [messageItem media];
+                
+                if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
+                    //is a photo
+                    tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
+                    [self performSegueWithIdentifier:@"fullImage" sender:self];
+                    
+                } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
+                    //is a video
+                }
+            }
+            
+            break;}
+        case TSErrorMessageAdapter:
+            [self handleErrorMessageTap:(TSErrorMessage*)interaction];
+            break;
+        case TSInfoMessageAdapter:
+            break;
+            
+        default:
+            break;
     }
-    
-    BOOL isUnsent = messageItem.messageState == TSOutgoingMessageStateUnsent || messageItem.messageState == TSOutgoingMessageStateAttemptingOut;
-    
-    if (isMessage && isUnsent)
-    {
-        [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+}
+
+#pragma mark Bubble User Actions
+
+- (void)handleUnsentMessageTap:(TSOutgoingMessage*)message{
+    [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+            NSLog(@"User Cancelled");
+        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                [message removeWithTransaction:transaction];
+            }];
+        }else {
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+            [self finishSendingMessage];
+        }
+    }];
+}
+
+- (void)handleErrorMessageTap:(TSErrorMessage*)message{
+    if (message.errorType == TSErrorMessageWrongTrustedIdentityKey) {
+        NSString *newKeyFingerprint = [message newIdentityKey];
+        NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
+        NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
+
+        [self.inputToolbar.contentView resignFirstResponder];
+        
+        [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                 NSLog(@"User Cancelled");
             } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                
-                [self.uiDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
-                    TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
+                [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                     [message removeWithTransaction:transaction];
-                    [self finishSendingMessage];
                 }];
-                
-            }else {
+            } else {
                 switch (tappedButtonIndex) {
                     case 0:
-                    {
-                        TSOutgoingMessage * message = (TSOutgoingMessage*)messageItem;
-                        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-                        [self finishSendingMessage];
+                        [message acceptNewIdentityKey];
                         break;
-                    }
-                        
+                    
+                    case 1:
+                        [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
+                        break;
                     default:
                         break;
                 }
             }
         }];
     }
-    
 }
 
 #pragma mark - Navigation
@@ -488,7 +550,6 @@ typedef enum : NSUInteger {
         
     } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
         FingerprintViewController *vc = [segue destinationViewController];
-        TSContactThread *thread = (TSContactThread*) self.thread;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
         }];
@@ -623,35 +684,47 @@ typedef enum : NSUInteger {
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
-    for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
-    {
-        switch (rowChange.type)
-        {
-            case YapDatabaseViewChangeDelete :
-            {
-                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                break;
-            }
-            case YapDatabaseViewChangeInsert :
-            {
-                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                break;
-            }
-            case YapDatabaseViewChangeMove :
-            {
-                [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
-                [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate :
-            {
-                [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                break;
-            }
-        }
+    
+    if (!messageRowChanges) {
+        return;
     }
     
-    [self finishReceivingMessage];
+    [self.collectionView performBatchUpdates:^{
+        for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
+        {
+            switch (rowChange.type)
+            {
+                case YapDatabaseViewChangeDelete :
+                {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    break;
+                }
+                case YapDatabaseViewChangeInsert :
+                {
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    break;
+                }
+                case YapDatabaseViewChangeMove :
+                {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
+                    break;
+                }
+                case YapDatabaseViewChangeUpdate :
+                {
+                    NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
+                    if (_lastDeliveredMessageIndexPath) {
+                        [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
+                    }
+                    
+                    [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
+                    break;
+                }
+            }
+        }
+    } completion:^(BOOL finished) {
+        [self finishReceivingMessage];
+    }];
 }
 
 #pragma mark - UICollectionView DataSource
@@ -661,8 +734,7 @@ typedef enum : NSUInteger {
     return numberOfMessages;
 }
 
-- (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath
-{
+- (TSInteraction*)interactionAtIndexPath:(NSIndexPath*)indexPath {
     __block TSInteraction *message = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
@@ -678,7 +750,13 @@ typedef enum : NSUInteger {
         message = [viewTransaction objectAtRow:row inSection:section withMappings:self.messageMappings];
         NSParameterAssert(message != nil);
     }];
-    return [TSMessageAdapter messageViewDataWithInteraction:message inThread:self.thread];
+    
+    return message;
+}
+
+- (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath {
+    TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
 }
 
 #pragma mark Accessory View
@@ -732,8 +810,8 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    [self.readTimer invalidate];
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

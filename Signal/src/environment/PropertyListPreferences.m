@@ -1,6 +1,5 @@
 #import "PropertyListPreferences.h"
 #import "Constraints.h"
-#import <UICKeyChainStore/UICKeyChainStore.h>
 #import "TSStorageManager.h"
 
 #define SignalDatabaseCollection @"SignalPreferences"

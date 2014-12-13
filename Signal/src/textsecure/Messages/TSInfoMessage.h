@@ -11,8 +11,12 @@
 @interface TSInfoMessage : TSMessage
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType){
-    TSInfoMessageTypeSessionDidEnd
+    TSInfoMessageTypeSessionDidEnd,
+    TSInfoMessageUserNotRegistered,
+    TSInfoMessageTypeUnsupportedMessage
 };
+
++ (instancetype)userNotRegisteredMessageInThread:(TSThread*)thread transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 @property TSInfoMessageType messageType;
 
