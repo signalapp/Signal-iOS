@@ -208,7 +208,9 @@
 }
 
 - (void)handleGroupMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    // TO DO
+    // TO DO 12/14
+    // dial into debugger for the messages.
+    
 }
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{

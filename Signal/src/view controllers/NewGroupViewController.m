@@ -85,6 +85,14 @@
 -(GroupModel*)makeGroup {
     
     //TODO: Add it to Envirronment
+    // Something like:
+    /*
+     NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
+     
+     [self dismissViewControllerAnimated:YES completion:^(){
+     [Environment messageIdentifier:identifier];
+     }];
+   */
     
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _groupImageButton.imageView.image;

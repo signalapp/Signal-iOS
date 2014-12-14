@@ -2604,6 +2604,8 @@
 				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
+				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
+				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
 				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
 				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
@@ -2612,8 +2614,6 @@
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
 				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
-				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
-				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
 				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 			);
@@ -3520,7 +3520,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3756,7 +3756,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3810,7 +3810,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
