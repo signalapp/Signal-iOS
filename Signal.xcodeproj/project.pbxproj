@@ -494,7 +494,6 @@
 		FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0321A1D46AE00DA100A /* InitialViewController.m */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
-		FC9120401A39EFB70074545C /* qr_scan@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203E1A39EFB70074545C /* qr_scan@2x.png */; };
 		FC9120411A39EFB70074545C /* qr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203F1A39EFB70074545C /* qr@2x.png */; };
 		FC9120431A39F9E00074545C /* qr_scan_fingerprint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */; };
 		FCA52AE61A2B676C00CCADFA /* call_canceled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */; };
@@ -1181,7 +1180,6 @@
 		FC4FA0321A1D46AE00DA100A /* InitialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitialViewController.m; sourceTree = "<group>"; };
 		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
 		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
-		FC91203E1A39EFB70074545C /* qr_scan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr_scan@2x.png"; sourceTree = "<group>"; };
 		FC91203F1A39EFB70074545C /* qr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr@2x.png"; sourceTree = "<group>"; };
 		FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr_scan_fingerprint@2x.png"; sourceTree = "<group>"; };
 		FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_canceled@2x.png"; sourceTree = "<group>"; };
@@ -2166,7 +2164,6 @@
 				FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */,
 				B633C54B1A1D190B0059AC12 /* photo@2x.png */,
 				FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */,
-				FC91203E1A39EFB70074545C /* qr_scan@2x.png */,
 				FC91203F1A39EFB70074545C /* qr@2x.png */,
 				B633C54C1A1D190B0059AC12 /* quit@2x.png */,
 				B633C54E1A1D190B0059AC12 /* red-delete@2x.png */,
@@ -2946,7 +2943,6 @@
 				B633C58F1A1D190B0059AC12 /* contacts@2x.png in Resources */,
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
 				B633C5961A1D190B0059AC12 /* DefaultContactImage.png in Resources */,
-				FC9120401A39EFB70074545C /* qr_scan@2x.png in Resources */,
 				E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */,
 				FCA52AE61A2B676C00CCADFA /* call_canceled@2x.png in Resources */,
 				E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */,
