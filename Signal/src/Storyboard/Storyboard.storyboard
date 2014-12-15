@@ -189,6 +189,31 @@
                                                 <action selector="shredAndDelete:" destination="urv-62-RsD" eventType="touchUpInside" id="MVo-Ji-K0l"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBa-mc-vN9">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="1YJ-9Z-Wec"/>
+                                                <constraint firstAttribute="height" constant="50" id="MeG-gW-gmb"/>
+                                            </constraints>
+                                            <state key="normal" image="info.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="1YJ-9Z-Wec"/>
+                                                    <exclude reference="MeG-gW-gmb"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="constraints">
+                                                    <include reference="1YJ-9Z-Wec"/>
+                                                    <include reference="MeG-gW-gmb"/>
+                                                </mask>
+                                            </variation>
+                                            <connections>
+                                                <action selector="showInfoAction:" destination="urv-62-RsD" eventType="touchUpInside" id="XtX-Fq-e1P"/>
+                                            </connections>
+                                        </button>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="qr_scan_fingerprint.png" translatesAutoresizingMaskIntoConstraints="NO" id="HyV-ht-MrM">
                                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                             <constraints>
@@ -396,31 +421,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 </mask>
                                             </variation>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap here to show a QR code and get your fingerprint scanned." lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Wg-UP-VDC">
-                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="44" id="xb1-B9-MyR"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="14"/>
-                                            <color key="textColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="xb1-B9-MyR"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <include reference="xb1-B9-MyR"/>
-                                                </mask>
-                                            </variation>
-                                        </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap here to scan your contact's fingerprint." lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ge0-8K-A4F">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="HyF-Kt-KmB"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="14"/>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="16"/>
                                             <color key="textColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                             <variation key="default">
@@ -434,38 +440,36 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 </mask>
                                             </variation>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GBa-mc-vN9">
-                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap here to get your fingerprint scanned." lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Wg-UP-VDC">
+                                            <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="50" id="1YJ-9Z-Wec"/>
-                                                <constraint firstAttribute="height" constant="50" id="MeG-gW-gmb"/>
+                                                <constraint firstAttribute="height" constant="44" id="xb1-B9-MyR">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="43"/>
+                                                </constraint>
                                             </constraints>
-                                            <state key="normal" image="info.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="16"/>
+                                            <color key="textColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
                                             <variation key="default">
                                                 <mask key="constraints">
-                                                    <exclude reference="1YJ-9Z-Wec"/>
-                                                    <exclude reference="MeG-gW-gmb"/>
+                                                    <exclude reference="xb1-B9-MyR"/>
                                                 </mask>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
-                                                    <include reference="1YJ-9Z-Wec"/>
-                                                    <include reference="MeG-gW-gmb"/>
+                                                    <include reference="xb1-B9-MyR"/>
                                                 </mask>
                                             </variation>
-                                            <connections>
-                                                <action selector="showInfoAction:" destination="urv-62-RsD" eventType="touchUpInside" id="XtX-Fq-e1P"/>
-                                            </connections>
-                                        </button>
+                                        </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="HyV-ht-MrM" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="0cP-F5-N4l"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="top" secondItem="5De-Jq-XWv" secondAttribute="bottom" constant="8" id="0jD-kP-zTX">
                                             <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                                         </constraint>
-                                        <constraint firstItem="9Wg-UP-VDC" firstAttribute="leading" secondItem="LGs-pw-dUf" secondAttribute="trailing" constant="3" id="2y5-eR-nCq"/>
+                                        <constraint firstItem="9Wg-UP-VDC" firstAttribute="leading" secondItem="LGs-pw-dUf" secondAttribute="trailing" constant="3" id="2y5-eR-nCq">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="5"/>
+                                        </constraint>
                                         <constraint firstItem="JFv-Xu-qls" firstAttribute="centerX" secondItem="HyV-ht-MrM" secondAttribute="centerX" id="3d4-WJ-rnC"/>
                                         <constraint firstAttribute="trailing" secondItem="e7E-iS-3Oc" secondAttribute="trailing" constant="37" id="5uD-gq-nro"/>
                                         <constraint firstItem="Ii9-7N-hCc" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="129" id="C8D-t9-FSO">
@@ -488,7 +492,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <constraint firstItem="LGs-pw-dUf" firstAttribute="top" secondItem="wGB-4p-e1Z" secondAttribute="bottom" constant="5" id="O0u-Yb-pa4"/>
                                         <constraint firstItem="5De-Jq-XWv" firstAttribute="leading" secondItem="YOs-e5-ee3" secondAttribute="trailing" constant="17" id="OHR-8T-cxj"/>
                                         <constraint firstItem="kBW-ix-mdQ" firstAttribute="top" secondItem="Ii9-7N-hCc" secondAttribute="bottom" constant="8" id="Pef-ZF-oW5">
-                                            <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                            <variation key="heightClass=regular-widthClass=compact" constant="-1"/>
                                         </constraint>
                                         <constraint firstItem="akb-4W-Bz9" firstAttribute="leading" secondItem="JFv-Xu-qls" secondAttribute="trailing" constant="-42" id="Pxd-9U-zXQ"/>
                                         <constraint firstItem="kBW-ix-mdQ" firstAttribute="centerY" secondItem="HyV-ht-MrM" secondAttribute="centerY" id="RKt-vl-1bC"/>
@@ -500,7 +504,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <constraint firstItem="DV4-GV-ZPf" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="VHE-LF-wOx">
                                             <variation key="heightClass=regular-widthClass=compact" constant="22"/>
                                         </constraint>
-                                        <constraint firstItem="ge0-8K-A4F" firstAttribute="leading" secondItem="akb-4W-Bz9" secondAttribute="trailing" constant="3" id="W59-Jj-b07"/>
+                                        <constraint firstItem="ge0-8K-A4F" firstAttribute="leading" secondItem="akb-4W-Bz9" secondAttribute="trailing" constant="3" id="W59-Jj-b07">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="5"/>
+                                        </constraint>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="top" secondItem="5De-Jq-XWv" secondAttribute="bottom" constant="8" id="WAB-2c-hEF">
                                             <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                                         </constraint>
@@ -513,7 +519,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <constraint firstItem="Yoz-ex-1gK" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="27" id="cp2-OL-5R1"/>
                                         <constraint firstItem="wGB-4p-e1Z" firstAttribute="centerX" secondItem="YOs-e5-ee3" secondAttribute="centerX" id="dSu-8u-7Os"/>
                                         <constraint firstItem="e7E-iS-3Oc" firstAttribute="centerX" secondItem="kBW-ix-mdQ" secondAttribute="centerX" id="diH-aS-cqX"/>
-                                        <constraint firstItem="9Wg-UP-VDC" firstAttribute="top" secondItem="LGs-pw-dUf" secondAttribute="bottom" constant="-26" id="eTe-cf-QZK"/>
+                                        <constraint firstItem="9Wg-UP-VDC" firstAttribute="top" secondItem="LGs-pw-dUf" secondAttribute="bottom" constant="-26" id="eTe-cf-QZK">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="-30"/>
+                                        </constraint>
                                         <constraint firstItem="DV4-GV-ZPf" firstAttribute="leading" secondItem="kEV-0h-NsX" secondAttribute="leading" constant="21" id="eVX-2q-T74">
                                             <variation key="heightClass=regular-widthClass=compact" constant="22"/>
                                         </constraint>
@@ -542,12 +550,16 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <constraint firstItem="HyV-ht-MrM" firstAttribute="top" secondItem="kEV-0h-NsX" secondAttribute="top" constant="129" id="oOD-rR-Kfs"/>
                                         <constraint firstItem="LGs-pw-dUf" firstAttribute="leading" secondItem="wGB-4p-e1Z" secondAttribute="trailing" constant="-42" id="oUV-RD-TZe"/>
                                         <constraint firstItem="aff-6Q-MJH" firstAttribute="top" secondItem="DV4-GV-ZPf" secondAttribute="bottom" constant="8" id="oq1-KV-Txm"/>
-                                        <constraint firstAttribute="trailing" secondItem="9Wg-UP-VDC" secondAttribute="trailing" constant="42" id="q6i-NU-i8C"/>
+                                        <constraint firstAttribute="trailing" secondItem="9Wg-UP-VDC" secondAttribute="trailing" constant="42" id="q6i-NU-i8C">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                                        </constraint>
                                         <constraint firstAttribute="trailing" secondItem="DV4-GV-ZPf" secondAttribute="trailing" constant="37" id="qbq-AK-HjD">
                                             <variation key="heightClass=regular-widthClass=compact" constant="22"/>
                                         </constraint>
                                         <constraint firstItem="YOs-e5-ee3" firstAttribute="top" secondItem="HyV-ht-MrM" secondAttribute="bottom" constant="37" id="rdE-nO-pjk"/>
-                                        <constraint firstAttribute="trailing" secondItem="ge0-8K-A4F" secondAttribute="trailing" constant="37" id="wKt-CS-7mj"/>
+                                        <constraint firstAttribute="trailing" secondItem="ge0-8K-A4F" secondAttribute="trailing" constant="37" id="wKt-CS-7mj">
+                                            <variation key="heightClass=regular-widthClass=compact" constant="35"/>
+                                        </constraint>
                                         <constraint firstItem="YOs-e5-ee3" firstAttribute="centerY" secondItem="e7E-iS-3Oc" secondAttribute="centerY" id="wPV-70-ZDS"/>
                                         <constraint firstItem="JFv-Xu-qls" firstAttribute="height" secondItem="HyV-ht-MrM" secondAttribute="height" id="zLY-j4-O06"/>
                                     </constraints>
@@ -555,6 +567,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <mask key="subviews">
                                             <exclude reference="Yg7-KF-hVR"/>
                                             <exclude reference="aff-6Q-MJH"/>
+                                            <exclude reference="GBa-mc-vN9"/>
                                             <exclude reference="HyV-ht-MrM"/>
                                             <exclude reference="Ii9-7N-hCc"/>
                                             <exclude reference="kBW-ix-mdQ"/>
@@ -567,9 +580,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <exclude reference="wGB-4p-e1Z"/>
                                             <exclude reference="akb-4W-Bz9"/>
                                             <exclude reference="LGs-pw-dUf"/>
-                                            <exclude reference="9Wg-UP-VDC"/>
                                             <exclude reference="ge0-8K-A4F"/>
-                                            <exclude reference="GBa-mc-vN9"/>
+                                            <exclude reference="9Wg-UP-VDC"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="Pxd-9U-zXQ"/>
@@ -639,6 +651,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <mask key="subviews">
                                             <include reference="Yg7-KF-hVR"/>
                                             <include reference="aff-6Q-MJH"/>
+                                            <include reference="GBa-mc-vN9"/>
                                             <include reference="HyV-ht-MrM"/>
                                             <include reference="Ii9-7N-hCc"/>
                                             <include reference="kBW-ix-mdQ"/>
@@ -651,9 +664,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <include reference="wGB-4p-e1Z"/>
                                             <include reference="akb-4W-Bz9"/>
                                             <include reference="LGs-pw-dUf"/>
-                                            <include reference="9Wg-UP-VDC"/>
                                             <include reference="ge0-8K-A4F"/>
-                                            <include reference="GBa-mc-vN9"/>
+                                            <include reference="9Wg-UP-VDC"/>
                                         </mask>
                                         <mask key="constraints">
                                             <include reference="Pxd-9U-zXQ"/>

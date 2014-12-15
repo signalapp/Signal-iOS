@@ -77,15 +77,16 @@
     _infoArrowBottom.hidden      = NO;
     _infoMyFingerprint.hidden    = NO;
     _infoTheirFingerprint.hidden = NO;
-    _presentationLabel.hidden    = NO;
     
     [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
         _infoArrowTop.alpha         = 1;
         _infoArrowBottom.alpha      = 1;
         _infoMyFingerprint.alpha    = 1;
         _infoTheirFingerprint.alpha = 1;
-        _presentationLabel.alpha    = 1;
+        _presentationLabel.alpha    = 0;
     } completion:nil];
+    
+    _presentationLabel.hidden    = YES;
 
 }
 
@@ -93,13 +94,14 @@
 {
     
     _didShowInfo = NO;
-    
+    _presentationLabel.hidden    = NO;
+
     [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
         _infoArrowTop.alpha         = 0;
         _infoArrowBottom.alpha      = 0;
         _infoMyFingerprint.alpha    = 0;
         _infoTheirFingerprint.alpha = 0;
-        _presentationLabel.alpha    = 0;
+        _presentationLabel.alpha    = 1;
     } completion:^(BOOL done){
         
         if (done) {
@@ -107,7 +109,6 @@
             _infoArrowBottom.hidden      = YES;
             _infoMyFingerprint.hidden    = YES;
             _infoTheirFingerprint.hidden = YES;
-            _presentationLabel.hidden    = YES;
         }
 
     }];
