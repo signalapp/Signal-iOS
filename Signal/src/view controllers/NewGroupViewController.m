@@ -14,6 +14,7 @@
 
 #import "Contact.h"
 #import "GroupModel.h"
+#import "SecurityUtils.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
@@ -73,27 +74,12 @@
 
 #pragma mark - Actions
 -(void)createGroup {
-    SignalsViewController* s = (SignalsViewController*)((UINavigationController*)[((UITabBarController*)self.parentViewController.presentingViewController).childViewControllers objectAtIndex:1]).topViewController;
-    
-    s.groupFromCompose = [self makeGroup];
-    
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [s performSegueWithIdentifier:@"showSegue" sender:nil];
-    }];
+    GroupModel* model = [self makeGroup];
+    [Environment groupModel:model];
 }
 
 -(GroupModel*)makeGroup {
-    
-    //TODO: Add it to Envirronment
-    // Something like:
-    /*
-     NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
-     
-     [self dismissViewControllerAnimated:YES completion:^(){
-     [Environment messageIdentifier:identifier];
-     }];
-   */
-    
+
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _groupImageButton.imageView.image;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
@@ -101,8 +87,8 @@
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObject:[contacts objectAtIndex:(NSUInteger)idx.row-1]];
     }
-    
-    return [[GroupModel alloc] initWithTitle:title members:mut image:img];
+    NSData* groupId =  [SecurityUtils generateRandomBytes:32];
+    return [[GroupModel alloc] initWithTitle:title members:mut image:img groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender

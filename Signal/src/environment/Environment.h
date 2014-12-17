@@ -3,7 +3,7 @@
 #import "PropertyListPreferences.h"
 #import "PacketHandler.h"
 #import "SecureEndPoint.h"
-
+#import "GroupModel.h"
 /**
  *
  * Environment is a data and data accessor class.
@@ -85,5 +85,7 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
 + (void)messageIdentifier:(NSString*)identifier;
++ (void)groupModel:(GroupModel*)model;
+
 
 @end

@@ -10,11 +10,11 @@
 
 @implementation GroupModel
 
--(instancetype)initWithTitle:(NSString*)title members:(NSMutableArray*)members image:(UIImage*)image
-{
+-(instancetype)initWithTitle:(NSString*)title members:(NSMutableArray*)members image:(UIImage*)image groupId:(NSData *)groupId{
     _groupName=title;
     _groupMembers = [members copy];
     _groupImage = image;
+    _groupId = groupId;
     
     return self;
 }

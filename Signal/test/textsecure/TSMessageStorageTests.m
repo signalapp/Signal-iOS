@@ -108,4 +108,6 @@
     }];
 }
 
+// TODO: group storage tests
+
 @end

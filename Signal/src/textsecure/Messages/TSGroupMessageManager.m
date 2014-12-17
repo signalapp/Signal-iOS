@@ -28,7 +28,7 @@
     TSGroup *record = [TSGroup groupWithId:id];
     
     if (record != nil && type == PushMessageContentGroupContextTypeUpdate) {
-        //TODO: [self handleGroupUpdate:pushMessage group:group record:record];
+        [self handleGroupUpdate:pushMessage group:group record:record];
     } else if (record == nil && type == PushMessageContentGroupContextTypeUpdate) {
         [self handleGroupCreate:pushMessage group:group record:record];
     } else if (record != nil && type == PushMessageContentGroupContextTypeQuit) {
@@ -47,7 +47,8 @@
 }
 
 
-//+ (void)handleGroupUpdate:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
++ (void)handleGroupUpdate:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
+    //TODO
 //    NSData  *identifier = group.id;
 //    NSArray *messageMembersIds = group.members;
 //    
@@ -83,6 +84,6 @@
 //    
 //    // TO-DO: Implement
 //    
-//}
+}
 
 @end
