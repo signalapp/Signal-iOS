@@ -57,8 +57,8 @@ dispatch_queue_t sendingQueue() {
     
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
-            // TODO group support stuff
-            NSLog(@"Currently unsupported");
+            // TODOGROUP
+            NSLog(@"Currently unsupported to send in group");
         } else if([thread isKindOfClass:[TSContactThread class]]){
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;

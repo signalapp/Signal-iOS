@@ -9,8 +9,9 @@
 #import "TSThread.h"
 
 @interface TSGroupThread : TSThread
+@property (nonatomic,strong) NSString* groupName;
 
-+ (instancetype)threadWithGroupId:(NSData*)groupId;
++ (instancetype)threadWithGroupId:(NSData *)groupId groupName:(NSString*)groupName transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (NSData*)groupId;
 

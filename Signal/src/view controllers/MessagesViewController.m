@@ -81,20 +81,21 @@ typedef enum : NSUInteger {
 }
 
 - (void)setupWithTSGroup:(GroupModel*)model {
+    //TODOGROUP
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSGroupThread threadWithGroupId:model.groupId];
+        self.thread = [TSGroupThread threadWithGroupId:model.groupId groupName:model.groupName transaction:transaction];
     }];
 }
 
 - (void)setupWithThread:(TSThread *)thread{
+    //TODOGROUP
     self.thread = thread;
+    isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self markAllMessagesAsRead];
-    
-    isGroupConversation = NO; // TODO: Support Group Conversations
     
     [self initializeBubbles];
     

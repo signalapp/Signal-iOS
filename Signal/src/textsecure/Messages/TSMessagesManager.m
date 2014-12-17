@@ -221,13 +221,12 @@
     //    -will need to update local information to p
     switch (content.group.type) {
         case PushMessageContentGroupContextTypeQuit: {
-            // TO DO TODO groups, we can try setting content to QUIT, UPDATE, and DELIVER
+            // TODOGROUP
             [self handleReceivedTextMessage:incomingMessage withContent:content];
             break;
         }
         case PushMessageContentGroupContextTypeUpdate: {
-            // TODO:
-            //The first UI case goes here...
+            // TODOGROUP
             [self handleReceivedTextMessage:incomingMessage withContent:content];
             break;
         }
@@ -237,7 +236,7 @@
             break;
         }
         case PushMessageContentGroupContextTypeUnknown:{
-            // TO DO TODO groups
+            // TODOGROUP
             [self handleReceivedTextMessage:incomingMessage withContent:content];
             // We will want an error situation here
             break;
@@ -261,11 +260,19 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId groupName:content.group.name transaction:transaction];
             [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
+            //TODOGROUP
+            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachements:nil]; // GET RID OF THIS THIS WILL BE UI
+            }
+            else {
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
+
+            }
             thread = gThread;
-        } else{
+        }
+        else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];

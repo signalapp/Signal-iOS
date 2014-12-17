@@ -170,6 +170,7 @@ static NSString *const kSegueIndentifier  = @"showSegue";
             self.contactIdentifierFromCompose = nil;
         }
         else if (self.groupFromCompose) {
+            //TODOGROUP
             [vc setupWithTSGroup:self.groupFromCompose];
             self.groupFromCompose = nil;
         }

@@ -13,22 +13,22 @@
 
 #define TSGroupThreadPrefix @"g"
 
-- (instancetype)initWithGroupId:(NSData*)groupId{
+- (instancetype)initWithGroupId:(NSData*)groupId groupName:(NSString*)groupName{
     
     NSString *uniqueIdentifier = [[self class] threadIdFromGroupId:groupId];
     
     self = [super initWithUniqueId:uniqueIdentifier];
-    
+    _groupName = groupName;
     return self;
 }
 
-+ (instancetype)threadWithGroupId:(NSData *)groupId{
-    
-    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId]];
-    
++ (instancetype)threadWithGroupId:(NSData *)groupId groupName:(NSString*)groupName transaction:(YapDatabaseReadWriteTransaction*)transaction{
+    //TODOGROUP
+    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
+
     if (!thread) {
-        thread = [[TSGroupThread alloc] initWithGroupId:groupId];
-        [thread save];
+        thread = [[TSGroupThread alloc] initWithGroupId:groupId groupName:groupName];
+        [thread saveWithTransaction:transaction];
     }
     
     return thread;
@@ -41,6 +41,13 @@
 - (NSData *)groupId{
     return [[self class] groupIdFromThreadId:self.uniqueId];
 }
+
+
+- (NSString*)name{
+    //TODOGROUP
+    return self.groupName;
+}
+
 
 + (NSString*)threadIdFromGroupId:(NSData*)groupId{
     return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
