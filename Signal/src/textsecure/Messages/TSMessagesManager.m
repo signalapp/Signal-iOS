@@ -28,6 +28,7 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSNetworkManager.h"
 #import "TSSubmitMessageRequest.h"
+#import "TSMessagesManager+attachements.h"
 
 #import "NSData+messagePadding.h"
 
@@ -184,13 +185,6 @@
     } else if (content.attachments.count > 0) {
         DDLogVerbose(@"Received push media message (attachement) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            TSInfoMessage *message = [[TSInfoMessage alloc] initWithTimestamp:incomingMessage.timestamp
-                                                                     inThread:[TSContactThread threadWithContactId:incomingMessage.source transaction:transaction]
-                                                                  messageType:TSInfoMessageTypeUnsupportedMessage];
-            [message saveWithTransaction:transaction];
-        }];
-        
     } else {
         DDLogVerbose(@"Received push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
@@ -214,11 +208,11 @@
     // TO DO
 }
 
-- (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    // TO DO
+- (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
+    [self handleReceivedMessage:message withContent:content attachements:nil];
 }
 
-- (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachements:(NSArray*)attachements {
     uint64_t timeStamp  = message.timestamp;
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
@@ -229,12 +223,12 @@
         if (groupId) {
             TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
             [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:attachements];
             thread = gThread;
         } else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:attachements];
             thread = cThread;
         }
         [incomingMessage saveWithTransaction:transaction];

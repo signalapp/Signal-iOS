@@ -7,9 +7,10 @@
 //
 
 #import "TSRequest.h"
-@class TSAttachment;
+#import "TSAttachementStream.h"
+
 @interface TSUploadAttachment : TSRequest
-@property(nonatomic,strong) TSAttachment* attachment;
--(TSRequest*) initWithAttachment:(TSAttachment*) attachment ;
+
+-(TSRequest*) initWithAttachment:(TSAttachementStream*)attachment;
 
 @end

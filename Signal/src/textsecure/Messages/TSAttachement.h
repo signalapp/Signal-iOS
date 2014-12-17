@@ -9,19 +9,18 @@
 #import <Foundation/Foundation.h>
 #import "TSYapDatabaseObject.h"
 
-/**
- *  TSAttachements are stored by attachement id;
- */
-
 @interface TSAttachement : TSYapDatabaseObject
 
+- (NSNumber*)identifier;
+
+- (BOOL)isDownloaded;
+
+@property (nonatomic, readonly) NSData   *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
-@property (nonatomic, readonly) NSURL *url;
-@property (nonatomic, readonly) NSData *encryptionKey;
 
-- (BOOL)expired;
-- (NSString*)attachementId;
+- (instancetype)initWithIdentifier:(NSString*)identifier
+                     encryptionKey:(NSData*)encryptionKey
+                       contentType:(NSString*)contentType;
 
-- (instancetype)initWithAttachementId:(NSString*)attachementId url:(NSURL*)url encryptionKey:(NSData*)encryptionKey;
 
 @end

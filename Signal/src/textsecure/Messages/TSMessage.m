@@ -11,6 +11,20 @@
 
 @implementation TSMessage
 
+- (void)addAttachements:(NSArray*)attachements {
+    for (NSString *identifier in attachements) {
+        [self addAttachement:identifier];
+    }
+}
+
+- (void)addAttachement:(NSString*)attachement {
+    if (!_attachements) {
+        _attachements = [NSMutableArray array];
+    }
+    
+    [self.attachements addObject:attachement];
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread*)thread
                       messageBody:(NSString*)body
@@ -20,7 +34,7 @@
     
     if (self) {
         _body         = body;
-        _attachements = attachements;
+        _attachements = [attachements mutableCopy];
     }
     return self;
 }
@@ -30,7 +44,11 @@
 }
 
 - (NSString *)description{
-    return self.body;
+    if(self.attachements > 0){
+        return @"Attachement";
+    } else {
+        return self.body;
+    }
 }
 
 @end

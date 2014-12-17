@@ -13,7 +13,7 @@
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                     attachements:(NSArray *)attachements
+                     attachements:(NSMutableArray*)attachements
 {
     self = [super initWithTimestamp:timestamp inThread:thread
                         messageBody:body attachements:attachements];

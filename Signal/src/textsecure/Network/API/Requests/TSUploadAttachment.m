@@ -7,11 +7,17 @@
 //
 
 #import "TSUploadAttachment.h"
+#import "TSAttachementStream.h"
 #import <AFNetworking/AFHTTPRequestOperation.h>
+
+@interface TSUploadAttachment ()
+@property(nonatomic,strong) TSAttachement* attachment;
+@end
+
 @implementation TSUploadAttachment
 
-//-(TSRequest*) initWithAttachment:(TSAttachment*) attachment{
-//  
+-(TSRequest*) initWithAttachment:(TSAttachementStream*)attachment{
+  
 //  self = [super initWithURL:attachment.attachmentURL];
 //  self.HTTPMethod = @"PUT";
 //  self.attachment = attachment;
@@ -20,14 +26,7 @@
 //  [self setAllHTTPHeaderFields: @{@"Content-Type": @"application/octet-stream"}];
 //
 //  return self;
-//  
-//}
-
-
-
-
-
-
-
+  
+}
 
 @end

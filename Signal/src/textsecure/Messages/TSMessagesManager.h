@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "IncomingPushMessageSignal.pb.h"
+#import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 
 @interface TSMessagesManager : NSObject
@@ -19,5 +20,7 @@
 - (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
+
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachements:(NSArray*)attachements;
 
 @end
