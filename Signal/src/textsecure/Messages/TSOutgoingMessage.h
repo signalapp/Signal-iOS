@@ -18,5 +18,4 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState){
 };
 
 @property (nonatomic) TSOutgoingMessageState messageState;
-
 @end

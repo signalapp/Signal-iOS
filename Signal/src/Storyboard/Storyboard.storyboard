@@ -120,6 +120,7 @@
                     </view>
                     <connections>
                         <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" animates="NO" id="Zjl-QX-tHE"/>
+                        <segue destination="bDi-2Q-XOC" kind="show" identifier="updateGroupSegue" id="gZ1-lh-srF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3404,7 +3405,7 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-iU-Cax" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="f1M-Dk-nMv"/>
             </objects>
-            <point key="canvasLocation" x="3082.5" y="-906.75"/>
+            <point key="canvasLocation" x="3184.5" y="-906.75"/>
         </scene>
         <!--New Group View Controller-->
         <scene sceneID="mdV-ti-fPA">
@@ -3612,7 +3613,7 @@ Licensed under the GPLv3</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GsM-dR-L7j" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3930" y="-906.75"/>
+            <point key="canvasLocation" x="4197" y="-899.25"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kfT-eG-hkf">
@@ -3657,4 +3658,7 @@ Licensed under the GPLv3</string>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="gZ1-lh-srF"/>
+    </inferredMetricsTieBreakers>
 </document>

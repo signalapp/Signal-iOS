@@ -14,6 +14,8 @@
 
 #import "Contact.h"
 #import "GroupModel.h"
+#import "SecurityUtils.h"
+#import "SignalKeyingStorage.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
@@ -24,19 +26,29 @@
 @interface NewGroupViewController () {
     NSArray* contacts;
 }
+@property TSGroupThread* thread;
 
 @end
-
 @implementation NewGroupViewController
+
+- (void)configWithThread:(TSGroupThread *)gThread{
+    _thread = gThread;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
-    self.navigationItem.title = @"New Group";
-    
+    if(_thread==nil) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
+        self.navigationItem.title = @"New Group";
+        
+    }
+    else {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
+        self.navigationItem.title = _thread.groupModel.groupName;
+        self.nameGroupTextField.text = _thread.groupModel.groupName;
+    }
     contacts = [Environment getCurrent].contactsManager.textSecureContacts;
-    
+
     [self initializeDelegates];
     [self initializeTableView];
     [self initializeKeyboardHandlers];
@@ -73,28 +85,29 @@
 
 #pragma mark - Actions
 -(void)createGroup {
-    SignalsViewController* s = (SignalsViewController*)((UINavigationController*)[((UITabBarController*)self.parentViewController.presentingViewController).childViewControllers objectAtIndex:1]).topViewController;
-    
-    s.groupFromCompose = [self makeGroup];
-    
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [s performSegueWithIdentifier:@"showSegue" sender:nil];
-    }];
+    GroupModel* model = [self makeGroup];
+    [Environment groupModel:model];
 }
 
+
+-(void)updateGroup {
+    DDLogDebug(@"Update gruop not implemented");
+}
+
+
 -(GroupModel*)makeGroup {
-    
-    //TODO: Add it to Envirronment
-    
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _groupImageButton.imageView.image;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
-        [mut addObject:[contacts objectAtIndex:(NSUInteger)idx.row-1]];
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
+    // Also add the originator
+    [mut addObject:[SignalKeyingStorage.localNumber toE164]];
+    NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
-    return [[GroupModel alloc] initWithTitle:title members:mut image:img];
+    return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender
@@ -198,12 +211,17 @@
         
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: indexPath.row == 0 ? @"HeaderCell" : @"GroupSearchCell"];
     }
-    
     if (indexPath.row > 0) {
-    NSUInteger row = (NSUInteger)indexPath.row;
-    Contact* contact = contacts[row-1];
-    
-    cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
+        NSUInteger row = (NSUInteger)indexPath.row;
+        Contact* contact = contacts[row-1];
+        if(_thread) {
+            //TODOGROUP inefficient way of doing this, will not scale well
+            NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
+            [usersInGroup intersectSet:[NSSet setWithArray:contact.userTextPhoneNumbers]];
+            cell.accessoryType = [usersInGroup count]>0 ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+        }
+        
+        cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
     } else {
         cell.textLabel.text = @"Add People:";

@@ -13,10 +13,18 @@
  *  Abstract message class. Is instantiated by either
  */
 
+typedef NS_ENUM(NSInteger, TSGroupMetaMessage){
+    TSGroupMessageNone,
+    TSGroupMessageNew,
+    TSGroupMessageUpdate,
+    TSGroupMessageDeliver,
+    TSGroupMessageQuit
+};
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray  *attachments;
 @property (nonatomic, readonly) NSString        *body;
+@property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread*)thread
