@@ -14,6 +14,10 @@
 
 #include "NSData+Base64.h"
 
+#define HMAC256_KEY_LENGTH    32
+#define HMAC256_OUTPUT_LENGTH 32
+#define AES_CBC_IV_LENGTH     16
+#define AES_KEY_SIZE          32
 
 @implementation Cryptography
 
@@ -163,9 +167,10 @@
      */
     //verify hmac of version||encrypted data||iv
     NSMutableData *dataToHmac = [NSMutableData data ];
-    if(version!=nil) {
+    if(version != nil) {
         [dataToHmac appendData:version];
     }
+
     [dataToHmac appendData:iv];
     [dataToHmac appendData:dataToDecrypt];
     
@@ -173,20 +178,22 @@
     
     if(hmacType == TSHMACSHA1Truncated10Bytes) {
         ourHmacData = [Cryptography truncatedSHA1HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
-    }
-    else if (hmacType == TSHMACSHA256Truncated10Bytes) {
+    } else if (hmacType == TSHMACSHA256Truncated10Bytes) {
         ourHmacData = [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
+    } else if (hmacType == TSHMACSHA256AttachementType){
+        ourHmacData = [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
     }
     
     if(hmac == nil || ![ourHmacData isEqualToData:hmac] ) {
+        DDLogError(@"Bad HMAC on decrypting payload");
         return nil;
     }
     
     // decrypt
     size_t bufferSize           = [dataToDecrypt length] + kCCBlockSizeAES128;
     void* buffer                = malloc(bufferSize);
-    
-    size_t bytesDecrypted    = 0;
+
+    size_t bytesDecrypted       = 0;
     CCCryptorStatus cryptStatus = CCCrypt(kCCDecrypt, kCCAlgorithmAES128, kCCOptionPKCS7Padding,
                                           [key bytes], [key length],
                                           [iv bytes],
@@ -195,9 +202,11 @@
                                           &bytesDecrypted);
     if (cryptStatus == kCCSuccess) {
         return [NSData dataWithBytesNoCopy:buffer length:bytesDecrypted];
+    } else{
+        DDLogError(@"Failed CBC decryption");
+        free(buffer);
     }
-    
-    free(buffer);
+
     return nil;
 }
 
@@ -232,14 +241,20 @@
 }
 
 +(NSData*) decryptAttachment:(NSData*) dataToDecrypt withKey:(NSData*) key {
+    if (([dataToDecrypt length] <  AES_CBC_IV_LENGTH + HMAC256_OUTPUT_LENGTH) || ([key length] < AES_KEY_SIZE + HMAC256_KEY_LENGTH)) {
+        DDLogError(@"Message shorter than crypto overhead!");
+        return nil;
+    }
+    
     // key: 32 byte AES key || 32 byte Hmac-SHA256 key.
-    NSData *encryptionKey = [key subdataWithRange:NSMakeRange(0, 32)];
-    NSData *hmacKey = [key subdataWithRange:NSMakeRange(32, 32)];
+    NSData *encryptionKey = [key subdataWithRange:NSMakeRange(0, AES_KEY_SIZE)];
+    NSData *hmacKey       = [key subdataWithRange:NSMakeRange(AES_KEY_SIZE, HMAC256_KEY_LENGTH)];
+    
     // dataToDecrypt: IV || Ciphertext || truncated MAC(IV||Ciphertext)
-    NSData *iv = [dataToDecrypt subdataWithRange:NSMakeRange(0, 10)];
-    NSData *encryptedAttachment = [dataToDecrypt subdataWithRange:NSMakeRange(10, [dataToDecrypt length]-10-10)];
-    NSData *hmac = [dataToDecrypt subdataWithRange:NSMakeRange([dataToDecrypt length]-10, 10)];
-    return [Cryptography decryptCBCMode:encryptedAttachment key:encryptionKey IV:iv version:nil HMACKey:hmacKey HMACType:TSHMACSHA256Truncated10Bytes  matchingHMAC:hmac];
+    NSData *iv = [dataToDecrypt subdataWithRange:NSMakeRange(0, AES_CBC_IV_LENGTH)];
+    NSData *encryptedAttachment = [dataToDecrypt subdataWithRange:NSMakeRange(AES_CBC_IV_LENGTH, [dataToDecrypt length]-AES_CBC_IV_LENGTH-HMAC256_OUTPUT_LENGTH)];
+    NSData *hmac = [dataToDecrypt subdataWithRange:NSMakeRange([dataToDecrypt length]-HMAC256_OUTPUT_LENGTH, HMAC256_OUTPUT_LENGTH)];
+    return [Cryptography decryptCBCMode:encryptedAttachment key:encryptionKey IV:iv version:nil HMACKey:hmacKey HMACType:TSHMACSHA256AttachementType  matchingHMAC:hmac];
 }
 
 

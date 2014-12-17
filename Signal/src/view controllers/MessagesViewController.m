@@ -37,6 +37,7 @@
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
+#import "TSAttachementAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -288,7 +289,7 @@ typedef enum : NSUInteger {
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
             break;
-            
+                        
         default:
             NSLog(@"Something went wrong");
             return nil;
@@ -467,15 +468,15 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                id<JSQMessageMediaData> messageMedia = [messageItem media];
+                TSAttachementAdapter * messageMedia = (TSAttachementAdapter*)[messageItem media];
                 
-                if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
+                if ([messageMedia isImage]) {
                     //is a photo
-                    tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
+                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image ;
                     [self performSegueWithIdentifier:@"fullImage" sender:self];
                     
-                } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
-                    //is a video
+                } else {
+                    DDLogWarn(@"Currently unsupported");
                 }
             }
             

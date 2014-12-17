@@ -15,14 +15,16 @@
 
 @interface TSMessage : TSInteraction
 
-@property (nonatomic, readonly) NSArray  *attachements;// contains TSAttachements
-@property (nonatomic, readonly) NSString *body;
+@property (nonatomic, readonly) NSMutableArray  *attachements;
+@property (nonatomic, readonly) NSString        *body;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread*)thread
                       messageBody:(NSString*)body
                      attachements:(NSArray*)attachements;
 
+- (void)addAttachements:(NSArray*)attachements;
+- (void)addAttachement:(NSString*)attachement;
 - (BOOL)hasAttachements;
 
 @end

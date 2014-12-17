@@ -1,3 +1,4 @@
+
 //
 //  TSAttachement.m
 //  TextSecureKit
@@ -9,5 +10,32 @@
 #import "TSAttachement.h"
 
 @implementation TSAttachement
+
+- (instancetype)initWithIdentifier:(NSString*)identifier
+                     encryptionKey:(NSData*)encryptionKey
+                       contentType:(NSString*)contentType {
+    self = [super initWithUniqueId:identifier];
+    
+    if (self) {
+        _encryptionKey = encryptionKey;
+        _contentType   = contentType;
+    }
+    
+    return self;
+}
+
++ (NSString *)collection{
+    return @"TSAttachements";
+}
+
+- (NSNumber*)identifier{
+    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    return [f numberFromString:self.uniqueId];
+}
+
+- (BOOL)isDownloaded{
+    return NO;
+}
 
 @end

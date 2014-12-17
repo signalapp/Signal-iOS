@@ -334,8 +334,7 @@
 		B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B51A1F757900D01AAD /* TSRegisterPrekeysRequest.m */; };
 		B63AF5CC1A1F757900D01AAD /* TSRegisterWithTokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */; };
 		B63AF5CD1A1F757900D01AAD /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5B91A1F757900D01AAD /* TSRequest.m */; };
-		B63AF5CE1A1F757900D01AAD /* TSRequestAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */; };
-		B63AF5CF1A1F757900D01AAD /* TSRequestAttachmentId.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */; };
+		B63AF5CE1A1F757900D01AAD /* TSAttachementRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BB1A1F757900D01AAD /* TSAttachementRequest.m */; };
 		B63AF5D01A1F757900D01AAD /* TSSubmitMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */; };
 		B63AF5D11A1F757900D01AAD /* TSUploadAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C11A1F757900D01AAD /* TSUploadAttachment.m */; };
 		B63AF5D21A1F757900D01AAD /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C31A1F757900D01AAD /* TSNetworkManager.m */; };
@@ -349,6 +348,7 @@
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
+		B6A3EB4B1A423B3800B2236B /* TSAttachementAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSAttachementAdapter.m */; };
 		B6AE33BD1A1EB121003DF39D /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* GroupModel.m */; };
 		B6B095E41A1D25C5008BFAA6 /* CryptographyTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */; };
 		B6B095E51A1D25C5008BFAA6 /* TextSecureKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */; };
@@ -393,12 +393,15 @@
 		B6B096941A1D25ED008BFAA6 /* NSString+escape.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0965E1A1D25ED008BFAA6 /* NSString+escape.m */; };
 		B6B096951A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */; };
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
+		B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachements.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachements.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
 		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */; };
 		B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */; };
+		B6FAAAE81A41BC6C007FEC1D /* TSAttachementPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAE71A41BC6C007FEC1D /* TSAttachementPointer.m */; };
+		B6FAAAEE1A41C918007FEC1D /* TSAttachementStream.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAED1A41C918007FEC1D /* TSAttachementStream.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -941,10 +944,8 @@
 		B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRegisterWithTokenRequest.m; sourceTree = "<group>"; };
 		B63AF5B81A1F757900D01AAD /* TSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequest.h; sourceTree = "<group>"; };
 		B63AF5B91A1F757900D01AAD /* TSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequest.m; sourceTree = "<group>"; };
-		B63AF5BA1A1F757900D01AAD /* TSRequestAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachment.h; sourceTree = "<group>"; };
-		B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachment.m; sourceTree = "<group>"; };
-		B63AF5BC1A1F757900D01AAD /* TSRequestAttachmentId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRequestAttachmentId.h; sourceTree = "<group>"; };
-		B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRequestAttachmentId.m; sourceTree = "<group>"; };
+		B63AF5BA1A1F757900D01AAD /* TSAttachementRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachementRequest.h; sourceTree = "<group>"; };
+		B63AF5BB1A1F757900D01AAD /* TSAttachementRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachementRequest.m; sourceTree = "<group>"; };
 		B63AF5BE1A1F757900D01AAD /* TSSubmitMessageRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSSubmitMessageRequest.h; sourceTree = "<group>"; };
 		B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSubmitMessageRequest.m; sourceTree = "<group>"; };
 		B63AF5C01A1F757900D01AAD /* TSUploadAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUploadAttachment.h; sourceTree = "<group>"; };
@@ -967,6 +968,8 @@
 		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		B6A3EB491A423B3800B2236B /* TSAttachementAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachementAdapter.h; sourceTree = "<group>"; };
+		B6A3EB4A1A423B3800B2236B /* TSAttachementAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachementAdapter.m; sourceTree = "<group>"; };
 		B6AE33BB1A1EB121003DF39D /* GroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupModel.h; sourceTree = "<group>"; };
 		B6AE33BC1A1EB121003DF39D /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
 		B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CryptographyTests.mm; sourceTree = "<group>"; };
@@ -1051,6 +1054,8 @@
 		B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionDataTask+StatusCode.m"; sourceTree = "<group>"; };
 		B6B1013A196D213F007E3930 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
+		B6B50AA91A4192C500F8F607 /* TSMessagesManager+attachements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSMessagesManager+attachements.h"; sourceTree = "<group>"; };
+		B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TSMessagesManager+attachements.m"; sourceTree = "<group>"; };
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
 		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
@@ -1061,6 +1066,10 @@
 		B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactDetailCell.m; path = "Signal/src/view controllers/ContactDetailCell.m"; sourceTree = SOURCE_ROOT; };
 		B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSFingerprintGenerator.h; sourceTree = "<group>"; };
 		B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSFingerprintGenerator.m; sourceTree = "<group>"; };
+		B6FAAAE61A41BC6C007FEC1D /* TSAttachementPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAttachementPointer.h; path = Attachements/TSAttachementPointer.h; sourceTree = "<group>"; };
+		B6FAAAE71A41BC6C007FEC1D /* TSAttachementPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachementPointer.m; path = Attachements/TSAttachementPointer.m; sourceTree = "<group>"; };
+		B6FAAAEC1A41C918007FEC1D /* TSAttachementStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAttachementStream.h; path = Attachements/TSAttachementStream.h; sourceTree = "<group>"; };
+		B6FAAAED1A41C918007FEC1D /* TSAttachementStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachementStream.m; path = Attachements/TSAttachementStream.m; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
@@ -2112,6 +2121,8 @@
 		B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */ = {
 			isa = PBXGroup;
 			children = (
+				B6A3EB491A423B3800B2236B /* TSAttachementAdapter.h */,
+				B6A3EB4A1A423B3800B2236B /* TSAttachementAdapter.m */,
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
 				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
 			);
@@ -2219,10 +2230,8 @@
 				B63AF5B71A1F757900D01AAD /* TSRegisterWithTokenRequest.m */,
 				B63AF5B81A1F757900D01AAD /* TSRequest.h */,
 				B63AF5B91A1F757900D01AAD /* TSRequest.m */,
-				B63AF5BA1A1F757900D01AAD /* TSRequestAttachment.h */,
-				B63AF5BB1A1F757900D01AAD /* TSRequestAttachment.m */,
-				B63AF5BC1A1F757900D01AAD /* TSRequestAttachmentId.h */,
-				B63AF5BD1A1F757900D01AAD /* TSRequestAttachmentId.m */,
+				B63AF5BA1A1F757900D01AAD /* TSAttachementRequest.h */,
+				B63AF5BB1A1F757900D01AAD /* TSAttachementRequest.m */,
 				B63AF5BE1A1F757900D01AAD /* TSSubmitMessageRequest.h */,
 				B63AF5BF1A1F757900D01AAD /* TSSubmitMessageRequest.m */,
 				B63AF5C01A1F757900D01AAD /* TSUploadAttachment.h */,
@@ -2336,10 +2345,9 @@
 		B6B096001A1D25ED008BFAA6 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
+				B6FAAAE91A41C7CC007FEC1D /* Attachement */,
 				B6B096011A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.h */,
 				B6B096021A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m */,
-				B6B096031A1D25ED008BFAA6 /* TSAttachement.h */,
-				B6B096041A1D25ED008BFAA6 /* TSAttachement.m */,
 				B6B096051A1D25ED008BFAA6 /* TSCall.h */,
 				B6B096061A1D25ED008BFAA6 /* TSCall.m */,
 				B6B096071A1D25ED008BFAA6 /* TSErrorMessage.h */,
@@ -2360,6 +2368,8 @@
 				B6B096141A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.m */,
 				B6B096151A1D25ED008BFAA6 /* TSMessagesManager.h */,
 				B6B096161A1D25ED008BFAA6 /* TSMessagesManager.m */,
+				B6B50AA91A4192C500F8F607 /* TSMessagesManager+attachements.h */,
+				B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachements.m */,
 				B6B096171A1D25ED008BFAA6 /* TSOutgoingMessage.h */,
 				B6B096181A1D25ED008BFAA6 /* TSOutgoingMessage.m */,
 				B6B096191A1D25ED008BFAA6 /* TSServerMessage.h */,
@@ -2449,6 +2459,19 @@
 				B6C6AE541A305ED1006BAF8F /* textsecure.cer */,
 			);
 			path = Certificates;
+			sourceTree = "<group>";
+		};
+		B6FAAAE91A41C7CC007FEC1D /* Attachement */ = {
+			isa = PBXGroup;
+			children = (
+				B6B096031A1D25ED008BFAA6 /* TSAttachement.h */,
+				B6B096041A1D25ED008BFAA6 /* TSAttachement.m */,
+				B6FAAAEC1A41C918007FEC1D /* TSAttachementStream.h */,
+				B6FAAAED1A41C918007FEC1D /* TSAttachementStream.m */,
+				B6FAAAE61A41BC6C007FEC1D /* TSAttachementPointer.h */,
+				B6FAAAE71A41BC6C007FEC1D /* TSAttachementPointer.m */,
+			);
+			name = Attachement;
 			sourceTree = "<group>";
 		};
 		BF8C3D8119CE3B6A008F644C /* call */ = {
@@ -3104,6 +3127,7 @@
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
 				B6B096691A1D25ED008BFAA6 /* TSThread.m in Sources */,
 				B6B096641A1D25ED008BFAA6 /* TSContactThread.m in Sources */,
+				B6A3EB4B1A423B3800B2236B /* TSAttachementAdapter.m in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
 				76EB062818170B33006006FC /* BadArgument.m in Sources */,
@@ -3142,10 +3166,11 @@
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,
+				B6FAAAEE1A41C918007FEC1D /* TSAttachementStream.m in Sources */,
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
 				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
 				B6B096931A1D25ED008BFAA6 /* NSData+messagePadding.m in Sources */,
-				B63AF5CE1A1F757900D01AAD /* TSRequestAttachment.m in Sources */,
+				B63AF5CE1A1F757900D01AAD /* TSAttachementRequest.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
@@ -3201,7 +3226,9 @@
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
 				B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */,
+				B6FAAAE81A41BC6C007FEC1D /* TSAttachementPointer.m in Sources */,
 				B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */,
+				B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachements.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				765052AF182AC9B5008313E1 /* DialerButtonView.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
@@ -3273,7 +3300,6 @@
 				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
 				B6B096711A1D25ED008BFAA6 /* TSInteraction.m in Sources */,
 				B6B0966D1A1D25ED008BFAA6 /* TSErrorMessage.m in Sources */,
-				B63AF5CF1A1F757900D01AAD /* TSRequestAttachmentId.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				B6B096741A1D25ED008BFAA6 /* TSMessagesManager.m in Sources */,

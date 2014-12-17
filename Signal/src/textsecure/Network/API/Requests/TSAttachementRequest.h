@@ -8,6 +8,8 @@
 
 #import "TSRequest.h"
 
-@interface TSRequestAttachment : TSRequest
--(TSRequest*) initWithId:(NSNumber*) attachmentId;
+@interface TSAttachementRequest : TSRequest
+
+-(TSRequest*) initWithId:(NSNumber*) attachmentId relay:(NSString*)relay;
+
 @end

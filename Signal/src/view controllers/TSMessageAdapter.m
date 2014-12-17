@@ -12,6 +12,9 @@
 #import "TSCall.h"
 #import "TSInfoMessage.h"
 #import "TSErrorMessage.h"
+#import "TSAttachement.h"
+#import "TSAttachementStream.h"
+#import "TSAttachementAdapter.h"
 
 @interface TSMessageAdapter ()
 
@@ -36,6 +39,10 @@
 
 @property NSInteger outgoingMessageStatus;
 
+// for MediaMessages
+
+@property JSQMediaItem *mediaItem;
+
 // ---
 
 @property (nonatomic, copy)   NSDate   *messageDate;
@@ -48,11 +55,11 @@
 
 @implementation TSMessageAdapter
 
-+ (instancetype)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread{
-    
++ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread{
+
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
-    adapter.messageDate = interaction.date;
-    adapter.identifier  = (NSUInteger)interaction.uniqueId;
+    adapter.messageDate       = interaction.date;
+    adapter.identifier        = (NSUInteger)interaction.uniqueId;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         adapter.thread = (TSContactThread*)thread;
@@ -80,6 +87,23 @@
     if ([interaction isKindOfClass:[TSIncomingMessage class]] || [interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSMessage *message = (TSMessage*)interaction;
         adapter.messageBody = message.body;
+        
+        if (message.attachements > 0) {
+            
+            
+            for (NSString *attachementID in message.attachements) {
+                TSAttachement *attachement = [TSAttachement fetchObjectWithUniqueID:attachementID];
+                
+                if ([attachement isKindOfClass:[TSAttachementStream class]]) {
+                    TSAttachementStream *stream = (TSAttachementStream*)attachement;
+                    if ([stream isImage]) {
+                        adapter.mediaItem = [[TSAttachementAdapter alloc] initWithAttachement:stream];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                    }
+                }
+            }
+        }
+        
     } else if ([interaction isKindOfClass:[TSCall class]]){
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
@@ -123,7 +147,11 @@
 }
 
 - (BOOL)isMediaMessage{
-    return NO;
+    return _mediaItem?YES:NO;
+}
+
+- (id<JSQMessageMediaData>)media{
+    return _mediaItem;
 }
 
 - (NSString *)text{
