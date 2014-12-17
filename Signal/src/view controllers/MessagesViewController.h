@@ -8,12 +8,14 @@
 
 #import "JSQMessagesViewController.h"
 #import "JSQMessages.h"
-
+#import "GroupModel.h"
 @class TSThread;
 
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 - (void)setupWithThread:(TSThread*)thread;
 - (void)setupWithTSIdentifier:(NSString*)identifier;
+- (void)setupWithTSGroup:(GroupModel*)model;
+
 
 @end

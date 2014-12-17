@@ -7,14 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@interface GroupModel : NSObject
-
-@property (nonatomic, strong) NSMutableArray * groupMembers;
-@property (nonatomic, strong) UIImage * groupImage;
-@property (nonatomic, strong) NSString * groupName;
+#import "TSYapDatabaseObject.h"
 
 
--(instancetype)initWithTitle:(NSString*)title members:(NSMutableArray*)members image:(UIImage*)image;
+
+@interface GroupModel : TSYapDatabaseObject
+
+@property (nonatomic, strong) NSMutableArray *groupMemberIds; //
+@property (nonatomic, strong) UIImage *groupImage;
+@property (nonatomic, strong) NSString *groupName;
+@property (nonatomic, strong) NSData* groupId;
+
+-(instancetype)initWithTitle:(NSString*)title memberIds:(NSMutableArray*)members image:(UIImage*)image groupId:(NSData*)groupId;
+
+- (BOOL)isEqual:(id)other;
+- (BOOL)isEqualToGroupModel:(GroupModel *)model;
 
 @end

@@ -12,7 +12,6 @@
 #import "ContactsManager.h"
 #import "TSInteraction.h"
 #import "TSStorageManager.h"
-#import "TSGroup.h"
 
 #import "TSCall.h"
 #import "TSOutgoingMessage.h"

@@ -189,6 +189,26 @@ phoneDirectoryManager;
     }
 }
 
++ (void)groupModel:(GroupModel*)model {
+    Environment *env          = [self getCurrent];
+    SignalsViewController *vc = env.signalsViewController;
+    
+    if (vc.presentedViewController) {
+        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [vc.navigationController popToRootViewControllerAnimated:YES];
+    vc.groupFromCompose = model;
+    [vc performSegueWithIdentifier:@"showSegue" sender:nil];
+    
+    UITabBarController *tabBarController = (UITabBarController*)vc.parentViewController.parentViewController;
+    if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
+        tabBarController.selectedIndex = 1;
+    }
+    
+}
+
+
 + (void)resetAppData{
     [SignalKeyingStorage wipeKeychain];
     [Environment.preferences clear];

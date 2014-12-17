@@ -21,6 +21,7 @@
 #import "TSStorageManager+SignedPreKeyStore.h"
 
 #import "PreKeyBundle+jsonDict.h"
+#import "SignalKeyingStorage.h"
 
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
@@ -53,12 +54,30 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
-    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
-    
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
-            NSLog(@"Currently unsupported");
-        } else if([thread isKindOfClass:[TSContactThread class]]){
+            TSGroupThread* groupThread = (TSGroupThread*)thread;
+            
+            [self saveGroupMessage:message inThread:thread];
+            __block NSArray* recipients;
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                recipients = [groupThread recipientsWithTransaction:transaction];
+            }];
+            
+            for(TSRecipient *rec in recipients){
+                // TODOGROUP hack so that we don't send group messages to ourselves; probably a more elegant way of doing this.
+                if( ![[rec uniqueId] isEqualToString:[SignalKeyingStorage.localNumber toE164]]){
+                    [self sendMessage:message
+                          toRecipient:rec
+                             inThread:thread
+                          withAttemps:3];
+                }
+            }
+            
+        }
+        else if([thread isKindOfClass:[TSContactThread class]]){
+            [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -81,7 +100,7 @@ dispatch_queue_t sendingQueue() {
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
         
-        [self outgoingMessages:message toRecipient:recipient completion:^(NSArray *messages) {
+        [self outgoingMessages:message toRecipient:recipient inThread:thread completion:^(NSArray *messages) {
             TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -127,10 +146,10 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
 }
 
-- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient completion:(messagesQueue)sendMessages{
+- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient inThread:(TSThread*)thread completion:(messagesQueue)sendMessages{
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     TSStorageManager *storage     = [TSStorageManager sharedManager];
-    NSData *plainText             = [self plainTextForMessage:message];
+    NSData *plainText             = [self plainTextForMessage:message inThread:thread];
     
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
@@ -209,16 +228,51 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)saveMessage:(TSOutgoingMessage*)message withState:(TSOutgoingMessageState)state{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message setMessageState:state];
-        [message saveWithTransaction:transaction];
-    }];
+    if(message.groupMetaMessage == TSGroupMessageDeliver || message.groupMetaMessage == TSGroupMessageNone) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message setMessageState:state];
+            [message saveWithTransaction:transaction];
+        }];
+    }
 }
 
-- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message{
-    
+- (void) saveGroupMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+    if(message.groupMetaMessage==TSGroupMessageDeliver) {
+        [self saveMessage:message withState:message.messageState];
+    }
+    else {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            
+            [[[TSInfoMessage alloc] initWithTimestamp:message.timeStamp inThread:thread messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction]; 
+        }];
+    }
+}
+
+- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];
+
+    if([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *gThread = (TSGroupThread*)thread;
+        PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
+        [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
+        [groupBuilder setName:gThread.groupModel.groupName];
+        [groupBuilder setId:gThread.groupModel.groupId];
+        switch (message.groupMetaMessage) {
+            case TSGroupMessageQuit:
+                [groupBuilder setType:PushMessageContentGroupContextTypeQuit];
+                break;
+            case TSGroupMessageUpdate:
+            case TSGroupMessageNew:
+                [groupBuilder setType:PushMessageContentGroupContextTypeUpdate];
+                break;
+            default:
+                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver];
+                break;
+        }
+        //[groupBuilder setAvatar:(PushMessageContentAttachmentPointer *)]; //TODOATTACHMENTS for avatar
+        [builder setGroup:groupBuilder.build];
+    }
     
     NSMutableArray *attachmentsArray = [NSMutableArray array];
     
