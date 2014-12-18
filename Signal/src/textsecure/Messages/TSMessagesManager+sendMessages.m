@@ -94,7 +94,7 @@ dispatch_queue_t sendingQueue() {
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
         
-        [self outgoingMessages:message toRecipient:recipient completion:^(NSArray *messages) {
+        [self outgoingMessages:message toRecipient:recipient inThread:thread completion:^(NSArray *messages) {
             TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -140,10 +140,10 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
 }
 
-- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient completion:(messagesQueue)sendMessages{
+- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient inThread:(TSThread*)thread completion:(messagesQueue)sendMessages{
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     TSStorageManager *storage     = [TSStorageManager sharedManager];
-    NSData *plainText             = [self plainTextForMessage:message];
+    NSData *plainText             = [self plainTextForMessage:message inThread:thread];
     
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
@@ -228,10 +228,30 @@ dispatch_queue_t sendingQueue() {
     }];
 }
 
-- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message{
+- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+    //TODOGROUP
+    // here is where we can handle group stuff
     
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];
+
+    if([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *gThread = (TSGroupThread*)thread;
+        PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
+        /*
+         @property (nonatomic, strong) NSMutableArray *groupMembers;
+         @property (nonatomic, strong) UIImage *groupImage;
+         @property (nonatomic, strong) NSString *groupName;
+         @property (nonatomic, strong) NSData* groupId;
+         */
+        [groupBuilder setMembersArray:gThread.groupModel.groupMembers];
+        [groupBuilder setName:gThread.groupModel.groupName];
+        [groupBuilder setId:gThread.groupModel.groupId];
+        [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+        //[groupBuilder setAvatar:(PushMessageContentAttachmentPointer *)]; //TODOATTACHMENTS
+        [builder setGroup:groupBuilder.build];
+    }
+    
     return [builder.build data];
     
     //TO-DO: DEAL WITH ATTACHEMENTS AND GROUPS STUFF

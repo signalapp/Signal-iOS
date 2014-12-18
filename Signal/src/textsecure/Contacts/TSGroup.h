@@ -12,6 +12,7 @@
 #import "TSYapDatabaseObject.h"
 
 @interface TSGroup : TSYapDatabaseObject
+//TODOGROUP UNUSED
 
 @property (nonatomic) NSString      *name;          // Name of the group
 @property (nonatomic) TSAttachement *avatar;        // Link to the attachement object (group picture)

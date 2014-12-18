@@ -10,6 +10,7 @@
 
 #import "TSGroup.h"
 #import "TSGroupMessageManager.h"
+//TODOGROUP UNUSED
 
 #define ddLogLevel LOG_LEVEL_VERBOSE
 
@@ -17,6 +18,7 @@
 @implementation TSGroupMessageManager
 
 + (void)processGroupMessage:(IncomingPushMessageSignal*)pushMessage content:(PushMessageContent*)content{
+    //TODOGROUP UNUSED
     if (!content.group.id) {
         DDLogInfo(@"Received group message with no id! Ignoring...");
         return;
@@ -39,16 +41,16 @@
 }
 
 + (void)handleGroupCreate:(IncomingPushMessageSignal*)message group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
-    //TODO
+    //TODOGROUP UNUSED
 }
 
 + (void)handleGroupLeave:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
-    //TODO
+    //TODOGROUP UNUSED
 }
 
 
 + (void)handleGroupUpdate:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
-    //TODO
+    //TODOGROUP UNUSED
 //    NSData  *identifier = group.id;
 //    NSArray *messageMembersIds = group.members;
 //    
