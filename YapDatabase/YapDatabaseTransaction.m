@@ -1029,7 +1029,7 @@
  *
  * @see objectForKey:inCollection:
 **/
-- (NSData *)serializedObjectForKey:(NSString *)key inCollection:(NSString *)collection;
+- (NSData *)serializedObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
@@ -2609,7 +2609,7 @@
 **/
 - (void)_enumerateKeysAndMetadataInCollection:(NSString *)collection
                                    usingBlock:(void (^)(int64_t rowid, NSString *key, id metadata, BOOL *stop))block
-                                   withFilter:(BOOL (^)(int64_t rowid, NSString *key))filter;
+                                   withFilter:(BOOL (^)(int64_t rowid, NSString *key))filter
 {
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
