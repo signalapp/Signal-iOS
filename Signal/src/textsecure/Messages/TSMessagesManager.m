@@ -294,7 +294,7 @@
             return [NSString stringWithFormat:@"%@ : %@", name, message.body];
             break;
         default:
-            DDLogWarn(@"Unexpected notification type %ld", setting);
+            DDLogWarn(@"Unexpected notification type %u", setting);
             break;
     }
 }
