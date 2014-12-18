@@ -190,6 +190,7 @@ phoneDirectoryManager;
 }
 
 + (void)groupModel:(GroupModel*)model {
+    //TODOGROUP
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
     

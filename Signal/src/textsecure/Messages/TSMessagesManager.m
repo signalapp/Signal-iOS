@@ -260,11 +260,12 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId groupName:content.group.name transaction:transaction];
-            [gThread saveWithTransaction:transaction];
             //TODOGROUP
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name members:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOATTACHMENTS, group avatar will not be nil
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+            [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
-                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachements:nil]; // GET RID OF THIS THIS WILL BE UI
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachements:nil]; // TODOGROUPS GET RID OF THIS THIS WILL BE UI
             }
             else {
                 incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];

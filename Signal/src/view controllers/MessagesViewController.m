@@ -83,7 +83,7 @@ typedef enum : NSUInteger {
 - (void)setupWithTSGroup:(GroupModel*)model {
     //TODOGROUP
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSGroupThread threadWithGroupId:model.groupId groupName:model.groupName transaction:transaction];
+        self.thread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
     }];
 }
 

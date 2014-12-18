@@ -53,12 +53,24 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
-    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
-    
+    [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
-            // TODOGROUP
-            NSLog(@"Currently unsupported to send in group");
+            //TODOGROUP
+            TSGroupThread* groupThread = (TSGroupThread*)thread;
+            __block NSArray* recipients;
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                recipients = [groupThread recipientsWithTransaction:transaction];
+            }];
+            
+            for(TSRecipient *rec in recipients){
+                [self sendMessage:message
+                      toRecipient:rec
+                         inThread:thread
+                      withAttemps:1];
+            }
+            
+            
         } else if([thread isKindOfClass:[TSContactThread class]]){
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;
