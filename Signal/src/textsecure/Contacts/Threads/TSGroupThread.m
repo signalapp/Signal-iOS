@@ -65,7 +65,7 @@
     //TODOGROUP
     NSMutableArray *recipients = [[NSMutableArray alloc] init];
     
-    for(NSString *recipientId in _groupModel.groupMembers) {
+    for(NSString *recipientId in _groupModel.groupMemberIds) {
         TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
         if (!recipient){
             recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:recipientId relay:nil];

@@ -261,7 +261,7 @@
         TSThread          *thread;
         if (groupId) {
             //TODOGROUP
-            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name members:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOATTACHMENTS, group avatar will not be nil
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOATTACHMENTS, group avatar will not be nil
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {

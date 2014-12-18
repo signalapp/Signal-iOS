@@ -53,11 +53,11 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
-    [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             //TODOGROUP
             TSGroupThread* groupThread = (TSGroupThread*)thread;
+            [self saveMessage:message withState:message.messageState];
             __block NSArray* recipients;
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                 recipients = [groupThread recipientsWithTransaction:transaction];
@@ -72,6 +72,8 @@ dispatch_queue_t sendingQueue() {
             
             
         } else if([thread isKindOfClass:[TSContactThread class]]){
+            [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -244,10 +246,23 @@ dispatch_queue_t sendingQueue() {
          @property (nonatomic, strong) NSString *groupName;
          @property (nonatomic, strong) NSData* groupId;
          */
-        [groupBuilder setMembersArray:gThread.groupModel.groupMembers];
+        [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
         [groupBuilder setName:gThread.groupModel.groupName];
         [groupBuilder setId:gThread.groupModel.groupId];
-        [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+        switch (message.messageState) {
+            case TSOutgoingMessageStateAttemptingOut:
+            case TSOutgoingMessageStateSent:
+            case TSOutgoingMessageStateUnsent:
+            case TSOutgoingMessageStateDelivered:
+                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+                break;
+            case TSOutgoingMessageStateMeta:
+                [groupBuilder setType:PushMessageContentGroupContextTypeUpdate]; //TODOGROUP other types
+                break;
+            default:
+                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+                break;
+        }
         //[groupBuilder setAvatar:(PushMessageContentAttachmentPointer *)]; //TODOATTACHMENTS
         [builder setGroup:groupBuilder.build];
     }

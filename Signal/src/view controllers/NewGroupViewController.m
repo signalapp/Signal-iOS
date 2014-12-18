@@ -85,10 +85,10 @@
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
-        [mut addObject:[contacts objectAtIndex:(NSUInteger)idx.row-1]];
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
     NSData* groupId =  [SecurityUtils generateRandomBytes:32];
-    return [[GroupModel alloc] initWithTitle:title members:mut image:img groupId:groupId];
+    return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender
