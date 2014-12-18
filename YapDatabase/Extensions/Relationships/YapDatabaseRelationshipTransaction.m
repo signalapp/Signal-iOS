@@ -1546,7 +1546,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		matchingEdge = [edge copy];
 		matchingEdge->edgeRowid = edgeRowid;
-		matchingEdge->nodeDeleteRules = rules;
+		matchingEdge->nodeDeleteRules = (unsigned short)rules;
 		
 		matchingEdge->flags |= YDB_FlagsHasEdgeRowid;
 	}
@@ -2779,7 +2779,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 							edge->destinationKey = dst.key;
 							edge->destinationCollection = dst.collection;
 							edge->destinationRowid = dstRowid;
-							edge->nodeDeleteRules = nodeDeleteRules;
+							edge->nodeDeleteRules = (unsigned short)nodeDeleteRules;
 							
 							id updatedDstNode =
 							  [dstNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_SourceNodeDeleted];
@@ -2866,7 +2866,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 						edge->destinationKey = collectionKey.key;
 						edge->destinationCollection = collectionKey.collection;
 						edge->destinationRowid = rowid;
-						edge->nodeDeleteRules = nodeDeleteRules;
+						edge->nodeDeleteRules = (unsigned short)nodeDeleteRules;
 						
 						id updatedSrcNode =
 						  [srcNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_DestinationNodeDeleted];

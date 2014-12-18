@@ -124,7 +124,7 @@
 			{
 				NSInteger elementCount = [paramIndexToElementCountMap[index] intValue];
 				NSMutableArray *unpackedParams = [NSMutableArray array];
-				for (NSUInteger i = 0; i < elementCount; i++)
+				for (NSInteger i = 0; i < elementCount; i++)
 				{
 					[unpackedParams addObject:@"?"];
 				}

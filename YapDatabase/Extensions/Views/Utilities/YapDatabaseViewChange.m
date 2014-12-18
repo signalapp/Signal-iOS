@@ -551,7 +551,7 @@
 					if (wasDelete)
 						dependencyIndex--;
 				}
-				else if ((offset < 0) && (-1*offset <= groupIndex))
+				else if ((offset < 0) && (-1*offset <= (NSInteger)groupIndex))
 				{
 					dependencyIndex = groupIndex + offset;
 				}

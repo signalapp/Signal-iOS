@@ -102,7 +102,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	
 		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			for (int i = 0; i < COUNT; i++)
+			for (unsigned int i = 0; i < COUNT; i++)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -119,7 +119,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		
 		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			for (int i = 1; i < COUNT; i += 2)
+			for (unsigned int i = 1; i < COUNT; i += 2)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -136,7 +136,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		
 		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			for (int i = 0; i < COUNT; i += 2)
+			for (unsigned int i = 0; i < COUNT; i += 2)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -153,7 +153,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		
 		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			for (int i = 1; i < COUNT; i+=2)
+			for (unsigned int i = 1; i < COUNT; i+=2)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -170,7 +170,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		
 		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			for (int i = 0; i < COUNT; i+=2)
+			for (unsigned int i = 0; i < COUNT; i+=2)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -237,7 +237,7 @@ static const NSUInteger STR_LENGTH = 2000;
 			
 			NSLog(@"Fetching items...");
 			
-			for (int i = 0; i < COUNT; i++)
+			for (unsigned int i = 0; i < COUNT; i++)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
@@ -249,7 +249,7 @@ static const NSUInteger STR_LENGTH = 2000;
 			
 			NSLog(@"Fetching more items...");
 			
-			for (int i = 0; i < COUNT; i++)
+			for (unsigned int i = 0; i < COUNT; i++)
 			{
 				NSString *key = [NSString stringWithFormat:@"%d", i];
 				
