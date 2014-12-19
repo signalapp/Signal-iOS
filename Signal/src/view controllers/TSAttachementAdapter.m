@@ -66,9 +66,29 @@
     return self.cachedImageView;
 }
 
+- (CGSize)mediaViewDisplaySize
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        return CGSizeMake(315.0f, 225.0f);
+    }
+    
+    if ([self isImagePortrait:_image]) {
+        return CGSizeMake(150.0f, 210.0f);
+    } else {
+        return CGSizeMake(210.0f, 150.0f);
+    }
+}
+
 -(BOOL)isImage
 {
     return _isImageAttachment;
+}
+
+#pragma mark - Utility
+
+- (BOOL)isImagePortrait:(UIImage*)image
+{
+    return image.size.height > image.size.width;
 }
 
 @end
