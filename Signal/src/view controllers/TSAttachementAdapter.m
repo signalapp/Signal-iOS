@@ -8,6 +8,7 @@
 
 #import "TSAttachementAdapter.h"
 
+#import "UIDevice+TSHardwareVersion.h"
 #import "JSQMessagesMediaViewBubbleImageMasker.h"
 
 @interface TSAttachementAdapter ()
@@ -15,7 +16,6 @@
 @property UIImage *image;
 
 @property (strong, nonatomic) UIImageView *cachedImageView;
-
 @property (assign, nonatomic, readonly) BOOL isImageAttachment;
 
 @end
@@ -66,9 +66,59 @@
     return self.cachedImageView;
 }
 
+- (CGSize)mediaViewDisplaySize
+{
+    return [self getBubbleSizeForImage:_image];
+}
+
 -(BOOL)isImage
 {
     return _isImageAttachment;
+}
+
+#pragma mark - Utility
+
+-(CGSize)getBubbleSizeForImage:(UIImage*)image
+{
+    CGFloat aspectRatio = image.size.height / image.size.width ;
+    
+    if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore])
+    {
+        return [self getLargeSizeForAspectRatio:aspectRatio];
+    } else {
+        return [self getSmallSizeForAspectRatio:aspectRatio];
+    }
+}
+
+-(CGSize)getLargeSizeForAspectRatio:(CGFloat)ratio
+{
+    return ratio > 1.0f ? [self largePortraitSize] : [self largeLandscapeSize];
+}
+
+-(CGSize)getSmallSizeForAspectRatio:(CGFloat)ratio
+{
+    return ratio > 1.0f ? [self smallPortraitSize] : [self smallLandscapeSize];
+}
+
+
+- (CGSize)largePortraitSize
+{
+    return CGSizeMake(220.0f, 310.0f);
+}
+
+- (CGSize)smallPortraitSize
+{
+    return CGSizeMake(150.0f, 210.0f);
+}
+
+- (CGSize)largeLandscapeSize
+{
+    return CGSizeMake(310.0f, 220.0f);
+}
+
+- (CGSize)smallLandscapeSize
+{
+    return CGSizeMake(210.0f, 150.0f);
 }
 
 @end
