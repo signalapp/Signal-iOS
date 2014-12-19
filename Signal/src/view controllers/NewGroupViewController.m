@@ -74,12 +74,13 @@
 
 #pragma mark - Actions
 -(void)createGroup {
+    //TODOGROUP
     GroupModel* model = [self makeGroup];
     [Environment groupModel:model];
 }
 
 -(GroupModel*)makeGroup {
-
+    //TODOGROUP
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _groupImageButton.imageView.image;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
@@ -87,7 +88,7 @@
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
-    NSData* groupId =  [SecurityUtils generateRandomBytes:32];
+    NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }
 

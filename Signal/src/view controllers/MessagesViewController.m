@@ -118,6 +118,22 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
+    //TODOGROUP total hack and will call update group everytime launched until there are messages
+    if( isGroupConversation && [self collectionView:nil numberOfItemsInSection:0]==0) {
+        //TODOGROUP
+        //HACKHACKHACK
+        // create the group
+        //TODOGROUP
+        TSGroupThread *gThread = (TSGroupThread*)self.thread;
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [gThread saveWithTransaction:transaction];
+        }];
+        // press send with a meta message
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachements:nil];
+        message.messageState = TSOutgoingMessageStateMeta;
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+
+    }
 }
 
 - (void)startReadTimer{
