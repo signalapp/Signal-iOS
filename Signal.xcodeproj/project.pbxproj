@@ -522,6 +522,7 @@
 		FCB626B51A3B067900FDB504 /* ArrowBottom@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB626B11A3B067900FDB504 /* ArrowBottom@2x.png */; };
 		FCB626B61A3B067900FDB504 /* ArrowBottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB626B21A3B067900FDB504 /* ArrowBottom@3x.png */; };
 		FCB626B71A3B067900FDB504 /* ArrowTop@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB626B31A3B067900FDB504 /* ArrowTop@3x.png */; };
+		FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
@@ -1220,6 +1221,8 @@
 		FCB626B11A3B067900FDB504 /* ArrowBottom@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ArrowBottom@2x.png"; sourceTree = "<group>"; };
 		FCB626B21A3B067900FDB504 /* ArrowBottom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ArrowBottom@3x.png"; sourceTree = "<group>"; };
 		FCB626B31A3B067900FDB504 /* ArrowTop@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ArrowTop@3x.png"; sourceTree = "<group>"; };
+		FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+TSHardwareVersion.h"; sourceTree = "<group>"; };
+		FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+TSHardwareVersion.m"; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
@@ -1806,6 +1809,8 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				76EB04FC18170B33006006FC /* Zid.h */,
 				76EB04FD18170B33006006FC /* Zid.m */,
+				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
+				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -3259,6 +3264,7 @@
 				FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */,
 				76EB059E18170B33006006FC /* HttpSocket.m in Sources */,
 				E197B60E18BBEC1A00F073E5 /* CallAudioManager.m in Sources */,
+				FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				76EB05D018170B33006006FC /* ZrtpHandshakeSocket.m in Sources */,
 				B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */,

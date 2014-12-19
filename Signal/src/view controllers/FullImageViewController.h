@@ -10,12 +10,8 @@
 
 @interface FullImageViewController : UIViewController
 
-@property(nonatomic, strong) IBOutlet UIImageView* fullImageView;
-@property(nonatomic, strong) IBOutlet UIButton* saveButton;
-@property(nonatomic, strong) IBOutlet UIButton* closeButton;
-@property(nonatomic, strong) IBOutlet UIScrollView* pinchView;
+- (instancetype)initWithImage:(UIImage*)image fromRect:(CGRect)rect;
 
-@property(nonatomic, strong) UIImage* image;
-
+-(void)presentFromViewController:(UIViewController*)viewController;
 
 @end

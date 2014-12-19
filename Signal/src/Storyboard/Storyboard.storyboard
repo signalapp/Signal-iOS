@@ -119,7 +119,6 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <segue destination="m2q-RS-sTo" kind="presentation" identifier="fullImage" id="vI3-mk-n1C"/>
                         <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" animates="NO" id="Zjl-QX-tHE"/>
                     </connections>
                 </viewController>
@@ -2532,177 +2531,6 @@ A0 09 9A FF A8 8A 09 99</string>
             </objects>
             <point key="canvasLocation" x="3154.5" y="392.25"/>
         </scene>
-        <!--Full Image View Controller-->
-        <scene sceneID="Awx-pS-RDJ">
-            <objects>
-                <viewController id="m2q-RS-sTo" customClass="FullImageViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="t0J-yq-Mbh"/>
-                        <viewControllerLayoutGuide type="bottom" id="LH9-C1-m9I"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="WfW-cb-tK6">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm6-V1-1DQ">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Neb-cr-TuQ">
-                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                    </imageView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="Neb-cr-TuQ" firstAttribute="leading" secondItem="Nm6-V1-1DQ" secondAttribute="leading" id="9te-80-0Kb"/>
-                                    <constraint firstItem="Neb-cr-TuQ" firstAttribute="top" secondItem="Nm6-V1-1DQ" secondAttribute="top" id="JpP-5v-dCV"/>
-                                    <constraint firstAttribute="trailing" secondItem="Neb-cr-TuQ" secondAttribute="trailing" constant="400" id="MIF-Ph-3aX">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                    </constraint>
-                                    <constraint firstAttribute="centerX" secondItem="Neb-cr-TuQ" secondAttribute="centerX" constant="200" id="OgJ-gl-OHy">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                    </constraint>
-                                    <constraint firstAttribute="centerY" secondItem="Neb-cr-TuQ" secondAttribute="centerY" constant="400" id="pHe-78-0g9">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                    </constraint>
-                                    <constraint firstAttribute="bottom" secondItem="Neb-cr-TuQ" secondAttribute="bottom" constant="800" id="wCF-r0-Mcy">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                    </constraint>
-                                </constraints>
-                                <variation key="default">
-                                    <mask key="subviews">
-                                        <exclude reference="Neb-cr-TuQ"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <exclude reference="9te-80-0Kb"/>
-                                        <exclude reference="JpP-5v-dCV"/>
-                                        <exclude reference="MIF-Ph-3aX"/>
-                                        <exclude reference="OgJ-gl-OHy"/>
-                                        <exclude reference="pHe-78-0g9"/>
-                                        <exclude reference="wCF-r0-Mcy"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="subviews">
-                                        <include reference="Neb-cr-TuQ"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <include reference="9te-80-0Kb"/>
-                                        <include reference="JpP-5v-dCV"/>
-                                        <include reference="MIF-Ph-3aX"/>
-                                        <include reference="OgJ-gl-OHy"/>
-                                        <include reference="pHe-78-0g9"/>
-                                        <include reference="wCF-r0-Mcy"/>
-                                    </mask>
-                                </variation>
-                            </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2yV-c9-cpf">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="g8h-b7-vpN"/>
-                                    <constraint firstAttribute="width" constant="50" id="r8b-pK-z62"/>
-                                </constraints>
-                                <state key="normal" image="quit.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="g8h-b7-vpN"/>
-                                        <exclude reference="r8b-pK-z62"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="g8h-b7-vpN"/>
-                                        <include reference="r8b-pK-z62"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="close:" destination="m2q-RS-sTo" eventType="touchUpInside" id="xN6-p0-Brk"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wrt-Gs-Awk">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="8e9-NC-H21"/>
-                                    <constraint firstAttribute="width" constant="50" id="LMa-lp-yS7"/>
-                                </constraints>
-                                <state key="normal" image="savephoto.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="8e9-NC-H21"/>
-                                        <exclude reference="LMa-lp-yS7"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="8e9-NC-H21"/>
-                                        <include reference="LMa-lp-yS7"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="more:" destination="m2q-RS-sTo" eventType="touchUpInside" id="jeq-kT-wEb"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <constraints>
-                            <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="wrt-Gs-Awk" secondAttribute="bottom" constant="20" id="3F7-s6-l2J"/>
-                            <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="Nm6-V1-1DQ" secondAttribute="bottom" id="Ept-m4-iN0"/>
-                            <constraint firstItem="Nm6-V1-1DQ" firstAttribute="top" secondItem="t0J-yq-Mbh" secondAttribute="bottom" id="Roc-JQ-f9y"/>
-                            <constraint firstItem="2yV-c9-cpf" firstAttribute="leading" secondItem="WfW-cb-tK6" secondAttribute="leadingMargin" id="YbI-cl-hOB"/>
-                            <constraint firstItem="Nm6-V1-1DQ" firstAttribute="leading" secondItem="WfW-cb-tK6" secondAttribute="leadingMargin" constant="-16" id="ZDj-at-031"/>
-                            <constraint firstItem="LH9-C1-m9I" firstAttribute="top" secondItem="2yV-c9-cpf" secondAttribute="bottom" constant="20" id="lve-Jx-YbD"/>
-                            <constraint firstItem="wrt-Gs-Awk" firstAttribute="leading" secondItem="2yV-c9-cpf" secondAttribute="trailing" constant="20" id="qxF-m3-YlM"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Nm6-V1-1DQ" secondAttribute="trailing" constant="-16" id="rPg-Hq-Xxk"/>
-                        </constraints>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="Nm6-V1-1DQ"/>
-                                <exclude reference="2yV-c9-cpf"/>
-                                <exclude reference="wrt-Gs-Awk"/>
-                            </mask>
-                            <mask key="constraints">
-                                <exclude reference="3F7-s6-l2J"/>
-                                <exclude reference="Ept-m4-iN0"/>
-                                <exclude reference="lve-Jx-YbD"/>
-                                <exclude reference="YbI-cl-hOB"/>
-                                <exclude reference="qxF-m3-YlM"/>
-                                <exclude reference="Roc-JQ-f9y"/>
-                                <exclude reference="ZDj-at-031"/>
-                                <exclude reference="rPg-Hq-Xxk"/>
-                            </mask>
-                        </variation>
-                        <variation key="heightClass=regular-widthClass=compact">
-                            <mask key="subviews">
-                                <include reference="Nm6-V1-1DQ"/>
-                                <include reference="2yV-c9-cpf"/>
-                                <include reference="wrt-Gs-Awk"/>
-                            </mask>
-                            <mask key="constraints">
-                                <include reference="3F7-s6-l2J"/>
-                                <include reference="Ept-m4-iN0"/>
-                                <include reference="lve-Jx-YbD"/>
-                                <include reference="YbI-cl-hOB"/>
-                                <include reference="qxF-m3-YlM"/>
-                                <include reference="Roc-JQ-f9y"/>
-                                <include reference="ZDj-at-031"/>
-                                <include reference="rPg-Hq-Xxk"/>
-                            </mask>
-                        </variation>
-                    </view>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
-                    <connections>
-                        <outlet property="closeButton" destination="2yV-c9-cpf" id="0LC-MN-kUI"/>
-                        <outlet property="fullImageView" destination="Neb-cr-TuQ" id="oFA-rD-2T5"/>
-                        <outlet property="pinchView" destination="Nm6-V1-1DQ" id="yXB-Op-QkS"/>
-                        <outlet property="saveButton" destination="wrt-Gs-Awk" id="69f-4L-Igh"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="a5y-ji-0eO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4000.5" y="392.25"/>
-        </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
             <objects>
@@ -3824,7 +3652,6 @@ Licensed under the GPLv3</string>
         <image name="qr.png" width="100" height="100"/>
         <image name="qr_scan_fingerprint.png" width="100" height="100"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="savephoto.png" width="50" height="50"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
