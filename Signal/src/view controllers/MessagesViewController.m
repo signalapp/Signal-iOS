@@ -322,7 +322,6 @@ typedef enum : NSUInteger {
     }
     
     return cell;
-    
 }
 
 -(JSQCallCollectionViewCell*)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath*)indexPath
@@ -473,7 +472,9 @@ typedef enum : NSUInteger {
                 if ([messageMedia isImage]) {
                     //is a photo
                     tappedImage = ((UIImageView*)[messageMedia mediaView]).image ;
-                    [self performSegueWithIdentifier:@"fullImage" sender:self];
+                    
+                    FullImageViewController * vc = [[FullImageViewController alloc]initWithImage:tappedImage];
+                    [self presentViewController:vc animated:YES completion:nil];
                     
                 } else {
                     DDLogWarn(@"Currently unsupported");
@@ -544,12 +545,8 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"fullImage"])
-    {
-        FullImageViewController* dest = [segue destinationViewController];
-        dest.image = tappedImage;
-        
-    } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
+    
+    if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
