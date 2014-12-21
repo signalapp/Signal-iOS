@@ -1,5 +1,5 @@
 //
-//  TSMessagesManager+attachements.m
+//  TSMessagesManager+attachments.m
 //  Signal
 //
 //  Created by Frederic Jacobs on 17/12/14.
@@ -12,59 +12,59 @@
 #import "Cryptography.h"
 
 #import "TSConstants.h"
-#import "TSMessagesManager+attachements.h"
-#import "TSAttachementRequest.h"
+#import "TSMessagesManager+attachments.h"
+#import "TSAttachmentRequest.h"
 #import "TSUploadAttachment.h"
 #import "TSInfoMessage.h"
-#import "TSAttachementPointer.h"
+#import "TSattachmentPointer.h"
 #import "TSNetworkManager.h"
 
 @interface TSMessagesManager ()
 
-dispatch_queue_t attachementsQueue(void);
+dispatch_queue_t attachmentsQueue(void);
 
 @end
 
-dispatch_queue_t attachementsQueue() {
+dispatch_queue_t attachmentsQueue() {
     static dispatch_once_t queueCreationGuard;
     static dispatch_queue_t queue;
     dispatch_once(&queueCreationGuard, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.attachements", NULL);
+        queue = dispatch_queue_create("org.whispersystems.signal.attachments", NULL);
     });
     return queue;
 }
 
-@implementation TSMessagesManager (attachements)
+@implementation TSMessagesManager (attachments)
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content {
-    NSMutableArray *attachements = [NSMutableArray array];
+    NSMutableArray *attachments = [NSMutableArray array];
     
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (PushMessageContentAttachmentPointer *pointer in content.attachments) {
-            TSAttachementPointer *attachementPointer = [[TSAttachementPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
-            [attachementPointer saveWithTransaction:transaction];
-            dispatch_async(attachementsQueue(), ^{
-                [self retrieveAttachment:attachementPointer];
+            TSAttachmentPointer *attachmentPointer = [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
+            [attachmentPointer saveWithTransaction:transaction];
+            dispatch_async(attachmentsQueue(), ^{
+                [self retrieveAttachment:attachmentPointer];
             });
-            [attachements addObject:attachementPointer.uniqueId];
+            [attachments addObject:attachmentPointer.uniqueId];
         }
     }];
     
-    [self handleReceivedMessage:message withContent:content attachements:attachements];
+    [self handleReceivedMessage:message withContent:content attachments:attachments];
 }
 
-- (void)retrieveAttachment:(TSAttachementPointer*)attachement {
+- (void)retrieveAttachment:(TSAttachmentPointer*)attachment {
     
-    TSAttachementRequest *attachementRequest = [[TSAttachementRequest alloc] initWithId:[attachement identifier]
-                                                                                  relay:attachement.relay];
+    TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:[attachment identifier]
+                                                                                  relay:attachment.relay];
     
-    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:attachementRequest success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:attachmentRequest success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSString *location = [(NSDictionary*)responseObject objectForKey:@"location"];
             NSData *data = [self downloadFromLocation:location];
             if (data) {
-                dispatch_async(attachementsQueue(), ^{
-                    [self decryptedAndSaveAttachement:attachement data:data];
+                dispatch_async(attachmentsQueue(), ^{
+                    [self decryptedAndSaveAttachment:attachment data:data];
                 });
             }
             
@@ -78,7 +78,7 @@ dispatch_queue_t attachementsQueue() {
     __block NSData *data;
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.completionQueue    = attachementsQueue();
+    manager.completionQueue    = attachmentsQueue();
     manager.requestSerializer  = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
     
@@ -96,19 +96,19 @@ dispatch_queue_t attachementsQueue() {
     return data;
 }
 
-- (void)decryptedAndSaveAttachement:(TSAttachementPointer*)attachement data:(NSData*)cipherText {
-    NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachement.encryptionKey];
+- (void)decryptedAndSaveAttachment:(TSAttachmentPointer*)attachment data:(NSData*)cipherText {
+    NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey];
     
     if (!plaintext) {
-        DDLogError(@"Failed to get attachement decrypted ...");
+        DDLogError(@"Failed to get attachment decrypted ...");
     } else {
-        TSAttachementStream *stream = [[TSAttachementStream alloc] initWithIdentifier:attachement.uniqueId
-                                                                                 data:plaintext key:attachement.encryptionKey
-                                                                          contentType:attachement.contentType];
+        TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithIdentifier:attachment.uniqueId
+                                                                                 data:plaintext key:attachment.encryptionKey
+                                                                          contentType:attachment.contentType];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
         }];
-        NSLog(@"We got %@ of type %@", plaintext, attachement.contentType);
+        NSLog(@"We got %@ of type %@", plaintext, attachment.contentType);
     }
     
 }

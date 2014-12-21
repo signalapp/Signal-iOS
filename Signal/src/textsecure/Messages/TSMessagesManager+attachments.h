@@ -1,5 +1,5 @@
 //
-//  TSMessagesManager+attachements.h
+//  TSMessagesManager+attachments.h
 //  Signal
 //
 //  Created by Frederic Jacobs on 17/12/14.
@@ -7,11 +7,11 @@
 //
 
 #import "TSMessagesManager.h"
-#import "TSAttachement.h"
+#import "TSAttachment.h"
 
-@interface TSMessagesManager (attachements)
+@interface TSMessagesManager (attachments)
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content;
-- (void)retrieveAttachment:(TSAttachement*)attachement;
+- (void)retrieveAttachment:(TSAttachment*)attachment;
 
 @end

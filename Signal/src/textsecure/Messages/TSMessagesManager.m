@@ -28,7 +28,7 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSNetworkManager.h"
 #import "TSSubmitMessageRequest.h"
-#import "TSMessagesManager+attachements.h"
+#import "TSMessagesManager+attachments.h"
 
 #import "NSData+messagePadding.h"
 
@@ -183,7 +183,7 @@
         DDLogVerbose(@"Received push group update message...");
         [self handleGroupMessage:incomingMessage withContent:content];
     } else if (content.attachments.count > 0) {
-        DDLogVerbose(@"Received push media message (attachement) ...");
+        DDLogVerbose(@"Received push media message (attachment) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     } else {
         DDLogVerbose(@"Received push text message...");
@@ -209,10 +209,10 @@
 }
 
 - (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    [self handleReceivedMessage:message withContent:content attachements:nil];
+    [self handleReceivedMessage:message withContent:content attachments:nil];
 }
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachements:(NSArray*)attachements {
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
     uint64_t timeStamp  = message.timestamp;
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
@@ -223,12 +223,12 @@
         if (groupId) {
             TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
             [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:attachements];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
             thread = gThread;
         } else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:attachements];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
             thread = cThread;
         }
         [incomingMessage saveWithTransaction:transaction];
@@ -294,7 +294,7 @@
             return [NSString stringWithFormat:@"%@ : %@", name, message.body];
             break;
         default:
-            DDLogWarn(@"Unexpected notification type %u", setting);
+            DDLogWarn(@"Unexpected notification type %lu", setting);
             break;
     }
 }

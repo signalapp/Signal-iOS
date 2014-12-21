@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TSAttachement.h"
+#import "TSAttachment.h"
 
-@interface TSAttachementPointer : TSAttachement
+@interface TSAttachmentPointer : TSAttachment
 
 - (instancetype)initWithIdentifier:(uint64_t)identifier
                                key:(NSData*)key

@@ -12,9 +12,9 @@
 #import "TSCall.h"
 #import "TSInfoMessage.h"
 #import "TSErrorMessage.h"
-#import "TSAttachement.h"
-#import "TSAttachementStream.h"
-#import "TSAttachementAdapter.h"
+#import "TSattachment.h"
+#import "TSAttachmentStream.h"
+#import "TSAttachmentAdapter.h"
 
 @interface TSMessageAdapter ()
 
@@ -88,16 +88,16 @@
         TSMessage *message = (TSMessage*)interaction;
         adapter.messageBody = message.body;
         
-        if (message.attachements > 0) {
+        if (message.attachments > 0) {
             
             
-            for (NSString *attachementID in message.attachements) {
-                TSAttachement *attachement = [TSAttachement fetchObjectWithUniqueID:attachementID];
+            for (NSString *attachmentID in message.attachments) {
+                TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
                 
-                if ([attachement isKindOfClass:[TSAttachementStream class]]) {
-                    TSAttachementStream *stream = (TSAttachementStream*)attachement;
+                if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                    TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
                     if ([stream isImage]) {
-                        adapter.mediaItem = [[TSAttachementAdapter alloc] initWithAttachement:stream];
+                        adapter.mediaItem = [[TSAttachmentAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                     }
                 }

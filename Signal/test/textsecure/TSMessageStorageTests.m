@@ -57,7 +57,7 @@
     TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                         inThread:self.thread
                                                                      messageBody:body
-                                                                    attachements:nil];
+                                                                    attachments:nil];
     [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
     }];
@@ -65,7 +65,7 @@
     TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp]];
     
     NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
-    NSAssert(fetchedMessage.attachements == nil, @"Attachements are nil");
+    NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
     NSAssert([fetchedMessage.uniqueId isEqualToString:[TSInteraction stringFromTimeStamp:timestamp]], @"Unique identifier is accurate");
     NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
     NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");
@@ -79,7 +79,7 @@
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
                                                                             inThread:self.thread
                                                                          messageBody:body
-                                                                        attachements:nil];
+                                                                        attachments:nil];
         [newMessage save];
     }
     
@@ -90,7 +90,7 @@
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
             
             NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
-            NSAssert(fetchedMessage.attachements == nil, @"Attachements are nil");
+            NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
             NSAssert([fetchedMessage.uniqueId isEqualToString:[TSInteraction stringFromTimeStamp:timestamp]], @"Unique identifier is accurate");
             NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
             NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");

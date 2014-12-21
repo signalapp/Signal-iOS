@@ -37,7 +37,7 @@
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
-#import "TSAttachementAdapter.h"
+#import "TSAttachmentAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -233,7 +233,7 @@ typedef enum : NSUInteger {
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
         
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachements:nil];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
         
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
@@ -467,7 +467,7 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                TSAttachementAdapter * messageMedia = (TSAttachementAdapter*)[messageItem media];
+                TSAttachmentAdapter * messageMedia = (TSAttachmentAdapter*)[messageItem media];
                 
                 if ([messageMedia isImage]) {
                     //is a photo
@@ -616,20 +616,21 @@ typedef enum : NSUInteger {
     if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
         //Is a video
         
-        NSURL* videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+        NSURL* videoURL                          = [info objectForKey:UIImagePickerControllerMediaURL];
         AVURLAsset *asset1                       = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
-        //Create a snapshot image
         AVAssetImageGenerator *generate1         = [[AVAssetImageGenerator alloc] initWithAsset:asset1];
         generate1.appliesPreferredTrackTransform = YES;
         NSError *err                             = NULL;
         CMTime time                              = CMTimeMake(2, 1);
         CGImageRef snapshotRef                   = [generate1 copyCGImageAtTime:time actualTime:NULL error:&err];
         __unused UIImage *snapshot               = [[UIImage alloc] initWithCGImage:snapshotRef];
-        
+
         JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
         JSQMessage * videoMessage = [JSQMessage messageWithSenderId:self.senderId
                                                         displayName:self.senderDisplayName
                                                               media:videoItem];
+        
+        self.
         
         [self finishSendingMessage];
         

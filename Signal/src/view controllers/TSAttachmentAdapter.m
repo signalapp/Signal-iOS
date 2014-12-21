@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachementAdapter.h"
+#import "TSAttachmentAdapter.h"
 
 #import "UIDevice+TSHardwareVersion.h"
 #import "JSQMessagesMediaViewBubbleImageMasker.h"
 
-@interface TSAttachementAdapter ()
+@interface TSAttachmentAdapter ()
 
 @property UIImage *image;
 
@@ -20,13 +20,13 @@
 
 @end
 
-@implementation TSAttachementAdapter
+@implementation TSAttachmentAdapter
 
-- (instancetype)initWithAttachement:(TSAttachementStream*)attachement{
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment{
     self = [super init];
     
     if (self) {
-        _image = [UIImage imageWithCGImage:attachement.image.CGImage];
+        _image = [UIImage imageWithCGImage:attachment.image.CGImage];
         _cachedImageView = nil;
         _isImageAttachment = YES;
     }

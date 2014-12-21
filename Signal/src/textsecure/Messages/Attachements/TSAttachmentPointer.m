@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachementPointer.h"
+#import "TSAttachmentPointer.h"
 
-@implementation TSAttachementPointer
+@implementation TSAttachmentPointer
 
 - (instancetype)initWithIdentifier:(uint64_t)identifier
                                key:(NSData*)key

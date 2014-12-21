@@ -1,20 +1,20 @@
 //
-//  TSAttachementStream.m
+//  TSattachmentStream.m
 //  Signal
 //
 //  Created by Frederic Jacobs on 17/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachementStream.h"
+#import "TSAttachmentStream.h"
 
-@interface TSAttachementStream ()
+@interface TSAttachmentStream ()
 
 @property (nonatomic) NSString *path;
 
 @end
 
-@implementation TSAttachementStream
+@implementation TSAttachmentStream
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data
@@ -36,10 +36,10 @@
     NSFileManager* fileManager  = [NSFileManager defaultManager];
     NSURL *fileURL              = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSString *path              = [fileURL path];
-    NSString *attachementFolder = [path stringByAppendingFormat:@"/Attachements"];
+    NSString *attachmentFolder = [path stringByAppendingFormat:@"/Attachments"];
     
     NSError * error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:attachementFolder
+    [[NSFileManager defaultManager] createDirectoryAtPath:attachmentFolder
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:&error];
@@ -47,7 +47,7 @@
         DDLogError(@"Failed to create attachments directory: %@", error.description);
     }
 
-    return attachementFolder;
+    return attachmentFolder;
 }
 
 - (NSString*)filePath {

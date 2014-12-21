@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachementRequest.h"
+#import "TSAttachmentRequest.h"
 #import "TSConstants.h"
 
-@implementation TSAttachementRequest
+@implementation TSAttachmentRequest
 
 -(TSRequest*) initWithId:(NSNumber*) attachmentId relay:(NSString*)relay {
     

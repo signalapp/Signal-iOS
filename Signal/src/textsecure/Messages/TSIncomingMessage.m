@@ -14,9 +14,9 @@
                          inThread:(TSGroupThread*)thread
                          authorId:(NSString*)authorId
                       messageBody:(NSString*)body
-                     attachements:(NSArray *)attachements
+                     attachments:(NSArray *)attachments
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachements:attachements];
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachments:attachments];
     
     if (self) {
         _authorId = authorId;
@@ -29,9 +29,9 @@
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSContactThread *)thread
                       messageBody:(NSString *)body
-                     attachements:(NSArray *)attachements
+                     attachments:(NSArray *)attachments
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachements:attachements];
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachments:attachments];
     
     if (self) {
         _authorId = nil;
