@@ -21,8 +21,8 @@
 #import "TSStorageManager+SignedPreKeyStore.h"
 
 #import "PreKeyBundle+jsonDict.h"
-#import "TSErrorMessage.h"
 
+#import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
 #import "TSSubmitMessageRequest.h"
@@ -219,9 +219,27 @@ dispatch_queue_t sendingQueue() {
     
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];
-    return [builder.build data];
     
-    //TO-DO: DEAL WITH ATTACHEMENTS AND GROUPS STUFF
+    NSMutableArray *attachmentsArray = [NSMutableArray array];
+    
+    for (NSString *attachmentId in message.attachments){
+        id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+        
+        if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
+            
+            PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
+            [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
+            [attachmentbuilder setContentType:attachment.contentType];
+            [attachmentbuilder setKey:attachment.encryptionKey];
+    
+            [attachmentsArray addObject:[attachmentbuilder build]];
+        }
+    }
+    
+    [builder setAttachmentsArray:attachmentsArray];
+    
+    return [builder.build data];
 }
 
 @end

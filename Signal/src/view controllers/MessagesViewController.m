@@ -40,6 +40,7 @@
 #import "TSAttachmentAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
+#import "TSMessagesManager+attachments.h"
 #import "NSDate+millisecondTimeStamp.h"
 
 #import "PhoneNumber.h"
@@ -614,35 +615,10 @@ typedef enum : NSUInteger {
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
     
     if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
-        //Is a video
-        
-        NSURL* videoURL                          = [info objectForKey:UIImagePickerControllerMediaURL];
-        AVURLAsset *asset1                       = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
-        AVAssetImageGenerator *generate1         = [[AVAssetImageGenerator alloc] initWithAsset:asset1];
-        generate1.appliesPreferredTrackTransform = YES;
-        NSError *err                             = NULL;
-        CMTime time                              = CMTimeMake(2, 1);
-        CGImageRef snapshotRef                   = [generate1 copyCGImageAtTime:time actualTime:NULL error:&err];
-        __unused UIImage *snapshot               = [[UIImage alloc] initWithCGImage:snapshotRef];
-
-        JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
-        JSQMessage * videoMessage = [JSQMessage messageWithSenderId:self.senderId
-                                                        displayName:self.senderDisplayName
-                                                              media:videoItem];
-        
-        self.
-        
-        [self finishSendingMessage];
-        
+        DDLogWarn(@"Video formats not supported, yet");
     } else if (picture_camera) {
-        //Is a photo
-        
-        JSQPhotoMediaItem *photoItem = [[JSQPhotoMediaItem alloc] initWithImage:picture_camera];
-        JSQMessage *photoMessage = [JSQMessage messageWithSenderId:self.senderId
-                                                       displayName:self.senderDisplayName
-                                                             media:photoItem];
-        [self finishSendingMessage];
-        
+        DDLogVerbose(@"Sending picture attachement ...");
+        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(picture_camera) contentType:@"image/png" thread:self.thread];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];

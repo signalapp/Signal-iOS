@@ -13,5 +13,6 @@
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content;
 - (void)retrieveAttachment:(TSAttachment*)attachment;
+- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread;
 
 @end

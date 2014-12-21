@@ -62,6 +62,14 @@
     }
 }
 
+- (BOOL)isVideo{
+    if ([self.contentType containsString:@"video/"]) {
+        return YES;
+    } else{
+        return NO;
+    }
+}
+
 - (UIImage*)image{
     if (![self isImage]) {
         return nil;

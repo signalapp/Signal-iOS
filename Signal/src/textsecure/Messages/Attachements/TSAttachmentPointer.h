@@ -15,7 +15,7 @@
 - (instancetype)initWithIdentifier:(uint64_t)identifier
                                key:(NSData*)key
                        contentType:(NSString*)contentType
-                             relay:(NSString*)relay;
+                             relay:(NSString*)relay NS_DESIGNATED_INITIALIZER;;
 
 @property NSString *relay;
 

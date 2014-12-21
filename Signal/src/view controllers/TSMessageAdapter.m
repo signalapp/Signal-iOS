@@ -88,8 +88,7 @@
         TSMessage *message = (TSMessage*)interaction;
         adapter.messageBody = message.body;
         
-        if (message.attachments > 0) {
-            
+        if ([message.attachments count] > 0) {
             
             for (NSString *attachmentID in message.attachments) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
