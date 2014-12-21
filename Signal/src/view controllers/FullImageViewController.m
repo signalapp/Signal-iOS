@@ -351,21 +351,19 @@
 
 -(void)shareButtonTapped:(UIButton*)sender
 {
-    [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Save to Camera Roll", @"Copy", @"Share"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+    [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Save to Camera Roll", @"Copy"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-            NSLog(@"User Cancelled");
+            
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+            #warning Unimplemented deleting attachments from FullImageView
             NSLog(@"Destructive button tapped");
         }else {
             switch (tappedButtonIndex) {
                 case 0:
-                    //Save to Camera Roll
+                    UIImageWriteToSavedPhotosAlbum(self.image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
                     break;
                 case 1:
-                    //Copy to PasteBoard
-                    break;
-                case 2:
-                    //Share
+                    [[UIPasteboard generalPasteboard] setImage:self.image];
                     break;
                 default:
                     DDLogWarn(@"Illegal Action sheet field #%ld <%s>",tappedButtonIndex, __PRETTY_FUNCTION__);
@@ -374,4 +372,16 @@
         }
     }];
 }
+
+#pragma mark - Saving images to Camera Roll
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error
+  contextInfo:(void *)contextInfo
+{
+    if (error)
+    {
+        DDLogWarn(@"There was a problem saving <%@> to camera roll from %s ", error.localizedDescription ,__PRETTY_FUNCTION__);
+    }
+}
+
 @end
