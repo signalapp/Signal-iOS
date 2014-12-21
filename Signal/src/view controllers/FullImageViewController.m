@@ -14,12 +14,18 @@
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 5.0f
 
-@interface FullImageViewController () <UIScrollViewDelegate>
+@interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImage* image;
+
+@property (strong, nonatomic) UITapGestureRecognizer *singleTap;
+@property (strong, nonatomic) UITapGestureRecognizer *doubleTap;
+@property (strong, nonatomic) UILongPressGestureRecognizer *longPress;
+@property (strong, nonatomic) UIPanGestureRecognizer *panRecognizer;
+
 @property CGRect originRect;
 
 @property BOOL isPresenting;
@@ -47,6 +53,7 @@
     [self initializeBackground];
     [self initializeScrollView];
     [self initializeImageView];
+    [self initializeGestureRecognizers];
     
     [self populateImageView:self.image];
 }
@@ -59,7 +66,7 @@
 
 #pragma mark - Initializers
 
--(void)initializeBackground
+- (void)initializeBackground
 {
     
     self.view.backgroundColor           = [UIColor blackColor];
@@ -71,7 +78,7 @@
     [self.view addSubview:self.backgroundView];
 }
 
--(void)initializeScrollView
+- (void)initializeScrollView
 {
     self.scrollView                  = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     self.scrollView.delegate         = self;
@@ -93,11 +100,58 @@
 
 }
 
--(void)populateImageView:(UIImage*)image
+- (void)populateImageView:(UIImage*)image
 {
     if (image) {
         self.imageView.image = image;
     }
+}
+
+- (void)initializeGestureRecognizers
+{
+    self.longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(imageLongPressed:)];
+
+    self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageDoubleTapped:)];
+    self.doubleTap.numberOfTapsRequired = 2;
+    
+    self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageSingleTapped:)];
+    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    [self.singleTap requireGestureRecognizerToFail:self.longPress];
+    
+    self.singleTap.delegate = self;
+    self.doubleTap.delegate = self;
+    self.longPress.delegate = self;
+
+    [self.view addGestureRecognizer:self.singleTap];
+    [self.view addGestureRecognizer:self.doubleTap];
+    [self.view addGestureRecognizer:self.longPress];
+    
+    self.panRecognizer = [[UIPanGestureRecognizer alloc] init];
+    [self.panRecognizer addTarget:self action:@selector(panGestureDismiss:)];
+    self.panRecognizer.delegate = self;
+    [self.scrollView addGestureRecognizer:self.panRecognizer];
+}
+
+#pragma mark - Gesture Recongizers
+
+- (void)imageDoubleTapped:(id)sender
+{
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+- (void)imageSingleTapped:(id)sender
+{
+    NSLog(@"%s",__PRETTY_FUNCTION__);
+}
+
+-(void)imageLongPressed:(id)sender
+{
+    NSLog(@"%s",__PRETTY_FUNCTION__);
+}
+
+-(void)panGestureDismiss:(id)sender
+{
+    NSLog(@"%s",__PRETTY_FUNCTION__);
 }
 
 #pragma mark - Presentation
@@ -128,6 +182,7 @@
     }];
 
 }
+
 
 #pragma mark - Update Layout
 
@@ -242,6 +297,8 @@
     self.scrollView.scrollEnabled = (scale > 1);
     self.scrollView.contentInset = [self contentInsetForScrollView:scale];
 }
+
+
 
 #pragma mark - Utility
 
