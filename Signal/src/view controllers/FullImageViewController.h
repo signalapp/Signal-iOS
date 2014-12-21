@@ -10,6 +10,8 @@
 
 @interface FullImageViewController : UIViewController
 
-- (instancetype)initWithImage:(UIImage*)image;
+- (instancetype)initWithImage:(UIImage*)image fromRect:(CGRect)rect;
+
+-(void)presentFromViewController:(UIViewController*)viewController;
 
 @end

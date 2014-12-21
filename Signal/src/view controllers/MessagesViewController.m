@@ -472,9 +472,9 @@ typedef enum : NSUInteger {
                 if ([messageMedia isImage]) {
                     //is a photo
                     tappedImage = ((UIImageView*)[messageMedia mediaView]).image ;
-                    
-                    FullImageViewController * vc = [[FullImageViewController alloc]initWithImage:tappedImage];
-                    [self presentViewController:vc animated:YES completion:nil];
+                    CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
+                    FullImageViewController * vc = [[FullImageViewController alloc]initWithImage:tappedImage fromRect:convertedRect];
+                    [vc presentFromViewController:self];
                     
                 } else {
                     DDLogWarn(@"Currently unsupported");
