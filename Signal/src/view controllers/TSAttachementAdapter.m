@@ -103,7 +103,7 @@
 
 - (CGSize)largePortraitSize
 {
-    return CGSizeMake(250.0f, 310.0f);
+    return CGSizeMake(220.0f, 310.0f);
 }
 
 - (CGSize)smallPortraitSize
@@ -113,7 +113,7 @@
 
 - (CGSize)largeLandscapeSize
 {
-    return CGSizeMake(310.0f, 250.0f);
+    return CGSizeMake(310.0f, 220.0f);
 }
 
 - (CGSize)smallLandscapeSize
