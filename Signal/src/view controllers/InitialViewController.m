@@ -17,7 +17,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"%@",self.navigationController);
 
     [[Environment getCurrent]setSignUpFlowNavigationController:self.navigationController];
 }

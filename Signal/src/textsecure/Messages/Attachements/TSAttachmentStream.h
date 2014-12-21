@@ -13,13 +13,11 @@
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data
                                key:(NSData*)key
-                       contentType:(NSString*)contentType;
+                       contentType:(NSString*)contentType NS_DESIGNATED_INITIALIZER;;
 
-- (NSString*)path;
+- (UIImage *)image;
 
 - (BOOL)isImage;
-- (UIImage*)image;
-
 - (BOOL)isVideo;
 
 @end

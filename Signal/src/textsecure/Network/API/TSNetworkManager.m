@@ -14,7 +14,6 @@
 #import "TSRequest.h"
 #import "TSRegisterWithTokenRequest.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "TSUploadAttachment.h"
 
 @interface TSNetworkManager ()
 

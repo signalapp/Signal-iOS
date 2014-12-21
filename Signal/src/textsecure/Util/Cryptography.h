@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TSAttachmentEncryptionResult.h"
 
 @interface Cryptography : NSObject
 
@@ -32,7 +33,6 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 
 #pragma mark encrypt and decrypt attachment data
 +(NSData*) decryptAttachment:(NSData*)dataToDecrypt withKey:(NSData*)key ;
-+(NSData*) encryptAttachment:(NSData*)attachment withRandomKey:(NSData**)key;
 
-
++(TSAttachmentEncryptionResult*)encryptAttachment:(NSData*)attachment contentType:(NSString*)contentType identifier:(NSString*)identifier;
 @end
