@@ -11,41 +11,41 @@
 
 @implementation TSMessage
 
-- (void)addAttachements:(NSArray*)attachements {
-    for (NSString *identifier in attachements) {
-        [self addAttachement:identifier];
+- (void)addattachments:(NSArray*)attachments {
+    for (NSString *identifier in attachments) {
+        [self addattachment:identifier];
     }
 }
 
-- (void)addAttachement:(NSString*)attachement {
-    if (!_attachements) {
-        _attachements = [NSMutableArray array];
+- (void)addattachment:(NSString*)attachment {
+    if (!_attachments) {
+        _attachments = [NSMutableArray array];
     }
     
-    [self.attachements addObject:attachement];
+    [self.attachments addObject:attachment];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread*)thread
                       messageBody:(NSString*)body
-                     attachements:(NSArray*)attachements
+                     attachments:(NSArray*)attachments
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
     
     if (self) {
         _body         = body;
-        _attachements = [attachements mutableCopy];
+        _attachments = [attachments mutableCopy];
     }
     return self;
 }
 
-- (BOOL)hasAttachements{
-    return self.attachements?(self.attachements.count>0):false;
+- (BOOL)hasattachments{
+    return self.attachments?(self.attachments.count>0):false;
 }
 
 - (NSString *)description{
-    if(self.attachements > 0){
-        return @"Attachement";
+    if(self.attachments > 0){
+        return @"attachment";
     } else {
         return self.body;
     }

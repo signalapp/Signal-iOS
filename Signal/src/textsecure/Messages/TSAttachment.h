@@ -1,5 +1,5 @@
 //
-//  TSAttachement.h
+//  TSAttachment.h
 //  TextSecureKit
 //
 //  Created by Frederic Jacobs on 12/11/14.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "TSYapDatabaseObject.h"
 
-@interface TSAttachement : TSYapDatabaseObject
+@interface TSAttachment : TSYapDatabaseObject
 
 - (NSNumber*)identifier;
 

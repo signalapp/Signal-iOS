@@ -21,6 +21,6 @@
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachements:(NSArray*)attachements;
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
 
 @end

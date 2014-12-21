@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachement.h"
+#import "TSAttachment.h"
 
-@interface TSAttachementStream : TSAttachement
+@interface TSAttachmentStream : TSAttachment
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data

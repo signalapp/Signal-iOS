@@ -7,12 +7,12 @@
 //
 
 #import <JSQMessagesViewController/JSQMediaItem.h>
-#import "TSAttachementStream.h"
+#import "TSAttachmentStream.h"
 #import <Foundation/Foundation.h>
 
-@interface TSAttachementAdapter : JSQMediaItem
+@interface TSAttachmentAdapter : JSQMediaItem
 
-- (instancetype)initWithAttachement:(TSAttachementStream*)attachement;
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment;
 
 - (BOOL)isImage;
 

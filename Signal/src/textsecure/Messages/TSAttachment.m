@@ -7,9 +7,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachement.h"
+#import "TSAttachment.h"
 
-@implementation TSAttachement
+@implementation TSAttachment
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                      encryptionKey:(NSData*)encryptionKey

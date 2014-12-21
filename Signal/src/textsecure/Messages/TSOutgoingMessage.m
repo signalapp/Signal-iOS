@@ -13,10 +13,10 @@
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                     attachements:(NSMutableArray*)attachements
+                     attachments:(NSMutableArray*)attachments
 {
     self = [super initWithTimestamp:timestamp inThread:thread
-                        messageBody:body attachements:attachements];
+                        messageBody:body attachments:attachments];
     
     if (self) {
         _messageState = TSOutgoingMessageStateAttemptingOut;
