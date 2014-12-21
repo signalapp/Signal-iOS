@@ -20,16 +20,18 @@
 @interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIView *backgroundView;
-@property (nonatomic, strong) UIImageView *imageView;
+
 @property (nonatomic, strong) UIScrollView *scrollView;
+
+@property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIImage* image;
 
-@property (strong, nonatomic) UITapGestureRecognizer *singleTap;
-@property (strong, nonatomic) UITapGestureRecognizer *doubleTap;
-@property (strong, nonatomic) UILongPressGestureRecognizer *longPress;
+@property (nonatomic, strong) UITapGestureRecognizer *singleTap;
+@property (nonatomic, strong) UITapGestureRecognizer *doubleTap;
+
+@property (nonatomic, strong) UIButton *shareButton;
 
 @property CGRect originRect;
-
 @property BOOL isPresenting;
 
 @end
@@ -110,25 +112,33 @@
 
 - (void)initializeGestureRecognizers
 {
-    self.longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(imageLongPressed:)];
-
     self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageDoubleTapped:)];
     self.doubleTap.numberOfTapsRequired = 2;
     
     self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageSingleTapped:)];
     [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
-    [self.singleTap requireGestureRecognizerToFail:self.longPress];
     
     self.singleTap.delegate = self;
     self.doubleTap.delegate = self;
-    self.longPress.delegate = self;
 
     [self.view addGestureRecognizer:self.singleTap];
     [self.view addGestureRecognizer:self.doubleTap];
-    [self.view addGestureRecognizer:self.longPress];
 }
 
-#pragma mark - Gesture Recongizers
+- (void) initializeShareButton
+{
+    CGFloat buttonRadius = 50.0f;
+    CGFloat x = 14.0f;
+    CGFloat y = self.view.bounds.size.height - buttonRadius - 10.0f;
+    
+    self.shareButton = [[UIButton alloc]initWithFrame:CGRectMake(x, y, buttonRadius, buttonRadius)];
+    [self.shareButton addTarget:self action:@selector(shareButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [self.shareButton setImage:[UIImage imageNamed:@"savephoto"] forState:UIControlStateNormal];
+    
+    [self.view addSubview:self.shareButton];
+}
+
+#pragma mark - Gesture Recognizers
 
 - (void)imageDoubleTapped:(UITapGestureRecognizer*)doubleTap
 {
@@ -166,13 +176,8 @@
     [self dismiss];
 }
 
--(void)imageLongPressed:(UILongPressGestureRecognizer*)longPress
-{
-    NSLog(@"%s",__PRETTY_FUNCTION__);
-}
-
-
 #pragma mark - Presentation
+
 -(void)presentFromViewController:(UIViewController*)viewController
 {
     _isPresenting = YES;
@@ -193,6 +198,7 @@
                                  self.scrollView.frame = self.view.bounds;
                                  [self.scrollView addSubview:self.imageView];
                                  [self updateLayouts];
+                                 [self initializeShareButton];
                                  self.view.userInteractionEnabled = YES;
                                  _isPresenting = NO;
                              }];
@@ -341,4 +347,31 @@
     return size.height / size.width;
 }
 
+#pragma mark - Actions
+
+-(void)shareButtonTapped:(UIButton*)sender
+{
+    [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Save to Camera Roll", @"Copy", @"Share"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+            NSLog(@"User Cancelled");
+        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+            NSLog(@"Destructive button tapped");
+        }else {
+            switch (tappedButtonIndex) {
+                case 0:
+                    //Save to Camera Roll
+                    break;
+                case 1:
+                    //Copy to PasteBoard
+                    break;
+                case 2:
+                    //Share
+                    break;
+                default:
+                    DDLogWarn(@"Illegal Action sheet field #%ld <%s>",tappedButtonIndex, __PRETTY_FUNCTION__);
+                    break;
+            }
+        }
+    }];
+}
 @end
