@@ -12,7 +12,8 @@
 #define kImageViewCornerRadius 5.0f
 
 #define kMinZoomScale 1.0f
-#define kMaxZoomScale 5.0f
+#define kMaxZoomScale 8.0f
+#define kTargetDoubleTapZoom 3.0f
 
 #define kBackgroundAlpha 0.6f
 
@@ -131,7 +132,33 @@
 
 - (void)imageDoubleTapped:(UITapGestureRecognizer*)doubleTap
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    CGPoint tap = [doubleTap locationInView:doubleTap.view];
+    CGPoint convertCoord = [self.scrollView convertPoint:tap fromView:doubleTap.view];
+    CGRect targetZoomRect;
+    UIEdgeInsets targetInsets;
+    
+    CGSize zoom ;
+    
+    if (self.scrollView.zoomScale == 1.0f) {
+        zoom = CGSizeMake(self.view.bounds.size.width / kTargetDoubleTapZoom, self.view.bounds.size.height / kTargetDoubleTapZoom);
+        targetZoomRect = CGRectMake(convertCoord.x - (zoom.width/2.0f), convertCoord.y - (zoom.height/2.0f), zoom.width, zoom.height);
+        targetInsets = [self contentInsetForScrollView:kTargetDoubleTapZoom];
+    } else {
+        zoom = CGSizeMake(self.view.bounds.size.width * self.scrollView.zoomScale, self.view.bounds.size.height * self.scrollView.zoomScale);
+        targetZoomRect = CGRectMake(convertCoord.x - (zoom.width/2.0f), convertCoord.y - (zoom.height/2.0f), zoom.width, zoom.height);
+        targetInsets = [self contentInsetForScrollView:1.0f];
+    }
+    
+    self.view.userInteractionEnabled = NO;
+    
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        self.scrollView.contentInset = targetInsets;
+        self.view.userInteractionEnabled = YES;
+    }];
+    [self.scrollView zoomToRect:targetZoomRect animated:YES];
+    [CATransaction commit];
+
 }
 
 - (void)imageSingleTapped:(UITapGestureRecognizer*)singleTap
