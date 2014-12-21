@@ -24,7 +24,6 @@
 @property (strong, nonatomic) UITapGestureRecognizer *singleTap;
 @property (strong, nonatomic) UITapGestureRecognizer *doubleTap;
 @property (strong, nonatomic) UILongPressGestureRecognizer *longPress;
-@property (strong, nonatomic) UIPanGestureRecognizer *panRecognizer;
 
 @property CGRect originRect;
 
@@ -125,34 +124,25 @@
     [self.view addGestureRecognizer:self.singleTap];
     [self.view addGestureRecognizer:self.doubleTap];
     [self.view addGestureRecognizer:self.longPress];
-    
-    self.panRecognizer = [[UIPanGestureRecognizer alloc] init];
-    [self.panRecognizer addTarget:self action:@selector(panGestureDismiss:)];
-    self.panRecognizer.delegate = self;
-    [self.scrollView addGestureRecognizer:self.panRecognizer];
 }
 
 #pragma mark - Gesture Recongizers
 
-- (void)imageDoubleTapped:(id)sender
+- (void)imageDoubleTapped:(UITapGestureRecognizer*)doubleTap
 {
     NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
-- (void)imageSingleTapped:(id)sender
+- (void)imageSingleTapped:(UITapGestureRecognizer*)singleTap
+{
+    [self dismiss];
+}
+
+-(void)imageLongPressed:(UILongPressGestureRecognizer*)longPress
 {
     NSLog(@"%s",__PRETTY_FUNCTION__);
 }
 
--(void)imageLongPressed:(id)sender
-{
-    NSLog(@"%s",__PRETTY_FUNCTION__);
-}
-
--(void)panGestureDismiss:(id)sender
-{
-    NSLog(@"%s",__PRETTY_FUNCTION__);
-}
 
 #pragma mark - Presentation
 -(void)presentFromViewController:(UIViewController*)viewController
@@ -183,6 +173,21 @@
 
 }
 
+- (void)dismiss
+{
+    self.view.userInteractionEnabled = NO;
+    
+    [UIView animateWithDuration:0.4f
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
+                     animations:^(){
+                         self.backgroundView.alpha = 0;
+                         self.scrollView.alpha = 0;
+                         
+                     } completion:^(BOOL completed){
+                         [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+                     }];
+}
 
 #pragma mark - Update Layout
 
@@ -297,8 +302,6 @@
     self.scrollView.scrollEnabled = (scale > 1);
     self.scrollView.contentInset = [self contentInsetForScrollView:scale];
 }
-
-
 
 #pragma mark - Utility
 
