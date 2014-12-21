@@ -14,6 +14,8 @@
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 5.0f
 
+#define kBackgroundAlpha 0.6f
+
 @interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIView *backgroundView;
@@ -67,12 +69,11 @@
 
 - (void)initializeBackground
 {
-    
-    self.view.backgroundColor           = [UIColor blackColor];
+    self.imageView.backgroundColor      = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
+    self.view.backgroundColor           = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     self.view.autoresizingMask          = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.backgroundView                 = [[UIView alloc] initWithFrame:CGRectInset(self.view.bounds, -512, -512)];
-    self.backgroundView.backgroundColor = [UIColor blackColor];
-    self.backgroundView.alpha           = 0;
+    self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     
     [self.view addSubview:self.backgroundView];
 }
@@ -89,7 +90,7 @@
 
 - (void)initializeImageView
 {
-    self.imageView                              = [[UIImageView alloc]initWithFrame:[self resizedFrameForImageView:self.image.size]];
+    self.imageView                              = [[UIImageView alloc]initWithFrame:self.originRect];
     self.imageView.layer.cornerRadius           = kImageViewCornerRadius;
     self.imageView.contentMode                  = UIViewContentModeScaleAspectFill;
     self.imageView.userInteractionEnabled       = YES;
@@ -150,19 +151,18 @@
     _isPresenting = YES;
     self.view.userInteractionEnabled = NO;
     [self.view addSubview:self.imageView];
-
+    self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    self.view.alpha = 0;
+    
     [viewController presentViewController:self animated:NO completion:^{
-
-        self.imageView.frame = self.originRect;
-        
-            [UIView animateWithDuration:0.6f
+            [UIView animateWithDuration:0.4f
                                   delay:0
                                 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
                              animations:^(){
+                                 self.view.alpha = 1.0f;
                                  self.imageView.frame = [self resizedFrameForImageView:self.image.size];
                                  self.imageView.center = CGPointMake(self.view.bounds.size.width/2.0f, self.view.bounds.size.height/2.0f);
-                             }
-                             completion:^(BOOL completed){
+                           } completion:^(BOOL completed){
                                  self.scrollView.frame = self.view.bounds;
                                  [self.scrollView addSubview:self.imageView];
                                  [self updateLayouts];
@@ -176,14 +176,13 @@
 - (void)dismiss
 {
     self.view.userInteractionEnabled = NO;
-    
     [UIView animateWithDuration:0.4f
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
                      animations:^(){
-                         self.backgroundView.alpha = 0;
+                         self.backgroundView.backgroundColor = [UIColor clearColor];
                          self.scrollView.alpha = 0;
-                         
+                         self.view.alpha = 0;
                      } completion:^(BOOL completed){
                          [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
                      }];
