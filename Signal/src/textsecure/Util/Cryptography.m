@@ -285,8 +285,6 @@
     [encryptedAttachment appendData:ciphertext];
     [encryptedAttachment appendData:computedHMAC];
     
-    NSLog(@"Resulting IV: %@ cipherText: %@ hmac: %@", iv, ciphertext, computedHMAC);
-    
     TSAttachmentStream *pointer = [[TSAttachmentStream alloc] initWithIdentifier:identifier data:attachment key:outKey contentType:contentType];
     
     return [[TSAttachmentEncryptionResult alloc] initWithPointer:pointer body:encryptedAttachment];
