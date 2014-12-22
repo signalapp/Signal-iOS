@@ -53,12 +53,27 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
-    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
-    
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
-            NSLog(@"Currently unsupported");
+            //TODOGROUP
+            TSGroupThread* groupThread = (TSGroupThread*)thread;
+            [self saveMessage:message withState:message.messageState];
+            __block NSArray* recipients;
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                recipients = [groupThread recipientsWithTransaction:transaction];
+            }];
+            
+            for(TSRecipient *rec in recipients){
+                [self sendMessage:message
+                      toRecipient:rec
+                         inThread:thread
+                      withAttemps:1];
+            }
+            
+            
         } else if([thread isKindOfClass:[TSContactThread class]]){
+            [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -81,7 +96,7 @@ dispatch_queue_t sendingQueue() {
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
         
-        [self outgoingMessages:message toRecipient:recipient completion:^(NSArray *messages) {
+        [self outgoingMessages:message toRecipient:recipient inThread:thread completion:^(NSArray *messages) {
             TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -127,10 +142,10 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
 }
 
-- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient completion:(messagesQueue)sendMessages{
+- (void)outgoingMessages:(TSOutgoingMessage*)message toRecipient:(TSRecipient*)recipient inThread:(TSThread*)thread completion:(messagesQueue)sendMessages{
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     TSStorageManager *storage     = [TSStorageManager sharedManager];
-    NSData *plainText             = [self plainTextForMessage:message];
+    NSData *plainText             = [self plainTextForMessage:message inThread:thread];
     
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
@@ -215,10 +230,44 @@ dispatch_queue_t sendingQueue() {
     }];
 }
 
-- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message{
+- (NSData*)plainTextForMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+    //TODOGROUP
+    // here is where we can handle group stuff
     
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];
+
+    if([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *gThread = (TSGroupThread*)thread;
+        PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
+        /*
+         @property (nonatomic, strong) NSMutableArray *groupMembers;
+         @property (nonatomic, strong) UIImage *groupImage;
+         @property (nonatomic, strong) NSString *groupName;
+         @property (nonatomic, strong) NSData* groupId;
+         */
+        [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
+        [groupBuilder setName:gThread.groupModel.groupName];
+        [groupBuilder setId:gThread.groupModel.groupId];
+        switch (message.messageState) {
+            case TSOutgoingMessageStateAttemptingOut:
+            case TSOutgoingMessageStateSent:
+            case TSOutgoingMessageStateUnsent:
+            case TSOutgoingMessageStateDelivered:
+                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+                break;
+            case TSOutgoingMessageStateMeta:
+                [groupBuilder setType:PushMessageContentGroupContextTypeUpdate]; //TODOGROUP other types
+                break;
+            default:
+                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver]; //TODOGROUP other types
+                break;
+        }
+        //[groupBuilder setAvatar:(PushMessageContentAttachmentPointer *)]; //TODOATTACHMENTS
+        [builder setGroup:groupBuilder.build];
+    }
+    
+    return [builder.build data];
     
     NSMutableArray *attachmentsArray = [NSMutableArray array];
     

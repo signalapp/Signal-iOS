@@ -14,7 +14,8 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState){
     TSOutgoingMessageStateAttemptingOut,
     TSOutgoingMessageStateUnsent,
     TSOutgoingMessageStateSent,
-    TSOutgoingMessageStateDelivered
+    TSOutgoingMessageStateDelivered,
+    TSOutgoingMessageStateMeta
 };
 
 @property (nonatomic) TSOutgoingMessageState messageState;

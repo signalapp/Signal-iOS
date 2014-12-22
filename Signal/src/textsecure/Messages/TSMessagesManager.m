@@ -179,14 +179,14 @@
     if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
-    } else if (content.hasGroup && (content.group.type != PushMessageContentGroupContextTypeDeliver)) {
-        DDLogVerbose(@"Received push group update message...");
+    } else if (content.hasGroup) {
+        DDLogVerbose(@"Received group message...");
         [self handleGroupMessage:incomingMessage withContent:content];
     } else if (content.attachments.count > 0) {
         DDLogVerbose(@"Received push media message (attachment) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     } else {
-        DDLogVerbose(@"Received push text message...");
+        DDLogVerbose(@"Received individual push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
     }
 }
@@ -204,8 +204,44 @@
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
 }
 
-- (void)handleGroupMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    // TO DO
+- (void)handleGroupMessage:(IncomingPushMessageSignal*)incomingMessage withContent:(PushMessageContent*)content{
+// TO DO
+    // this is where we will need to handle:
+    // a) PushMessageContentGroupContextTypeUnknown = 0,
+    //     -display error/fishi ness  to user
+    // b) PushMessageContentGroupContextTypeDeliver
+    //     - we will handle as usual, the logif for groups is buried in self handledReceivedTextMessage
+    // c) PushMessageContentGroupContextTypeUpdate = 1,
+    //     -will need to update the group context (or create it for a new group, presumably)
+    //     -group UI will not work without this
+    // d) PushMessageContentGroupContextTypeQuit = 3,
+    //    -will need to update local information to p
+    switch (content.group.type) {
+        case PushMessageContentGroupContextTypeQuit: {
+            // TODOGROUP
+            [self handleReceivedTextMessage:incomingMessage withContent:content];
+            break;
+        }
+        case PushMessageContentGroupContextTypeUpdate: {
+            // TODOGROUP
+            [self handleReceivedTextMessage:incomingMessage withContent:content];
+            break;
+        }
+        case PushMessageContentGroupContextTypeDeliver: {
+            // alread appropriate behavior
+            [self handleReceivedTextMessage:incomingMessage withContent:content];
+            break;
+        }
+        case PushMessageContentGroupContextTypeUnknown:{
+            // TODOGROUP
+            [self handleReceivedTextMessage:incomingMessage withContent:content];
+            // We will want an error situation here
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 - (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
@@ -221,11 +257,20 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
+            //TODOGROUP
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOATTACHMENTS, group avatar will not be nil
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
+            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachements:attachments]; // TODOGROUPS GET RID OF THIS THIS WILL BE UI
+            }
+            else {
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:attachments];
+
+            }
             thread = gThread;
-        } else{
+        }
+        else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];

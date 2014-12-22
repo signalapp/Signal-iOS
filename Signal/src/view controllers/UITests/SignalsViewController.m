@@ -164,10 +164,17 @@ static NSString *const kSegueIndentifier  = @"showSegue";
         
         if (thread) {
             [vc setupWithThread:thread];
-        } else if (self.contactIdentifierFromCompose){
+        }
+        else if (self.contactIdentifierFromCompose){
             [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
             self.contactIdentifierFromCompose = nil;
         }
+        else if (self.groupFromCompose) {
+            //TODOGROUP
+            [vc setupWithTSGroup:self.groupFromCompose];
+            self.groupFromCompose = nil;
+        }
+        
     }
 }
 

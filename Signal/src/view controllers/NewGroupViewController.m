@@ -14,6 +14,7 @@
 
 #import "Contact.h"
 #import "GroupModel.h"
+#import "SecurityUtils.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
@@ -73,28 +74,22 @@
 
 #pragma mark - Actions
 -(void)createGroup {
-    SignalsViewController* s = (SignalsViewController*)((UINavigationController*)[((UITabBarController*)self.parentViewController.presentingViewController).childViewControllers objectAtIndex:1]).topViewController;
-    
-    s.groupFromCompose = [self makeGroup];
-    
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [s performSegueWithIdentifier:@"showSegue" sender:nil];
-    }];
+    //TODOGROUP
+    GroupModel* model = [self makeGroup];
+    [Environment groupModel:model];
 }
 
 -(GroupModel*)makeGroup {
-    
-    //TODO: Add it to Envirronment
-    
+    //TODOGROUP
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _groupImageButton.imageView.image;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
-        [mut addObject:[contacts objectAtIndex:(NSUInteger)idx.row-1]];
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
-    
-    return [[GroupModel alloc] initWithTitle:title members:mut image:img];
+    NSData* groupId =  [SecurityUtils generateRandomBytes:16];
+    return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender

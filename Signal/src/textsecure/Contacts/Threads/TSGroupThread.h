@@ -7,11 +7,14 @@
 //
 
 #import "TSThread.h"
+#import "GroupModel.h"
 
 @interface TSGroupThread : TSThread
+@property (nonatomic,strong) GroupModel* groupModel;
 
-+ (instancetype)threadWithGroupId:(NSData*)groupId;
++ (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (NSData*)groupId;
+- (NSArray *)recipientsWithTransaction:(YapDatabaseReadTransaction*)transaction;
 
 @end

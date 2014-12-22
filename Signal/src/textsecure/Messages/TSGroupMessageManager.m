@@ -10,6 +10,7 @@
 
 #import "TSGroup.h"
 #import "TSGroupMessageManager.h"
+//TODOGROUP UNUSED
 
 #define ddLogLevel LOG_LEVEL_VERBOSE
 
@@ -17,6 +18,7 @@
 @implementation TSGroupMessageManager
 
 + (void)processGroupMessage:(IncomingPushMessageSignal*)pushMessage content:(PushMessageContent*)content{
+    //TODOGROUP UNUSED
     if (!content.group.id) {
         DDLogInfo(@"Received group message with no id! Ignoring...");
         return;
@@ -28,7 +30,7 @@
     TSGroup *record = [TSGroup groupWithId:id];
     
     if (record != nil && type == PushMessageContentGroupContextTypeUpdate) {
-        //TODO: [self handleGroupUpdate:pushMessage group:group record:record];
+        [self handleGroupUpdate:pushMessage group:group record:record];
     } else if (record == nil && type == PushMessageContentGroupContextTypeUpdate) {
         [self handleGroupCreate:pushMessage group:group record:record];
     } else if (record != nil && type == PushMessageContentGroupContextTypeQuit) {
@@ -39,15 +41,16 @@
 }
 
 + (void)handleGroupCreate:(IncomingPushMessageSignal*)message group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
-    //TODO
+    //TODOGROUP UNUSED
 }
 
 + (void)handleGroupLeave:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
-    //TODO
+    //TODOGROUP UNUSED
 }
 
 
-//+ (void)handleGroupUpdate:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
++ (void)handleGroupUpdate:(IncomingPushMessageSignal*)pushMessage group:(PushMessageContentGroupContext*)group record:(TSGroup*)record{
+    //TODOGROUP UNUSED
 //    NSData  *identifier = group.id;
 //    NSArray *messageMembersIds = group.members;
 //    
@@ -83,6 +86,6 @@
 //    
 //    // TO-DO: Implement
 //    
-//}
+}
 
 @end
