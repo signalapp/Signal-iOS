@@ -14,7 +14,6 @@
 #import "TSRequest.h"
 #import "TSRegisterWithTokenRequest.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "TSUploadAttachment.h"
 
 @interface TSNetworkManager ()
 
@@ -69,7 +68,7 @@
         
         [self.operationManager.requestSerializer setAuthorizationHeaderFieldWithUsername:[TSAccountManager registeredNumber] password:[TSStorageManager serverAuthToken]];
         
-        if ([request.HTTPMethod isEqualToString:@"GET"]) {
+        if ([request.HTTPMethod isEqualToString:@"GET"]) {            
             [self.operationManager GET:[textSecureServerURL stringByAppendingString:request.URL.absoluteString] parameters:request.parameters success:success failure:failure];
         } else if ([request.HTTPMethod isEqualToString:@"POST"]){
             [self.operationManager POST:[textSecureServerURL stringByAppendingString:request.URL.absoluteString] parameters:request.parameters success:success failure:failure];

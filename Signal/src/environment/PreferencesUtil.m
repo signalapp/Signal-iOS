@@ -23,6 +23,7 @@
 #define PUSH_REVOKED_KEY @"Push Revoked Key"
 #define SCREEN_SECURITY_KEY @"Screen Security Key"
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
+#define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -115,6 +116,21 @@
     } else{
         return NO;
     }
+}
+
+-(NotificationType)notificationPreviewType {
+    NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
+    
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        return NotificationNamePreview;
+    }
+}
+
+-(void)setNotificationPreviewType:(NotificationType)type
+{
+    [self setValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY toValue:@(type)];
 }
 
 -(void)setScreenSecurity:(BOOL)flag{

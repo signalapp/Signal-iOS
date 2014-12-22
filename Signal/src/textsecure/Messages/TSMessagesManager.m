@@ -28,8 +28,12 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSNetworkManager.h"
 #import "TSSubmitMessageRequest.h"
+#import "TSMessagesManager+attachments.h"
 
 #import "NSData+messagePadding.h"
+
+#import "Environment.h"
+#import "PreferencesUtil.h"
 
 #import <CocoaLumberjack/DDLog.h>
 
@@ -179,15 +183,8 @@
         DDLogVerbose(@"Received push group update message...");
         [self handleGroupMessage:incomingMessage withContent:content];
     } else if (content.attachments.count > 0) {
-        DDLogVerbose(@"Received push media message (attachement) ...");
+        DDLogVerbose(@"Received push media message (attachment) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            TSInfoMessage *message = [[TSInfoMessage alloc] initWithTimestamp:incomingMessage.timestamp
-                                                                     inThread:[TSContactThread threadWithContactId:incomingMessage.source transaction:transaction]
-                                                                  messageType:TSInfoMessageTypeUnsupportedMessage];
-            [message saveWithTransaction:transaction];
-        }];
-        
     } else {
         DDLogVerbose(@"Received push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
@@ -211,11 +208,11 @@
     // TO DO
 }
 
-- (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    // TO DO
+- (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
+    [self handleReceivedMessage:message withContent:content attachments:nil];
 }
 
-- (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
     uint64_t timeStamp  = message.timestamp;
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
@@ -226,12 +223,12 @@
         if (groupId) {
             TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
             [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:nil];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
             thread = gThread;
         } else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachements:nil];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
             thread = cThread;
         }
         [incomingMessage saveWithTransaction:transaction];
@@ -276,11 +273,30 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
+    
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, message.body];
+    notification.alertBody = [self alertBodyForNotificationSetting:[Environment.preferences notificationPreviewType] withMessage:message from:name];
     notification.soundName = @"default";
     notification.category  = Signal_Message_Category;
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+}
+
+-(NSString*)alertBodyForNotificationSetting:(NotificationType)setting withMessage:(TSIncomingMessage*)message from:(NSString*)name
+{
+    switch (setting) {
+        case NotificationNoNameNoPreview:
+            return @"New message";
+            break;
+        case NotificationNameNoPreview:
+            return [NSString stringWithFormat:@"New message from %@", name];
+            break;
+        case NotificationNamePreview:
+            return [NSString stringWithFormat:@"%@ : %@", name, message.body];
+            break;
+        default:
+            DDLogWarn(@"Unexpected notification type %lu", setting);
+            break;
+    }
 }
 
 @end

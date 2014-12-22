@@ -37,8 +37,10 @@
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
+#import "TSAttachmentAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
+#import "TSMessagesManager+attachments.h"
 #import "NSDate+millisecondTimeStamp.h"
 
 #import "PhoneNumber.h"
@@ -232,7 +234,7 @@ typedef enum : NSUInteger {
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
         
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachements:nil];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
         
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
@@ -288,7 +290,7 @@ typedef enum : NSUInteger {
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
             break;
-            
+                        
         default:
             NSLog(@"Something went wrong");
             return nil;
@@ -321,7 +323,6 @@ typedef enum : NSUInteger {
     }
     
     return cell;
-    
 }
 
 -(JSQCallCollectionViewCell*)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath*)indexPath
@@ -467,15 +468,17 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                id<JSQMessageMediaData> messageMedia = [messageItem media];
+                TSAttachmentAdapter * messageMedia = (TSAttachmentAdapter*)[messageItem media];
                 
-                if ([messageMedia isKindOfClass:JSQPhotoMediaItem.class]) {
+                if ([messageMedia isImage]) {
                     //is a photo
-                    tappedImage = ((JSQPhotoMediaItem*)messageMedia).image ;
-                    [self performSegueWithIdentifier:@"fullImage" sender:self];
+                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image ;
+                    CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
+                    FullImageViewController * vc = [[FullImageViewController alloc]initWithImage:tappedImage fromRect:convertedRect];
+                    [vc presentFromViewController:self];
                     
-                } else if ([messageMedia isKindOfClass:JSQVideoMediaItem.class]) {
-                    //is a video
+                } else {
+                    DDLogWarn(@"Currently unsupported");
                 }
             }
             
@@ -543,12 +546,8 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"fullImage"])
-    {
-        FullImageViewController* dest = [segue destinationViewController];
-        dest.image = tappedImage;
-        
-    } else if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
+    
+    if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
@@ -616,34 +615,10 @@ typedef enum : NSUInteger {
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
     
     if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
-        //Is a video
-        
-        NSURL* videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
-        AVURLAsset *asset1                       = [[AVURLAsset alloc] initWithURL:videoURL options:nil];
-        //Create a snapshot image
-        AVAssetImageGenerator *generate1         = [[AVAssetImageGenerator alloc] initWithAsset:asset1];
-        generate1.appliesPreferredTrackTransform = YES;
-        NSError *err                             = NULL;
-        CMTime time                              = CMTimeMake(2, 1);
-        CGImageRef snapshotRef                   = [generate1 copyCGImageAtTime:time actualTime:NULL error:&err];
-        __unused UIImage *snapshot               = [[UIImage alloc] initWithCGImage:snapshotRef];
-        
-        JSQVideoMediaItem * videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES];
-        JSQMessage * videoMessage = [JSQMessage messageWithSenderId:self.senderId
-                                                        displayName:self.senderDisplayName
-                                                              media:videoItem];
-        
-        [self finishSendingMessage];
-        
+        DDLogWarn(@"Video formats not supported, yet");
     } else if (picture_camera) {
-        //Is a photo
-        
-        JSQPhotoMediaItem *photoItem = [[JSQPhotoMediaItem alloc] initWithImage:picture_camera];
-        JSQMessage *photoMessage = [JSQMessage messageWithSenderId:self.senderId
-                                                       displayName:self.senderDisplayName
-                                                             media:photoItem];
-        [self finishSendingMessage];
-        
+        DDLogVerbose(@"Sending picture attachement ...");
+        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(picture_camera) contentType:@"image/png" thread:self.thread];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];

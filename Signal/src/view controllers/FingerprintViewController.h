@@ -23,8 +23,14 @@
 @property (nonatomic, strong) IBOutlet UILabel     * userFingerprintTitleLabel;
 @property (nonatomic, strong) IBOutlet UILabel     * userFingerprintLabel;
 
+@property (nonatomic, strong) IBOutlet UILabel     * infoMyFingerprint;
+@property (nonatomic, strong) IBOutlet UILabel     * infoTheirFingerprint;
+@property (nonatomic, strong) IBOutlet UIImageView * infoArrowTop;
+@property (nonatomic, strong) IBOutlet UIImageView * infoArrowBottom;
+
 @property (nonatomic, strong) IBOutlet UIButton    * closeButton;
 @property (nonatomic, strong) IBOutlet UIButton    * shredMessagesAndContactButton;
+@property (nonatomic, strong) IBOutlet UIButton    * infoButton;
 
 // returns my public identity key as NSData
 -(NSData*) getMyPublicIdentityKey;

@@ -12,7 +12,7 @@
 @implementation TSInfoMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSContactThread *)contact messageType:(TSInfoMessageType)infoMessage{
-    self = [super initWithTimestamp:timestamp inThread:contact messageBody:nil attachements:nil];
+    self = [super initWithTimestamp:timestamp inThread:contact messageBody:nil attachments:nil];
     
     if (self) {
         _messageType = infoMessage;
