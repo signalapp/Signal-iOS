@@ -11,6 +11,7 @@
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
+#import "NewGroupViewController.h"
 
 #import "JSQCallCollectionViewCell.h"
 #import "JSQCall.h"
@@ -49,6 +50,9 @@
 #import "ContactsManager.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+static NSString *const kUpdateGroupSegueIdentifier  = @"updateGroupSegue";
+static NSString *const kFingerprintSegueIdentifier  = @"fingerprintSegue";
+
 
 typedef enum : NSUInteger {
     kMediaTypePicture,
@@ -83,15 +87,18 @@ typedef enum : NSUInteger {
 }
 
 - (void)setupWithTSGroup:(GroupModel*)model {
-    //TODOGROUP
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+        
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:nil];
+        message.groupMetaMessage = TSGroupMessageNew;
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+        
         isGroupConversation = YES;
     }];
 }
 
 - (void)setupWithThread:(TSThread *)thread{
-    //TODOGROUP
     self.thread = thread;
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
@@ -120,22 +127,6 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
-    //TODOGROUP total hack and will call update group everytime launched until there are messages
-    if( isGroupConversation && [self collectionView:nil numberOfItemsInSection:0]==0) {
-        //TODOGROUP
-        //HACKHACKHACK
-        // create the group
-        //TODOGROUP
-        TSGroupThread *gThread = (TSGroupThread*)self.thread;
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [gThread saveWithTransaction:transaction];
-        }];
-        // press send with a meta message
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:nil];
-        message.messageState = TSOutgoingMessageStateMeta;
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-
-    }
 }
 
 - (void)startReadTimer{
@@ -167,10 +158,10 @@ typedef enum : NSUInteger {
     
     self.title = self.thread.name;
     
-    UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+    
     
     if (!isGroupConversation && [self isRedPhoneReachable]) {
-        
+        UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
         UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
         [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
         UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -178,7 +169,8 @@ typedef enum : NSUInteger {
         
         self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
     } else {
-        self.navigationItem.rightBarButtonItem = lockButton;
+        UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
+        self.navigationItem.rightBarButtonItem = groupMenuButton;
     }
 }
 
@@ -212,7 +204,7 @@ typedef enum : NSUInteger {
 -(void)showFingerprint
 {
     [self markAllMessagesAsRead];
-    [self performSegueWithIdentifier:@"fingerprintSegue" sender:self];
+    [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:self];
 }
 
 
@@ -387,8 +379,9 @@ typedef enum : NSUInteger {
     }
     else {
         TSMessageAdapter *currentMessage =  [self messageAtIndexPath:indexPath];
+
         TSMessageAdapter *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
-        
+    
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
             showDate = YES;
@@ -399,10 +392,11 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-    if ([self showDateAtIndexPath:indexPath])
-    {
-        return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:msg.date];
+  
+    if ([self showDateAtIndexPath:indexPath]) {
+        TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+            
+        return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:currentMessage.date];
     }
     
     return nil;
@@ -411,20 +405,22 @@ typedef enum : NSUInteger {
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    TSMessageAdapter * currentMessage = [self messageAtIndexPath:indexPath];
-    
-    if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1)
-    {
-        return [self isMessageOutgoingAndDelivered:currentMessage];
+    TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+    if([self.thread isKindOfClass:[TSGroupThread class]]) {
+        return currentMessage.messageType == TSIncomingMessageAdapter;
     }
-    
-    if (![self isMessageOutgoingAndDelivered:currentMessage])
-    {
-        return NO;
+    else {
+        if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1) {
+            return [self isMessageOutgoingAndDelivered:currentMessage];
+        }
+        
+        if (![self isMessageOutgoingAndDelivered:currentMessage]) {
+            return NO;
+        }
+        
+        TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
+        return ![self isMessageOutgoingAndDelivered:nextMessage];
     }
-    
-    TSMessageAdapter * nextMessage = [self nextOutgoingMessage:indexPath];
-    return ![self isMessageOutgoingAndDelivered:nextMessage];
 }
 
 -(TSMessageAdapter*)nextOutgoingMessage:(NSIndexPath*)indexPath
@@ -446,19 +442,29 @@ typedef enum : NSUInteger {
 }
 
 
--(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self shouldShowMessageStatusAtIndexPath:indexPath])
-    {
-        _lastDeliveredMessageIndexPath = indexPath;
-        NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-        textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
-        NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
-        [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+-(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
+    TSMessageAdapter *msg = [self messageAtIndexPath:indexPath];
+    if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
+        if([self.thread isKindOfClass:[TSGroupThread class]]) {
+            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
+            NSString *name = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:msg.senderId];
+            name = name ? name : msg.senderId;
+            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
+            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
         
-        return (NSAttributedString*)attrStr;
+            return (NSAttributedString*)attrStr;
+        }
+        else {
+            _lastDeliveredMessageIndexPath = indexPath;
+            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
+            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
+            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+        
+            return (NSAttributedString*)attrStr;
+        }
     }
-    
     return nil;
 }
 
@@ -466,8 +472,12 @@ typedef enum : NSUInteger {
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
     TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-    
-    if (msg.messageType == TSOutgoingMessageAdapter) {
+    if([self.thread isKindOfClass:[TSGroupThread class]]) {
+        if(msg.messageType == TSIncomingMessageAdapter) {
+            return 16.0f;
+        }
+    }
+    else if (msg.messageType == TSOutgoingMessageAdapter) {
         return 16.0f;
     }
     
@@ -571,10 +581,16 @@ typedef enum : NSUInteger {
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    if ([segue.identifier isEqualToString:@"fingerprintSegue"]){
+    if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
+        }];
+    }
+    else if ([segue.identifier isEqualToString:kUpdateGroupSegueIdentifier]) {
+        NewGroupViewController *vc = [segue destinationViewController];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [vc configWithThread:(TSGroupThread*)self.thread];
         }];
     }
 }
@@ -676,7 +692,6 @@ typedef enum : NSUInteger {
     // Process the notification(s),
     // and get the change-set(s) as applies to my view and mappings configuration.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
     NSArray *messageRowChanges = nil;
     
     [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:nil
@@ -757,6 +772,44 @@ typedef enum : NSUInteger {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
     return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
 }
+#pragma mark group action view
+-(void)didPressGroupMenuButton:(UIButton *)sender
+{
+    [self.inputToolbar.contentView.textView resignFirstResponder];
+    
+    UIView *presenter = self.parentViewController.view;
+    
+    [DJWActionSheet showInView:presenter
+                     withTitle:nil
+             cancelButtonTitle:@"Cancel"
+        destructiveButtonTitle:nil
+             otherButtonTitles:@[@"Update group", @"Leave group", @"Delete thread"]
+                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                              NSLog(@"User Cancelled");
+                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                              NSLog(@"Destructive button tapped");
+                          }else {
+                              switch (tappedButtonIndex) {
+                                  case 0:
+                                      DDLogDebug(@"update group picked");
+                                      [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
+
+                                      break;
+                                  case 1:
+                                      DDLogDebug(@"leave group picket");
+                                      break;
+                                  case 2:
+                                      DDLogDebug(@"delete thread");
+                                      break;
+                                      
+                                  default:
+                                      break;
+                              }
+                          }
+                      }];
+}
+
 
 #pragma mark Accessory View
 

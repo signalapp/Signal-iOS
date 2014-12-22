@@ -11,7 +11,6 @@
 
 @interface TSGroupThread : TSThread
 @property (nonatomic,strong) GroupModel* groupModel;
-
 + (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (NSData*)groupId;

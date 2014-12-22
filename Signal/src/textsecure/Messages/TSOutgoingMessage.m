@@ -20,6 +20,12 @@
     
     if (self) {
         _messageState = TSOutgoingMessageStateAttemptingOut;
+        if( [thread isKindOfClass:[TSGroupThread class]]) {
+            self.groupMetaMessage = TSGroupMessageDeliver;
+        }
+        else {
+            self.groupMetaMessage = TSGroupMessageNone;
+        }
     }
     
     return self;
