@@ -144,11 +144,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-<<<<<<< HEAD
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="lock_white.png" translatesAutoresizingMaskIntoConstraints="NO" id="Yg7-KF-hVR">
-=======
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="012578FA-40DF-482E-ACD4-BD54545C6710" translatesAutoresizingMaskIntoConstraints="NO" id="Yg7-KF-hVR">
->>>>>>> groups-try1
                                             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="50e-Dx-c2x"/>
@@ -3639,10 +3635,8 @@ Licensed under the GPLv3</string>
         </scene>
     </scenes>
     <resources>
-<<<<<<< HEAD
         <image name="ArrowBottom.png" width="90" height="50"/>
         <image name="ArrowTop.png" width="90" height="50"/>
-=======
         <image name="012578FA-40DF-482E-ACD4-BD54545C6710" width="100" height="100">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
@@ -4360,7 +4354,6 @@ rwC0ALcAuQC7AL0AvwDEANsA3QDfpZGllqWhpaqlvaXBpdSl36Xope2l9aX4pf2mDKYQphemH6YspjGm
 M6Y1pjqmQqZFpkqmUqZVpmemaqZvAAAAAAAAAgEAAAAAAAAAQgAAAAAAAAAAAAAAAAAApnE
 </mutableData>
         </image>
->>>>>>> groups-try1
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contacts_tab.png" width="24" height="24"/>
