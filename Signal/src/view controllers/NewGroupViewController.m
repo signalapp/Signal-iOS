@@ -15,6 +15,7 @@
 #import "Contact.h"
 #import "GroupModel.h"
 #import "SecurityUtils.h"
+#import "SignalKeyingStorage.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
@@ -88,6 +89,8 @@
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
+    // Also add the originator
+    [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }

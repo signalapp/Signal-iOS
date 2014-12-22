@@ -131,7 +131,7 @@ typedef enum : NSUInteger {
             [gThread saveWithTransaction:transaction];
         }];
         // press send with a meta message
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachements:nil];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:nil];
         message.messageState = TSOutgoingMessageStateMeta;
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
 

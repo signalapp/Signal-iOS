@@ -233,6 +233,7 @@ dispatch_queue_t sendingQueue() {
 - (NSData*)plainTextForMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
     //TODOGROUP
     // here is where we can handle group stuff
+    // Look at what 
     
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];

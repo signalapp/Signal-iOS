@@ -262,10 +262,10 @@
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
-                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachements:attachments]; // TODOGROUPS GET RID OF THIS THIS WILL BE UI
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:@"UPDATE" attachments:attachments]; // TODOGROUPS GET RID OF THIS THIS WILL BE UI
             }
             else {
-                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachements:attachments];
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
 
             }
             thread = gThread;

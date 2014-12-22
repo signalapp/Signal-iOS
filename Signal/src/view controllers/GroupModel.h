@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TSYapDatabaseObject.h"
 
-@interface GroupModel : NSObject
+@interface GroupModel : TSYapDatabaseObject
 
 @property (nonatomic, strong) NSMutableArray *groupMemberIds; //
 @property (nonatomic, strong) UIImage *groupImage;
