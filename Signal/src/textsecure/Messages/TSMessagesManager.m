@@ -98,8 +98,10 @@
 - (void)handleDeliveryReceipt:(IncomingPushMessageSignal*)signal{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:signal.timestamp] transaction:transaction];
-        message.messageState = TSOutgoingMessageStateDelivered;
-        [message saveWithTransaction:transaction];
+        if(![message isKindOfClass:[TSInfoMessage class]]){
+            message.messageState = TSOutgoingMessageStateDelivered;
+            [message saveWithTransaction:transaction];
+        }
     }];
 }
 
@@ -179,14 +181,11 @@
     if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
-    } else if (content.hasGroup && (content.group.type != PushMessageContentGroupContextTypeDeliver)) {
-        DDLogVerbose(@"Received push group update message...");
-        [self handleGroupMessage:incomingMessage withContent:content];
     } else if (content.attachments.count > 0) {
         DDLogVerbose(@"Received push media message (attachment) ...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     } else {
-        DDLogVerbose(@"Received push text message...");
+        DDLogVerbose(@"Received individual push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
     }
 }
@@ -204,12 +203,9 @@
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
 }
 
-- (void)handleGroupMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    // TO DO
-}
 
 - (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    [self handleReceivedMessage:message withContent:content attachments:nil];
+    [self handleReceivedMessage:message withContent:content attachments:content.attachments];
 }
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
@@ -221,17 +217,25 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupId:groupId];
-            [gThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOGROUP group avatar will not be nil generically
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+            [gThread saveWithTransaction:transaction]; 
+            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
+            }
+            else {
+                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
+                [incomingMessage saveWithTransaction:transaction];
+            }
             thread = gThread;
-        } else{
+        }
+        else{
             TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
+            [incomingMessage saveWithTransaction:transaction];
             thread = cThread;
         }
-        [incomingMessage saveWithTransaction:transaction];
         NSString *name = [thread name];
         [self notifyUserForIncomingMessage:incomingMessage from:name];
     }];
@@ -266,10 +270,13 @@
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message{
     DDLogWarn(@"Got exception: %@", exception.description);
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message setMessageState:TSOutgoingMessageStateUnsent];
-        [message saveWithTransaction:transaction];
-    }];
+    if(message.groupMetaMessage==TSGroupMessageNone) {
+        // Only update this with exception if it is not a group message as group messages may except for one group send but not another and the UI doesn't know how to handle that
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message setMessageState:TSOutgoingMessageStateUnsent];
+            [message saveWithTransaction:transaction];
+        }];
+    }
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{

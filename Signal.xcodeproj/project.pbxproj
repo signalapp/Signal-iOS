@@ -363,14 +363,12 @@
 		B6B096631A1D25ED008BFAA6 /* TSPreKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F11A1D25ED008BFAA6 /* TSPreKeyManager.m */; };
 		B6B096641A1D25ED008BFAA6 /* TSContactThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */; };
 		B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */; };
-		B6B096671A1D25ED008BFAA6 /* TSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FB1A1D25ED008BFAA6 /* TSGroup.m */; };
 		B6B096681A1D25ED008BFAA6 /* TSRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */; };
 		B6B096691A1D25ED008BFAA6 /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FF1A1D25ED008BFAA6 /* TSThread.m */; };
 		B6B0966A1A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096021A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B6B0966B1A1D25ED008BFAA6 /* TSAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096041A1D25ED008BFAA6 /* TSAttachment.m */; };
 		B6B0966C1A1D25ED008BFAA6 /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096061A1D25ED008BFAA6 /* TSCall.m */; };
 		B6B0966D1A1D25ED008BFAA6 /* TSErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096081A1D25ED008BFAA6 /* TSErrorMessage.m */; };
-		B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960A1A1D25ED008BFAA6 /* TSGroupMessageManager.m */; };
 		B6B0966F1A1D25ED008BFAA6 /* TSIncomingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960C1A1D25ED008BFAA6 /* TSIncomingMessage.m */; };
 		B6B096701A1D25ED008BFAA6 /* TSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0960E1A1D25ED008BFAA6 /* TSInfoMessage.m */; };
 		B6B096711A1D25ED008BFAA6 /* TSInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096101A1D25ED008BFAA6 /* TSInteraction.m */; };
@@ -995,8 +993,6 @@
 		B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactThread.m; sourceTree = "<group>"; };
 		B6B095F61A1D25ED008BFAA6 /* TSGroupThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroupThread.h; sourceTree = "<group>"; };
 		B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroupThread.m; sourceTree = "<group>"; };
-		B6B095FA1A1D25ED008BFAA6 /* TSGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroup.h; sourceTree = "<group>"; };
-		B6B095FB1A1D25ED008BFAA6 /* TSGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroup.m; sourceTree = "<group>"; };
 		B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipient.h; sourceTree = "<group>"; };
 		B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipient.m; sourceTree = "<group>"; };
 		B6B095FE1A1D25ED008BFAA6 /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSThread.h; path = ../TSThread.h; sourceTree = "<group>"; };
@@ -1009,8 +1005,6 @@
 		B6B096061A1D25ED008BFAA6 /* TSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
 		B6B096071A1D25ED008BFAA6 /* TSErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSErrorMessage.h; sourceTree = "<group>"; };
 		B6B096081A1D25ED008BFAA6 /* TSErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSErrorMessage.m; sourceTree = "<group>"; };
-		B6B096091A1D25ED008BFAA6 /* TSGroupMessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroupMessageManager.h; sourceTree = "<group>"; };
-		B6B0960A1A1D25ED008BFAA6 /* TSGroupMessageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroupMessageManager.m; sourceTree = "<group>"; };
 		B6B0960B1A1D25ED008BFAA6 /* TSIncomingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSIncomingMessage.h; sourceTree = "<group>"; };
 		B6B0960C1A1D25ED008BFAA6 /* TSIncomingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSIncomingMessage.m; sourceTree = "<group>"; };
 		B6B0960D1A1D25ED008BFAA6 /* TSInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInfoMessage.h; sourceTree = "<group>"; };
@@ -2335,8 +2329,6 @@
 			isa = PBXGroup;
 			children = (
 				B6B095F31A1D25ED008BFAA6 /* Threads */,
-				B6B095FA1A1D25ED008BFAA6 /* TSGroup.h */,
-				B6B095FB1A1D25ED008BFAA6 /* TSGroup.m */,
 				B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */,
 				B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */,
 			);
@@ -2366,8 +2358,6 @@
 				B6B096061A1D25ED008BFAA6 /* TSCall.m */,
 				B6B096071A1D25ED008BFAA6 /* TSErrorMessage.h */,
 				B6B096081A1D25ED008BFAA6 /* TSErrorMessage.m */,
-				B6B096091A1D25ED008BFAA6 /* TSGroupMessageManager.h */,
-				B6B0960A1A1D25ED008BFAA6 /* TSGroupMessageManager.m */,
 				B6B0960B1A1D25ED008BFAA6 /* TSIncomingMessage.h */,
 				B6B0960C1A1D25ED008BFAA6 /* TSIncomingMessage.m */,
 				B6B0960D1A1D25ED008BFAA6 /* TSInfoMessage.h */,
@@ -2680,6 +2670,8 @@
 				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
+				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
+				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
 				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
 				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
@@ -2688,8 +2680,6 @@
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
 				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
-				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
-				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
 				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 			);
@@ -3108,7 +3098,6 @@
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
-				B6B0966E1A1D25ED008BFAA6 /* TSGroupMessageManager.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
 				B6CBF53F1A254BD1000D4184 /* ContactDetailCell.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
@@ -3151,7 +3140,6 @@
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
 				76EB062818170B33006006FC /* BadArgument.m in Sources */,
-				B6B096671A1D25ED008BFAA6 /* TSGroup.m in Sources */,
 				76EB062E18170B33006006FC /* SecurityFailure.m in Sources */,
 				76EB05F218170B33006006FC /* PhoneNumber.m in Sources */,
 				E197B61718BBEC1A00F073E5 /* AnonymousAudioCallbackHandler.m in Sources */,
@@ -3614,7 +3602,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3850,7 +3838,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3904,7 +3892,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (

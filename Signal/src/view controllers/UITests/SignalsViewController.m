@@ -162,12 +162,20 @@ static NSString *const kSegueIndentifier  = @"showSegue";
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         TSThread *thread               = [self threadForIndexPath:selectedIndexPath];
         
-        if (thread) {
-            [vc setupWithThread:thread];
-        } else if (self.contactIdentifierFromCompose){
+        if (self.contactIdentifierFromCompose){
             [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
             self.contactIdentifierFromCompose = nil;
         }
+        else if (self.groupFromCompose) {
+            [vc setupWithTSGroup:self.groupFromCompose];
+            self.groupFromCompose = nil;
+        }
+        else if (thread) {
+            [vc setupWithThread:thread];
+        }
+        
+        
+        
     }
 }
 
