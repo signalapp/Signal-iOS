@@ -189,6 +189,8 @@ phoneDirectoryManager;
     }
 }
 
+
+
 + (void)groupModel:(GroupModel*)model {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;

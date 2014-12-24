@@ -65,7 +65,7 @@ dispatch_queue_t sendingQueue() {
             }];
             
             for(TSRecipient *rec in recipients){
-                // TODOGROUP hack so that we don't send group messages to ourselves; probably a more elegant way of doing this.
+                // we don't need to send the message to ourselves, but otherwise we sends
                 if( ![[rec uniqueId] isEqualToString:[SignalKeyingStorage.localNumber toE164]]){
                     [self sendMessage:message
                           toRecipient:rec
@@ -240,6 +240,12 @@ dispatch_queue_t sendingQueue() {
     if(message.groupMetaMessage==TSGroupMessageDeliver) {
         [self saveMessage:message withState:message.messageState];
     }
+    else if(message.groupMetaMessage==TSGroupMessageQuit) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            
+            [[[TSInfoMessage alloc] initWithTimestamp:message.timeStamp inThread:thread messageType:TSInfoMessageTypeGroupQuit] saveWithTransaction:transaction];
+        }];
+    }
     else {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             
@@ -270,28 +276,37 @@ dispatch_queue_t sendingQueue() {
                 [groupBuilder setType:PushMessageContentGroupContextTypeDeliver];
                 break;
         }
-        //[groupBuilder setAvatar:(PushMessageContentAttachmentPointer *)]; //TODOATTACHMENTS for avatar
+        if(gThread.groupModel.groupImage!=nil && [message.attachments count] == 1) {
+            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:[message.attachments firstObject]];
+            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
+                PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
+                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
+                [attachmentbuilder setContentType:attachment.contentType];
+                [attachmentbuilder setKey:attachment.encryptionKey];
+                [groupBuilder setAvatar:[attachmentbuilder build]];
+            }
+        }
         [builder setGroup:groupBuilder.build];
     }
-    
-    NSMutableArray *attachmentsArray = [NSMutableArray array];
-    
-    for (NSString *attachmentId in message.attachments){
-        id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-        
-        if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-            TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
+    else {
+        NSMutableArray *attachmentsArray = [NSMutableArray array];
+        for (NSString *attachmentId in message.attachments){
+            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
             
-            PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
-            [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-            [attachmentbuilder setContentType:attachment.contentType];
-            [attachmentbuilder setKey:attachment.encryptionKey];
-    
-            [attachmentsArray addObject:[attachmentbuilder build]];
+            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
+                
+                PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
+                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
+                [attachmentbuilder setContentType:attachment.contentType];
+                [attachmentbuilder setKey:attachment.encryptionKey];
+        
+                [attachmentsArray addObject:[attachmentbuilder build]];
+            }
         }
+        [builder setAttachmentsArray:attachmentsArray];
     }
-    
-    [builder setAttachmentsArray:attachmentsArray];
     
     return [builder.build data];
 }

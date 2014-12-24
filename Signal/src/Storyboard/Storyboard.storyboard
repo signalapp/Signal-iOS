@@ -3416,7 +3416,7 @@ Licensed under the GPLv3</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -3609,9 +3609,11 @@ Licensed under the GPLv3</string>
                         <outlet property="nameGroupTextField" destination="gbm-B5-gCc" id="XC8-Ci-sl2"/>
                         <outlet property="tableView" destination="cFo-AT-Srf" id="NqG-W1-Vhy"/>
                         <outlet property="tapToDismissView" destination="Ukg-om-VX3" id="nyq-IV-JDV"/>
+                        <segue destination="JOx-5h-y9g" kind="unwind" identifier="UnwindToMessagesViewSegue" unwindAction="unwindGroupUpdated:" id="IGD-29-LA4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GsM-dR-L7j" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="JOx-5h-y9g" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="4197" y="-899.25"/>
         </scene>

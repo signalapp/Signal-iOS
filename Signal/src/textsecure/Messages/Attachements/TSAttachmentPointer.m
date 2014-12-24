@@ -24,6 +24,23 @@
     return self;
 }
 
+
+
+- (instancetype)initWithIdentifier:(uint64_t)identifier
+                               key:(NSData*)key
+                       contentType:(NSString*)contentType
+                             relay:(NSString*)relay
+                   avatarOfGroupId:(NSData *)avatarOfGroupId {
+    
+    self = [super initWithIdentifier:[[NSNumber numberWithUnsignedLongLong:identifier] stringValue] encryptionKey:key contentType:contentType];
+    if(self){
+        _relay = relay;
+        _avatarOfGroupId = avatarOfGroupId;
+    }
+    return self;
+}
+
+
 - (BOOL)isDownloaded{
     return NO;
 }

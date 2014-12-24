@@ -26,7 +26,7 @@
     return self;
 }
 
-+ (instancetype)threadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction {
++ (instancetype)getOrCreateThreadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction {
     
     TSContactThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
     
