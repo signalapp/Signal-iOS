@@ -24,11 +24,11 @@
 }
 
 
-+ (instancetype)threadWithGroupModel:(GroupModel *)groupModel readTransaction:(YapDatabaseReadTransaction*)transaction {
++ (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadTransaction*)transaction {
    return  [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
 }
 
-+ (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction{
++ (instancetype)getOrCreateThreadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction{
     TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
 
     if (!thread) {

@@ -192,7 +192,7 @@
 
 - (void)handleEndSessionMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread  *thread    = [TSContactThread threadWithContactId:message.source transaction:transaction];
+        TSContactThread  *thread    = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
         uint64_t         timeStamp  = message.timestamp;
         
         if (thread){
@@ -217,7 +217,7 @@
         TSThread          *thread;
         if (groupId) {
             GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOGROUP group avatar will not be nil generically
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+            TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction]; 
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
                 NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
@@ -232,7 +232,7 @@
             thread = gThread;
         }
         else{
-            TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
+            TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
             [incomingMessage saveWithTransaction:transaction];
