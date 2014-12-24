@@ -687,8 +687,16 @@ typedef enum : NSUInteger {
     return _editingDatabaseConnection;
 }
 
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    if(isGroupConversation) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            TSGroupThread* gThread = (TSGroupThread*)self.thread;
+            self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel readTransaction:transaction];
+            self.title = self.thread.name;
+        }];
+    }
     // Process the notification(s),
     // and get the change-set(s) as applies to my view and mappings configuration.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];

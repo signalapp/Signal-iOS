@@ -21,6 +21,14 @@
     return self;
 }
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage customMessage:(NSString*)customMessage {
+    self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
+    if (self) {
+        _customMessage = customMessage;
+    }
+    return self;
+}
+
 + (instancetype)userNotRegisteredMessageInThread:(TSThread*)thread transaction:(YapDatabaseReadWriteTransaction*)transaction{
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageType:TSInfoMessageUserNotRegistered];
     
@@ -35,7 +43,7 @@
         case TSInfoMessageUserNotRegistered:
             return @"The user is not registered.";
         case TSInfoMessageTypeGroupUpdate:
-            return @"Updated the group";
+            return _customMessage != nil ? _customMessage : @"Updated the group";
         default:
             break;
     }

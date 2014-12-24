@@ -13,6 +13,7 @@
 @property (nonatomic,strong) GroupModel* groupModel;
 + (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
++ (instancetype)threadWithGroupModel:(GroupModel *)groupModel readTransaction:(YapDatabaseReadTransaction*)transaction;
 - (NSData*)groupId;
 - (NSArray *)recipientsWithTransaction:(YapDatabaseReadTransaction*)transaction;
 
