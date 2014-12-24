@@ -129,6 +129,13 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.automaticallyScrollsToMostRecentMessage = YES;
+    [self scrollToBottomAnimated:NO];
+}
+
 - (void)startReadTimer{
     self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
 }
@@ -155,11 +162,8 @@ typedef enum : NSUInteger {
 
 -(void)initializeNavigationBar
 {
-    
     self.title = self.thread.name;
-    
-    
-    
+
     if (!isGroupConversation && [self isRedPhoneReachable]) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
         UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
@@ -192,7 +196,7 @@ typedef enum : NSUInteger {
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         
-        self.automaticallyScrollsToMostRecentMessage = YES;
+        self.automaticallyScrollsToMostRecentMessage = NO;
         
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
@@ -306,7 +310,7 @@ typedef enum : NSUInteger {
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
             break;
-                        
+            
         default:
             NSLog(@"Something went wrong");
             return nil;
@@ -379,9 +383,9 @@ typedef enum : NSUInteger {
     }
     else {
         TSMessageAdapter *currentMessage =  [self messageAtIndexPath:indexPath];
-
+        
         TSMessageAdapter *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
-    
+        
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
             showDate = YES;
@@ -392,10 +396,10 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-  
+    
     if ([self showDateAtIndexPath:indexPath]) {
         TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
-            
+        
         return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:currentMessage.date];
     }
     
@@ -452,7 +456,7 @@ typedef enum : NSUInteger {
             name = name ? name : msg.senderId;
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-        
+            
             return (NSAttributedString*)attrStr;
         }
         else {
@@ -461,7 +465,7 @@ typedef enum : NSUInteger {
             textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-        
+            
             return (NSAttributedString*)attrStr;
         }
     }
@@ -498,7 +502,7 @@ typedef enum : NSUInteger {
                 [self handleUnsentMessageTap:(TSOutgoingMessage*)interaction];
             }
         case TSIncomingMessageAdapter:{
-        
+            
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
@@ -550,7 +554,7 @@ typedef enum : NSUInteger {
         NSString *newKeyFingerprint = [message newIdentityKey];
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
-
+        
         [self.inputToolbar.contentView resignFirstResponder];
         
         [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
@@ -565,7 +569,7 @@ typedef enum : NSUInteger {
                     case 0:
                         [message acceptNewIdentityKey];
                         break;
-                    
+                        
                     case 1:
                         [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
                         break;
@@ -794,7 +798,7 @@ typedef enum : NSUInteger {
                                   case 0:
                                       DDLogDebug(@"update group picked");
                                       [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
-
+                                      
                                       break;
                                   case 1:
                                       DDLogDebug(@"leave group picket");
