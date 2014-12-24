@@ -82,7 +82,7 @@ const struct TSMessageEdges TSMessageEdges = {
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction{
     [super saveWithTransaction:transaction];
-    TSThread *fetchedThread     = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
+    TSThread *fetchedThread     = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
     uint64_t timeStamp          = [TSInteraction timeStampFromString:self.uniqueId];
     
     if (timeStamp > fetchedThread.lastMessageId) {

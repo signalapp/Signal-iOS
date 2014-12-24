@@ -35,7 +35,7 @@
     [super setUp];
     
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSContactThread threadWithContactId:@"aStupidId" transaction:transaction];
+        self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
         
         [self.thread saveWithTransaction:transaction];
     }];

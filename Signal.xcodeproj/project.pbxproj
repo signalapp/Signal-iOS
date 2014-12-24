@@ -284,6 +284,7 @@
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
 		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
+		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
@@ -882,6 +883,8 @@
 		A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanIdentityBarcodeViewController.m; sourceTree = "<group>"; };
 		A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentIdentityQRCodeViewController.m; sourceTree = "<group>"; };
 		A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresentIdentityQRCodeViewController.h; sourceTree = "<group>"; };
+		A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; };
+		A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowGroupMembersViewController.h; sourceTree = "<group>"; };
 		B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+millisecondTimeStamp.h"; sourceTree = "<group>"; };
 		B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+millisecondTimeStamp.mm"; sourceTree = "<group>"; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
@@ -2683,6 +2686,8 @@
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
 				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
+				A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */,
+				A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */,
 				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
 				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
@@ -3194,6 +3199,7 @@
 				FC1615181A37935600F1761D /* NotificationPreviewViewController.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
+				A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */,
 				FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
@@ -3558,7 +3564,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -3729,7 +3735,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -3796,7 +3802,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

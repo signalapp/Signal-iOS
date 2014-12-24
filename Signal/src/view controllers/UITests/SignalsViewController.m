@@ -16,6 +16,9 @@
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
 #import "TSContactThread.h"
+#import "TSMessagesManager+sendMessages.h"
+
+#import "NSDate+millisecondTimeStamp.h"
 
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import "YapDatabaseViewTransaction.h"
@@ -131,7 +134,12 @@ static NSString *const kSegueIndentifier = @"showSegue";
 - (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
-    
+    if([thread isKindOfClass:[TSGroupThread class]]) {
+        DDLogDebug(@"leaving the group");
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+        message.groupMetaMessage = TSGroupMessageQuit;
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:thread];
+    }
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];

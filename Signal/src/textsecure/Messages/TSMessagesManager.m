@@ -29,6 +29,7 @@
 #import "TSNetworkManager.h"
 #import "TSSubmitMessageRequest.h"
 #import "TSMessagesManager+attachments.h"
+#import "TSAttachmentPointer.h"
 
 #import "NSData+messagePadding.h"
 
@@ -178,13 +179,30 @@
 }
 
 - (void)handleIncomingMessage:(IncomingPushMessageSignal*)incomingMessage withPushContent:(PushMessageContent*)content{
+    if(content.group!= nil )  {
+        __block BOOL ignoreMessage = NO;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+            if(gThread==nil) {
+                ignoreMessage = YES;
+            }
+        }];
+        if(ignoreMessage) {
+            DDLogDebug(@"recevied message from group that I left, ignoring");
+            return;
+        }
+        
+    }
     if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
-    } else if (content.attachments.count > 0) {
-        DDLogVerbose(@"Received push media message (attachment) ...");
+    }
+    else if (content.attachments.count > 0 || (content.group!= nil && content.group.type == PushMessageContentGroupContextTypeUpdate && content.group.hasAvatar)) {
+        DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
-    } else {
+    }
+    else {
         DDLogVerbose(@"Received individual push text message...");
         [self handleReceivedTextMessage:incomingMessage withContent:content];
     }
@@ -192,7 +210,7 @@
 
 - (void)handleEndSessionMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread  *thread    = [TSContactThread threadWithContactId:message.source transaction:transaction];
+        TSContactThread  *thread    = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
         uint64_t         timeStamp  = message.timestamp;
         
         if (thread){
@@ -216,11 +234,33 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id]; //TODOGROUP group avatar will not be nil generically
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
-            [gThread saveWithTransaction:transaction]; 
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id];
+            TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+            [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
-                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
+                if([attachments count]==1) {
+                    NSString* avatarId  = [attachments firstObject];
+                    TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
+                    if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *stream = (TSAttachmentStream*)avatar;
+                        if ([stream isImage]) {
+                            model.groupImage = [stream image];
+                        }
+                    }
+                }
+                
+                NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
+                gThread.groupModel = model;
+                [gThread saveWithTransaction:transaction];
+                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
+            }
+            else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
+                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",message.source];
+                NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
+                [newGroupMembers removeObject:message.source];
+                gThread.groupModel.groupMemberIds = newGroupMembers;
+                [gThread saveWithTransaction:transaction];
+                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
             }
             else {
                 incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
@@ -229,7 +269,7 @@
             thread = gThread;
         }
         else{
-            TSContactThread *cThread = [TSContactThread threadWithContactId:message.source transaction:transaction];
+            TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
             [incomingMessage saveWithTransaction:transaction];

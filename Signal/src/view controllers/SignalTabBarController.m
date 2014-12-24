@@ -25,7 +25,6 @@
     [super viewDidLoad];
     
     self.dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
