@@ -49,5 +49,23 @@
     return YES;
 }
 
+- (NSString*) getInfoStringAboutUpdateTo:(GroupModel*)newModel {
+    NSString* updatedGroupInfoString = @"Group updated. ";
+    if (self == newModel)
+        return updatedGroupInfoString;
+    if (![_groupName isEqual:newModel.groupName]) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Name changed. "];
+    }
+    if(_groupImage!=nil  && newModel.groupImage!=nil  && !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Avatar changed. "];
+    }
+    NSMutableArray* compareMyGroupMemberIds = [NSMutableArray arrayWithArray:_groupMemberIds];
+    [compareMyGroupMemberIds removeObjectsInArray:newModel.groupMemberIds];
+    if([compareMyGroupMemberIds count] > 0 ) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Members changed. "];
+    }
+    return updatedGroupInfoString;
+}
+
 
 @end
