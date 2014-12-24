@@ -12,6 +12,9 @@
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
 #import "NewGroupViewController.h"
+#import "ShowGroupMembersViewController.h"
+
+#import "SignalKeyingStorage.h"
 
 #import "JSQCallCollectionViewCell.h"
 #import "JSQCall.h"
@@ -51,8 +54,9 @@
 #import "PreferencesUtil.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
-static NSString *const kUpdateGroupSegueIdentifier  = @"updateGroupSegue";
-static NSString *const kFingerprintSegueIdentifier  = @"fingerprintSegue";
+static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
+static NSString *const kFingerprintSegueIdentifier = @"fingerprintSegue";
+static NSString *const kShowGroupMembersSegue = @"showGroupMembersSegue";
 
 
 typedef enum : NSUInteger {
@@ -83,18 +87,22 @@ typedef enum : NSUInteger {
 
 - (void)setupWithTSIdentifier:(NSString *)identifier{
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSContactThread threadWithContactId:identifier transaction:transaction];
+        self.thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
     }];
 }
 
 - (void)setupWithTSGroup:(GroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+        self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:nil];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
         message.groupMetaMessage = TSGroupMessageNew;
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-        
+        if(model.groupImage!=nil) {
+            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
+        }
+        else {
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+        }
         isGroupConversation = YES;
     }];
 }
@@ -102,6 +110,7 @@ typedef enum : NSUInteger {
 - (void)setupWithThread:(TSThread *)thread{
     self.thread = thread;
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
+   
 }
 
 - (void)viewDidLoad {
@@ -117,7 +126,7 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     
-    [self initializeNavigationBar];
+    [self initializeToolbars];
     [self initializeCollectionViewLayout];
     
     
@@ -160,21 +169,33 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
--(void)initializeNavigationBar
+-(void)initializeToolbars
 {
     self.title = self.thread.name;
-    
-    if (!isGroupConversation && [self isRedPhoneReachable]) {
+
+    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-        UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
-        [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
-        UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-        negativeSeparator.width = -8;
+
+        if ([self isRedPhoneReachable]) {
+            UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
+            [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
+            negativeSeparator.width = -8;
         
-        self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
+            self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
+        }
+        else {
+            self.navigationItem.rightBarButtonItem = lockButton;
+        }
     } else {
-        UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
-        self.navigationItem.rightBarButtonItem = groupMenuButton;
+        if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
+            [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
+        }
+        else {
+            UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
+            UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
+            self.navigationItem.rightBarButtonItems = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
+        }
     }
 }
 
@@ -209,6 +230,11 @@ typedef enum : NSUInteger {
 {
     [self markAllMessagesAsRead];
     [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:self];
+}
+
+
+-(void)showGroupMembers {
+    [self performSegueWithIdentifier:kShowGroupMembersSegue sender:self];
 }
 
 
@@ -566,7 +592,7 @@ typedef enum : NSUInteger {
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
         
         [self.inputToolbar.contentView resignFirstResponder];
-        
+
         [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                 NSLog(@"User Cancelled");
@@ -594,7 +620,7 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
+
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -603,6 +629,12 @@ typedef enum : NSUInteger {
     }
     else if ([segue.identifier isEqualToString:kUpdateGroupSegueIdentifier]) {
         NewGroupViewController *vc = [segue destinationViewController];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [vc configWithThread:(TSGroupThread*)self.thread];
+        }];
+    }
+    else if([segue.identifier isEqualToString:kShowGroupMembersSegue]) {
+        ShowGroupMembersViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:(TSGroupThread*)self.thread];
         }];
@@ -767,8 +799,16 @@ typedef enum : NSUInteger {
     return _editingDatabaseConnection;
 }
 
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    if(isGroupConversation) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            TSGroupThread* gThread = (TSGroupThread*)self.thread;
+            self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
+            [self initializeToolbars];
+        }];
+    }
     // Process the notification(s),
     // and get the change-set(s) as applies to my view and mappings configuration.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -863,7 +903,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Update group", @"Leave group"]
+             otherButtonTitles:@[@"Update group", @"Leave group"] //@"Delete thread"] // TODOGROUP delete thread
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               NSLog(@"User Cancelled");
@@ -872,14 +912,15 @@ typedef enum : NSUInteger {
                           }else {
                               switch (tappedButtonIndex) {
                                   case 0:
-                                      DDLogDebug(@"update group picked");
                                       [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
-                                      
                                       break;
                                   case 1:
-                                      DDLogDebug(@"leave group picked");
+                                      [self leaveGroup];
                                       break;
-
+                                  case 2:
+                                      DDLogDebug(@"delete thread");
+                                      //TODOGROUP delete thread
+                                      break;
                                   default:
                                       break;
                               }
@@ -935,7 +976,6 @@ typedef enum : NSUInteger {
     }];
 }
 
-
 - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
 {
     if (action == @selector(delete:)) {
@@ -953,6 +993,49 @@ typedef enum : NSUInteger {
     else {
         [super collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
     }
+}
+
+- (void) leaveGroup {
+    TSGroupThread* gThread = (TSGroupThread*)_thread;
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+    message.groupMetaMessage = TSGroupMessageQuit;
+    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
+        [newGroupMemberIds removeObject:[SignalKeyingStorage.localNumber toE164]];
+        gThread.groupModel.groupMemberIds = newGroupMemberIds;
+        [gThread saveWithTransaction:transaction];
+    }];
+}
+
+- (void) updateGroupModelTo:(GroupModel*)newGroupModel {
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+        gThread.groupModel = newGroupModel;
+        [gThread saveWithTransaction:transaction];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+        message.groupMetaMessage = TSGroupMessageUpdate;
+        if(newGroupModel.groupImage!=nil) {
+            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage) contentType:@"image/png" inMessage:message thread:gThread];
+        }
+        else {
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
+        }
+        
+        self.thread = gThread;
+    }];
+
+}
+
+
+- (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
+    [self.inputToolbar.contentView.textView resignFirstResponder];
+    NewGroupViewController *ngc = [segue sourceViewController];
+    GroupModel* newGroupModel = [ngc groupModel];
+    NSMutableArray* groupMemberIds = [[NSMutableArray alloc] initWithArray:newGroupModel.groupMemberIds];
+    [groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
+    newGroupModel.groupMemberIds = groupMemberIds;
+    [self updateGroupModelTo:newGroupModel];
 }
 
 - (void)dealloc{

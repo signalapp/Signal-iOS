@@ -9,6 +9,7 @@
 #import "InboxTableViewCell.h"
 #import "Util.h"
 #import "UIImage+JSQMessages.h"
+#import "TSGroupThread.h"
 
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
@@ -46,7 +47,7 @@
 -(void)configureWithThread:(TSThread*)thread {
     _nameLabel.text           = thread.name;
     _snippetLabel.text        = thread.lastMessageLabel;
-    _contactPictureView.image = thread.image;
+    _contactPictureView.image = [thread isKindOfClass:[TSGroupThread class]] ? ((TSGroupThread*)thread).groupModel.groupImage : thread.image;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
     self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 

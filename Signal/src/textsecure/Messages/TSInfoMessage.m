@@ -21,6 +21,14 @@
     return self;
 }
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage customMessage:(NSString*)customMessage {
+    self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
+    if (self) {
+        _customMessage = customMessage;
+    }
+    return self;
+}
+
 + (instancetype)userNotRegisteredMessageInThread:(TSThread*)thread transaction:(YapDatabaseReadWriteTransaction*)transaction{
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageType:TSInfoMessageUserNotRegistered];
     
@@ -34,8 +42,10 @@
             return @"Media messages are currently not supported.";
         case TSInfoMessageUserNotRegistered:
             return @"The user is not registered.";
+        case TSInfoMessageTypeGroupQuit:
+            return @"You have left the group.";
         case TSInfoMessageTypeGroupUpdate:
-            return @"Updated the group";
+            return _customMessage != nil ? _customMessage : @"Updated the group";
         default:
             break;
     }

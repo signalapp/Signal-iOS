@@ -15,8 +15,14 @@
 - (instancetype)initWithIdentifier:(uint64_t)identifier
                                key:(NSData*)key
                        contentType:(NSString*)contentType
-                             relay:(NSString*)relay NS_DESIGNATED_INITIALIZER;;
+                             relay:(NSString*)relay NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithIdentifier:(uint64_t)identifier
+                               key:(NSData*)key
+                       contentType:(NSString*)contentType
+                             relay:(NSString*)relay
+                   avatarOfGroupId:(NSData*)avatarOfGroupId;
 
 @property NSString *relay;
-
+@property NSData *avatarOfGroupId;
 @end

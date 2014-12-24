@@ -40,25 +40,25 @@ dispatch_queue_t attachmentsQueue() {
 @implementation TSMessagesManager (attachments)
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content {
-    NSMutableArray *attachments = [NSMutableArray array];
-    
+    NSArray *attachmentsToRetrieve = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ?  [NSArray arrayWithObject:content.group.avatar] : content.attachments;
+
+    NSMutableArray *retrievedAttachments = [NSMutableArray array];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (PushMessageContentAttachmentPointer *pointer in content.attachments) {
-            TSAttachmentPointer *attachmentPointer = [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
+        for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
+            TSAttachmentPointer *attachmentPointer = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
             [attachmentPointer saveWithTransaction:transaction];
             
             dispatch_async(attachmentsQueue(), ^{
                 [self retrieveAttachment:attachmentPointer];
             });
-            [attachments addObject:attachmentPointer.uniqueId];
+            [retrievedAttachments addObject:attachmentPointer.uniqueId];
         }
     }];
     
-    [self handleReceivedMessage:message withContent:content attachments:attachments];
+    [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments];
 }
 
-- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread {
-
+- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType inMessage:(TSOutgoingMessage*)outgoingMessage thread:(TSThread*)thread {
     TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:allocateAttachment success:^(NSURLSessionDataTask *task, id responseObject) {
         dispatch_async(attachmentsQueue(), ^{
@@ -76,8 +76,8 @@ dispatch_queue_t attachmentsQueue() {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [result.pointer saveWithTransaction:transaction];
                     }];
-                    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:nil attachments:@[attachementId]];
-                    [self sendMessage:message inThread:thread];
+                    [outgoingMessage.attachments addObject:attachementId];
+                    [self sendMessage:outgoingMessage inThread:thread];
                 } else{
                     DDLogWarn(@"Failed to upload attachment");
                 }
@@ -87,9 +87,14 @@ dispatch_queue_t attachmentsQueue() {
         });
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         DDLogError(@"Failed to get attachment allocated: %@", error);
-    }];
+    }]; 
 }
-        
+
+- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread {
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:nil attachments:[[NSMutableArray alloc] init]];
+    [self sendAttachment:attachmentData contentType:contentType inMessage:message thread:thread];
+}
+
 - (void)retrieveAttachment:(TSAttachmentPointer*)attachment {
     
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:[attachment identifier]
@@ -122,6 +127,13 @@ dispatch_queue_t attachmentsQueue() {
                                                                           contentType:attachment.contentType];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
+            if([attachment.avatarOfGroupId length]!=0) {
+                GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+                TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+                gThread.groupModel.groupImage=[stream image];
+                [gThread saveWithTransaction:transaction];
+            
+            }
         }];
     }
 }

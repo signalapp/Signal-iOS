@@ -15,4 +15,6 @@
 - (void)retrieveAttachment:(TSAttachment*)attachment;
 - (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread;
 
+- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType inMessage:(TSOutgoingMessage*)outgoingMessage thread:(TSThread*)thread;
+
 @end
