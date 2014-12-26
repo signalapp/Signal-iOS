@@ -11,11 +11,12 @@
 #import "GroupModel.h"
 @class TSThread;
 
-@interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface MessagesViewController : JSQMessagesViewController   <UIImagePickerControllerDelegate,
+                                                                UINavigationControllerDelegate,
+                                                                UITextViewDelegate>
 
 - (void)setupWithThread:(TSThread*)thread;
 - (void)setupWithTSIdentifier:(NSString*)identifier;
 - (void)setupWithTSGroup:(GroupModel*)model;
-
 
 @end

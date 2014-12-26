@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TSAttachmentStream.h"
+#import "TSInteraction.h"
 
 @interface FullImageViewController : UIViewController
 
-- (instancetype)initWithImage:(UIImage*)image fromRect:(CGRect)rect;
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment fromRect:(CGRect)rect forInteraction:(TSInteraction*)interaction;
 
--(void)presentFromViewController:(UIViewController*)viewController;
+- (void)presentFromViewController:(UIViewController*)viewController;
 
 @end

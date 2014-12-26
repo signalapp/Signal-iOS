@@ -16,4 +16,6 @@
 
 - (BOOL)isImage;
 
+@property NSString *attachmentId;
+
 @end

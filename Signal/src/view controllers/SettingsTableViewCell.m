@@ -43,6 +43,9 @@
 -(void)updateImageQualityLabel
 {
     switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityUncropped:
+            self.detailLabel.text = @"Full";
+            break;
         case TSImageQualityHigh:
             self.detailLabel.text = @"High";
             break;

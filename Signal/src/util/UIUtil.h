@@ -2,6 +2,8 @@
 
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import "UIImage+normalizeImage.h"
+#import "UIImage+contentTypes.h"
 
 /**
  *

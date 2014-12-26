@@ -16,8 +16,6 @@
 @property UIImage *image;
 
 @property (strong, nonatomic) UIImageView *cachedImageView;
-@property (assign, nonatomic, readonly) BOOL isImageAttachment;
-
 @end
 
 @implementation TSAttachmentAdapter
@@ -26,9 +24,9 @@
     self = [super init];
     
     if (self) {
-        _image = [UIImage imageWithCGImage:attachment.image.CGImage];
+        _image           = attachment.image;
         _cachedImageView = nil;
-        _isImageAttachment = YES;
+        _attachmentId    = attachment.uniqueId;
     }
     return self;
 }
@@ -73,7 +71,7 @@
 
 -(BOOL)isImage
 {
-    return _isImageAttachment;
+    return YES;
 }
 
 #pragma mark - Utility
@@ -99,7 +97,6 @@
 {
     return ratio > 1.0f ? [self smallPortraitSize] : [self smallLandscapeSize];
 }
-
 
 - (CGSize)largePortraitSize
 {

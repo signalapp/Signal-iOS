@@ -33,6 +33,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage){
 
 - (void)addattachments:(NSArray*)attachments;
 - (void)addattachment:(NSString*)attachment;
-- (BOOL)hasattachments;
+- (BOOL)hasAttachments;
 
 @end

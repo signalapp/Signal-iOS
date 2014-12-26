@@ -8,6 +8,7 @@
 
 #import "FullImageViewController.h"
 #import "DJWActionSheet.h"
+#import "TSAttachmentStream.h"
 
 #define kImageViewCornerRadius 5.0f
 
@@ -24,7 +25,6 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 
 @property (nonatomic, strong) UIImageView *imageView;
-@property (nonatomic, strong) UIImage* image;
 
 @property (nonatomic, strong) UITapGestureRecognizer *singleTap;
 @property (nonatomic, strong) UITapGestureRecognizer *doubleTap;
@@ -34,21 +34,29 @@
 @property CGRect originRect;
 @property BOOL isPresenting;
 
+@property TSAttachmentStream *attachment;
+@property TSInteraction      *interaction;
+
 @end
 
 @implementation FullImageViewController
 
 
-- (instancetype)initWithImage:(UIImage*)image fromRect:(CGRect)rect {
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment fromRect:(CGRect)rect forInteraction:(TSInteraction*)interaction {
     self = [super initWithNibName:nil bundle:nil];
     
     if  (self) {
-        self.image = image;
-        self.imageView.image = image;
-        self.originRect = rect;
+        self.attachment      = attachment;
+        self.imageView.image = self.image;
+        self.originRect      = rect;
+        self.interaction     = interaction;
     }
     
     return self;
+}
+
+- (UIImage*)image{
+    return self.attachment.image;
 }
 
 - (void)viewDidLoad {
@@ -353,11 +361,14 @@
 {
     [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Save to Camera Roll", @"Copy"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+
+        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
+            __block TSInteraction *interaction = [self interaction];
+            [self dismissViewControllerAnimated:YES completion:^{
+                [interaction remove];
+            }];
             
-        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-            #warning Unimplemented deleting attachments from FullImageView
-            NSLog(@"Destructive button tapped");
-        }else {
+        } else {
             switch (tappedButtonIndex) {
                 case 0:
                     UIImageWriteToSavedPhotosAlbum(self.image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);

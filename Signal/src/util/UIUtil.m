@@ -4,7 +4,6 @@
 
 @implementation UIUtil
 
-
 + (void)applyRoundedBorderToImageView:(UIImageView *__strong*)imageView {
     [[*imageView layer] setBorderWidth:CONTACT_PICTURE_VIEW_BORDER_WIDTH];
     [[*imageView layer] setBorderColor:[[UIColor lightGrayColor] CGColor]];

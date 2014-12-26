@@ -7,7 +7,9 @@
 //
 
 #import "TSMessage.h"
+#import "TSAttachment.h"
 
+NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 
 @implementation TSMessage
 
@@ -25,10 +27,25 @@
     [self.attachments addObject:attachment];
 }
 
+- (NSArray *)yapDatabaseRelationshipEdges {
+    NSMutableArray *edges = [[super yapDatabaseRelationshipEdges] mutableCopy];
+    
+    if ([self hasAttachments]) {
+        for (NSString *attachmentId in self.attachments) {
+            YapDatabaseRelationshipEdge *fileEdge = [[YapDatabaseRelationshipEdge alloc] initWithName:TSAttachementsRelationshipEdgeName
+                                                                                       destinationKey:attachmentId
+                                                                                           collection:[TSAttachment collection]
+                                                                                      nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
+            [edges addObject:fileEdge];
+        }
+    }
+    return edges;
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread*)thread
                       messageBody:(NSString*)body
-                     attachments:(NSArray*)attachments
+                      attachments:(NSArray*)attachments
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
     
@@ -39,13 +56,13 @@
     return self;
 }
 
-- (BOOL)hasattachments{
+- (BOOL)hasAttachments{
     return self.attachments?(self.attachments.count>0):false;
 }
 
 - (NSString *)description{
     if(self.attachments > 0){
-        return @"attachment";
+        return @"Attachment";
     } else {
         return self.body;
     }

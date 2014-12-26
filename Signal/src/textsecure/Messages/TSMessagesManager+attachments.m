@@ -46,6 +46,7 @@ dispatch_queue_t attachmentsQueue() {
         for (PushMessageContentAttachmentPointer *pointer in content.attachments) {
             TSAttachmentPointer *attachmentPointer = [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
             [attachmentPointer saveWithTransaction:transaction];
+            
             dispatch_async(attachmentsQueue(), ^{
                 [self retrieveAttachment:attachmentPointer];
             });
@@ -57,7 +58,7 @@ dispatch_queue_t attachmentsQueue() {
 }
 
 - (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread {
-    
+
     TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:allocateAttachment success:^(NSURLSessionDataTask *task, id responseObject) {
         dispatch_async(attachmentsQueue(), ^{
@@ -173,5 +174,6 @@ dispatch_queue_t attachmentsQueue() {
     
     return success;
 }
+
 
 @end
