@@ -14,16 +14,19 @@
 @implementation SettingsTableViewCell
 
 - (void)awakeFromNib {
-    // Initialization code
-    [self.toggle setOn:[Environment.preferences screenSecurityIsEnabled]];
-    [self.toggle addTarget:self action:@selector(toggleSetting:) forControlEvents:UIControlEventValueChanged];
 
+    if (self.toggle) {
+        [self.toggle setOn:[Environment.preferences screenSecurityIsEnabled]];
+        [self.toggle addTarget:self action:@selector(toggleSetting:) forControlEvents:UIControlEventValueChanged];
+    }
+    
+    if ([self.reuseIdentifier isEqualToString:@"imageUploadQuality"]) {
+        [self updateImageQualityLabel];
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 #pragma mark - UISwitch
@@ -35,5 +38,24 @@
     }
 }
 
+#pragma mark - Detail Label
+
+-(void)updateImageQualityLabel
+{
+    switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityHigh:
+            self.detailLabel.text = @"High";
+            break;
+        case TSImageQualityMedium:
+            self.detailLabel.text = @"Medium";
+            break;
+        case TSImageQualityLow:
+            self.detailLabel.text = @"Low";
+            break;
+        default:
+            DDLogWarn(@"Unknown Image Quality setting : %ld <%s>", [Environment.preferences imageUploadQuality], __PRETTY_FUNCTION__);
+            break;
+    }
+}
 
 @end
