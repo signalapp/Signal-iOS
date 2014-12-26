@@ -673,7 +673,49 @@ typedef enum : NSUInteger {
 
 -(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
 {
-    return UIImageJPEGRepresentation(image, [self compressionRate]);
+    return UIImageJPEGRepresentation([self adjustedImageSizedForSending:image], [self compressionRate]);
+}
+
+-(UIImage*)adjustedImageSizedForSending:(UIImage*)image
+{
+    CGFloat correctedWidth;
+    switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityHigh:
+            correctedWidth = 2048;
+            break;
+        case TSImageQualityMedium:
+            correctedWidth = 1024;
+            break;
+        case TSImageQualityLow:
+            correctedWidth = 512;
+            break;
+        default:
+            break;
+    }
+    
+    return [self imageScaled:image toMaxSize:correctedWidth];
+}
+
+- (UIImage*)imageScaled:(UIImage *)image toMaxSize:(CGFloat)size
+{
+    CGFloat scaleFactor;
+    CGFloat aspectRatio = image.size.height / image.size.width;
+    
+    if( aspectRatio > 1 ) {
+        scaleFactor = size / image.size.width;
+    }
+    else {
+        scaleFactor = size / image.size.height;
+    }
+    
+    CGSize newSize = CGSizeMake(image.size.width * scaleFactor, image.size.height * scaleFactor);
+    
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage* updatedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return updatedImage;
 }
 
 -(CGFloat)compressionRate
