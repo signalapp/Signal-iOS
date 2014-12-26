@@ -48,6 +48,7 @@
 #import "Environment.h"
 #import "PhoneManager.h"
 #import "ContactsManager.h"
+#import "PreferencesUtil.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 static NSString *const kUpdateGroupSegueIdentifier  = @"updateGroupSegue";
@@ -662,11 +663,34 @@ typedef enum : NSUInteger {
         DDLogWarn(@"Video formats not supported, yet");
     } else if (picture_camera) {
         DDLogVerbose(@"Sending picture attachement ...");
-        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(picture_camera) contentType:@"image/png" thread:self.thread];
+        [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" thread:self.thread];
+        [self finishSendingMessage];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
+}
+
+-(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
+{
+    return UIImageJPEGRepresentation(image, [self compressionRate]);
+}
+
+-(CGFloat)compressionRate
+{
+    switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityHigh:
+            return 0.9f;
+            break;
+        case TSImageQualityMedium:
+            return 0.5f;
+            break;
+        case TSImageQualityLow:
+            return 0.3f;
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark Storage access
