@@ -2887,7 +2887,7 @@ Licensed under the GPLv3</string>
                                             <segue destination="8Xl-8d-r8m" kind="show" id="Vv8-VV-3Hv"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="imageUploadQuality" rowHeight="60" id="UYv-h0-6xf">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="imageUploadQuality" rowHeight="60" id="UYv-h0-6xf" customClass="SettingsTableViewCell">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="UYv-h0-6xf" id="cYD-8i-Zwo">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -2981,6 +2981,9 @@ Licensed under the GPLv3</string>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detailLabel" destination="rRX-8L-Jga" id="Re7-xi-iPD"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="60" id="qa9-qm-gch">
                                         <autoresizingMask key="autoresizingMask"/>

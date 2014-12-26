@@ -148,6 +148,9 @@ typedef enum {
                                                   DDLogWarn(@"Illegal Image Quality Tapped in <%s>", __PRETTY_FUNCTION__);
                                                   break;
                                           }
+                                          
+                                          SettingsTableViewCell * cell = (SettingsTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
+                                          [cell updateImageQualityLabel];
                                       }
                                   }];
                 break;
