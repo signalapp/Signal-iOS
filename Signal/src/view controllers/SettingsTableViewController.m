@@ -12,6 +12,8 @@
 
 #import "TSAccountManager.h"
 #import "TSStorageManager.h"
+#import "Environment.h"
+#import "PreferencesUtil.h"
 
 #import "RPServerRequestsManager.h"
 
@@ -127,12 +129,25 @@ typedef enum {
                                   tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                                       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
                                       if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                          NSLog(@"User Cancelled");
+                                          DDLogVerbose(@"User Cancelled <%s>", __PRETTY_FUNCTION__);
                                           
                                       } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                          NSLog(@"Destructive button tapped");
+                                          DDLogVerbose(@"Destructive button tapped <%s>", __PRETTY_FUNCTION__);
                                       }else {
-                                          NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                          switch (tappedButtonIndex) {
+                                              case 0:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityHigh];
+                                                  break;
+                                              case 1:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityMedium];
+                                                  break;
+                                              case 2:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityLow];
+                                                  break;
+                                              default:
+                                                  DDLogWarn(@"Illegal Image Quality Tapped in <%s>", __PRETTY_FUNCTION__);
+                                                  break;
+                                          }
                                       }
                                   }];
                 break;
