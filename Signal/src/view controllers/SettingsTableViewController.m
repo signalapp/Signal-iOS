@@ -22,15 +22,16 @@
 
 #define kNumberOfSections       2
 
-#define kClearHistoryLogCellRow 2
-#define kMessageDisplayCellRow  3
-#define kSendDebugLogCellRow    4
-#define kUnregisterCell         5
+#define kMessageDisplayCellRow  1
+#define kImageQualitySettingRow 2
+#define kClearHistoryLogCellRow 3
+#define kSendDebugLogCellRow    5
+#define kUnregisterCell         6
 
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 6,
+    kSecurityRows = 7,
 } kRowsForSection;
 
 typedef enum {
@@ -113,6 +114,27 @@ typedef enum {
                                       }
                                   }];
                 
+                break;
+            }
+            
+            case kImageQualitySettingRow:
+            {
+                [DJWActionSheet showInView:self.tabBarController.view
+                                 withTitle:nil
+                         cancelButtonTitle:@"Cancel"
+                    destructiveButtonTitle:nil
+                         otherButtonTitles:@[@"High", @"Medium", @"Low"]
+                                  tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                                      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                      if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                          NSLog(@"User Cancelled");
+                                          
+                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                          NSLog(@"Destructive button tapped");
+                                      }else {
+                                          NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                      }
+                                  }];
                 break;
             }
                 
