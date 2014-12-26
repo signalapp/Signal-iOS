@@ -48,6 +48,7 @@
 #import "Environment.h"
 #import "PhoneManager.h"
 #import "ContactsManager.h"
+#import "PreferencesUtil.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 static NSString *const kUpdateGroupSegueIdentifier  = @"updateGroupSegue";
@@ -662,11 +663,76 @@ typedef enum : NSUInteger {
         DDLogWarn(@"Video formats not supported, yet");
     } else if (picture_camera) {
         DDLogVerbose(@"Sending picture attachement ...");
-        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(picture_camera) contentType:@"image/png" thread:self.thread];
+        [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" thread:self.thread];
+        [self finishSendingMessage];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
+}
+
+-(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
+{
+    return UIImageJPEGRepresentation([self adjustedImageSizedForSending:image], [self compressionRate]);
+}
+
+-(UIImage*)adjustedImageSizedForSending:(UIImage*)image
+{
+    CGFloat correctedWidth;
+    switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityHigh:
+            correctedWidth = 2048;
+            break;
+        case TSImageQualityMedium:
+            correctedWidth = 1024;
+            break;
+        case TSImageQualityLow:
+            correctedWidth = 512;
+            break;
+        default:
+            break;
+    }
+    
+    return [self imageScaled:image toMaxSize:correctedWidth];
+}
+
+- (UIImage*)imageScaled:(UIImage *)image toMaxSize:(CGFloat)size
+{
+    CGFloat scaleFactor;
+    CGFloat aspectRatio = image.size.height / image.size.width;
+    
+    if( aspectRatio > 1 ) {
+        scaleFactor = size / image.size.width;
+    }
+    else {
+        scaleFactor = size / image.size.height;
+    }
+    
+    CGSize newSize = CGSizeMake(image.size.width * scaleFactor, image.size.height * scaleFactor);
+    
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage* updatedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return updatedImage;
+}
+
+-(CGFloat)compressionRate
+{
+    switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityHigh:
+            return 0.9f;
+            break;
+        case TSImageQualityMedium:
+            return 0.5f;
+            break;
+        case TSImageQualityLow:
+            return 0.3f;
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark Storage access
