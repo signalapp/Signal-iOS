@@ -348,6 +348,8 @@
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
+		B68112ED1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */; };
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -972,6 +974,10 @@
 		B67ADDC21989FF8700E1A773 /* RPServerRequestsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPServerRequestsManager.h; sourceTree = "<group>"; };
 		B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPServerRequestsManager.m; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+normalizeImage.h"; path = "util/UIImage+normalizeImage.h"; sourceTree = "<group>"; };
+		B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+normalizeImage.m"; path = "util/UIImage+normalizeImage.m"; sourceTree = "<group>"; };
+		B68112EB1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "JSQMessagesCollectionViewCell+menuBarItems.h"; path = "views/JSQMessagesCollectionViewCell+menuBarItems.h"; sourceTree = "<group>"; };
+		B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "JSQMessagesCollectionViewCell+menuBarItems.m"; path = "views/JSQMessagesCollectionViewCell+menuBarItems.m"; sourceTree = "<group>"; };
 		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -2712,6 +2718,10 @@
 				FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */,
 				FCFA64B51A24F6730007FB87 /* UIFont+OWS.h */,
 				FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */,
+				B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */,
+				B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */,
+				B68112EB1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.h */,
+				B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -3210,6 +3220,7 @@
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
+				B68112ED1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m in Sources */,
 				B6B096701A1D25ED008BFAA6 /* TSInfoMessage.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
@@ -3276,6 +3287,7 @@
 				B6B0968C1A1D25ED008BFAA6 /* TSDatabaseView.m in Sources */,
 				B6B0966A1A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
+				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,
 				B6B0968E1A1D25ED008BFAA6 /* TSStorageManager.m in Sources */,
 				FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,

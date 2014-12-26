@@ -10,9 +10,10 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 };
 
 typedef NS_ENUM(NSUInteger, TSImageQuality) {
-    TSImageQualityHigh,
-    TSImageQualityMedium,
-    TSImageQualityLow
+    TSImageQualityUncropped = 1,
+    TSImageQualityHigh      = 2,
+    TSImageQualityMedium    = 3,
+    TSImageQualityLow       = 4
 };
 
 @class PhoneNumber;

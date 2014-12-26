@@ -7,8 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <YapDatabase/YapDatabaseRelationshipNode.h>
-
 #import "TSYapDatabaseObject.h"
 
 typedef NS_ENUM(NSInteger, TSLastActionType) {

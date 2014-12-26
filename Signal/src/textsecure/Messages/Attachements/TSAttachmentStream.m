@@ -7,10 +7,13 @@
 //
 
 #import "TSAttachmentStream.h"
+#import "UIImage+contentTypes.h"
+
+NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
 @interface TSAttachmentStream ()
 
-@property (nonatomic) NSString *path;
+@property (nonatomic) NSString *attachmentPath;
 
 @end
 
@@ -21,9 +24,8 @@
                                key:(NSData*)key
                        contentType:(NSString*)contentType{
     self = [super initWithIdentifier:identifier encryptionKey:key contentType:contentType];
-    
-    NSString *path = [self filePath];
-    [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+
+    [[NSFileManager defaultManager] createFileAtPath:_attachmentPath contents:data attributes:nil];
     
     return self;
 }
@@ -32,10 +34,18 @@
     return YES;
 }
 
+- (NSArray *)yapDatabaseRelationshipEdges {
+    YapDatabaseRelationshipEdge *attachmentFileEdge = [YapDatabaseRelationshipEdge edgeWithName:TSAttachementFileRelationshipEdge
+                                                                            destinationFilePath:[self filePath]
+                                                                                nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+    
+    return @[attachmentFileEdge];
+}
+
 + (NSString*)attachmentsFolder {
-    NSFileManager* fileManager  = [NSFileManager defaultManager];
-    NSURL *fileURL              = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    NSString *path              = [fileURL path];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSURL *fileURL             = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSString *path             = [fileURL path];
     NSString *attachmentFolder = [path stringByAppendingFormat:@"/Attachments"];
     
     NSError * error = nil;
@@ -46,7 +56,7 @@
     if (error != nil) {
         DDLogError(@"Failed to create attachments directory: %@", error.description);
     }
-
+    
     return attachmentFolder;
 }
 
@@ -75,7 +85,7 @@
         return nil;
     }
     
-    return [UIImage imageWithContentsOfFile:[self filePath]];
+    return [UIImage imageWithContentsOfFile:self.filePath];
 }
 
 @end

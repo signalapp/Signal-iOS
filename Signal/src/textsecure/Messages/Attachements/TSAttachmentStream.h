@@ -8,7 +8,7 @@
 
 #import "TSAttachment.h"
 
-@interface TSAttachmentStream : TSAttachment
+@interface TSAttachmentStream : TSAttachment <YapDatabaseRelationshipNode>
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data

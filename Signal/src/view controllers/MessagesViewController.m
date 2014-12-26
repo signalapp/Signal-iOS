@@ -133,7 +133,6 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.automaticallyScrollsToMostRecentMessage = YES;
     [self scrollToBottomAnimated:NO];
 }
 
@@ -164,7 +163,7 @@ typedef enum : NSUInteger {
 -(void)initializeNavigationBar
 {
     self.title = self.thread.name;
-
+    
     if (!isGroupConversation && [self isRedPhoneReachable]) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
         UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
@@ -197,7 +196,7 @@ typedef enum : NSUInteger {
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         
-        self.automaticallyScrollsToMostRecentMessage = NO;
+        self.automaticallyScrollsToMostRecentMessage = YES;
         
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
@@ -298,24 +297,18 @@ typedef enum : NSUInteger {
     switch (msg.messageType) {
         case TSIncomingMessageAdapter:
             return [self loadIncomingMessageCellForMessage:msg atIndexPath:indexPath];
-            break;
         case TSOutgoingMessageAdapter:
             return [self loadOutgoingCellForMessage:msg atIndexPath:indexPath];
-            break;
         case TSCallAdapter:
             return [self loadCallCellForCall:msg atIndexPath:indexPath];
-            break;
         case TSInfoMessageAdapter:
             return [self loadInfoMessageCellForMessage:msg atIndexPath:indexPath];
-            break;
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
-            break;
             
         default:
             NSLog(@"Something went wrong");
             return nil;
-            break;
     }
 }
 
@@ -325,7 +318,8 @@ typedef enum : NSUInteger {
 {
     JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
-        cell.textView.textColor = [UIColor blackColor];
+        cell.textView.textColor          = [UIColor blackColor];
+        cell.textView.selectable         = NO;
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
@@ -338,7 +332,8 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage)
     {
-        cell.textView.textColor = [UIColor whiteColor];
+        cell.textView.textColor          = [UIColor whiteColor];
+        cell.textView.selectable         = NO;
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
@@ -497,6 +492,7 @@ typedef enum : NSUInteger {
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
     
+    
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
             if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
@@ -507,15 +503,21 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                TSAttachmentAdapter * messageMedia = (TSAttachmentAdapter*)[messageItem media];
+                TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
                 
                 if ([messageMedia isImage]) {
-                    //is a photo
-                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image ;
+                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
                     CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
-                    FullImageViewController * vc = [[FullImageViewController alloc]initWithImage:tappedImage fromRect:convertedRect];
-                    [vc presentFromViewController:self];
+                    __block TSAttachment *attachment = nil;
+                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                    }];
                     
+                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
+                        FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
+                        [vc presentFromViewController:self];
+                    }
                 } else {
                     DDLogWarn(@"Currently unsupported");
                 }
@@ -547,6 +549,13 @@ typedef enum : NSUInteger {
             [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
             [self finishSendingMessage];
         }
+    }];
+}
+
+- (void)deleteMessageAtIndexPath:(NSIndexPath*)indexPath {
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+        [interaction removeWithTransaction:transaction];
     }];
 }
 
@@ -615,9 +624,8 @@ typedef enum : NSUInteger {
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     
     if ([UIImagePickerController isSourceTypeAvailable:
-         UIImagePickerControllerSourceTypeCamera])
-    {
-        picker.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *)kUTTypeMovie, kUTTypeImage, kUTTypeVideo, nil];
+         UIImagePickerControllerSourceTypeCamera]) {
+        picker.mediaTypes = @[(NSString*)kUTTypeImage];
         [self presentViewController:picker animated:YES completion:NULL];
     }
     
@@ -655,7 +663,7 @@ typedef enum : NSUInteger {
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    UIImage *picture_camera = [info objectForKey:UIImagePickerControllerOriginalImage];
+    UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
     
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
     
@@ -680,6 +688,9 @@ typedef enum : NSUInteger {
 {
     CGFloat correctedWidth;
     switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityUncropped:
+            return image;
+            
         case TSImageQualityHigh:
             correctedWidth = 2048;
             break;
@@ -721,15 +732,14 @@ typedef enum : NSUInteger {
 -(CGFloat)compressionRate
 {
     switch ([Environment.preferences imageUploadQuality]) {
+        case TSImageQualityUncropped:
+            return 1;
         case TSImageQualityHigh:
             return 0.9f;
-            break;
         case TSImageQualityMedium:
             return 0.5f;
-            break;
         case TSImageQualityLow:
             return 0.3f;
-            break;
         default:
             break;
     }
@@ -853,7 +863,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Update group", @"Leave group", @"Delete thread"]
+             otherButtonTitles:@[@"Update group", @"Leave group"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               NSLog(@"User Cancelled");
@@ -867,12 +877,9 @@ typedef enum : NSUInteger {
                                       
                                       break;
                                   case 1:
-                                      DDLogDebug(@"leave group picket");
+                                      DDLogDebug(@"leave group picked");
                                       break;
-                                  case 2:
-                                      DDLogDebug(@"delete thread");
-                                      break;
-                                      
+
                                   default:
                                       break;
                               }
@@ -893,12 +900,12 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo", @"Choose existing Video", @"Send file"]
+             otherButtonTitles:@[@"Take Photo", @"Choose existing Photo"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              NSLog(@"User Cancelled");
+                              DDLogVerbose(@"User Cancelled");
                           } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              NSLog(@"Destructive button tapped");
+                              DDLogVerbose(@"Destructive button tapped");
                           }else {
                               switch (tappedButtonIndex) {
                                   case 0:
@@ -907,10 +914,6 @@ typedef enum : NSUInteger {
                                   case 1:
                                       [self chooseFromLibrary:kMediaTypePicture];
                                       break;
-                                  case 2:
-                                      [self chooseFromLibrary:kMediaTypeVideo];
-                                      break;
-                                      
                                   default:
                                       break;
                               }
@@ -930,6 +933,26 @@ typedef enum : NSUInteger {
             }
         }];
     }];
+}
+
+
+- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
+{
+    if (action == @selector(delete:)) {
+        return YES;
+    }
+    
+    return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
+{
+    if (action == @selector(delete:)) {
+        [self deleteMessageAtIndexPath:indexPath];
+    }
+    else {
+        [super collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
+    }
 }
 
 - (void)dealloc{

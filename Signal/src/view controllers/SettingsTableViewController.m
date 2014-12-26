@@ -125,7 +125,7 @@ typedef enum {
                                  withTitle:nil
                          cancelButtonTitle:@"Cancel"
                     destructiveButtonTitle:nil
-                         otherButtonTitles:@[@"High", @"Medium", @"Low"]
+                         otherButtonTitles:@[@"Uncompressed", @"High", @"Medium", @"Low"]
                                   tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                                       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
                                       if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
@@ -136,12 +136,15 @@ typedef enum {
                                       }else {
                                           switch (tappedButtonIndex) {
                                               case 0:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityHigh];
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityUncropped];
                                                   break;
                                               case 1:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityMedium];
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityHigh];
                                                   break;
                                               case 2:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityMedium];
+                                                  break;
+                                              case 3:
                                                   [Environment.preferences setImageUploadQuality:TSImageQualityLow];
                                                   break;
                                               default:

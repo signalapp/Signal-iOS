@@ -15,6 +15,7 @@
 #import "TSattachment.h"
 #import "TSAttachmentStream.h"
 #import "TSAttachmentAdapter.h"
+#import "TSAttachmentPointer.h"
 
 @interface TSMessageAdapter ()
 
@@ -92,13 +93,23 @@
             
             for (NSString *attachmentID in message.attachments) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
-                
+    
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
                     if ([stream isImage]) {
                         adapter.mediaItem = [[TSAttachmentAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
+                    } else {
+                        DDLogWarn(@"We have a TSAttachmentStream for an unsupported media type");
                     }
+                } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
+                    //TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
+                    //TODO: Change this status when download failed;
+                    adapter.messageBody = @"Attachment is downloading";
+                    adapter.messageType = TSInfoMessageAdapter;
+                } else {
+                    DDLogError(@"We retreived an attachment that doesn't have a known type : %@", NSStringFromClass([attachment class]));
                 }
             }
         }
