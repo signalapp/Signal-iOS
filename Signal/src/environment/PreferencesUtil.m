@@ -24,6 +24,7 @@
 #define SCREEN_SECURITY_KEY @"Screen Security Key"
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
+#define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -126,6 +127,20 @@
     } else {
         return NotificationNamePreview;
     }
+}
+
+-(TSImageQuality)imageUploadQuality {
+    NSNumber * preference = [self tryGetValueForKey:IMAGE_UPLOAD_QUALITY_KEY];
+    
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        return TSImageQualityMedium;
+    }
+}
+
+-(void)setImageUploadQuality:(TSImageQuality)quality {
+    [self setValueForKey:IMAGE_UPLOAD_QUALITY_KEY toValue:@(quality)];
 }
 
 -(void)setNotificationPreviewType:(NotificationType)type

@@ -12,6 +12,8 @@
 
 #import "TSAccountManager.h"
 #import "TSStorageManager.h"
+#import "Environment.h"
+#import "PreferencesUtil.h"
 
 #import "RPServerRequestsManager.h"
 
@@ -22,15 +24,16 @@
 
 #define kNumberOfSections       2
 
-#define kClearHistoryLogCellRow 2
-#define kMessageDisplayCellRow  3
-#define kSendDebugLogCellRow    4
-#define kUnregisterCell         5
+#define kMessageDisplayCellRow  1
+#define kImageQualitySettingRow 2
+#define kClearHistoryLogCellRow 3
+#define kSendDebugLogCellRow    5
+#define kUnregisterCell         6
 
 
 typedef enum {
     kProfileRows  = 1,
-    kSecurityRows = 6,
+    kSecurityRows = 7,
 } kRowsForSection;
 
 typedef enum {
@@ -113,6 +116,43 @@ typedef enum {
                                       }
                                   }];
                 
+                break;
+            }
+            
+            case kImageQualitySettingRow:
+            {
+                [DJWActionSheet showInView:self.tabBarController.view
+                                 withTitle:nil
+                         cancelButtonTitle:@"Cancel"
+                    destructiveButtonTitle:nil
+                         otherButtonTitles:@[@"High", @"Medium", @"Low"]
+                                  tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                                      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                      if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                          DDLogVerbose(@"User Cancelled <%s>", __PRETTY_FUNCTION__);
+                                          
+                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                          DDLogVerbose(@"Destructive button tapped <%s>", __PRETTY_FUNCTION__);
+                                      }else {
+                                          switch (tappedButtonIndex) {
+                                              case 0:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityHigh];
+                                                  break;
+                                              case 1:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityMedium];
+                                                  break;
+                                              case 2:
+                                                  [Environment.preferences setImageUploadQuality:TSImageQualityLow];
+                                                  break;
+                                              default:
+                                                  DDLogWarn(@"Illegal Image Quality Tapped in <%s>", __PRETTY_FUNCTION__);
+                                                  break;
+                                          }
+                                          
+                                          SettingsTableViewCell * cell = (SettingsTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
+                                          [cell updateImageQualityLabel];
+                                      }
+                                  }];
                 break;
             }
                 

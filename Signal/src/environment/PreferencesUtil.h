@@ -9,6 +9,12 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNamePreview,
 };
 
+typedef NS_ENUM(NSUInteger, TSImageQuality) {
+    TSImageQualityHigh,
+    TSImageQualityMedium,
+    TSImageQualityLow
+};
+
 @class PhoneNumber;
 
 @interface PropertyListPreferences (PropertyUtil)
@@ -26,6 +32,9 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 
 -(NotificationType)notificationPreviewType;
 -(void)setNotificationPreviewType:(NotificationType)type;
+
+-(TSImageQuality)imageUploadQuality;
+-(void)setImageUploadQuality:(TSImageQuality)quality;
 
 -(NSString*)lastRanVersion;
 -(NSString*)setAndGetCurrentVersion;
