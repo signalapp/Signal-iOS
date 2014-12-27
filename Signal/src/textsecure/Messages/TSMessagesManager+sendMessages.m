@@ -179,6 +179,7 @@ dispatch_queue_t sendingQueue() {
             bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceNumber];
             dispatch_semaphore_signal(sema);
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogError(@"Server replied on PreKeyBundle request with error: %@", error);
             dispatch_semaphore_signal(sema);
         }];
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);

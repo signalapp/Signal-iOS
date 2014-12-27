@@ -11,7 +11,7 @@
 
 #import <25519/Curve25519.h>
 
-#define TSStorageManagerIdentityKeyStoreIdentityKey @"TSStorageManagerIdentityKeyStoreIdentityKey"
+#define TSStorageManagerIdentityKeyStoreIdentityKey @"TSStorageManagerIdentityKeyStoreIdentityKey" // Key for our identity key
 #define TSStorageManagerIdentityKeyStoreCollection  @"TSStorageManagerIdentityKeyStoreCollection"
 #define TSStorageManagerTrustedKeysCollection       @"TSStorageManagerTrustedKeysCollection"
 
@@ -47,6 +47,10 @@
     NSData *trusted = [self dataForKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
     
     return (trusted == nil || [trusted isEqualToData:identityKey]);
+}
+
+- (void)removeIdentityKeyForRecipient:(NSString*)receipientId{
+    [self removeObjectForKey:receipientId inCollection:TSStorageManagerTrustedKeysCollection];
 }
 
 @end

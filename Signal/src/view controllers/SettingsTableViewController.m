@@ -14,7 +14,6 @@
 #import "TSStorageManager.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
-
 #import "RPServerRequestsManager.h"
 
 #import <PastelogKit/Pastelog.h>
@@ -100,18 +99,18 @@ typedef enum {
             {
                 //Present more info
                 [DJWActionSheet showInView:self.tabBarController.view
-                                 withTitle:@"Are you sure you want to delete all your history ? This action cannot be reverted."
+                                 withTitle:@"Are you sure you want to delete all your history (messages, attachments, call history ...)? This action cannot be reverted."
                          cancelButtonTitle:@"Cancel"
-                    destructiveButtonTitle:nil
-                         otherButtonTitles:@[@"I'm sure."]
+                    destructiveButtonTitle:@"I'm sure."
+                         otherButtonTitles:@[]
                                   tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                                       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
                                       if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                                           NSLog(@"User Cancelled");
                                           
-                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                          NSLog(@"Destructive button tapped");
-                                      }else {
+                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
+                                          [[TSStorageManager sharedManager] deleteThreadsAndMessages];
+                                      } else {
                                           NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
                                       }
                                   }];

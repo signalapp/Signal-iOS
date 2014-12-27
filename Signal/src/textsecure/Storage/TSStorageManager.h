@@ -21,6 +21,7 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 
 + (instancetype)sharedManager;
 - (void)setupDatabase;
+- (void)deleteThreadsAndMessages;
 
 - (YapDatabase*)database;
 - (YapDatabaseConnection*)newDatabaseConnection;

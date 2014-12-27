@@ -11,21 +11,15 @@
 
 NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
-@interface TSAttachmentStream ()
-
-@property (nonatomic) NSString *attachmentPath;
-
-@end
-
 @implementation TSAttachmentStream
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data
                                key:(NSData*)key
-                       contentType:(NSString*)contentType{
+                       contentType:(NSString*)contentType {
     self = [super initWithIdentifier:identifier encryptionKey:key contentType:contentType];
 
-    [[NSFileManager defaultManager] createFileAtPath:_attachmentPath contents:data attributes:nil];
+    [[NSFileManager defaultManager] createFileAtPath:self.filePath contents:data attributes:nil];
     
     return self;
 }
@@ -64,7 +58,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
 }
 
-- (BOOL)isImage{
+- (BOOL)isImage {
     if ([self.contentType containsString:@"image/"]) {
         return YES;
     } else{
@@ -72,7 +66,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     }
 }
 
-- (BOOL)isVideo{
+- (BOOL)isVideo {
     if ([self.contentType containsString:@"video/"]) {
         return YES;
     } else{
@@ -80,12 +74,21 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     }
 }
 
-- (UIImage*)image{
+- (UIImage*)image {
     if (![self isImage]) {
         return nil;
     }
-    
+
     return [UIImage imageWithContentsOfFile:self.filePath];
+}
+
++ (void)deleteAttachments {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSError *error;
+    [fm removeItemAtPath:[self attachmentsFolder] error:&error];
+    if (error) {
+        DDLogError(@"Failed to delete attachment folder with error: %@", error.debugDescription);
+    }
 }
 
 @end
