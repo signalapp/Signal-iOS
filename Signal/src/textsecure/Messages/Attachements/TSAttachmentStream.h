@@ -20,4 +20,6 @@
 - (BOOL)isImage;
 - (BOOL)isVideo;
 
++ (void)deleteAttachments;
+
 @end

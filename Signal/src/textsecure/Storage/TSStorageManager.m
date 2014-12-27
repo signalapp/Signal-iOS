@@ -13,6 +13,12 @@
 #import "CryptoTools.h"
 #import "NSData+Base64.h"
 
+#import "TSThread.h"
+#import "TSInteraction.h"
+#import "TSRecipient.h"
+#import "TSAttachment.h"
+#import "TSAttachmentStream.h"
+
 #import <SSKeychain/SSKeychain.h>
 #import "TSDatabaseView.h"
 
@@ -233,6 +239,16 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 
 - (void)setInt:(int)integer forKey:(NSString*)key inCollection:(NSString*)collection {
     [self setObject:[NSNumber numberWithInt:integer] forKey:key inCollection:collection];
+}
+
+- (void)deleteThreadsAndMessages {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:[TSThread collection]];
+        [transaction removeAllObjectsInCollection:[TSRecipient collection]];
+        [transaction removeAllObjectsInCollection:[TSInteraction collection]];
+        [transaction removeAllObjectsInCollection:[TSAttachment collection]];
+    }];
+    [TSAttachmentStream deleteAttachments];
 }
 
 - (void)wipe{
