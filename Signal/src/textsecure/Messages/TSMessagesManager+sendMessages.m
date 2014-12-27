@@ -76,7 +76,7 @@ dispatch_queue_t sendingQueue() {
             
         }
         else if([thread isKindOfClass:[TSContactThread class]]){
-            [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+            [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
 
             TSContactThread *contactThread = (TSContactThread*)thread;
             __block TSRecipient     *recipient;
