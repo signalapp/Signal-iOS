@@ -183,7 +183,7 @@
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
     }
-    else if (content.attachments.count > 0 || (content.group!= nil && content.group.type == PushMessageContentGroupContextTypeUpdate)) {
+    else if (content.attachments.count > 0 || (content.group!= nil && content.group.type == PushMessageContentGroupContextTypeUpdate && content.group.hasAvatar)) {
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     }
