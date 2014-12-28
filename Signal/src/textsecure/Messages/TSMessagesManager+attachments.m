@@ -45,7 +45,7 @@ dispatch_queue_t attachmentsQueue() {
     NSMutableArray *retrievedAttachments = [NSMutableArray array];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
-            TSAttachmentPointer *attachmentPointer = (content.group != nil) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
+            TSAttachmentPointer *attachmentPointer = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
             [attachmentPointer saveWithTransaction:transaction];
             dispatch_async(attachmentsQueue(), ^{
                 [self retrieveAttachment:attachmentPointer];
