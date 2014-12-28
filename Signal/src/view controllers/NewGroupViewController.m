@@ -12,6 +12,7 @@
 #import "ContactsManager.h"
 #import "Environment.h"
 
+
 #import "Contact.h"
 #import "GroupModel.h"
 #import "SecurityUtils.h"
@@ -22,6 +23,8 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
+
+static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 
 @interface NewGroupViewController () {
     NSArray* contacts;
@@ -37,6 +40,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    contacts = [Environment getCurrent].contactsManager.textSecureContacts;
+    [self initializeDelegates];
+    [self initializeTableView];
+    [self initializeKeyboardHandlers];
+
     if(_thread==nil) {
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
         self.navigationItem.title = @"New Group";
@@ -46,12 +54,25 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
         self.navigationItem.title = _thread.groupModel.groupName;
         self.nameGroupTextField.text = _thread.groupModel.groupName;
+        [self setupGroupImageButton:_thread.groupModel.groupImage];
+        // Select the contacts already selected:
+        for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]-1; r++) {
+            // TODOGROUP this will not scale well
+            NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
+            NSMutableArray *contactPhoneNumbers = [[NSMutableArray alloc] init];
+            for(PhoneNumber* number in [[contacts objectAtIndex:(NSUInteger)r] parsedPhoneNumbers]) {
+                [contactPhoneNumbers addObject:[number toE164]];
+            }
+            [usersInGroup intersectSet:[NSSet setWithArray:contactPhoneNumbers]];
+            if([usersInGroup count]>0) {
+                [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:(r+1) inSection:0]
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionNone];
+            }
+        }
+        
     }
-    contacts = [Environment getCurrent].contactsManager.textSecureContacts;
 
-    [self initializeDelegates];
-    [self initializeTableView];
-    [self initializeKeyboardHandlers];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -91,7 +112,15 @@
 
 
 -(void)updateGroup {
-    DDLogDebug(@"Update gruop not implemented");
+    NSMutableArray* mut = [[NSMutableArray alloc]init];
+    for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
+    }
+    [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
+    _groupModel = [[GroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_groupImageButton.imageView.image groupId:_thread.groupModel.groupId];
+
+    [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
+
 }
 
 
@@ -182,14 +211,16 @@
     UIImage *picture_camera = [info objectForKey:UIImagePickerControllerOriginalImage];
     
     if (picture_camera) {
-        //There is a photo
-        _groupImageButton.imageView.image = picture_camera;
-        _groupImageButton.imageView.layer.cornerRadius = 40.0f;
-        _groupImageButton.imageView.clipsToBounds = YES;
+        [self setupGroupImageButton:picture_camera];
         
     }
-    
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)setupGroupImageButton:(UIImage*)image {
+    _groupImageButton.imageView.image = image;
+    _groupImageButton.imageView.layer.cornerRadius = 4.0f;
+    _groupImageButton.imageView.clipsToBounds = YES;
 }
 
 #pragma mark - Table view data source
@@ -214,12 +245,6 @@
     if (indexPath.row > 0) {
         NSUInteger row = (NSUInteger)indexPath.row;
         Contact* contact = contacts[row-1];
-        if(_thread) {
-            //TODOGROUP inefficient way of doing this, will not scale well
-            NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
-            [usersInGroup intersectSet:[NSSet setWithArray:contact.userTextPhoneNumbers]];
-            cell.accessoryType = [usersInGroup count]>0 ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-        }
         
         cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
@@ -238,7 +263,6 @@
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    
 }
 
 
@@ -276,15 +300,5 @@
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
     return fullNameAttributedString;
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

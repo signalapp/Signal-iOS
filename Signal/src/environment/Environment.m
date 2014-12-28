@@ -43,6 +43,7 @@ phoneDirectoryManager;
     require(environment != nil);
     return environment;
 }
+
 +(void) setCurrent:(Environment*)curEnvironment {
     environment = curEnvironment;
 }
@@ -162,7 +163,6 @@ phoneDirectoryManager;
     return [PropertyListPreferences new];
 }
 
-
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController{
     _signalsViewController = signalsViewController;
 }
@@ -207,7 +207,6 @@ phoneDirectoryManager;
     }
     
 }
-
 
 + (void)resetAppData{
     [SignalKeyingStorage wipeKeychain];
