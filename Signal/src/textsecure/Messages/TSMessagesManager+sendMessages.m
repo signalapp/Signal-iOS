@@ -257,7 +257,7 @@ dispatch_queue_t sendingQueue() {
 - (NSData*)plainTextForMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
     PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
     [builder setBody:message.body];
-
+    BOOL processAttachments = YES;
     if([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread*)thread;
         PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
@@ -269,27 +269,29 @@ dispatch_queue_t sendingQueue() {
                 [groupBuilder setType:PushMessageContentGroupContextTypeQuit];
                 break;
             case TSGroupMessageUpdate:
-            case TSGroupMessageNew:
+            case TSGroupMessageNew: {
+                if(gThread.groupModel.groupImage!=nil && [message.attachments count] == 1) {
+                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:[message.attachments firstObject]];
+                    if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
+                        PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
+                        [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
+                        [attachmentbuilder setContentType:attachment.contentType];
+                        [attachmentbuilder setKey:attachment.encryptionKey];
+                        [groupBuilder setAvatar:[attachmentbuilder build]];
+                        processAttachments = NO;
+                    }
+                }
                 [groupBuilder setType:PushMessageContentGroupContextTypeUpdate];
                 break;
+            }
             default:
                 [groupBuilder setType:PushMessageContentGroupContextTypeDeliver];
                 break;
         }
-        if(gThread.groupModel.groupImage!=nil && [message.attachments count] == 1) {
-            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:[message.attachments firstObject]];
-            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachment = (TSAttachmentStream*)dbObject;
-                PushMessageContentAttachmentPointerBuilder *attachmentbuilder = [PushMessageContentAttachmentPointerBuilder new];
-                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                [attachmentbuilder setContentType:attachment.contentType];
-                [attachmentbuilder setKey:attachment.encryptionKey];
-                [groupBuilder setAvatar:[attachmentbuilder build]];
-            }
-        }
         [builder setGroup:groupBuilder.build];
     }
-    else {
+    if(processAttachments) {
         NSMutableArray *attachmentsArray = [NSMutableArray array];
         for (NSString *attachmentId in message.attachments){
             id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
@@ -307,7 +309,6 @@ dispatch_queue_t sendingQueue() {
         }
         [builder setAttachmentsArray:attachmentsArray];
     }
-    
     return [builder.build data];
 }
 

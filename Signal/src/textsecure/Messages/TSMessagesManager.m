@@ -183,7 +183,7 @@
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
     }
-    else if (content.attachments.count > 0 || (content.group!= nil && content.group.hasAvatar)) {
+    else if (content.attachments.count > 0 || (content.group!= nil && content.group.type == PushMessageContentGroupContextTypeUpdate)) {
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     }
@@ -219,21 +219,21 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            UIImage* groupAvatar;
-            if([attachments count]==1) {
-                NSString* avatarId  = [attachments firstObject];
-                TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
-                if ([avatar isKindOfClass:[TSAttachmentStream class]]) { 
-                    TSAttachmentStream *stream = (TSAttachmentStream*)avatar;
-                    if ([stream isImage]) {
-                        groupAvatar = [stream image];
+            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id];
+            TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+            [gThread saveWithTransaction:transaction];
+            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                if([attachments count]==1) {
+                    NSString* avatarId  = [attachments firstObject];
+                    TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
+                    if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *stream = (TSAttachmentStream*)avatar;
+                        if ([stream isImage]) {
+                            model.groupImage = [stream image];
+                        }
                     }
                 }
-            }
-            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:groupAvatar groupId:content.group.id];
-            TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-            [gThread saveWithTransaction:transaction]; 
-            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                
                 NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
                 gThread.groupModel = model;
                 [gThread saveWithTransaction:transaction];
