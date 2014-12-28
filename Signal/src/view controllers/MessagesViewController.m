@@ -83,13 +83,13 @@ typedef enum : NSUInteger {
 
 - (void)setupWithTSIdentifier:(NSString *)identifier{
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSContactThread threadWithContactId:identifier transaction:transaction];
+        self.thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
     }];
 }
 
 - (void)setupWithTSGroup:(GroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSGroupThread threadWithGroupModel:model transaction:transaction];
+        self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:nil];
         message.groupMetaMessage = TSGroupMessageNew;
@@ -767,8 +767,16 @@ typedef enum : NSUInteger {
     return _editingDatabaseConnection;
 }
 
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    if(isGroupConversation) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            TSGroupThread* gThread = (TSGroupThread*)self.thread;
+            self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
+            self.title = self.thread.name;
+        }];
+    }
     // Process the notification(s),
     // and get the change-set(s) as applies to my view and mappings configuration.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];

@@ -41,7 +41,7 @@
 }
 
 - (instancetype)initWithSignal:(IncomingPushMessageSignal*)signal transaction:(YapDatabaseReadWriteTransaction*)transaction failedMessageType:(TSErrorMessageType)errorMessageType{
-    TSContactThread *contactThread = [TSContactThread threadWithContactId:signal.source transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:signal.source transaction:transaction];
     return [self initWithTimestamp:signal.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
@@ -84,7 +84,7 @@
 }
 
 + (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction{
-    TSContactThread *contactThread = [TSContactThread threadWithContactId:preKeyMessage.source transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:preKeyMessage.source transaction:transaction];
     TSErrorMessage *errorMessage = [[self alloc] initForUnknownIdentityKeyWithTimestamp:preKeyMessage.timestamp inThread:contactThread incomingPushSignal:preKeyMessage.data];
     return errorMessage;
 }

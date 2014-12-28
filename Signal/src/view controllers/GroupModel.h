@@ -22,5 +22,6 @@
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(GroupModel *)model;
+- (NSString*) getInfoStringAboutUpdateTo:(GroupModel*)model;
 
 @end
