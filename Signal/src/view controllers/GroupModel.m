@@ -51,8 +51,14 @@
 
 - (NSString*) getInfoStringAboutUpdateTo:(GroupModel*)newModel {
     NSString* updatedGroupInfoString = @"Group updated. ";
-    if (self == newModel)
+    if (self == newModel) {
         return updatedGroupInfoString;
+    }
+    if ([_groupMemberIds count] -1 == [newModel.groupMemberIds count] && [newModel.groupMemberIds count] > 0) {
+        NSMutableArray* compareMyGroupMemberIds = [NSMutableArray arrayWithArray:_groupMemberIds];
+        [compareMyGroupMemberIds removeObjectsInArray:newModel.groupMemberIds];
+        return [NSString stringWithFormat:@"%@ has left group",[compareMyGroupMemberIds firstObject]];
+    }
     if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Name changed. "];
     }

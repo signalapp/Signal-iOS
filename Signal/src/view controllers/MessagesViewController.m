@@ -1011,6 +1011,7 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
+    [self.inputToolbar.contentView.textView resignFirstResponder];
     NewGroupViewController *ngc = [segue sourceViewController];
     GroupModel* newGroupModel = [ngc groupModel];
     [self updateGroupModelTo:newGroupModel];
