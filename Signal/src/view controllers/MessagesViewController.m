@@ -995,14 +995,15 @@ typedef enum : NSUInteger {
 }
 
 - (void) leaveGroup {
+    TSGroupThread* gThread = (TSGroupThread*)_thread;
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+    message.groupMetaMessage = TSGroupMessageQuit;
+    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSGroupThread* gThread = (TSGroupThread*)_thread;
-        gThread.groupModel.groupMemberIds = nil;
+        NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
+        [newGroupMemberIds removeObject:[SignalKeyingStorage.localNumber toE164]];
+        gThread.groupModel.groupMemberIds = newGroupMemberIds;
         [gThread saveWithTransaction:transaction];
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
-        message.groupMetaMessage = TSGroupMessageQuit;
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
-        
     }];
 }
 
