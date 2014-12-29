@@ -12,6 +12,8 @@
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
 #import "NewGroupViewController.h"
+#import "ShowGroupMembersViewController.h"
+
 #import "SignalKeyingStorage.h"
 
 #import "JSQCallCollectionViewCell.h"
@@ -52,8 +54,9 @@
 #import "PreferencesUtil.h"
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
-static NSString *const kUpdateGroupSegueIdentifier  = @"updateGroupSegue";
-static NSString *const kFingerprintSegueIdentifier  = @"fingerprintSegue";
+static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
+static NSString *const kFingerprintSegueIdentifier = @"fingerprintSegue";
+static NSString *const kShowGroupMembersSegue = @"showGroupMembersSegue";
 
 
 typedef enum : NSUInteger {
@@ -168,19 +171,20 @@ typedef enum : NSUInteger {
 
 -(void)initializeToolbars
 {
-    self.title = self.thread.name;    
+    self.title = self.thread.name;
+    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+
         if ([self isRedPhoneReachable]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
-            UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
             negativeSeparator.width = -8;
         
             self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
         }
         else {
-            self.navigationItem.rightBarButtonItems = @[lockButton];
+            self.navigationItem.rightBarButtonItem = lockButton;
         }
     } else {
         if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
@@ -188,7 +192,8 @@ typedef enum : NSUInteger {
         }
         else {
             UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
-            self.navigationItem.rightBarButtonItem = groupMenuButton;
+            UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
+            self.navigationItem.rightBarButtonItems = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
         }
     }
 }
@@ -224,6 +229,11 @@ typedef enum : NSUInteger {
 {
     [self markAllMessagesAsRead];
     [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:self];
+}
+
+
+-(void)showGroupMembers {
+    [self performSegueWithIdentifier:kShowGroupMembersSegue sender:self];
 }
 
 
@@ -609,7 +619,7 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
+
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -618,6 +628,12 @@ typedef enum : NSUInteger {
     }
     else if ([segue.identifier isEqualToString:kUpdateGroupSegueIdentifier]) {
         NewGroupViewController *vc = [segue destinationViewController];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [vc configWithThread:(TSGroupThread*)self.thread];
+        }];
+    }
+    else if([segue.identifier isEqualToString:kShowGroupMembersSegue]) {
+        ShowGroupMembersViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:(TSGroupThread*)self.thread];
         }];
