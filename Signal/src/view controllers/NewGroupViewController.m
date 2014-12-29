@@ -11,6 +11,7 @@
 #import "Contact.h"
 #import "ContactsManager.h"
 #import "Environment.h"
+#import "FunctionalUtil.h"
 
 
 #import "Contact.h"
@@ -41,6 +42,16 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)viewDidLoad {
     [super viewDidLoad];
     contacts = [Environment getCurrent].contactsManager.textSecureContacts;
+
+    contacts = [contacts filter:^int(Contact* contact) {
+        for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
+            if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+                return NO;
+            }
+        }
+        return YES;
+    }];
+    
     [self initializeDelegates];
     [self initializeTableView];
     [self initializeKeyboardHandlers];
@@ -141,6 +152,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(IBAction)addGroupPhoto:(id)sender
 {
+    [self.nameGroupTextField resignFirstResponder];
     [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil otherButtonTitles:@[@"Take a Picture",@"Choose from Library"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {

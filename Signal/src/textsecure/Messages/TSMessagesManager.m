@@ -179,6 +179,21 @@
 }
 
 - (void)handleIncomingMessage:(IncomingPushMessageSignal*)incomingMessage withPushContent:(PushMessageContent*)content{
+    if(content.group!= nil )  {
+        __block BOOL ignoreMessage = NO;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+            if(gThread==nil) {
+                ignoreMessage = YES;
+            }
+        }];
+        if(ignoreMessage) {
+            DDLogDebug(@"recevied message from group that I left, ignoring");
+            return;
+        }
+        
+    }
     if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
@@ -240,7 +255,7 @@
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
             }
             else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
-                NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
+                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",message.source];
                 NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
                 [newGroupMembers removeObject:message.source];
                 gThread.groupModel.groupMemberIds = newGroupMembers;

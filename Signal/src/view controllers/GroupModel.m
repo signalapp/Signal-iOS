@@ -51,8 +51,9 @@
 
 - (NSString*) getInfoStringAboutUpdateTo:(GroupModel*)newModel {
     NSString* updatedGroupInfoString = @"Group updated. ";
-    if (self == newModel)
+    if (self == newModel) {
         return updatedGroupInfoString;
+    }
     if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Name changed. "];
     }

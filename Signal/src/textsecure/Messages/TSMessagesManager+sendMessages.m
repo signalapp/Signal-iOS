@@ -262,9 +262,7 @@ dispatch_queue_t sendingQueue() {
     if([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread*)thread;
         PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
-        [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
-        [groupBuilder setName:gThread.groupModel.groupName];
-        [groupBuilder setId:gThread.groupModel.groupId];
+       
         switch (message.groupMetaMessage) {
             case TSGroupMessageQuit:
                 [groupBuilder setType:PushMessageContentGroupContextTypeQuit];
@@ -289,6 +287,11 @@ dispatch_queue_t sendingQueue() {
             default:
                 [groupBuilder setType:PushMessageContentGroupContextTypeDeliver];
                 break;
+        }
+        [groupBuilder setId:gThread.groupModel.groupId];
+        if(message.groupMetaMessage!=TSGroupMessageQuit) {
+            [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
+            [groupBuilder setName:gThread.groupModel.groupName];
         }
         [builder setGroup:groupBuilder.build];
     }
