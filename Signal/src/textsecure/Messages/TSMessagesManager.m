@@ -180,7 +180,7 @@
 }
 
 - (void)handleIncomingMessage:(IncomingPushMessageSignal*)incomingMessage withPushContent:(PushMessageContent*)content{
-    if(content.group!= nil )  {
+    if(content.hasGroup)  {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
@@ -199,7 +199,7 @@
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
     }
-    else if (content.attachments.count > 0 || (content.group!= nil && content.group.type == PushMessageContentGroupContextTypeUpdate && content.group.hasAvatar)) {
+    else if (content.attachments.count > 0 || (content.hasGroup && content.group.type == PushMessageContentGroupContextTypeUpdate && content.group.hasAvatar)) {
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
     }
