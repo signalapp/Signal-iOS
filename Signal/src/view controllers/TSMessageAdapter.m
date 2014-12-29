@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "JSQCall.h"
+#import "NSDate+millisecondTimeStamp.h"
+
 #import "TSMessageAdapter.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
@@ -119,6 +122,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]){
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
+        return [self jsqCallForTSCall:(TSCall*)interaction thread:(TSContactThread*)thread];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
         TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
         adapter.infoMessageType = infoMessage.messageType;
@@ -136,6 +140,25 @@
     }
     
     return adapter;
+}
+
++ (JSQCall*)jsqCallForTSCall:(TSCall*)call thread:(TSContactThread*)thread{
+    CallStatus status = 0;
+    
+    switch (call.callType) {
+        case RPRecentCallTypeOutgoing:
+            status = kCallOutgoing;
+            break;
+        case RPRecentCallTypeMissed:
+            status = kCallMissed;
+            break;
+        case RPRecentCallTypeIncoming:
+            status = kCallIncoming;
+            break;
+    }
+    
+    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier callerDisplayName:thread.name date:call.date status:status];
+    return jsqCall;
 }
 
 - (NSString*)senderId{

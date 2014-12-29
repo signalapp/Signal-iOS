@@ -190,7 +190,7 @@
             }
         }];
         if(ignoreMessage) {
-            DDLogDebug(@"recevied message from group that I left, ignoring");
+            DDLogDebug(@"Received message from group that I left, ignoring");
             return;
         }
         

@@ -12,19 +12,27 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timeStamp
                    withCallNumber:(NSString*)contactNumber
-                        wasCaller:(BOOL)caller callType:(TSCallType)callType
-                         duration:(NSNumber*)duration
+                         callType:(RPRecentCallType)callType
+                         inThread:(TSContactThread*)thread
 {
-    self  = [super initWithTimestamp:timeStamp inThread:nil];
+    self  = [super initWithTimestamp:timeStamp inThread:thread];
     
     if (self) {
-        _wasCaller      = caller;
         _callType       = callType;
-        _duration       = duration;
-        _redPhoneNumber = contactNumber;
     }
     
     return self;
+}
+
+- (NSString*)description{
+    switch (_callType) {
+        case RPRecentCallTypeIncoming:
+            return @"Incoming call";
+        case RPRecentCallTypeOutgoing:
+            return @"Outgoing call";
+        case RPRecentCallTypeMissed:
+            return @"Missed call";
+    }
 }
 
 @end

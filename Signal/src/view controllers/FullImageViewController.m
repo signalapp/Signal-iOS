@@ -377,7 +377,7 @@
                     [[UIPasteboard generalPasteboard] setImage:self.image];
                     break;
                 default:
-                    DDLogWarn(@"Illegal Action sheet field #%ld <%s>",tappedButtonIndex, __PRETTY_FUNCTION__);
+                    DDLogWarn(@"Illegal Action sheet field #%ld <%s>",(long)tappedButtonIndex, __PRETTY_FUNCTION__);
                     break;
             }
         }
