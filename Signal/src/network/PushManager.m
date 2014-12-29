@@ -214,12 +214,11 @@
     action_decline.authenticationRequired           = NO;
     
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
-    messageCategory.identifier = Signal_Call_Category;
+    messageCategory.identifier = Signal_Message_Category;
     [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
     [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
     
     return messageCategory;
-
 }
 
 - (UIUserNotificationCategory*)userNotificationsCallCategory{
