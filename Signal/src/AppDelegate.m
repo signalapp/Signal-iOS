@@ -64,7 +64,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     BOOL loggingIsEnabled;
-
+    
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
@@ -78,7 +78,7 @@
 #elif RELEASE
     loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
-
+    
     if (loggingIsEnabled) {
         [DebugLogger.sharedInstance enableFileLogging];
     }
@@ -100,7 +100,7 @@
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
-        [self application:application didReceiveRemoteNotification:remoteNotif];
+        [self application:application didReceiveRemoteNotification:remoteNotif ];
     }
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
@@ -117,10 +117,10 @@
         if (latestCall == nil){
             return;
         }
-
+        
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
                                                                                  andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
-
+        
         if (latestCall.initiatedLocally == false){
             [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
                 if ([accept isEqualToNumber:@YES]) {
@@ -177,9 +177,15 @@
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     ResponderSessionDescriptor* call;
+    
+    if (![self.notificationTracker shouldProcessNotification:userInfo]){
+        return;
+    }
+    
     @try {
         call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
         DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
+        self.callPickUpFuture = [TOCFutureSource new];
     } @catch (OperationFailed* ex) {
         DDLogError(@"Error parsing remote notification. Error: %@.", ex);
         return;
@@ -189,26 +195,21 @@
         DDLogError(@"Decryption of session descriptor failed");
         return;
     }
-    self.callPickUpFuture = [TOCFutureSource new];
+    
     [Environment.phoneManager incomingCallWithSession:call];
 }
 
--(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+
     if ([self isRedPhonePush:userInfo]) {
-        if ([self.notificationTracker shouldProcessNotification:userInfo]){
-            [self application:application didReceiveRemoteNotification:userInfo];
-        } else{
-            DDLogDebug(@"Push already processed. Skipping.");
-            completionHandler(UIBackgroundFetchResultNewData);
-        }
+        [self application:application didReceiveRemoteNotification:userInfo];
     } else {
         [TSSocketManager becomeActive];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC),
-                       dispatch_get_main_queue(), ^{
-                           completionHandler(UIBackgroundFetchResultNewData);
-                       });
     }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+                       completionHandler(UIBackgroundFetchResultNewData);
+                   });
 }
 
 - (BOOL)isRedPhonePush:(NSDictionary*)pushDict {
@@ -243,15 +244,23 @@
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
+    
+    [self application:application didReceiveRemoteNotification:userInfo];
     if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
         [self.callPickUpFuture trySetResult:@YES];
+        completionHandler();
     } else if ([identifier isEqualToString:Signal_Call_Decline_Identifier]){
         [self.callPickUpFuture trySetResult:@NO];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+                           completionHandler();
+                       });
     } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]){
         //TODO
     } else if ([identifier isEqualToString:Signal_Message_View_Identifier]){
         //TODO
     }
+    
     completionHandler();
 }
 

@@ -112,11 +112,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Observables
 
--(ObservableValue *) getObservableContacts {
+-(ObservableValue *)getObservableContacts {
     return observableContactsController;
 }
 
--(ObservableValue *) getObservableRedPhoneUsers {
+-(ObservableValue *)getObservableRedPhoneUsers {
     return observableRedPhoneUsersController;
 }
 

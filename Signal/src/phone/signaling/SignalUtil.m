@@ -36,7 +36,7 @@
 }
 
 -(bool) isHangupForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"DELETE"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
+    return [self.method isEqualToString:@"DELETE"] && self.tryGetSessionId?[@(targetSessionId) isEqualToNumber:self.tryGetSessionId]:YES;
 }
 
 -(bool) isBusyForSession:(int64_t)targetSessionId {

@@ -81,7 +81,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   JSQMessagesViewController:
-    :commit: 9dffc05aa72ad701ecb038a2833cdf53df4b16d7
+    :commit: ed9858bd6df609bba83b21a029701cbf13682981
     :git: https://github.com/dtsbourg/JSQMessagesViewController
   SocketRocket:
     :commit: d0585af165
