@@ -45,5 +45,12 @@
 {
     return [UIColor colorWithRed:195.f/255.f green:0 blue:22.f/255.f alpha:1.f];
 }
+
++ (UIColor *) ows_lightBackgroundColor
+{
+    return [UIColor colorWithRed:242.f/255.f green:242.f/255.f blue:242.f/255.f alpha:1.f];
+}
+
+
 @end
 

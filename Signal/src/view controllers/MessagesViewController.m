@@ -141,6 +141,7 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.automaticallyScrollsToMostRecentMessage = YES;
     [self scrollToBottomAnimated:NO];
 }
 
@@ -155,6 +156,7 @@ typedef enum : NSUInteger {
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self startReadTimer];
+    [self scrollToBottomAnimated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -216,7 +218,7 @@ typedef enum : NSUInteger {
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         
-        self.automaticallyScrollsToMostRecentMessage = YES;
+        self.automaticallyScrollsToMostRecentMessage = NO;
         
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
@@ -257,14 +259,6 @@ typedef enum : NSUInteger {
         [Environment.phoneManager initiateOutgoingCallToRemoteNumber:[self phoneNumberForThread]];
     } else {
         DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
-    }
-}
-
-#pragma mark - JSQMessage custom methods
-
--(void)updateMessageStatus:(JSQMessage*)message {
-    if ([message.senderId isEqualToString:self.senderId]){
-        message.status = kMessageReceived;
     }
 }
 
@@ -502,7 +496,7 @@ typedef enum : NSUInteger {
             return 16.0f;
         }
     }
-    else if (msg.messageType == TSOutgoingMessageAdapter) {
+    else if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
         return 16.0f;
     }
     
@@ -822,7 +816,9 @@ typedef enum : NSUInteger {
         return;
     }
     
+    
     [self.collectionView performBatchUpdates:^{
+        
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
             switch (rowChange.type)
@@ -855,8 +851,9 @@ typedef enum : NSUInteger {
                 }
             }
         }
+        
     } completion:^(BOOL finished) {
-        [self finishReceivingMessage];
+        [self scrollToBottomAnimated:YES];
     }];
 }
 
