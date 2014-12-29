@@ -172,6 +172,7 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars
 {
     self.title = self.thread.name;
+
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
