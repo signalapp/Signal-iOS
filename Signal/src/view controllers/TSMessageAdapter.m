@@ -79,9 +79,11 @@
             TSIncomingMessage *message = (TSIncomingMessage*)interaction;
             adapter.senderId   = message.authorId;
             adapter.senderDisplayName = message.authorId;
+            adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = @"Me";
+            adapter.messageType = TSOutgoingMessageAdapter;
         }
     }
     
