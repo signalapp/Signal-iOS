@@ -141,6 +141,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(IBAction)addGroupPhoto:(id)sender
 {
+    [self.nameGroupTextField resignFirstResponder];
     [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil otherButtonTitles:@[@"Take a Picture",@"Choose from Library"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
