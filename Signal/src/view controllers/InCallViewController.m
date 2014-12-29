@@ -50,9 +50,12 @@ static NSInteger connectingFlashCounter = 0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self showCallState];
-    [self setupButtonBorders];
+    [self setPotentiallyKnownContact:_potentiallyKnownContact];
     [self localizeButtons];
     [self linkActions];
+    [[[[Environment getCurrent] contactsManager] getObservableContacts] watchLatestValue:^(NSArray *latestContacts) {
+        [self setPotentiallyKnownContact:[[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:_callState.remoteNumber]];
+    } onThread:[NSThread mainThread] untilCancelled:nil];
     
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
@@ -172,7 +175,8 @@ static NSInteger connectingFlashCounter = 0;
     [_rejectButton setTitle:REJECT_CALL_BUTTON_TITLE forState:UIControlStateNormal];
 }
 
-- (void)setupButtonBorders {
+- (void)setPotentiallyKnownContact:(Contact *)potentiallyKnownContact {
+    _potentiallyKnownContact = potentiallyKnownContact;
     
     if (_potentiallyKnownContact) {
 

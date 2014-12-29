@@ -498,7 +498,7 @@ typedef enum : NSUInteger {
             return 16.0f;
         }
     }
-    else if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
+    else if (msg.messageType == TSOutgoingMessageAdapter) {
         return 16.0f;
     }
     
