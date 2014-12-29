@@ -1013,6 +1013,7 @@ typedef enum : NSUInteger {
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
     [self.inputToolbar.contentView.textView resignFirstResponder];
     NewGroupViewController *ngc = [segue sourceViewController];
+    [ngc.groupModel.groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
     GroupModel* newGroupModel = [ngc groupModel];
     [self updateGroupModelTo:newGroupModel];
 }
