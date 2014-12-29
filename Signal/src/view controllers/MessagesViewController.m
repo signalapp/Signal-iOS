@@ -110,7 +110,6 @@ typedef enum : NSUInteger {
 - (void)setupWithThread:(TSThread *)thread{
     self.thread = thread;
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
-   
 }
 
 - (void)viewDidLoad {
@@ -1026,7 +1025,6 @@ typedef enum : NSUInteger {
     }];
 
 }
-
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
     [self.inputToolbar.contentView.textView resignFirstResponder];

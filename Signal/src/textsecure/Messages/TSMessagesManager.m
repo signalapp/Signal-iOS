@@ -35,6 +35,7 @@
 
 #import "Environment.h"
 #import "PreferencesUtil.h"
+#import "ContactsManager.h"
 
 #import <CocoaLumberjack/DDLog.h>
 
@@ -255,10 +256,17 @@
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
             }
             else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
-                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",message.source];
+                NSString *nameString = [[Environment.getCurrent contactsManager] nameStringForPhoneIdentifier:message.source];
+    
+                if (!nameString) {
+                    nameString = message.source;
+                }
+    
+                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",nameString];
                 NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
                 [newGroupMembers removeObject:message.source];
                 gThread.groupModel.groupMemberIds = newGroupMembers;
+                
                 [gThread saveWithTransaction:transaction];
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
             }

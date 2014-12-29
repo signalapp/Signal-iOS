@@ -87,5 +87,4 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 + (void)messageIdentifier:(NSString*)identifier;
 + (void)groupModel:(GroupModel*)model;
 
-
 @end
