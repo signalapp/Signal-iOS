@@ -1030,8 +1030,10 @@ typedef enum : NSUInteger {
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
     [self.inputToolbar.contentView.textView resignFirstResponder];
     NewGroupViewController *ngc = [segue sourceViewController];
-    [ngc.groupModel.groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
     GroupModel* newGroupModel = [ngc groupModel];
+    NSMutableArray* groupMemberIds = [[NSMutableArray alloc] initWithArray:newGroupModel.groupMemberIds];
+    [groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
+    newGroupModel.groupMemberIds = groupMemberIds;
     [self updateGroupModelTo:newGroupModel];
 }
 

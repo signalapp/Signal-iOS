@@ -43,7 +43,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [super viewDidLoad];
     contacts = [Environment getCurrent].contactsManager.textSecureContacts;
 
-    [contacts filter:^int(Contact* contact) {
+    contacts = [contacts filter:^int(Contact* contact) {
         for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
             if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
                 return NO;
