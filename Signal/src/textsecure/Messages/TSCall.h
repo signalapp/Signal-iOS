@@ -11,23 +11,15 @@
 #import "TSInteraction.h"
 #import "Contact.h"
 
+#import "RecentCall.h"
+
 @interface TSCall : TSInteraction
 
-typedef NS_ENUM(NSInteger, TSCallType) {
-    TSCallTypeSuccess,
-    TSCallTypeMissed,
-    TSCallTypeBusy,
-    TSCallTypeFailed
-};
-
-@property (nonatomic, readonly) NSNumber     *duration;
-@property (nonatomic, readonly) BOOL         wasCaller;
-@property (nonatomic, readonly) TSCallType   callType;
-@property (nonatomic) NSString *redPhoneNumber;
+@property (nonatomic, readonly)RPRecentCallType callType;
 
 - (instancetype)initWithTimestamp:(uint64_t)timeStamp
                    withCallNumber:(NSString*)contactNumber
-                        wasCaller:(BOOL)caller callType:(TSCallType)callType
-                         duration:(NSNumber*)duration;
+                         callType:(RPRecentCallType)callType
+                         inThread:(TSContactThread*)thread;
 
 @end

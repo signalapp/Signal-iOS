@@ -17,7 +17,7 @@
 
 @interface TSMessageAdapter : NSObject <JSQMessageData>
 
-+ (instancetype)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread;
++ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread;
 
 @property TSMessageAdapterType messageType;
 

@@ -56,7 +56,7 @@
             self.detailLabel.text = @"Low";
             break;
         default:
-            DDLogWarn(@"Unknown Image Quality setting : %ld <%s>", [Environment.preferences imageUploadQuality], __PRETTY_FUNCTION__);
+            DDLogWarn(@"Unknown Image Quality setting : %lu <%s>", [Environment.preferences imageUploadQuality], __PRETTY_FUNCTION__);
             break;
     }
 }

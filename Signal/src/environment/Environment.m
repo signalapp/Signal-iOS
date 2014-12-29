@@ -131,8 +131,6 @@ phoneDirectoryManager;
         
         [recentCallManager watchForCallsThrough:phoneManager
                                  untilCancelled:nil];
-        [recentCallManager watchForContactUpdatesFrom:contactsManager
-                                      untillCancelled:nil];
     }
     
     return e;
