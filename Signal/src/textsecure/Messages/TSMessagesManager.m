@@ -327,11 +327,12 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
-    
     UILocalNotification *notification = [[UILocalNotification alloc] init];
+    
     notification.alertBody = [self alertBodyForNotificationSetting:[Environment.preferences notificationPreviewType] withMessage:message from:name];
     notification.soundName = @"default";
     notification.category  = Signal_Message_Category;
+    
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 }
 
@@ -341,12 +342,13 @@
         case NotificationNoNameNoPreview:
             return @"New message";
             break;
+        case NotificationNamePreview:
+            if (message.body) {
+                return [NSString stringWithFormat:@"%@ : %@", name, message.body];
+            }
         case NotificationNameNoPreview:
             return [NSString stringWithFormat:@"New message from %@", name];
-            break;
-        case NotificationNamePreview:
-            return [NSString stringWithFormat:@"%@ : %@", name, message.body];
-            break;
+            
         default:
             DDLogWarn(@"Unexpected notification type %lu", setting);
             break;
