@@ -255,7 +255,7 @@
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
             }
             else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
-                NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
+                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",message.source];
                 NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
                 [newGroupMembers removeObject:message.source];
                 gThread.groupModel.groupMemberIds = newGroupMembers;
