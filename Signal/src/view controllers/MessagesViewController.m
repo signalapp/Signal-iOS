@@ -249,14 +249,16 @@ typedef enum : NSUInteger {
 -(PhoneNumber*)phoneNumberForThread
 {
     NSString * contactId = [(TSContactThread*)self.thread contactIdentifier];
-    PhoneNumber * phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-    return phoneNumber;
+    return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
 }
 
 -(void)callAction
 {
     if ([self isRedPhoneReachable]) {
-        [Environment.phoneManager initiateOutgoingCallToRemoteNumber:[self phoneNumberForThread]];
+        PhoneNumber *number = [self phoneNumberForThread];
+        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
+
+        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
         DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
     }
