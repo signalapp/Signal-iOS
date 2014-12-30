@@ -138,11 +138,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     [self sendWebSocketMessageAcknowledgement:message];
     
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]){
-        
-        NSString *base64String   = [[NSString alloc] initWithData:message.body encoding:NSUTF8StringEncoding];
-        
-        NSData *encryptedSignal  = [NSData dataFromBase64String:base64String];
-        NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:encryptedSignal
+        NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:message.body
                                                            withSignalingKey:TSStorageManager.signalingKey];
         
         if (!decryptedPayload) {
