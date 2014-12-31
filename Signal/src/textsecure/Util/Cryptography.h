@@ -17,17 +17,17 @@ typedef NS_ENUM(NSInteger, TSMACType) {
     TSHMACSHA256AttachementType  = 3
 };
 
-+(NSMutableData*) generateRandomBytes:(int)numberBytes;
++(NSMutableData*) generateRandomBytes:(NSUInteger)numberBytes;
 
 #pragma mark SHA and HMAC methods
 
-+(NSData*) computeSHA256:(NSData *)data truncatedToBytes:(int)truncatedBytes;
++(NSData*) computeSHA256:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes;
 +(NSString*)truncatedSHA1Base64EncodedWithoutPadding:(NSString*)string;
 +(NSString*)computeSHA1DigestForString:(NSString*)input;
 
 +(NSData*) computeSHA256HMAC:(NSData*)dataToHMAC  withHMACKey:(NSData*)HMACKey;
 +(NSData*) computeSHA1HMAC:(NSData*)dataToHMAC    withHMACKey:(NSData*)HMACKey;
-+(NSData*) truncatedSHA1HMAC:(NSData*)dataToHMAC  withHMACKey:(NSData*)HMACKey truncation:(int)bytes;
++(NSData*) truncatedSHA1HMAC:(NSData*)dataToHMAC  withHMACKey:(NSData*)HMACKey truncation:(NSUInteger)bytes;
 
 +(NSData*) decryptAppleMessagePayload:(NSData*)payload withSignalingKey:(NSString*)signalingKeyString;
 

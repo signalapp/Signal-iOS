@@ -8,29 +8,12 @@
 
 #import "TSErrorMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "TSStorageManager+IdentityKeyStore.h"
-#import <AxolotlKit/PreKeyWhisperMessage.h>
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import "TSMessagesManager.h"
-#import "TSFingerprintGenerator.h"
 
-@interface TSErrorMessage()
-@property NSData *pushSignal;
-@end
+#import "TSErrorMessage_privateConstructor.h"
 
 @implementation TSErrorMessage
 
-- (instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread incomingPushSignal:(NSData*)signal{
-    self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
-    
-    if (self) {
-        _pushSignal = signal;
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType{
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType {
     self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachments:nil];
     
     if (self) {
@@ -83,42 +66,8 @@
     return [[self alloc] initWithSignal:signal transaction:transaction failedMessageType:TSErrorMessageInvalidKeyException];
 }
 
-+ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction{
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:preKeyMessage.source transaction:transaction];
-    TSErrorMessage *errorMessage = [[self alloc] initForUnknownIdentityKeyWithTimestamp:preKeyMessage.timestamp inThread:contactThread incomingPushSignal:preKeyMessage.data];
-    return errorMessage;
-}
-
 + (instancetype)missingSessionWithSignal:(IncomingPushMessageSignal*)signal withTransaction:(YapDatabaseReadWriteTransaction*)transaction{
     return [[self alloc] initWithSignal:signal transaction:transaction failedMessageType:TSErrorMessageNoSession];
-}
-
-- (void)acceptNewIdentityKey{
-    if (_errorType != TSErrorMessageWrongTrustedIdentityKey || !_pushSignal) {
-        return;
-    }
-    
-    TSStorageManager *storage = [TSStorageManager sharedManager];
-    IncomingPushMessageSignal *signal = [IncomingPushMessageSignal parseFromData:_pushSignal];
-    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:signal.message];
-    NSData *newKey = [message.identityKey removeKeyType];
-    
-    [storage saveRemoteIdentity:newKey recipientId:signal.source];
-    
-    [[TSMessagesManager sharedManager] handleMessageSignal:signal];
-    //TODO: Decrypt any other messages encrypted with that new identity key automatically.
-}
-
-- (NSString *)newIdentityKey{
-    if (_errorType != TSErrorMessageWrongTrustedIdentityKey || !_pushSignal) {
-        return @"";
-    }
-    
-    IncomingPushMessageSignal *signal = [IncomingPushMessageSignal parseFromData:_pushSignal];
-    PreKeyWhisperMessage *message     = [[PreKeyWhisperMessage alloc] initWithData:signal.message];
-    NSData *identityKey               = [message.identityKey removeKeyType];
-    
-    return [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
 }
 
 @end

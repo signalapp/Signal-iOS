@@ -28,7 +28,7 @@
 @synthesize initiatorNumber;
 @synthesize interopVersion;
 
-+(ResponderSessionDescriptor*)responderSessionDescriptorWithInteropVersion:(int32_t)interopVersion
++(ResponderSessionDescriptor*)responderSessionDescriptorWithInteropVersion:(NSUInteger)interopVersion
                                                            andRelayUdpPort:(in_port_t)relayUdpPort
                                                               andSessionId:(int64_t)sessionId
                                                         andRelayServerName:(NSString*)relayServerName
@@ -72,8 +72,8 @@
     checkOperation(parsedPayload.initiator != nil);
     checkOperation(parsedPayload.serverName != nil);
 
-    unsigned int interopVersion = parsedPayload.version;
-    unsigned long long sessionId = parsedPayload.sessionId;
+    NSUInteger interopVersion = parsedPayload.version;
+    int64_t sessionId = (int64_t)parsedPayload.sessionId;
     in_port_t relayUdpPort = (in_port_t)parsedPayload.port;
     NSString* relayServerName = parsedPayload.serverName;
     PhoneNumber* phoneNumber = [PhoneNumber phoneNumberFromE164:parsedPayload.initiator];
@@ -106,11 +106,11 @@
 }
 
 -(NSString*) description {
-    return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud, interop version: %d",
+    return [NSString stringWithFormat:@"relay name: %@, relay port: %d, session id: %llud, interop version: %lu",
             relayServerName,
             relayUdpPort,
             sessionId,
-            interopVersion];
+            (unsigned long)interopVersion];
 }
 
 @end

@@ -25,7 +25,7 @@
 
 
 #pragma mark random bytes methods
-+(NSMutableData*) generateRandomBytes:(int)numberBytes {
++(NSMutableData*) generateRandomBytes:(NSUInteger)numberBytes {
     /* used to generate db master key, and to generate signaling key, both at install */
     NSMutableData* randomBytes = [NSMutableData dataWithLength:numberBytes];
     int err = 0;
@@ -72,7 +72,7 @@
 }
 
 #pragma mark SHA256
-+(NSData*) computeSHA256:(NSData *)data truncatedToBytes:(int)truncatedBytes {
++(NSData*) computeSHA256:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes {
   uint8_t digest[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(data.bytes, (unsigned int)data.length, digest);
   return [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] subdataWithRange:NSMakeRange(0, truncatedBytes)];
@@ -103,11 +103,11 @@
 }
 
 
-+(NSData*) truncatedSHA1HMAC:(NSData*)dataToHMAC withHMACKey:(NSData*)HMACKey truncation:(int)bytes{
++(NSData*) truncatedSHA1HMAC:(NSData*)dataToHMAC withHMACKey:(NSData*)HMACKey truncation:(NSUInteger)bytes{
     return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
 }
 
-+(NSData*) truncatedSHA256HMAC:(NSData*)dataToHMAC withHMACKey:(NSData*)HMACKey truncation:(int)bytes{
++(NSData*) truncatedSHA256HMAC:(NSData*)dataToHMAC withHMACKey:(NSData*)HMACKey truncation:(NSUInteger)bytes{
     return [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
 }
 

@@ -19,6 +19,7 @@
 
 #import "TSIncomingMessage.h"
 #import "TSErrorMessage.h"
+#import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSInfoMessage.h"
 
 #import "TSStorageManager+keyingMaterial.h"
@@ -305,7 +306,7 @@
         } else if ([exception.name isEqualToString:InvalidVersionException]){
             errorMessage = [TSErrorMessage invalidVersionWithSignal:signal withTransaction:transaction];
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]){
-            errorMessage = [TSErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
+            errorMessage = [TSInvalidIdentityKeyErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
         } else {
             errorMessage = [TSErrorMessage corruptedMessageWithSignal:signal withTransaction:transaction];
         }

@@ -156,15 +156,20 @@
 -(BOOL) application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation {
     if ([url.scheme isEqualToString:@"sgnl"]) {
         if ([url.host hasPrefix:@"verify"] && ![TSAccountManager isRegistered]) {
-            UIViewController *controller = [[Environment getCurrent].signUpFlowNavigationController.childViewControllers lastObject];
-            if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
-                CodeVerificationViewController *cvvc = (CodeVerificationViewController*)controller;
-                NSString *verificationCode           = [url.path substringFromIndex:1];
+            id signupController                   = [Environment getCurrent].signUpFlowNavigationController;
+            if ([signupController isKindOfClass:[UINavigationController class]]) {
+                UINavigationController *navController = (UINavigationController*)signupController;
+                UIViewController *controller          = [navController.childViewControllers lastObject];
+                if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
+                    CodeVerificationViewController *cvvc  = (CodeVerificationViewController*)controller;
+                    NSString *verificationCode            = [url.path substringFromIndex:1];
+                    
+                    cvvc.challengeTextField.text          = verificationCode;
+                    [cvvc verifyChallengeAction:nil];
+                } else{
+                    DDLogWarn(@"Not the verification view controller we expected. Got %@ instead", NSStringFromClass(controller.class));
+                }
                 
-                cvvc.challengeTextField.text = verificationCode;
-                [cvvc verifyChallengeAction:nil];
-            } else{
-                DDLogWarn(@"Not the verification view controller we expected. Got %@ instead", NSStringFromClass(controller.class));
             }
         } else{
             DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
@@ -200,7 +205,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-
+    
     if ([self isRedPhonePush:userInfo]) {
         [self application:application didReceiveRemoteNotification:userInfo];
     } else {

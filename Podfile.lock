@@ -21,7 +21,7 @@ PODS:
   - AFNetworking/UIKit (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - AxolotlKit (0.3):
+  - AxolotlKit (0.5):
     - 25519 (~> 1.8)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.2)
@@ -59,14 +59,14 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5)
-  - AxolotlKit (~> 0.3)
+  - AxolotlKit (~> 0.5)
   - DJWActionSheet
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.110)
   - PastelogKit (~> 1.2)
-  - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `d0585af165`)
+  - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `954750c018`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
   - YapDatabase/SQLCipher
@@ -76,7 +76,7 @@ EXTERNAL SOURCES:
     :branch: JSignalQ
     :git: https://github.com/dtsbourg/JSQMessagesViewController
   SocketRocket:
-    :commit: d0585af165
+    :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
 
 CHECKOUT OPTIONS:
@@ -84,13 +84,13 @@ CHECKOUT OPTIONS:
     :commit: ed9858bd6df609bba83b21a029701cbf13682981
     :git: https://github.com/dtsbourg/JSQMessagesViewController
   SocketRocket:
-    :commit: d0585af165
+    :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
 
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
-  AxolotlKit: 19a7a6482e3deb6621e0f81a1733f60301802d40
+  AxolotlKit: eec4d036d5b021258dc8b6b0212f3c04edeaf15b
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
