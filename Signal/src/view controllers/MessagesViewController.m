@@ -700,7 +700,14 @@ typedef enum : NSUInteger {
         DDLogWarn(@"Video formats not supported, yet");
     } else if (picture_camera) {
         DDLogVerbose(@"Sending picture attachement ...");
-        [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" thread:self.thread];
+        
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"Uploading attachment" attachments:[NSMutableArray array]];
+        
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message saveWithTransaction:transaction];
+        }];
+
+        [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" inMessage:message thread:self.thread];
         [self finishSendingMessage];
     }
     

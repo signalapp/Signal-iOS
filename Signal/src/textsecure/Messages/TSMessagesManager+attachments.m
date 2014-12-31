@@ -41,21 +41,37 @@ dispatch_queue_t attachmentsQueue() {
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content {
     NSArray *attachmentsToRetrieve = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ?  [NSArray arrayWithObject:content.group.avatar] : content.attachments;
-
+    
     NSMutableArray *retrievedAttachments = [NSMutableArray array];
+    __block BOOL shouldProcessMessage = YES;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
             TSAttachmentPointer *attachmentPointer = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
-            [attachmentPointer saveWithTransaction:transaction];
             
-            dispatch_async(attachmentsQueue(), ^{
-                [self retrieveAttachment:attachmentPointer];
-            });
-            [retrievedAttachments addObject:attachmentPointer.uniqueId];
+            if ([attachmentPointer.contentType hasPrefix:@"image/"]) {
+                [attachmentPointer saveWithTransaction:transaction];
+                
+                dispatch_async(attachmentsQueue(), ^{
+                    [self retrieveAttachment:attachmentPointer];
+                });
+                
+                [retrievedAttachments addObject:attachmentPointer.uniqueId];
+                shouldProcessMessage = YES;
+            } else {
+                
+                TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                             inThread:thread
+                                                                          messageType:TSInfoMessageTypeUnsupportedMessage];
+                [infoMessage saveWithTransaction:transaction];
+                shouldProcessMessage = NO;
+            }
         }
     }];
     
-    [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments];
+    if (shouldProcessMessage) {
+        [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments];
+    }
 }
 
 - (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType inMessage:(TSOutgoingMessage*)outgoingMessage thread:(TSThread*)thread {
@@ -76,8 +92,10 @@ dispatch_queue_t attachmentsQueue() {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [result.pointer saveWithTransaction:transaction];
                     }];
-                    [outgoingMessage.attachments addObject:attachementId];
-                    [self sendMessage:outgoingMessage inThread:thread];
+                    
+                    TSOutgoingMessage *messageToSend = [[TSOutgoingMessage alloc] initWithTimestamp:outgoingMessage.timeStamp inThread:thread messageBody:@"" attachments:[@[attachementId] mutableCopy]];
+                    
+                    [self sendMessage:messageToSend inThread:thread];
                 } else{
                     DDLogWarn(@"Failed to upload attachment");
                 }
@@ -87,7 +105,7 @@ dispatch_queue_t attachmentsQueue() {
         });
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         DDLogError(@"Failed to get attachment allocated: %@", error);
-    }]; 
+    }];
 }
 
 - (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType thread:(TSThread*)thread {
@@ -98,7 +116,7 @@ dispatch_queue_t attachmentsQueue() {
 - (void)retrieveAttachment:(TSAttachmentPointer*)attachment {
     
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:[attachment identifier]
-                                                                                  relay:attachment.relay];
+                                                                               relay:attachment.relay];
     
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:attachmentRequest success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
@@ -123,8 +141,8 @@ dispatch_queue_t attachmentsQueue() {
         DDLogError(@"Failed to get attachment decrypted ...");
     } else {
         TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithIdentifier:attachment.uniqueId
-                                                                                 data:plaintext key:attachment.encryptionKey
-                                                                          contentType:attachment.contentType];
+                                                                               data:plaintext key:attachment.encryptionKey
+                                                                        contentType:attachment.contentType];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
             if([attachment.avatarOfGroupId length]!=0) {
@@ -132,7 +150,7 @@ dispatch_queue_t attachmentsQueue() {
                 TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
                 gThread.groupModel.groupImage=[stream image];
                 [gThread saveWithTransaction:transaction];
-            
+                
             }
         }];
     }
