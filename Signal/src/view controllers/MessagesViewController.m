@@ -39,6 +39,7 @@
 
 #import "TSMessageAdapter.h"
 #import "TSErrorMessage.h"
+#import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSAttachmentAdapter.h"
@@ -543,14 +544,15 @@ typedef enum : NSUInteger {
                     DDLogWarn(@"Currently unsupported");
                 }
             }
-            
-            break;}
+        }
+            break;
         case TSErrorMessageAdapter:
             [self handleErrorMessageTap:(TSErrorMessage*)interaction];
             break;
         case TSInfoMessageAdapter:
             break;
-            
+        case TSCallAdapter:
+            break;
         default:
             break;
     }
@@ -581,8 +583,9 @@ typedef enum : NSUInteger {
 }
 
 - (void)handleErrorMessageTap:(TSErrorMessage*)message{
-    if (message.errorType == TSErrorMessageWrongTrustedIdentityKey) {
-        NSString *newKeyFingerprint = [message newIdentityKey];
+    if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+        TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage*)message;
+        NSString *newKeyFingerprint = [errorMessage newIdentityKey];
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
         
@@ -598,9 +601,8 @@ typedef enum : NSUInteger {
             } else {
                 switch (tappedButtonIndex) {
                     case 0:
-                        [message acceptNewIdentityKey];
+                        [errorMessage acceptNewIdentityKey];
                         break;
-                        
                     case 1:
                         [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
                         break;
@@ -862,7 +864,7 @@ typedef enum : NSUInteger {
 #pragma mark - UICollectionView DataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSInteger numberOfMessages = [self.messageMappings numberOfItemsInSection:section];
+    NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInSection:(NSUInteger)section];
     return numberOfMessages;
 }
 
@@ -873,8 +875,8 @@ typedef enum : NSUInteger {
         NSParameterAssert(viewTransaction != nil);
         NSParameterAssert(self.messageMappings != nil);
         NSParameterAssert(indexPath != nil);
-        NSUInteger row = indexPath.row;
-        NSUInteger section = indexPath.section;
+        NSUInteger row = (NSUInteger)indexPath.row;
+        NSUInteger section = (NSUInteger)indexPath.section;
         NSUInteger numberOfItemsInSection = [self.messageMappings numberOfItemsInSection:section];
         
         NSAssert(row < numberOfItemsInSection, @"Cannot fetch message because row %d is >= numberOfItemsInSection %d", (int)row, (int)numberOfItemsInSection);
