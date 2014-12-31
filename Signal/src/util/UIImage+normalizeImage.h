@@ -11,5 +11,5 @@
 @interface UIImage (normalizeImage)
 
 - (UIImage *)normalizedImage;
-
+- (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate;
 @end
