@@ -54,6 +54,12 @@
 #import "ContactsManager.h"
 #import "PreferencesUtil.h"
 
+#import "TSAdapterCacheManager.h"
+
+#define kYapDatabaseRangeLength 50
+#define kYapDatabaseRangeMaxLength 300
+#define kYapDatabaseRangeMinLength 20
+
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
 static NSString *const kFingerprintSegueIdentifier = @"fingerprintSegue";
@@ -81,6 +87,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) NSTimer *readTimer;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
+
+@property NSUInteger page;
 
 @end
 
@@ -115,6 +123,7 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];
@@ -122,13 +131,16 @@ typedef enum : NSUInteger {
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
                                                                       view:TSMessageDatabaseViewExtensionName];
     
+    self.page = 0;
+    
+    [self updateRangeOptionsForPage:self.page];
+    
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-    
+
     [self initializeToolbars];
     [self initializeCollectionViewLayout];
-    
     
     self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
@@ -142,8 +154,10 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.automaticallyScrollsToMostRecentMessage = YES;
-    [self scrollToBottomAnimated:NO];
+    
+    NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:(NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId]-1 inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+
 }
 
 - (void)startReadTimer{
@@ -157,7 +171,6 @@ typedef enum : NSUInteger {
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self startReadTimer];
-    [self scrollToBottomAnimated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -219,7 +232,7 @@ typedef enum : NSUInteger {
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         
-        self.automaticallyScrollsToMostRecentMessage = NO;
+        [self updateLoadEarlierVisible];
         
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
@@ -426,7 +439,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-    
+
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
@@ -513,8 +526,7 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
-    
-    
+
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
             if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
@@ -556,6 +568,81 @@ typedef enum : NSUInteger {
         default:
             break;
     }
+}
+
+-(void)collectionView:(JSQMessagesCollectionView *)collectionView header:(JSQMessagesLoadEarlierHeaderView *)headerView didTapLoadEarlierMessagesButton:(UIButton *)sender
+{
+    if ([self shouldShowLoadEarlierMessages]) {
+        self.page++;
+    }
+    
+    NSInteger item = (NSInteger)[self scrollToItem];
+    
+    [self updateRangeOptionsForPage:self.page];
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.messageMappings updateWithTransaction:transaction];
+    }];
+    
+    [self updateLayoutForEarlierMessagesWithOffset:item];
+    
+}
+
+-(BOOL)shouldShowLoadEarlierMessages
+{
+    __block BOOL show = YES;
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+        show = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] < [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
+    }];
+
+    return show;
+}
+
+-(NSUInteger)scrollToItem
+{
+    __block NSUInteger item = kYapDatabaseRangeLength*(self.page+1) - [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSUInteger numberOfVisibleMessages = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] ;
+        NSUInteger numberOfTotalMessages = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId] ;
+        NSUInteger numberOfMessagesToLoad =  numberOfTotalMessages - numberOfVisibleMessages ;
+        
+        BOOL canLoadFullRange = numberOfMessagesToLoad >= kYapDatabaseRangeLength;
+        
+        if (!canLoadFullRange) {
+            item = numberOfMessagesToLoad;
+        }
+    }];
+    
+    return item == 0 ? item : item - 1;
+}
+
+-(void)updateLoadEarlierVisible
+{
+    [self setShowLoadEarlierMessagesHeader:[self shouldShowLoadEarlierMessages]];
+}
+
+-(void)updateLayoutForEarlierMessagesWithOffset:(NSInteger)offset
+{
+    [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+    [self.collectionView reloadData];
+    
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:offset inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
+    
+    [self updateLoadEarlierVisible];
+}
+
+-(void)updateRangeOptionsForPage:(NSUInteger)page
+{
+    YapDatabaseViewRangeOptions *rangeOptions = [YapDatabaseViewRangeOptions flexibleRangeWithLength:kYapDatabaseRangeLength*(page+1) offset:0 from:YapDatabaseViewEnd];
+    
+    rangeOptions.maxLength = kYapDatabaseRangeMaxLength;
+    rangeOptions.minLength = kYapDatabaseRangeMinLength;
+    
+    [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
+
 }
 
 #pragma mark Bubble User Actions
@@ -823,38 +910,50 @@ typedef enum : NSUInteger {
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
     
+    __block BOOL containsInsertion = NO;
+    
     if (!messageRowChanges) {
         return;
     }
     
-    
     [self.collectionView performBatchUpdates:^{
-        
+
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
             switch (rowChange.type)
             {
                 case YapDatabaseViewChangeDelete :
                 {
+                    TSInteraction * interaction = [self interactionAtIndexPath:rowChange.indexPath];
+                    [[TSAdapterCacheManager sharedManager] clearCacheEntryForInteractionId:interaction.uniqueId];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     break;
                 }
                 case YapDatabaseViewChangeInsert :
                 {
+                    TSInteraction * interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
+                    [[TSAdapterCacheManager sharedManager] cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    containsInsertion = YES;
                     break;
                 }
                 case YapDatabaseViewChangeMove :
                 {
-                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath]];
-                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath]];
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate :
                 {
                     NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
+
                     if (_lastDeliveredMessageIndexPath) {
                         [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
+                    }
+                    
+                    for (NSIndexPath* indexPath in rowsToUpdate) {
+                        TSInteraction * interaction = [self interactionAtIndexPath:indexPath];
+                        [[TSAdapterCacheManager sharedManager] cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
                     }
                     
                     [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
@@ -862,9 +961,14 @@ typedef enum : NSUInteger {
                 }
             }
         }
-        
-    } completion:^(BOOL finished) {
-        [self scrollToBottomAnimated:YES];
+    } completion:^(BOOL success) {
+        if (success) {
+            [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+            [self.collectionView reloadData];
+        }
+        if (containsInsertion) {
+            [self scrollToBottomAnimated:YES];
+        }
     }];
 }
 
@@ -897,8 +1001,16 @@ typedef enum : NSUInteger {
 
 - (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+    TSAdapterCacheManager * manager = [TSAdapterCacheManager sharedManager];
+    
+    if (![manager containsCacheEntryForInteractionId:interaction.uniqueId]) {
+        [manager cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
+    }
+    
+    return [manager adapterForInteractionId:interaction.uniqueId];
 }
+
+
 #pragma mark group action view
 -(void)didPressGroupMenuButton:(UIButton *)sender
 {

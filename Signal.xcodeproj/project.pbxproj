@@ -505,6 +505,7 @@
 		FC4FA0331A1D46AE00DA100A /* InitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0321A1D46AE00DA100A /* InitialViewController.m */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
+		FC7C7A961A581AF40091823B /* TSAdapterCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */; };
 		FC9120411A39EFB70074545C /* qr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203F1A39EFB70074545C /* qr@2x.png */; };
 		FC9120431A39F9E00074545C /* qr_scan_fingerprint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */; };
 		FCA52AE61A2B676C00CCADFA /* call_canceled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */; };
@@ -1211,6 +1212,8 @@
 		FC4FA0321A1D46AE00DA100A /* InitialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitialViewController.m; sourceTree = "<group>"; };
 		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
 		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
+		FC7C7A941A581AF40091823B /* TSAdapterCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAdapterCacheManager.h; sourceTree = "<group>"; };
+		FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAdapterCacheManager.m; sourceTree = "<group>"; };
 		FC91203F1A39EFB70074545C /* qr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr@2x.png"; sourceTree = "<group>"; };
 		FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr_scan_fingerprint@2x.png"; sourceTree = "<group>"; };
 		FCA52ADE1A2B676C00CCADFA /* call_canceled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_canceled@2x.png"; sourceTree = "<group>"; };
@@ -1833,6 +1836,8 @@
 				76EB04FD18170B33006006FC /* Zid.m */,
 				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
 				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
+				FC7C7A941A581AF40091823B /* TSAdapterCacheManager.h */,
+				FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -3272,6 +3277,7 @@
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
 				B63AF5CB1A1F757900D01AAD /* TSRegisterPrekeysRequest.m in Sources */,
+				FC7C7A961A581AF40091823B /* TSAdapterCacheManager.m in Sources */,
 				B6FAAAE81A41BC6C007FEC1D /* TSAttachmentPointer.m in Sources */,
 				B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */,
 				B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachments.m in Sources */,
