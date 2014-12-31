@@ -93,9 +93,9 @@ dispatch_queue_t attachmentsQueue() {
                         [result.pointer saveWithTransaction:transaction];
                     }];
                     
-                    TSOutgoingMessage *messageToSend = [[TSOutgoingMessage alloc] initWithTimestamp:outgoingMessage.timeStamp inThread:thread messageBody:@"" attachments:[@[attachementId] mutableCopy]];
+                    [outgoingMessage.attachments addObject:attachementId];
                     
-                    [self sendMessage:messageToSend inThread:thread];
+                    [self sendMessage:outgoingMessage inThread:thread];
                 } else{
                     DDLogWarn(@"Failed to upload attachment");
                 }

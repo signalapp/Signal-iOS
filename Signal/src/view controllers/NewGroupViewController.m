@@ -19,6 +19,8 @@
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 
+#import "UIImage+normalizeImage.h"
+
 #import "UIUtil.h"
 #import "DJWActionSheet.h"
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -131,7 +133,6 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _groupModel = [[GroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_groupImageButton.imageView.image groupId:_thread.groupModel.groupId];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
-
 }
 
 
@@ -223,8 +224,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     UIImage *picture_camera = [info objectForKey:UIImagePickerControllerOriginalImage];
     
     if (picture_camera) {
-        [self setupGroupImageButton:picture_camera];
-        
+        [self setupGroupImageButton:[picture_camera resizedImageToFitInSize:CGSizeMake(100.0,100.0) scaleIfSmaller:NO]];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }

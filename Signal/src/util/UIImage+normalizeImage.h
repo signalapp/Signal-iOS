@@ -11,5 +11,9 @@
 @interface UIImage (normalizeImage)
 
 - (UIImage *)normalizedImage;
+- (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate;
+
+-(UIImage*)resizedImageToSize:(CGSize)dstSize;
+-(UIImage*)resizedImageToFitInSize:(CGSize)boundingSize scaleIfSmaller:(BOOL)scale;
 
 @end
