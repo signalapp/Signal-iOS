@@ -8,6 +8,8 @@
 
 #import "PresentIdentityQRCodeViewController.h"
 #import "NSData+Base64.h"
+#import "UIImage+normalizeImage.h"
+
 
 
 @implementation PresentIdentityQRCodeViewController
@@ -36,7 +38,7 @@
     UIImage *image = [UIImage imageWithCGImage:cgImage scale:1. orientation:UIImageOrientationUp];
     
     // Resize without interpolating
-    UIImage *resized = [self resizeImage:image withQuality:kCGInterpolationNone rate:5.0];
+    UIImage *resized = [image resizedWithQuality:kCGInterpolationNone rate:5.0];
     
     self.qrCodeView.image = resized;
     
@@ -55,21 +57,5 @@
 }
 
 
-#pragma mark - Private
-
-- (UIImage *)resizeImage:(UIImage *)image withQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate {
-	UIImage *resized = nil;
-	CGFloat width = image.size.width * rate;
-	CGFloat height = image.size.height * rate;
-    
-	UIGraphicsBeginImageContext(CGSizeMake(width, height));
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextSetInterpolationQuality(context, quality);
-	[image drawInRect:CGRectMake(0, 0, width, height)];
-	resized = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-    
-	return resized;
-}
 
 @end
