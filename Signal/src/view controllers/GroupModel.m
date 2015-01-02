@@ -55,18 +55,33 @@
         return updatedGroupInfoString;
     }
     if (![_groupName isEqual:newModel.groupName]) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Name changed. "];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"Title is now '%@'. ",newModel.groupName]];
     }
     if(_groupImage!=nil  && newModel.groupImage!=nil  && !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
         updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Avatar changed. "];
     }
-    NSMutableArray* compareMyGroupMemberIds = [NSMutableArray arrayWithArray:_groupMemberIds];
-    [compareMyGroupMemberIds removeObjectsInArray:newModel.groupMemberIds];
-    if([compareMyGroupMemberIds count] > 0 ) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Members changed. "];
+    NSSet* oldMembers = [NSSet setWithArray:_groupMemberIds];
+    NSSet* newMembers = [NSSet setWithArray:newModel.groupMemberIds];
+    
+    NSMutableSet *membersWhoJoined = [NSMutableSet setWithSet:newMembers];
+    [membersWhoJoined minusSet:oldMembers];
+    
+    NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
+    [membersWhoLeft minusSet:newMembers];
+    
+    
+    if([membersWhoLeft count] > 0 ) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"%@ left the group. ",[[membersWhoLeft allObjects] componentsJoinedByString:@", "]]];
     }
+    
+    if([membersWhoJoined count] > 0 ) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"%@ joined the group. ",[[membersWhoJoined allObjects] componentsJoinedByString:@", "]]];
+    }
+    
     return updatedGroupInfoString;
 }
+
+
 
 
 @end

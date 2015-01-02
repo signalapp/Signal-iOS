@@ -252,6 +252,7 @@
                 }
                 
                 NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
+                DDLogDebug(@"new info is %@",updateGroupInfo);
                 gThread.groupModel = model;
                 [gThread saveWithTransaction:transaction];
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
