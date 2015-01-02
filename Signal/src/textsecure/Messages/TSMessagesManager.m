@@ -63,17 +63,17 @@
     return self;
 }
 
-- (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal{
+
+- (BOOL)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal{
+    // returns yes if this message should be acked
     @try {
         switch (messageSignal.type) {
             case IncomingPushMessageSignalTypeCiphertext:
-                [self handleSecureMessage:messageSignal];
+                return [self handleSecureMessage:messageSignal];
                 break;
-                
             case IncomingPushMessageSignalTypePrekeyBundle:
                 [self handlePreKeyBundle:messageSignal];
                 break;
-                
                 // Other messages are just dismissed for now.
                 
             case IncomingPushMessageSignalTypeKeyExchange:
@@ -92,10 +92,12 @@
             default:
                 break;
         }
+        return YES;
     }
     @catch (NSException *exception) {
         DDLogWarn(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
     }
+    return YES;
 }
 
 - (void)handleDeliveryReceipt:(IncomingPushMessageSignal*)signal{
@@ -108,7 +110,7 @@
     }];
 }
 
-- (void)handleSecureMessage:(IncomingPushMessageSignal*)secureMessage{
+- (BOOL)handleSecureMessage:(IncomingPushMessageSignal*)secureMessage{
     @synchronized(self){
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId            = secureMessage.source;
@@ -119,7 +121,7 @@
                 TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage withTransaction:transaction];
                 [errorMessage saveWithTransaction:transaction];
             }];
-            return;
+            return YES;
         }
         
         PushMessageContent *content;
@@ -141,10 +143,10 @@
         }
         @catch (NSException *exception) {
             [self processException:exception pushSignal:secureMessage];
-            return;
+            return YES;
         }
         
-        [self handleIncomingMessage:secureMessage withPushContent:content];
+        return [self handleIncomingMessage:secureMessage withPushContent:content];
     }
 }
 
@@ -180,33 +182,20 @@
     
 }
 
-- (void)handleIncomingMessage:(IncomingPushMessageSignal*)incomingMessage withPushContent:(PushMessageContent*)content{
-    if(content.hasGroup)  {
-        __block BOOL ignoreMessage = NO;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
-            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
-            if(gThread==nil) {
-                ignoreMessage = YES;
-            }
-        }];
-        if(ignoreMessage) {
-            DDLogDebug(@"Received message from group that I left, ignoring");
-            return;
-        }
-        
-    }
+- (BOOL)handleIncomingMessage:(IncomingPushMessageSignal*)incomingMessage withPushContent:(PushMessageContent*)content{
     if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
         [self handleEndSessionMessage:incomingMessage withContent:content];
+        return YES;
     }
     else if (content.attachments.count > 0 || (content.hasGroup && content.group.type == PushMessageContentGroupContextTypeUpdate && content.group.hasAvatar)) {
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaMessage:incomingMessage withContent:content];
+        return YES;
     }
     else {
         DDLogVerbose(@"Received individual push text message...");
-        [self handleReceivedTextMessage:incomingMessage withContent:content];
+        return [self handleReceivedTextMessage:incomingMessage withContent:content];
     }
 }
 
@@ -223,59 +212,65 @@
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
 }
 
-- (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
-    [self handleReceivedMessage:message withContent:content attachments:content.attachments];
+- (BOOL)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
+    return [self handleReceivedMessage:message withContent:content attachments:content.attachments];
 }
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
+- (BOOL)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
     uint64_t timeStamp  = message.timestamp;
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
-    
+    __block BOOL ackMessage = YES;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
             GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id];
-            TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-            [gThread saveWithTransaction:transaction];
-            if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
-                if([attachments count]==1) {
-                    NSString* avatarId  = [attachments firstObject];
-                    TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
-                    if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *stream = (TSAttachmentStream*)avatar;
-                        if ([stream isImage]) {
-                            model.groupImage = [stream image];
-                        }
-                    }
-                }
-                
-                NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
-                gThread.groupModel = model;
-                [gThread saveWithTransaction:transaction];
-                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
-            }
-            else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
-                NSString *nameString = [[Environment.getCurrent contactsManager] nameStringForPhoneIdentifier:message.source];
-    
-                if (!nameString) {
-                    nameString = message.source;
-                }
-    
-                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",nameString];
-                NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-                [newGroupMembers removeObject:message.source];
-                gThread.groupModel.groupMemberIds = newGroupMembers;
-                
-                [gThread saveWithTransaction:transaction];
-                [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
+            if(content.group.type!=PushMessageContentGroupContextTypeUpdate && [TSGroupThread threadWithGroupModel:model transaction:transaction]==nil) {
+                ackMessage = NO; // group I have left or have no idea about.
             }
             else {
-                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
-                [incomingMessage saveWithTransaction:transaction];
+                TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+                [gThread saveWithTransaction:transaction];
+                if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
+                    if([attachments count]==1) {
+                        NSString* avatarId  = [attachments firstObject];
+                        TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
+                        if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
+                            TSAttachmentStream *stream = (TSAttachmentStream*)avatar;
+                            if ([stream isImage]) {
+                                model.groupImage = [stream image];
+                            }
+                        }
+                    }
+                    
+                    NSString* updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
+                    gThread.groupModel = model;
+                    [gThread saveWithTransaction:transaction];
+                    [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
+                }
+                else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
+                    NSString *nameString = [[Environment.getCurrent contactsManager] nameStringForPhoneIdentifier:message.source];
+        
+                    if (!nameString) {
+                        nameString = message.source;
+                    }
+        
+                    NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",nameString];
+                    NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
+                    [newGroupMembers removeObject:message.source];
+                    gThread.groupModel.groupMemberIds = newGroupMembers;
+                    
+                    [gThread saveWithTransaction:transaction];
+                    [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
+                }
+                else {
+                    incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
+                    [incomingMessage saveWithTransaction:transaction];
+                }
+                thread = gThread;
             }
-            thread = gThread;
+            
         }
         else{
             TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
@@ -284,9 +279,12 @@
             [incomingMessage saveWithTransaction:transaction];
             thread = cThread;
         }
-        NSString *name = [thread name];
-        [self notifyUserForIncomingMessage:incomingMessage from:name];
+        if(ackMessage) {
+            NSString *name = [thread name];
+            [self notifyUserForIncomingMessage:incomingMessage from:name];
+        }
     }];
+    return ackMessage;
 }
 
 - (void)processException:(NSException*)exception pushSignal:(IncomingPushMessageSignal*)signal{

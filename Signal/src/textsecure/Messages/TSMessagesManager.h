@@ -17,10 +17,11 @@
 
 @property (readonly) YapDatabaseConnection *dbConnection;
 
-- (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
+// returns yes if this message should be acked
+- (BOOL)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
+- (BOOL)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
 
 @end
