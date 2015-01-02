@@ -134,9 +134,6 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage*)message {
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
-    
-    [self sendWebSocketMessageAcknowledgement:message];
-    
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]){
         
         NSString *base64String   = [[NSString alloc] initWithData:message.body encoding:NSUTF8StringEncoding];
@@ -151,10 +148,14 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
         }
         
         IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
-        
-        [[TSMessagesManager sharedManager] handleMessageSignal:messageSignal];
+        if([[TSMessagesManager sharedManager] handleMessageSignal:messageSignal]){
+            [self sendWebSocketMessageAcknowledgement:message];
+    
+        }
     } else{
         DDLogWarn(@"Unsupported WebSocket Request");
+        [self sendWebSocketMessageAcknowledgement:message];
+        
     }
 }
 
