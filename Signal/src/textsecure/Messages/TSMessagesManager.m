@@ -186,12 +186,12 @@
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
-            if(gThread==nil) {
+            if(gThread==nil && content.group.type != PushMessageContentGroupContextTypeUpdate) {
                 ignoreMessage = YES;
             }
         }];
         if(ignoreMessage) {
-            DDLogDebug(@"Received message from group that I left, ignoring");
+            DDLogDebug(@"Received message from group that I left or don't know about, ignoring");
             return;
         }
         
