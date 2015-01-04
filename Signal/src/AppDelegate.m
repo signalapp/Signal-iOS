@@ -121,7 +121,7 @@
         InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
                                                                                  andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
         
-        if (latestCall.initiatedLocally == false){
+        if (latestCall.initiatedLocally == NO){
             [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
                 if ([accept isEqualToNumber:@YES]) {
                     [callViewController answerButtonTapped];
