@@ -110,6 +110,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     } else {
         cell.textLabel.text = @"Group conversation Recipients:";
         cell.textLabel.textColor = [UIColor lightGrayColor];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
