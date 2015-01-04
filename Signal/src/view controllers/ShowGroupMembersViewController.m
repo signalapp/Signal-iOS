@@ -8,6 +8,7 @@
 
 #import "ShowGroupMembersViewController.h"
 #import "SignalsViewController.h"
+#import "ContactDetailTableViewController.h"
 #import "Contact.h"
 #import "ContactsManager.h"
 #import "Environment.h"
@@ -102,8 +103,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: indexPath.row == 0 ? @"HeaderCell" : @"GroupSearchCell"];
     }
     if (indexPath.row > 0) {
-        NSUInteger row = (NSUInteger)indexPath.row;
-        Contact* contact = contacts[row-1];
+        Contact* contact = [self contactForIndexPath:indexPath];
         
         cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
@@ -117,6 +117,35 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     
     return cell;
 }
+
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.row>0) {
+        [self performSegueWithIdentifier:@"DetailSegue" sender:self];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
+
+-(Contact*)contactForIndexPath:(NSIndexPath*)indexPath
+{
+    Contact *contact = contacts[(NSUInteger)(indexPath.row-1)];
+    return contact;
+}
+
+
+#pragma mark - Segue
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"DetailSegue"]) {
+        ContactDetailTableViewController * detailvc = [segue destinationViewController];
+        NSIndexPath * indexPath = [self.tableView indexPathForSelectedRow]; // this is nil
+        Contact *contact = [self contactForIndexPath:indexPath];
+        detailvc.contact = contact;
+    }
+}
+
 
 
 #pragma mark - Cell Utility
