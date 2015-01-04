@@ -10,9 +10,8 @@
 #import "TSGroupThread.h"
 #import "GroupModel.h"
 
-@interface ShowGroupMembersViewController : UIViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
+@interface ShowGroupMembersViewController : UITableViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
 
 - (void)configWithThread:(TSGroupThread*)thread;
-@property(nonatomic, strong) IBOutlet UITableView* tableView;
 
 @end
