@@ -67,7 +67,9 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
         self.navigationItem.title = _thread.groupModel.groupName;
         self.nameGroupTextField.text = _thread.groupModel.groupName;
-        [self setupGroupImageButton:_thread.groupModel.groupImage];
+        if(_thread.groupModel.groupImage!=nil) {
+            [self setupGroupImageButton:_thread.groupModel.groupImage];
+        }
         // Select the contacts already selected:
         for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]-1; r++) {
             // TODOGROUP this will not scale well
@@ -130,7 +132,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
-    _groupModel = [[GroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_groupImageButton.imageView.image groupId:_thread.groupModel.groupId];
+    _groupModel = [[GroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
 }
@@ -138,7 +140,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(GroupModel*)makeGroup {
     NSString* title = _nameGroupTextField.text;
-    UIImage* img = _groupImageButton.imageView.image;
+    UIImage* img = _thread.groupModel.groupImage;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
@@ -224,13 +226,16 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     UIImage *picture_camera = [info objectForKey:UIImagePickerControllerOriginalImage];
     
     if (picture_camera) {
-        [self setupGroupImageButton:[picture_camera resizedImageToFitInSize:CGSizeMake(100.0,100.0) scaleIfSmaller:NO]];
+        UIImage *small = [picture_camera resizedImageToFitInSize:CGSizeMake(100.00,100.00) scaleIfSmaller:NO];
+        _thread.groupModel.groupImage = small;
+        [self setupGroupImageButton:small];
+
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)setupGroupImageButton:(UIImage*)image {
-    _groupImageButton.imageView.image = image;
+    [self.groupImageButton setImage:image forState:UIControlStateNormal];
     _groupImageButton.imageView.layer.cornerRadius = 4.0f;
     _groupImageButton.imageView.clipsToBounds = YES;
 }

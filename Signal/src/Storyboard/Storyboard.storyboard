@@ -3822,7 +3822,7 @@ Licensed under the GPLv3</string>
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="groupImageButton" destination="Ul8-NY-i4c" id="4Hl-dP-0tV"/>
+                        <outlet property="groupImageButton" destination="Ul8-NY-i4c" id="QLc-T4-wUb"/>
                         <outlet property="nameGroupTextField" destination="gbm-B5-gCc" id="XC8-Ci-sl2"/>
                         <outlet property="tableView" destination="cFo-AT-Srf" id="NqG-W1-Vhy"/>
                         <outlet property="tapToDismissView" destination="Ukg-om-VX3" id="nyq-IV-JDV"/>
