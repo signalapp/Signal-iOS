@@ -426,7 +426,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier{
-    for (Contact *contact in self.textSecureContacts) {
+    for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
                 return contact.fullName;
@@ -437,7 +437,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (UIImage*)imageForPhoneIdentifier:(NSString*)identifier{
-    for (Contact *contact in self.textSecureContacts) {
+    for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
                 return contact.image;
