@@ -822,6 +822,9 @@ A0 09 9A FF A8 8A 09 99</string>
                             <outlet property="delegate" destination="JeZ-9g-U61" id="qYP-nN-CLJ"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="0XE-hu-8cu" kind="show" identifier="DetailSegue" id="0BB-Wo-N9f"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3R8-C6-Zq8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -2557,7 +2560,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="srg-3q-gF9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3172.5" y="437.25"/>
+            <point key="canvasLocation" x="4138.5" y="1172.25"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
@@ -3877,5 +3880,6 @@ Licensed under the GPLv3</string>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="gZ1-lh-srF"/>
+        <segue reference="0BB-Wo-N9f"/>
     </inferredMetricsTieBreakers>
 </document>
