@@ -138,7 +138,7 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-
+    
     [self initializeToolbars];
     [self initializeCollectionViewLayout];
     
@@ -155,9 +155,12 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
     
-    NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:(NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId]-1 inSection:0];
-    [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
-
+    NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    
+    if (numberOfMessages > 0) {
+        NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages-1 inSection:0];
+        [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+    }
 }
 
 - (void)startReadTimer{
@@ -187,16 +190,16 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars
 {
     self.title = self.thread.name;
-
+    
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-
+        
         if ([self isRedPhoneReachable]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
             negativeSeparator.width = -8;
-        
+            
             self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
         }
         else {
@@ -271,7 +274,7 @@ typedef enum : NSUInteger {
     if ([self isRedPhoneReachable]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
-
+        
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
         DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
@@ -439,7 +442,7 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-
+    
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
@@ -526,7 +529,7 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
-
+    
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
             if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
@@ -595,7 +598,7 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         show = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] < [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
-
+    
     return show;
 }
 
@@ -642,7 +645,7 @@ typedef enum : NSUInteger {
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
     
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
-
+    
 }
 
 #pragma mark Bubble User Actions
@@ -677,7 +680,7 @@ typedef enum : NSUInteger {
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
         
         [self.inputToolbar.contentView resignFirstResponder];
-
+        
         [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                 NSLog(@"User Cancelled");
@@ -704,7 +707,7 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-
+    
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -793,7 +796,7 @@ typedef enum : NSUInteger {
         [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [message saveWithTransaction:transaction];
         }];
-
+        
         [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" inMessage:message thread:self.thread];
         [self finishSendingMessage];
     }
@@ -917,7 +920,7 @@ typedef enum : NSUInteger {
     }
     
     [self.collectionView performBatchUpdates:^{
-
+        
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
             switch (rowChange.type)
@@ -946,7 +949,7 @@ typedef enum : NSUInteger {
                 case YapDatabaseViewChangeUpdate :
                 {
                     NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
-
+                    
                     if (_lastDeliveredMessageIndexPath) {
                         [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                     }
@@ -1143,7 +1146,6 @@ typedef enum : NSUInteger {
         
         self.thread = gThread;
     }];
-
 }
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
