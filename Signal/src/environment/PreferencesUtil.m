@@ -135,7 +135,7 @@
     if (preference) {
         return [preference unsignedIntegerValue];
     } else {
-        return TSImageQualityUncropped;
+        return TSImageQualityMedium;
     }
 }
 

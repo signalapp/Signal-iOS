@@ -913,7 +913,7 @@ typedef enum : NSUInteger {
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
     
-    __block BOOL containsInsertion = NO;
+    __block BOOL scrollToBottom = NO;
     
     if (!messageRowChanges) {
         return;
@@ -937,7 +937,7 @@ typedef enum : NSUInteger {
                     TSInteraction * interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
                     [[TSAdapterCacheManager sharedManager] cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    containsInsertion = YES;
+                    scrollToBottom = YES;
                     break;
                 }
                 case YapDatabaseViewChangeMove :
@@ -960,6 +960,7 @@ typedef enum : NSUInteger {
                     }
                     
                     [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
+                    scrollToBottom = YES;
                     break;
                 }
             }
@@ -969,7 +970,7 @@ typedef enum : NSUInteger {
             [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
             [self.collectionView reloadData];
         }
-        if (containsInsertion) {
+        if (scrollToBottom) {
             [self scrollToBottomAnimated:YES];
         }
     }];

@@ -52,7 +52,7 @@ dispatch_queue_t attachmentsQueue() {
                 [attachmentPointer saveWithTransaction:transaction];
                 
                 dispatch_async(attachmentsQueue(), ^{
-                    [self retrieveAttachment:attachmentPointer];
+                    [self retrieveAttachment:attachmentPointer messageId:[TSInteraction stringFromTimeStamp:message.timestamp]];
                 });
                 
                 [retrievedAttachments addObject:attachmentPointer.uniqueId];
@@ -93,6 +93,7 @@ dispatch_queue_t attachmentsQueue() {
                         [result.pointer saveWithTransaction:transaction];
                     }];
                     
+                    outgoingMessage.body = nil;
                     [outgoingMessage.attachments addObject:attachementId];
                     
                     [self sendMessage:outgoingMessage inThread:thread];
@@ -113,28 +114,27 @@ dispatch_queue_t attachmentsQueue() {
     [self sendAttachment:attachmentData contentType:contentType inMessage:message thread:thread];
 }
 
-- (void)retrieveAttachment:(TSAttachmentPointer*)attachment {
+- (void)retrieveAttachment:(TSAttachmentPointer*)attachment messageId:(NSString*)messageId {
     
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:[attachment identifier]
                                                                                relay:attachment.relay];
     
     [[TSNetworkManager sharedManager] queueAuthenticatedRequest:attachmentRequest success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            NSString *location = [(NSDictionary*)responseObject objectForKey:@"location"];
-            NSData *data = [self downloadFromLocation:location];
-            if (data) {
-                dispatch_async(attachmentsQueue(), ^{
-                    [self decryptedAndSaveAttachment:attachment data:data];
-                });
-            }
-            
+            dispatch_async(attachmentsQueue(), ^{
+                NSString *location = [(NSDictionary*)responseObject objectForKey:@"location"];
+                NSData *data = [self downloadFromLocation:location];
+                if (data) {
+                    [self decryptedAndSaveAttachment:attachment data:data messageId:messageId];
+                }
+            });
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         DDLogError(@"Failed task %@ error: %@", task.description, error.description);
     }];
 }
 
-- (void)decryptedAndSaveAttachment:(TSAttachmentPointer*)attachment data:(NSData*)cipherText {
+- (void)decryptedAndSaveAttachment:(TSAttachmentPointer*)attachment data:(NSData*)cipherText messageId:(NSString*)messageId {
     NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey];
     
     if (!plaintext) {
@@ -145,12 +145,16 @@ dispatch_queue_t attachmentsQueue() {
                                                                         contentType:attachment.contentType];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
+            
             if([attachment.avatarOfGroupId length]!=0) {
                 GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
                 TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
                 gThread.groupModel.groupImage=[stream image];
                 [gThread saveWithTransaction:transaction];
-                
+            } else {
+                // Causing message to be reloaded in view.
+                TSMessage *message = [TSMessage fetchObjectWithUniqueID:messageId transaction:transaction];
+                [message saveWithTransaction:transaction];
             }
         }];
     }
@@ -160,12 +164,13 @@ dispatch_queue_t attachmentsQueue() {
     __block NSData *data;
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.completionQueue    = attachmentsQueue();
     manager.requestSerializer  = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
-    
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.completionQueue    = dispatch_get_main_queue();
+
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    
     [manager GET:location parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         data = responseObject;
         dispatch_semaphore_signal(sema);
@@ -173,6 +178,7 @@ dispatch_queue_t attachmentsQueue() {
         DDLogError(@"Failed to retreive attachment with error: %@", error.description);
         dispatch_semaphore_signal(sema);
     }];
+    
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     
     return data;

@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage){
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray  *attachments;
-@property (nonatomic, readonly) NSString        *body;
+@property (nonatomic) NSString        *body;
 @property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
