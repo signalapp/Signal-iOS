@@ -651,6 +651,7 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage*)message{
+    [self.inputToolbar.contentView.textView resignFirstResponder];
     [DJWActionSheet showInView:self.tabBarController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
             NSLog(@"User Cancelled");
@@ -679,7 +680,7 @@ typedef enum : NSUInteger {
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
         
-        [self.inputToolbar.contentView resignFirstResponder];
+         [self.inputToolbar.contentView.textView resignFirstResponder];
         
         [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
