@@ -146,7 +146,7 @@
 - (IBAction)shredAndDelete:(id)sender
 {
     [DJWActionSheet showInView:self.view withTitle:@"Are you sure wou want to shred the following? This action is irreversible."
-             cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@[@"Shred all keying material", @"Shred all keying material & communications history"]
+             cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@[@"Shred all keying material", @"Also shred communications"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               NSLog(@"User Cancelled");

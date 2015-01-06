@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14C68k" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -15,7 +15,7 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3rD-4i-EKG" userLabel="Delete View">
-                        <rect key="frame" x="299" y="0.0" width="102" height="71"/>
+                        <rect key="frame" x="299" y="0.0" width="102" height="72"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="delete.png" translatesAutoresizingMaskIntoConstraints="NO" id="TBw-ud-Ysk">
                                 <rect key="frame" x="50" y="23" width="19" height="25"/>
@@ -27,7 +27,7 @@
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
-                        <rect key="frame" x="0.0" y="0.0" width="102" height="71"/>
+                        <rect key="frame" x="0.0" y="0.0" width="102" height="72"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="archive.png" translatesAutoresizingMaskIntoConstraints="NO" id="WyX-Hb-Mpn">
                                 <rect key="frame" x="40" y="25" width="22" height="22"/>
@@ -121,7 +121,7 @@
                     <constraint firstItem="bG5-iK-ql3" firstAttribute="leading" secondItem="BRG-hJ-lRa" secondAttribute="leadingMargin" constant="-8" id="Dmq-W5-Xkr"/>
                     <constraint firstAttribute="centerY" secondItem="bG5-iK-ql3" secondAttribute="centerY" constant="-0.25" id="IQe-4d-baG"/>
                     <constraint firstAttribute="trailingMargin" secondItem="3rD-4i-EKG" secondAttribute="trailing" constant="23" id="LCr-QP-vla"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="3rD-4i-EKG" secondAttribute="bottom" constant="-7.5" id="SPU-lp-rQv"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="3rD-4i-EKG" secondAttribute="bottom" constant="-8.5" id="SPU-lp-rQv"/>
                     <constraint firstAttribute="trailingMargin" secondItem="3rD-4i-EKG" secondAttribute="trailing" constant="-9" id="SbS-PB-jL2"/>
                     <constraint firstAttribute="trailingMargin" secondItem="bG5-iK-ql3" secondAttribute="trailing" constant="-8" id="ikW-Es-Ngp"/>
                     <constraint firstItem="3rD-4i-EKG" firstAttribute="top" secondItem="BRG-hJ-lRa" secondAttribute="topMargin" constant="-8" id="yxg-lB-7gK"/>

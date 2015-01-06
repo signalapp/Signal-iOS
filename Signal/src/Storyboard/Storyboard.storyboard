@@ -1213,11 +1213,11 @@ A0 09 9A FF A8 8A 09 99</string>
                             <constraint firstItem="RQS-Iz-2vV" firstAttribute="top" secondItem="a9b-kU-125" secondAttribute="bottom" constant="145" id="Rvg-Br-JhL">
                                 <variation key="heightClass=regular-widthClass=compact" constant="20"/>
                             </constraint>
-                            <constraint firstItem="pSv-Dm-f1R" firstAttribute="top" secondItem="91B-iw-6Q2" secondAttribute="bottom" constant="45" id="TXe-eX-lw8"/>
+                            <constraint firstItem="pSv-Dm-f1R" firstAttribute="top" secondItem="91B-iw-6Q2" secondAttribute="bottom" constant="25" id="TXe-eX-lw8"/>
                             <constraint firstItem="vW6-pP-9vd" firstAttribute="top" secondItem="XvA-gQ-BvT" secondAttribute="bottom" constant="31" id="Whv-CV-znA"/>
                             <constraint firstItem="Mof-iB-rK4" firstAttribute="top" secondItem="sBS-MF-j0u" secondAttribute="bottom" constant="18" id="YIO-Kg-5LJ"/>
                             <constraint firstItem="8e0-BB-J7K" firstAttribute="top" secondItem="SBQ-kY-h2a" secondAttribute="bottom" constant="36" id="Z0C-6N-HnE"/>
-                            <constraint firstItem="SBQ-kY-h2a" firstAttribute="top" secondItem="91B-iw-6Q2" secondAttribute="bottom" constant="45" id="Z96-LX-bJp"/>
+                            <constraint firstItem="SBQ-kY-h2a" firstAttribute="top" secondItem="91B-iw-6Q2" secondAttribute="bottom" constant="25" id="Z96-LX-bJp"/>
                             <constraint firstItem="91B-iw-6Q2" firstAttribute="leading" secondItem="sqD-R1-bDb" secondAttribute="leadingMargin" constant="24" id="aLd-65-HKk"/>
                             <constraint firstAttribute="centerX" secondItem="91B-iw-6Q2" secondAttribute="centerX" constant="-0.5" id="bng-yH-By6"/>
                             <constraint firstAttribute="trailingMargin" secondItem="vW6-pP-9vd" secondAttribute="trailing" constant="-4" id="cLa-Bf-WM5"/>

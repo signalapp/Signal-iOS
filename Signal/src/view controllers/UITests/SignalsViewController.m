@@ -27,7 +27,7 @@
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabase.h"
 
-#define CELL_HEIGHT 71.0f
+#define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
 
