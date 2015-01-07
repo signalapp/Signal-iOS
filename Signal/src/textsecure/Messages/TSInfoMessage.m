@@ -37,7 +37,7 @@
 - (NSString *)description{
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
-            return @"Secure session ended.";
+            return @"Secure session was reset.";
         case TSInfoMessageTypeUnsupportedMessage:
             return @"Media messages are currently not supported.";
         case TSInfoMessageUserNotRegistered:
