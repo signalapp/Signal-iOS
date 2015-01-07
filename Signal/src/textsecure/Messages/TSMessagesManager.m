@@ -32,6 +32,8 @@
 #import "TSMessagesManager+attachments.h"
 #import "TSAttachmentPointer.h"
 
+#import "SignalKeyingStorage.h"
+
 #import "NSData+messagePadding.h"
 
 #import "Environment.h"
@@ -225,6 +227,15 @@
 
 - (void)handleReceivedTextMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content{
     [self handleReceivedMessage:message withContent:content attachments:content.attachments];
+}
+
+-(void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:[SignalKeyingStorage.localNumber toE164] transaction:transaction];
+        [cThread saveWithTransaction:transaction];
+        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timeStamp + 1) inThread:cThread messageBody:outgoingMessage.body attachments:outgoingMessage.attachments];
+        [incomingMessage saveWithTransaction:transaction];
+    }];
 }
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {

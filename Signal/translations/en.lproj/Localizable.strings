@@ -38,6 +38,7 @@
 "DIALER_NUMBER_PLUS" = "+";
 "DIALER_NUMBER_POUND" = "#";
 "DISABLING_BACKUP_FAILED" = "We encountered an issue while disabling the backup of your call log. Call logs might leak in your iTunes/iCloud backups.";
+"ERROR_CALL_ONESELF" = "You can't call yourself.";
 "ERROR_WAS_DETECTED_TITLE" = "Bummer!";
 "ERROR_WAS_DETECTED_SUBMIT" = "An bug was detected. Help us make Signal better by reporting this incident.";
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "Server Failed!";

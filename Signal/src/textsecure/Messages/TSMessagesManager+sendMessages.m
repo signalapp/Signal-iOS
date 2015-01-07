@@ -57,7 +57,6 @@ dispatch_queue_t sendingQueue() {
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread* groupThread = (TSGroupThread*)thread;
-            
             [self saveGroupMessage:message inThread:thread];
             __block NSArray* recipients;
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -65,7 +64,7 @@ dispatch_queue_t sendingQueue() {
             }];
             
             for(TSRecipient *rec in recipients){
-                // we don't need to send the message to ourselves, but otherwise we sends
+                // we don't need to send the message to ourselves, but otherwise we send
                 if( ![[rec uniqueId] isEqualToString:[SignalKeyingStorage.localNumber toE164]]){
                     [self sendMessage:message
                           toRecipient:rec
@@ -76,19 +75,28 @@ dispatch_queue_t sendingQueue() {
             
         }
         else if([thread isKindOfClass:[TSContactThread class]]){
-            [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
-
             TSContactThread *contactThread = (TSContactThread*)thread;
-            __block TSRecipient     *recipient;
-            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                recipient = [contactThread recipientWithTransaction:transaction];
-            }];
+           
+            [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
             
-            [self sendMessage:message
-                  toRecipient:recipient
-                     inThread:thread
-                  withAttemps:3];
+             if(![contactThread.contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+                 __block TSRecipient     *recipient;
+                 [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                     recipient = [contactThread recipientWithTransaction:transaction];
+                 }];
+
+                 [self sendMessage:message
+                       toRecipient:recipient
+                          inThread:thread
+                       withAttemps:3];
+             }
+             else {
+                 // Special situation: if we are sending to ourselves in a single thread, we treat this as an incoming message
+                 [self handleMessageSent:message];
+                 [[TSMessagesManager sharedManager] handleSendToMyself:message];
+             }
         }
+        
     });
 }
 
