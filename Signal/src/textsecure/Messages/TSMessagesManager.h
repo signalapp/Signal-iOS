@@ -23,4 +23,6 @@
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
 
+-(void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage;
+
 @end
