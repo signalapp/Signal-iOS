@@ -5212,10 +5212,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
                             withOptions:(NSEnumerationOptions)options
                                   range:(NSRange)range
+                                 filter:
+                    (BOOL (^)(NSString *collection, NSString *key))filter
                              usingBlock:
                     (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block
-                             withFilter:
-                    (BOOL (^)(NSString *collection, NSString *key))filter
 {
 	if (filter == NULL) {
 		[self enumerateKeysAndMetadataInGroup:group withOptions:options range:range usingBlock:block];
@@ -5302,10 +5302,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                                  range:(NSRange)range
+                                filter:
+            (BOOL (^)(NSString *collection, NSString *key))filter
                             usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
-                            withFilter:
-            (BOOL (^)(NSString *collection, NSString *key))filter
 {
 	if (filter == NULL) {
 		[self enumerateKeysAndObjectsInGroup:group withOptions:options range:range usingBlock:block];
@@ -5395,10 +5395,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 - (void)enumerateRowsInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options
                        range:(NSRange)range
+                      filter:
+            (BOOL (^)(NSString *collection, NSString *key))filter
                   usingBlock:
             (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
-                  withFilter:
-            (BOOL (^)(NSString *collection, NSString *key))filter
 {
 	if (filter == NULL) {
 		[self enumerateRowsInGroup:group withOptions:options range:range usingBlock:block];

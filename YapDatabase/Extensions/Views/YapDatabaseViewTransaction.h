@@ -445,10 +445,10 @@ __attribute((deprecated("Use method setGrouping:sorting:versionTag: instead")));
 - (void)enumerateKeysAndMetadataInGroup:(NSString *)group
                             withOptions:(NSEnumerationOptions)options
                                   range:(NSRange)range
+                                 filter:
+                    (BOOL (^)(NSString *collection, NSString *key))filter
                              usingBlock:
-                    (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block
-                             withFilter:
-                    (BOOL (^)(NSString *collection, NSString *key))filter;
+                    (void (^)(NSString *collection, NSString *key, id metadata, NSUInteger index, BOOL *stop))block;
 
 /**
  * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
@@ -473,10 +473,10 @@ __attribute((deprecated("Use method setGrouping:sorting:versionTag: instead")));
 - (void)enumerateKeysAndObjectsInGroup:(NSString *)group
                            withOptions:(NSEnumerationOptions)options
                                  range:(NSRange)range
+                                filter:
+            (BOOL (^)(NSString *collection, NSString *key))filter
                             usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block
-                            withFilter:
-            (BOOL (^)(NSString *collection, NSString *key))filter;
+            (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
 
 /**
  * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
@@ -501,10 +501,10 @@ __attribute((deprecated("Use method setGrouping:sorting:versionTag: instead")));
 - (void)enumerateRowsInGroup:(NSString *)group
                  withOptions:(NSEnumerationOptions)options
                        range:(NSRange)range
+                      filter:
+            (BOOL (^)(NSString *collection, NSString *key))filter
                   usingBlock:
-            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block
-                  withFilter:
-            (BOOL (^)(NSString *collection, NSString *key))filter;
+            (void (^)(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop))block;
 
 @end
 
