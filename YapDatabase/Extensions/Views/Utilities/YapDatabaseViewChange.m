@@ -666,7 +666,7 @@
 		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the ORIGINAL index value of operations that occurred AFTER it,
-			//   IF the later operation occurs at a greater or equal index value. ( -1 )
+			//   IF the later operation occurs at a greater (but not equal) index value.  ( -1 )
 			
 			for (j = i; j < rowChangesCount; j++)
 			{
@@ -675,7 +675,7 @@
 				if (laterRowChange->type == YapDatabaseViewChangeDelete ||
 				    laterRowChange->type == YapDatabaseViewChangeUpdate)
 				{
-					if (laterRowChange->originalIndex >= rowChange->opFinalIndex &&
+					if (laterRowChange->originalIndex > rowChange->opFinalIndex &&
 					   [laterRowChange->originalGroup isEqualToString:rowChange->finalGroup])
 					{
 						laterRowChange->originalIndex -= 1;
@@ -717,7 +717,7 @@
 		else if (rowChange->type == YapDatabaseViewChangeInsert)
 		{
 			// An INSERT operation may affect the FINAL index value of operations that occurred BEFORE it,
-			//   IF the earlier operation occurs at a greater index value ( +1 )
+			//   IF the earlier operation occurs at a greater or equal index value ( +1 )
 			
 			for (j = i; j > 0; j--)
 			{
@@ -741,7 +741,7 @@
 	// The user may have various range options set for each group.
 	// Here we update the range length & offset to match the basic changes made to the group.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^UpdateRangeOptionsForGroup)(NSString *group);
 	UpdateRangeOptionsForGroup = ^(NSString *group){
@@ -811,7 +811,7 @@
 			
 			finalRangeLength = MIN(originalRangeOpts.maxLength, maxFinalRangeLength);
 		}
-		else // if (rangeOpts.isFlexibleRange)
+		else // if (originalRangeOpts.isFlexibleRange)
 		{
 			// FLEXIBLE Range:
 			// 
@@ -954,7 +954,9 @@
 		} // end else if (rangeOpts.isFlexibleRange)
 		
 		
-		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		YapDatabaseViewRangeOptions *finalRangeOpts = [finalMappings _rangeOptionsForGroup:group];
+		
+		if ((finalRangeLength != finalRangeOpts.length) || (finalRangeOffset != finalRangeOpts.offset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 			rangeOptionsChanged = YES;
@@ -1024,61 +1026,68 @@
 		__unsafe_unretained YapDatabaseViewRowChange *firstChangeForKey = _changes[i];
 		__unsafe_unretained YapDatabaseViewRowChange *mostRecentChangeForKey = firstChangeForKey;
 		
+		NSUInteger mostRecentChangeForKey_OpIndex = 0;
+		
+		if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate ||
+			mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
+			mostRecentChangeForKey_OpIndex = mostRecentChangeForKey->opFinalIndex;
+		
 		// Find later operations with the same key
 		
 		for (j = i+1; j < changesCount; j++)
 		{
-			if ([indexesToRemove containsIndex:j]) continue;
-			
 			__unsafe_unretained YapDatabaseViewRowChange *laterChange = _changes[j];
 			BOOL changesAreForSameKey = NO;
 			
-			if (firstChangeForKey->collectionKey && laterChange->collectionKey)
+			if (![indexesToRemove containsIndex:j])
 			{
-				// Compare keys
-				
-				if (YapCollectionKeyEqual(laterChange->collectionKey, firstChangeForKey->collectionKey))
-					changesAreForSameKey = YES;
-			}
-			else
-			{
-				// Compare indexes & groups
-				//
-				// This technique is used if one of the keys is nil,
-				// and applies to situations where one of the changes is an Update with a nil key,
-				// which was injected during pre-processing due to cell drawing dependencies.
-				
-				if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate)
+				if (firstChangeForKey->collectionKey && laterChange->collectionKey)
 				{
-					if (laterChange->type == YapDatabaseViewChangeUpdate ||
-					    laterChange->type == YapDatabaseViewChangeDelete)
-					{
-						if (mostRecentChangeForKey->originalIndex == laterChange->originalIndex &&
-						   [mostRecentChangeForKey->originalGroup isEqualToString:laterChange->originalGroup]) {
-							changesAreForSameKey = YES;
-						}
-					}
-				}
-				else if (mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
-				{
-					if (laterChange->type == YapDatabaseViewChangeUpdate)
-					{
-						if (mostRecentChangeForKey->originalIndex == laterChange->originalIndex &&
-						   [mostRecentChangeForKey->originalGroup isEqualToString:laterChange->originalGroup]) {
-							changesAreForSameKey = YES;
-						}
-					}
-				}
-				
-				if (changesAreForSameKey)
-				{
-					if (mostRecentChangeForKey->collectionKey == nil)
-						mostRecentChangeForKey->collectionKey = laterChange->collectionKey;
-					else
-						laterChange->collectionKey = mostRecentChangeForKey->collectionKey;
+					// Compare keys
 					
-					if (firstChangeForKey->collectionKey == nil)
-						firstChangeForKey->collectionKey = mostRecentChangeForKey->collectionKey;
+					if (YapCollectionKeyEqual(laterChange->collectionKey, firstChangeForKey->collectionKey))
+						changesAreForSameKey = YES;
+				}
+				else
+				{
+					// Compare indexes & groups
+					//
+					// This technique is used if one of the keys is nil,
+					// and applies to situations where one of the changes is an Update with a nil key,
+					// which was injected during pre-processing due to cell drawing dependencies.
+					
+					if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate)
+					{
+						if (laterChange->type == YapDatabaseViewChangeUpdate ||
+						    laterChange->type == YapDatabaseViewChangeDelete)
+						{
+							if (mostRecentChangeForKey_OpIndex == laterChange->opOriginalIndex &&
+							   [mostRecentChangeForKey->originalGroup isEqualToString:laterChange->originalGroup]) {
+								changesAreForSameKey = YES;
+							}
+						}
+					}
+					else if (mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
+					{
+						if (laterChange->type == YapDatabaseViewChangeUpdate)
+						{
+							if (mostRecentChangeForKey_OpIndex == laterChange->opOriginalIndex &&
+							   [mostRecentChangeForKey->finalGroup isEqualToString:laterChange->finalGroup]) {
+								changesAreForSameKey = YES;
+							}
+						}
+					}
+					
+					if (changesAreForSameKey)
+					{
+						if (mostRecentChangeForKey->collectionKey == nil)
+							mostRecentChangeForKey->collectionKey = laterChange->collectionKey;
+						else
+							laterChange->collectionKey = mostRecentChangeForKey->collectionKey;
+						
+						if (firstChangeForKey->collectionKey == nil)
+							firstChangeForKey->collectionKey = mostRecentChangeForKey->collectionKey;
+					}
 				}
 			}
 			
@@ -1088,8 +1097,38 @@
 				[indexesThatMatch addIndex:j];
 				
 				mostRecentChangeForKey = laterChange;
+				
+				if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate ||
+				    mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
+					mostRecentChangeForKey_OpIndex = mostRecentChangeForKey->opFinalIndex;
+				else
+					mostRecentChangeForKey_OpIndex = 0;
 			}
-		}
+			else
+			{
+				if (mostRecentChangeForKey->type == YapDatabaseViewChangeUpdate ||
+				    mostRecentChangeForKey->type == YapDatabaseViewChangeInsert)
+				{
+					if (laterChange->type == YapDatabaseViewChangeInsert)
+					{
+						if (laterChange->opFinalIndex <= mostRecentChangeForKey_OpIndex &&
+							[laterChange->finalGroup isEqualToString:mostRecentChangeForKey->finalGroup])
+						{
+							mostRecentChangeForKey_OpIndex++;
+						}
+					}
+					else if (laterChange->type == YapDatabaseViewChangeDelete)
+					{
+						if (laterChange->opOriginalIndex < mostRecentChangeForKey_OpIndex &&
+							[laterChange->originalGroup isEqualToString:mostRecentChangeForKey->finalGroup])
+						{
+							mostRecentChangeForKey_OpIndex--;
+						}
+					}
+				}
+			}
+		
+		} // end for (j = i+1; j < changesCount; j++)
 		
 		if ([indexesThatMatch count] > 0)
 		{
@@ -1390,7 +1429,7 @@
 	// The user has a hard range on group "fiction" in the "bookSalesRank" view in order to display the top 20.
 	// So any items outside of that range must be filtered.
 	
-	__block BOOL rangeOptionsChanged = YES;
+	__block BOOL rangeOptionsChanged = NO;
 	
 	void (^ApplyRangeOptionsForGroup)(NSString *group);
 	ApplyRangeOptionsForGroup = ^(NSString *group)
@@ -2030,7 +2069,7 @@
 		//
 		// STEP 4.A : Update finalMappings if needed (by updating rangeOpts.length & rangeOpts.offset)
 		
-		if ((originalRangeLength != finalRangeLength) || (originalRangeOffset != finalRangeOffset))
+		if ((finalRangeLength != finalRangeOpts.length) || (finalRangeOffset != finalRangeOpts.offset))
 		{
 			[finalMappings updateRangeOptionsForGroup:group withNewLength:finalRangeLength newOffset:finalRangeOffset];
 			rangeOptionsChanged = YES;

@@ -2639,4 +2639,287 @@ static YapDatabaseViewRowChange* (^RowOp)(NSArray*, NSUInteger) = ^(NSArray *rCh
 	XCTAssertTrue(RowOp(rChanges, 1).finalIndex == 3, @"");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Issue Bugs
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Issue #125:
+ * https://github.com/yapstudios/YapDatabase/issues/125
+**/
+- (void)testIssue125_1
+{
+	// I noticed this:
+	//
+	// - setup view mapping on group A, which contains 2 rows, 1 section
+	// - in the same read write transaction:
+	//   - add 1 item to A
+	//   - mode all items from A to B
+	// - end the read write transaction
+	//
+	// [UITableView endUpdates] crashes with the following exception:
+	// attempt to delete and reload the same index path (<NSIndexPath: 0xc000000000008016> {length = 2, path = 0 - 1})
+	//
+	// notifications =
+	// <__NSArrayM 0x170454f10>(
+	//  NSConcreteNotification 0x174454d90 {
+	//    name = YapDatabaseModifiedNotification;
+	//    object = <YapDatabase: 0x1741e7100>;
+	//    userInfo = {
+	//      connection = "<YapDatabaseConnection: 0x15c56c0d0>";
+	//      extensions = {
+	//        chatview = {
+	//          changes = (
+	//            "<YapDatabaseViewRowChange: Insert pre(~ -> 2) post(~ -> 2)   group(A) collectionKey(Chats, k3)>",
+	//            "<YapDatabaseViewRowChange: Delete pre(0 -> ~) post(0 -> ~)   group(A) collectionKey(Chats, k1)>",
+	//            "<YapDatabaseViewRowChange: Insert pre(~ -> 18) post(~ -> 18) group(B) collectionKey(Chats, k1)>",
+	//            "<YapDatabaseViewRowChange: Delete pre(0 -> ~) post(0 -> ~)   group(A) collectionKey(Chats, k2)>",
+	//            "<YapDatabaseViewRowChange: Insert pre(~ -> 19) post(~ -> 19) group(B) collectionKey(Chats, k2)>",
+	//            "<YapDatabaseViewRowChange: Delete pre(0 -> ~) post(0 -> ~)   group(A) collectionKey(Chats, k3)>",
+	//            "<YapDatabaseViewRowChange: Insert pre(~ -> 20) post(~ -> 20) group(B) collectionKey(Chats, k3)>",
+	//            "<YapDatabaseViewSectionChange: Delete group(A)" );
+	//          };
+	//        };
+	//      metadataChanges = "<YapSet: 0x17443b5e0>";
+	//      objectChanges = "<YapSet: 0x174620f60>";
+	//      snapshot = 21;
+	//    }
+	//  }
+	// )
+	//
+	// rowChanges =
+	// <__NSArrayM 0x174457370>(
+	//   <YapDatabaseViewRowChange: Delete indexPath(0, 0) newIndexPath(nil) group(A) collectionKey(Chats, k1)>,
+	//   <YapDatabaseViewRowChange: Delete indexPath(0, 1) newIndexPath(nil) group(A) collectionKey(Chats, k2)>,
+	//   <YapDatabaseViewRowChange: Update indexPath(0, 1) group(B) collectionKey((null))
+	// )
+	
+	// Note: I made the following swaps: (-RH)
+	//
+	// group "A" <- "2618|6766"
+	// group "B" <- "2618|4212|6766"
+	//
+	// key "k0" <- "PRIVMSG261867662618014144983664eeac15ae345b99db2b063be34cfa006fd7d551f5805a296e5f9fc72ff6efcad"
+	// key "k1" <- "JOIN26186766421201414498369"
+	// key "k2" <- "JOIN26186766421201414498411"
+	
+	
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:2]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k0") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k0") inGroup:@"B" atIndex:18]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k1") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k1") inGroup:@"B" atIndex:19]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"B" atIndex:20]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sectionChanges;
+	NSArray *rowChanges;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	
+	[mappings updateWithCounts:@{ @"A": @(2) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	[mappings updateWithCounts:@{ @"A": @(0) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete : [0, 0] -> [-] (k0)
+	// 1) Row Delete : [0, 1] -> [-] (k1)
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+}
+
+/**
+ * Issue #125:
+ * https://github.com/yapstudios/YapDatabase/issues/125
+**/
+- (void)testIssue125_2
+{
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:2]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k0") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k0") inGroup:@"B" atIndex:18]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k1") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k1") inGroup:@"B" atIndex:19]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"B" atIndex:20]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sectionChanges;
+	NSArray *rowChanges;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"A"];
+	
+	[mappings updateWithCounts:@{ @"A": @(2) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	[mappings updateWithCounts:@{ @"A": @(0) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete : [0, 0] -> [-] (k1)
+	// 1) Row Delete : [0, 1] -> [-] (k2)
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+}
+
+/**
+ * Issue #125:
+ * https://github.com/yapstudios/YapDatabase/issues/125
+**/
+- (void)testIssue125_3
+{
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k3") inGroup:@"A" atIndex:2]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:2]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k0") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k0") inGroup:@"B" atIndex:18]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k1") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k1") inGroup:@"B" atIndex:19]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"B" atIndex:20]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k3") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k3") inGroup:@"B" atIndex:21]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sectionChanges;
+	NSArray *rowChanges;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"A"];
+	
+	[mappings updateWithCounts:@{ @"A": @(2) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	[mappings updateWithCounts:@{ @"A": @(0) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+								  rowChanges:&rowChanges
+						withOriginalMappings:originalMappings
+							   finalMappings:mappings
+								 fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete : [0, 0] -> [-] (k1)
+	// 1) Row Delete : [0, 1] -> [-] (k2)
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+}
+
+/**
+ * Issue #125:
+ * https://github.com/yapstudios/YapDatabase/issues/125
+**/
+- (void)testIssue125_4
+{
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k0") inGroup:@"A" atIndex:0]];
+	
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k3") inGroup:@"A" atIndex:1]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:1]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k1") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k1") inGroup:@"B" atIndex:18]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k2") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k2") inGroup:@"B" atIndex:19]];
+	
+	[changes addObject:[YapDatabaseViewRowChange deleteCollectionKey:YCK(@"Chats", @"k3") inGroup:@"A" atIndex:0]];
+	[changes addObject:[YapDatabaseViewRowChange insertCollectionKey:YCK(@"Chats", @"k3") inGroup:@"B" atIndex:20]];
+	
+	[changes addObject:[YapDatabaseViewSectionChange deleteGroup:@"A"]];
+	
+	// Process
+	
+	NSArray *sectionChanges;
+	NSArray *rowChanges;
+	
+	YapDatabaseViewMappings *mappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[@"A"] view:nil];
+	[mappings setCellDrawingDependencyForNeighboringCellWithOffset:-1 forGroup:@"A"];
+	
+	[mappings updateWithCounts:@{ @"A": @(2) } forceUpdateRangeOptions:NO];
+	YapDatabaseViewMappings *originalMappings = [mappings copy];
+	
+	[mappings updateWithCounts:@{ @"A": @(0) } forceUpdateRangeOptions:NO];
+	[YapDatabaseViewChange getSectionChanges:&sectionChanges
+	                              rowChanges:&rowChanges
+	                    withOriginalMappings:originalMappings
+	                           finalMappings:mappings
+	                             fromChanges:changes];
+	
+	// Expecting:
+	//
+	// 0) Row Delete : [0, 0] -> [-] (k1)
+	// 1) Row Delete : [0, 1] -> [-] (k2)
+	
+	XCTAssertTrue([sectionChanges count] == 0, @"");
+	XCTAssertTrue([rowChanges count] == 2, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 0).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 0).originalIndex == 0, @"");
+	
+	XCTAssertTrue(RowOp(rowChanges, 1).type == YapDatabaseViewChangeDelete, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalSection == 0, @"");
+	XCTAssertTrue(RowOp(rowChanges, 1).originalIndex == 1, @"");
+}
+
 @end

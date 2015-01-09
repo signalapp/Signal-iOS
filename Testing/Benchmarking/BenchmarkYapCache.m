@@ -103,11 +103,11 @@ static NSMutableArray *keys;
 + (NSTimeInterval)testYapCache:(NSUInteger)cacheSize
 {
 #if TEST_COLLECTION_KEY
-	YapCache *cache = [[YapCache alloc] initWithKeyClass:[YapCollectionKey class]
-	                                        keyCallbacks:[YapCollectionKey keyCallbacks]
-	                                          countLimit:cacheSize];
+	YapCache *cache = [[YapCache alloc] initWithCountLimit:cacheSize keyCallbacks:[YapCollectionKey keyCallbacks]];
+	cache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
 #else
-	YapCache *cache = [[YapCache alloc] initWithKeyClass:[NSString class] countLimit:cacheSize];
+	YapCache *cache = [[YapCache alloc] initWithCountLimit:cacheSize];
+	cache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
 #endif
 	
 	
