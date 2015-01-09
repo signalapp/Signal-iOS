@@ -208,6 +208,135 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)test_skipInitialPopulationView
+{
+    NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.skipInitialViewPopulation = YES;
+    
+    [self _test_withPath:databasePath options:options];
+}
+
+- (void)test_notskipInitialPopulationView
+{
+    NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.skipInitialViewPopulation = NO;
+    
+    [self _testSkipInitialPopulationView_withPath:databasePath options:options];
+}
+
+- (void)_testSkipInitialPopulationView_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+    [[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+    YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+    
+    XCTAssertNotNil(database, @"Oops");
+    
+    YapDatabaseConnection *connection1 = [database newConnection];
+    YapDatabaseConnection *connection2 = [database newConnection];
+    
+    YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+                                         ^NSString *(NSString *collection, NSString *key)
+                                         {
+                                             if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
+                                                 return nil;
+                                             else
+                                                 return @"";
+                                         }];
+    
+    YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+                                       ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+                                         NSString *collection2, NSString *key2, id obj2)
+                                       {
+                                           __unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+                                           __unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
+                                           
+                                           return [number1 compare:number2];
+                                       }];
+    
+    NSString *order_initialVersionTag = @"1";
+    
+    YapDatabaseView *view =
+    [[YapDatabaseView alloc] initWithGrouping:grouping
+                                      sorting:sorting
+                                   versionTag:order_initialVersionTag
+                                      options:options];
+    
+    BOOL registerResult1 = [database registerExtension:view withName:@"order"];
+    XCTAssertTrue(registerResult1, @"Failure registering view extension");
+    
+    [connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSString *versionTag = [[transaction ext:@"order"] versionTag];
+        XCTAssert([versionTag isEqualToString:order_initialVersionTag], @"Bad versionTag");
+    }];
+    
+    YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+                                           ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+                                           {
+                                               __unsafe_unretained NSNumber *number = (NSNumber *)object;
+                                               
+                                               if ([number intValue] % 2 == 0)
+                                                   return YES; // even
+                                               else
+                                                   return NO;  // odd
+                                           }];
+    
+    NSString *filter_initialVersionTag = @"1";
+    
+    YapDatabaseFilteredView *filteredView =
+    [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
+                                                  filtering:filtering
+                                                 versionTag:filter_initialVersionTag
+                                                    options:options];
+    
+    // Without registering the view,
+    // add a bunch of keys to the database.
+    
+    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        
+        for (int i = 0; i < 100; i++)
+        {
+            NSString *key = [NSString stringWithFormat:@"key%d", i];
+            
+            [transaction setObject:@(i) forKey:key inCollection:nil];
+        }
+    }];
+    
+    BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
+    XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
+    
+    [connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
+        if (options.skipInitialViewPopulation) {
+            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        } else {
+            XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        }
+    }];
+    
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
+        if (options.skipInitialViewPopulation) {
+            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        } else {
+            XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        }
+    }];
+    
+    connection1 = nil;
+    connection2 = nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)testScratch_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];

@@ -2050,6 +2050,108 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)testViewPopulation_skipInitialViewPopulation
+{
+    NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.skipInitialViewPopulation = YES;
+    
+    [self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)testViewPopulation_notSkipInitialViewPopulation
+{
+    NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.skipInitialViewPopulation = NO;
+    
+    [self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)_testViewPopulation_skipInitialViewPopulation_withPath:(NSString *)databasePath options:(YapDatabaseViewOptions *)options
+{
+    [[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+    YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+    
+    XCTAssertNotNil(database, @"Oops");
+    
+    YapDatabaseConnection *connection1 = [database newConnection];
+    YapDatabaseConnection *connection2 = [database newConnection];
+    
+    YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+                                         ^NSString *(NSString *collection, NSString *key)
+                                         {
+                                             return @"";
+                                         }];
+    
+    YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+                                       ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+                                         NSString *collection2, NSString *key2, id obj2)
+                                       {
+                                           NSString *object1 = (NSString *)obj1;
+                                           NSString *object2 = (NSString *)obj2;
+                                           
+                                           return [object1 compare:object2 options:NSNumericSearch];
+                                       }];
+    
+    YapDatabaseView *databaseView =
+    [[YapDatabaseView alloc] initWithGrouping:grouping
+                                      sorting:sorting
+                                   versionTag:@"1"
+                                      options:options];
+    
+    // Without registering the view,
+    // add a bunch of keys to the database.
+    
+    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        
+        for (int i = 0; i < 150; i++)
+        {
+            NSString *key = [NSString stringWithFormat:@"key%d", i];
+            NSString *obj = [NSString stringWithFormat:@"object%d", i];
+            
+            [transaction setObject:obj forKey:key inCollection:nil];
+        }
+    }];
+    
+    // And NOW register the view
+    
+    BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
+    
+    XCTAssertTrue(registerResult, @"Failure registering extension");
+    
+    // Make sure both connections can see the view now
+    
+    [connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+        if (options.skipInitialViewPopulation) {
+            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        } else {
+            XCTAssertTrue(orderCount == 150, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        }
+    }];
+    
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        NSUInteger orderCount = [[transaction ext:@"order"] numberOfItemsInGroup:@""];
+        if (options.skipInitialViewPopulation) {
+            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        } else {
+            XCTAssertTrue(orderCount == 150, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+        }
+    }];
+    
+    connection1 = nil;
+    connection2 = nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (void)testMutationDuringEnumerationProtection_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
