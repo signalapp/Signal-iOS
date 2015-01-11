@@ -13,6 +13,7 @@
 #import "RecentCallManager.h"
 #import "Release.h"
 #import "SignalsViewController.h"
+#import "SignalKeyingStorage.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager.h"
 #import "TSAccountManager.h"
@@ -44,21 +45,37 @@
 #pragma mark Detect updates - perform migrations
 
 - (void)performUpdateCheck{
-    // We check if NSUserDefaults key for version exists.
     NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
-    
+    NSString *currentVersion = [Environment.preferences setAndGetCurrentVersion];
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
-    } else if ([currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
-        [Environment resetAppData];
-        // Application was updated, let's see if we have a migration scheme for it.
-        if ([previousVersion isEqualToString:@"1.0.2"]) {
-            // Migrate from custom preferences to NSUserDefaults
-            [VersionMigrations migrationFrom1Dot0Dot2toLarger];
+    }
+    else if ([Environment.preferences getIsMigratingToVersion2Dot0] || [currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
+        if([self isVersion:previousVersion atLeast:@"1.0.2"]) {
+            [Environment.preferences setIsMigratingToVersion2Dot0:YES];
+            [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0]; // this is only necessary for older apps
+            [Environment.getCurrent.recentCallManager migrateToVersion2Dot0];
+            [SignalKeyingStorage migrateToVersion2Dot0];
+            [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
+                    [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+                    Environment *env = [Environment getCurrent];
+                    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+                    [manager forceUpdate];
+                    [Environment.preferences setIsMigratingToVersion2Dot0:NO];
+                } failure:^(NSError *error) {
+                    // TODO: should we have a UI response here?
+                }];
+            } failure:^{
+                // TODO: should we have a UI response here?
+            }];
         }
     }
+}
+
+
+- (BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString {
+    return [thisVersionString compare:thatVersionString options:NSNumericSearch] != NSOrderedAscending;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -84,8 +101,6 @@
     }
     
     [[TSStorageManager sharedManager] setupDatabase];
-    
-    [self performUpdateCheck];
 
     self.notificationTracker = [NotificationTracker notificationTracker];
     
@@ -95,6 +110,8 @@
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
+    [self performUpdateCheck];
+
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];

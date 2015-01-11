@@ -1190,8 +1190,8 @@
 		FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_with_name@2x.png"; sourceTree = "<group>"; };
 		FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_no_name@2x.png"; sourceTree = "<group>"; };
 		FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_with_preview@2x.png"; sourceTree = "<group>"; };
-		FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalTabBarController.h; path = "view controllers/SignalTabBarController.h"; sourceTree = "<group>"; };
-		FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalTabBarController.m; path = "view controllers/SignalTabBarController.m"; sourceTree = "<group>"; };
+		FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalTabBarController.h; sourceTree = "<group>"; };
+		FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalTabBarController.m; sourceTree = "<group>"; };
 		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
 		FC1F90C41A223991004F8253 /* settings_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_tab@2x.png"; sourceTree = "<group>"; };
 		FC1F90C51A223991004F8253 /* signals_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signals_tab@2x.png"; sourceTree = "<group>"; };
@@ -1379,8 +1379,6 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */,
-				FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */,
 				FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
@@ -2694,6 +2692,8 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */,
+				FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */,
 				A569778D1A351BC400173BF2 /* ScanIdentityBarcodeViewController.h */,
 				A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */,
 				A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */,

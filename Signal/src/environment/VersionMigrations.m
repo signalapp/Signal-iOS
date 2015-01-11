@@ -11,7 +11,7 @@
 
 @implementation VersionMigrations
 
-+ (void)migrationFrom1Dot0Dot2toLarger{
++ (void)migrateFrom1Dot0Dot2ToVersion2Dot0{
     
     // Preferences were stored in both a preference file and a plist in the documents folder, as a temporary measure, we are going to move all the preferences to the NSUserDefaults preference store, those will be migrated to a SQLCipher-backed database
     
@@ -24,6 +24,7 @@
         NSError *error;
         NSPropertyListFormat format;
         NSDictionary *dict = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&format error:&error];
+        
         
         NSArray *entries = [dict allKeys];
         NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;

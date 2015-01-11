@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [[Environment getCurrent]setSignUpFlowNavigationController:self.navigationController];
+    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -10,6 +10,6 @@
 
 @interface VersionMigrations : NSObject
 
-+ (void)migrationFrom1Dot0Dot2toLarger;
++ (void)migrateFrom1Dot0Dot2ToVersion2Dot0;
 
 @end

@@ -9,11 +9,17 @@
 #import <YapDatabase/YapDatabaseViewMappings.h>
 #import <YapDatabase/YapDatabaseViewTransaction.h>
 
+#import "CodeVerificationViewController.h"
 #import "SignalTabBarController.h"
-
+#import "Environment.h"
+#import "PreferencesUtil.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
+
+
+static NSString *const kSignupFlowSegueIndentifier = @"showSignupFlow";
+
 
 @interface SignalTabBarController ()
 @property YapDatabaseConnection *dbConnection;
@@ -33,9 +39,9 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    if (![TSAccountManager isRegistered]){
-        [self performSegueWithIdentifier:@"showSignupFlow" sender:self];
+   
+    if (![Environment.preferences getIsMigratingToVersion2Dot0] && ![TSAccountManager isRegistered] ){
+        [self performSegueWithIdentifier:kSignupFlowSegueIndentifier sender:self];
     }
 }
 
@@ -62,5 +68,9 @@
 - (UITabBarItem*)signalsItem{
     return self.tabBar.items[1];
 }
+
+
+
+
 
 @end

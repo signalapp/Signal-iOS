@@ -18,5 +18,5 @@
 - (void)addRecentCall:(RecentCall *)recentCall;
 - (void)addMissedCallDueToBusy:(ResponderSessionDescriptor*)incomingCallDescriptor;
 
-
+-(void) migrateToVersion2Dot0;
 @end

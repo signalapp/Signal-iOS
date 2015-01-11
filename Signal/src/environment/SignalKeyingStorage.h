@@ -40,4 +40,6 @@
 +(NSData*)signalingCipherKey;
 +(NSData*)signalingExtraKey;
 
+#pragma mark migration
++ (void)migrateToVersion2Dot0;
 @end

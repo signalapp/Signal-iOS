@@ -8,8 +8,10 @@
 #import "CryptoTools.h"
 #import "SignalKeyingStorage.h"
 #import "Constraints.h"
-#import "Util.h"
 #import "TSStorageManager.h"
+#import "UICKeyChainStore.h"
+#import "Util.h"
+
 
 #define LOCAL_NUMBER_KEY @"Number"
 #define PASSWORD_COUNTER_KEY @"PasswordCounter"
@@ -125,5 +127,20 @@
 +(void)storeString:(NSString*)string forKey:(NSString*)key{
     [TSStorageManager.sharedManager setObject:string forKey:key inCollection:SignalKeyingCollection];
 }
+
+
++ (void)migrateToVersion2Dot0{
+    
+    [self storeString:[UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY] forKey:LOCAL_NUMBER_KEY];
+    [self storeString:[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] forKey:PASSWORD_COUNTER_KEY];
+    [self storeString:[UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY] forKey:SAVED_PASSWORD_KEY];
+    
+    [self storeData:[UICKeyChainStore dataForKey:SIGNALING_MAC_KEY] forKey:SIGNALING_MAC_KEY];
+    [self storeData:[UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY] forKey:SIGNALING_CIPHER_KEY];
+    [self storeData:[UICKeyChainStore dataForKey:ZID_KEY] forKey:ZID_KEY];
+    [self storeData:[UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY] forKey:SIGNALING_EXTRA_KEY];
+}
+
+
 
 @end
