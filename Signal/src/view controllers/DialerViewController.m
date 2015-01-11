@@ -10,6 +10,7 @@
 #import "PhoneNumberDirectoryFilter.h"
 #import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
+#import "SignalKeyingStorage.h"
 
 #define INITIAL_BACKSPACE_TIMER_DURATION 0.5f
 #define BACKSPACE_TIME_DECREASE_AMMOUNT 0.1f
@@ -129,11 +130,17 @@
 }
 
 -(void) initiateCallToPhoneNumber:(PhoneNumber*) phoneNumber {
-    if (_contact) {
-        [Environment.phoneManager initiateOutgoingCallToContact:_contact
-                                                   atRemoteNumber:phoneNumber];
-    } else {
-        [Environment.phoneManager initiateOutgoingCallToRemoteNumber:phoneNumber];
+    if(![[phoneNumber toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+        if (_contact) {
+            [Environment.phoneManager initiateOutgoingCallToContact:_contact
+                                                       atRemoteNumber:phoneNumber];
+        } else {
+            [Environment.phoneManager initiateOutgoingCallToRemoteNumber:phoneNumber];
+        }
+    }
+    else {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_CALL_ONESELF", @"") message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+        [alertView show];
     }
 }
 
