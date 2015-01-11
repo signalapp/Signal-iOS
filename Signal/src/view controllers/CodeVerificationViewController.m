@@ -41,7 +41,6 @@
 
 
 - (IBAction)verifyChallengeAction:(id)sender {
-    
     [self enableServerActions:NO];
     [_challengeTextField resignFirstResponder];
     
