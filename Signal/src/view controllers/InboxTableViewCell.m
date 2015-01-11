@@ -47,10 +47,15 @@
 -(void)configureWithThread:(TSThread*)thread {
     _nameLabel.text           = thread.name;
     _snippetLabel.text        = thread.lastMessageLabel;
-    _contactPictureView.image = [thread isKindOfClass:[TSGroupThread class]] ? (((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"]) : thread.image;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
+    if([thread isKindOfClass:[TSGroupThread class]] ) {
+        _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"];
+    }
+    else {
+        _contactPictureView.image = thread.image!=nil ? thread.image : [UIImage imageNamed:@"DefaultContactImage.png"];
+        
+    }
     self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
-
     [self setUpLastActionForThread:thread];
 }
 
