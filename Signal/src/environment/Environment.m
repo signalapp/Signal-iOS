@@ -203,7 +203,6 @@ phoneDirectoryManager;
     if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
         tabBarController.selectedIndex = 1;
     }
-    
 }
 
 + (void)resetAppData{
