@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "VersionMigrations.h"
+
 #import "Environment.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PreferencesUtil.h"
@@ -14,10 +16,6 @@
 #import "RecentCallManager.h"
 #import "SignalKeyingStorage.h"
 #import "UICKeyChainStore.h"
-#import "VersionMigrations.h"
-
-
-#define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
 
 @interface SignalKeyingStorage(VersionMigrations)
 
@@ -131,6 +129,16 @@
     [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY] forKey:SIGNALING_CIPHER_KEY];
     [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:ZID_KEY] forKey:ZID_KEY];
     [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY] forKey:SIGNALING_EXTRA_KEY];
+    
+    // Erasing keys in the old key chain store
+    [UICKeyChainStore removeItemForKey:LOCAL_NUMBER_KEY];
+    [UICKeyChainStore removeItemForKey:PASSWORD_COUNTER_KEY];
+    [UICKeyChainStore removeItemForKey:SAVED_PASSWORD_KEY];
+    [UICKeyChainStore removeItemForKey:SIGNALING_MAC_KEY];
+    [UICKeyChainStore removeItemForKey:SIGNALING_CIPHER_KEY];
+    [UICKeyChainStore removeItemForKey:ZID_KEY];
+    [UICKeyChainStore removeItemForKey:SIGNALING_EXTRA_KEY];
+    
 }
 
 @end

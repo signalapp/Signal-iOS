@@ -282,6 +282,7 @@
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
+		A5578C721A646E5300704A25 /* VersionMigrationsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5578C711A646E5300704A25 /* VersionMigrationsTests.m */; };
 		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
 		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
@@ -884,6 +885,7 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A5578C711A646E5300704A25 /* VersionMigrationsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrationsTests.m; sourceTree = "<group>"; };
 		A569778D1A351BC400173BF2 /* ScanIdentityBarcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanIdentityBarcodeViewController.h; sourceTree = "<group>"; };
 		A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanIdentityBarcodeViewController.m; sourceTree = "<group>"; };
 		A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentIdentityQRCodeViewController.m; sourceTree = "<group>"; };
@@ -2313,6 +2315,7 @@
 		B6B095DD1A1D25C5008BFAA6 /* textsecure */ = {
 			isa = PBXGroup;
 			children = (
+				A5578C711A646E5300704A25 /* VersionMigrationsTests.m */,
 				B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */,
 				B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */,
 				B6B095E01A1D25C5008BFAA6 /* TSMessageStorageTests.m */,
@@ -3444,6 +3447,7 @@
 				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				A157076817F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m in Sources */,
+				A5578C721A646E5300704A25 /* VersionMigrationsTests.m in Sources */,
 				76EB065718170B34006006FC /* InCallViewController.m in Sources */,
 				A157076917F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.m in Sources */,
 				76EB062918170B33006006FC /* BadArgument.m in Sources */,
@@ -3585,7 +3589,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3693,6 +3697,7 @@
 			baseConfigurationReference = 9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -3730,7 +3735,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "a377b8e6-d43e-485d-8830-bc7bfa3d1731";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
@@ -3824,7 +3829,7 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
@@ -3982,6 +3987,7 @@
 			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -4019,7 +4025,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "a377b8e6-d43e-485d-8830-bc7bfa3d1731";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
@@ -4030,6 +4036,7 @@
 			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -4067,7 +4074,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "a377b8e6-d43e-485d-8830-bc7bfa3d1731";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};

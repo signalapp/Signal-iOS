@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
+
 @interface VersionMigrations : NSObject
 
 + (void)migrateFrom1Dot0Dot2ToGreater;
