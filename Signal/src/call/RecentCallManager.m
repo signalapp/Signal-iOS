@@ -8,6 +8,7 @@
 #import "TSStorageManager.h"
 #import "TSContactThread.h"
 
+
 @interface RecentCallManager ()
 @property YapDatabaseConnection *dbConnection;
 @end
@@ -74,9 +75,16 @@
 - (void)addRecentCall:(RecentCall*)recentCall {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recentCall.phoneNumber.toE164 transaction:transaction];
-        TSCall *call = [[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] withCallNumber:recentCall.phoneNumber.toE164 callType:recentCall.callType inThread:thread];
+        
+        uint64_t callDateSeconds = (uint64_t)[recentCall.date timeIntervalSince1970];
+        TSCall *call = [[TSCall alloc] initWithTimestamp:callDateSeconds*1000 withCallNumber:recentCall.phoneNumber.toE164 callType:recentCall.callType inThread:thread];
+        if(recentCall.isArchived) { //for migration only from Signal versions with RedPhone only
+            thread.archivalDate = [NSDate dateWithTimeIntervalSince1970:(callDateSeconds+10000)];
+            [thread saveWithTransaction:transaction];
+        }
         [call saveWithTransaction:transaction];
     }];
 }
+
 
 @end

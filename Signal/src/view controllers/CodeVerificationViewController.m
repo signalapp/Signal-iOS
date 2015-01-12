@@ -33,6 +33,13 @@
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
     [_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
+    
+    /*
+     if([Environment migrateRegistrationFrom1Dot0Dot2toLarger]) {
+     [Environment resetAppData];     // start with a clean slate
+     _setupTSSupportInfo.hidden = NO;
+     }
+*/
 }
 
 - (void)didReceiveMemoryWarning {

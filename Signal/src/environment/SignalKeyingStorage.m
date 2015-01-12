@@ -8,17 +8,8 @@
 #import "CryptoTools.h"
 #import "SignalKeyingStorage.h"
 #import "Constraints.h"
-#import "Util.h"
 #import "TSStorageManager.h"
-
-#define LOCAL_NUMBER_KEY @"Number"
-#define PASSWORD_COUNTER_KEY @"PasswordCounter"
-#define SAVED_PASSWORD_KEY @"Password"
-#define SIGNALING_MAC_KEY @"Signaling Mac Key"
-#define SIGNALING_CIPHER_KEY @"Signaling Cipher Key"
-#define ZID_KEY @"ZID"
-#define ZID_LENGTH 12
-#define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
+#import "Util.h"
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
 
@@ -125,5 +116,9 @@
 +(void)storeString:(NSString*)string forKey:(NSString*)key{
     [TSStorageManager.sharedManager setObject:string forKey:key inCollection:SignalKeyingCollection];
 }
+
+
+
+
 
 @end
