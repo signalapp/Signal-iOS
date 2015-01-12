@@ -10,6 +10,15 @@
 #import "PhoneNumber.h"
 #import "Zid.h"
 
+#define LOCAL_NUMBER_KEY @"Number"
+#define PASSWORD_COUNTER_KEY @"PasswordCounter"
+#define SAVED_PASSWORD_KEY @"Password"
+#define SIGNALING_MAC_KEY @"Signaling Mac Key"
+#define SIGNALING_CIPHER_KEY @"Signaling Cipher Key"
+#define ZID_KEY @"ZID"
+#define ZID_LENGTH 12
+#define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
+
 @interface SignalKeyingStorage : NSObject
 
 +(void)generateSignaling;
@@ -40,6 +49,4 @@
 +(NSData*)signalingCipherKey;
 +(NSData*)signalingExtraKey;
 
-#pragma mark migration
-+ (void)migrateToVersion2Dot0;
 @end

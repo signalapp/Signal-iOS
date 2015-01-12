@@ -1,6 +1,7 @@
 #import "AppDelegate.h"
 #import "AppAudioManager.h"
 #import "CategorizingLogger.h"
+#import "ContactsManager.h"
 #import "DebugLogger.h"
 #import "DialerViewController.h"
 #import "DiscardingLog.h"
@@ -10,13 +11,11 @@
 #import "NotificationTracker.h"
 #import "PushManager.h"
 #import "PriorityQueue.h"
-#import "RecentCallManager.h"
 #import "Release.h"
 #import "SignalsViewController.h"
-#import "SignalKeyingStorage.h"
+#import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager.h"
-#import "TSAccountManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
 
@@ -53,22 +52,7 @@
     }
     else if ([Environment.preferences getIsMigratingToVersion2Dot0] || [currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
         if([self isVersion:previousVersion atLeast:@"1.0.2"]) {
-            [Environment.preferences setIsMigratingToVersion2Dot0:YES];
             [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0]; // this is only necessary for older apps
-            [Environment.getCurrent.recentCallManager migrateToVersion2Dot0];
-            [SignalKeyingStorage migrateToVersion2Dot0];
-            [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
-                    [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
-                    Environment *env = [Environment getCurrent];
-                    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
-                    [manager forceUpdate];
-                    [Environment.preferences setIsMigratingToVersion2Dot0:NO];
-                } failure:^(NSError *error) {
-                    // TODO: should we have a UI response here?
-                }];
-            } failure:^{
-                // TODO: should we have a UI response here?
-            }];
         }
     }
 }

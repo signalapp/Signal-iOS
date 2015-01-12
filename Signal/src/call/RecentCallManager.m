@@ -8,7 +8,6 @@
 #import "TSStorageManager.h"
 #import "TSContactThread.h"
 
-#define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
 
 @interface RecentCallManager ()
 @property YapDatabaseConnection *dbConnection;
@@ -87,27 +86,5 @@
     }];
 }
 
--(void) migrateToVersion2Dot0 {
-
-    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-    NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
-    id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
-    
-    if(![data isKindOfClass:NSArray.class]) {
-        return;
-    } else {
-        NSMutableArray *allRecents = [NSMutableArray arrayWithArray:data];
-        
-        for (RecentCall* recentCall in allRecents) {
-            [self addRecentCall:recentCall];
-        }
-        // Erasing recent calls in the defaults
-        NSUserDefaults *localDefaults = NSUserDefaults.standardUserDefaults;
-        NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[NSMutableArray array]];
-        [localDefaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
-        [localDefaults synchronize];
-        
-    }
-}
 
 @end

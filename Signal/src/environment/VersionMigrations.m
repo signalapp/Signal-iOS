@@ -6,12 +6,49 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "Environment.h"
+#import "PhoneNumberDirectoryFilterManager.h"
+#import "PreferencesUtil.h"
 #import "PushManager.h"
+#import "TSAccountManager.h"
+#import "RecentCallManager.h"
+#import "SignalKeyingStorage.h"
+#import "UICKeyChainStore.h"
 #import "VersionMigrations.h"
+
+
+#define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
+
+@interface SignalKeyingStorage(VersionMigrations)
+
++(void)storeString:(NSString*)string forKey:(NSString*)key;
++(void)storeData:(NSData*)data forKey:(NSString*)key;
+@end
 
 @implementation VersionMigrations
 
-+ (void)migrateFrom1Dot0Dot2ToVersion2Dot0{
++ (void)migrateFrom1Dot0Dot2ToVersion2Dot0 {
+    [Environment.preferences setIsMigratingToVersion2Dot0:YES];
+    [self migrateFrom1Dot0Dot2ToGreater];
+    [self migrateRecentCallsToVersion2Dot0]; 
+    [self migrateKeyingStorageToVersion2Dot0];
+    [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
+        [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+            Environment *env = [Environment getCurrent];
+            PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+            [manager forceUpdate];
+            [Environment.preferences setIsMigratingToVersion2Dot0:NO];
+        } failure:^(NSError *error) {
+            // TODO: should we have a UI response here?
+        }];
+    } failure:^{
+        // TODO: should we have a UI response here?
+    }];
+
+    
+}
+
++ (void)migrateFrom1Dot0Dot2ToGreater {
     
     // Preferences were stored in both a preference file and a plist in the documents folder, as a temporary measure, we are going to move all the preferences to the NSUserDefaults preference store, those will be migrated to a SQLCipher-backed database
     
@@ -58,6 +95,42 @@
     }
     
     return;
+}
+
+#pragma mark helper methods
++ (void) migrateRecentCallsToVersion2Dot0 {
+    
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
+    id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
+    
+    if(![data isKindOfClass:NSArray.class]) {
+        return;
+    } else {
+        NSMutableArray *allRecents = [NSMutableArray arrayWithArray:data];
+        
+        for (RecentCall* recentCall in allRecents) {
+            [Environment.getCurrent.recentCallManager addRecentCall:recentCall];
+        }
+        // Erasing recent calls in the defaults
+        NSUserDefaults *localDefaults = NSUserDefaults.standardUserDefaults;
+        NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[NSMutableArray array]];
+        [localDefaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
+        [localDefaults synchronize];
+        
+    }
+}
+
+
++ (void)migrateKeyingStorageToVersion2Dot0{
+    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY] forKey:LOCAL_NUMBER_KEY];
+    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] forKey:PASSWORD_COUNTER_KEY];
+    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY] forKey:SAVED_PASSWORD_KEY];
+    
+    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_MAC_KEY] forKey:SIGNALING_MAC_KEY];
+    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY] forKey:SIGNALING_CIPHER_KEY];
+    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:ZID_KEY] forKey:ZID_KEY];
+    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY] forKey:SIGNALING_EXTRA_KEY];
 }
 
 @end
