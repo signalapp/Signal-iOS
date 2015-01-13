@@ -744,7 +744,7 @@ typedef enum : NSUInteger {
     
     if ([UIImagePickerController isSourceTypeAvailable:
          UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = @[(NSString*)kUTTypeImage];
+        picker.mediaTypes = @[(NSString*)kUTTypeImage,(NSString*)kUTTypeMovie];
         [self presentViewController:picker animated:YES completion:NULL];
     }
     
@@ -1064,7 +1064,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo", @"Choose existing Photo"]
+             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo or Video"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
