@@ -782,27 +782,113 @@ typedef enum : NSUInteger {
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
-    
+
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
-    
     if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
-        DDLogWarn(@"Video formats not supported, yet");
-    } else if (picture_camera) {
-        DDLogVerbose(@"Sending picture attachement ...");
-        
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"Uploading attachment" attachments:[NSMutableArray array]];
-        
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [message saveWithTransaction:transaction];
-        }];
-        
-        [[TSMessagesManager sharedManager] sendAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] contentType:@"image/jpeg" inMessage:message thread:self.thread];
-        [self finishSendingMessage];
+        NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+        [self sendQualityAdjustedAttachment:videoURL];
     }
+    else {
+        
+        UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
+        if(picture_camera) {
+            DDLogVerbose(@"Sending picture attachement ...");
+            [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] ofType:@"image/jpeg"];
+        }
+    }
+    
+}
+
+-(void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"Uploading attachment" attachments:[NSMutableArray array]];
+    
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
+    }];
+    
+    [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
+    [self finishSendingMessage];
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
+}
+
+-(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
+
+    AVAsset *video = [AVAsset assetWithURL:movieURL];
+    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
+    exportSession.shouldOptimizeForNetworkUse = YES;
+    exportSession.outputFileType = AVFileTypeMPEG4;
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    basePath = [basePath stringByAppendingPathComponent:@"videos"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSURL *compressedVideoUrl = [NSURL fileURLWithPath:basePath];
+    long currentTime = [[NSDate date] timeIntervalSince1970];
+    NSString *strImageName = [NSString stringWithFormat:@"%ld",currentTime];
+    compressedVideoUrl=[compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
+    
+    exportSession.outputURL = compressedVideoUrl;
+    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+        
+        NSLog(@"done processing video!");
+        NSLog(@"%@",compressedVideoUrl);
+        
+        
+    }];
+    while(exportSession.progress!=1){
+
+    }
+    [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
+    
+#if 0
+    return [NSData dataWithContentsOfURL:movieURL];
+#endif
+#if 0
+    NSString *serializationQueueDescription = [NSString stringWithFormat:@"%@ serialization queue", self];
+    
+    // Create the main serialization queue.
+    self.mainSerializationQueue = dispatch_queue_create([serializationQueueDescription UTF8String], NULL);
+    NSString *rwAudioSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw audio serialization queue", self];
+    
+    // Create the serialization queue to use for reading and writing the audio data.
+    self.rwAudioSerializationQueue = dispatch_queue_create([rwAudioSerializationQueueDescription UTF8String], NULL);
+    NSString *rwVideoSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw video serialization queue", self];
+    
+    // Create the serialization queue to use for reading and writing the video data.
+    self.rwVideoSerializationQueue = dispatch_queue_create([rwVideoSerializationQueueDescription UTF8String], NULL);
+
+    
+    
+    int videoWidth = 1920;
+    int videoHeight = 1920;
+    int desiredKeyframeInterval = 2;
+    int desiredBitrate = 3000;
+    NSError *error = nil;
+    AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:
+                                  [NSURL fileURLWithPath:@"hello"]
+                                                           fileType:AVFileTypeQuickTimeMovie
+                                                              error:&error];
+    NSParameterAssert(videoWriter);
+
+    
+    NSDictionary* settings = @{AVVideoCodecKey:AVVideoCodecH264,
+                               AVVideoCompressionPropertiesKey:@{AVVideoAverageBitRateKey:[NSNumber numberWithInt:desiredBitrate],AVVideoProfileLevelKey:AVVideoProfileLevelH264Main31},
+                               AVVideoWidthKey: [NSNumber numberWithInt:videoWidth],
+                               AVVideoHeightKey:[NSNumber numberWithInt:videoHeight]};
+    
+    
+    AVAssetWriterInput* writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
+    NSParameterAssert(writerInput);
+    NSParameterAssert([videoWriter canAddInput:writerInput]);
+    [videoWriter addInput:writerInput];
+#endif
+    
+
 }
 
 -(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
