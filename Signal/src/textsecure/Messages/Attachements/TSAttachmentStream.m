@@ -8,6 +8,7 @@
 
 #import "TSAttachmentStream.h"
 #import "UIImage+contentTypes.h"
+#import <AVFoundation/AVFoundation.h>
 
 NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
@@ -76,10 +77,24 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
 - (UIImage*)image {
     if (![self isImage]) {
-        return nil;
+        return [self videoThumbnail];
     }
 
     return [UIImage imageWithContentsOfFile:self.filePath];
+}
+
+
+- (UIImage*)videoThumbnail {
+    
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL URLWithString:self.filePath] options:nil];
+    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+    NSLog(@"err==%@, imageRef==%@", err, imgRef);
+    
+    return [[UIImage alloc] initWithCGImage:imgRef];
+    
 }
 
 + (void)deleteAttachments {
