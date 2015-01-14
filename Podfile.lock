@@ -50,6 +50,7 @@ PODS:
   - SSKeychain (1.2.2)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
+  - UICKeyChainStore (1.0.7)
   - UnionFind (1.0.1)
   - YapDatabase/common (2.5.4):
     - CocoaLumberjack (~> 1)
@@ -69,6 +70,7 @@ DEPENDENCIES:
   - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `954750c018`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
+  - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
   - YapDatabase/SQLCipher
 
 EXTERNAL SOURCES:
@@ -78,6 +80,8 @@ EXTERNAL SOURCES:
   SocketRocket:
     :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
+  UICKeyChainStore:
+    :podspec: Podspecs/UICKeyChainStore.podspec
 
 CHECKOUT OPTIONS:
   JSQMessagesViewController:
@@ -105,6 +109,7 @@ SPEC CHECKSUMS:
   SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8
   SSKeychain: cc48bd3ad24fcd9125adb9e0d23dd50b8bbd08b9
   TwistedOakCollapsingFutures: 07aab84fd3958dc94d55ef705b12857d9fbe61d1
+  UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
   UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
   YapDatabase: c1d6912df1b4a160f7373ee7657d360e29bb00fd
 

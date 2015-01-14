@@ -25,6 +25,7 @@
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 #define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
+#define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
@@ -99,6 +100,17 @@
     } else {
         return YES;
     }
+}
+
+
+- (BOOL) getIsMigratingToVersion2Dot0 {
+    NSNumber *preference = [self tryGetValueForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return NO;
+    }
+    
 }
 
 - (BOOL)loggingIsEnabled{
@@ -181,13 +193,16 @@
     return [NSUserDefaults.standardUserDefaults objectForKey:kSignalVersionKey];
 }
 
+- (void) setIsMigratingToVersion2Dot0:(BOOL)enabled {
+    [self setValueForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY toValue:@(enabled)];
+}
+
+
+
 -(NSString*)setAndGetCurrentVersion{
     NSString *lastVersion = self.lastRanVersion;
-    
-    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]]
-                                            forKey:kSignalVersionKey];
+    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]] forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
-    
     return lastVersion;
 }
 

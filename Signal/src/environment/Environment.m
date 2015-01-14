@@ -11,6 +11,7 @@
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
+#import "TSAccountManager.h"
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
@@ -160,6 +161,7 @@ phoneDirectoryManager;
 +(PropertyListPreferences*)preferences{
     return [PropertyListPreferences new];
 }
+
 
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController{
     _signalsViewController = signalsViewController;
