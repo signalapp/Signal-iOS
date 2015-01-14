@@ -10,7 +10,7 @@
 #import "Util.h"
 #import "UIImage+JSQMessages.h"
 #import "TSGroupThread.h"
-
+#import "JSQMessagesAvatarImageFactory.h"
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
 #define TIME_LABEL_SIZE 11
@@ -47,8 +47,18 @@
 -(void)configureWithThread:(TSThread*)thread {
     _nameLabel.text           = thread.name;
     _snippetLabel.text        = thread.lastMessageLabel;
-    _contactPictureView.image = [thread isKindOfClass:[TSGroupThread class]] ? (((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"]) : thread.image;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
+    if([thread isKindOfClass:[TSGroupThread class]] ) {
+        _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"];
+    }
+    else {
+        NSArray* names = [thread.name componentsSeparatedByString:@" "];
+        NSString* initials = [names count] > 0 ? [NSString stringWithFormat:@"%c",[[names firstObject] characterAtIndex:0]] : [NSString stringWithFormat:@"%c",[thread.name characterAtIndex:0]];
+        initials = [names count] > 1 ? [initials stringByAppendingString:[NSString stringWithFormat:@"%c",[[names lastObject] characterAtIndex:0]]] : initials;
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor blueColor] font:[UIFont systemFontOfSize:30] diameter:100] avatarImage];
+        _contactPictureView.image = thread.image!=nil ? thread.image : image;
+    }
+
     self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 
     [self setUpLastActionForThread:thread];
