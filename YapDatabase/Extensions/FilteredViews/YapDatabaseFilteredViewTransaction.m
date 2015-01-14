@@ -108,7 +108,7 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 			
 			[self dropTablesForOldClassVersion:oldClassVersion];
 			needsCreateTables = YES;
-			needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+			needsPopulateView = YES; // Not initialViewPopulation, but rather codebase upgrade.
 		}
 		
 		// Create the database tables (if needed)
@@ -138,7 +138,7 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 			
 			if (![oldParentViewName isEqualToString:parentViewName])
 			{
-				needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+				needsPopulateView = YES;  // Not initialViewPopulation, but rather config change.
 			}
 			
 			// Check user-supplied tag.
@@ -157,7 +157,7 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 			
 			if (![oldVersionTag isEqualToString:versionTag])
 			{
-				needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+				needsPopulateView = YES; // Not initialViewPopulation, but rather versionTag upgrade.
 			}
 		}
 		

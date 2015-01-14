@@ -178,7 +178,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			
 			[self dropTablesForOldClassVersion:oldClassVersion];
 			needsCreateTables = YES;
-			needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+			needsPopulateView = YES; // Not initialViewPopulation, but rather codebase upgrade.
 		}
 	
 		// Create the database tables (if needed)
@@ -219,7 +219,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			
 			if (![oldVersionTag isEqualToString:versionTag])
 			{
-				needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+				needsPopulateView = YES; // Not initialViewPopulation, but rather versionTag upgrade.
 			}
 		}
 		
