@@ -131,33 +131,4 @@
 
 }
 
-#if 0
-// Currently commenting out as evironment is returning nil in setup. Ideas? Migration works in practice.
-- (void)testMigrateRecentCallsToVersion2Dot0 {
-    // checking that everything is migrated correctly
-    YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] newDatabaseConnection];
-    // migrate recent calls
-    [VersionMigrations migrateRecentCallsToVersion2Dot0]; // even though environment is set correctly in setup, this is returning nil
-    for(NSUInteger i=0; i < 2; i++) {
-        RecentCall *originalCall = [_recentCalls objectAtIndex:i];
-        [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:originalCall.phoneNumber.toE164 transaction:transaction];
-            TSCall *migratedCall = (TSCall*)[TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:thread.lastMessageId] transaction:transaction];
-            XCTAssert(originalCall.callType == migratedCall.callType);
-            XCTAssert([originalCall.date timeIntervalSince1970]*1000 == migratedCall.timeStamp);
-            XCTAssert([[originalCall.phoneNumber toE164] isEqualToString:thread.contactIdentifier]);
-            if(originalCall.isArchived) {
-                XCTAssert(![TSDatabaseView threadShouldBeInInbox:thread]);
-            }
-        }];
-    }
-    
-    // checking that the old storage is empty
-    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-    NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
-    id oldCallStorage = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
-    XCTAssert(oldCallStorage == nil);
-}
-#endif
-
 @end

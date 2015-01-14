@@ -79,7 +79,7 @@
         uint64_t callDateSeconds = (uint64_t)[recentCall.date timeIntervalSince1970];
         TSCall *call = [[TSCall alloc] initWithTimestamp:callDateSeconds*1000 withCallNumber:recentCall.phoneNumber.toE164 callType:recentCall.callType inThread:thread];
         if(recentCall.isArchived) { //for migration only from Signal versions with RedPhone only
-            thread.archivalDate = [NSDate dateWithTimeIntervalSince1970:(callDateSeconds+10000)];
+            thread.archivalDate = [NSDate dateWithTimeIntervalSince1970:(callDateSeconds+60)]; // archive has to happen in the future of the original call
             [thread saveWithTransaction:transaction];
         }
         [call saveWithTransaction:transaction];
