@@ -43,6 +43,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSAttachmentAdapter.h"
+#import "TSVideoAttachmentAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
 #import "TSMessagesManager+attachments.h"
@@ -559,30 +560,38 @@ typedef enum : NSUInteger {
                         DDLogWarn(@"Currently unsupported");
                     }
                 }
-                else if([[messageItem media] isKindOfClass:[JSQVideoMediaItem class]]){
+                else if([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]){
                     // fileurl disappeared should look up in db as before. will do refactor
                     // full screen, check this setup with a .mov
-                    JSQVideoMediaItem* messageMedia = (JSQVideoMediaItem*)[messageItem media];
+                    TSVideoAttachmentAdapter* messageMedia = (TSVideoAttachmentAdapter*)[messageItem media];
                     
-                    NSString * moviePath = [[NSBundle mainBundle]
-                                                pathForResource:@"small"
-                                                ofType:@""];
+                    __block TSAttachment *attachment = nil;
+                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                    }];
                     
-                    NSURL *movieURL = [NSURL fileURLWithPath:moviePath];
-                    
-                    _player = [[MPMoviePlayerController alloc] initWithContentURL:movieURL]; //messageMedia.fileURL];
+                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
 
                     
-                    [[NSNotificationCenter defaultCenter] addObserver:self
-                                                             selector:@selector(moviePlayBackDidFinish:)
-                                                                 name:MPMoviePlayerPlaybackDidFinishNotification
-                                                               object:_player];
-                    
-                    _player.controlStyle = MPMovieControlStyleDefault;
-                    _player.shouldAutoplay = YES;
-                    
-                    [self.view addSubview:_player.view];
-                    [_player setFullscreen:YES animated:YES];                }
+                        TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
+
+                        NSURL* movieURL = [self changeFile:attStream.videoURL toHaveExtension:@"m4v"];
+                        
+                        _player = [[MPMoviePlayerController alloc] initWithContentURL:movieURL]; //messageMedia.fileURL];
+
+                        
+                        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                 selector:@selector(moviePlayBackDidFinish:)
+                                                                     name:MPMoviePlayerPlaybackDidFinishNotification
+                                                                   object:_player];
+                        
+                        _player.controlStyle = MPMovieControlStyleDefault;
+                        _player.shouldAutoplay = YES;
+                        
+                        [self.view addSubview:_player.view];
+                        [_player setFullscreen:YES animated:YES];
+                    }
+                }
             }
         }
             break;
@@ -598,6 +607,17 @@ typedef enum : NSUInteger {
     }
 }
 
+
+-(NSURL*) changeFile:(NSURL*)originalFile toHaveExtension:(NSString*)extension {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString* newPath = [[originalFile path] stringByAppendingPathExtension:extension];
+    if (![fileManager fileExistsAtPath:newPath]) {
+        NSError *error = nil;
+        [fileManager createSymbolicLinkAtPath:newPath withDestinationPath:[originalFile path] error: &error];
+        return [NSURL URLWithString:newPath];
+    }
+    return originalFile;
+}
 -(void)moviePlayBackDidFinish:(id)sender {
     DDLogDebug(@"playback finished");
 }
