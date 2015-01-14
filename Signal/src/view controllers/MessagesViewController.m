@@ -575,21 +575,32 @@ typedef enum : NSUInteger {
                     
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                         NSFileManager *fileManager = [NSFileManager defaultManager];
+                        if([messageMedia isVideo]) {
+                            if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
 
-                        if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
+                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL]; //messageMedia.fileURL];
 
-                            _player = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL]; //messageMedia.fileURL];
-
-                            
-                            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                     selector:@selector(moviePlayBackDidFinish:)
-                                                                         name:MPMoviePlayerPlaybackDidFinishNotification
-                                                                       object:_player];
-                            
-                            _player.controlStyle = MPMovieControlStyleDefault;
-                            _player.shouldAutoplay = YES;
-                            [self.view addSubview:_player.view];
-                            [_player setFullscreen:YES animated:YES];
+                                
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayBackDidFinish:)
+                                                                             name:MPMoviePlayerPlaybackDidFinishNotification
+                                                                           object: _videoPlayer];
+                                
+                                 _videoPlayer.controlStyle = MPMovieControlStyleDefault;
+                                 _videoPlayer.shouldAutoplay = YES;
+                                [self.view addSubview: _videoPlayer.view];
+                                [_videoPlayer setFullscreen:YES animated:YES];
+                            }
+                        }
+                        else if([messageMedia isAudio]){
+                            DDLogDebug(@"audio location is %@",attStream.videoURL);
+                            NSError *error;
+                            _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.videoURL error:&error];
+                            DDLogDebug(@"audio debug is %@",error);
+                            [_audioPlayer prepareToPlay];
+                            [_audioPlayer play];
+                        
+                        
                         }
                     }
                 }
@@ -1201,7 +1212,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo or Video"]
+             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video",@"Record audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
@@ -1215,11 +1226,51 @@ typedef enum : NSUInteger {
                                   case 1:
                                       [self chooseFromLibrary:kMediaTypePicture];
                                       break;
+
+                                  case 2:
+                                      [self chooseFromLibrary:kMediaTypeVideo];
+                                      break;
+                                  case 3:
+                                      [self recordAudio];
+                                      break;
                                   default:
                                       break;
                               }
                           }
                       }];
+}
+
+-(void)recordAudio {
+    // Define the recorder setting
+    NSArray *pathComponents = [NSArray arrayWithObjects:
+                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
+                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
+                               nil];
+    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+    
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+
+    
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    
+    // Initiate and prepare the recorder
+    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
+    _audioRecorder.delegate = self;
+    _audioRecorder.meteringEnabled = YES;
+    [_audioRecorder prepareToRecord];
+}
+
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
+                           successfully:(BOOL)flag {
+    if(flag) {
+        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
+    }
 }
 
 - (void)markAllMessagesAsRead {

@@ -105,16 +105,13 @@
                     TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
                     if ([stream isImage]) {
                         adapter.mediaItem = [[TSAttachmentAdapter alloc] initWithAttachment:stream];
-                        //adapter.mediaItem = [[JSQPhotoMediaItem alloc] initWithImage:stream.image];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
                     }
                     else {
-                        // TODO: want to refactor this to play
                         adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
-                        DDLogWarn(@"We have a TSAttachmentStream for an unsupported media type");
                     }
                 }
                 else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){

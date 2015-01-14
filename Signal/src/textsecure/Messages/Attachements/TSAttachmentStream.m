@@ -56,8 +56,8 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (NSString*)filePath {
-    if ([self isVideo]) {
-        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self videoExtension]];
+    if ([self isVideo] || [self isAudio]) {
+        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
 
     }
     else {
@@ -70,23 +70,19 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (BOOL)isImage {
-    if ([self.contentType containsString:@"image/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"image/"];
 }
 
--(NSString*)videoExtension {
-    return [self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""];
+-(NSString*)mediaExtension {
+    return [[self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""] stringByReplacingOccurrencesOfString:@"audio/" withString:@""];
 }
 
 - (BOOL)isVideo {
-    if ([self.contentType containsString:@"video/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"video/"];
+}
+
+-(BOOL)isAudio {
+    return [self.contentType containsString:@"audio/"];
 }
 
 - (UIImage*)image {
