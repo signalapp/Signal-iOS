@@ -56,7 +56,13 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (NSString*)filePath {
-    return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    if ([self isVideo]) {
+        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self videoExtension]];
+
+    }
+    else {
+        return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    }
 }
 
 -(NSURL*) videoURL {
@@ -69,6 +75,10 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     } else{
         return NO;
     }
+}
+
+-(NSString*)videoExtension {
+    return [self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""];
 }
 
 - (BOOL)isVideo {
@@ -96,7 +106,6 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
     NSLog(@"err==%@, imageRef==%@", err, imgRef);
-    
     return [[UIImage alloc] initWithCGImage:imgRef];
     
 }
