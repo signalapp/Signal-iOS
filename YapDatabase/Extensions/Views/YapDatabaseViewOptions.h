@@ -65,7 +65,7 @@
  * You can configure the view to skip the initial view population.
  *
  * The default value is NO.
- **/
+**/
 @property (nonatomic, assign, readwrite) BOOL skipInitialViewPopulation;
 
 @end
