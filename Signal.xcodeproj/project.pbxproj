@@ -284,6 +284,8 @@
 		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
 		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
+		A5E9D4B41A65EB8700E4481C /* small in Resources */ = {isa = PBXBuildFile; fileRef = A5E9D4B31A65EB8700E4481C /* small */; };
+		A5E9D4B61A65EBBB00E4481C /* small.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = A5E9D4B51A65EBBB00E4481C /* small.mp4 */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
@@ -877,6 +879,8 @@
 		A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresentIdentityQRCodeViewController.h; sourceTree = "<group>"; };
 		A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; };
 		A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowGroupMembersViewController.h; sourceTree = "<group>"; };
+		A5E9D4B31A65EB8700E4481C /* small */ = {isa = PBXFileReference; lastKnownFileType = file; name = small; path = ../../../../../../Desktop/small; sourceTree = "<group>"; };
+		A5E9D4B51A65EBBB00E4481C /* small.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = small.mp4; path = ../../../../../../Desktop/small.mp4; sourceTree = "<group>"; };
 		B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+millisecondTimeStamp.h"; sourceTree = "<group>"; };
 		B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+millisecondTimeStamp.mm"; sourceTree = "<group>"; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
@@ -2554,6 +2558,8 @@
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A5E9D4B51A65EBBB00E4481C /* small.mp4 */,
+				A5E9D4B31A65EB8700E4481C /* small */,
 				B6C6AE521A305ED1006BAF8F /* Certificates */,
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				E18AB40618A05754001A532A /* AudioFiles */,
@@ -2926,6 +2932,8 @@
 				FCA52AEC1A2B676C00CCADFA /* message_error@2x.png in Resources */,
 				B633C5BC1A1D190B0059AC12 /* message_bubble@2x.png in Resources */,
 				FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */,
+				E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */,
+				A5E9D4B41A65EB8700E4481C /* small in Resources */,
 				B633C5871A1D190B0059AC12 /* call_dark@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5851A1D190B0059AC12 /* blue-archive@2x.png in Resources */,
@@ -2956,6 +2964,7 @@
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
 				B633C5DB1A1D190B0059AC12 /* share@2x.png in Resources */,
 				E1370BE318A0686C00826894 /* handshake.mp3 in Resources */,
+				A5E9D4B61A65EBBB00E4481C /* small.mp4 in Resources */,
 				FCA52B071A2BBAE400CCADFA /* call_tab@2x.png in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				FC3BD97C1A2CD385005B96BB /* signal_dotted@2x.png in Resources */,

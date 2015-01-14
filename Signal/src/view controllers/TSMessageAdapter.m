@@ -19,6 +19,9 @@
 #import "TSAttachmentStream.h"
 #import "TSAttachmentAdapter.h"
 #import "TSAttachmentPointer.h"
+#import "JSQVideoMediaItem.h"
+
+#import "JSQPhotoMediaItem.h"
 
 @interface TSMessageAdapter ()
 
@@ -103,12 +106,20 @@
                     TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
                     if ([stream isImage]) {
                         adapter.mediaItem = [[TSAttachmentAdapter alloc] initWithAttachment:stream];
+                        //adapter.mediaItem = [[JSQPhotoMediaItem alloc] initWithImage:stream.image];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
-                    } else {
+                    }
+                    else {
+                        // TODO: want to refactor this to play
+                        adapter.mediaItem = [[JSQVideoMediaItem alloc] initWithFileURL:[stream videoURL] isReadyToPlay:YES];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
                         DDLogWarn(@"We have a TSAttachmentStream for an unsupported media type");
                     }
-                } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
+                }
+                else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
+                    // can do loading information here
                     //TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
                     //TODO: Change this status when download failed;
                     adapter.messageBody = @"Attachment is downloading";

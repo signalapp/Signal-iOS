@@ -539,24 +539,50 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
-                
-                if ([messageMedia isImage]) {
-                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
-                    CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
-                    __block TSAttachment *attachment = nil;
-                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
-                    }];
+                if([[messageItem media] isKindOfClass:[TSAttachmentAdapter class]]) {
+                    TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
                     
-                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
-                        FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
-                        [vc presentFromViewController:self];
+                    if ([messageMedia isImage]) {
+                        tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
+                        CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
+                        __block TSAttachment *attachment = nil;
+                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                            attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                        }];
+                        
+                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                            TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
+                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
+                            [vc presentFromViewController:self];
+                        }
+                    } else {
+                        DDLogWarn(@"Currently unsupported");
                     }
-                } else {
-                    DDLogWarn(@"Currently unsupported");
                 }
+                else if([[messageItem media] isKindOfClass:[JSQVideoMediaItem class]]){
+                    // fileurl disappeared should look up in db as before. will do refactor
+                    // full screen, check this setup with a .mov
+                    JSQVideoMediaItem* messageMedia = (JSQVideoMediaItem*)[messageItem media];
+                    
+                    NSString * moviePath = [[NSBundle mainBundle]
+                                                pathForResource:@"small"
+                                                ofType:@""];
+                    
+                    NSURL *movieURL = [NSURL fileURLWithPath:moviePath];
+                    
+                    _player = [[MPMoviePlayerController alloc] initWithContentURL:movieURL]; //messageMedia.fileURL];
+
+                    
+                    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                             selector:@selector(moviePlayBackDidFinish:)
+                                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                                               object:_player];
+                    
+                    _player.controlStyle = MPMovieControlStyleDefault;
+                    _player.shouldAutoplay = YES;
+                    
+                    [self.view addSubview:_player.view];
+                    [_player setFullscreen:YES animated:YES];                }
             }
         }
             break;
@@ -570,6 +596,10 @@ typedef enum : NSUInteger {
         default:
             break;
     }
+}
+
+-(void)moviePlayBackDidFinish:(id)sender {
+    DDLogDebug(@"playback finished");
 }
 
 -(void)collectionView:(JSQMessagesCollectionView *)collectionView header:(JSQMessagesLoadEarlierHeaderView *)headerView didTapLoadEarlierMessagesButton:(UIButton *)sender
