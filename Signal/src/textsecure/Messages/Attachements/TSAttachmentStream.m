@@ -59,6 +59,10 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
 }
 
+-(NSURL*) videoURL {
+    return [NSURL URLWithString:[self filePath]];
+}
+
 - (BOOL)isImage {
     if ([self.contentType containsString:@"image/"]) {
         return YES;
@@ -85,7 +89,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
 
 - (UIImage*)videoThumbnail {
-    
+    NSLog(@"thumbnail for %@",self.filePath);
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL URLWithString:self.filePath] options:nil];
     AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     NSError *err = NULL;
