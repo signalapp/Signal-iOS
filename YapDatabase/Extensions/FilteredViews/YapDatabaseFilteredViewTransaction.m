@@ -47,7 +47,11 @@ static NSString *const ExtKey_versionTag     = @"versionTag";
 		// So we can skip all the checks because we know we need to create the memory tables.
 		
 		if (![self createTables]) return NO;
-		if (![self populateView]) return NO;
+		
+		if (!viewConnection->view->options.skipInitialViewPopulation)
+		{
+			if (![self populateView]) return NO;
+		}
 		
 		// Store initial versionTag in prefs table
 		

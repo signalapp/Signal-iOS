@@ -2050,21 +2050,45 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)testViewPopulation_skipInitialViewPopulation
+- (void)testViewPopulation_skipInitialViewPopulation_persistent
 {
     NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
     
     YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = YES;
     options.skipInitialViewPopulation = YES;
     
     [self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
 }
 
-- (void)testViewPopulation_notSkipInitialViewPopulation
+- (void)testViewPopulation_skipInitialViewPopulation_nonPersistent
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = NO;
+    options.skipInitialViewPopulation = YES;
+	
+	[self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)testViewPopulation_notSkipInitialViewPopulation_persistent
 {
     NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
     
     YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = YES;
+    options.skipInitialViewPopulation = NO;
+    
+    [self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
+}
+
+- (void)testViewPopulation_notSkipInitialViewPopulation_nonPersistent
+{
+    NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = NO;
     options.skipInitialViewPopulation = NO;
     
     [self _testViewPopulation_skipInitialViewPopulation_withPath:databasePath options:options];
