@@ -575,7 +575,7 @@ typedef enum : NSUInteger {
                     
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
 
-                        NSURL* movieURL = [self changeFile:attStream.videoURL toHaveExtension:@"m4v"];
+                        NSURL* movieURL = [self changeFile:attStream.videoURL toHaveExtension:@"mp4"];
                         
                         _player = [[MPMoviePlayerController alloc] initWithContentURL:movieURL]; //messageMedia.fileURL];
 
