@@ -574,22 +574,23 @@ typedef enum : NSUInteger {
 
                     
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
+                        NSFileManager *fileManager = [NSFileManager defaultManager];
 
-                        NSURL* movieURL = [self changeFile:attStream.videoURL toHaveExtension:@"mp4"];
-                        
-                        _player = [[MPMoviePlayerController alloc] initWithContentURL:movieURL]; //messageMedia.fileURL];
+                        if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
 
-                        
-                        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                 selector:@selector(moviePlayBackDidFinish:)
-                                                                     name:MPMoviePlayerPlaybackDidFinishNotification
-                                                                   object:_player];
-                        
-                        _player.controlStyle = MPMovieControlStyleDefault;
-                        _player.shouldAutoplay = YES;
-                        
-                        [self.view addSubview:_player.view];
-                        [_player setFullscreen:YES animated:YES];
+                            _player = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL]; //messageMedia.fileURL];
+
+                            
+                            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                     selector:@selector(moviePlayBackDidFinish:)
+                                                                         name:MPMoviePlayerPlaybackDidFinishNotification
+                                                                       object:_player];
+                            
+                            _player.controlStyle = MPMovieControlStyleDefault;
+                            _player.shouldAutoplay = YES;
+                            [self.view addSubview:_player.view];
+                            [_player setFullscreen:YES animated:YES];
+                        }
                     }
                 }
             }
