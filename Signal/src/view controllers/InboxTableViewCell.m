@@ -53,8 +53,11 @@
     }
     else {
         NSArray* names = [thread.name componentsSeparatedByString:@" "];
-        NSString* initials = [names count] > 0 ? [NSString stringWithFormat:@"%c",[[names firstObject] characterAtIndex:0]] : [NSString stringWithFormat:@"%c",[thread.name characterAtIndex:0]];
-        initials = [names count] > 1 ? [initials stringByAppendingString:[NSString stringWithFormat:@"%c",[[names lastObject] characterAtIndex:0]]] : initials;
+        NSString* initials = @"";
+        if([thread.name length]>0) {
+            initials = [names count] > 0 ? [NSString stringWithFormat:@"%c",[[names firstObject] characterAtIndex:0]] : [NSString stringWithFormat:@"%c",[thread.name characterAtIndex:0]];
+            initials = [names count] > 1 ? [initials stringByAppendingString:[NSString stringWithFormat:@"%c",[[names lastObject] characterAtIndex:0]]] : initials;
+        }
         UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor blueColor] font:[UIFont systemFontOfSize:30] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
     }
