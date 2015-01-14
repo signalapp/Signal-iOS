@@ -3,7 +3,6 @@
 #import "CategorizingLogger.h"
 #import "ContactsManager.h"
 #import "DebugLogger.h"
-#import "DialerViewController.h"
 #import "DiscardingLog.h"
 #import "Environment.h"
 #import "InCallViewController.h"
@@ -18,8 +17,7 @@
 #import "TSStorageManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
-
-#import "InitialViewController.h"
+#import "UIColor+OWS.h"
 #import "CodeVerificationViewController.h"
 
 #import <PastelogKit/Pastelog.h>
@@ -29,6 +27,9 @@
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
+
+
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
 @interface AppDelegate ()
 
@@ -65,7 +66,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     BOOL loggingIsEnabled;
-    
+    [self setupAppearance];
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
@@ -88,14 +89,12 @@
 
     self.notificationTracker = [NotificationTracker notificationTracker];
     
+    [self performUpdateCheck];
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
-    [self performUpdateCheck];
-
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -118,26 +117,15 @@
         if (latestCall == nil){
             return;
         }
-        
-        InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                                                                                 andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
-        
-        if (latestCall.initiatedLocally == NO){
-            [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
-                if ([accept isEqualToNumber:@YES]) {
-                    [callViewController answerButtonTapped];
-                } else if ([accept isEqualToNumber:@NO]){
-                    [callViewController rejectButtonTapped];
-                }
-            }];
-        }
-        
         SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
         [vc dismissViewControllerAnimated:NO completion:nil];
-        [vc presentViewController:callViewController animated:NO completion:nil];
+        vc.latestCall = latestCall;
+        [vc performSegueWithIdentifier:kCallSegue sender:self];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     [TSSocketManager becomeActive];
+    
+    [self refreshContacts];
     
     return YES;
 }
@@ -294,7 +282,7 @@
         vc.view.frame        = [[UIScreen mainScreen] bounds];
         imgView.frame        = [[UIScreen mainScreen] bounds];
         [vc.view addSubview:imgView];
-        [vc.view setBackgroundColor:[UIColor blackColor]];
+        [vc.view setBackgroundColor:[UIColor ows_blackColor]];
         window.rootViewController = vc;
         
         window;
@@ -311,6 +299,30 @@
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = YES;
     }
+}
+
+-(void)setupAppearance {
+    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    
+    [[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+
+
+    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [UIColor whiteColor], UITextAttributeTextColor,
+                                               [UIColor clearColor], UITextAttributeTextShadowColor,
+                                               [NSValue valueWithUIOffset:UIOffsetMake(-1, 0)], UITextAttributeTextShadowOffset, nil];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+
+}
+
+- (void)refreshContacts {
+    Environment *env = [Environment getCurrent];
+    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+    [manager forceUpdate];
 }
 
 @end

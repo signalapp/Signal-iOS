@@ -10,17 +10,22 @@
 #import "CountryCodeViewController.h"
 
 
-@interface RegistrationViewController : UIViewController<CountryCodeViewControllerDelegate, UITextFieldDelegate>
+@interface RegistrationViewController : UIViewController<UITextFieldDelegate>
 
 // Country code
-@property (nonatomic, strong) IBOutlet UIButton * countryCodeButton;
-@property (nonatomic, strong) IBOutlet UILabel  * countryNameLabel;
-@property (nonatomic, strong) IBOutlet UILabel  * countryCodeLabel;
+@property (nonatomic, strong) IBOutlet UIButton* countryNameButton;
+@property (nonatomic, strong) IBOutlet UIButton* countryCodeButton;
 
 //Phone number
 @property(nonatomic, strong) IBOutlet UITextField* phoneNumberTextField;
 
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
+@property(nonatomic, strong) IBOutlet UIButton* cancelReregButton;
+
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinnerView;
+
+- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
+- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;
 
 @end

@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
+
 #import "ActionContactDetailCell.h"
 
 

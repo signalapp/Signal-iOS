@@ -11,8 +11,8 @@
 #import "TSThread.h"
 
 typedef enum : NSUInteger {
-    kArchiveState,
-    kInboxState,
+    kArchiveState = 0,
+    kInboxState = 1
 } CellState;
 
 

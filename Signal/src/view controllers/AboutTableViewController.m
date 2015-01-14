@@ -30,6 +30,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
@@ -46,7 +47,7 @@
     self.versionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 75, 30)];
     self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     self.versionLabel.textColor = [UIColor lightGrayColor];
-    self.versionLabel.font = [UIFont ows_lightFontWithSize:16.0f];
+    self.versionLabel.font = [UIFont ows_regularFontWithSize:16.0f];
     self.versionLabel.textAlignment = NSTextAlignmentRight;
     
     self.versionCell.accessoryView = self.versionLabel;
@@ -60,8 +61,8 @@
     //Footer
     self.footerView = [[UILabel alloc]init];
     self.footerView.text = @"Copyright Open Whisper Systems \n Licensed under the GPLv3";
-    self.footerView.textColor = [UIColor darkGrayColor];
-    self.footerView.font = [UIFont ows_lightFontWithSize:15.0f];
+    self.footerView.textColor = [UIColor ows_darkGrayColor];
+    self.footerView.font = [UIFont ows_regularFontWithSize:15.0f];
     self.footerView.numberOfLines = 2;
     self.footerView.textAlignment = NSTextAlignmentCenter;
     

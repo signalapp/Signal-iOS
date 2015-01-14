@@ -9,6 +9,7 @@
 #import "ScanIdentityBarcodeViewController.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
+#import "UIColor+OWS.h"
 
 
 
@@ -16,11 +17,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     self.title = @"Scan key";
     
     self.highlightView = [[UIView alloc] init];
     self.highlightView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleBottomMargin;
-    self.highlightView.layer.borderColor = [UIColor greenColor].CGColor;
+    self.highlightView.layer.borderColor = [UIColor ows_greenColor].CGColor;
     self.highlightView.layer.borderWidth = 4;
     [self.view addSubview:self.highlightView];
     

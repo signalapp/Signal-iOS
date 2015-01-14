@@ -10,7 +10,10 @@
 
 @interface SettingsTableViewController : UITableViewController
 
+@property IBOutlet UILabel *registeredName;
 @property IBOutlet UILabel *registeredNumber;
 @property IBOutlet UILabel *networkStatusLabel;
 
+-(IBAction)unregisterUser:(id)sender;
+- (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue;
 @end

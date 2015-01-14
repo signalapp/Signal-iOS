@@ -21,6 +21,7 @@ PODS:
   - AFNetworking/UIKit (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - APDropDownNavToolbar (1.1)
   - AxolotlKit (0.5):
     - 25519 (~> 1.8)
     - HKDFKit (~> 0.0.3)
@@ -31,10 +32,11 @@ PODS:
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - DJWActionSheet (1.0.4)
+  - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (6.1.1):
     - JSQSystemSoundPlayer (~> 2.0.0)
-  - JSQSystemSoundPlayer (2.0.0)
+  - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.7.5)
   - Mantle (1.5.1):
     - Mantle/extobjc (= 1.5.1)
@@ -60,9 +62,11 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5)
+  - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`, branch `master`)
   - AxolotlKit (~> 0.5)
   - DJWActionSheet
-  - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
+  - FFCircularProgressView (>= 0.1)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.200)
@@ -74,9 +78,12 @@ DEPENDENCIES:
   - YapDatabase/SQLCipher
 
 EXTERNAL SOURCES:
+  APDropDownNavToolbar:
+    :branch: master
+    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :branch: JSignalQ
-    :git: https://github.com/dtsbourg/JSQMessagesViewController
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
@@ -84,9 +91,12 @@ EXTERNAL SOURCES:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
 CHECKOUT OPTIONS:
+  APDropDownNavToolbar:
+    :commit: cf63307d5e3833b16caa9a07f3b5ea06359913f9
+    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: ed9858bd6df609bba83b21a029701cbf13682981
-    :git: https://github.com/dtsbourg/JSQMessagesViewController
+    :commit: 184f53b07b6a80709b9801d605f666fd61e297fb
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
@@ -94,12 +104,14 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
+  APDropDownNavToolbar: 62131873890d3a30a2fdc98ffdda180a11e49aa4
   AxolotlKit: eec4d036d5b021258dc8b6b0212f3c04edeaf15b
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
+  FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 554430bbaeb0b2dbed8d4aaa2bdf64559e67f353
-  JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
+  JSQSystemSoundPlayer: 55528c699a283aae2220d3ae7b8b527d2ecef4b4
   libPhoneNumber-iOS: 16b9556d7fdf4819eabeb7b7356fea3373fa47f9
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   OpenSSL: 4c7be3eca71139f52984542d8c4c0752154d26c3

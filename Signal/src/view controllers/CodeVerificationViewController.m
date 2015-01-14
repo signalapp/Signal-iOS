@@ -24,7 +24,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self initializeKeyboardHandlers];
 }
 
@@ -32,7 +31,7 @@
 {
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
-    [_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
+    [_phoneNumberEntered setText:_formattedPhoneNumber];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -45,11 +44,13 @@
     [_challengeTextField resignFirstResponder];
     
     [self registerWithSuccess:^{
+        [_submitCodeSpinner stopAnimating];
         [Environment.getCurrent.phoneDirectoryManager forceUpdate];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSError *error) {
         [self showAlertForError:error];
         [self enableServerActions:YES];
+        [_submitCodeSpinner stopAnimating];
     }];
 }
 
@@ -57,6 +58,7 @@
 - (void)registerWithSuccess:(void(^)())success failure:(void(^)(NSError *))failure{
     //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
     
+    [_submitCodeSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
@@ -69,12 +71,15 @@
         } failure:^{
             // PushManager shows its own error alerts, so we don't want to show a second one
             failure(nil);
+            [_submitCodeSpinner stopAnimating];
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSHTTPURLResponse* badResponse = (NSHTTPURLResponse*)task.response;
         NSError *responseError = [self errorForResponse:badResponse];
         
         failure(responseError);
+        [_submitCodeSpinner stopAnimating];
+
     }];
 }
 
@@ -128,11 +133,12 @@
 - (IBAction)sendCodeSMSAction:(id)sender {
   
     [self enableServerActions:NO];
-
-  
+    
+    [_requestCodeAgainSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
-
         [self enableServerActions:YES];
+        [_requestCodeAgainSpinner stopAnimating];
+
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
     
         DDLogError(@"Registration failed with information %@", error.description);
@@ -146,6 +152,7 @@
         [registrationErrorAV show];
     
         [self enableServerActions:YES];
+        [_requestCodeAgainSpinner stopAnimating];   
     }];
 }
 
@@ -153,10 +160,12 @@
     
     [self enableServerActions:NO];
     
-    
+    [_requestCallSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCodeWithVoice] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [self enableServerActions:YES];
+        [_requestCallSpinner stopAnimating];
+
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
         DDLogError(@"Registration failed with information %@", error.description);
@@ -168,8 +177,8 @@
                                                            otherButtonTitles:nil, nil];
         
         [registrationErrorAV show];
-        
         [self enableServerActions:YES];
+        [_requestCallSpinner stopAnimating];
     }];
 }
 

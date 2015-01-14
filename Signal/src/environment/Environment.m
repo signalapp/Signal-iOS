@@ -180,11 +180,6 @@ phoneDirectoryManager;
     [vc.navigationController popToRootViewControllerAnimated:YES];
     vc.contactIdentifierFromCompose = identifier;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
-    
-    UITabBarController *tabBarController = (UITabBarController*)vc.parentViewController.parentViewController;
-    if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
-        tabBarController.selectedIndex = 1;
-    }
 }
 
 + (void)groupModel:(TSGroupModel*)model {

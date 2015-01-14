@@ -48,7 +48,7 @@ dispatch_queue_t attachmentsQueue() {
         for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
             TSAttachmentPointer *attachmentPointer = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
             
-            if ([attachmentPointer.contentType hasPrefix:@"image/"]) {
+            if ([attachmentPointer.contentType hasPrefix:@"image/"]||[attachmentPointer.contentType hasPrefix:@"video/"]) {
                 [attachmentPointer saveWithTransaction:transaction];
                 
                 dispatch_async(attachmentsQueue(), ^{
@@ -57,8 +57,8 @@ dispatch_queue_t attachmentsQueue() {
                 
                 [retrievedAttachments addObject:attachmentPointer.uniqueId];
                 shouldProcessMessage = YES;
-            } else {
-                
+            }
+            else {
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
                 TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                                                              inThread:thread
@@ -82,19 +82,28 @@ dispatch_queue_t attachmentsQueue() {
                 NSDictionary *responseDict = (NSDictionary*)responseObject;
                 NSString *attachementId    = [[responseDict objectForKey:@"id"] stringValue];
                 NSString *location         = [responseDict objectForKey:@"location"];
-                
+        
                 TSAttachmentEncryptionResult *result =
                 [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachementId];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    result.pointer.isDownloaded = NO;
+                    [result.pointer saveWithTransaction:transaction];
+                }];
+                outgoingMessage.body = nil;
+                [outgoingMessage.attachments addObject:attachementId];
+                //the state change is needed for the db to get a modification and it takes 200 milliseconds, why?
+                [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [outgoingMessage saveWithTransaction:transaction];
+                }];
                 
-                BOOL success = [self uploadData:result.body location:location];
-                
+                BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachementId];
                 if (success) {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        result.pointer.isDownloaded = YES;
                         [result.pointer saveWithTransaction:transaction];
+                        NSLog(@"finished uploading");
                     }];
-                    
-                    outgoingMessage.body = nil;
-                    [outgoingMessage.attachments addObject:attachementId];
                     
                     [self sendMessage:outgoingMessage inThread:thread];
                 } else{
@@ -202,6 +211,39 @@ dispatch_queue_t attachmentsQueue() {
         DDLogError(@"Failed uploading attachment with error: %@", error.description);
         success = NO;
         dispatch_semaphore_signal(sema);
+    }];
+    
+    [httpOperation start];
+    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    return success;
+}
+
+- (BOOL)uploadDataWithProgress:(NSData*)cipherText location:(NSString*)location attachmentID:(NSString*)attachmentID {
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    __block BOOL success = NO;
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:location]];
+    request.HTTPMethod = @"PUT";
+    request.HTTPBody   = cipherText;
+    [request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
+    
+    AFHTTPRequestOperation *httpOperation = [manager HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        success = YES;
+        dispatch_semaphore_signal(sema);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        DDLogError(@"Failed uploading attachment with error: %@", error.description);
+        success = NO;
+        dispatch_semaphore_signal(sema);
+    }];
+    
+    [httpOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        double percentDone = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        [notificationCenter postNotificationName:@"attachmentUploadProgress" object:nil userInfo:@{ @"progress": @(percentDone), @"attachmentID": attachmentID }];
     }];
     
     [httpOperation start];

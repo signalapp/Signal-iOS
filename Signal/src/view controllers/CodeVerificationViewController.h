@@ -15,10 +15,17 @@
 // Where the user enters the verification code they wish to document
 @property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
+@property(nonatomic, strong) NSString* formattedPhoneNumber;
+
 // User action buttons
 @property(nonatomic, strong) IBOutlet UIButton* challengeButton;
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeViaSMSAgainButton;
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeViaVoiceButton;
+
+@property(nonatomic, strong) IBOutlet UIActivityIndicatorView* submitCodeSpinner;
+@property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCodeAgainSpinner;
+@property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCallSpinner;
+
 
 // Displays phone number entered in previous step. There is a UI option (segue) which allows the user to go back and edit this.
 @property (nonatomic, strong) IBOutlet UILabel* phoneNumberEntered;

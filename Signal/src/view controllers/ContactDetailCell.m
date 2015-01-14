@@ -7,7 +7,7 @@
 //
 
 #import "ContactDetailCell.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 
 
 @implementation ContactDetailCell

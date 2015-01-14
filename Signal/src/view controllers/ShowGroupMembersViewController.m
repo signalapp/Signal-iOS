@@ -21,7 +21,7 @@
 #import "SignalKeyingStorage.h"
 
 #import "UIUtil.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
@@ -42,6 +42,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     self.title = _thread.groupModel.groupName;
 
     NSMutableArray *contactsInGroup = [[NSMutableArray alloc] init];
@@ -157,16 +159,23 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
+        lastNameFont  = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
     } else{
-        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
+        lastNameFont  = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
     
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
+    
+    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
+        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    }
+    else {
+        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(0, contact.firstName.length)];
+    }
     return fullNameAttributedString;
 }
 

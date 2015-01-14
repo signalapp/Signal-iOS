@@ -8,7 +8,6 @@
 
 #import "ContactsTableViewController.h"
 #import "ContactDetailTableViewController.h"
-#import "DialerViewController.h"
 
 #import "ContactTableViewCell.h"
 
@@ -43,7 +42,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.navigationController.navigationBar setTranslucent:NO];
     [self initializeObservers];
     [self initializeRefreshControl];
     [self initializeTableView];
@@ -191,7 +190,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[UIColor blackColor]];
+    [header.textLabel setTextColor:[UIColor ows_blackColor]];
     [header.textLabel setFont:[UIFont ows_thinFontWithSize:14.0f]];
     
 }
@@ -271,25 +270,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     }
 }
 
-#pragma mark - IBAction
-
--(IBAction)presentDialer:(id)sender {
-    DialerViewController * dialer = [DialerViewController new];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:dialer];
-    navigationController.tabBarController.hidesBottomBarWhenPushed = NO;
-    
-    dialer.phoneNumber = nil;
-    
-    self.tabBarController.providesPresentationContextTransitionStyle = YES;
-    self.tabBarController.definesPresentationContext = YES;
-    [navigationController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
-    navigationController.hidesBottomBarWhenPushed = YES;
-    navigationController.navigationBarHidden=YES;
-    
-    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-}
-
 #pragma mark - Refresh controls
 
 - (void)onSearchOrContactChange:(NSString *)searchTerm {
@@ -321,7 +301,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
         _emptyViewLabel.text = @"None of your contacts are Signal users yet.";
-        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.textColor = [UIColor ows_darkGrayColor];
         _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
         self.tableView.tableFooterView = _emptyViewLabel;

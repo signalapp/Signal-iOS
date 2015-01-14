@@ -10,7 +10,7 @@
 #import "ContactDetailCell.h"
 #import "ActionContactDetailCell.h"
 #import "UIUtil.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "PhoneManager.h"
 
@@ -55,6 +55,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
     doesImageExist = YES;
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
@@ -134,7 +135,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     if (c.isRedPhoneContact)
     {
-        cell.contactCallButton.tintColor = [UIColor ows_blueColor];
+        cell.contactCallButton.tintColor = [UIColor ows_materialBlueColor];
         [cell.contactCallButton addTarget:self action:@selector(initiateRedPhoneCall) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactCallButton.tintColor = [UIColor ows_darkGrayColor];
@@ -143,7 +144,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     if (c.isTextSecureContact)
     {
-        cell.contactTextButton.tintColor = [UIColor ows_blueColor];
+        cell.contactTextButton.tintColor = [UIColor ows_materialBlueColor];
         [cell.contactTextButton addTarget:self action:@selector(openTextSecureConversation) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactTextButton.tintColor = [UIColor ows_darkGrayColor];
@@ -155,7 +156,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     NSArray *textSecureIdentifiers = [self.contact textSecureIdentifiers];
     
     if (textSecureIdentifiers.count > 1) {
-        [DJWActionSheet showInView:self.tabBarController.view
+        [DJWActionSheet showInView:self.parentViewController.view
                          withTitle:@"What number would you like to message?"
                  cancelButtonTitle:@"Cancel"
             destructiveButtonTitle:nil
@@ -186,7 +187,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
             [e164 addObject:phoneNumber.toE164];
         }
         
-        [DJWActionSheet showInView:self.tabBarController.view
+        [DJWActionSheet showInView:[[UIApplication sharedApplication] delegate].window.rootViewController.view
                          withTitle:@"What number would you like to dial?"
                  cancelButtonTitle:@"Cancel"
             destructiveButtonTitle:nil

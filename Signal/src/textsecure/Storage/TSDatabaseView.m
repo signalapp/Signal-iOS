@@ -67,13 +67,10 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSThread class]]){
             TSThread *thread = (TSThread*)object;
-            
-            if (thread.lastMessageDate) {
-                if (thread.archivalDate) {
-                    return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
-                }
-                return TSInboxGroup;
+            if (thread.archivalDate) {
+                return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
             }
+            return TSInboxGroup;
         }
         return nil;
     }];
@@ -128,11 +125,13 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
  */
 
 + (BOOL)threadShouldBeInInbox:(TSThread*)thread {
-    NSDate *lastMessage  = thread.lastMessageDate;
+    NSDate *lastMessageDate  = thread.lastMessageDate;
     NSDate *archivalDate = thread.archivalDate;
-    
-    if (lastMessage&&archivalDate) {
-        return ([lastMessage timeIntervalSinceDate:archivalDate]>0)?YES:NO;
+    if (lastMessageDate&&archivalDate) { // this is what is called
+        return ([lastMessageDate timeIntervalSinceDate:archivalDate]>0)?YES:NO; // if there hasn't been a new message since the archive date, it's in the archive. an issue is that empty threads are always given with a lastmessage date of the present on every launch
+    }
+    else if(archivalDate) {
+        return NO;
     }
     
     return YES;

@@ -9,7 +9,7 @@
 #import "PrivacySettingsTableViewController.h"
 
 #import <25519/Curve25519.h>
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "TSFingerprintGenerator.h"
@@ -35,6 +35,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
@@ -71,7 +73,7 @@
     
     self.fingerprintLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 150, 25)];
     self.fingerprintLabel.textColor = [UIColor lightGrayColor];
-    self.fingerprintLabel.font = [UIFont ows_lightFontWithSize:16.0f];
+    self.fingerprintLabel.font = [UIFont ows_regularFontWithSize:16.0f]; 
     self.fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     
     self.fingerprintCell.accessoryView = self.fingerprintLabel;

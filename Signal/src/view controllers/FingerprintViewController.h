@@ -15,6 +15,10 @@
 
 @property (nonatomic, strong) IBOutlet UILabel     * presentationLabel;
 
+@property (nonatomic, strong) IBOutlet UIView *myFingerprintView;
+@property (nonatomic, strong) IBOutlet UIView *theirFingerprintView;
+
+
 @property (nonatomic, strong) IBOutlet UIImageView * contactImageView;
 @property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintTitleLabel;
 @property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintLabel;

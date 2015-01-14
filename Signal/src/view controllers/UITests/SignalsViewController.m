@@ -9,10 +9,13 @@
 #import "UIUtil.h"
 #import "InboxTableViewCell.h"
 
+#import "ContactsManager.h"
 #import "Environment.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "InCallViewController.h"
 #import "TSStorageManager.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
 #import "TSContactThread.h"
@@ -33,13 +36,17 @@
 
 static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
-
-@property (strong, nonatomic) UILabel * emptyViewLabel;
+@property (nonatomic, strong) UILabel *emptyViewLabel;
+@property (nonatomic, strong) UIImageView *emptyBoxImage;
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic) CellState viewingThreadsIn;
+@property (nonatomic) long inboxCount;
 
 @end
 
@@ -51,30 +58,39 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     [self tableViewSetUp];
     
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
-    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                     view:TSThreadDatabaseViewExtensionName];
-    
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
-        [self.threadMappings updateWithTransaction:transaction];
-    }];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
+    [self selectedInbox:self];
+    
+    [self updateInboxCountLabel];
+    
+    [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
+        [self.tableView reloadData];
+    } onThread:[NSThread mainThread] untilCancelled:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self  updateTableViewHeader];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if (![TSAccountManager isRegistered]){
+        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -110,7 +126,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [cell configureWithThread:thread];
-    [cell configureForState:_inboxArchiveSwitch.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
+    [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
     
     return cell;
 }
@@ -129,6 +145,27 @@ static NSString *const kSegueIndentifier = @"showSegue";
     return CELL_HEIGHT;
 }
 
+#pragma mark Table Swipe to Delete
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    return;
+}
+
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // add the ability to delete the cell
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"X          " handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath){
+        [self tableViewCellTappedDelete:swipedIndexPath];
+    }];
+    deleteAction.backgroundColor = [UIColor ows_redColor];
+    
+    return @[deleteAction];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
 #pragma mark - HomeFeedTableViewCellDelegate
 
 - (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
@@ -143,16 +180,28 @@ static NSString *const kSegueIndentifier = @"showSegue";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
+    [self updateTableViewHeader];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
-    thread.archivalDate    = _inboxArchiveSwitch.selectedSegmentIndex == 0 ? [NSDate date] : nil ;
+    thread.archivalDate    = self.viewingThreadsIn == kInboxState ? [NSDate date] : nil ;
     
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
+    [self updateTableViewHeader];
+}
+
+
+-(void) updateInboxCountLabel {
+    _inboxCount = (self.viewingThreadsIn == kInboxState) ? (long)[self tableView:self.tableView numberOfRowsInSection:0] : _inboxCount;
+
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",_inboxCount];
+    self.inboxCountLabel.hidden = (_inboxCount == 0);
+
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -180,33 +229,39 @@ static NSString *const kSegueIndentifier = @"showSegue";
         else if (thread) {
             [vc setupWithThread:thread];
         }
-        
-        
-        
+    }
+    else if ([segue.identifier isEqualToString:kCallSegue]) {
+        InCallViewController* vc = [segue destinationViewController];
+        [vc configureWithLatestCall:_latestCall];
+        _latestCall = nil;
     }
 }
 
 #pragma mark - IBAction
 
--(IBAction)segmentDidChange:(id)sender
-{
-    switch (_inboxArchiveSwitch.selectedSegmentIndex) {
-        case 0:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-            
-        case 1:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-    }
-    
+-(IBAction)selectedInbox:(id)sender {
+    self.viewingThreadsIn = kInboxState;
+    [self.inboxButton setSelected:YES];
+    [self.archiveButton setSelected:NO];
+    [self changeToGrouping:TSInboxGroup];
+}
+
+-(IBAction)selectedArchive:(id)sender {
+    self.viewingThreadsIn = kArchiveState;
+    [self.inboxButton setSelected:NO];
+    [self.archiveButton setSelected:YES];
+    [self changeToGrouping:TSArchiveGroup];
+}
+
+-(void) changeToGrouping:(NSString*)grouping {
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
+                                                                     view:TSThreadDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
     [self updateTableViewHeader];
+
 }
 
 #pragma mark Database delegates
@@ -271,12 +326,14 @@ static NSString *const kSegueIndentifier = @"showSegue";
             {
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount += (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeInsert :
             {
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeMove :
@@ -297,22 +354,59 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [self.tableView endUpdates];
+    [self updateInboxCountLabel];
     [self updateTableViewHeader];
 }
 
+
+- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
+    
+}
+
+- (IBAction)unwindMessagesView:(UIStoryboardSegue *)segue {
+    
+}
+
 - (void)updateTableViewHeader{
-    if ([self.threadMappings numberOfItemsInAllGroups]==0)
-    {
+    _emptyViewLabel = nil;
+    _emptyBoxImage = nil;
+    self.tableView.tableHeaderView = nil;
+    // Something like this can be used to put in a tutorial image. currently malformatted.
+//    if (userHasNeverSentMessage) {
+//        _emptyBoxImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"first-screen"] highlightedImage:[UIImage imageNamed:@"first-screen"]];
+//        self.tableView.tableHeaderView = _emptyBoxImage;
+//    }
+//    else
+    if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
+        (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0)) {
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
         _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
+        _emptyViewLabel.font = [UIFont ows_regularFontWithSize:18.f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyViewLabel.text = @"You have no messages yet.";
+        _emptyViewLabel.numberOfLines = 2;
+        
+        NSString* firstLine = @"";
+        NSString* secondLine = @"";
+
+        if(self.viewingThreadsIn == kInboxState) {
+            // Check if this is the first launch
+            firstLine =  @"Done. Done. Done.";
+            secondLine = @"Tip: add a conversation as a reminder.";
+        }
+        else {
+            firstLine = @"Squeaky Freaking Clean.";
+            secondLine = @"None. Zero. Zilch. Nada.";
+        }
+        NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];
+        
+        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_boldFontWithSize:17.f] range:NSMakeRange(0,firstLine.length)];
+        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_regularFontWithSize:16.f] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
+        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+        
+        _emptyViewLabel.attributedText = fullLabelString;
         self.tableView.tableHeaderView = _emptyViewLabel;
-    } else {
-        _emptyViewLabel = nil;
-        self.tableView.tableHeaderView = nil;
     }
 }
 

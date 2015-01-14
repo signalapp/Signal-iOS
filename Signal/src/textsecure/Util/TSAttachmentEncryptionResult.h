@@ -11,7 +11,7 @@
 
 @interface TSAttachmentEncryptionResult : NSData
 
-@property (readonly) TSAttachmentStream *pointer;
+@property (readwrite) TSAttachmentStream *pointer;
 @property (readonly) NSData *body;
 
 - (instancetype)initWithPointer:(TSAttachmentStream*)pointer
