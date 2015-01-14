@@ -32,10 +32,10 @@
     [self migrateKeyingStorageToVersion2Dot0];
     [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
         [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+            [Environment.preferences setIsMigratingToVersion2Dot0:NO];
             Environment *env = [Environment getCurrent];
             PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
             [manager forceUpdate];
-            [Environment.preferences setIsMigratingToVersion2Dot0:NO];
         } failure:^(NSError *error) {
             // TODO: should we have a UI response here?
         }];
@@ -121,15 +121,28 @@
 
 
 + (void)migrateKeyingStorageToVersion2Dot0{
-    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY] forKey:LOCAL_NUMBER_KEY];
-    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] forKey:PASSWORD_COUNTER_KEY];
-    [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY] forKey:SAVED_PASSWORD_KEY];
-    
-    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_MAC_KEY] forKey:SIGNALING_MAC_KEY];
-    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY] forKey:SIGNALING_CIPHER_KEY];
-    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:ZID_KEY] forKey:ZID_KEY];
-    [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY] forKey:SIGNALING_EXTRA_KEY];
-    
+    // if statements ensure that if this migration is called more than once for whatever reason, the original data isn't rewritten the second time
+    if([UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY]!=nil) {
+        [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY] forKey:LOCAL_NUMBER_KEY];
+    }
+    if([UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY]!=nil) {
+        [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY] forKey:PASSWORD_COUNTER_KEY];
+    }
+    if([UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY]!=nil) {
+        [SignalKeyingStorage storeString:[UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY] forKey:SAVED_PASSWORD_KEY];
+    }
+    if([UICKeyChainStore dataForKey:SIGNALING_MAC_KEY]!=nil) {
+        [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_MAC_KEY] forKey:SIGNALING_MAC_KEY];
+    }
+    if([UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY]!=nil) {
+        [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY] forKey:SIGNALING_CIPHER_KEY];
+    }
+    if([UICKeyChainStore dataForKey:ZID_KEY]!=nil) {
+        [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:ZID_KEY] forKey:ZID_KEY];
+    }
+    if([UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY]!=nil) {
+        [SignalKeyingStorage storeData:[UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY] forKey:SIGNALING_EXTRA_KEY];
+    }
     // Erasing keys in the old key chain store
     [UICKeyChainStore removeItemForKey:LOCAL_NUMBER_KEY];
     [UICKeyChainStore removeItemForKey:PASSWORD_COUNTER_KEY];
@@ -138,7 +151,6 @@
     [UICKeyChainStore removeItemForKey:SIGNALING_CIPHER_KEY];
     [UICKeyChainStore removeItemForKey:ZID_KEY];
     [UICKeyChainStore removeItemForKey:SIGNALING_EXTRA_KEY];
-    
 }
 
 @end
