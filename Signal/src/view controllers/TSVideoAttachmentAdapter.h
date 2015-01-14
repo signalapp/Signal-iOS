@@ -12,11 +12,15 @@
 
 @interface TSVideoAttachmentAdapter : JSQVideoMediaItem
 
+@property NSString *attachmentId;
+@property (nonatomic,strong) NSString* contentType;
+
 - (instancetype)initWithAttachment:(TSAttachmentStream*)attachment;
 
 - (BOOL)isImage;
+- (BOOL)isAudio;
+- (BOOL)isVideo;
 
-@property NSString *attachmentId;
-@property (nonatomic,strong) NSString* contentType;
+
 
 @end

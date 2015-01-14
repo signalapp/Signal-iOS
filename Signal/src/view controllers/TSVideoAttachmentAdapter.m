@@ -37,6 +37,15 @@
     return NO;
 }
 
+-(BOOL) isAudio {
+    return [_contentType containsString:@"audio/"];
+}
+
+
+-(BOOL) isVideo {
+    return [_contentType containsString:@"video/"];
+}
+
 - (void)dealloc
 {
     _image = nil;
