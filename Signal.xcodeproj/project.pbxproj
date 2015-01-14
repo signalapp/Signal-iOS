@@ -286,6 +286,8 @@
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
 		A5E9D4B41A65EB8700E4481C /* small in Resources */ = {isa = PBXBuildFile; fileRef = A5E9D4B31A65EB8700E4481C /* small */; };
 		A5E9D4B61A65EBBB00E4481C /* small.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = A5E9D4B51A65EBBB00E4481C /* small.mp4 */; };
+		A5E9D4B81A65EF1000E4481C /* smallPlay in Resources */ = {isa = PBXBuildFile; fileRef = A5E9D4B71A65EF1000E4481C /* smallPlay */; };
+		A5E9D4BB1A65FAD800E4481C /* TSVideoAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */; };
 		AA0C8E498E2046B0B81EEE6E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */; };
 		B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
@@ -881,6 +883,9 @@
 		A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowGroupMembersViewController.h; sourceTree = "<group>"; };
 		A5E9D4B31A65EB8700E4481C /* small */ = {isa = PBXFileReference; lastKnownFileType = file; name = small; path = ../../../../../../Desktop/small; sourceTree = "<group>"; };
 		A5E9D4B51A65EBBB00E4481C /* small.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = small.mp4; path = ../../../../../../Desktop/small.mp4; sourceTree = "<group>"; };
+		A5E9D4B71A65EF1000E4481C /* smallPlay */ = {isa = PBXFileReference; lastKnownFileType = file; name = smallPlay; path = ../../../../../../Desktop/smallPlay; sourceTree = "<group>"; };
+		A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSVideoAttachmentAdapter.m; sourceTree = "<group>"; };
+		A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSVideoAttachmentAdapter.h; sourceTree = "<group>"; };
 		B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+millisecondTimeStamp.h"; sourceTree = "<group>"; };
 		B6019E961A2492AB001118DF /* NSDate+millisecondTimeStamp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+millisecondTimeStamp.mm"; sourceTree = "<group>"; };
 		B60C16631988999D00E97A6C /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
@@ -2124,6 +2129,8 @@
 		B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */ = {
 			isa = PBXGroup;
 			children = (
+				A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */,
+				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
 				B6A3EB491A423B3800B2236B /* TSAttachmentAdapter.h */,
 				B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */,
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
@@ -2558,6 +2565,7 @@
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A5E9D4B71A65EF1000E4481C /* smallPlay */,
 				A5E9D4B51A65EBBB00E4481C /* small.mp4 */,
 				A5E9D4B31A65EB8700E4481C /* small */,
 				B6C6AE521A305ED1006BAF8F /* Certificates */,
@@ -2921,6 +2929,8 @@
 				FCA52AE81A2B676C00CCADFA /* call_incoming@2x.png in Resources */,
 				FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */,
 				FCA52AE91A2B676C00CCADFA /* call_missed@2x.png in Resources */,
+				A5E9D4B81A65EF1000E4481C /* smallPlay in Resources */,
+				E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				FCA52AEB1A2B676C00CCADFA /* checkmark_light@2x.png in Resources */,
@@ -3212,6 +3222,7 @@
 				B6B0966B1A1D25ED008BFAA6 /* TSAttachment.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
 				B6B0968F1A1D25ED008BFAA6 /* TSYapDatabaseObject.m in Sources */,
+				A5E9D4BB1A65FAD800E4481C /* TSVideoAttachmentAdapter.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */,
 				FC18803C1A31D94D0044CE86 /* SignalTabBarController.m in Sources */,

@@ -19,9 +19,8 @@
 #import "TSAttachmentStream.h"
 #import "TSAttachmentAdapter.h"
 #import "TSAttachmentPointer.h"
-#import "JSQVideoMediaItem.h"
+#import "TSVideoAttachmentAdapter.h"
 
-#import "JSQPhotoMediaItem.h"
 
 @interface TSMessageAdapter ()
 
@@ -112,7 +111,7 @@
                     }
                     else {
                         // TODO: want to refactor this to play
-                        adapter.mediaItem = [[JSQVideoMediaItem alloc] initWithFileURL:[stream videoURL] isReadyToPlay:YES];
+                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
                         DDLogWarn(@"We have a TSAttachmentStream for an unsupported media type");
