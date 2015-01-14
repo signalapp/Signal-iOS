@@ -57,7 +57,20 @@ dispatch_queue_t attachmentsQueue() {
                 
                 [retrievedAttachments addObject:attachmentPointer.uniqueId];
                 shouldProcessMessage = YES;
-            } else {
+            }
+            else if ([attachmentPointer.contentType hasPrefix:@"video/"]) {
+                //TODOATTACHMENTS process video
+                [attachmentPointer saveWithTransaction:transaction];
+                
+                dispatch_async(attachmentsQueue(), ^{
+                    [self retrieveAttachment:attachmentPointer messageId:[TSInteraction stringFromTimeStamp:message.timestamp]];
+                });
+                
+                [retrievedAttachments addObject:attachmentPointer.uniqueId];
+                shouldProcessMessage = YES;
+
+            }
+            else {
                 
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
                 TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
