@@ -1033,151 +1033,129 @@ A0 09 9A FF A8 8A 09 99</string>
             </objects>
             <point key="canvasLocation" x="5604" y="-579"/>
         </scene>
-        <!--Registration View Controller-->
+        <!--_1.0 Registration Screen-->
         <scene sceneID="okO-46-HuB">
             <objects>
-                <viewController id="sL4-Zw-2Og" customClass="RegistrationViewController" sceneMemberID="viewController">
+                <viewController id="sL4-Zw-2Og" userLabel="_1.0 Registration Screen" customClass="RegistrationViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="kUb-Rf-uos"/>
                         <viewControllerLayoutGuide type="bottom" id="g9k-sN-wqg"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Y3I-8Y-pLa">
+                    <view key="view" contentMode="scaleToFill" id="Y3I-8Y-pLa" userLabel="_1.0 Registration Screen">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bad-Vo-KR4">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <color key="backgroundColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5f-8V-ASm" userLabel="_1.0a Registration Screen Title">
+                                <rect key="frame" x="-20" y="-20" width="440" height="284"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bad-Vo-KR4">
+                                        <rect key="frame" x="20" y="20" width="400" height="244"/>
+                                        <color key="backgroundColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                    </button>
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
+                                        <rect key="frame" x="170" y="88" width="101" height="88"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
+                                        <rect key="frame" x="49" y="188" width="343" height="52"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="26"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="244"/>
-                                </variation>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
-                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="26"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="29" y="168" width="343" height="52"/>
-                                </variation>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+111" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TiF-CF-7WU">
-                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <color key="textColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="318" y="261" width="46" height="25"/>
-                                </variation>
-                            </label>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
-                                <rect key="frame" x="0.0" y="-82" width="82" height="82"/>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="150" y="68" width="101" height="88"/>
-                                </variation>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ngV-Kv-6Ax">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
-                                <state key="normal" title="United States">
-                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="27" y="262" width="289" height="30"/>
-                                </variation>
-                                <connections>
-                                    <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="Ufe-Un-ybV"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7IK-hd-tli">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <color key="backgroundColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
-                                <state key="normal" title="Verify This Device">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="35" y="390" width="336" height="47"/>
-                                </variation>
-                                <connections>
-                                    <action selector="sendCodeAction:" destination="sL4-Zw-2Og" eventType="touchUpInside" id="T8X-Mx-4I6"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AbN-AU-yk7">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
-                                <state key="normal" title="Phone Number">
-                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="28" y="319" width="152" height="30"/>
-                                </variation>
-                                <connections>
-                                    <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="g69-yt-mwr"/>
-                                </connections>
-                            </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="300" width="400" height="1"/>
+                                    <rect key="frame" x="-20" y="-20" width="440" height="264"/>
                                 </variation>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
+                                <rect key="frame" x="-20" y="241" width="440" height="80"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="+111" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TiF-CF-7WU">
+                                        <rect key="frame" x="338" y="20" width="46" height="25"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <color key="textColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
+                                        <rect key="frame" x="20" y="59" width="400" height="1"/>
+                                        <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ngV-Kv-6Ax">
+                                        <rect key="frame" x="47" y="21" width="289" height="30"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                                        <state key="normal" title="United States">
+                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="Ufe-Un-ybV"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="357" width="400" height="1"/>
+                                    <rect key="frame" x="-20" y="241" width="440" height="60"/>
                                 </variation>
                             </view>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" placeholder="Enter Number" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-pq-Z9L">
-                                <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
-                                <color key="textColor" red="0.30192413926124573" green="0.30198189616203308" blue="0.30192050337791443" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <textInputTraits key="textInputTraits" keyboardType="phonePad" keyboardAppearance="alert"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
-                                </userDefinedRuntimeAttributes>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g8J-Eg-0PT" userLabel="_1.0d Registration Verification Code Button">
+                                <rect key="frame" x="15" y="370" width="376" height="87"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7IK-hd-tli">
+                                        <rect key="frame" x="20" y="20" width="336" height="47"/>
+                                        <color key="backgroundColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
+                                        <state key="normal" title="Verify This Device">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <rect key="frame" x="20" y="11" width="336" height="47"/>
+                                        </variation>
+                                        <connections>
+                                            <action selector="sendCodeAction:" destination="sL4-Zw-2Og" eventType="touchUpInside" id="T8X-Mx-4I6"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="182" y="317" width="182" height="30"/>
+                                    <rect key="frame" x="15" y="388" width="385" height="69"/>
                                 </variation>
-                            </textField>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tSy-r0-e7H" userLabel="_1.0c Registration Phone Number Input">
+                                <rect key="frame" x="-20" y="297" width="440" height="81"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
+                                        <rect key="frame" x="20" y="60" width="400" height="1"/>
+                                        <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AbN-AU-yk7">
+                                        <rect key="frame" x="48" y="22" width="152" height="30"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                                        <state key="normal" title="Phone Number">
+                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                    </button>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" placeholder="Enter Number" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-pq-Z9L">
+                                        <rect key="frame" x="202" y="20" width="182" height="30"/>
+                                        <color key="textColor" red="0.30192413926124573" green="0.30198189616203308" blue="0.30192050337791443" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="phonePad" keyboardAppearance="alert"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="keyPath" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </textField>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="-20" y="302" width="440" height="61"/>
+                                </variation>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="Bad-Vo-KR4"/>
-                                <exclude reference="50y-cV-8aI"/>
-                                <exclude reference="TiF-CF-7WU"/>
-                                <exclude reference="vpb-XQ-s2c"/>
-                                <exclude reference="ngV-Kv-6Ax"/>
-                                <exclude reference="7IK-hd-tli"/>
-                                <exclude reference="AbN-AU-yk7"/>
-                                <exclude reference="O6t-0o-mk5"/>
-                                <exclude reference="vpp-VC-z9v"/>
-                                <exclude reference="tTJ-pq-Z9L"/>
-                            </mask>
-                        </variation>
-                        <variation key="heightClass=regular-widthClass=compact">
-                            <mask key="subviews">
-                                <include reference="Bad-Vo-KR4"/>
-                                <include reference="50y-cV-8aI"/>
-                                <include reference="TiF-CF-7WU"/>
-                                <include reference="vpb-XQ-s2c"/>
-                                <include reference="ngV-Kv-6Ax"/>
-                                <include reference="7IK-hd-tli"/>
-                                <include reference="AbN-AU-yk7"/>
-                                <include reference="O6t-0o-mk5"/>
-                                <include reference="vpp-VC-z9v"/>
-                                <include reference="tTJ-pq-Z9L"/>
-                            </mask>
-                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="5Qk-ka-UUh"/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
@@ -1194,296 +1172,184 @@ A0 09 9A FF A8 8A 09 99</string>
             </objects>
             <point key="canvasLocation" x="-1212" y="940.5"/>
         </scene>
-        <!--Code Verification View Controller-->
+        <!--_1.1 Verification Screen-->
         <scene sceneID="44F-BV-mQs">
             <objects>
-                <viewController id="3Uo-Ow-qOD" customClass="CodeVerificationViewController" sceneMemberID="viewController">
+                <viewController id="3Uo-Ow-qOD" userLabel="_1.1 Verification Screen" customClass="CodeVerificationViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="OuY-yn-ZQb"/>
                         <viewControllerLayoutGuide type="bottom" id="MHI-1c-yZH"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Zgb-Uj-73M">
+                    <view key="view" contentMode="scaleToFill" id="Zgb-Uj-73M" userLabel="_1.1 Verification Screen">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <userGuides>
-                            <userLayoutGuide location="199" affinity="minX"/>
+                            <userLayoutGuide location="198" affinity="minX"/>
                             <userLayoutGuide location="199" affinity="minX"/>
                         </userGuides>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yK6-ad-ihc">
-                                <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="bfS-CL-Jgh"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad" keyboardAppearance="alert"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VVn-mW-32x" userLabel="_1.1a Verification Screen Title">
+                                <rect key="frame" x="-20" y="-20" width="440" height="284"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="veY-pb-VuZ">
+                                        <rect key="frame" x="20" y="20" width="400" height="244"/>
+                                        <color key="backgroundColor" red="0.067691504959999996" green="0.55628502369999999" blue="0.92999207969999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <rect key="frame" x="20" y="20" width="400" height="244"/>
+                                        </variation>
+                                    </button>
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="fOf-yb-ZrP">
+                                        <rect key="frame" x="170" y="88" width="101" height="88"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q8D-0H-IdP">
+                                        <rect key="frame" x="49" y="188" width="343" height="52"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="26"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="-21" y="-19" width="440" height="264"/>
+                                </variation>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XXt-2F-6KC" userLabel="_1.1b Verification Code Input">
+                                <rect key="frame" x="80" y="486" width="240" height="73"/>
+                                <subviews>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Verification Code" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yK6-ad-ihc">
+                                        <rect key="frame" x="20" y="20" width="200" height="30"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="numberPad" keyboardAppearance="alert"/>
+                                    </textField>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                        <rect key="frame" x="20" y="52" width="200" height="1"/>
+                                        <color key="backgroundColor" red="0.50588235290000005" green="0.50588235290000005" blue="0.50588235290000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="79" y="283" width="240" height="73"/>
+                                </variation>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="95o-ce-XGu" userLabel="_1.1c Verification Verify Code Button ">
+                                <rect key="frame" x="17" y="541" width="376" height="87"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Nx-nz-ht7">
+                                        <rect key="frame" x="20" y="20" width="336" height="47"/>
+                                        <color key="backgroundColor" red="0.067691504959999996" green="0.55628502369999999" blue="0.92999207969999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
+                                        <state key="normal" title="Submit Verification Code">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="xhB-mH-aQJ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="12" y="375" width="376" height="87"/>
+                                </variation>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5A-hy-9hb" userLabel="_1.1f Verification Change Number">
+                                <rect key="frame" x="67" y="741" width="265" height="71"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IVn-LE-fmp">
+                                        <rect key="frame" x="20" y="20" width="225" height="31"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
+                                        <state key="normal" title="  Change Number">
+                                            <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <rect key="frame" x="0.0" y="20" width="408" height="51"/>
+                                        </variation>
+                                        <connections>
+                                            <segue destination="ZUP-dD-a8s" kind="unwind" unwindAction="unwindToChangeNumber:" id="4Dh-Ef-EAM"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="729" width="400" height="71"/>
+                                </variation>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UWb-Di-S2f" userLabel="_1.1d Verification Send Again Button">
+                                <rect key="frame" x="28" y="302" width="376" height="87"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9dl-sl-tZN">
+                                        <rect key="frame" x="20" y="20" width="336" height="47"/>
+                                        <color key="backgroundColor" red="0.067691504959999996" green="0.55628502369999999" blue="0.92999207969999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
+                                        <state key="normal" title="Send Again">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <rect key="frame" x="20" y="20" width="336" height="47"/>
+                                        </variation>
+                                        <connections>
+                                            <action selector="sendCodeSMSAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="a2S-fL-uqx"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="bfS-CL-Jgh"/>
+                                    <mask key="subviews">
+                                        <exclude reference="9dl-sl-tZN"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="bfS-CL-Jgh"/>
-                                    </mask>
-                                </variation>
-                            </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter the code you just received" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49d-7m-0k6">
-                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="32" id="mvm-EN-sk0"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="24"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="mvm-EN-sk0"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="mvm-EN-sk0"/>
-                                    </mask>
-                                </variation>
-                            </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" red="0.50588235290000005" green="0.50588235290000005" blue="0.50588235290000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="O3w-ox-onf"/>
-                                </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="O3w-ox-onf"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="O3w-ox-onf"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="12" y="452" width="376" height="87"/>
+                                    <mask key="subviews">
+                                        <include reference="9dl-sl-tZN"/>
                                     </mask>
                                 </variation>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PHu-da-Fan">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="0ec-t9-zwJ"/>
-                                    <constraint firstAttribute="width" constant="100" id="MA2-40-BxI"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="30"/>
-                                <state key="normal" title="Verify">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="0ec-t9-zwJ"/>
-                                        <exclude reference="MA2-40-BxI"/>
-                                    </mask>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="65n-ug-kaa" userLabel="_1.1e Verification Call Me Button">
+                                <rect key="frame" x="80" y="670" width="240" height="75"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I5-tm-rMi">
+                                        <rect key="frame" x="20" y="20" width="200" height="35"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
+                                        <state key="normal" title="  Call Me Instead">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <rect key="frame" x="0.0" y="7" width="400" height="35"/>
+                                        </variation>
+                                        <connections>
+                                            <action selector="sendCodeVoiceAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="YWt-aa-RUW"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="671" width="400" height="50"/>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="0ec-t9-zwJ"/>
-                                        <include reference="MA2-40-BxI"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="KLK-9J-Slf"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IVn-LE-fmp">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="63" id="Ruw-po-bob">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="225"/>
-                                    </constraint>
-                                    <constraint firstAttribute="height" constant="30" id="lfU-Qy-gcH"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
-                                <state key="normal" title="Change phone number or cancel">
-                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="Ruw-po-bob"/>
-                                        <exclude reference="lfU-Qy-gcH"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="Ruw-po-bob"/>
-                                        <include reference="lfU-Qy-gcH"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <segue destination="ZUP-dD-a8s" kind="unwind" unwindAction="unwindToChangeNumber:" id="4Dh-Ef-EAM"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HYX-Cr-u0w">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="4Xo-G3-3yp"/>
-                                    <constraint firstAttribute="width" constant="102" id="EoB-jn-bwV"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
-                                <state key="normal" title="Send again">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="4Xo-G3-3yp"/>
-                                        <exclude reference="EoB-jn-bwV"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="4Xo-G3-3yp"/>
-                                        <include reference="EoB-jn-bwV"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="sendCodeSMSAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="jWS-dh-jsO"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2I5-tm-rMi">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="UiP-hG-L0t"/>
-                                    <constraint firstAttribute="height" constant="30" id="UzF-a6-vRO"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
-                                <state key="normal" title="Call me instead">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="UiP-hG-L0t"/>
-                                        <exclude reference="UzF-a6-vRO"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="UiP-hG-L0t"/>
-                                        <include reference="UzF-a6-vRO"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="sendCodeVoiceAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="YWt-aa-RUW"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="80G-wF-Ki5">
-                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="16"/>
-                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="centerX" secondItem="49d-7m-0k6" secondAttribute="centerX" id="601-ZF-xlq"/>
-                            <constraint firstAttribute="centerX" secondItem="80G-wF-Ki5" secondAttribute="centerX" id="9Ob-8g-gcU"/>
-                            <constraint firstAttribute="centerX" secondItem="PHu-da-Fan" secondAttribute="centerX" id="9hL-iF-RZL"/>
-                            <constraint firstAttribute="centerX" secondItem="yK6-ad-ihc" secondAttribute="centerX" id="AIw-5F-Lfj"/>
-                            <constraint firstItem="HYX-Cr-u0w" firstAttribute="top" secondItem="49d-7m-0k6" secondAttribute="bottom" constant="8" id="J0Z-pe-1GZ"/>
-                            <constraint firstItem="49d-7m-0k6" firstAttribute="trailing" secondItem="Zgb-Uj-73M" secondAttribute="trailingMargin" id="JFF-KZ-h6I"/>
-                            <constraint firstItem="yK6-ad-ihc" firstAttribute="top" secondItem="49d-7m-0k6" secondAttribute="bottom" constant="105" id="LsW-Pq-PRZ"/>
-                            <constraint firstItem="PHu-da-Fan" firstAttribute="top" secondItem="yK6-ad-ihc" secondAttribute="bottom" constant="67" id="M8V-ht-k2s"/>
-                            <constraint firstAttribute="centerX" secondItem="260-Dq-fnd" secondAttribute="centerX" id="Mb0-Wd-GVx"/>
-                            <constraint firstItem="MHI-1c-yZH" firstAttribute="top" secondItem="IVn-LE-fmp" secondAttribute="bottom" constant="8" id="StQ-SP-FMd"/>
-                            <constraint firstAttribute="centerX" secondItem="2I5-tm-rMi" secondAttribute="centerX" id="Wkv-S5-yMl"/>
-                            <constraint firstItem="yK6-ad-ihc" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="c47-uE-awH"/>
-                            <constraint firstAttribute="bottom" secondItem="2I5-tm-rMi" secondAttribute="bottom" constant="75" id="cJz-3Q-q4i"/>
-                            <constraint firstItem="49d-7m-0k6" firstAttribute="top" secondItem="OuY-yn-ZQb" secondAttribute="bottom" constant="36" id="dP3-9o-eNP"/>
-                            <constraint firstItem="260-Dq-fnd" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" constant="84" id="dvC-Xu-1F4"/>
-                            <constraint firstAttribute="bottom" secondItem="80G-wF-Ki5" secondAttribute="bottom" constant="46" id="eco-TD-FoN"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="260-Dq-fnd" secondAttribute="trailing" constant="84" id="mNE-hX-tgd"/>
-                            <constraint firstAttribute="centerX" secondItem="HYX-Cr-u0w" secondAttribute="centerX" id="oPh-8d-yYT"/>
-                            <constraint firstItem="49d-7m-0k6" firstAttribute="leading" secondItem="Zgb-Uj-73M" secondAttribute="leadingMargin" id="oSp-IH-lVa"/>
-                            <constraint firstAttribute="centerX" secondItem="IVn-LE-fmp" secondAttribute="centerX" constant="-0.5" id="rmZ-rb-JoP">
-                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                            </constraint>
-                            <constraint firstAttribute="trailingMargin" secondItem="yK6-ad-ihc" secondAttribute="trailing" constant="84" id="yuF-1t-XeW"/>
-                            <constraint firstItem="260-Dq-fnd" firstAttribute="top" secondItem="yK6-ad-ihc" secondAttribute="bottom" constant="2" id="z0p-1R-W5Z"/>
-                        </constraints>
                         <variation key="default">
                             <mask key="subviews">
-                                <exclude reference="yK6-ad-ihc"/>
-                                <exclude reference="49d-7m-0k6"/>
-                                <exclude reference="260-Dq-fnd"/>
-                                <exclude reference="PHu-da-Fan"/>
-                                <exclude reference="IVn-LE-fmp"/>
-                                <exclude reference="HYX-Cr-u0w"/>
-                                <exclude reference="2I5-tm-rMi"/>
-                                <exclude reference="80G-wF-Ki5"/>
-                            </mask>
-                            <mask key="constraints">
-                                <exclude reference="601-ZF-xlq"/>
-                                <exclude reference="JFF-KZ-h6I"/>
-                                <exclude reference="dP3-9o-eNP"/>
-                                <exclude reference="oSp-IH-lVa"/>
-                                <exclude reference="9Ob-8g-gcU"/>
-                                <exclude reference="eco-TD-FoN"/>
-                                <exclude reference="StQ-SP-FMd"/>
-                                <exclude reference="AIw-5F-Lfj"/>
-                                <exclude reference="LsW-Pq-PRZ"/>
-                                <exclude reference="c47-uE-awH"/>
-                                <exclude reference="yuF-1t-XeW"/>
-                                <exclude reference="Wkv-S5-yMl"/>
-                                <exclude reference="cJz-3Q-q4i"/>
-                                <exclude reference="J0Z-pe-1GZ"/>
-                                <exclude reference="oPh-8d-yYT"/>
-                                <exclude reference="rmZ-rb-JoP"/>
-                                <exclude reference="9hL-iF-RZL"/>
-                                <exclude reference="M8V-ht-k2s"/>
-                                <exclude reference="Mb0-Wd-GVx"/>
-                                <exclude reference="dvC-Xu-1F4"/>
-                                <exclude reference="mNE-hX-tgd"/>
-                                <exclude reference="z0p-1R-W5Z"/>
+                                <exclude reference="VVn-mW-32x"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="subviews">
-                                <include reference="yK6-ad-ihc"/>
-                                <include reference="49d-7m-0k6"/>
-                                <include reference="260-Dq-fnd"/>
-                                <include reference="PHu-da-Fan"/>
-                                <include reference="IVn-LE-fmp"/>
-                                <include reference="HYX-Cr-u0w"/>
-                                <include reference="2I5-tm-rMi"/>
-                                <include reference="80G-wF-Ki5"/>
-                            </mask>
-                            <mask key="constraints">
-                                <include reference="601-ZF-xlq"/>
-                                <include reference="JFF-KZ-h6I"/>
-                                <include reference="dP3-9o-eNP"/>
-                                <include reference="oSp-IH-lVa"/>
-                                <include reference="9Ob-8g-gcU"/>
-                                <include reference="eco-TD-FoN"/>
-                                <include reference="StQ-SP-FMd"/>
-                                <include reference="AIw-5F-Lfj"/>
-                                <include reference="LsW-Pq-PRZ"/>
-                                <include reference="c47-uE-awH"/>
-                                <include reference="yuF-1t-XeW"/>
-                                <include reference="Wkv-S5-yMl"/>
-                                <include reference="cJz-3Q-q4i"/>
-                                <include reference="J0Z-pe-1GZ"/>
-                                <include reference="oPh-8d-yYT"/>
-                                <include reference="rmZ-rb-JoP"/>
-                                <include reference="9hL-iF-RZL"/>
-                                <include reference="M8V-ht-k2s"/>
-                                <include reference="Mb0-Wd-GVx"/>
-                                <include reference="dvC-Xu-1F4"/>
-                                <include reference="mNE-hX-tgd"/>
-                                <include reference="z0p-1R-W5Z"/>
+                                <include reference="VVn-mW-32x"/>
                             </mask>
                         </variation>
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
-                        <outlet property="challengeButton" destination="PHu-da-Fan" id="hd0-4C-XqL"/>
+                        <outlet property="challengeButton" destination="5Nx-nz-ht7" id="JO8-b7-GHV"/>
                         <outlet property="challengeTextField" destination="yK6-ad-ihc" id="cnh-li-Z6O"/>
-                        <outlet property="phoneNumberEntered" destination="80G-wF-Ki5" id="rRv-vj-0Eo"/>
-                        <outlet property="sendCodeViaSMSAgainButton" destination="HYX-Cr-u0w" id="80C-tQ-khX"/>
+                        <outlet property="sendCodeViaSMSAgainButton" destination="9dl-sl-tZN" id="P3C-jR-K09"/>
                         <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
                     </connections>
                 </viewController>
@@ -3380,6 +3246,24 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-321" y="62.25"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="856-h5-Qo3">
+            <objects>
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="vEe-5a-Yvo" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wOW-gE-8YQ"/>
+                        <viewControllerLayoutGuide type="bottom" id="ddL-Ow-qO5"/>
+                    </layoutGuides>
+                    <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="az7-ec-4jH">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <toolbarItems/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hTC-Qo-AXZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
         </scene>
     </scenes>
     <resources>
