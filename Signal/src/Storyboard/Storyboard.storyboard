@@ -1142,28 +1142,6 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
                                 <rect key="frame" x="-20" y="241" width="440" height="80"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="+111" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TiF-CF-7WU">
-                                        <rect key="frame" x="338" y="20" width="46" height="25"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="25" id="7yr-Ie-1nC"/>
-                                            <constraint firstAttribute="width" constant="69" id="bQ9-Gd-pfd"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <color key="textColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="7yr-Ie-1nC"/>
-                                                <exclude reference="bQ9-Gd-pfd"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <include reference="7yr-Ie-1nC"/>
-                                                <include reference="bQ9-Gd-pfd"/>
-                                            </mask>
-                                        </variation>
-                                    </label>
                                     <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
                                         <rect key="frame" x="20" y="59" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1181,6 +1159,34 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </mask>
                                         </variation>
                                     </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VvN-1x-NvR">
+                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="69" id="68g-X0-PPD"/>
+                                            <constraint firstAttribute="height" constant="25" id="dGP-Lc-sks"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="+1">
+                                            <color key="titleColor" red="0.0" green="0.54770743846893311" blue="0.94218957424163818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="68g-X0-PPD"/>
+                                                <exclude reference="dGP-Lc-sks"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                            <rect key="frame" x="358" y="13" width="46" height="30"/>
+                                            <mask key="constraints">
+                                                <include reference="68g-X0-PPD"/>
+                                                <include reference="dGP-Lc-sks"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <action selector="changeCountryCodeTapped" destination="sL4-Zw-2Og" eventType="touchUpInside" id="ugK-wp-y8C"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ngV-Kv-6Ax">
                                         <rect key="frame" x="47" y="21" width="289" height="30"/>
                                         <constraints>
@@ -1198,7 +1204,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="sgg-mU-FAN"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="36" y="17" width="260" height="26"/>
                                             <mask key="constraints">
                                                 <include reference="CxG-Pf-LL4"/>
                                                 <include reference="sgg-mU-FAN"/>
@@ -1217,19 +1224,16 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </constraint>
                                     <constraint firstItem="O6t-0o-mk5" firstAttribute="width" secondItem="oS3-t9-5np" secondAttribute="width" id="FQA-TE-PFY"/>
                                     <constraint firstItem="O6t-0o-mk5" firstAttribute="top" secondItem="oS3-t9-5np" secondAttribute="top" constant="59" id="HiM-Qo-w4K"/>
-                                    <constraint firstItem="TiF-CF-7WU" firstAttribute="top" secondItem="oS3-t9-5np" secondAttribute="top" constant="18" id="LRA-f6-wRS">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="18"/>
-                                    </constraint>
                                     <constraint firstItem="ngV-Kv-6Ax" firstAttribute="leading" secondItem="oS3-t9-5np" secondAttribute="leading" constant="47" id="PhP-z2-o6P">
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
                                     </constraint>
                                     <constraint firstItem="O6t-0o-mk5" firstAttribute="leading" secondItem="oS3-t9-5np" secondAttribute="leading" constant="20" id="dDh-ly-5tQ"/>
                                     <constraint firstAttribute="width" constant="440" id="g39-IW-Qio"/>
-                                    <constraint firstAttribute="trailing" secondItem="TiF-CF-7WU" secondAttribute="trailing" constant="56" id="zHZ-pQ-Siv">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="36"/>
-                                    </constraint>
                                 </constraints>
                                 <variation key="default">
+                                    <mask key="subviews">
+                                        <exclude reference="VvN-1x-NvR"/>
+                                    </mask>
                                     <mask key="constraints">
                                         <exclude reference="4z2-Ss-eUR"/>
                                         <exclude reference="g39-IW-Qio"/>
@@ -1238,11 +1242,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="FQA-TE-PFY"/>
                                         <exclude reference="HiM-Qo-w4K"/>
                                         <exclude reference="dDh-ly-5tQ"/>
-                                        <exclude reference="LRA-f6-wRS"/>
-                                        <exclude reference="zHZ-pQ-Siv"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="subviews">
+                                        <include reference="VvN-1x-NvR"/>
+                                    </mask>
                                     <mask key="constraints">
                                         <include reference="4z2-Ss-eUR"/>
                                         <exclude reference="g39-IW-Qio"/>
@@ -1251,8 +1256,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <include reference="FQA-TE-PFY"/>
                                         <include reference="HiM-Qo-w4K"/>
                                         <exclude reference="dDh-ly-5tQ"/>
-                                        <include reference="LRA-f6-wRS"/>
-                                        <include reference="zHZ-pQ-Siv"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -1568,8 +1571,8 @@ A0 09 9A FF A8 8A 09 99</string>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
-                        <outlet property="countryCodeButton" destination="ngV-Kv-6Ax" id="neF-G4-N4t"/>
-                        <outlet property="countryCodeLabel" destination="TiF-CF-7WU" id="a8o-pE-QzV"/>
+                        <outlet property="countryCodeButton" destination="VvN-1x-NvR" id="4lX-oF-LcQ"/>
+                        <outlet property="countryNameButton" destination="ngV-Kv-6Ax" id="g5m-JR-9we"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
                         <outlet property="sendCodeButton" destination="7IK-hd-tli" id="zj7-3u-4OR"/>
                         <segue destination="3Uo-Ow-qOD" kind="show" identifier="codeSent" id="KhC-MI-Evx"/>
