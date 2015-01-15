@@ -63,7 +63,7 @@
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
     _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    _countryCodeButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
 }
 
 
@@ -170,7 +170,7 @@
     
     //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
     _countryCodeLabel.text = code;
-    _countryNameLabel.text = country;
+    _countryCodeButton.titleLabel.text = country;
     
     // Reformat phone number
     NSString* digits = _phoneNumberTextField.text.digitsOnly;
