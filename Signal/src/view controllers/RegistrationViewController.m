@@ -62,15 +62,15 @@
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
-    _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryCodeButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    _countryCodeButton.titleLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
+    _countryNameButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
 }
 
 
 #pragma mark - Actions
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeLabel.text, _phoneNumberTextField.text];
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeButton.titleLabel.text, _phoneNumberTextField.text];
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     if(localNumber==nil){ return; }
     
@@ -169,13 +169,13 @@
                        forCountry:(NSString *)country {
     
     //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    _countryCodeLabel.text = code;
-    _countryCodeButton.titleLabel.text = country;
+    _countryCodeButton.titleLabel.text = code;
+    _countryNameButton.titleLabel.text = country;
     
     // Reformat phone number
     NSString* digits = _phoneNumberTextField.text.digitsOnly;
     NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     _phoneNumberTextField.text = reformattedNumber;
     UITextPosition *pos = _phoneNumberTextField.endOfDocument;
     [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
@@ -217,7 +217,7 @@
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = string.length == 0;
     NSString* textAfterReformat = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat
