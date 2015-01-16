@@ -13,6 +13,7 @@
 #import "LocalizableText.h"
 #import "NBAsYouTypeFormatter.h"
 #import "PhoneNumber.h"
+#import "CodeVerificationViewController.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PhoneNumberUtil.h"
 #import "PreferencesUtil.h"
@@ -28,6 +29,7 @@
 #define kKeyboardPadding 40.0f
 #define kDoNotScroll 667.0f
 
+static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
 
@@ -43,6 +45,7 @@
     _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
     [self initializeKeyboardHandlers];
+    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -65,8 +68,8 @@
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
-    _countryCodeButton.titleLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryNameButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    [_countryCodeButton setTitle:[NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc] forState:UIControlStateNormal];
+    [_countryNameButton setTitle:[PhoneNumberUtil countryNameFromCountryCode:countryCode] forState:UIControlStateNormal];
 }
 
 
@@ -174,8 +177,8 @@
                        forCountry:(NSString *)country {
     
     //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    _countryCodeButton.titleLabel.text = code;
-    _countryNameButton.titleLabel.text = country;
+    [_countryCodeButton setTitle:code forState:UIControlStateNormal];
+    [_countryNameButton setTitle:country forState:UIControlStateNormal];
     
     // Reformat phone number
     NSString* digits = _phoneNumberTextField.text.digitsOnly;
@@ -242,14 +245,13 @@
     
 }
 
-/*
 #pragma mark - Navigation
-
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if([[segue identifier] isEqualToString:kCodeSentSegue]) {
+        CodeVerificationViewController* vc =  [segue destinationViewController];
+        vc.formattedPhoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+    }
 }
-*/
 
 @end
