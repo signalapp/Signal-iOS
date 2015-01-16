@@ -54,16 +54,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
 }
 
-#if 0
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(UITableViewCell *)sender{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    _callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    _countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-}
-#endif
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 44.0f;
 }
 
