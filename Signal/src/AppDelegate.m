@@ -92,11 +92,7 @@
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
-    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
-    [self performUpdateCheck];
-
-    
+    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];    
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
