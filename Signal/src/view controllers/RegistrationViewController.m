@@ -25,10 +25,12 @@
 
 #import <Pastelog.h>
 
-#define kKeyboardPadding 36.0f
+#define kKeyboardPadding 40.0f
 
 
 @interface RegistrationViewController ()
+
+@property CGFloat sendCodeButtonOriginalY;
 
 @end
 
@@ -140,10 +142,10 @@
 
 - (void)keyboardWillShow:(NSNotification *)notification {
     double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    [UIView animateWithDuration:duration animations:^{        
+        _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
         self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)   -keyboardSize.height+kKeyboardPadding,
+                                       CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
                                        CGRectGetWidth(self.view.frame),
                                        CGRectGetHeight(self.view.frame));
     }];
@@ -152,10 +154,8 @@
 - (void)keyboardWillHide:(NSNotification *)notification {
     double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)+keyboardSize.height-kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
+                                       CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
                                        CGRectGetHeight(self.view.frame));
     }];
 }
