@@ -170,31 +170,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 
 
-#pragma mark - CountryCodeViewControllerDelegate
 
-- (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)code
-                       forCountry:(NSString *)country {
-    
-    //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    [_countryCodeButton setTitle:code forState:UIControlStateNormal];
-    [_countryNameButton setTitle:country forState:UIControlStateNormal];
-    
-    // Reformat phone number
-    NSString* digits = _phoneNumberTextField.text.digitsOnly;
-    NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
-                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
-    _phoneNumberTextField.text = reformattedNumber;
-    UITextPosition *pos = _phoneNumberTextField.endOfDocument;
-    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
-    
-    // Done choosing country
-    [vc dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)countryCodeViewControllerDidCancel:(CountryCodeViewController *)vc {
-    [vc dismissViewControllerAnimated:YES completion:nil];
-}
 
 #pragma mark - UITextFieldDelegate
 
@@ -244,6 +220,29 @@ static NSString *const kCodeSentSegue = @"codeSent";
 {
     
 }
+
+- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue {
+    
+}
+
+- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue {
+    CountryCodeViewController *vc = [segue sourceViewController];
+    
+    //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
+    [_countryCodeButton setTitle:vc.callingCodeSelected forState:UIControlStateNormal];
+    [_countryNameButton setTitle:vc.countryNameSelected forState:UIControlStateNormal];
+    
+    // Reformat phone number
+    NSString* digits = _phoneNumberTextField.text.digitsOnly;
+    NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+    _phoneNumberTextField.text = reformattedNumber;
+    UITextPosition *pos = _phoneNumberTextField.endOfDocument;
+    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
+    
+}
+
+
 
 #pragma mark - Navigation
 // In a storyboard-based application, you will often want to do a little preparation before navigation

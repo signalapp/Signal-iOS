@@ -10,7 +10,7 @@
 #import "CountryCodeViewController.h"
 
 
-@interface RegistrationViewController : UIViewController<CountryCodeViewControllerDelegate, UITextFieldDelegate>
+@interface RegistrationViewController : UIViewController<UITextFieldDelegate>
 
 // Country code
 @property (nonatomic, strong) IBOutlet UIButton* countryNameButton;
@@ -21,5 +21,9 @@
 
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
+
+
+- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
+- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;
 
 @end

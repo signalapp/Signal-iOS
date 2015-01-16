@@ -12,12 +12,13 @@
 
 @end
 
-@interface CountryCodeViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@interface CountryCodeViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView *countryCodeTableView;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, assign) id<CountryCodeViewControllerDelegate> delegate;
+@property (nonatomic, strong) NSString* callingCodeSelected;
+@property (nonatomic, strong) NSString* countryNameSelected;
 
-- (IBAction)cancelTapped:(id)sender;
 
 @end
