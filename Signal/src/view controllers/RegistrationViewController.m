@@ -13,6 +13,7 @@
 #import "LocalizableText.h"
 #import "NBAsYouTypeFormatter.h"
 #import "PhoneNumber.h"
+#import "CodeVerificationViewController.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PhoneNumberUtil.h"
 #import "PreferencesUtil.h"
@@ -28,6 +29,7 @@
 #define kKeyboardPadding 40.0f
 #define kDoNotScroll 667.0f
 
+static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
 
@@ -242,14 +244,13 @@
     
 }
 
-/*
 #pragma mark - Navigation
-
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if([[segue identifier] isEqualToString:kCodeSentSegue]) {
+        CodeVerificationViewController* vc =  [segue destinationViewController];
+        vc.phoneNumberEntered.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+    }
 }
-*/
 
 @end

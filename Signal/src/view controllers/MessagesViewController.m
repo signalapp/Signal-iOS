@@ -65,7 +65,6 @@ static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
 static NSString *const kFingerprintSegueIdentifier = @"fingerprintSegue";
 static NSString *const kShowGroupMembersSegue = @"showGroupMembersSegue";
 
-
 typedef enum : NSUInteger {
     kMediaTypePicture,
     kMediaTypeVideo,

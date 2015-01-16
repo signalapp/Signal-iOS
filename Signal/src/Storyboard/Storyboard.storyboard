@@ -1742,7 +1742,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="401" height="30"/>
                                         </variation>
                                     </textField>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
                                         <rect key="frame" x="20" y="52" width="200" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
