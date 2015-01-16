@@ -94,7 +94,6 @@
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
