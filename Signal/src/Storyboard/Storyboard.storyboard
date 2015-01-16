@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -1142,7 +1142,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
                                 <rect key="frame" x="-20" y="241" width="440" height="80"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
+                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
                                         <rect key="frame" x="20" y="59" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1271,7 +1271,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tSy-r0-e7H" userLabel="_1.0c Registration Phone Number Input">
                                 <rect key="frame" x="-20" y="297" width="440" height="81"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
+                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
                                         <rect key="frame" x="20" y="60" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1478,7 +1478,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="xer-5m-yBI"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="-20" y="396" width="440" height="36"/>
                                     <mask key="subviews">
                                         <include reference="7IK-hd-tli"/>
                                     </mask>
@@ -1495,6 +1496,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="J5f-8V-ASm" secondAttribute="trailing" constant="-56" id="18Y-oL-GhL"/>
+                            <constraint firstItem="J5f-8V-ASm" firstAttribute="top" secondItem="kUb-Rf-uos" secondAttribute="bottom" constant="-20" id="1eq-jN-dQd"/>
                             <constraint firstItem="tSy-r0-e7H" firstAttribute="top" secondItem="J5f-8V-ASm" secondAttribute="top" constant="246" id="3mv-og-RyE"/>
                             <constraint firstItem="oS3-t9-5np" firstAttribute="top" secondItem="J5f-8V-ASm" secondAttribute="bottom" id="AXF-YV-V5G"/>
                             <constraint firstItem="J5f-8V-ASm" firstAttribute="leading" secondItem="Y3I-8Y-pLa" secondAttribute="leadingMargin" constant="-16" id="GdM-Ov-pj9"/>
@@ -1502,11 +1504,8 @@ A0 09 9A FF A8 8A 09 99</string>
                             <constraint firstAttribute="centerX" secondItem="g8J-Eg-0PT" secondAttribute="centerX" id="Kfi-ob-ixg"/>
                             <constraint firstItem="J5f-8V-ASm" firstAttribute="width" secondItem="oS3-t9-5np" secondAttribute="width" id="NwW-ai-v8s"/>
                             <constraint firstItem="tSy-r0-e7H" firstAttribute="bottom" secondItem="J5f-8V-ASm" secondAttribute="top" constant="246" id="OEH-Q7-zMV"/>
-                            <constraint firstItem="g9k-sN-wqg" firstAttribute="top" secondItem="g8J-Eg-0PT" secondAttribute="bottom" constant="345" id="WQn-gJ-GKU">
-                                <variation key="heightClass=regular-widthClass=compact" constant="36"/>
-                            </constraint>
+                            <constraint firstItem="g9k-sN-wqg" firstAttribute="top" secondItem="g8J-Eg-0PT" secondAttribute="bottom" constant="36" id="QWk-je-Ei2"/>
                             <constraint firstAttribute="centerX" secondItem="oS3-t9-5np" secondAttribute="centerX" id="ZaF-pB-kQf"/>
-                            <constraint firstItem="J5f-8V-ASm" firstAttribute="top" secondItem="kUb-Rf-uos" secondAttribute="bottom" constant="-20" id="aC8-pJ-ob3"/>
                             <constraint firstAttribute="centerX" secondItem="tSy-r0-e7H" secondAttribute="centerX" id="cpS-z2-hSP"/>
                             <constraint firstItem="g8J-Eg-0PT" firstAttribute="top" secondItem="tSy-r0-e7H" secondAttribute="top" constant="81" id="dRZ-o5-umS">
                                 <variation key="heightClass=regular-widthClass=compact" constant="91"/>
@@ -1529,7 +1528,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="18Y-oL-GhL"/>
                                 <exclude reference="GdM-Ov-pj9"/>
                                 <exclude reference="NwW-ai-v8s"/>
-                                <exclude reference="aC8-pJ-ob3"/>
                                 <exclude reference="mqQ-M3-cTP"/>
                                 <exclude reference="AXF-YV-V5G"/>
                                 <exclude reference="ZaF-pB-kQf"/>
@@ -1541,7 +1539,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="fB0-je-8HO"/>
                                 <exclude reference="g8P-mc-caY"/>
                                 <exclude reference="m2d-pE-Bog"/>
-                                <exclude reference="WQn-gJ-GKU"/>
                                 <exclude reference="KQJ-bB-VfX"/>
                                 <exclude reference="Kfi-ob-ixg"/>
                                 <exclude reference="dRZ-o5-umS"/>
@@ -1556,7 +1553,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="18Y-oL-GhL"/>
                                 <include reference="GdM-Ov-pj9"/>
                                 <include reference="NwW-ai-v8s"/>
-                                <include reference="aC8-pJ-ob3"/>
                                 <include reference="mqQ-M3-cTP"/>
                                 <include reference="AXF-YV-V5G"/>
                                 <include reference="ZaF-pB-kQf"/>
@@ -1568,7 +1564,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="fB0-je-8HO"/>
                                 <include reference="g8P-mc-caY"/>
                                 <exclude reference="m2d-pE-Bog"/>
-                                <exclude reference="WQn-gJ-GKU"/>
                                 <include reference="KQJ-bB-VfX"/>
                                 <include reference="Kfi-ob-ixg"/>
                                 <include reference="dRZ-o5-umS"/>
@@ -1607,15 +1602,15 @@ A0 09 9A FF A8 8A 09 99</string>
             </objects>
             <point key="canvasLocation" x="-1228.5" y="1707"/>
         </scene>
-        <!--_2.0_1.0^1 Country Code Modal-->
+        <!--_2.0_1.0__1 Country Code Modal-->
         <scene sceneID="8LH-LS-3Zu">
             <objects>
-                <tableViewController id="nT9-Zl-5R0" userLabel="_2.0_1.0^1 Country Code Modal" customClass="CountryCodeViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="o7w-iD-5XF">
+                <tableViewController id="nT9-Zl-5R0" userLabel="_2.0_1.0__1 Country Code Modal" customClass="CountryCodeViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="o7w-iD-5XF" userLabel="_1.0__1 Country Code Table">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="Syd-Xl-kCG">
+                        <searchBar key="tableHeaderView" contentMode="redraw" id="Syd-Xl-kCG" userLabel="__1a Search Bar">
                             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -1624,40 +1619,80 @@ A0 09 9A FF A8 8A 09 99</string>
                             </connections>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CountryCodeTableViewCell" id="hpG-pz-GPZ" customClass="CountryCodeTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CountryCodeTableViewCell" id="hpG-pz-GPZ" userLabel="__1b Country Code Table" customClass="CountryCodeTableViewCell">
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hpG-pz-GPZ" id="gVo-Nw-ff7" userLabel="table view items">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hpG-pz-GPZ" id="gVo-Nw-ff7" userLabel="Country Code Table Row">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="United states" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SDz-Ag-lp3">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="244" id="Y66-3d-yJI"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="19"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="Y66-3d-yJI"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                                 <rect key="frame" x="20" y="11" width="244" height="21"/>
+                                                <mask key="constraints">
+                                                    <include reference="Y66-3d-yJI"/>
+                                                </mask>
                                             </variation>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hl9-0w-DHU">
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hl9-0w-DHU">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="64" id="S6t-bW-MMl"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
+                                            <color key="textColor" red="0.50196078431372548" green="0.50196078431372548" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                                <rect key="frame" x="242" y="11" width="64" height="21"/>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="S6t-bW-MMl"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="317" y="11" width="64" height="21"/>
+                                                <mask key="constraints">
+                                                    <include reference="S6t-bW-MMl"/>
+                                                </mask>
                                             </variation>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="SDz-Ag-lp3" firstAttribute="leading" secondItem="gVo-Nw-ff7" secondAttribute="leadingMargin" constant="12" id="aYr-BL-A9N"/>
+                                        <constraint firstAttribute="centerY" secondItem="SDz-Ag-lp3" secondAttribute="centerY" id="d1E-Q7-R5V"/>
+                                        <constraint firstAttribute="centerY" secondItem="hl9-0w-DHU" secondAttribute="centerY" id="wyz-ST-eA7"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="hl9-0w-DHU" secondAttribute="trailing" constant="11" id="zEI-fy-DdI"/>
+                                    </constraints>
                                     <variation key="default">
                                         <mask key="subviews">
                                             <exclude reference="SDz-Ag-lp3"/>
                                             <exclude reference="hl9-0w-DHU"/>
+                                        </mask>
+                                        <mask key="constraints">
+                                            <exclude reference="aYr-BL-A9N"/>
+                                            <exclude reference="d1E-Q7-R5V"/>
+                                            <exclude reference="wyz-ST-eA7"/>
+                                            <exclude reference="zEI-fy-DdI"/>
                                         </mask>
                                     </variation>
                                     <variation key="heightClass=regular-widthClass=compact">
                                         <mask key="subviews">
                                             <include reference="SDz-Ag-lp3"/>
                                             <include reference="hl9-0w-DHU"/>
+                                        </mask>
+                                        <mask key="constraints">
+                                            <include reference="aYr-BL-A9N"/>
+                                            <include reference="d1E-Q7-R5V"/>
+                                            <include reference="wyz-ST-eA7"/>
+                                            <include reference="zEI-fy-DdI"/>
                                         </mask>
                                     </variation>
                                 </tableViewCellContentView>
@@ -1672,7 +1707,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <outlet property="delegate" destination="nT9-Zl-5R0" id="fH6-5P-CqK"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Select Country Code" id="XoD-Ld-9kq">
+                    <navigationItem key="navigationItem" title="Select Country Code" id="XoD-Ld-9kq" userLabel="_1.0__1c Navigation Bar">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="TGY-g8-Q3E">
                             <connections>
                                 <segue destination="FyL-dj-xBH" kind="unwind" unwindAction="unwindToCountryCodeSelectionCancelled:" id="RgP-lV-2uZ"/>
@@ -1852,7 +1887,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="401" height="30"/>
                                         </variation>
                                     </textField>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
                                         <rect key="frame" x="20" y="52" width="200" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1977,7 +2012,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
