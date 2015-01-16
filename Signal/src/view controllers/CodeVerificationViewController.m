@@ -32,7 +32,6 @@
 {
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
-    [_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
 }
 
 - (void)didReceiveMemoryWarning {
