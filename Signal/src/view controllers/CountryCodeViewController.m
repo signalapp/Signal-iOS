@@ -21,12 +21,6 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 }
 
 
-#pragma mark - Actions
-
-- (IBAction)cancelTapped:(id)sender {
-    [_delegate countryCodeViewControllerDidCancel:self];
-}
-
 
 #pragma mark - UITableViewDelegate
 
