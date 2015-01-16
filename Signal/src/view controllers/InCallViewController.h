@@ -40,8 +40,7 @@ typedef NS_ENUM(NSInteger, PushAcceptState){
 
 @property (nonatomic, readonly) PushAcceptState callPushState;
 
-+(InCallViewController*) inCallViewControllerWithCallState:(CallState*)callState
-                                 andOptionallyKnownContact:(Contact*)contact;
+-(void)configureWithLatestCall:(CallState*)callState;
 
 - (IBAction)endCallTapped;
 - (IBAction)muteButtonTapped;

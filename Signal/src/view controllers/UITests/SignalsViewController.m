@@ -12,6 +12,7 @@
 #import "Environment.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "InCallViewController.h"
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
@@ -33,6 +34,7 @@
 
 static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
 @interface SignalsViewController ()
 
@@ -180,9 +182,11 @@ static NSString *const kSegueIndentifier = @"showSegue";
         else if (thread) {
             [vc setupWithThread:thread];
         }
-        
-        
-        
+    }
+    else if ([segue.identifier isEqualToString:kCallSegue]) {
+        InCallViewController* vc = [segue destinationViewController];
+        [vc configureWithLatestCall:_latestCall];
+        _latestCall = nil;
     }
 }
 

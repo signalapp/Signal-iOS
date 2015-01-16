@@ -11,6 +11,7 @@
 
 #import "Contact.h"
 #import "TSGroupModel.h"
+#import "CallState.h"
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
@@ -18,6 +19,6 @@
 @property (nonatomic) TSGroupModel *groupFromCompose;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UISegmentedControl *inboxArchiveSwitch;
-
+@property (nonatomic, retain) CallState* latestCall;
 
 @end
