@@ -44,15 +44,11 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(UITableViewCell *)sender{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-    
-    [_delegate countryCodeViewController:self
-                    didSelectCountryCode:callingCode
-                              forCountry:countryName];
+    _callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    _countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
