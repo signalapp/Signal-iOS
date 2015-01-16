@@ -13,10 +13,8 @@
 @interface RegistrationViewController : UIViewController<CountryCodeViewControllerDelegate, UITextFieldDelegate>
 
 // Country code
-@property (nonatomic, strong) IBOutlet UIButton * countryCodeButton;
-@property (nonatomic, strong) IBOutlet UILabel  * countryNameLabel;
-@property (nonatomic, strong) IBOutlet UILabel  * countryCodeLabel;
-@property (nonatomic,strong)  IBOutlet UITextField *connectMeTyler;
+@property (nonatomic, strong) IBOutlet UIButton* countryNameButton;
+@property (nonatomic, strong) IBOutlet UIButton* countryCodeButton;
 
 //Phone number
 @property(nonatomic, strong) IBOutlet UITextField* phoneNumberTextField;

@@ -25,10 +25,13 @@
 
 #import <Pastelog.h>
 
-#define kKeyboardPadding 10.0f
+#define kKeyboardPadding 40.0f
+#define kDoNotScroll 667.0f
 
 
 @interface RegistrationViewController ()
+
+@property CGFloat sendCodeButtonOriginalY;
 
 @end
 
@@ -37,7 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
     [self initializeKeyboardHandlers];
 }
@@ -62,15 +65,15 @@
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
-    _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    _countryCodeButton.titleLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
+    _countryNameButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
 }
 
 
 #pragma mark - Actions
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeLabel.text, _phoneNumberTextField.text];
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeButton.titleLabel.text, _phoneNumberTextField.text];
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     if(localNumber==nil){ return; }
     
@@ -139,25 +142,27 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)-keyboardSize.height+kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
+                                           CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)+keyboardSize.height-kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 
@@ -169,13 +174,13 @@
                        forCountry:(NSString *)country {
     
     //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    _countryCodeLabel.text = code;
-    _countryNameLabel.text = country;
+    _countryCodeButton.titleLabel.text = code;
+    _countryNameButton.titleLabel.text = country;
     
     // Reformat phone number
     NSString* digits = _phoneNumberTextField.text.digitsOnly;
     NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     _phoneNumberTextField.text = reformattedNumber;
     UITextPosition *pos = _phoneNumberTextField.endOfDocument;
     [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
@@ -217,7 +222,7 @@
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = string.length == 0;
     NSString* textAfterReformat = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat

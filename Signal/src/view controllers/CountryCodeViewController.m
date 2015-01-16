@@ -20,9 +20,6 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleDefault;
-}
 
 #pragma mark - Actions
 
