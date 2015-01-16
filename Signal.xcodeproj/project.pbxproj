@@ -414,7 +414,6 @@
 		B97940281832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
 		B97CBFA918860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
-		B97CBFAB18860EA3008E0DE9 /* CountryCodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */; };
 		B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
 		B97CBFAF1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
 		B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
@@ -451,7 +450,6 @@
 		E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
 		E14874F918A06951002CC4F3 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
 		E148750018A06966002CC4F3 /* CallAudioManagerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */; };
-		E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */; };
 		E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
 		E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
 		E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -1096,7 +1094,6 @@
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
 		B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
-		B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CountryCodeViewController.xib; path = ../CountryCodeViewController.xib; sourceTree = "<group>"; };
 		B97CBFAC1886100E008E0DE9 /* CountryCodeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeTableViewCell.h; sourceTree = "<group>"; };
 		B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeTableViewCell.m; sourceTree = "<group>"; };
 		B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CountryCodeTableViewCell.xib; sourceTree = "<group>"; };
@@ -1913,7 +1910,6 @@
 			isa = PBXGroup;
 			children = (
 				76EB051D18170B33006006FC /* CallAudioManagerDemo.xib */,
-				B97CBFA718860EA3008E0DE9 /* CountryCodeViewController.xib */,
 				76EB052118170B33006006FC /* DialerViewController.xib */,
 				76EB052518170B33006006FC /* InCallViewController.xib */,
 			);
@@ -2937,7 +2933,6 @@
 				FCA52AE81A2B676C00CCADFA /* call_incoming@2x.png in Resources */,
 				FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */,
 				FCA52AE91A2B676C00CCADFA /* call_missed@2x.png in Resources */,
-				E148750518A06966002CC4F3 /* CountryCodeViewController.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
@@ -3025,7 +3020,6 @@
 				765052AC18294C9F008313E1 /* HelveticaNeueLTStd-Md.otf in Resources */,
 				76EB060118170B33006006FC /* InitiateSignal.proto in Resources */,
 				765052AA18294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf in Resources */,
-				B97CBFAB18860EA3008E0DE9 /* CountryCodeViewController.xib in Resources */,
 				76EB067118170B34006006FC /* DialerViewController.xib in Resources */,
 				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
 				B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */,
