@@ -45,6 +45,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
     [self initializeKeyboardHandlers];
+    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 }
 
 -(void)viewDidAppear:(BOOL)animated
