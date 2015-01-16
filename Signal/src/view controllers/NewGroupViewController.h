@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TSGroupThread.h"
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 
 @interface NewGroupViewController : UIViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
 
@@ -17,6 +17,6 @@
 @property(nonatomic, strong) IBOutlet UITextField* nameGroupTextField;
 @property(nonatomic, strong) IBOutlet UIButton* groupImageButton;
 @property(nonatomic, strong) IBOutlet UIView* tapToDismissView;
-@property(nonatomic, strong) GroupModel* groupModel;
+@property(nonatomic, strong) TSGroupModel* groupModel;
 
 @end

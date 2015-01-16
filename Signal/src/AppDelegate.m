@@ -212,6 +212,7 @@
     } else {
         [TSSocketManager becomeActive];
     }
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
                        completionHandler(UIBackgroundFetchResultNewData);
@@ -261,13 +262,9 @@
                        dispatch_get_main_queue(), ^{
                            completionHandler();
                        });
-    } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]){
-        //TODO
-    } else if ([identifier isEqualToString:Signal_Message_View_Identifier]){
-        //TODO
+    } else{
+        completionHandler();
     }
-    
-    completionHandler();
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{

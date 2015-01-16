@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TSGroupThread.h"
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 
 @interface ShowGroupMembersViewController : UITableViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
 

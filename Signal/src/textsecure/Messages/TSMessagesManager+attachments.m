@@ -147,7 +147,7 @@ dispatch_queue_t attachmentsQueue() {
             [stream saveWithTransaction:transaction];
             
             if([attachment.avatarOfGroupId length]!=0) {
-                GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+                TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
                 TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
                 gThread.groupModel.groupImage=[stream image];
                 [gThread saveWithTransaction:transaction];

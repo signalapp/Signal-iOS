@@ -16,7 +16,7 @@
 
 
 #import "Contact.h"
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 

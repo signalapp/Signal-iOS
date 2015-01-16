@@ -14,7 +14,7 @@
 
 #define TSGroupThreadPrefix @"g"
 
-- (instancetype)initWithGroupModel:(GroupModel *)groupModel{
+- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel{
     
     NSString *uniqueIdentifier = [[self class] threadIdFromGroupId:groupModel.groupId];
     
@@ -24,11 +24,11 @@
 }
 
 
-+ (instancetype)threadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadTransaction*)transaction {
++ (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction*)transaction {
    return  [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
 }
 
-+ (instancetype)getOrCreateThreadWithGroupModel:(GroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction{
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadWriteTransaction*)transaction{
     TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
 
     if (!thread) {

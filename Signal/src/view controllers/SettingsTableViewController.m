@@ -14,9 +14,12 @@
 #import "TSStorageManager.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
+#import "UIUtil.h"
 #import <Social/Social.h>
 
 #import "RPServerRequestsManager.h"
+
+#import "TSSocketManager.h"
 
 #import <PastelogKit/Pastelog.h>
 
@@ -27,29 +30,39 @@
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 
+#import "PrivacySettingsTableViewController.h"
+#import "MediaSettingsTableViewController.h"
+#import "AdvancedSettingsTableViewController.h"
+#import "AboutTableViewController.h"
+
 #define kProfileCellHeight      87.0f
-#define kStandardCellHeight     60.0f
+#define kStandardCellHeight     44.0f
 
-#define kNumberOfSections       2
+#define kNumberOfSections       4
 
-#define kMessageDisplayCellRow  1
-#define kImageQualitySettingRow 2
-#define kClearHistoryLogCellRow 3
-#define kShareFingerpintCellRow 4
-#define kSendDebugLogCellRow    6
-#define kUnregisterCell         7
+#define kRegisteredNumberRow 0
+#define kPrivacyRow          0
+#define kMediaRow            1
+#define kAdvancedRow         2
+#define kAboutRow            3
+#define kNetworkRow          0
+#define kUnregisterRow       0
 
 typedef enum {
-    kProfileRows  = 1,
-    kSecurityRows = 8,
+    kRegisteredRows    = 1,
+    kGeneralRows       = 4,
+    kNetworkStatusRows = 1,
+    kUnregisterRows    = 1,
 } kRowsForSection;
 
 typedef enum {
-    kProfileSection,
-    kSecuritySection,
+    kRegisteredNumberSection,
+    kGeneralSection,
+    kNetworkStatusSection,
+    kUnregisterSection,
 } kSection;
 
-@interface SettingsTableViewController ()
+@interface SettingsTableViewController () <UIAlertViewDelegate>
 
 @end
 
@@ -59,12 +72,15 @@ typedef enum {
     [super viewDidLoad];
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     self.registeredNumber.text     = [TSAccountManager registeredNumber];
+    [self initializeObserver];
+    [TSSocketManager sendNotification];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+-(void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
 }
-
 
 #pragma mark - Table view data source
 
@@ -75,131 +91,101 @@ typedef enum {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     switch (section) {
-        case kProfileSection:
-            return kProfileRows;
-            break;
-        case kSecuritySection:
-            return kSecurityRows;
-            break;
+        case kRegisteredNumberSection:
+            return kRegisteredRows;
+        case kGeneralSection:
+            return kGeneralRows;
+        case kNetworkStatusSection:
+            return kNetworkStatusRows;
+        case kUnregisterSection:
+            return kUnregisterRows;
         default:
             return 0;
-            break;
     }
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
-        case kProfileSection:
+        case kRegisteredNumberSection:
             return kProfileCellHeight;
-            break;
-            
         default:
             return kStandardCellHeight;
-            break;
     }
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section==kSecuritySection)
-    {
-        switch (indexPath.row) {
-            case kClearHistoryLogCellRow:
-            {
-                //Present more info
-                [DJWActionSheet showInView:self.tabBarController.view
-                                 withTitle:@"Are you sure you want to delete all your history (messages, attachments, call history ...)? This action cannot be reverted."
-                         cancelButtonTitle:@"Cancel"
-                    destructiveButtonTitle:@"I'm sure."
-                         otherButtonTitles:@[]
-                                  tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                                      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                      if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                          NSLog(@"User Cancelled");
-                                          
-                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
-                                          [[TSStorageManager sharedManager] deleteThreadsAndMessages];
-                                      } else {
-                                          NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
-                                      }
-                                  }];
-                
-                break;
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    switch (indexPath.section) {
+        case kGeneralSection:
+        {
+            switch (indexPath.row) {
+                case kPrivacyRow:
+                {
+                    PrivacySettingsTableViewController * vc = [[PrivacySettingsTableViewController alloc]init];
+                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                    NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
+                case kMediaRow:
+                {
+                    MediaSettingsTableViewController * vc = [[MediaSettingsTableViewController alloc]init];
+                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                    NSAssert(vc != nil, @"Media Settings View Controller must not be nil");
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
+                case kAdvancedRow:
+                {
+                    AdvancedSettingsTableViewController * vc = [[AdvancedSettingsTableViewController alloc]init];
+                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                    NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
+                case kAboutRow:
+                {
+                    AboutTableViewController * vc = [[AboutTableViewController alloc]init];
+                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                    NSAssert(vc != nil, @"About View Controller must not be nil");
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
+                default:
+                    break;
             }
             
-            case kImageQualitySettingRow:
-            {
-                [DJWActionSheet showInView:self.tabBarController.view
-                                 withTitle:nil
-                         cancelButtonTitle:@"Cancel"
-                    destructiveButtonTitle:nil
-                         otherButtonTitles:@[@"Uncompressed", @"High", @"Medium", @"Low"]
-                                  tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                                      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                      if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                          DDLogVerbose(@"User Cancelled <%s>", __PRETTY_FUNCTION__);
-                                          
-                                      } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                          DDLogVerbose(@"Destructive button tapped <%s>", __PRETTY_FUNCTION__);
-                                      }else {
-                                          switch (tappedButtonIndex) {
-                                              case 0:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityUncropped];
-                                                  break;
-                                              case 1:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityHigh];
-                                                  break;
-                                              case 2:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityMedium];
-                                                  break;
-                                              case 3:
-                                                  [Environment.preferences setImageUploadQuality:TSImageQualityLow];
-                                                  break;
-                                              default:
-                                                  DDLogWarn(@"Illegal Image Quality Tapped in <%s>", __PRETTY_FUNCTION__);
-                                                  break;
-                                          }
-                                          
-                                          SettingsTableViewCell * cell = (SettingsTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
-                                          [cell updateImageQualityLabel];
-                                      }
-                                  }];
-                break;
-            }
-            case kShareFingerpintCellRow: {
-                if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
-                {
-                    SLComposeViewController *tweetSheet = [SLComposeViewController
-                                                           composeViewControllerForServiceType:SLServiceTypeTwitter];
-                    NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
-                    NSString * tweetString = [NSString stringWithFormat:@"Verifying myself on Signal : %@", [self getFingerprintForTweet:myPublicKey]];
-                    [tweetSheet setInitialText:tweetString];
-                    [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
-                    tweetSheet.completionHandler = ^(SLComposeViewControllerResult result) {
-                        if (result == SLComposeViewControllerResultCancelled) {
-                            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-                        }
-                    };
-                    [self presentViewController:tweetSheet animated:YES completion:nil];
-                }
-                break;
-            }
-            case kSendDebugLogCellRow:
-                [Pastelog submitLogs];
-                break;
-                
-            case kUnregisterCell:
-                [TSAccountManager unregisterTextSecureWithSuccess:^{
-                    [[TSStorageManager sharedManager] wipe];
-                    exit(0);
-                } failure:^(NSError *error) {
-                    SignalAlertView(@"Failed to unregister", @"");
-                }];
-                break;
-                
-            default:
-                break;
+            break;
         }
+            
+        case kNetworkStatusSection:
+        {
+            break;
+        }
+            
+        case kUnregisterSection:
+        {
+            [TSAccountManager unregisterTextSecureWithSuccess:^{
+                [[TSStorageManager sharedManager] wipe];
+                exit(0);
+            } failure:^(NSError *error) {
+                SignalAlertView(@"Failed to unregister", @"");
+            }];
+            break;
+        }
+        
+        default:
+            break;
+    }
+}
+
+-(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == kNetworkStatusSection) {
+        UIAlertView * info = [[UIAlertView alloc]initWithTitle:@"Network Status" message:@"You can check your network status by looking at the colored bar above your inbox." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        [info show];
     }
 }
 
@@ -222,6 +208,30 @@ typedef enum {
          formattedFingerprint = [formattedFingerprint stringByAppendingString:substring];
      }];
     return formattedFingerprint;
+}
+
+#pragma mark - Socket Status Notifications
+
+-(void)initializeObserver
+{
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidOpen)      name:SocketOpenedNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidClose)     name:SocketClosedNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketIsConnecting) name:SocketConnectingNotification object:nil];
+}
+
+-(void)socketDidOpen {
+    self.networkStatusLabel.text = @"Connected";
+    self.networkStatusLabel.textColor = [UIColor ows_greenColor];
+}
+
+-(void)socketDidClose {
+    self.networkStatusLabel.text = @"Offline";
+    self.networkStatusLabel.textColor = [UIColor ows_redColor];
+}
+
+-(void)socketIsConnecting {
+    self.networkStatusLabel.text = @"Connecting";
+    self.networkStatusLabel.textColor = [UIColor ows_yellowColor];
 }
 
 

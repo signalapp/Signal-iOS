@@ -357,7 +357,7 @@
 		B68B0E8A1A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6A3EB4B1A423B3800B2236B /* TSAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */; };
-		B6AE33BD1A1EB121003DF39D /* GroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* GroupModel.m */; };
+		B6AE33BD1A1EB121003DF39D /* TSGroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* TSGroupModel.m */; };
 		B6B095E41A1D25C5008BFAA6 /* CryptographyTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */; };
 		B6B095E51A1D25C5008BFAA6 /* TextSecureKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */; };
 		B6B095E61A1D25C5008BFAA6 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095E01A1D25C5008BFAA6 /* TSMessageStorageTests.m */; };
@@ -486,10 +486,6 @@
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
-		FC1615181A37935600F1761D /* NotificationPreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1615171A37935600F1761D /* NotificationPreviewViewController.m */; };
-		FC16151C1A37945D00F1761D /* notification_no_preview_with_name@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */; };
-		FC16151D1A37945D00F1761D /* notification_no_preview_no_name@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */; };
-		FC16151E1A37945D00F1761D /* notification_with_preview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */; };
 		FC18803C1A31D94D0044CE86 /* SignalTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */; };
 		FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90BF1A22342B004F8253 /* group_photo@2x.png */; };
 		FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C41A223991004F8253 /* settings_tab@2x.png */; };
@@ -533,6 +529,10 @@
 		FCB626B61A3B067900FDB504 /* ArrowBottom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB626B21A3B067900FDB504 /* ArrowBottom@3x.png */; };
 		FCB626B71A3B067900FDB504 /* ArrowTop@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB626B31A3B067900FDB504 /* ArrowTop@3x.png */; };
 		FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
+		FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */; };
+		FCD274E51A5AFDB800202277 /* MediaSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */; };
+		FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */; };
+		FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */; };
 		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
@@ -996,8 +996,8 @@
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6A3EB491A423B3800B2236B /* TSAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentAdapter.h; sourceTree = "<group>"; };
 		B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentAdapter.m; sourceTree = "<group>"; };
-		B6AE33BB1A1EB121003DF39D /* GroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupModel.h; sourceTree = "<group>"; };
-		B6AE33BC1A1EB121003DF39D /* GroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupModel.m; sourceTree = "<group>"; };
+		B6AE33BB1A1EB121003DF39D /* TSGroupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSGroupModel.h; path = "../../view controllers/TSGroupModel.h"; sourceTree = "<group>"; };
+		B6AE33BC1A1EB121003DF39D /* TSGroupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSGroupModel.m; path = "../../view controllers/TSGroupModel.m"; sourceTree = "<group>"; };
 		B6B095DE1A1D25C5008BFAA6 /* CryptographyTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CryptographyTests.mm; sourceTree = "<group>"; };
 		B6B095DF1A1D25C5008BFAA6 /* TextSecureKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextSecureKitTests.m; sourceTree = "<group>"; };
 		B6B095E01A1D25C5008BFAA6 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
@@ -1187,11 +1187,6 @@
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
-		FC1615161A37935600F1761D /* NotificationPreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationPreviewViewController.h; sourceTree = "<group>"; };
-		FC1615171A37935600F1761D /* NotificationPreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationPreviewViewController.m; sourceTree = "<group>"; };
-		FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_with_name@2x.png"; sourceTree = "<group>"; };
-		FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_no_preview_no_name@2x.png"; sourceTree = "<group>"; };
-		FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notification_with_preview@2x.png"; sourceTree = "<group>"; };
 		FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalTabBarController.h; sourceTree = "<group>"; };
 		FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalTabBarController.m; sourceTree = "<group>"; };
 		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
@@ -1249,6 +1244,14 @@
 		FCB626B31A3B067900FDB504 /* ArrowTop@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ArrowTop@3x.png"; sourceTree = "<group>"; };
 		FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+TSHardwareVersion.h"; sourceTree = "<group>"; };
 		FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+TSHardwareVersion.m"; sourceTree = "<group>"; };
+		FCD274E01A5AFD8000202277 /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
+		FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; };
+		FCD274E31A5AFDB800202277 /* MediaSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaSettingsTableViewController.h; sourceTree = "<group>"; };
+		FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaSettingsTableViewController.m; sourceTree = "<group>"; };
+		FCD274E61A5AFDC900202277 /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
+		FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
+		FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
+		FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
 		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
 		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
@@ -2204,9 +2207,6 @@
 				FCA52AE41A2B676C00CCADFA /* message_error@2x.png */,
 				B633C5411A1D190B0059AC12 /* mute_off@2x.png */,
 				B633C5421A1D190B0059AC12 /* mute_on@2x.png */,
-				FC16151A1A37945D00F1761D /* notification_no_preview_no_name@2x.png */,
-				FC1615191A37945D00F1761D /* notification_no_preview_with_name@2x.png */,
-				FC16151B1A37945D00F1761D /* notification_with_preview@2x.png */,
 				B633C54B1A1D190B0059AC12 /* photo@2x.png */,
 				FC9120421A39F9E00074545C /* qr_scan_fingerprint@2x.png */,
 				FC91203F1A39EFB70074545C /* qr@2x.png */,
@@ -2306,8 +2306,6 @@
 		B6AE33B41A1EB0A0003DF39D /* temp */ = {
 			isa = PBXGroup;
 			children = (
-				B6AE33BB1A1EB121003DF39D /* GroupModel.h */,
-				B6AE33BC1A1EB121003DF39D /* GroupModel.m */,
 			);
 			name = temp;
 			sourceTree = "<group>";
@@ -2395,6 +2393,8 @@
 				B6B0960E1A1D25ED008BFAA6 /* TSInfoMessage.m */,
 				B6B0960F1A1D25ED008BFAA6 /* TSInteraction.h */,
 				B6B096101A1D25ED008BFAA6 /* TSInteraction.m */,
+				B6AE33BB1A1EB121003DF39D /* TSGroupModel.h */,
+				B6AE33BC1A1EB121003DF39D /* TSGroupModel.m */,
 				B6B096111A1D25ED008BFAA6 /* TSMessage.h */,
 				B6B096121A1D25ED008BFAA6 /* TSMessage.m */,
 				B6B50AA91A4192C500F8F607 /* TSMessagesManager+attachments.h */,
@@ -2686,8 +2686,14 @@
 			children = (
 				FC31962E1A0814130094C78E /* SettingsTableViewController.h */,
 				FC31962F1A0814130094C78E /* SettingsTableViewController.m */,
-				FC1615161A37935600F1761D /* NotificationPreviewViewController.h */,
-				FC1615171A37935600F1761D /* NotificationPreviewViewController.m */,
+				FCD274E01A5AFD8000202277 /* PrivacySettingsTableViewController.h */,
+				FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */,
+				FCD274E31A5AFDB800202277 /* MediaSettingsTableViewController.h */,
+				FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */,
+				FCD274E61A5AFDC900202277 /* AdvancedSettingsTableViewController.h */,
+				FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */,
+				FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */,
+				FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -2951,9 +2957,7 @@
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
 				FCA52AEB1A2B676C00CCADFA /* checkmark_light@2x.png in Resources */,
-				FC16151C1A37945D00F1761D /* notification_no_preview_with_name@2x.png in Resources */,
 				B633C5D01A1D190B0059AC12 /* red-delete@2x.png in Resources */,
-				FC16151E1A37945D00F1761D /* notification_with_preview@2x.png in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				B633C5B41A1D190B0059AC12 /* keypad@2x.png in Resources */,
 				B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */,
@@ -2976,7 +2980,6 @@
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				FCA52AE71A2B676C00CCADFA /* call_failed@2x.png in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
-				FC16151D1A37945D00F1761D /* notification_no_preview_no_name@2x.png in Resources */,
 				B633C5801A1D190B0059AC12 /* archive@2x.png in Resources */,
 				FC1F90C71A223991004F8253 /* signals_tab@2x.png in Resources */,
 				FCB626B51A3B067900FDB504 /* ArrowBottom@2x.png in Resources */,
@@ -3170,6 +3173,7 @@
 				B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
 				B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */,
+				FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */,
 				E197B61618BBEC1A00F073E5 /* StretchFactorController.m in Sources */,
 				FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */,
 				76EB065018170B34006006FC /* DialerViewController.m in Sources */,
@@ -3201,7 +3205,7 @@
 				76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
-				B6AE33BD1A1EB121003DF39D /* GroupModel.m in Sources */,
+				B6AE33BD1A1EB121003DF39D /* TSGroupModel.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
 				FCAFC33F1A0F948F00AE5136 /* ActionContactDetailCell.m in Sources */,
@@ -3225,7 +3229,6 @@
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
-				FC1615181A37935600F1761D /* NotificationPreviewViewController.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
 				A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */,
@@ -3260,6 +3263,7 @@
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
+				FCD274E51A5AFDB800202277 /* MediaSettingsTableViewController.m in Sources */,
 				76EB063618170B33006006FC /* DataUtil.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
@@ -3275,6 +3279,7 @@
 				76EB057418170B33006006FC /* RecentCallManager.m in Sources */,
 				B60FB9A71A46F099006A5A66 /* TSAllocAttachmentRequest.m in Sources */,
 				76EB061C18170B33006006FC /* ArrayUtil.m in Sources */,
+				FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */,
 				76EB05C418170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB05AA18170B33006006FC /* SequenceCounter.m in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
@@ -3327,6 +3332,7 @@
 				FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */,
 				76EB05C818170B33006006FC /* HelloPacket.m in Sources */,
 				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
+				FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,

@@ -2,20 +2,20 @@
 //  GroupModel.m
 //  Signal
 //
-//  Created by Dylan Bourgeois on 13/11/14.
+//  Created by Frederic Jacobs on 13/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 
-@implementation GroupModel
+@implementation TSGroupModel
 
 -(instancetype)initWithTitle:(NSString*)title memberIds:(NSMutableArray*)memberIds image:(UIImage*)image groupId:(NSData *)groupId{
-    _groupName=title;
+    _groupName      = title;
     _groupMemberIds = [memberIds copy];
-    _groupImage = image;
-    _groupId = groupId;
-    
+    _groupImage     = image;
+    _groupId        = groupId;
+
     return self;
 }
 
@@ -29,7 +29,7 @@
     return [self isEqualToGroupModel:other];
 }
 
-- (BOOL)isEqualToGroupModel:(GroupModel *)other {
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)other {
     if (self == other)
         return YES;
     if(![_groupId isEqualToData:other.groupId] ) {
@@ -49,7 +49,7 @@
     return YES;
 }
 
-- (NSString*) getInfoStringAboutUpdateTo:(GroupModel*)newModel {
+- (NSString*) getInfoStringAboutUpdateTo:(TSGroupModel*)newModel {
     NSString* updatedGroupInfoString = @"Group updated. ";
     if (self == newModel) {
         return updatedGroupInfoString;
@@ -80,7 +80,5 @@
     
     return updatedGroupInfoString;
 }
-
-
 
 @end

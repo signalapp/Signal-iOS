@@ -100,7 +100,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)setupWithTSGroup:(GroupModel*)model {
+- (void)setupWithTSGroup:(TSGroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         
@@ -1132,7 +1132,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void) updateGroupModelTo:(GroupModel*)newGroupModel {
+- (void) updateGroupModelTo:(TSGroupModel*)newGroupModel {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
         gThread.groupModel = newGroupModel;
@@ -1153,7 +1153,7 @@ typedef enum : NSUInteger {
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
     [self.inputToolbar.contentView.textView resignFirstResponder];
     NewGroupViewController *ngc = [segue sourceViewController];
-    GroupModel* newGroupModel = [ngc groupModel];
+    TSGroupModel* newGroupModel = [ngc groupModel];
     NSMutableArray* groupMemberIds = [[NSMutableArray alloc] initWithArray:newGroupModel.groupMemberIds];
     [groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
     newGroupModel.groupMemberIds = groupMemberIds;

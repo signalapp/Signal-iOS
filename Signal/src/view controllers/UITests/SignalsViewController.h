@@ -10,12 +10,12 @@
 #import <UIKit/UIKit.h>
 
 #import "Contact.h"
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
 @property (nonatomic) NSString   *contactIdentifierFromCompose;
-@property (nonatomic) GroupModel *groupFromCompose;
+@property (nonatomic) TSGroupModel *groupFromCompose;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UISegmentedControl *inboxArchiveSwitch;
 

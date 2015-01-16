@@ -11,5 +11,6 @@
 @interface SettingsTableViewController : UITableViewController
 
 @property IBOutlet UILabel *registeredNumber;
+@property IBOutlet UILabel *networkStatusLabel;
 
 @end

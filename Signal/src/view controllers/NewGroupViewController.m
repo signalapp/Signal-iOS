@@ -15,7 +15,7 @@
 
 
 #import "Contact.h"
-#import "GroupModel.h"
+#import "TSGroupModel.h"
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 
@@ -121,7 +121,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 #pragma mark - Actions
 -(void)createGroup {
-    GroupModel* model = [self makeGroup];
+    TSGroupModel* model = [self makeGroup];
     [Environment groupModel:model];
 }
 
@@ -132,13 +132,13 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
     }
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
-    _groupModel = [[GroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
+    _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
 }
 
 
--(GroupModel*)makeGroup {
+-(TSGroupModel*)makeGroup {
     NSString* title = _nameGroupTextField.text;
     UIImage* img = _thread.groupModel.groupImage;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
@@ -150,7 +150,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
-    return [[GroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender

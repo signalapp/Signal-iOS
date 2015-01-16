@@ -186,7 +186,7 @@
     if(content.hasGroup)  {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            GroupModel *emptyModelToFillOutId = [[GroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+            TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
             if(gThread==nil && content.group.type != PushMessageContentGroupContextTypeUpdate) {
                 ignoreMessage = YES;
@@ -247,7 +247,7 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            GroupModel *model = [[GroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id];
+            TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id];
             TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {
@@ -324,7 +324,6 @@
         
         [errorMessage saveWithTransaction:transaction];
     }];
-    
 }
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message{
@@ -339,32 +338,7 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
-    UILocalNotification *notification = [[UILocalNotification alloc] init];
-    
-    notification.alertBody = [self alertBodyForNotificationSetting:[Environment.preferences notificationPreviewType] withMessage:message from:name];
-    notification.soundName = @"default";
-    notification.category  = Signal_Message_Category;
-    
-    [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-}
-
--(NSString*)alertBodyForNotificationSetting:(NotificationType)setting withMessage:(TSIncomingMessage*)message from:(NSString*)name
-{
-    switch (setting) {
-        case NotificationNoNameNoPreview:
-            return @"New message";
-            break;
-        case NotificationNamePreview:
-            if (message.body) {
-                return [NSString stringWithFormat:@"%@ : %@", name, message.body];
-            }
-        case NotificationNameNoPreview:
-            return [NSString stringWithFormat:@"New message from %@", name];
-            
-        default:
-            DDLogWarn(@"Unexpected notification type %lu", setting);
-            break;
-    }
+    //TODO: Warn user when message is received?
 }
 
 @end
