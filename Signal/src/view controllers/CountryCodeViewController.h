@@ -17,5 +17,8 @@
 @property (nonatomic, strong) IBOutlet UITableView *countryCodeTableView;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, assign) id<CountryCodeViewControllerDelegate> delegate;
+@property (nonatomic, strong) NSString* callingCodeSelected;
+@property (nonatomic, strong) NSString* countryNameSelected;
+
 
 @end
