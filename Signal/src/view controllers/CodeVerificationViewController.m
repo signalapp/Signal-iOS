@@ -32,6 +32,7 @@
 {
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
+    [_phoneNumberEntered setText:_formattedPhoneNumber];
 }
 
 - (void)didReceiveMemoryWarning {

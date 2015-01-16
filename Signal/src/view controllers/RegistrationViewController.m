@@ -249,7 +249,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([[segue identifier] isEqualToString:kCodeSentSegue]) {
         CodeVerificationViewController* vc =  [segue destinationViewController];
-        vc.phoneNumberEntered.text = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+        vc.formattedPhoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     }
 }
 
