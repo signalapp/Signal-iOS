@@ -182,27 +182,28 @@
 }
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    ResponderSessionDescriptor* call;
-    
-    if (![self.notificationTracker shouldProcessNotification:userInfo]){
-        return;
-    }
-    
-    @try {
-        call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
-        DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
-        self.callPickUpFuture = [TOCFutureSource new];
-    } @catch (OperationFailed* ex) {
-        DDLogError(@"Error parsing remote notification. Error: %@.", ex);
-        return;
-    }
-    
-    if (!call) {
-        DDLogError(@"Decryption of session descriptor failed");
-        return;
-    }
-    
-    [Environment.phoneManager incomingCallWithSession:call];
+    if ([self isRedPhonePush:userInfo]) {
+        ResponderSessionDescriptor* call;
+        if (![self.notificationTracker shouldProcessNotification:userInfo]){
+            return;
+        }
+        
+        @try {
+            call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
+            DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
+            self.callPickUpFuture = [TOCFutureSource new];
+        } @catch (OperationFailed* ex) {
+            DDLogError(@"Error parsing remote notification. Error: %@.", ex);
+            return;
+        }
+        
+        if (!call) {
+            DDLogError(@"Decryption of session descriptor failed");
+            return;
+        }
+        
+        [Environment.phoneManager incomingCallWithSession:call];
+    }    
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
