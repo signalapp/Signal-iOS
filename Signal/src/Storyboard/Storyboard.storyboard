@@ -1282,33 +1282,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </mask>
                                         </variation>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AbN-AU-yk7">
-                                        <rect key="frame" x="48" y="22" width="152" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="26" id="Yhg-xJ-c8E"/>
-                                            <constraint firstAttribute="height" constant="26" id="hch-s1-zig"/>
-                                            <constraint firstAttribute="width" constant="152" id="tZB-hO-p3n"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
-                                        <state key="normal" title="Phone Number">
-                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="Yhg-xJ-c8E"/>
-                                                <exclude reference="hch-s1-zig"/>
-                                                <exclude reference="tZB-hO-p3n"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <exclude reference="Yhg-xJ-c8E"/>
-                                                <include reference="hch-s1-zig"/>
-                                                <include reference="tZB-hO-p3n"/>
-                                            </mask>
-                                        </variation>
-                                    </button>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" placeholder="Enter Number" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTJ-pq-Z9L">
                                         <rect key="frame" x="202" y="20" width="182" height="30"/>
                                         <constraints>
@@ -1336,6 +1309,33 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </mask>
                                         </variation>
                                     </textField>
+                                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AbN-AU-yk7">
+                                        <rect key="frame" x="48" y="22" width="152" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="26" id="Yhg-xJ-c8E"/>
+                                            <constraint firstAttribute="height" constant="26" id="hch-s1-zig"/>
+                                            <constraint firstAttribute="width" constant="152" id="tZB-hO-p3n"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                                        <state key="normal" title="Phone Number">
+                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="Yhg-xJ-c8E"/>
+                                                <exclude reference="hch-s1-zig"/>
+                                                <exclude reference="tZB-hO-p3n"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact">
+                                            <mask key="constraints">
+                                                <exclude reference="Yhg-xJ-c8E"/>
+                                                <include reference="hch-s1-zig"/>
+                                                <include reference="tZB-hO-p3n"/>
+                                            </mask>
+                                        </variation>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
