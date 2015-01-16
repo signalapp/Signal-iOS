@@ -25,7 +25,7 @@
 
 #import <Pastelog.h>
 
-#define kKeyboardPadding 10.0f
+#define kKeyboardPadding 36.0f
 
 
 @interface RegistrationViewController ()
@@ -143,7 +143,7 @@
     [UIView animateWithDuration:duration animations:^{
         CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)-keyboardSize.height+kKeyboardPadding,
+                                       CGRectGetMinY(self.view.frame)-kKeyboardPadding, //-keyboardSize.height+kKeyboardPadding,
                                        CGRectGetWidth(self.view.frame),
                                        CGRectGetHeight(self.view.frame));
     }];
@@ -154,7 +154,7 @@
     [UIView animateWithDuration:duration animations:^{
         CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
         self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)+keyboardSize.height-kKeyboardPadding,
+                                       CGRectGetMinY(self.view.frame)+kKeyboardPadding,  //+keyboardSize.height-kKeyboardPadding,
                                        CGRectGetWidth(self.view.frame),
                                        CGRectGetHeight(self.view.frame));
     }];
