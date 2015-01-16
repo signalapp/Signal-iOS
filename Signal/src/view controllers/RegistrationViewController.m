@@ -26,6 +26,7 @@
 #import <Pastelog.h>
 
 #define kKeyboardPadding 40.0f
+#define kDoNotScroll 667.0f
 
 
 @interface RegistrationViewController ()
@@ -141,23 +142,27 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{        
-        _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
+                                           CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 
