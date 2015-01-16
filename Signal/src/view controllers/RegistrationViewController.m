@@ -67,8 +67,8 @@ static NSString *const kCodeSentSegue = @"codeSent";
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
-    _countryCodeButton.titleLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryNameButton.titleLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    [_countryCodeButton setTitle:[NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc] forState:UIControlStateNormal];
+    [_countryNameButton setTitle:[PhoneNumberUtil countryNameFromCountryCode:countryCode] forState:UIControlStateNormal];
 }
 
 
@@ -176,8 +176,8 @@ static NSString *const kCodeSentSegue = @"codeSent";
                        forCountry:(NSString *)country {
     
     //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    _countryCodeButton.titleLabel.text = code;
-    _countryNameButton.titleLabel.text = country;
+    [_countryCodeButton setTitle:code forState:UIControlStateNormal];
+    [_countryNameButton setTitle:country forState:UIControlStateNormal];
     
     // Reformat phone number
     NSString* digits = _phoneNumberTextField.text.digitsOnly;
