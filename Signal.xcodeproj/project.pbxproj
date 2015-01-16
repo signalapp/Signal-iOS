@@ -283,6 +283,8 @@
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		A5578C721A646E5300704A25 /* VersionMigrationsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5578C711A646E5300704A25 /* VersionMigrationsTests.m */; };
+		A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */; };
+		A5509ECD1A69B1D600ABA4BC /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */; };
 		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
 		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
@@ -415,8 +417,6 @@
 		B97940281832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
 		B97CBFA918860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
-		B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
-		B97CBFAF1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */; };
 		B97CBFB218861023008E0DE9 /* CountryCodeTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BF8C3D8319CE3B6A008F644C /* RecentCallTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */; };
@@ -511,7 +511,6 @@
 		FCA52AEC1A2B676C00CCADFA /* message_error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52AE41A2B676C00CCADFA /* message_error@2x.png */; };
 		FCA52AED1A2B676C00CCADFA /* reply@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52AE51A2B676C00CCADFA /* reply@2x.png */; };
 		FCA52B071A2BBAE400CCADFA /* call_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA52B061A2BBAE400CCADFA /* call_tab@2x.png */; };
-		FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */; };
 		FCAC964119FEF99A0046DFC5 /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FCAC963F19FEF99A0046DFC5 /* InboxTableViewCell.xib */; };
@@ -883,6 +882,9 @@
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A5578C711A646E5300704A25 /* VersionMigrationsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrationsTests.m; sourceTree = "<group>"; };
+		A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Storyboard/Storyboard.storyboard; sourceTree = "<group>"; };
+		A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeTableViewCell.h; sourceTree = "<group>"; };
+		A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeTableViewCell.m; sourceTree = "<group>"; };
 		A569778D1A351BC400173BF2 /* ScanIdentityBarcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanIdentityBarcodeViewController.h; sourceTree = "<group>"; };
 		A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanIdentityBarcodeViewController.m; sourceTree = "<group>"; };
 		A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentIdentityQRCodeViewController.m; sourceTree = "<group>"; };
@@ -1096,8 +1098,6 @@
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
 		B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
-		B97CBFAC1886100E008E0DE9 /* CountryCodeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeTableViewCell.h; sourceTree = "<group>"; };
-		B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeTableViewCell.m; sourceTree = "<group>"; };
 		B97CBFB018861023008E0DE9 /* CountryCodeTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CountryCodeTableViewCell.xib; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		BF8C3D8219CE3B6A008F644C /* RecentCallTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallTest.m; sourceTree = "<group>"; };
@@ -1216,7 +1216,6 @@
 		FCA52AE41A2B676C00CCADFA /* message_error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "message_error@2x.png"; sourceTree = "<group>"; };
 		FCA52AE51A2B676C00CCADFA /* reply@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reply@2x.png"; sourceTree = "<group>"; };
 		FCA52B061A2BBAE400CCADFA /* call_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call_tab@2x.png"; sourceTree = "<group>"; };
-		FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Signal/src/Storyboard/Storyboard.storyboard; sourceTree = SOURCE_ROOT; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
 		FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InboxTableViewCell.h; path = "../view controllers/InboxTableViewCell.h"; sourceTree = "<group>"; };
@@ -1378,7 +1377,9 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FCAC963419FEF4E20046DFC5 /* Storyboard.storyboard */,
+				A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */,
+				FC18803A1A31D94D0044CE86 /* SignalTabBarController.h */,
+				FC18803B1A31D94D0044CE86 /* SignalTabBarController.m */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03D918170B33006006FC /* audio */,
@@ -1896,8 +1897,6 @@
 				FC3196331A0814360094C78E /* Contacts */,
 				FC3196311A08141D0094C78E /* Settings */,
 				FCAC963919FEF8A00046DFC5 /* UI Tests */,
-				B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */,
-				B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */,
 				76EB050518170B33006006FC /* DialerViewController.h */,
 				76EB050618170B33006006FC /* DialerViewController.m */,
 				76EB050B18170B33006006FC /* InCallViewController.h */,
@@ -1922,6 +1921,8 @@
 		76EB052B18170B33006006FC /* views */ = {
 			isa = PBXGroup;
 			children = (
+				A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */,
+				A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */,
 				B6CBF53D1A254BD1000D4184 /* ContactDetailCell.h */,
 				B6CBF53E1A254BD1000D4184 /* ContactDetailCell.m */,
 				FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */,
@@ -1932,8 +1933,6 @@
 				FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */,
 				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
 				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
-				B97CBFAC1886100E008E0DE9 /* CountryCodeTableViewCell.h */,
-				B97CBFAD1886100E008E0DE9 /* CountryCodeTableViewCell.m */,
 				765052AD182AC9B5008313E1 /* DialerButtonView.h */,
 				765052AE182AC9B5008313E1 /* DialerButtonView.m */,
 				70377AA71916BA0500CAF501 /* InteractiveLabel.h */,
@@ -2763,6 +2762,8 @@
 				FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */,
 				FCFD25801A154B3800F4C644 /* CodeVerificationViewController.h */,
 				FCFD25811A154B3800F4C644 /* CodeVerificationViewController.m */,
+				B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */,
+				B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */,
 			);
 			name = Signup;
 			sourceTree = "<group>";
@@ -2939,6 +2940,7 @@
 				B633C5E61A1D190B0059AC12 /* speaker_on@2x.png in Resources */,
 				B633C5BB1A1D190B0059AC12 /* message_bubble.png in Resources */,
 				B633C5B51A1D190B0059AC12 /* lock@2x.png in Resources */,
+				A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */,
 				FCA52AE81A2B676C00CCADFA /* call_incoming@2x.png in Resources */,
 				FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */,
 				FCA52AE91A2B676C00CCADFA /* call_missed@2x.png in Resources */,
@@ -2992,7 +2994,6 @@
 				FC3BD97C1A2CD385005B96BB /* signal_dotted@2x.png in Resources */,
 				B633C5CD1A1D190B0059AC12 /* photo@2x.png in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
-				FCAC963519FEF4E20046DFC5 /* Storyboard.storyboard in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				B633C5841A1D190B0059AC12 /* backspace@2x.png in Resources */,
@@ -3121,6 +3122,7 @@
 			files = (
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				B60FB9AD1A46F831006A5A66 /* UIImage+contentTypes.m in Sources */,
+				A5509ECD1A69B1D600ABA4BC /* CountryCodeTableViewCell.m in Sources */,
 				76EB05F618170B33006006FC /* CallConnectUtil.m in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
 				A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */,
@@ -3328,7 +3330,6 @@
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				B6B096761A1D25ED008BFAA6 /* TSServerMessage.m in Sources */,
-				B97CBFAE1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */,
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				B63885CD1A26772D00A226A6 /* TSMessagesManager+callRecorder.m in Sources */,
@@ -3473,7 +3474,6 @@
 				76EB058D18170B33006006FC /* DnsManager.m in Sources */,
 				A157077117F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m in Sources */,
 				A157077217F0CD6D007C2BD6 /* EventWindowTest.m in Sources */,
-				B97CBFAF1886100E008E0DE9 /* CountryCodeTableViewCell.m in Sources */,
 				A157077417F0CD6D007C2BD6 /* TestUtil.m in Sources */,
 				A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */,
 				76EB05E918170B33006006FC /* CallFailedServerMessage.m in Sources */,

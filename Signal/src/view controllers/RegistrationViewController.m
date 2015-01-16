@@ -240,8 +240,6 @@ static NSString *const kCodeSentSegue = @"codeSent";
     UITextPosition *pos = _phoneNumberTextField.endOfDocument;
     [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
     
-    // Done choosing country
-    [vc dismissViewControllerAnimated:YES completion:nil];
 }
 
 
