@@ -36,15 +36,11 @@ static NSInteger connectingFlashCounter = 0;
 
 @implementation InCallViewController
 
-+(InCallViewController*) inCallViewControllerWithCallState:(CallState*)callState
-                                 andOptionallyKnownContact:(Contact*)contact {
-    require(callState != nil);
 
-    InCallViewController* controller = [InCallViewController new];
-    controller->_potentiallyKnownContact = contact;
-    controller->_callState = callState;
-    controller->_callPushState = PushNotSetState;
-    return controller;
+-(void)configureWithLatestCall:(CallState*)callState {
+    _potentiallyKnownContact = callState.potentiallySpecifiedContact;
+    _callState = callState;
+    _callPushState = PushNotSetState;
 }
 
 - (void)viewDidLoad {

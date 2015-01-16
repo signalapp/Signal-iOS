@@ -29,6 +29,9 @@
 #include "TargetConditionals.h"
 #endif
 
+
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow            *blankWindow;
@@ -115,23 +118,10 @@
         if (latestCall == nil){
             return;
         }
-        
-        InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                                                                                 andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
-        
-        if (latestCall.initiatedLocally == NO){
-            [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
-                if ([accept isEqualToNumber:@YES]) {
-                    [callViewController answerButtonTapped];
-                } else if ([accept isEqualToNumber:@NO]){
-                    [callViewController rejectButtonTapped];
-                }
-            }];
-        }
-        
         SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
         [vc dismissViewControllerAnimated:NO completion:nil];
-        [vc presentViewController:callViewController animated:NO completion:nil];
+        vc.latestCall = latestCall;
+        [vc performSegueWithIdentifier:kCallSegue sender:self];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     [TSSocketManager becomeActive];
