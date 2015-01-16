@@ -19,7 +19,6 @@
 #import "Util.h"
 #import "VersionMigrations.h"
 
-#import "InitialViewController.h"
 #import "CodeVerificationViewController.h"
 
 #import <PastelogKit/Pastelog.h>
