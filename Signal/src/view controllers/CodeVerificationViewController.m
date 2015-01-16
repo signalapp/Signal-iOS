@@ -32,8 +32,7 @@
 {
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
-    // TODOTYLER: add back in
-    //[_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
+    [_phoneNumberEntered setText:[SignalKeyingStorage.localNumber toE164]];
 }
 
 - (void)didReceiveMemoryWarning {
