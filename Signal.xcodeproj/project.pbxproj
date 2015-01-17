@@ -229,11 +229,8 @@
 		76EB065718170B34006006FC /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050C18170B33006006FC /* InCallViewController.m */; };
 		76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051018170B33006006FC /* NextResponderScrollView.m */; };
 		76EB065B18170B34006006FC /* NextResponderScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051018170B33006006FC /* NextResponderScrollView.m */; };
-		76EB067118170B34006006FC /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
-		76EB067918170B34006006FC /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
 		76EB068718170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
-		76EB069318170B34006006FC /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A123C14916F902EE000AE905 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
@@ -445,9 +442,6 @@
 		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
-		E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB053A18170B33006006FC /* ContactTableViewCell.xib */; };
-		E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052118170B33006006FC /* DialerViewController.xib */; };
-		E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 76EB052518170B33006006FC /* InCallViewController.xib */; };
 		E148751218A06AFD002CC4F3 /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
 		E148751318A06AFD002CC4F3 /* HelveticaNeueLTStd-Th.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */; };
 		E148751418A06AFD002CC4F3 /* HelveticaNeueLTStd-Lt.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */; };
@@ -814,11 +808,8 @@
 		76EB050C18170B33006006FC /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
 		76EB050F18170B33006006FC /* NextResponderScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextResponderScrollView.h; sourceTree = "<group>"; };
 		76EB051018170B33006006FC /* NextResponderScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NextResponderScrollView.m; sourceTree = "<group>"; };
-		76EB052118170B33006006FC /* DialerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
-		76EB052518170B33006006FC /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
-		76EB053A18170B33006006FC /* ContactTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactTableViewCell.xib; sourceTree = "<group>"; };
 		8313AE91B4954215858A5662 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.ad-hoc distribution.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.ad-hoc distribution.xcconfig"; sourceTree = "<group>"; };
@@ -1892,18 +1883,8 @@
 				76EB050C18170B33006006FC /* InCallViewController.m */,
 				76EB050F18170B33006006FC /* NextResponderScrollView.h */,
 				76EB051018170B33006006FC /* NextResponderScrollView.m */,
-				76EB051C18170B33006006FC /* xibs */,
 			);
 			path = "view controllers";
-			sourceTree = "<group>";
-		};
-		76EB051C18170B33006006FC /* xibs */ = {
-			isa = PBXGroup;
-			children = (
-				76EB052118170B33006006FC /* DialerViewController.xib */,
-				76EB052518170B33006006FC /* InCallViewController.xib */,
-			);
-			path = xibs;
 			sourceTree = "<group>";
 		};
 		76EB052B18170B33006006FC /* views */ = {
@@ -1935,7 +1916,6 @@
 		76EB053818170B33006006FC /* xibs */ = {
 			isa = PBXGroup;
 			children = (
-				76EB053A18170B33006006FC /* ContactTableViewCell.xib */,
 				FCAC963F19FEF99A0046DFC5 /* InboxTableViewCell.xib */,
 			);
 			path = xibs;
@@ -2925,9 +2905,7 @@
 				FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */,
 				FCA52AE91A2B676C00CCADFA /* call_missed@2x.png in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
-				E148750618A06966002CC4F3 /* DialerViewController.xib in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
-				E148750A18A06966002CC4F3 /* InCallViewController.xib in Resources */,
 				FCA52AEB1A2B676C00CCADFA /* checkmark_light@2x.png in Resources */,
 				FC16151C1A37945D00F1761D /* notification_no_preview_with_name@2x.png in Resources */,
 				B633C5D01A1D190B0059AC12 /* red-delete@2x.png in Resources */,
@@ -2937,7 +2915,6 @@
 				B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */,
 				B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */,
 				FCA52AEC1A2B676C00CCADFA /* message_error@2x.png in Resources */,
-				E14874F818A06951002CC4F3 /* ContactTableViewCell.xib in Resources */,
 				B633C5BC1A1D190B0059AC12 /* message_bubble@2x.png in Resources */,
 				FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */,
 				B633C5871A1D190B0059AC12 /* call_dark@2x.png in Resources */,
@@ -3009,10 +2986,7 @@
 				765052AC18294C9F008313E1 /* HelveticaNeueLTStd-Md.otf in Resources */,
 				76EB060118170B33006006FC /* InitiateSignal.proto in Resources */,
 				765052AA18294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf in Resources */,
-				76EB067118170B34006006FC /* DialerViewController.xib in Resources */,
-				76EB067918170B34006006FC /* InCallViewController.xib in Resources */,
 				B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */,
-				76EB069318170B34006006FC /* ContactTableViewCell.xib in Resources */,
 				765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
