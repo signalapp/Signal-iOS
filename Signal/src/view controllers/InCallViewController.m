@@ -191,8 +191,10 @@ static NSInteger connectingFlashCounter = 0;
     _nameLabel.text						= @"";
     _phoneNumberLabel.text				= @"";
     _authenicationStringLabel.text		= @"";
+    _explainAuthenticationStringLabel.text = @"";
     _contactImageView.image				= nil;
     _authenicationStringLabel.hidden	= YES;
+    _explainAuthenticationStringLabel.hidden    = YES;
     [self displayAcceptRejectButtons:NO];
 }
 
@@ -210,6 +212,7 @@ static NSInteger connectingFlashCounter = 0;
     [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
         _authenicationStringLabel.textColor = [UIColor colorWithRed:0.f/255.f green:12.f/255.f blue:255.f/255.f alpha:1.0f];
         _authenicationStringLabel.hidden = NO;
+        _explainAuthenticationStringLabel.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
     }];
