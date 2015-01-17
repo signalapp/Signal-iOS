@@ -18,7 +18,7 @@ Current version contains binaries build with SDK iOS 8.0 (target 5.1.1), and SDK
 **Installation**
 
 ````
-pod 'OpenSSL-Universal'
+pod 'OpenSSL-Universal', '1.0.1.k'
 ````
 
 Or always latest version
