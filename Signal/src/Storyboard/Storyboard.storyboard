@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
@@ -110,7 +110,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2290.5" y="-261"/>
+            <point key="canvasLocation" x="-5341.5" y="-1624.5"/>
         </scene>
         <!--Messages View Controller-->
         <scene sceneID="QqV-z2-xRW">
@@ -121,7 +121,7 @@
                         <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -133,7 +133,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3163.5" y="-261"/>
+            <point key="canvasLocation" x="-4462.5" y="-1624.5"/>
         </scene>
         <!--Fingerprint View Controller-->
         <scene sceneID="ldP-mt-Vsq">
@@ -806,14 +806,14 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3895.5" y="426"/>
+            <point key="canvasLocation" x="-3628.5" y="-2745"/>
         </scene>
         <!--Show Group Members View Controller-->
         <scene sceneID="VBt-Ax-0G9">
             <objects>
                 <tableViewController id="JeZ-9g-U61" customClass="ShowGroupMembersViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Fdx-Zk-e27">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -835,7 +835,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3R8-C6-Zq8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3151.5" y="437.25"/>
+            <point key="canvasLocation" x="-3628.5" y="-1624.5"/>
         </scene>
         <!--Present IdentityQR Code View Controller-->
         <scene sceneID="b0A-fL-uiD">
@@ -962,7 +962,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zk1-cK-ftT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5016" y="906"/>
+            <point key="canvasLocation" x="-2001" y="-2973"/>
         </scene>
         <!--Scan Identity Barcode View Controller-->
         <scene sceneID="f84-pF-1is">
@@ -1038,7 +1038,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VTv-Ry-X99" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="aQ6-9V-CJA" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="4908" y="207"/>
+            <point key="canvasLocation" x="-2800.5" y="-2973"/>
         </scene>
         <!--_1.0 Registration Screen-->
         <scene sceneID="okO-46-HuB">
@@ -1151,7 +1151,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
                                 <rect key="frame" x="-20" y="241" width="440" height="80"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
                                         <rect key="frame" x="20" y="59" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1280,7 +1280,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tSy-r0-e7H" userLabel="_1.0c Registration Phone Number Input">
                                 <rect key="frame" x="-20" y="297" width="440" height="81"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
                                         <rect key="frame" x="20" y="60" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1593,7 +1593,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rfK-ej-7ve" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1228.5" y="930"/>
+            <point key="canvasLocation" x="-7417.5" y="-774"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="h0n-nM-9Kp">
@@ -1609,7 +1609,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zxR-ej-kvN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1228.5" y="1707"/>
+            <point key="canvasLocation" x="-8197.5" y="24"/>
         </scene>
         <!--_2.0_1.0__1 Country Code Modal-->
         <scene sceneID="8LH-LS-3Zu">
@@ -1741,7 +1741,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </searchDisplayController>
                 <navigationItem title="Title" id="1Tt-v6-fTh"/>
             </objects>
-            <point key="canvasLocation" x="-394.5" y="1707"/>
+            <point key="canvasLocation" x="-7417.5" y="24"/>
         </scene>
         <!--In Call View Controller-->
         <scene sceneID="cEC-6y-6yI">
@@ -1851,8 +1851,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                         <exclude reference="ifY-o4-2Pv"/>
                                                     </mask>
                                                 </variation>
-                                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                    <rect key="frame" x="160" y="180" width="80" height="80"/>
+                                                <variation key="heightClass=regular-widthClass=compact">
                                                     <mask key="constraints">
                                                         <include reference="ToV-Ks-2i9"/>
                                                         <include reference="ifY-o4-2Pv"/>
@@ -2113,14 +2112,14 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="8gG-fb-fIu"/>
                                                 <exclude reference="oZS-u8-FVd"/>
                                                 <exclude reference="wFY-40-Laj"/>
-                                                <exclude reference="52l-ID-Y6Y"/>
-                                                <exclude reference="N0b-LN-DeT"/>
-                                                <exclude reference="C9H-jg-PzP"/>
-                                                <exclude reference="XYO-Xa-34Y"/>
                                                 <exclude reference="Rx2-eF-b7D"/>
                                                 <exclude reference="lih-fd-mYT"/>
                                                 <exclude reference="orp-IW-ZWu"/>
                                                 <exclude reference="wF6-Qj-bGW"/>
+                                                <exclude reference="52l-ID-Y6Y"/>
+                                                <exclude reference="N0b-LN-DeT"/>
+                                                <exclude reference="C9H-jg-PzP"/>
+                                                <exclude reference="XYO-Xa-34Y"/>
                                                 <exclude reference="awO-f2-qDG"/>
                                                 <exclude reference="c6f-xF-e4Z"/>
                                             </mask>
@@ -2143,14 +2142,14 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <include reference="8gG-fb-fIu"/>
                                                 <exclude reference="oZS-u8-FVd"/>
                                                 <include reference="wFY-40-Laj"/>
-                                                <include reference="52l-ID-Y6Y"/>
-                                                <include reference="N0b-LN-DeT"/>
-                                                <include reference="C9H-jg-PzP"/>
-                                                <include reference="XYO-Xa-34Y"/>
                                                 <include reference="Rx2-eF-b7D"/>
                                                 <include reference="lih-fd-mYT"/>
                                                 <include reference="orp-IW-ZWu"/>
                                                 <include reference="wF6-Qj-bGW"/>
+                                                <include reference="52l-ID-Y6Y"/>
+                                                <include reference="N0b-LN-DeT"/>
+                                                <include reference="C9H-jg-PzP"/>
+                                                <include reference="XYO-Xa-34Y"/>
                                                 <include reference="awO-f2-qDG"/>
                                                 <include reference="c6f-xF-e4Z"/>
                                             </mask>
@@ -2472,10 +2471,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="SWK-jL-8IG"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="Oyq-x2-7ff"/>
-                                <exclude reference="tNr-RB-5MN"/>
-                                <exclude reference="urc-iT-2id"/>
-                                <exclude reference="x57-vC-gqp"/>
+                                <exclude reference="4np-49-qeF"/>
+                                <exclude reference="5gb-xA-wtd"/>
+                                <exclude reference="IXo-sQ-w99"/>
+                                <exclude reference="iH8-6M-CVs"/>
                                 <exclude reference="Rhp-N3-pOf"/>
                                 <exclude reference="b7m-pM-Uy1"/>
                                 <exclude reference="gmj-Pv-q3p"/>
@@ -2484,10 +2483,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="H2Q-Dy-2cF"/>
                                 <exclude reference="pFX-kc-sE0"/>
                                 <exclude reference="tyf-8l-cL5"/>
-                                <exclude reference="4np-49-qeF"/>
-                                <exclude reference="5gb-xA-wtd"/>
-                                <exclude reference="IXo-sQ-w99"/>
-                                <exclude reference="iH8-6M-CVs"/>
+                                <exclude reference="Oyq-x2-7ff"/>
+                                <exclude reference="tNr-RB-5MN"/>
+                                <exclude reference="urc-iT-2id"/>
+                                <exclude reference="x57-vC-gqp"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -2498,10 +2497,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="SWK-jL-8IG"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="Oyq-x2-7ff"/>
-                                <include reference="tNr-RB-5MN"/>
-                                <include reference="urc-iT-2id"/>
-                                <include reference="x57-vC-gqp"/>
+                                <exclude reference="4np-49-qeF"/>
+                                <exclude reference="5gb-xA-wtd"/>
+                                <include reference="IXo-sQ-w99"/>
+                                <exclude reference="iH8-6M-CVs"/>
                                 <include reference="Rhp-N3-pOf"/>
                                 <include reference="b7m-pM-Uy1"/>
                                 <include reference="gmj-Pv-q3p"/>
@@ -2510,10 +2509,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="H2Q-Dy-2cF"/>
                                 <include reference="pFX-kc-sE0"/>
                                 <include reference="tyf-8l-cL5"/>
-                                <exclude reference="4np-49-qeF"/>
-                                <exclude reference="5gb-xA-wtd"/>
-                                <include reference="IXo-sQ-w99"/>
-                                <exclude reference="iH8-6M-CVs"/>
+                                <include reference="Oyq-x2-7ff"/>
+                                <include reference="tNr-RB-5MN"/>
+                                <include reference="urc-iT-2id"/>
+                                <include reference="x57-vC-gqp"/>
                             </mask>
                         </variation>
                     </view>
@@ -2534,7 +2533,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zf9-os-O7P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2290.5" y="-911.25"/>
+            <point key="canvasLocation" x="-4462.5" y="-2493.75"/>
         </scene>
         <!--_1.1 Verification Screen-->
         <scene sceneID="44F-BV-mQs">
@@ -2687,7 +2686,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="401" height="30"/>
                                         </variation>
                                     </textField>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
                                         <rect key="frame" x="20" y="52" width="200" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -3235,14 +3234,14 @@ A0 09 9A FF A8 8A 09 99</string>
                 <exit id="ZUP-dD-a8s" userLabel="Exit" sceneMemberID="exit"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WLS-Zq-ncm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-442.5" y="941.25"/>
+            <point key="canvasLocation" x="-6652.5" y="-774"/>
         </scene>
         <!--Contact Detail Table View Controller-->
         <scene sceneID="cYN-Tc-52p">
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -3778,7 +3777,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="srg-3q-gF9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3151.5" y="1151.25"/>
+            <point key="canvasLocation" x="-2800.5" y="-1624.5"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
@@ -3802,7 +3801,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6tU-Dy-HQe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="-261"/>
+            <point key="canvasLocation" x="-8197.5" y="-1624.5"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8zg-9i-Ja1">
@@ -3823,14 +3822,14 @@ A0 09 9A FF A8 8A 09 99</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I4o-GY-ah6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="571.5" y="1097.25"/>
+            <point key="canvasLocation" x="-5341.5" y="-2493.75"/>
         </scene>
         <!--Settings-->
         <scene sceneID="BD7-1h-slc">
             <objects>
                 <tableViewController id="n1f-7Y-906" customClass="SettingsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="FhQ-dM-1mj">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="Ezq-Cw-na2">
@@ -4574,14 +4573,14 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b8Q-ui-1Tb" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="0Ge-H7-b9J" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1372.5" y="1102.5"/>
+            <point key="canvasLocation" x="-6193.5" y="-1624.5"/>
         </scene>
         <!--Notification Preview View Controller-->
         <scene sceneID="Ed4-o9-N6n">
             <objects>
                 <tableViewController id="8Xl-8d-r8m" customClass="NotificationPreviewViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="Ile-A3-wGk">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="separatorColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
@@ -4777,7 +4776,7 @@ Licensed under the GPLv3</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d4H-sX-kEK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2131.5" y="1102.5"/>
+            <point key="canvasLocation" x="-6193.5" y="24"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aWR-d3-s5V">
@@ -4795,7 +4794,7 @@ Licensed under the GPLv3</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b1E-7L-eKw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3136.5" y="-963.75"/>
+            <point key="canvasLocation" x="-5341.5" y="-774"/>
         </scene>
         <!--New Message-->
         <scene sceneID="qez-9r-EDt">
@@ -4826,7 +4825,7 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-iU-Cax" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="f1M-Dk-nMv"/>
             </objects>
-            <point key="canvasLocation" x="3862.5" y="-957.75"/>
+            <point key="canvasLocation" x="-4462.5" y="-774"/>
         </scene>
         <!--New Group View Controller-->
         <scene sceneID="mdV-ti-fPA">
@@ -5036,12 +5035,11 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GsM-dR-L7j" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="JOx-5h-y9g" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="4671" y="-963.75"/>
+            <point key="canvasLocation" x="-3628.5" y="-774"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kfT-eG-hkf">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="lIF-0m-2N3" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="l1Z-lc-H46">
@@ -5056,8 +5054,9 @@ Licensed under the GPLv3</string>
                         <segue destination="sL4-Zw-2Og" kind="relationship" relationship="rootViewController" id="zqL-2e-WXU"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2014.5" y="941.25"/>
+            <point key="canvasLocation" x="-8197.5" y="-774"/>
         </scene>
     </scenes>
     <resources>
