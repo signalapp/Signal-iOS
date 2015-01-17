@@ -19,7 +19,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [self initializeObserver];
     [TSSocketManager sendNotification];
 }
 
@@ -28,22 +27,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
--(void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
-}
-
-#pragma mark - Socket Status Notifications
-
--(void)initializeObserver
-{
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidOpen)      name:SocketOpenedNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketDidClose)     name:SocketClosedNotification object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(socketIsConnecting) name:SocketConnectingNotification object:nil];
-}
 
 
 @end
