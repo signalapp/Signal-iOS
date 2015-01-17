@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -1143,7 +1143,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
                                 <rect key="frame" x="-20" y="241" width="440" height="80"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
                                         <rect key="frame" x="20" y="59" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1272,7 +1272,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tSy-r0-e7H" userLabel="_1.0c Registration Phone Number Input">
                                 <rect key="frame" x="-20" y="297" width="440" height="81"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
                                         <rect key="frame" x="20" y="60" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1479,8 +1479,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="xer-5m-yBI"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="-20" y="396" width="440" height="36"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="7IK-hd-tli"/>
                                     </mask>
@@ -1638,8 +1637,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="Y66-3d-yJI"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="20" y="11" width="244" height="21"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="Y66-3d-yJI"/>
                                                 </mask>
@@ -1658,8 +1656,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="S6t-bW-MMl"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="317" y="11" width="64" height="21"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="S6t-bW-MMl"/>
                                                 </mask>
@@ -1746,6 +1743,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="9Ut-k6-hNn"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="vir-2e-LN3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F2a-2h-UK2">
@@ -1943,6 +1941,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="contactImageView" destination="eSg-l3-cbz" id="vzC-u7-NqS"/>
                         <outlet property="endButton" destination="F2a-2h-UK2" id="DMF-kg-iXz"/>
                         <outlet property="endLabel" destination="buR-yk-dvI" id="acs-6V-qiC"/>
+                        <outlet property="explainAuthenticationStringLabel" destination="bnt-nc-bE8" id="4TM-Ag-g7f"/>
                         <outlet property="muteButton" destination="4OS-z4-ixd" id="lEf-yW-gKn"/>
                         <outlet property="muteLabel" destination="2aF-sd-4O6" id="1ye-eA-27C"/>
                         <outlet property="nameLabel" destination="zMG-vs-mRy" id="Aqu-D2-irE"/>
@@ -2107,7 +2106,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="401" height="30"/>
                                         </variation>
                                     </textField>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
                                         <rect key="frame" x="20" y="52" width="200" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -3918,7 +3917,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
