@@ -11,6 +11,5 @@
 
 @interface SignalsNavigationController : UINavigationController
 
-@property (nonatomic, strong) UIProgressView* socketStatusView;
 
 @end
