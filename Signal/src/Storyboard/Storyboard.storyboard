@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -99,6 +99,7 @@
                     <connections>
                         <outlet property="inboxArchiveSwitch" destination="3zh-Df-ewk" id="ANJ-FH-ESj"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
+                        <segue destination="Duq-aU-MmN" kind="presentation" identifier="2.0_6.0_Call_Segue" id="gHJ-y4-zWg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -799,7 +800,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4597.5" y="-276"/>
+            <point key="canvasLocation" x="3895.5" y="426"/>
         </scene>
         <!--Show Group Members View Controller-->
         <scene sceneID="VBt-Ax-0G9">
@@ -828,7 +829,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3R8-C6-Zq8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4561.5" y="452.25"/>
+            <point key="canvasLocation" x="3151.5" y="437.25"/>
         </scene>
         <!--Present IdentityQR Code View Controller-->
         <scene sceneID="b0A-fL-uiD">
@@ -955,7 +956,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zk1-cK-ftT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5574" y="75"/>
+            <point key="canvasLocation" x="5016" y="906"/>
         </scene>
         <!--Scan Identity Barcode View Controller-->
         <scene sceneID="f84-pF-1is">
@@ -1031,7 +1032,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VTv-Ry-X99" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="aQ6-9V-CJA" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="5604" y="-579"/>
+            <point key="canvasLocation" x="4908" y="207"/>
         </scene>
         <!--_1.0 Registration Screen-->
         <scene sceneID="okO-46-HuB">
@@ -1144,7 +1145,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oS3-t9-5np" userLabel="_1.0b Registration Country Code Selection">
                                 <rect key="frame" x="-20" y="241" width="440" height="80"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O6t-0o-mk5">
                                         <rect key="frame" x="20" y="59" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.7999122142791748" green="0.80005049705505371" blue="0.7999035120010376" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1273,7 +1274,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tSy-r0-e7H" userLabel="_1.0c Registration Phone Number Input">
                                 <rect key="frame" x="-20" y="297" width="440" height="81"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vpp-VC-z9v">
                                         <rect key="frame" x="20" y="60" width="400" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -1480,8 +1481,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="xer-5m-yBI"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="-20" y="396" width="440" height="36"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="7IK-hd-tli"/>
                                     </mask>
@@ -1639,8 +1639,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="Y66-3d-yJI"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="20" y="11" width="244" height="21"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="Y66-3d-yJI"/>
                                                 </mask>
@@ -1659,8 +1658,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="S6t-bW-MMl"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="317" y="11" width="64" height="21"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="S6t-bW-MMl"/>
                                                 </mask>
@@ -1737,6 +1735,227 @@ A0 09 9A FF A8 8A 09 99</string>
                 <navigationItem title="Title" id="1Tt-v6-fTh"/>
             </objects>
             <point key="canvasLocation" x="-394.5" y="1707"/>
+        </scene>
+        <!--In Call View Controller-->
+        <scene sceneID="cEC-6y-6yI">
+            <objects>
+                <viewController id="Duq-aU-MmN" customClass="InCallViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="g84-iS-Sgw"/>
+                        <viewControllerLayoutGuide type="bottom" id="9Ut-k6-hNn"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="vir-2e-LN3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F2a-2h-UK2">
+                                <rect key="frame" x="58" y="448" width="60" height="60"/>
+                                <state key="normal" image="endcall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="155" y="495" width="60" height="60"/>
+                                </variation>
+                                <connections>
+                                    <action selector="endCallTapped" destination="Duq-aU-MmN" eventType="touchUpInside" id="rXu-gi-QGz"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="De1-JJ-Nsi">
+                                <rect key="frame" x="130" y="448" width="60" height="60"/>
+                                <state key="normal" image="endcall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="40" y="495" width="60" height="60"/>
+                                </variation>
+                                <connections>
+                                    <action selector="rejectButtonTapped" destination="Duq-aU-MmN" eventType="touchUpInside" id="a1b-3s-CBO"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Moxie Marlinspike" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zMG-vs-mRy">
+                                <rect key="frame" x="32" y="41" width="220" height="31"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="20"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="35" y="28" width="220" height="31"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="calling mobile ..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dbS-Y4-Ge8">
+                                <rect key="frame" x="32" y="70" width="220" height="20.5"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="17"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="35" y="58" width="220" height="21"/>
+                                </variation>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eSg-l3-cbz">
+                                <rect key="frame" x="260" y="41" width="50" height="50"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="310" y="33" width="50" height="50"/>
+                                </variation>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4OS-z4-ixd">
+                                <rect key="frame" x="61" y="322" width="60" height="60"/>
+                                <state key="normal" image="mute_off.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="70" y="318" width="60" height="60"/>
+                                </variation>
+                                <connections>
+                                    <action selector="muteButtonTapped" destination="Duq-aU-MmN" eventType="touchUpInside" id="M1t-hp-hot"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BEl-Hp-9uM">
+                                <rect key="frame" x="204" y="322" width="60" height="60"/>
+                                <state key="normal" image="speaker_off.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="241" y="304" width="60" height="60"/>
+                                </variation>
+                                <connections>
+                                    <action selector="speakerButtonTapped" destination="Duq-aU-MmN" eventType="touchUpInside" id="Xua-fi-rSx"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mute Off" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2aF-sd-4O6">
+                                <rect key="frame" x="59" y="390" width="65" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="70" y="386" width="65" height="21"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Decline" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AGd-Zi-MKA">
+                                <rect key="frame" x="56" y="516" width="65" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="35" y="563" width="65" height="21"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accept" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RMt-Zm-dGH">
+                                <rect key="frame" x="202" y="516" width="65" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="277" y="563" width="65" height="21"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Speaker Off" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9po-Yl-h3W">
+                                <rect key="frame" x="193" y="390" width="82" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="246" y="370" width="82" height="21"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="watchword chambermaid" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CLR-My-Jfk">
+                                <rect key="frame" x="56" y="150" width="211" height="31"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="19"/>
+                                <color key="textColor" red="0.50588235290000005" green="0.50588235290000005" blue="0.50588235290000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="95" y="169" width="211" height="31"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="End Call" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="buR-yk-dvI">
+                                <rect key="frame" x="128" y="519" width="65" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="160" y="563" width="65" height="21"/>
+                                </variation>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="explain " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bnt-nc-bE8">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="179" y="226" width="60" height="21"/>
+                                </variation>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3b2-qR-0Y3">
+                                <rect key="frame" x="204" y="448" width="60" height="60"/>
+                                <state key="normal" image="call.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="277" y="495" width="60" height="60"/>
+                                </variation>
+                                <connections>
+                                    <action selector="answerButtonTapped" destination="Duq-aU-MmN" eventType="touchUpInside" id="7Ss-JA-w0J"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="F2a-2h-UK2"/>
+                                <exclude reference="De1-JJ-Nsi"/>
+                                <exclude reference="zMG-vs-mRy"/>
+                                <exclude reference="dbS-Y4-Ge8"/>
+                                <exclude reference="eSg-l3-cbz"/>
+                                <exclude reference="4OS-z4-ixd"/>
+                                <exclude reference="BEl-Hp-9uM"/>
+                                <exclude reference="2aF-sd-4O6"/>
+                                <exclude reference="AGd-Zi-MKA"/>
+                                <exclude reference="RMt-Zm-dGH"/>
+                                <exclude reference="9po-Yl-h3W"/>
+                                <exclude reference="CLR-My-Jfk"/>
+                                <exclude reference="buR-yk-dvI"/>
+                                <exclude reference="bnt-nc-bE8"/>
+                                <exclude reference="3b2-qR-0Y3"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="F2a-2h-UK2"/>
+                                <include reference="De1-JJ-Nsi"/>
+                                <include reference="zMG-vs-mRy"/>
+                                <include reference="dbS-Y4-Ge8"/>
+                                <include reference="eSg-l3-cbz"/>
+                                <include reference="4OS-z4-ixd"/>
+                                <include reference="BEl-Hp-9uM"/>
+                                <include reference="2aF-sd-4O6"/>
+                                <include reference="AGd-Zi-MKA"/>
+                                <include reference="RMt-Zm-dGH"/>
+                                <include reference="9po-Yl-h3W"/>
+                                <include reference="CLR-My-Jfk"/>
+                                <include reference="buR-yk-dvI"/>
+                                <include reference="bnt-nc-bE8"/>
+                                <include reference="3b2-qR-0Y3"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="answerButton" destination="3b2-qR-0Y3" id="M9I-Fp-cuU"/>
+                        <outlet property="answerLabel" destination="RMt-Zm-dGH" id="h4N-sJ-RA0"/>
+                        <outlet property="authenicationStringLabel" destination="CLR-My-Jfk" id="fpT-33-Pb5"/>
+                        <outlet property="callStatusLabel" destination="dbS-Y4-Ge8" id="9g1-o6-89a"/>
+                        <outlet property="contactImageView" destination="eSg-l3-cbz" id="vzC-u7-NqS"/>
+                        <outlet property="endButton" destination="F2a-2h-UK2" id="DMF-kg-iXz"/>
+                        <outlet property="endLabel" destination="buR-yk-dvI" id="acs-6V-qiC"/>
+                        <outlet property="explainAuthenticationStringLabel" destination="bnt-nc-bE8" id="4TM-Ag-g7f"/>
+                        <outlet property="muteButton" destination="4OS-z4-ixd" id="lEf-yW-gKn"/>
+                        <outlet property="muteLabel" destination="2aF-sd-4O6" id="1ye-eA-27C"/>
+                        <outlet property="nameLabel" destination="zMG-vs-mRy" id="Aqu-D2-irE"/>
+                        <outlet property="rejectButton" destination="De1-JJ-Nsi" id="WU6-hK-mzq"/>
+                        <outlet property="rejectLabel" destination="AGd-Zi-MKA" id="Dci-BU-fql"/>
+                        <outlet property="speakerButton" destination="BEl-Hp-9uM" id="BGm-LH-4g5"/>
+                        <outlet property="speakerLabel" destination="9po-Yl-h3W" id="qaB-1T-qb0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Zf9-os-O7P" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2278.5" y="-963.75"/>
         </scene>
         <!--_1.1 Verification Screen-->
         <scene sceneID="44F-BV-mQs">
@@ -1889,7 +2108,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="401" height="30"/>
                                         </variation>
                                     </textField>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
+                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="260-Dq-fnd">
                                         <rect key="frame" x="20" y="52" width="200" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -3033,7 +3252,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="srg-3q-gF9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4138.5" y="1172.25"/>
+            <point key="canvasLocation" x="3151.5" y="1151.25"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
@@ -4064,7 +4283,7 @@ Licensed under the GPLv3</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b1E-7L-eKw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2236.5" y="-906.75"/>
+            <point key="canvasLocation" x="3136.5" y="-963.75"/>
         </scene>
         <!--New Message-->
         <scene sceneID="qez-9r-EDt">
@@ -4095,7 +4314,7 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-iU-Cax" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="f1M-Dk-nMv"/>
             </objects>
-            <point key="canvasLocation" x="3184.5" y="-906.75"/>
+            <point key="canvasLocation" x="3862.5" y="-957.75"/>
         </scene>
         <!--New Group View Controller-->
         <scene sceneID="mdV-ti-fPA">
@@ -4106,7 +4325,7 @@ Licensed under the GPLv3</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -4305,7 +4524,7 @@ Licensed under the GPLv3</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GsM-dR-L7j" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="JOx-5h-y9g" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="4545" y="-974.25"/>
+            <point key="canvasLocation" x="4671" y="-963.75"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="kfT-eG-hkf">
@@ -4335,13 +4554,16 @@ Licensed under the GPLv3</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="21"/>
+        <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contacts_tab.png" width="24" height="24"/>
         <image name="delete_history.png" width="50" height="50"/>
+        <image name="endcall.png" width="100" height="100"/>
         <image name="group_photo.png" width="100" height="100"/>
         <image name="info.png" width="200" height="200"/>
         <image name="keypad.png" width="25" height="25"/>
         <image name="lock_white.png" width="100" height="100"/>
+        <image name="mute_off.png" width="100" height="100"/>
         <image name="notification_no_preview_no_name.png" width="640" height="128"/>
         <image name="notification_no_preview_with_name.png" width="640" height="128"/>
         <image name="notification_with_preview.png" width="640" height="128"/>
@@ -4352,11 +4574,12 @@ Licensed under the GPLv3</string>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
+        <image name="speaker_off.png" width="100" height="100"/>
         <image name="twitter.png" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="gZ1-lh-srF"/>
+        <segue reference="D0d-4f-lcI"/>
         <segue reference="0BB-Wo-N9f"/>
     </inferredMetricsTieBreakers>
 </document>
