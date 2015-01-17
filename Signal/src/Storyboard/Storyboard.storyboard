@@ -77,6 +77,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="Um0-0y-8lr">
                         <nil key="title"/>
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="settings_tab.png" id="PYj-7F-J24">
+                            <connections>
+                                <segue destination="hxR-Pc-Gxm" kind="presentation" id="dB4-oM-uSL"/>
+                            </connections>
+                        </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="3zh-Df-ewk">
                             <rect key="frame" x="238.5" y="7.5" width="123" height="29"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -2805,7 +2810,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
@@ -3816,7 +3821,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I4o-GY-ah6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="454.5" y="1102.5"/>
+            <point key="canvasLocation" x="571.5" y="1097.25"/>
         </scene>
         <!--Settings-->
         <scene sceneID="BD7-1h-slc">
@@ -4349,13 +4354,20 @@ A0 09 9A FF A8 8A 09 99</string>
                             <outlet property="delegate" destination="n1f-7Y-906" id="qdU-Y6-vJ9"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP"/>
+                    <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="TN5-Oj-Mpn">
+                            <connections>
+                                <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="f4w-Qb-xi9"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="networkStatusLabel" destination="tg3-dQ-odw" id="l6J-8y-maW"/>
                         <outlet property="registeredNumber" destination="ipE-BI-sLL" id="uQB-V6-ooY"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b8Q-ui-1Tb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="0Ge-H7-b9J" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1372.5" y="1102.5"/>
         </scene>

@@ -330,4 +330,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     }
 }
 
+- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
+    
+}
+
 @end
