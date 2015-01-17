@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -79,6 +79,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="Um0-0y-8lr">
                         <nil key="title"/>
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="settings_tab.png" id="PYj-7F-J24">
+                            <connections>
+                                <segue destination="hxR-Pc-Gxm" kind="presentation" id="dB4-oM-uSL"/>
+                            </connections>
+                        </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="3zh-Df-ewk">
                             <rect key="frame" x="238.5" y="7.5" width="123" height="29"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -100,6 +105,7 @@
                         <outlet property="inboxArchiveSwitch" destination="3zh-Df-ewk" id="ANJ-FH-ESj"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
                         <segue destination="Duq-aU-MmN" kind="presentation" identifier="2.0_6.0_Call_Segue" id="gHJ-y4-zWg"/>
+                        <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" id="DR8-fx-0PD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2806,7 +2812,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
@@ -3230,59 +3236,6 @@ A0 09 9A FF A8 8A 09 99</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WLS-Zq-ncm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-442.5" y="941.25"/>
-        </scene>
-        <!--Signal Tab Bar Controller-->
-        <scene sceneID="dB1-7w-8YS">
-            <objects>
-                <tabBarController storyboardIdentifier="UserInitialViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QKN-cj-wuH" customClass="SignalTabBarController" sceneMemberID="viewController">
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
-                    <nil key="simulatedBottomBarMetrics"/>
-                    <tabBar key="tabBar" contentMode="scaleToFill" translucent="NO" id="JT6-cn-7qk">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="barTintColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="selectedImageTintColor" red="0.50588235294117645" green="0.50588235294117645" blue="0.50588235294117645" alpha="1" colorSpace="calibratedRGB"/>
-                    </tabBar>
-                    <connections>
-                        <segue destination="voG-nJ-5AE" kind="relationship" relationship="viewControllers" id="n5v-AN-H5v"/>
-                        <segue destination="tuk-0x-yCb" kind="relationship" relationship="viewControllers" id="gmL-g3-5EN"/>
-                        <segue destination="hxR-Pc-Gxm" kind="relationship" relationship="viewControllers" id="a4H-Ax-JAL"/>
-                        <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" animates="NO" id="IRa-F6-tmc"/>
-                    </connections>
-                </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Hgl-9i-kQr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="442.5" y="62.25"/>
-        </scene>
-        <!--Contacts-->
-        <scene sceneID="P9O-s1-2L3">
-            <objects>
-                <tableViewController id="6mY-1Q-YBT" customClass="ContactsTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="GqA-oC-CJa">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="dataSource" destination="6mY-1Q-YBT" id="ENQ-OE-pLW"/>
-                            <outlet property="delegate" destination="6mY-1Q-YBT" id="hz8-JN-cbT"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Contacts" id="oYb-E2-R06">
-                        <barButtonItem key="rightBarButtonItem" image="keypad.png" id="BN6-QX-2Pe">
-                            <connections>
-                                <action selector="presentDialer:" destination="6mY-1Q-YBT" id="mG0-Su-7VQ"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="contactTableView" destination="GqA-oC-CJa" id="7n8-SC-J1z"/>
-                        <segue destination="0XE-hu-8cu" kind="show" identifier="DetailSegue" id="nHU-Zk-VvG"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xQP-wB-KqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2290.5" y="392.25"/>
         </scene>
         <!--Contact Detail Table View Controller-->
         <scene sceneID="cYN-Tc-52p">
@@ -3830,7 +3783,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="UserInitialViewController" automaticallyAdjustsScrollViewInsets="NO" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="signals_tab.png" id="jye-1e-hLH">
                         <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
                     </tabBarItem>
@@ -3852,27 +3805,6 @@ A0 09 9A FF A8 8A 09 99</string>
             <point key="canvasLocation" x="1372.5" y="-261"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="d9M-87-JHc">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="voG-nJ-5AE" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" image="contacts_tab.png" id="kjO-gW-2ja">
-                        <inset key="imageInsets" minX="0.0" minY="4" maxX="0.0" maxY="-4"/>
-                    </tabBarItem>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="qhF-o2-tBt">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="6mY-1Q-YBT" kind="relationship" relationship="rootViewController" id="J6b-zw-B7w"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rcU-oi-2J6" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1377" y="392.25"/>
-        </scene>
-        <!--Navigation Controller-->
         <scene sceneID="8zg-9i-Ja1">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hxR-Pc-Gxm" sceneMemberID="viewController">
@@ -3891,7 +3823,7 @@ A0 09 9A FF A8 8A 09 99</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I4o-GY-ah6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="454.5" y="1102.5"/>
+            <point key="canvasLocation" x="571.5" y="1097.25"/>
         </scene>
         <!--Settings-->
         <scene sceneID="BD7-1h-slc">
@@ -4628,12 +4560,19 @@ Licensed under the GPLv3</string>
                             <outlet property="delegate" destination="n1f-7Y-906" id="qdU-Y6-vJ9"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP"/>
+                    <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="TN5-Oj-Mpn">
+                            <connections>
+                                <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="f4w-Qb-xi9"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="registeredNumber" destination="ipE-BI-sLL" id="emG-hV-7kX"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b8Q-ui-1Tb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="0Ge-H7-b9J" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1372.5" y="1102.5"/>
         </scene>
@@ -5102,6 +5041,7 @@ Licensed under the GPLv3</string>
         <!--Navigation Controller-->
         <scene sceneID="kfT-eG-hkf">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="lIF-0m-2N3" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="l1Z-lc-H46">
@@ -5116,9 +5056,8 @@ Licensed under the GPLv3</string>
                         <segue destination="sL4-Zw-2Og" kind="relationship" relationship="rootViewController" id="zqL-2e-WXU"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eOz-Mr-Nmp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-321" y="62.25"/>
+            <point key="canvasLocation" x="-2014.5" y="941.25"/>
         </scene>
     </scenes>
     <resources>
@@ -5129,12 +5068,10 @@ Licensed under the GPLv3</string>
         <image name="_arrow_button" width="12" height="21"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
-        <image name="contacts_tab.png" width="24" height="24"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="endcall.png" width="100" height="100"/>
         <image name="group_photo.png" width="100" height="100"/>
         <image name="info.png" width="200" height="200"/>
-        <image name="keypad.png" width="25" height="25"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="mute_off.png" width="100" height="100"/>
         <image name="notification_no_preview_no_name.png" width="640" height="128"/>
@@ -5151,8 +5088,7 @@ Licensed under the GPLv3</string>
         <image name="twitter.png" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="xo7-5J-BJb"/>
         <segue reference="D0d-4f-lcI"/>
-        <segue reference="0BB-Wo-N9f"/>
+        <segue reference="xo7-5J-BJb"/>
     </inferredMetricsTieBreakers>
 </document>
