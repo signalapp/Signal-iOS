@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -3944,69 +3944,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="Wzt-cN-e8v">
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Wzt-cN-e8v" id="6V3-5O-eEy">
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Media" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B7i-Yu-DwB">
-                                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="307" id="KRJ-YZ-rc6">
-                                                            <variation key="heightClass=regular-widthClass=compact" constant="200"/>
-                                                        </constraint>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="KRJ-YZ-rc6"/>
-                                                        </mask>
-                                                    </variation>
-                                                    <variation key="heightClass=regular-widthClass=compact">
-                                                        <mask key="constraints">
-                                                            <include reference="KRJ-YZ-rc6"/>
-                                                        </mask>
-                                                    </variation>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="B7i-Yu-DwB" secondAttribute="trailing" constant="70" id="00k-FV-KGq"/>
-                                                <constraint firstAttribute="centerY" secondItem="B7i-Yu-DwB" secondAttribute="centerY" constant="0.5" id="vLg-ja-0lD">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                                </constraint>
-                                                <constraint firstItem="B7i-Yu-DwB" firstAttribute="top" secondItem="6V3-5O-eEy" secondAttribute="topMargin" constant="3" id="xso-dM-gQ1">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="11"/>
-                                                </constraint>
-                                                <constraint firstItem="B7i-Yu-DwB" firstAttribute="leading" secondItem="6V3-5O-eEy" secondAttribute="leadingMargin" id="yRR-2N-mYa">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="7"/>
-                                                </constraint>
-                                            </constraints>
-                                            <variation key="default">
-                                                <mask key="subviews">
-                                                    <exclude reference="B7i-Yu-DwB"/>
-                                                </mask>
-                                                <mask key="constraints">
-                                                    <exclude reference="00k-FV-KGq"/>
-                                                    <exclude reference="vLg-ja-0lD"/>
-                                                    <exclude reference="xso-dM-gQ1"/>
-                                                    <exclude reference="yRR-2N-mYa"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="subviews">
-                                                    <include reference="B7i-Yu-DwB"/>
-                                                </mask>
-                                                <mask key="constraints">
-                                                    <exclude reference="00k-FV-KGq"/>
-                                                    <include reference="vLg-ja-0lD"/>
-                                                    <exclude reference="xso-dM-gQ1"/>
-                                                    <include reference="yRR-2N-mYa"/>
-                                                </mask>
-                                            </variation>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="Xx7-pz-aLN">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xx7-pz-aLN" id="pMA-vR-8Ae">
@@ -4837,11 +4774,9 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker_off.png" width="100" height="100"/>
-        <image name="twitter.png" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="D0d-4f-lcI"/>
         <segue reference="xo7-5J-BJb"/>
     </inferredMetricsTieBreakers>
-line, and launch set to wrong screen}
 </document>
