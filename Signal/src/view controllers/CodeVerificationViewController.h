@@ -15,6 +15,8 @@
 // Where the user enters the verification code they wish to document
 @property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
+@property(nonatomic, strong) NSString* formattedPhoneNumber;
+
 // User action buttons
 @property(nonatomic, strong) IBOutlet UIButton* challengeButton;
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeViaSMSAgainButton;

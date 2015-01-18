@@ -12,7 +12,9 @@
 #import "Environment.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "InCallViewController.h"
 #import "TSStorageManager.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
 #import "TSContactThread.h"
@@ -33,6 +35,8 @@
 
 static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
 
@@ -75,6 +79,14 @@ static NSString *const kSegueIndentifier = @"showSegue";
 {
     [super viewWillAppear:animated];
     [self  updateTableViewHeader];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if (![TSAccountManager isRegistered]){
+        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -180,9 +192,11 @@ static NSString *const kSegueIndentifier = @"showSegue";
         else if (thread) {
             [vc setupWithThread:thread];
         }
-        
-        
-        
+    }
+    else if ([segue.identifier isEqualToString:kCallSegue]) {
+        InCallViewController* vc = [segue destinationViewController];
+        [vc configureWithLatestCall:_latestCall];
+        _latestCall = nil;
     }
 }
 
@@ -314,6 +328,10 @@ static NSString *const kSegueIndentifier = @"showSegue";
         _emptyViewLabel = nil;
         self.tableView.tableHeaderView = nil;
     }
+}
+
+- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
+    
 }
 
 @end

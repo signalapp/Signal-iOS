@@ -6,6 +6,8 @@
 #import "PhoneNumberUtil.h"
 
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableViewCell";
+static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
+
 
 @interface CountryCodeViewController () {
     NSArray *_countryCodes;
@@ -20,15 +22,6 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleDefault;
-}
-
-#pragma mark - Actions
-
-- (IBAction)cancelTapped:(id)sender {
-    [_delegate countryCodeViewControllerDidCancel:self];
-}
 
 
 #pragma mark - UITableViewDelegate
@@ -39,33 +32,29 @@ static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableVie
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CountryCodeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
-    
     if (!cell) {
         cell = [[CountryCodeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                reuseIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
     }
     
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-    [cell configureWithCountryCode:callingCode andCountryName:countryName];
+    
+    [cell configureWithCountryCode:[PhoneNumberUtil callingCodeFromCountryCode:countryCode]
+      andCountryName:[PhoneNumberUtil countryNameFromCountryCode:countryCode]];
+    
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-    
-    [_delegate countryCodeViewController:self
-                    didSelectCountryCode:callingCode
-                              forCountry:countryName];
+    _callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    _countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    [self.searchBar resignFirstResponder];
+    [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 44.0f;
 }
 
