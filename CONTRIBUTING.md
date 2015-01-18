@@ -9,7 +9,9 @@ Please go ahead and sign, putting your github username in "Address line #2", so 
 
 ## Code Conventions
 
-We are trying to follow the [GitHub code conventions for Objective-C](https://github.com/github/objective-c-conventions) and we appreciate that pull requests do conform with those conventions. 
+To get started with developing for Signal iOS, please read [this tutorial on git best practices](https://gist.github.com/corbett/ef9fd5f1abbef3b02f3b).
+
+We are trying to follow the [GitHub code conventions for Objective-C](https://github.com/github/objective-c-conventions) and we appreciate that pull requests do conform with those conventions.
 
 In addition to that, always add curly braces to your `if` conditionals, even if there is no `else`. Booleans should be declared according to their Objective-C definition, and hence take `YES` or `NO` as values.
 
@@ -18,7 +20,7 @@ Any category extension on UIKit, or popular libraries, should be prefixed with `
 One note, for programmers joining us from Java or similar language communities, note that [exceptions are not commonly used for errors that may occur in normal use](http://stackoverflow.com/questions/324284/throwing-an-exception-in-objective-c-cocoa/324805#324805) so familiarize yourself with **NSError**.
 
 ### UI conventions
-We prefer to use [Storyboards](https://developer.apple.com/library/ios/documentation/general/conceptual/Devpedia-CocoaApp/Storyboard.html) vs. building UI elements within the code itself. We are not at the stage to provide a .strings localizable file for translating, but the goal is to have translatable strings in a single entry point so that we can reach users in their native language wherever possible. 
+We prefer to use [Storyboards](https://developer.apple.com/library/ios/documentation/general/conceptual/Devpedia-CocoaApp/Storyboard.html) vs. building UI elements within the code itself. We are not at the stage to provide a .strings localizable file for translating, but the goal is to have translatable strings in a single entry point so that we can reach users in their native language wherever possible.
 
 ## Tabs vs Spaces
 
@@ -39,12 +41,12 @@ Open Whisper Systems is currently [experimenting](https://whispersystems.org/blo
 Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/WhisperSystems/Signal-iOS/blob/master/Podfile) we use!
 
 The original version of Signal was developed by Twisted Oak Studios.
-v1.0 development by Twisted Oak Studios: 
+v1.0 development by Twisted Oak Studios:
 
 - Connor Bell (@connorbell)
 - Craig Gidney (@strilanc)
-- Matthew Jewkes (@mjewkes) 
+- Matthew Jewkes (@mjewkes)
 - Petar Markovich (@Waxford)
 - Jazz Turner Baggs (@jazzz)
 
-Since the initial release, Signal is being managed by [Christine Corbett](https://twitter.com/corbett) and [Frederic Jacobs](https://twitter.com/FredericJacobs). 
+Since the initial release, Signal is being managed by [Christine Corbett](https://twitter.com/corbett) and [Frederic Jacobs](https://twitter.com/FredericJacobs).
