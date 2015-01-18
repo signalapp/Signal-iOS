@@ -147,7 +147,12 @@
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+#ifdef DEBUG
+    DDLogWarn(@"We're in debug mode, and registered a fake push identifier");
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[@"aFakePushIdentifier" dataUsingEncoding:NSUTF8StringEncoding]];
+#else
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
+#endif
 }
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
