@@ -52,11 +52,15 @@
         _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"];
     }
     else {
-        NSString* initials = @"";
+        NSMutableString *initials = [NSMutableString string];
         if([thread.name length]>0) {
-            NSArray* names = [thread.name componentsSeparatedByString:@" "];
-            initials = [names count] > 0 ? [NSString stringWithFormat:@"%c",[[names firstObject] characterAtIndex:0]] : [NSString stringWithFormat:@"%c",[thread.name characterAtIndex:0]];
-            initials = [names count] > 1 ? [initials stringByAppendingString:[NSString stringWithFormat:@"%c",[[names lastObject] characterAtIndex:0]]] : initials;
+            NSArray *words = [thread.name componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            for (NSString * word in words) {
+                if ([word length] > 0) {
+                    NSString *firstLetter = [word substringToIndex:1];
+                    [initials appendString:[firstLetter uppercaseString]];
+                }
+            }
         }
         UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor blueColor] font:[UIFont systemFontOfSize:30] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
