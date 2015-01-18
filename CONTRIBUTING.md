@@ -36,6 +36,8 @@ Open Whisper Systems is currently [experimenting](https://whispersystems.org/blo
 
 [![Bithub Payment Amount](https://bithub.herokuapp.com/v1/status/payment/commit)](https://whispersystems.org/blog/bithub/)
 
+If you'd like to opt out of receiving a payment, simply include the string "FREEBIE" somewhere in your commit message, and you will not receive BTC for that commit.
+
 ## Contributors
 
 Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/WhisperSystems/Signal-iOS/blob/master/Podfile) we use!
