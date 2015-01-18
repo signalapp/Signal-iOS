@@ -152,11 +152,11 @@ AppAudioManager*  sharedAppAudioManager;
     [_soundPlayer stopAllAudio];
 }
 
--(BOOL) requestRecordingPrivlege {
+-(BOOL) requestRecordingPrivilege {
     return [self changeAudioSessionCategoryTo:RECORDING_CATEGORY];
 }
 
--(BOOL) releaseRecordingPrivlege{
+-(BOOL) releaseRecordingPrivilege{
     return [self changeAudioSessionCategoryTo:DEFAULT_CATEGORY];
 }
 
