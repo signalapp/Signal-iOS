@@ -25,6 +25,7 @@ enum AudioProfile {
 
 -(void) setAudioProfile:(enum AudioProfile) profile;
 -(enum AudioProfile) getCurrentAudioProfile;
+-(void) updateAudioRouter;
 
 -(void) respondToProgressChange:(enum CallProgressType) progressType forLocallyInitiatedCall:(BOOL) initiatedLocally;
 -(void) respondToTerminationType:(enum CallTerminationType) terminationType;
@@ -33,8 +34,8 @@ enum AudioProfile {
 -(void) cancellAllAudio;
 
 -(void) requestRequiredPermissionsIfNeeded;
--(BOOL) requestRecordingPrivlege;
--(BOOL) releaseRecordingPrivlege;
+-(BOOL) requestRecordingPrivilege;
+-(BOOL) releaseRecordingPrivilege;
 
 -(BOOL) setAudioEnabled:(BOOL) enable;
 -(void) awake;

@@ -47,13 +47,14 @@ static bool doesActiveInstanceExist;
 }
 
 -(void)setupAudio {
-    [AppAudioManager.sharedInstance requestRecordingPrivlege];
+    [AppAudioManager.sharedInstance requestRecordingPrivilege];
     rioAudioUnit = [self makeAudioUnit];
     [self setAudioEnabled];
     [self setAudioStreamFormat];
     [self setAudioCallbacks];
     [self unsetAudioShouldAllocateBuffer];
     [self checkDone:AudioUnitInitialize(rioAudioUnit)];
+    [[AppAudioManager sharedInstance] updateAudioRouter];
 }
 -(AudioUnit)makeAudioUnit {
     AudioComponentDescription audioUnitDescription = [self makeAudioComponentDescription];
@@ -177,7 +178,7 @@ static bool doesActiveInstanceExist;
             state = TERMINATED;
             doesActiveInstanceExist = false;
             [self checkDone:AudioOutputUnitStop(rioAudioUnit)];
-            [AppAudioManager.sharedInstance releaseRecordingPrivlege];
+            [AppAudioManager.sharedInstance releaseRecordingPrivilege];
             [unusedBuffers removeAllObjects];
         }
     }];
