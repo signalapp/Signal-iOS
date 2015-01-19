@@ -85,7 +85,11 @@
 
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
-    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"fullName contains[c] %@", searchText];
+    // (123) 456-7890 would be sanitized into 1234567890
+    NSCharacterSet *illegalCharacters = [NSCharacterSet characterSetWithCharactersInString:@" ()-+[]"];
+    NSString *sanitizedNumber = [[searchText componentsSeparatedByCharactersInSet:illegalCharacters] componentsJoinedByString:@""];
+    
+    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, sanitizedNumber];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = contacts;
 }

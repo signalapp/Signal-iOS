@@ -34,6 +34,7 @@
                         andNotes:(NSString *)notes;
 
 - (NSString*)fullName;
+- (NSString *)allPhoneNumbers;
 
 - (BOOL)isTextSecureContact;
 - (BOOL)isRedPhoneContact;
