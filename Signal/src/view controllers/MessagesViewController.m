@@ -125,9 +125,6 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navController = (APNavigationController*)self.navigationController;
-    self.navController.activeNavigationBarTitle = @"Tool bar visible";
-    self.navController.activeBarButtonTitle = @"Hide";
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];
@@ -191,9 +188,8 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
--(void)initializeToolbars
-{
-    self.title = self.thread.name;
+
+- (IBAction)didSelectShow:(id)sender {
     
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
@@ -204,21 +200,42 @@ typedef enum : NSUInteger {
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
             negativeSeparator.width = -8;
             
-            self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
+            self.navController.dropDownToolbar.items = @[negativeSeparator, lockButton, callButton];
         }
         else {
-            self.navigationItem.rightBarButtonItem = lockButton;
+            self.navController.dropDownToolbar.items  = @[lockButton];
         }
-    } else {
+    }
+    else {
         if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
             [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
         }
         else {
             UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
             UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-            self.navigationItem.rightBarButtonItems = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
+            self.navController.dropDownToolbar.items  = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
         }
     }
+
+    if(self.navController.isDropDownVisible){
+        [self.navController hideDropDown:sender];
+    }
+    else{
+        [self.navController showDropDown:sender];
+    }
+    // Can also toggle toolbar from current state
+    // [self.navController toggleToolbar:sender];
+}
+
+
+-(void)initializeToolbars {
+    
+    self.title = self.thread.name;
+    self.navController = (APNavigationController*)self.navigationController;
+
+    self.navController.activeNavigationBarTitle = @"Tool bar visible";
+    self.navController.activeBarButtonTitle = @"Hide";
+    [self didSelectShow:self];
 }
 
 -(void)initializeBubbles
