@@ -67,7 +67,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     BOOL loggingIsEnabled;
-    
+    [self setupAppearance];
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
@@ -298,6 +298,20 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = YES;
     }
+}
+
+-(void)setupAppearance {
+    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], UITextAttributeTextColor, [UIColor whiteColor], UITextAttributeTextShadowColor, nil];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:textTitleOptions];
+    
+    textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], UITextAttributeTextColor, nil];
+    
+    [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
+    [[UINavigationBar appearance] setTranslucent:NO];
+    [[UIToolbar appearance] setTintColor:[UIColor redColor]];
+    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor redColor]];
 }
 
 - (void)refreshContacts {
