@@ -116,7 +116,7 @@ static NSInteger connectingFlashCounter = 0;
                                                             userInfo:nil
                                                              repeats:YES];
     
-    if (!_answerButton.hidden) {
+    if (!_incomingCallButtonsView.hidden) {
         _vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
                                                          target:self
                                                        selector:@selector(vibrate)
@@ -187,20 +187,16 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) clearDetails {
-    _callStatusLabel.text				= @"";
-    _nameLabel.text						= @"";
-    _phoneNumberLabel.text				= @"";
-    _authenicationStringLabel.text		= @"";
+    _callStatusLabel.text = @"";
+    _nameLabel.text = @"";
+    _authenicationStringLabel.text = @"";
     _explainAuthenticationStringLabel.text = @"";
-    _contactImageView.image				= nil;
-    _authenicationStringLabel.hidden	= YES;
-    _explainAuthenticationStringLabel.hidden    = YES;
+    _contactImageView.image = nil;
+    _safeWordsView.hidden = YES;
     [self displayAcceptRejectButtons:NO];
 }
 
 -(void) populateImmediateDetails {
-    _phoneNumberLabel.text = _callState.remoteNumber.localizedDescriptionForUser;
-
     if (_potentiallyKnownContact) {
         _nameLabel.text = _potentiallyKnownContact.fullName;
         if (_potentiallyKnownContact.image) {
@@ -211,8 +207,7 @@ static NSInteger connectingFlashCounter = 0;
 -(void) handleIncomingDetails {
     [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
         _authenicationStringLabel.textColor = [UIColor colorWithRed:0.f/255.f green:12.f/255.f blue:255.f/255.f alpha:1.0f];
-        _authenicationStringLabel.hidden = NO;
-        _explainAuthenticationStringLabel.hidden = NO;
+        _safeWordsView.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
     }];
@@ -255,25 +250,11 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)muteButtonTapped {
-	_muteButton.selected = [Environment.phoneManager toggleMute];
-    
-    if (_muteButton.isSelected)
-    {
-        _muteLabel.text = @"Mute On";
-    } else {
-        _muteLabel.text = @"Mute Off";
-    }
+	_muteButton.selected = [Environment.phoneManager toggleMute];    
 }
 
 - (void)speakerButtonTapped {
     _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
-    
-    if (_speakerButton.isSelected)
-    {
-        _speakerLabel.text = @"Speaker On";
-    } else {
-        _speakerLabel.text = @"Speaker Off";
-    }
 }
 
 - (void)answerButtonTapped {
@@ -318,13 +299,8 @@ static NSInteger connectingFlashCounter = 0;
 
 -(void) displayAcceptRejectButtons:(BOOL) enable{
     
-    _answerButton.hidden = !enable;
-    _rejectButton.hidden = !enable;
-    _endButton.hidden    = enable;
-    
-    _answerLabel.hidden  = !enable;
-    _rejectLabel.hidden  = !enable;
-    _endLabel.hidden     = enable;
+    _incomingCallButtonsView.hidden = !enable;
+    _activeCallButtonsView.hidden = enable;
     
     if (_vibrateTimer && enable == false) {
         [_vibrateTimer invalidate];

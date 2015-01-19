@@ -1742,10 +1742,10 @@ A0 09 9A FF A8 8A 09 99</string>
             </objects>
             <point key="canvasLocation" x="-7417.5" y="24"/>
         </scene>
-        <!--In Call View Controller-->
+        <!--2.0_6.0-3 Incoming, Outgoing, Active call-->
         <scene sceneID="cEC-6y-6yI">
             <objects>
-                <viewController id="Duq-aU-MmN" customClass="InCallViewController" sceneMemberID="viewController">
+                <viewController id="Duq-aU-MmN" userLabel="2.0_6.0-3 Incoming, Outgoing, Active call" customClass="InCallViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="g84-iS-Sgw"/>
                         <viewControllerLayoutGuide type="bottom" id="9Ut-k6-hNn"/>
@@ -2351,26 +2351,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="WJ0-XC-WRe"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="Oyq-x2-7ff"/>
-                                <exclude reference="tNr-RB-5MN"/>
-                                <exclude reference="urc-iT-2id"/>
-                                <exclude reference="x57-vC-gqp"/>
-                                <exclude reference="Rhp-N3-pOf"/>
-                                <exclude reference="b7m-pM-Uy1"/>
-                                <exclude reference="gmj-Pv-q3p"/>
-                                <exclude reference="wbw-U8-6vo"/>
-                                <exclude reference="Gkv-9Z-jKX"/>
-                                <exclude reference="H2Q-Dy-2cF"/>
-                                <exclude reference="nLs-gW-yhg"/>
-                                <exclude reference="FuS-nm-EeS"/>
-                                <exclude reference="PM1-bR-hD4"/>
-                                <exclude reference="XRF-CC-o2i"/>
-                                <exclude reference="eOw-lR-F39"/>
-                                <exclude reference="hFp-IT-8KH"/>
-                                <exclude reference="EYg-oB-bvq"/>
-                                <exclude reference="pFX-kc-sE0"/>
-                                <exclude reference="tyf-8l-cL5"/>
-                                <exclude reference="z0w-qt-yKs"/>
                                 <exclude reference="4np-49-qeF"/>
                                 <exclude reference="5gb-xA-wtd"/>
                                 <exclude reference="BVM-c2-AKA"/>
@@ -2379,6 +2359,26 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="P5Q-CU-yAE"/>
                                 <exclude reference="iH8-6M-CVs"/>
                                 <exclude reference="qxg-WE-Dm0"/>
+                                <exclude reference="Rhp-N3-pOf"/>
+                                <exclude reference="b7m-pM-Uy1"/>
+                                <exclude reference="gmj-Pv-q3p"/>
+                                <exclude reference="wbw-U8-6vo"/>
+                                <exclude reference="eOw-lR-F39"/>
+                                <exclude reference="hFp-IT-8KH"/>
+                                <exclude reference="Gkv-9Z-jKX"/>
+                                <exclude reference="H2Q-Dy-2cF"/>
+                                <exclude reference="nLs-gW-yhg"/>
+                                <exclude reference="EYg-oB-bvq"/>
+                                <exclude reference="pFX-kc-sE0"/>
+                                <exclude reference="tyf-8l-cL5"/>
+                                <exclude reference="z0w-qt-yKs"/>
+                                <exclude reference="Oyq-x2-7ff"/>
+                                <exclude reference="tNr-RB-5MN"/>
+                                <exclude reference="urc-iT-2id"/>
+                                <exclude reference="x57-vC-gqp"/>
+                                <exclude reference="FuS-nm-EeS"/>
+                                <exclude reference="PM1-bR-hD4"/>
+                                <exclude reference="XRF-CC-o2i"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -2391,26 +2391,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="WJ0-XC-WRe"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="Oyq-x2-7ff"/>
-                                <exclude reference="tNr-RB-5MN"/>
-                                <include reference="urc-iT-2id"/>
-                                <include reference="x57-vC-gqp"/>
-                                <include reference="Rhp-N3-pOf"/>
-                                <include reference="b7m-pM-Uy1"/>
-                                <include reference="gmj-Pv-q3p"/>
-                                <include reference="wbw-U8-6vo"/>
-                                <include reference="Gkv-9Z-jKX"/>
-                                <include reference="H2Q-Dy-2cF"/>
-                                <exclude reference="nLs-gW-yhg"/>
-                                <include reference="FuS-nm-EeS"/>
-                                <include reference="PM1-bR-hD4"/>
-                                <include reference="XRF-CC-o2i"/>
-                                <include reference="eOw-lR-F39"/>
-                                <include reference="hFp-IT-8KH"/>
-                                <exclude reference="EYg-oB-bvq"/>
-                                <include reference="pFX-kc-sE0"/>
-                                <include reference="tyf-8l-cL5"/>
-                                <exclude reference="z0w-qt-yKs"/>
                                 <exclude reference="4np-49-qeF"/>
                                 <exclude reference="5gb-xA-wtd"/>
                                 <include reference="BVM-c2-AKA"/>
@@ -2419,19 +2399,45 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="P5Q-CU-yAE"/>
                                 <exclude reference="iH8-6M-CVs"/>
                                 <exclude reference="qxg-WE-Dm0"/>
+                                <include reference="Rhp-N3-pOf"/>
+                                <include reference="b7m-pM-Uy1"/>
+                                <include reference="gmj-Pv-q3p"/>
+                                <include reference="wbw-U8-6vo"/>
+                                <include reference="eOw-lR-F39"/>
+                                <include reference="hFp-IT-8KH"/>
+                                <include reference="Gkv-9Z-jKX"/>
+                                <include reference="H2Q-Dy-2cF"/>
+                                <exclude reference="nLs-gW-yhg"/>
+                                <exclude reference="EYg-oB-bvq"/>
+                                <include reference="pFX-kc-sE0"/>
+                                <include reference="tyf-8l-cL5"/>
+                                <exclude reference="z0w-qt-yKs"/>
+                                <include reference="Oyq-x2-7ff"/>
+                                <exclude reference="tNr-RB-5MN"/>
+                                <include reference="urc-iT-2id"/>
+                                <include reference="x57-vC-gqp"/>
+                                <include reference="FuS-nm-EeS"/>
+                                <include reference="PM1-bR-hD4"/>
+                                <include reference="XRF-CC-o2i"/>
                             </mask>
                         </variation>
                     </view>
                     <connections>
+                        <outlet property="activeCallButtonsView" destination="N3L-Um-Vnw" id="TvI-Qp-Z1T"/>
+                        <outlet property="activeOrIncomingButtonsView" destination="nsz-Sa-Uh6" id="1iD-yw-fBz"/>
                         <outlet property="answerButton" destination="3b2-qR-0Y3" id="M9I-Fp-cuU"/>
                         <outlet property="authenicationStringLabel" destination="CLR-My-Jfk" id="fpT-33-Pb5"/>
                         <outlet property="callStatusLabel" destination="dbS-Y4-Ge8" id="9g1-o6-89a"/>
                         <outlet property="contactImageView" destination="eSg-l3-cbz" id="vzC-u7-NqS"/>
+                        <outlet property="conversationContactView" destination="kYX-We-g3s" id="hyV-yV-xB1"/>
                         <outlet property="endButton" destination="F2a-2h-UK2" id="DMF-kg-iXz"/>
                         <outlet property="explainAuthenticationStringLabel" destination="bnt-nc-bE8" id="4TM-Ag-g7f"/>
+                        <outlet property="incomingCallButtonsView" destination="WJ0-XC-WRe" id="wVj-ou-Jbg"/>
                         <outlet property="muteButton" destination="4OS-z4-ixd" id="lEf-yW-gKn"/>
                         <outlet property="nameLabel" destination="zMG-vs-mRy" id="Aqu-D2-irE"/>
                         <outlet property="rejectButton" destination="De1-JJ-Nsi" id="WU6-hK-mzq"/>
+                        <outlet property="safeWordsView" destination="SWK-jL-8IG" id="1T6-mb-4T0"/>
+                        <outlet property="speakerButton" destination="uqh-Gl-dvz" id="P7h-V4-I3J"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zf9-os-O7P" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2714,7 +2720,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
