@@ -13,4 +13,5 @@
 @property IBOutlet UILabel *registeredNumber;
 @property IBOutlet UILabel *networkStatusLabel;
 
+-(IBAction)unregisterUser:(id)sender;
 @end

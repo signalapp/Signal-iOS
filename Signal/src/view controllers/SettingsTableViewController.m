@@ -55,10 +55,10 @@ typedef enum {
 } kRowsForSection;
 
 typedef enum {
-    kRegisteredNumberSection,
-    kGeneralSection,
-    kNetworkStatusSection,
-    kUnregisterSection,
+    kRegisteredNumberSection=0,
+    kGeneralSection=2,
+    kNetworkStatusSection=1,
+    kUnregisterSection=3,
 } kSection;
 
 @interface SettingsTableViewController () <UIAlertViewDelegate>
@@ -115,7 +115,7 @@ typedef enum {
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+    
     switch (indexPath.section) {
         case kGeneralSection:
         {
@@ -158,18 +158,24 @@ typedef enum {
             
         case kUnregisterSection:
         {
-            [TSAccountManager unregisterTextSecureWithSuccess:^{
-                [[TSStorageManager sharedManager] wipe];
-                exit(0);
-            } failure:^(NSError *error) {
-                SignalAlertView(@"Failed to unregister", @"");
-            }];
+            [self unregisterUser:self];
             break;
         }
-        
+            
         default:
             break;
     }
+}
+
+
+-(IBAction)unregisterUser:(id)sender {
+    [TSAccountManager unregisterTextSecureWithSuccess:^{
+        [[TSStorageManager sharedManager] wipe];
+        exit(0);
+    } failure:^(NSError *error) {
+        SignalAlertView(@"Failed to unregister", @"");
+    }];
+    
 }
 
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
