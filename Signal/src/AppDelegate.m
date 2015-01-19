@@ -124,6 +124,8 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     
     [TSSocketManager becomeActive];
     
+    [self refreshContacts];
+    
     return YES;
 }
 
@@ -296,6 +298,12 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = YES;
     }
+}
+
+- (void)refreshContacts {
+    Environment *env = [Environment getCurrent];
+    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+    [manager forceUpdate];
 }
 
 @end
