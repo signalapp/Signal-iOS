@@ -8,6 +8,7 @@
 
 #import "TSAttachmentStream.h"
 #import "UIImage+contentTypes.h"
+#import <AVFoundation/AVFoundation.h>
 
 NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
@@ -55,31 +56,54 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (NSString*)filePath {
-    return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    if ([self isVideo] || [self isAudio]) {
+        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
+
+    }
+    else {
+        return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    }
+}
+
+-(NSURL*) videoURL {
+    return [NSURL URLWithString:[self filePath]];
 }
 
 - (BOOL)isImage {
-    if ([self.contentType containsString:@"image/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"image/"];
+}
+
+-(NSString*)mediaExtension {
+    return [[self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""] stringByReplacingOccurrencesOfString:@"audio/" withString:@""];
 }
 
 - (BOOL)isVideo {
-    if ([self.contentType containsString:@"video/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"video/"];
+}
+
+-(BOOL)isAudio {
+    return [self.contentType containsString:@"audio/"];
 }
 
 - (UIImage*)image {
     if (![self isImage]) {
-        return nil;
+        return [self videoThumbnail];
     }
 
     return [UIImage imageWithContentsOfFile:self.filePath];
+}
+
+
+- (UIImage*)videoThumbnail {
+    NSLog(@"thumbnail for %@",self.filePath);
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL URLWithString:self.filePath] options:nil];
+    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+    NSLog(@"err==%@, imageRef==%@", err, imgRef);
+    return [[UIImage alloc] initWithCGImage:imgRef];
+    
 }
 
 + (void)deleteAttachments {

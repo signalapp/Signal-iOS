@@ -142,13 +142,8 @@
 }
 
 -(TSImageQuality)imageUploadQuality {
-    NSNumber * preference = [self tryGetValueForKey:IMAGE_UPLOAD_QUALITY_KEY];
-    
-    if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return TSImageQualityMedium;
-    }
+    // always return average image quality
+    return TSImageQualityMedium;
 }
 
 -(void)setImageUploadQuality:(TSImageQuality)quality {

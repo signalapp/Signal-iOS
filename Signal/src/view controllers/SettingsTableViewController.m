@@ -42,15 +42,14 @@
 
 #define kRegisteredNumberRow 0
 #define kPrivacyRow          0
-#define kMediaRow            1
-#define kAdvancedRow         2
-#define kAboutRow            3
+#define kAdvancedRow         1
+#define kAboutRow            2
 #define kNetworkRow          0
 #define kUnregisterRow       0
 
 typedef enum {
     kRegisteredRows    = 1,
-    kGeneralRows       = 4,
+    kGeneralRows       = 3,
     kNetworkStatusRows = 1,
     kUnregisterRows    = 1,
 } kRowsForSection;
@@ -126,14 +125,6 @@ typedef enum {
                     PrivacySettingsTableViewController * vc = [[PrivacySettingsTableViewController alloc]init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
                     NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
-                    [self.navigationController pushViewController:vc animated:YES];
-                    break;
-                }
-                case kMediaRow:
-                {
-                    MediaSettingsTableViewController * vc = [[MediaSettingsTableViewController alloc]init];
-                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-                    NSAssert(vc != nil, @"Media Settings View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
