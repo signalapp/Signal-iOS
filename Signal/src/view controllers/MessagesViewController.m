@@ -34,6 +34,7 @@
 
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
+
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -124,6 +125,9 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navController = (APNavigationController*)self.navigationController;
+    self.navController.activeNavigationBarTitle = @"Tool bar visible";
+    self.navController.activeBarButtonTitle = @"Hide";
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];

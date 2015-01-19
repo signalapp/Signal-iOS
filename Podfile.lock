@@ -21,6 +21,7 @@ PODS:
   - AFNetworking/UIKit (2.5.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - APDropDownNavToolbar (1.1)
   - AxolotlKit (0.5):
     - 25519 (~> 1.8)
     - HKDFKit (~> 0.0.3)
@@ -60,6 +61,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5)
+  - APDropDownNavToolbar (~> 1.1)
   - AxolotlKit (~> 0.5)
   - DJWActionSheet
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
@@ -94,6 +96,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
+  APDropDownNavToolbar: 11c73db7013276a3b208be046c4c24cd2eb01883
   AxolotlKit: eec4d036d5b021258dc8b6b0212f3c04edeaf15b
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
