@@ -12,10 +12,15 @@
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
 
+#import <MessageUI/MFMessageComposeViewController.h>
+
 #import "ContactTableViewCell.h"
 
 @interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating>
 {
+    UIButton* sendTextButton;
+    NSString* currentSearchTerm;
+    
     NSArray* contacts;
     NSArray* searchResults;
 }
@@ -59,7 +64,19 @@
     self.definesPresentationContext = YES;
     
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchController.searchBar.delegate = self;
     
+    sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIColor *iosBlue = self.view.tintColor;
+    [sendTextButton setBackgroundColor:iosBlue];
+    [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    sendTextButton.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + 44.0, self.view.frame.size.width, 44.0);
+    [self.view addSubview:sendTextButton];
+    sendTextButton.hidden = YES;
+    
+    [sendTextButton addTarget:self
+               action:@selector(sendText)
+     forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -80,6 +97,10 @@
     [self updateSearchResultsForSearchController:self.searchController];
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    sendTextButton.hidden = YES;
+}
+
 
 #pragma mark - Filter
 
@@ -92,10 +113,43 @@
     NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, sanitizedNumber];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = contacts;
+    
+    // text to a non-signal number if we have no results and a valid phone #
+    if (searchResults.count == 0 && sanitizedNumber.length > 6) {
+        NSString *sendTextTo = @"Send SMS to: +";
+        sendTextTo = [sendTextTo stringByAppendingString:sanitizedNumber];
+        [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
+        sendTextButton.hidden = NO;
+        currentSearchTerm = sanitizedNumber;
+    } else {
+        sendTextButton.hidden = YES;
+    }
 }
 
 
-#pragma mark - Table view data source
+#pragma mark - Send Normal Text
+
+- (void)sendText {
+    [self.searchController setActive:NO];
+    
+    UIDevice *device = [UIDevice currentDevice];
+    if ([[device model] isEqualToString:@"iPhone"] ) {
+        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+        picker.messageComposeDelegate = self;
+        
+        picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
+        picker.body = @"Install signal, here is the link";
+        [self presentModalViewController:picker animated:YES];
+    } else {
+        // TODO: better backup for iPods (just don't support on)
+        UIAlertView *Notpermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        
+        [Notpermitted show];
+    }
+}
+
+
+#pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
