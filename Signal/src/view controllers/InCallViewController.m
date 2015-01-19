@@ -250,7 +250,7 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)muteButtonTapped {
-	_muteButton.selected = [Environment.phoneManager toggleMute];    
+	_muteButton.selected = [Environment.phoneManager toggleMute];
 }
 
 - (void)speakerButtonTapped {
