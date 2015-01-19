@@ -72,9 +72,9 @@
 "INVITE_USER_MODAL_BUTTON_INVITE" = "Invite";
 "INVITE_USER_MODAL_TEXT" = "The number dialed is not registered with Signal. Would you like to invite them via SMS?";
 "IN_CALL_CONNECTING" = "Connecting...";
-"IN_CALL_RINGING" = "RING... RING...";
+"IN_CALL_RINGING" = "Dialing...";
 "IN_CALL_SECURING" = "Answered. Securing...";
-"IN_CALL_TALKING" = "Secured. You can be heard now.";
+"IN_CALL_TALKING" = "Secured. Active.";
 "IN_CALL_TERMINATED" = "Done.";
 "KEYPAD_NAV_BAR_TITLE" = "Keypad";
 "MAIN_MENU_INVITE_CONTACTS" = "Invite Contacts";
