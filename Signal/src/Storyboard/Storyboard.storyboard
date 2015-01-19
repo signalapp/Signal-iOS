@@ -16,7 +16,7 @@
                         <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
@@ -34,9 +34,6 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="-64" width="410" height="800"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
                                     <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
@@ -126,7 +123,7 @@
                         <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -818,7 +815,7 @@ A0 09 9A FF A8 8A 09 99</string>
             <objects>
                 <tableViewController id="JeZ-9g-U61" customClass="ShowGroupMembersViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Fdx-Zk-e27">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -3135,7 +3132,7 @@ A0 09 9A FF A8 8A 09 99</string>
             <objects>
                 <tableViewController id="0XE-hu-8cu" customClass="ContactDetailTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="150" sectionHeaderHeight="22" sectionFooterHeight="22" id="RoU-YO-d5P">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -3879,9 +3876,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="EK0-jy-cQX"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <exclude reference="6HO-Ue-A3L"/>
-                                                    <exclude reference="hAL-0X-KuW"/>
-                                                    <exclude reference="tLW-sU-SOD"/>
                                                     <exclude reference="1do-80-mEG"/>
                                                     <exclude reference="4cA-kW-n9A"/>
                                                     <exclude reference="5bY-hD-EYS"/>
@@ -3889,14 +3883,17 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <exclude reference="a9L-QN-6dN"/>
                                                     <exclude reference="gVJ-kJ-ilB"/>
                                                     <exclude reference="oHW-ro-5l8"/>
+                                                    <exclude reference="YHR-iq-n5J"/>
+                                                    <exclude reference="bBN-nu-ZHv"/>
+                                                    <exclude reference="yIS-2Y-cND"/>
                                                     <exclude reference="1OB-sb-Vym"/>
                                                     <exclude reference="X4T-4F-v6e"/>
                                                     <exclude reference="c5a-HY-X68"/>
                                                     <exclude reference="cU4-H3-udB"/>
                                                     <exclude reference="nIo-TW-c0a"/>
-                                                    <exclude reference="YHR-iq-n5J"/>
-                                                    <exclude reference="bBN-nu-ZHv"/>
-                                                    <exclude reference="yIS-2Y-cND"/>
+                                                    <exclude reference="6HO-Ue-A3L"/>
+                                                    <exclude reference="hAL-0X-KuW"/>
+                                                    <exclude reference="tLW-sU-SOD"/>
                                                 </mask>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
@@ -3907,9 +3904,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <include reference="EK0-jy-cQX"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="6HO-Ue-A3L"/>
-                                                    <include reference="hAL-0X-KuW"/>
-                                                    <include reference="tLW-sU-SOD"/>
                                                     <include reference="1do-80-mEG"/>
                                                     <exclude reference="4cA-kW-n9A"/>
                                                     <exclude reference="5bY-hD-EYS"/>
@@ -3917,14 +3911,17 @@ A0 09 9A FF A8 8A 09 99</string>
                                                     <include reference="a9L-QN-6dN"/>
                                                     <exclude reference="gVJ-kJ-ilB"/>
                                                     <include reference="oHW-ro-5l8"/>
+                                                    <include reference="YHR-iq-n5J"/>
+                                                    <include reference="bBN-nu-ZHv"/>
+                                                    <include reference="yIS-2Y-cND"/>
                                                     <include reference="1OB-sb-Vym"/>
                                                     <include reference="X4T-4F-v6e"/>
                                                     <exclude reference="c5a-HY-X68"/>
                                                     <exclude reference="cU4-H3-udB"/>
                                                     <exclude reference="nIo-TW-c0a"/>
-                                                    <include reference="YHR-iq-n5J"/>
-                                                    <include reference="bBN-nu-ZHv"/>
-                                                    <include reference="yIS-2Y-cND"/>
+                                                    <include reference="6HO-Ue-A3L"/>
+                                                    <include reference="hAL-0X-KuW"/>
+                                                    <include reference="tLW-sU-SOD"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
@@ -4256,6 +4253,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                                             <include reference="kGd-pV-JHI"/>
                                                         </mask>
                                                     </variation>
+                                                    <connections>
+                                                        <action selector="unregisterUser:" destination="n1f-7Y-906" eventType="touchUpInside" id="GA2-Ke-con"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
@@ -4572,7 +4572,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -4653,8 +4653,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="100"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -4708,9 +4707,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="108" width="400" height="628"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
