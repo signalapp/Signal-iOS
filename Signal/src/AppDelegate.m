@@ -301,17 +301,9 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 -(void)setupAppearance {
-    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], UITextAttributeTextColor, [UIColor whiteColor], UITextAttributeTextShadowColor, nil];
-    
-    [[UINavigationBar appearance] setTitleTextAttributes:textTitleOptions];
-    
-    textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], UITextAttributeTextColor, nil];
-    
-    [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
-    [[UINavigationBar appearance] setTranslucent:NO];
-    [[UIToolbar appearance] setTintColor:[UIColor redColor]];
-    
-    [[UIBarButtonItem appearance] setTintColor:[UIColor redColor]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    [[UIToolbar appearance] setTintColor:[UIColor whiteColor]];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
 }
 
 - (void)refreshContacts {
