@@ -11,6 +11,8 @@
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "NotificationManifest.h"
+#import "PhoneNumberDirectoryFilterManager.h"
 
 #import <MessageUI/MFMessageComposeViewController.h>
 
@@ -77,6 +79,23 @@
     [sendTextButton addTarget:self
                action:@selector(sendText)
      forControlEvents:UIControlEventTouchUpInside];
+    
+    [self initializeObservers];
+    [self initializeRefreshControl];
+}
+
+-(void)initializeObservers
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
+}
+
+-(void)initializeRefreshControl {
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]init];
+    [refreshControl addTarget:self action:@selector(refreshContacts) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    [self.tableView addSubview:self.refreshControl];
+    
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -217,6 +236,24 @@
     return contact;
 }
 
+#pragma mark Refresh controls
+
+- (void)contactRefreshFailed {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT message:TIMEOUT_CONTACTS_DETAIL delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
+    [alert show];
+    [self.refreshControl endRefreshing];
+}
+
+- (void)contactsDidRefresh {
+    [self updateSearchResultsForSearchController:self.searchController];
+    [self.refreshControl endRefreshing];
+}
+
+- (void)refreshContacts {
+    Environment *env = [Environment getCurrent];
+    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
+    [manager forceUpdate];
+}
 
 #pragma mark - Navigation
 
