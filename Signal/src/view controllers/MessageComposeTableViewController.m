@@ -8,6 +8,7 @@
 
 #import "Environment.h"
 #import "Contact.h"
+#import "PhoneNumberUtil.h"
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
@@ -67,6 +68,7 @@
     
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.searchBar.delegate = self;
+    self.searchController.searchBar.placeholder = @"Search by name or number";
     
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     UIColor *iosBlue = self.view.tintColor;
@@ -125,48 +127,73 @@
 
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
-    // (123) 456-7890 would be sanitized into 1234567890
-    NSCharacterSet *illegalCharacters = [NSCharacterSet characterSetWithCharactersInString:@" ()-+[]"];
-    NSString *sanitizedNumber = [[searchText componentsSeparatedByCharactersInSet:illegalCharacters] componentsJoinedByString:@""];
-    
-    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, sanitizedNumber];
+    // search by contact name or number
+    NSString *normalizedNumber = [PhoneNumberUtil normalizePhoneNumber:searchText];
+    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, normalizedNumber];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = contacts;
     
+    // formats the user input into a pretty number to display
+    NSString *formattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:normalizedNumber];
+    
     // text to a non-signal number if we have no results and a valid phone #
-    if (searchResults.count == 0 && sanitizedNumber.length > 6) {
+    if (searchResults.count == 0 && normalizedNumber.length > 8) {
         NSString *sendTextTo = @"Send SMS to: +";
-        sendTextTo = [sendTextTo stringByAppendingString:sanitizedNumber];
+        sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
         sendTextButton.hidden = NO;
-        currentSearchTerm = sanitizedNumber;
+        currentSearchTerm = formattedNumber;
     } else {
         sendTextButton.hidden = YES;
     }
 }
 
 
-#pragma mark - Send Normal Text
+#pragma mark - Send Normal Text to Unknown Contact
 
 - (void)sendText {
-    [self.searchController setActive:NO];
+    NSString *confirmMessage = @"Are you sure you want to send a normal SMS to: ";
+    confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
+    confirmMessage = [confirmMessage stringByAppendingString:@"?"];
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Confirm"
+                                                           message:confirmMessage
+                                                    preferredStyle:UIAlertControllerStyleAlert];
     
-    UIDevice *device = [UIDevice currentDevice];
-    if ([[device model] isEqualToString:@"iPhone"] ) {
-        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-        picker.messageComposeDelegate = self;
-        
-        picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
-        picker.body = @"Install signal, here is the link";
-        [self presentModalViewController:picker animated:YES];
-    } else {
-        // TODO: better backup for iPods (just don't support on)
-        UIAlertView *Notpermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        
-        [Notpermitted show];
-    }
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel action")
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                       NSLog(@"Cancel action");
+                                   }];
+    
+    UIAlertAction *okAction = [UIAlertAction
+                               actionWithTitle:NSLocalizedString(@"OK", @"OK action")
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction *action) {
+                                           [self.searchController setActive:NO];
+                                           
+                                           UIDevice *device = [UIDevice currentDevice];
+                                           if ([[device model] isEqualToString:@"iPhone"]) {
+                                               MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+                                               picker.messageComposeDelegate = self;
+                                               
+                                               picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
+                                               picker.body = @"Install signal, here is the link";
+                                               [self presentModalViewController:picker animated:YES];
+                                           } else {
+                                               // TODO: better backup for iPods (just don't support on)
+                                               UIAlertView *Notpermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                                               
+                                               [Notpermitted show];
+                                           }
+                                       }];
+    
+    [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
-
 
 #pragma mark - Table View Data Source
 
