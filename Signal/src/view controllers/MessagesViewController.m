@@ -190,7 +190,8 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)didSelectShow:(id)sender {
-    
+    //TODO: dropdown add button
+#if 0
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
@@ -216,6 +217,7 @@ typedef enum : NSUInteger {
             self.navController.dropDownToolbar.items  = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
         }
     }
+#endif
 
     if(self.navController.isDropDownVisible){
         [self.navController hideDropDown:sender];
