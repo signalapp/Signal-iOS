@@ -324,10 +324,11 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
         _emptyViewLabel.text = @"You have no messages yet.";
         self.tableView.tableHeaderView = _emptyViewLabel;
-    } else {
+    }
+    /*else {
         _emptyViewLabel = nil;
         self.tableView.tableHeaderView = nil;
-    }
+    }*/
 }
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
