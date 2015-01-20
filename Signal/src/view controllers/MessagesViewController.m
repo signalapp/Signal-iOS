@@ -195,19 +195,22 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)didSelectShow:(id)sender {
+    
+    UIBarButtonItem *alignRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *spaceRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spaceRight.width = 10;
 
-    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
-            negativeSeparator.width = -8;
+
             
-            self.navController.dropDownToolbar.items = @[negativeSeparator, lockButton, callButton];
+            self.navController.dropDownToolbar.items = @[alignRight, lockButton, callButton, spaceRight];
         }
         else {
-            self.navController.dropDownToolbar.items  = @[lockButton];
+            self.navController.dropDownToolbar.items  = @[alignRight, lockButton, spaceRight];
         }
     }
     else {
@@ -217,7 +220,7 @@ typedef enum : NSUInteger {
         else {
             UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
             UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-            self.navController.dropDownToolbar.items  = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
+            self.navController.dropDownToolbar.items  = @[alignRight, groupMenuButton, showGroupMembersButton, spaceRight];
         }
     }
     for(UIButton *button in self.navController.dropDownToolbar.items) {
@@ -229,9 +232,8 @@ typedef enum : NSUInteger {
     else{
         [self.navController showDropDown:sender];
     }
-    self.title = self.thread.name;
     [self.navController.dropDownToolbar setTintColor:[UIColor colorWithRed:0 green:0 blue:255 alpha:1.0]];
-
+    self.title = self.thread.name;
     // Can also toggle toolbar from current state
     // [self.navController toggleToolbar:sender];
 }
@@ -239,10 +241,13 @@ typedef enum : NSUInteger {
 
 -(void)initializeToolbars {
     
-    self.navigationController.title = self.thread.name;
     self.navController = (APNavigationController*)self.navigationController;
-//    self.navController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:nil action:@selector(didSelectShow:)];
-//    [self.navController setActiveBarButtonTitle:@"info"];
+    self.navController.activeBarButtonTitle = @"Hide";
+
+    self.navController.activeNavigationBarTitle = self.thread.name;
+    self.navigationController.title = self.thread.name;
+    self.title = self.thread.name;
+    
 }
 
 -(void)initializeBubbles
