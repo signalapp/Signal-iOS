@@ -114,7 +114,7 @@
             </objects>
             <point key="canvasLocation" x="-5341.5" y="-1624.5"/>
         </scene>
-        <!--Messages View Controller-->
+        <!--Title-->
         <scene sceneID="QqV-z2-xRW">
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="DtA-8O-wrT" customClass="MessagesViewController" sceneMemberID="viewController">
@@ -127,6 +127,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
+                        <barButtonItem key="rightBarButtonItem" title="Info" style="plain" id="662-pN-RLf">
+                            <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="didSelectShow:" destination="DtA-8O-wrT" id="ktP-VG-5bo"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="urv-62-RsD" kind="presentation" identifier="fingerprintSegue" modalPresentationStyle="overCurrentContext" animates="NO" id="Zjl-QX-tHE"/>
                         <segue destination="bDi-2Q-XOC" kind="show" identifier="updateGroupSegue" id="gZ1-lh-srF"/>

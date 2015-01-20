@@ -231,7 +231,6 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars {
     
     self.title = self.thread.name;
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:nil action:@selector(didSelectShow:)];
     self.navController = (APNavigationController*)self.navigationController;
 //    self.navController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:nil action:@selector(didSelectShow:)];
 //    [self.navController setActiveBarButtonTitle:@"info"];
