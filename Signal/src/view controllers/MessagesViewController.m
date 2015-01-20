@@ -34,7 +34,7 @@
 
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
-
+#import "UIColor+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -178,7 +178,12 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
+    if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
+        // back button was pressed.
+        [self.navController hideDropDown:self];
+    }
     [super viewDidDisappear:animated];
+
     [self cancelReadTimer];
 }
 
@@ -190,12 +195,10 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)didSelectShow:(id)sender {
-    //TODO: dropdown add button
-#if 0
+
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-        
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
@@ -217,14 +220,18 @@ typedef enum : NSUInteger {
             self.navController.dropDownToolbar.items  = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
         }
     }
-#endif
-
+    for(UIButton *button in self.navController.dropDownToolbar.items) {
+        [button setTintColor:[UIColor ows_materialBlueColor]];
+    }
     if(self.navController.isDropDownVisible){
         [self.navController hideDropDown:sender];
     }
     else{
         [self.navController showDropDown:sender];
     }
+    self.title = self.thread.name;
+    [self.navController.dropDownToolbar setTintColor:[UIColor colorWithRed:0 green:0 blue:255 alpha:1.0]];
+
     // Can also toggle toolbar from current state
     // [self.navController toggleToolbar:sender];
 }
@@ -232,7 +239,7 @@ typedef enum : NSUInteger {
 
 -(void)initializeToolbars {
     
-    self.title = self.thread.name;
+    self.navigationController.title = self.thread.name;
     self.navController = (APNavigationController*)self.navigationController;
 //    self.navController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:nil action:@selector(didSelectShow:)];
 //    [self.navController setActiveBarButtonTitle:@"info"];
