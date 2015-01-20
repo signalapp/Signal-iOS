@@ -70,7 +70,7 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
             
             if (thread.lastMessageDate) {
                 if (thread.archivalDate) {
-                    return TSArchiveGroup;
+                    return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
                 }
                 return TSInboxGroup;
             }
