@@ -44,7 +44,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
-
+@property (nonatomic, strong) UIView *headerView;
 @end
 
 @implementation SignalsViewController
@@ -55,6 +55,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.headerView = self.tableView.tableHeaderView;
     
     [self tableViewSetUp];
     
@@ -202,20 +203,17 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 #pragma mark - IBAction
 
--(IBAction)segmentDidChange:(id)sender
-{
-    switch (_inboxArchiveSwitch.selectedSegmentIndex) {
-        case 0:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-            
-        case 1:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-    }
-    
+-(IBAction)selectedInbox:(id)sender {
+    [self changeToGrouping:TSInboxGroup];
+}
+
+-(IBAction)selectedArchive:(id)sender {
+    [self changeToGrouping:TSArchiveGroup];
+}
+
+-(void) changeToGrouping:(NSString*)grouping {
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
+                                                                     view:TSThreadDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];
@@ -325,10 +323,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         _emptyViewLabel.text = @"You have no messages yet.";
         self.tableView.tableHeaderView = _emptyViewLabel;
     }
-    /*else {
-        _emptyViewLabel = nil;
-        self.tableView.tableHeaderView = nil;
-    }*/
+    else {
+        self.tableView.tableHeaderView = self.headerView;
+    }
 }
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {

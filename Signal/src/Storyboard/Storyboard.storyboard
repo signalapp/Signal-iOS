@@ -34,6 +34,9 @@
                                             <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
                                                 <rect key="frame" x="25" y="6" width="39" height="30"/>
                                             </variation>
+                                            <connections>
+                                                <action selector="selectedInbox:" destination="MY2-bB-USa" eventType="touchUpInside" id="mFX-FS-Ofg"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WVY-Zl-dpP">
                                             <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -43,6 +46,9 @@
                                             <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
                                                 <rect key="frame" x="324" y="6" width="51" height="30"/>
                                             </variation>
+                                            <connections>
+                                                <action selector="selectedArchive:" destination="MY2-bB-USa" eventType="touchUpInside" id="Spp-Ns-lKG"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
