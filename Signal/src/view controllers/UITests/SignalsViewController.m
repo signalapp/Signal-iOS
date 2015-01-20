@@ -44,7 +44,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
-@property (nonatomic, strong) UIView *headerView;
 @end
 
 @implementation SignalsViewController
@@ -55,7 +54,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.headerView = self.tableView.tableHeaderView;
     
     [self tableViewSetUp];
     
@@ -79,7 +77,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self  updateTableViewHeader];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -218,7 +215,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
-    [self updateTableViewHeader];
 }
 
 #pragma mark Database delegates
@@ -309,24 +305,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     }
     
     [self.tableView endUpdates];
-    [self updateTableViewHeader];
 }
 
-- (void)updateTableViewHeader{
-    if ([self.threadMappings numberOfItemsInAllGroups]==0)
-    {
-        CGRect r = CGRectMake(0, 60, 300, 70);
-        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
-        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyViewLabel.text = @"You have no messages yet.";
-        self.tableView.tableHeaderView = _emptyViewLabel;
-    }
-    else {
-        self.tableView.tableHeaderView = self.headerView;
-    }
-}
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
     
