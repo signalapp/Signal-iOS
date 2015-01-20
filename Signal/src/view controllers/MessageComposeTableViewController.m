@@ -15,11 +15,12 @@
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 
+#import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 
 #import "ContactTableViewCell.h"
 
-@interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating>
+@interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating, MFMessageComposeViewControllerDelegate>
 {
     UIButton* sendTextButton;
     NSString* currentSearchTerm;
@@ -138,7 +139,7 @@
     
     // text to a non-signal number if we have no results and a valid phone #
     if (searchResults.count == 0 && normalizedNumber.length > 8) {
-        NSString *sendTextTo = @"Send SMS to: +";
+        NSString *sendTextTo = @"Send SMS to: ";
         sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
         sendTextButton.hidden = NO;
@@ -152,7 +153,7 @@
 #pragma mark - Send Normal Text to Unknown Contact
 
 - (void)sendText {
-    NSString *confirmMessage = @"Are you sure you want to send a normal SMS to: ";
+    NSString *confirmMessage = @"Would you like to invite the following number to Signal: ";
     confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
     confirmMessage = [confirmMessage stringByAppendingString:@"?"];
     UIAlertController *alertController = [UIAlertController
@@ -180,19 +181,44 @@
                                                picker.messageComposeDelegate = self;
                                                
                                                picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
-                                               picker.body = @"Install signal, here is the link";
+                                               picker.body = @"I'm inviting you to install Signal! Here is the link: https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
                                                [self presentModalViewController:picker animated:YES];
                                            } else {
                                                // TODO: better backup for iPods (just don't support on)
-                                               UIAlertView *Notpermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                                               UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                                                
-                                               [Notpermitted show];
+                                               [notPermitted show];
                                            }
                                        }];
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma mark - SMS Composer Delegate
+
+// called on completion of message screen
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult) result
+{
+    switch (result) {
+        case MessageComposeResultCancelled:
+            break;
+        case MessageComposeResultFailed: {
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [warningAlert show];
+            break;
+        }
+        case MessageComposeResultSent: {
+            UIAlertView *successAlert = [[UIAlertView alloc] initWithTitle:@"Success" message:@"You've invited your friend to use Signal!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [successAlert show];
+            break;
+        }
+        default:
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Table View Data Source
