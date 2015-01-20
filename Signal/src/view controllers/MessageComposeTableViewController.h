@@ -15,6 +15,7 @@
 #import "JSQMessagesComposerTextView.h"
 
 #import "JSQMessagesKeyboardController.h"
+#import "LocalizableText.h"
 
 @interface MessageComposeTableViewController : UITableViewController
 

@@ -42,24 +42,23 @@
 
 #define kRegisteredNumberRow 0
 #define kPrivacyRow          0
-#define kMediaRow            1
-#define kAdvancedRow         2
-#define kAboutRow            3
+#define kAdvancedRow         1
+#define kAboutRow            2
 #define kNetworkRow          0
 #define kUnregisterRow       0
 
 typedef enum {
     kRegisteredRows    = 1,
-    kGeneralRows       = 4,
+    kGeneralRows       = 3,
     kNetworkStatusRows = 1,
     kUnregisterRows    = 1,
 } kRowsForSection;
 
 typedef enum {
-    kRegisteredNumberSection,
-    kGeneralSection,
-    kNetworkStatusSection,
-    kUnregisterSection,
+    kRegisteredNumberSection=0,
+    kGeneralSection=2,
+    kNetworkStatusSection=1,
+    kUnregisterSection=3,
 } kSection;
 
 @interface SettingsTableViewController () <UIAlertViewDelegate>
@@ -116,7 +115,7 @@ typedef enum {
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+    
     switch (indexPath.section) {
         case kGeneralSection:
         {
@@ -126,14 +125,6 @@ typedef enum {
                     PrivacySettingsTableViewController * vc = [[PrivacySettingsTableViewController alloc]init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
                     NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
-                    [self.navigationController pushViewController:vc animated:YES];
-                    break;
-                }
-                case kMediaRow:
-                {
-                    MediaSettingsTableViewController * vc = [[MediaSettingsTableViewController alloc]init];
-                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-                    NSAssert(vc != nil, @"Media Settings View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
@@ -167,18 +158,24 @@ typedef enum {
             
         case kUnregisterSection:
         {
-            [TSAccountManager unregisterTextSecureWithSuccess:^{
-                [[TSStorageManager sharedManager] wipe];
-                exit(0);
-            } failure:^(NSError *error) {
-                SignalAlertView(@"Failed to unregister", @"");
-            }];
+            [self unregisterUser:self];
             break;
         }
-        
+            
         default:
             break;
     }
+}
+
+
+-(IBAction)unregisterUser:(id)sender {
+    [TSAccountManager unregisterTextSecureWithSuccess:^{
+        [[TSStorageManager sharedManager] wipe];
+        exit(0);
+    } failure:^(NSError *error) {
+        SignalAlertView(@"Failed to unregister", @"");
+    }];
+    
 }
 
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
