@@ -10,6 +10,7 @@
 #import "JSQMessages.h"
 #import "TSGroupModel.h"
 #import <MediaPlayer/MediaPlayer.h>
+#import "APNavigationController.h"
 #import <AVFoundation/AVFoundation.h>
 @class TSThread;
 
@@ -17,6 +18,8 @@
                                                                 UINavigationControllerDelegate,
                                                                 UITextViewDelegate,AVAudioRecorderDelegate,AVAudioPlayerDelegate>
 
+
+@property (nonatomic, retain) APNavigationController *navController;
 
 @property (nonatomic,strong) MPMoviePlayerController* videoPlayer;
 @property (nonatomic,strong) AVAudioPlayer* audioPlayer;

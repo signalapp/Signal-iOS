@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "TSSocketManager.h"
-
-@interface SignalsNavigationController : UINavigationController
+#import "APNavigationController.h"
+@interface SignalsNavigationController : APNavigationController
 
 
 @end

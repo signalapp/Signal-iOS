@@ -34,6 +34,7 @@
 
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
+#import "UIColor+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -177,7 +178,12 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
+    if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
+        // back button was pressed.
+        [self.navController hideDropDown:self];
+    }
     [super viewDidDisappear:animated];
+
     [self cancelReadTimer];
 }
 
@@ -187,34 +193,61 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
--(void)initializeToolbars
-{
-    self.title = self.thread.name;
+
+- (IBAction)didSelectShow:(id)sender {
     
-    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    UIBarButtonItem *alignRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *spaceRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spaceRight.width = 10;
+
     if (!isGroupConversation) {
         UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-        
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
-            negativeSeparator.width = -8;
+
             
-            self.navigationItem.rightBarButtonItems = @[negativeSeparator, lockButton, callButton];
+            self.navController.dropDownToolbar.items = @[alignRight, lockButton, callButton, spaceRight];
         }
         else {
-            self.navigationItem.rightBarButtonItem = lockButton;
+            self.navController.dropDownToolbar.items  = @[alignRight, lockButton, spaceRight];
         }
-    } else {
+    }
+    else {
         if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
             [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
         }
         else {
             UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
             UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-            self.navigationItem.rightBarButtonItems = @[negativeSeparator, groupMenuButton, showGroupMembersButton];
+            self.navController.dropDownToolbar.items  = @[alignRight, groupMenuButton, showGroupMembersButton, spaceRight];
         }
     }
+    for(UIButton *button in self.navController.dropDownToolbar.items) {
+        [button setTintColor:[UIColor ows_materialBlueColor]];
+    }
+    if(self.navController.isDropDownVisible){
+        [self.navController hideDropDown:sender];
+    }
+    else{
+        [self.navController showDropDown:sender];
+    }
+    [self.navController.dropDownToolbar setTintColor:[UIColor colorWithRed:0 green:0 blue:255 alpha:1.0]];
+    self.title = self.thread.name;
+    // Can also toggle toolbar from current state
+    // [self.navController toggleToolbar:sender];
+}
+
+
+-(void)initializeToolbars {
+    
+    self.navController = (APNavigationController*)self.navigationController;
+    self.navController.activeBarButtonTitle = @"Hide";
+
+    self.navController.activeNavigationBarTitle = self.thread.name;
+    self.navigationController.title = self.thread.name;
+    self.title = self.thread.name;
+    
 }
 
 -(void)initializeBubbles
