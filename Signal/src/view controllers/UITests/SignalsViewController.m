@@ -211,7 +211,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
             break;
             
         case 1:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup,TSArchiveGroup]
+            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
                                                                              view:TSThreadDatabaseViewExtensionName];
             break;
     }
