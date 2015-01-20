@@ -7,7 +7,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Signals View Controller-->
+        <!--Signal-->
         <scene sceneID="82U-Xj-21R">
             <objects>
                 <viewController id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
@@ -22,6 +22,49 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+                                <view key="tableHeaderView" contentMode="scaleToFill" id="uoq-UX-3fJ" customClass="UITableViewHeaderFooterView">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DfA-eN-PyK">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <state key="normal" title="Inbox">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                                <rect key="frame" x="25" y="6" width="39" height="30"/>
+                                            </variation>
+                                            <connections>
+                                                <action selector="selectedInbox:" destination="MY2-bB-USa" eventType="touchUpInside" id="mFX-FS-Ofg"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WVY-Zl-dpP">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <state key="normal" title="Archive">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
+                                                <rect key="frame" x="324" y="6" width="51" height="30"/>
+                                            </variation>
+                                            <connections>
+                                                <action selector="selectedArchive:" destination="MY2-bB-USa" eventType="touchUpInside" id="Spp-Ns-lKG"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <variation key="default">
+                                        <mask key="subviews">
+                                            <exclude reference="DfA-eN-PyK"/>
+                                            <exclude reference="WVY-Zl-dpP"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="heightClass=regular-widthClass=compact">
+                                        <mask key="subviews">
+                                            <include reference="DfA-eN-PyK"/>
+                                            <include reference="WVY-Zl-dpP"/>
+                                        </mask>
+                                    </variation>
+                                </view>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="showCell" id="bnD-Ld-pC4">
                                         <autoresizingMask key="autoresizingMask"/>
@@ -76,27 +119,14 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="Um0-0y-8lr">
-                        <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="settings_tab.png" id="PYj-7F-J24">
+                    <navigationItem key="navigationItem" title="Signal" id="Um0-0y-8lr">
+                        <barButtonItem key="leftBarButtonItem" image="settings_tab.png" width="20" style="plain" id="PYj-7F-J24">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="presentation" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="3zh-Df-ewk">
-                            <rect key="frame" x="238.5" y="7.5" width="123" height="29"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <segments>
-                                <segment title="Inbox"/>
-                                <segment title="All"/>
-                            </segments>
-                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            <connections>
-                                <action selector="segmentDidChange:" destination="MY2-bB-USa" eventType="valueChanged" id="eE7-lp-jRr"/>
-                            </connections>
-                        </segmentedControl>
-                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Oft-fU-tf5">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -104,7 +134,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="inboxArchiveSwitch" destination="3zh-Df-ewk" id="ANJ-FH-ESj"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
                         <segue destination="Duq-aU-MmN" kind="presentation" identifier="2.0_6.0_Call_Segue" id="gHJ-y4-zWg"/>
                         <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" id="DR8-fx-0PD"/>
@@ -2710,7 +2739,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>

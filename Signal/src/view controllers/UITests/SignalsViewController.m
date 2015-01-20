@@ -44,7 +44,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
-
 @end
 
 @implementation SignalsViewController
@@ -78,7 +77,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self  updateTableViewHeader];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -202,25 +200,21 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 #pragma mark - IBAction
 
--(IBAction)segmentDidChange:(id)sender
-{
-    switch (_inboxArchiveSwitch.selectedSegmentIndex) {
-        case 0:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-            
-        case 1:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-    }
-    
+-(IBAction)selectedInbox:(id)sender {
+    [self changeToGrouping:TSInboxGroup];
+}
+
+-(IBAction)selectedArchive:(id)sender {
+    [self changeToGrouping:TSArchiveGroup];
+}
+
+-(void) changeToGrouping:(NSString*)grouping {
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
+                                                                     view:TSThreadDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
-    [self updateTableViewHeader];
 }
 
 #pragma mark Database delegates
@@ -311,24 +305,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     }
     
     [self.tableView endUpdates];
-    [self updateTableViewHeader];
 }
 
-- (void)updateTableViewHeader{
-    if ([self.threadMappings numberOfItemsInAllGroups]==0)
-    {
-        CGRect r = CGRectMake(0, 60, 300, 70);
-        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
-        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyViewLabel.text = @"You have no messages yet.";
-        self.tableView.tableHeaderView = _emptyViewLabel;
-    } else {
-        _emptyViewLabel = nil;
-        self.tableView.tableHeaderView = nil;
-    }
-}
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
     

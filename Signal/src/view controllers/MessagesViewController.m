@@ -233,21 +233,25 @@ typedef enum : NSUInteger {
         [self.navController showDropDown:sender];
     }
     [self.navController.dropDownToolbar setTintColor:[UIColor colorWithRed:0 green:0 blue:255 alpha:1.0]];
-    self.title = self.thread.name;
     // Can also toggle toolbar from current state
     // [self.navController toggleToolbar:sender];
+    [self setNavigationTitle];
 }
 
+-(void) setNavigationTitle {
+    NSString* navTitle = !isGroupConversation ? self.thread.name : ((TSGroupThread*)self.thread).groupModel.groupName;
+
+    self.title = navTitle;
+    self.navController.activeNavigationBarTitle = navTitle;
+    self.navigationController.title = navTitle;
+
+}
 
 -(void)initializeToolbars {
     
     self.navController = (APNavigationController*)self.navigationController;
     self.navController.activeBarButtonTitle = @"Hide";
-
-    self.navController.activeNavigationBarTitle = self.thread.name;
-    self.navigationController.title = self.thread.name;
-    self.title = self.thread.name;
-    
+    [self setNavigationTitle];
 }
 
 -(void)initializeBubbles
