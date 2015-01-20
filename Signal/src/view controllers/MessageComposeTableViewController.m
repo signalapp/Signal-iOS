@@ -182,6 +182,9 @@
                                                
                                                picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
                                                picker.body = @"I'm inviting you to install Signal! Here is the link: https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
+                                               
+                                               picker.navigationBar.barTintColor = self.view.window.tintColor;
+                                               [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
                                                [self presentModalViewController:picker animated:YES];
                                            } else {
                                                // TODO: better backup for iPods (just don't support on)
@@ -210,6 +213,9 @@
             break;
         }
         case MessageComposeResultSent: {
+            [self dismissViewControllerAnimated:NO completion:^{
+                NSLog(@"view controller dismissed");
+            }];
             UIAlertView *successAlert = [[UIAlertView alloc] initWithTitle:@"Success" message:@"You've invited your friend to use Signal!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [successAlert show];
             break;
