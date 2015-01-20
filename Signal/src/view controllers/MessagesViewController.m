@@ -571,16 +571,13 @@ typedef enum : NSUInteger {
                     }];
                     
                     if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-
-                    
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                         NSFileManager *fileManager = [NSFileManager defaultManager];
                         if([messageMedia isVideo]) {
                             if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
+                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL];
+                                [_videoPlayer prepareToPlay];
 
-                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL]; //messageMedia.fileURL];
-
-                                
                                 [[NSNotificationCenter defaultCenter] addObserver:self
                                                                          selector:@selector(moviePlayBackDidFinish:)
                                                                              name:MPMoviePlayerPlaybackDidFinishNotification
@@ -599,7 +596,6 @@ typedef enum : NSUInteger {
                             DDLogDebug(@"audio debug is %@",error);
                             [_audioPlayer prepareToPlay];
                             [_audioPlayer play];
-                        
                         
                         }
                     }
