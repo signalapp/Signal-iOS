@@ -66,6 +66,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
+    [self updateInboxCountLabel];
 
 }
 
@@ -148,6 +149,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    [self updateInboxCountLabel];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -158,6 +160,24 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
+    [self updateInboxCountLabel];
+
+}
+
+
+-(void) updateInboxCountLabel {
+    // TODO: doesn't work for now
+    self.inboxCountLabel.hidden = YES;
+#if 0
+    YapDatabaseViewMappings *inboxThreadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
+                                                                     view:TSThreadDatabaseViewExtensionName];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+        [inboxThreadMappings updateWithTransaction:transaction];
+    }];
+    
+    NSInteger inboxCount = (NSInteger)[inboxThreadMappings numberOfItemsInSection:0];
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",(long)inboxCount];
+#endif
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -197,11 +217,15 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 -(IBAction)selectedInbox:(id)sender {
     self.viewingThreadsIn = kInboxState;
+    [self.inboxButton setSelected:YES];
+    [self.archiveButton setSelected:NO];
     [self changeToGrouping:TSInboxGroup];
 }
 
 -(IBAction)selectedArchive:(id)sender {
     self.viewingThreadsIn = kArchiveState;
+    [self.inboxButton setSelected:NO];
+    [self.archiveButton setSelected:YES];
     [self changeToGrouping:TSArchiveGroup];
 }
 
