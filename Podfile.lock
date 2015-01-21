@@ -62,7 +62,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5)
-  - APDropDownNavToolbar (~> 1.1)
+  - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`, branch `master`)
   - AxolotlKit (~> 0.5)
   - DJWActionSheet
   - FFCircularProgressView (>= 0.1)
@@ -78,6 +78,9 @@ DEPENDENCIES:
   - YapDatabase/SQLCipher
 
 EXTERNAL SOURCES:
+  APDropDownNavToolbar:
+    :branch: master
+    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :branch: JSignalQ
     :git: https://github.com/dtsbourg/JSQMessagesViewController
@@ -88,6 +91,9 @@ EXTERNAL SOURCES:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
 CHECKOUT OPTIONS:
+  APDropDownNavToolbar:
+    :commit: 791dcb9659b2bd5afceff837c4e405ae745358ed
+    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :commit: ed9858bd6df609bba83b21a029701cbf13682981
     :git: https://github.com/dtsbourg/JSQMessagesViewController
@@ -98,7 +104,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
-  APDropDownNavToolbar: 11c73db7013276a3b208be046c4c24cd2eb01883
+  APDropDownNavToolbar: 62131873890d3a30a2fdc98ffdda180a11e49aa4
   AxolotlKit: eec4d036d5b021258dc8b6b0212f3c04edeaf15b
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
