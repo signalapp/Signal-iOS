@@ -183,9 +183,7 @@
                                                picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
                                                picker.body = @"I'm inviting you to install Signal! Here is the link: https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
                                                
-                                               picker.navigationBar.barTintColor = self.view.window.tintColor;
-                                               [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-                                               [self presentModalViewController:picker animated:YES];
+                                               [self presentViewController:picker animated:YES completion:nil];
                                            } else {
                                                // TODO: better backup for iPods (just don't support on)
                                                UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
