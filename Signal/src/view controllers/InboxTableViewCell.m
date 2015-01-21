@@ -228,7 +228,7 @@
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }
     
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)*2) {
+    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)/4) {
         [_delegate tableViewCellTappedDelete:self];
     } else {
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
