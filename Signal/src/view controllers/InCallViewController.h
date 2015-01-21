@@ -13,6 +13,7 @@
 @property (nonatomic, strong) IBOutlet UIImageView *contactImageView;
 @property (nonatomic, strong) IBOutlet UIImageView *connectingIndicatorImageView;
 @property (nonatomic, strong) IBOutlet UILabel *authenicationStringLabel;
+@property (nonatomic, strong) IBOutlet UILabel* explainAuthenticationStringLabel;
 @property (nonatomic, strong) IBOutlet UIView *verticalSpinnerAlignmentView;
 @property (nonatomic, strong) IBOutlet UIView *callStateImageContainerView;
 
@@ -40,8 +41,7 @@ typedef NS_ENUM(NSInteger, PushAcceptState){
 
 @property (nonatomic, readonly) PushAcceptState callPushState;
 
-+(InCallViewController*) inCallViewControllerWithCallState:(CallState*)callState
-                                 andOptionallyKnownContact:(Contact*)contact;
+-(void)configureWithLatestCall:(CallState*)callState;
 
 - (IBAction)endCallTapped;
 - (IBAction)muteButtonTapped;

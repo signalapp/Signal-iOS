@@ -19,7 +19,6 @@
 #import "Util.h"
 #import "VersionMigrations.h"
 
-#import "InitialViewController.h"
 #import "CodeVerificationViewController.h"
 
 #import <PastelogKit/Pastelog.h>
@@ -29,6 +28,9 @@
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
+
+
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
 @interface AppDelegate ()
 
@@ -92,11 +94,7 @@
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
-    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
-    [self performUpdateCheck];
-
-    
+    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];    
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
@@ -118,23 +116,10 @@
         if (latestCall == nil){
             return;
         }
-        
-        InCallViewController *callViewController = [InCallViewController inCallViewControllerWithCallState:latestCall
-                                                                                 andOptionallyKnownContact:latestCall.potentiallySpecifiedContact];
-        
-        if (latestCall.initiatedLocally == NO){
-            [self.callPickUpFuture.future thenDo:^(NSNumber *accept) {
-                if ([accept isEqualToNumber:@YES]) {
-                    [callViewController answerButtonTapped];
-                } else if ([accept isEqualToNumber:@NO]){
-                    [callViewController rejectButtonTapped];
-                }
-            }];
-        }
-        
         SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
         [vc dismissViewControllerAnimated:NO completion:nil];
-        [vc presentViewController:callViewController animated:NO completion:nil];
+        vc.latestCall = latestCall;
+        [vc performSegueWithIdentifier:kCallSegue sender:self];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
     [TSSocketManager becomeActive];
