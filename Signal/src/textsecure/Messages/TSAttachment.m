@@ -36,8 +36,4 @@
     return [f numberFromString:self.uniqueId];
 }
 
-- (BOOL)isDownloaded{
-    return NO;
-}
-
 @end

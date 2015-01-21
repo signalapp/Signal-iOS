@@ -22,11 +22,8 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
     [[NSFileManager defaultManager] createFileAtPath:self.filePath contents:data attributes:nil];
     
+    _isDownloaded = YES;
     return self;
-}
-
-- (BOOL)isDownloaded{
-    return YES;
 }
 
 - (NSArray *)yapDatabaseRelationshipEdges {
@@ -100,7 +97,6 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     NSError *err = NULL;
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-    NSLog(@"err==%@, imageRef==%@", err, imgRef);
     return [[UIImage alloc] initWithCGImage:imgRef];
     
 }
