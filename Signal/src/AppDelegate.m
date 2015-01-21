@@ -304,7 +304,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
 
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
