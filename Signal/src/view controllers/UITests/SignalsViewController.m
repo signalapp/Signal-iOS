@@ -44,6 +44,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic) CellState viewingThreadsIn;
 @end
 
 @implementation SignalsViewController
@@ -54,24 +55,18 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self tableViewSetUp];
     
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
-    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                     view:TSThreadDatabaseViewExtensionName];
-    
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
-        [self.threadMappings updateWithTransaction:transaction];
-    }];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
+    [self selectedInbox:self];
+
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -120,7 +115,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     }
     
     [cell configureWithThread:thread];
-    [cell configureForState:_inboxArchiveSwitch.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
+    [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
     
     return cell;
 }
@@ -158,7 +153,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
-    thread.archivalDate    = _inboxArchiveSwitch.selectedSegmentIndex == 0 ? [NSDate date] : nil ;
+    thread.archivalDate    = self.viewingThreadsIn == kInboxState ? [NSDate date] : nil ;
     
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
@@ -201,10 +196,12 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 #pragma mark - IBAction
 
 -(IBAction)selectedInbox:(id)sender {
+    self.viewingThreadsIn = kInboxState;
     [self changeToGrouping:TSInboxGroup];
 }
 
 -(IBAction)selectedArchive:(id)sender {
+    self.viewingThreadsIn = kArchiveState;
     [self changeToGrouping:TSArchiveGroup];
 }
 

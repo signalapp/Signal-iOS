@@ -18,7 +18,6 @@
 @property (nonatomic) NSString   *contactIdentifierFromCompose;
 @property (nonatomic) TSGroupModel *groupFromCompose;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *inboxArchiveSwitch;
 @property (nonatomic, retain) CallState* latestCall;
 
 -(IBAction)selectedInbox:(id)sender;
