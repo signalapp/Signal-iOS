@@ -66,6 +66,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
+    
+    self.inboxCount = [self tableView:self.tableView numberOfRowsInSection:0];
+    [self updateInboxCountLabel];
 
 }
 
@@ -148,6 +151,10 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    
+    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : 0;
+    
+    [self updateInboxCountLabel];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -158,6 +165,17 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
+    
+    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : -1;
+    [self updateInboxCountLabel];
+}
+
+
+-(void) updateInboxCountLabel {
+    // TODO: doesn't work for now
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",(long)self.inboxCount];
+    self.inboxCountLabel.hidden = (self.inboxCount == 0);
+
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -197,11 +215,15 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 -(IBAction)selectedInbox:(id)sender {
     self.viewingThreadsIn = kInboxState;
+    [self.inboxButton setSelected:YES];
+    [self.archiveButton setSelected:NO];
     [self changeToGrouping:TSInboxGroup];
 }
 
 -(IBAction)selectedArchive:(id)sender {
     self.viewingThreadsIn = kArchiveState;
+    [self.inboxButton setSelected:NO];
+    [self.archiveButton setSelected:YES];
     [self changeToGrouping:TSArchiveGroup];
 }
 

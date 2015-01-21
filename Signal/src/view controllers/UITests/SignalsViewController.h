@@ -18,7 +18,11 @@
 @property (nonatomic) NSString   *contactIdentifierFromCompose;
 @property (nonatomic) TSGroupModel *groupFromCompose;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
+@property (nonatomic, retain) IBOutlet UIButton *inboxButton;
+@property (nonatomic, retain) IBOutlet UIButton *archiveButton;
+@property (nonatomic, retain) IBOutlet UILabel *inboxCountLabel;
 @property (nonatomic, retain) CallState* latestCall;
+@property (nonatomic) long inboxCount;
 
 -(IBAction)selectedInbox:(id)sender;
 -(IBAction)selectedArchive:(id)sender;

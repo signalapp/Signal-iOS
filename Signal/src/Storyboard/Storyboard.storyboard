@@ -63,6 +63,8 @@
                                         <state key="normal" image="inactive-check@1x" backgroundImage="active-check@1x">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <state key="selected" image="active-check@1x"/>
+                                        <state key="highlighted" image="active-check@1x"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="alU-LZ-piL"/>
@@ -150,10 +152,6 @@
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="lM2-AA-dzm"/>
-                                        <exclude reference="615-3N-9QN"/>
-                                        <exclude reference="AGV-i5-F3D"/>
-                                        <exclude reference="Pq1-0y-L80"/>
-                                        <exclude reference="cJB-rq-7bY"/>
                                         <exclude reference="SJd-sZ-n13"/>
                                         <exclude reference="UgY-Jr-rPo"/>
                                         <exclude reference="lZW-eB-ucq"/>
@@ -164,6 +162,10 @@
                                         <exclude reference="HWa-M6-gjL"/>
                                         <exclude reference="YSd-C9-yEn"/>
                                         <exclude reference="Ydg-FL-fwr"/>
+                                        <exclude reference="615-3N-9QN"/>
+                                        <exclude reference="AGV-i5-F3D"/>
+                                        <exclude reference="Pq1-0y-L80"/>
+                                        <exclude reference="cJB-rq-7bY"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -175,10 +177,6 @@
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="lM2-AA-dzm"/>
-                                        <include reference="615-3N-9QN"/>
-                                        <include reference="AGV-i5-F3D"/>
-                                        <include reference="Pq1-0y-L80"/>
-                                        <include reference="cJB-rq-7bY"/>
                                         <include reference="SJd-sZ-n13"/>
                                         <include reference="UgY-Jr-rPo"/>
                                         <include reference="lZW-eB-ucq"/>
@@ -189,6 +187,10 @@
                                         <exclude reference="HWa-M6-gjL"/>
                                         <exclude reference="YSd-C9-yEn"/>
                                         <exclude reference="Ydg-FL-fwr"/>
+                                        <include reference="615-3N-9QN"/>
+                                        <include reference="AGV-i5-F3D"/>
+                                        <include reference="Pq1-0y-L80"/>
+                                        <include reference="cJB-rq-7bY"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -207,9 +209,6 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="64" width="400" height="666"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
                                     <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
@@ -242,6 +241,9 @@
                                 <exclude reference="PaA-ol-uQT"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="7iL-hd-xP7"/>
+                                <exclude reference="GCa-EH-8Vh"/>
+                                <exclude reference="s5v-Hl-a3k"/>
                                 <exclude reference="EdI-ia-IjN"/>
                                 <exclude reference="OD6-Pc-Zug"/>
                                 <exclude reference="ouV-vM-Vyv"/>
@@ -251,9 +253,6 @@
                                 <exclude reference="Fc5-tN-hro"/>
                                 <exclude reference="La3-rh-BpY"/>
                                 <exclude reference="xlM-od-Zuu"/>
-                                <exclude reference="7iL-hd-xP7"/>
-                                <exclude reference="GCa-EH-8Vh"/>
-                                <exclude reference="s5v-Hl-a3k"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -262,6 +261,9 @@
                                 <include reference="PaA-ol-uQT"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="7iL-hd-xP7"/>
+                                <exclude reference="GCa-EH-8Vh"/>
+                                <include reference="s5v-Hl-a3k"/>
                                 <include reference="EdI-ia-IjN"/>
                                 <exclude reference="OD6-Pc-Zug"/>
                                 <include reference="ouV-vM-Vyv"/>
@@ -271,9 +273,6 @@
                                 <include reference="Fc5-tN-hro"/>
                                 <include reference="La3-rh-BpY"/>
                                 <exclude reference="xlM-od-Zuu"/>
-                                <include reference="7iL-hd-xP7"/>
-                                <exclude reference="GCa-EH-8Vh"/>
-                                <include reference="s5v-Hl-a3k"/>
                             </mask>
                         </variation>
                     </view>
@@ -292,6 +291,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="archiveButton" destination="WVY-Zl-dpP" id="IdE-Kz-1r0"/>
+                        <outlet property="inboxButton" destination="DfA-eN-PyK" id="p0D-Qj-YzC"/>
+                        <outlet property="inboxCountLabel" destination="GV1-fp-iPR" id="MHq-Gs-bgt"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
                         <segue destination="Duq-aU-MmN" kind="presentation" identifier="2.0_6.0_Call_Segue" id="gHJ-y4-zWg"/>
                         <segue destination="lIF-0m-2N3" kind="presentation" identifier="showSignupFlow" id="DR8-fx-0PD"/>
@@ -2897,7 +2899,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
