@@ -152,6 +152,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
