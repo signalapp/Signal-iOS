@@ -285,6 +285,7 @@ typedef enum : NSUInteger {
 
 
 -(void)showGroupMembers {
+    [self.navController hideDropDown:self];
     [self performSegueWithIdentifier:kShowGroupMembersSegue sender:self];
 }
 
