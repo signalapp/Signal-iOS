@@ -232,7 +232,6 @@ typedef enum : NSUInteger {
     else{
         [self.navController showDropDown:sender];
     }
-    [self.navController.dropDownToolbar setTintColor:[UIColor colorWithRed:0 green:0 blue:255 alpha:1.0]];
     // Can also toggle toolbar from current state
     // [self.navController toggleToolbar:sender];
     [self setNavigationTitle];
