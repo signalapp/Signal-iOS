@@ -22,6 +22,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *archiveButton;
 @property (nonatomic, retain) IBOutlet UILabel *inboxCountLabel;
 @property (nonatomic, retain) CallState* latestCall;
+@property (nonatomic) long inboxCount;
 
 -(IBAction)selectedInbox:(id)sender;
 -(IBAction)selectedArchive:(id)sender;

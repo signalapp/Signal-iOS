@@ -66,6 +66,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
+    
+    self.inboxCount = [self tableView:self.tableView numberOfRowsInSection:0];
     [self updateInboxCountLabel];
 
 }
@@ -149,6 +151,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    
+    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : 0;
+    
     [self updateInboxCountLabel];
 }
 
@@ -160,24 +165,17 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
+    
+    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : -1;
     [self updateInboxCountLabel];
-
 }
 
 
 -(void) updateInboxCountLabel {
     // TODO: doesn't work for now
-    self.inboxCountLabel.hidden = YES;
-#if 0
-    YapDatabaseViewMappings *inboxThreadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                     view:TSThreadDatabaseViewExtensionName];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
-        [inboxThreadMappings updateWithTransaction:transaction];
-    }];
-    
-    NSInteger inboxCount = (NSInteger)[inboxThreadMappings numberOfItemsInSection:0];
-    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",(long)inboxCount];
-#endif
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",(long)self.inboxCount];
+    self.inboxCountLabel.hidden = (self.inboxCount == 0);
+
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
