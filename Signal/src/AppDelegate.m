@@ -18,7 +18,7 @@
 #import "TSStorageManager.h"
 #import "Util.h"
 #import "VersionMigrations.h"
-
+#import "UIColor+OWS.h"
 #import "CodeVerificationViewController.h"
 
 #import <PastelogKit/Pastelog.h>
@@ -301,8 +301,10 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 -(void)setupAppearance {
+    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    [[UIToolbar appearance] setTintColor:[UIColor whiteColor]];
+
+    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                                [UIColor whiteColor], UITextAttributeTextColor,
