@@ -29,11 +29,11 @@
                                             <constraint firstAttribute="height" constant="66" id="a8F-hg-6gc"/>
                                             <constraint firstAttribute="width" constant="180" id="sZf-gg-kCA"/>
                                         </constraints>
-                                        <state key="normal" image="inactive-inbox@1x">
+                                        <state key="normal" image="inbox-inactive@1x">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
-                                        <state key="selected" image="active-box@1x"/>
-                                        <state key="highlighted" image="active-box@1x"/>
+                                        <state key="selected" image="inbox-active@1x"/>
+                                        <state key="highlighted" image="inbox-active@1x"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="XZ0-7V-0w0"/>
@@ -60,11 +60,11 @@
                                             <constraint firstAttribute="width" constant="180" id="s5u-fl-v0s"/>
                                             <constraint firstAttribute="height" constant="66" id="sc4-SD-Hae"/>
                                         </constraints>
-                                        <state key="normal" image="inactive-check@1x">
+                                        <state key="normal" image="archive-inactive@1x">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
-                                        <state key="selected" image="active-check@1x"/>
-                                        <state key="highlighted" image="active-check@1x"/>
+                                        <state key="selected" image="archive-active@1x"/>
+                                        <state key="highlighted" image="archive-active@1x"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="alU-LZ-piL"/>
@@ -284,13 +284,15 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Signal" id="Um0-0y-8lr">
-                        <barButtonItem key="leftBarButtonItem" image="settings_tab.png" width="20" style="plain" id="PYj-7F-J24">
+                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="120" style="plain" id="PYj-7F-J24">
+                            <inset key="imageInsets" minX="0.0" minY="10" maxX="20" maxY="10"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="hxR-Pc-Gxm" kind="presentation" id="dB4-oM-uSL"/>
+                                <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Oft-fU-tf5">
+                        <barButtonItem key="rightBarButtonItem" image="new-conversation-icon@1x" width="120" style="plain" id="Oft-fU-tf5">
+                            <inset key="imageInsets" minX="15" minY="12" maxX="5" maxY="8"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -2906,7 +2908,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
+                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
                                     <rect key="frame" x="0.0" y="340" width="400" height="47"/>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
@@ -5039,24 +5041,26 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="21"/>
-        <image name="active-box@1x" width="66" height="66"/>
-        <image name="active-check@1x" width="66" height="66"/>
+        <image name="archive-active@1x" width="66" height="66"/>
+        <image name="archive-inactive@1x" width="66" height="66"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="endcall.png" width="100" height="100"/>
         <image name="group_photo.png" width="100" height="100"/>
-        <image name="inactive-check@1x" width="66" height="66"/>
-        <image name="inactive-inbox@1x" width="66" height="66"/>
+        <image name="inbox-active@1x" width="66" height="66"/>
+        <image name="inbox-inactive@1x" width="66" height="66"/>
         <image name="info.png" width="200" height="200"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="mute_off.png" width="100" height="100"/>
+        <image name="new-conversation-icon@1x" width="44" height="44"/>
         <image name="notification_no_preview_no_name.png" width="640" height="128"/>
         <image name="notification_no_preview_with_name.png" width="640" height="128"/>
         <image name="notification_with_preview.png" width="640" height="128"/>
         <image name="qr.png" width="100" height="100"/>
         <image name="qr_scan_fingerprint.png" width="100" height="100"/>
         <image name="quit.png" width="50" height="50"/>
+        <image name="settings-icon@1x" width="44" height="44"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
