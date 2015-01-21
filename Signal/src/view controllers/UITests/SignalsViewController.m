@@ -45,6 +45,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) CellState viewingThreadsIn;
+@property (nonatomic) long inboxCount;
+
 @end
 
 @implementation SignalsViewController
@@ -67,7 +69,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                object:nil];
     [self selectedInbox:self];
     
-    self.inboxCount = [self tableView:self.tableView numberOfRowsInSection:0];
     [self updateInboxCountLabel];
 
 }
@@ -151,10 +152,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
-    
-    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : 0;
-    
-    [self updateInboxCountLabel];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -166,15 +163,14 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [thread saveWithTransaction:transaction];
     }];
     
-    self.inboxCount -= (self.viewingThreadsIn == kInboxState) ? 1 : -1;
-    [self updateInboxCountLabel];
 }
 
 
 -(void) updateInboxCountLabel {
-    // TODO: doesn't work for now
-    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",(long)self.inboxCount];
-    self.inboxCountLabel.hidden = (self.inboxCount == 0);
+    _inboxCount = (self.viewingThreadsIn == kInboxState) ? (long)[self tableView:self.tableView numberOfRowsInSection:0] : _inboxCount;
+
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",_inboxCount];
+    self.inboxCountLabel.hidden = (_inboxCount == 0);
 
 }
 
@@ -298,12 +294,14 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
             {
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount += (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeInsert :
             {
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeMove :
@@ -324,6 +322,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     }
     
     [self.tableView endUpdates];
+    [self updateInboxCountLabel];
 }
 
 
