@@ -19,6 +19,8 @@
 #import "TSAttachmentStream.h"
 #import "TSAttachmentAdapter.h"
 #import "TSAttachmentPointer.h"
+#import "TSVideoAttachmentAdapter.h"
+
 
 @interface TSMessageAdapter ()
 
@@ -105,10 +107,15 @@
                         adapter.mediaItem = [[TSAttachmentAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
-                    } else {
-                        DDLogWarn(@"We have a TSAttachmentStream for an unsupported media type");
                     }
-                } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
+                    else {
+                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
+                    }
+                }
+                else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
+                    // can do loading information here
                     //TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
                     //TODO: Change this status when download failed;
                     adapter.messageBody = @"Attachment is downloading";

@@ -10,6 +10,8 @@
 
 @interface TSAttachmentStream : TSAttachment <YapDatabaseRelationshipNode>
 
+@property (nonatomic) BOOL isDownloaded;
+
 - (instancetype)initWithIdentifier:(NSString*)identifier
                               data:(NSData*)data
                                key:(NSData*)key
@@ -19,7 +21,7 @@
 
 - (BOOL)isImage;
 - (BOOL)isVideo;
-
+-(NSURL*)videoURL;
 + (void)deleteAttachments;
 
 @end
