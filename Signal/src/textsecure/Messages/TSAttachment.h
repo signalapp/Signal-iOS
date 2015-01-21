@@ -13,8 +13,6 @@
 
 - (NSNumber*)identifier;
 
-- (BOOL)isDownloaded;
-
 @property (nonatomic, readonly) NSData   *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
 

@@ -32,6 +32,7 @@ PODS:
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - DJWActionSheet (1.0.4)
+  - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (6.1.1):
     - JSQSystemSoundPlayer (~> 2.0.0)
@@ -64,6 +65,7 @@ DEPENDENCIES:
   - APDropDownNavToolbar (~> 1.1)
   - AxolotlKit (~> 0.5)
   - DJWActionSheet
+  - FFCircularProgressView (>= 0.1)
   - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.7)
   - Mantle (~> 1.5)
@@ -100,6 +102,7 @@ SPEC CHECKSUMS:
   AxolotlKit: eec4d036d5b021258dc8b6b0212f3c04edeaf15b
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
+  FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 554430bbaeb0b2dbed8d4aaa2bdf64559e67f353
   JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981

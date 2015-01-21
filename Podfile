@@ -18,3 +18,4 @@ pod 'JSQMessagesViewController', :git => 'https://github.com/dtsbourg/JSQMessage
 pod 'DJWActionSheet'
 pod 'UICKeyChainStore',           :podspec => 'Podspecs/UICKeyChainStore.podspec'
 pod 'APDropDownNavToolbar',		  '~> 1.1'
+pod 'FFCircularProgressView', '>= 0.1'

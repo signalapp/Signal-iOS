@@ -891,11 +891,7 @@ typedef enum : NSUInteger {
 }
 
 -(void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"Uploading attachment" attachments:[NSMutableArray array]];
-    
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
-    }];
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:nil attachments:[NSMutableArray array]];
     
     [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
     [self finishSendingMessage];
@@ -925,10 +921,6 @@ typedef enum : NSUInteger {
     
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        
-        NSLog(@"done processing video!");
-        NSLog(@"%@",compressedVideoUrl);
-        
         
     }];
     while(exportSession.progress!=1){
