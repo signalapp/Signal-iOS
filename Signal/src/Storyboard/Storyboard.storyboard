@@ -29,7 +29,7 @@
                                             <constraint firstAttribute="height" constant="66" id="a8F-hg-6gc"/>
                                             <constraint firstAttribute="width" constant="180" id="sZf-gg-kCA"/>
                                         </constraints>
-                                        <state key="normal" image="inactive-box@1x">
+                                        <state key="normal" image="inactive-inbox@1x">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <state key="selected" image="active-box@1x"/>
@@ -60,7 +60,7 @@
                                             <constraint firstAttribute="width" constant="180" id="s5u-fl-v0s"/>
                                             <constraint firstAttribute="height" constant="66" id="sc4-SD-Hae"/>
                                         </constraints>
-                                        <state key="normal" image="inactive-check@1x" backgroundImage="active-check@1x">
+                                        <state key="normal" image="inactive-check@1x">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <state key="selected" image="active-check@1x"/>
@@ -88,8 +88,9 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hSN-Ka-PzS" userLabel="Line">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <rect key="contentStretch" x="0.0" y="0.0" width="1" height="0.5"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="1" id="WuF-7s-PGe"/>
+                                            <constraint firstAttribute="height" id="WuF-7s-PGe"/>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
@@ -136,9 +137,11 @@
                                     <constraint firstItem="hSN-Ka-PzS" firstAttribute="top" secondItem="uoq-UX-3fJ" secondAttribute="top" id="Pq1-0y-L80"/>
                                     <constraint firstAttribute="bottom" secondItem="DfA-eN-PyK" secondAttribute="bottom" id="SJd-sZ-n13"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="centerX" secondItem="GV1-fp-iPR" secondAttribute="centerX" id="UgY-Jr-rPo"/>
+                                    <constraint firstItem="DfA-eN-PyK" firstAttribute="centerX" secondItem="GV1-fp-iPR" secondAttribute="centerX" id="WOe-oP-TIu"/>
                                     <constraint firstAttribute="trailing" secondItem="WVY-Zl-dpP" secondAttribute="trailing" id="YSd-C9-yEn"/>
                                     <constraint firstItem="WVY-Zl-dpP" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" constant="220" id="Ydg-FL-fwr"/>
                                     <constraint firstItem="hSN-Ka-PzS" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" id="cJB-rq-7bY"/>
+                                    <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-15" id="fp7-UH-t0O"/>
                                     <constraint firstAttribute="height" constant="66" id="lM2-AA-dzm"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-18" id="lZW-eB-ucq"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" constant="66" id="tIb-ee-zav"/>
@@ -154,6 +157,8 @@
                                         <exclude reference="lM2-AA-dzm"/>
                                         <exclude reference="SJd-sZ-n13"/>
                                         <exclude reference="UgY-Jr-rPo"/>
+                                        <exclude reference="WOe-oP-TIu"/>
+                                        <exclude reference="fp7-UH-t0O"/>
                                         <exclude reference="lZW-eB-ucq"/>
                                         <exclude reference="tIb-ee-zav"/>
                                         <exclude reference="5YJ-Oq-Roj"/>
@@ -178,8 +183,10 @@
                                     <mask key="constraints">
                                         <include reference="lM2-AA-dzm"/>
                                         <include reference="SJd-sZ-n13"/>
-                                        <include reference="UgY-Jr-rPo"/>
-                                        <include reference="lZW-eB-ucq"/>
+                                        <exclude reference="UgY-Jr-rPo"/>
+                                        <include reference="WOe-oP-TIu"/>
+                                        <include reference="fp7-UH-t0O"/>
+                                        <exclude reference="lZW-eB-ucq"/>
                                         <include reference="tIb-ee-zav"/>
                                         <exclude reference="5YJ-Oq-Roj"/>
                                         <include reference="77j-Xx-EHO"/>
@@ -5032,15 +5039,15 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="21"/>
-        <image name="active-box@1x" width="500" height="500"/>
-        <image name="active-check@1x" width="500" height="500"/>
+        <image name="active-box@1x" width="66" height="66"/>
+        <image name="active-check@1x" width="66" height="66"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="endcall.png" width="100" height="100"/>
         <image name="group_photo.png" width="100" height="100"/>
-        <image name="inactive-box@1x" width="500" height="500"/>
-        <image name="inactive-check@1x" width="500" height="500"/>
+        <image name="inactive-check@1x" width="66" height="66"/>
+        <image name="inactive-inbox@1x" width="66" height="66"/>
         <image name="info.png" width="200" height="200"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="mute_off.png" width="100" height="100"/>
