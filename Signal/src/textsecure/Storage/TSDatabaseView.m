@@ -66,14 +66,11 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
     
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSThread class]]){
-            TSThread *thread = (TSThread*)object;
-            
-            if (thread.lastMessageDate) {
-                if (thread.archivalDate) {
-                    return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
-                }
-                return TSInboxGroup;
+            TSThread *thread = (TSThread*)object;            
+            if (thread.archivalDate) {
+                return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
             }
+            return TSInboxGroup;
         }
         return nil;
     }];
