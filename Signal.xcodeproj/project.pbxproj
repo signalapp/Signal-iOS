@@ -2796,35 +2796,34 @@
 
 /* Begin PBXProject section */
 		D221A080169C9E5E00537ABF /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				LastTestingUpgradeCheck = 0600;
-				LastUpgradeCheck = 0500;
-				ORGANIZATIONNAME = "Open Whisper Systems";
-				TargetAttributes = {
-					D221A088169C9E5E00537ABF = {
-						DevelopmentTeam = AWR2FBJU75;
-						SystemCapabilities = {
-							com.apple.DataProtection = {
-								enabled = 1;
+					isa = PBXProject;
+					attributes = {
+						LastTestingUpgradeCheck = 0600;
+						LastUpgradeCheck = 0500;
+						ORGANIZATIONNAME = "Open Whisper Systems";
+						TargetAttributes = {
+							D221A088169C9E5E00537ABF = {
+								SystemCapabilities = {
+									com.apple.DataProtection = {
+										enabled = 1;
+									};
+									com.apple.InAppPurchase = {
+										enabled = 0;
+									};
+									com.apple.InterAppAudio = {
+										enabled = 0;
+									};
+									com.apple.VPNLite = {
+										enabled = 0;
+									};
+								};
 							};
-							com.apple.InAppPurchase = {
-								enabled = 0;
-							};
-							com.apple.InterAppAudio = {
-								enabled = 0;
-							};
-							com.apple.VPNLite = {
-								enabled = 0;
+							D221A0A9169C9E5F00537ABF = {
+								DevelopmentTeam = AWR2FBJU75;
+								TestTargetID = D221A088169C9E5E00537ABF;
 							};
 						};
 					};
-					D221A0A9169C9E5F00537ABF = {
-						DevelopmentTeam = AWR2FBJU75;
-						TestTargetID = D221A088169C9E5E00537ABF;
-					};
-				};
-			};
 			buildConfigurationList = D221A083169C9E5E00537ABF /* Build configuration list for PBXProject "Signal" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;

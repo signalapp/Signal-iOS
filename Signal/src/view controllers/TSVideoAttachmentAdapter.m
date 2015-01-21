@@ -73,7 +73,7 @@
         imageView.clipsToBounds = YES;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;
-        UIImage *img = [UIImage imageNamed:@"play_button"];
+        UIImage *img = [UIImage imageNamed:@"play_button"]; 
         _playButton = [[UIImageView alloc] initWithImage:img];
         _playButton.frame = CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37);
         [self.cachedImageView addSubview:_playButton];
