@@ -181,6 +181,8 @@ typedef enum : NSUInteger {
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
         // back button was pressed.
         [self.navController hideDropDown:self];
+        self.navController.navigationBar.topItem.title = @"Signal";
+        self.title = @"Signal";
     }
     [super viewDidDisappear:animated];
 
