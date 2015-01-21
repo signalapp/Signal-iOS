@@ -239,11 +239,8 @@ typedef enum : NSUInteger {
 
 -(void) setNavigationTitle {
     NSString* navTitle = !isGroupConversation ? self.thread.name : ((TSGroupThread*)self.thread).groupModel.groupName;
-
+    self.navController.navigationBar.topItem.title = navTitle;
     self.title = navTitle;
-    self.navController.activeNavigationBarTitle = navTitle;
-    self.navigationController.title = navTitle;
-
 }
 
 -(void)initializeToolbars {
