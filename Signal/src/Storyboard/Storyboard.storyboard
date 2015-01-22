@@ -3354,22 +3354,22 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="xhB-mH-aQJ"/>
                                         </connections>
                                     </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="oPQ-nC-GaF">
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="fpT-Yt-dBo">
                                         <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="PYh-VX-kzg"/>
-                                            <constraint firstAttribute="width" constant="20" id="ZXT-Ad-OJO"/>
+                                            <constraint firstAttribute="width" constant="20" id="3FZ-2w-74C"/>
+                                            <constraint firstAttribute="height" constant="20" id="j07-6k-dHi"/>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
-                                                <exclude reference="PYh-VX-kzg"/>
-                                                <exclude reference="ZXT-Ad-OJO"/>
+                                                <exclude reference="3FZ-2w-74C"/>
+                                                <exclude reference="j07-6k-dHi"/>
                                             </mask>
                                         </variation>
                                         <variation key="heightClass=regular-widthClass=compact">
                                             <mask key="constraints">
-                                                <include reference="PYh-VX-kzg"/>
-                                                <include reference="ZXT-Ad-OJO"/>
+                                                <include reference="3FZ-2w-74C"/>
+                                                <include reference="j07-6k-dHi"/>
                                             </mask>
                                         </variation>
                                     </activityIndicatorView>
@@ -3380,14 +3380,13 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
                                     </constraint>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="DCo-uF-wnB"/>
-                                    <constraint firstItem="oPQ-nC-GaF" firstAttribute="trailing" secondItem="5Nx-nz-ht7" secondAttribute="trailing" constant="-14" id="Rho-0j-EkO"/>
+                                    <constraint firstItem="5Nx-nz-ht7" firstAttribute="bottom" secondItem="fpT-Yt-dBo" secondAttribute="bottom" constant="13" id="QQz-sJ-g9s"/>
+                                    <constraint firstItem="fpT-Yt-dBo" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" constant="14" id="Ttk-Nc-doc"/>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="Yd9-hW-I38"/>
+                                    <constraint firstItem="fpT-Yt-dBo" firstAttribute="leading" secondItem="95o-ce-XGu" secondAttribute="leading" constant="329" id="epG-wE-L6f"/>
+                                    <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="fpT-Yt-dBo" secondAttribute="top" constant="-14" id="g9B-Vj-VPO"/>
                                     <constraint firstAttribute="trailing" secondItem="5Nx-nz-ht7" secondAttribute="trailing" constant="64" id="gb0-Cl-5TE">
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
-                                    </constraint>
-                                    <constraint firstItem="oPQ-nC-GaF" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" constant="14" id="izh-5p-arC"/>
-                                    <constraint firstAttribute="trailing" secondItem="oPQ-nC-GaF" secondAttribute="trailing" constant="58" id="koo-tZ-7aJ">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="50"/>
                                     </constraint>
                                     <constraint firstAttribute="height" constant="57" id="mab-6F-p8B">
                                         <variation key="heightClass=regular-widthClass=compact" constant="47"/>
@@ -3396,31 +3395,36 @@ A0 09 9A FF A8 8A 09 99</string>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
-                                        <exclude reference="oPQ-nC-GaF"/>
+                                        <exclude reference="fpT-Yt-dBo"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <exclude reference="sPb-zU-Xyo"/>
-                                        <exclude reference="Rho-0j-EkO"/>
-                                        <exclude reference="izh-5p-arC"/>
-                                        <exclude reference="koo-tZ-7aJ"/>
                                         <exclude reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
+                                        <exclude reference="QQz-sJ-g9s"/>
                                         <exclude reference="Yd9-hW-I38"/>
+                                        <exclude reference="g9B-Vj-VPO"/>
                                         <exclude reference="gb0-Cl-5TE"/>
+                                        <exclude reference="Ttk-Nc-doc"/>
+                                        <exclude reference="epG-wE-L6f"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="subviews">
+                                        <include reference="fpT-Yt-dBo"/>
+                                    </mask>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <include reference="sPb-zU-Xyo"/>
-                                        <include reference="Rho-0j-EkO"/>
-                                        <include reference="izh-5p-arC"/>
-                                        <exclude reference="koo-tZ-7aJ"/>
                                         <include reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
+                                        <exclude reference="QQz-sJ-g9s"/>
                                         <include reference="Yd9-hW-I38"/>
+                                        <exclude reference="g9B-Vj-VPO"/>
                                         <include reference="gb0-Cl-5TE"/>
+                                        <include reference="Ttk-Nc-doc"/>
+                                        <include reference="epG-wE-L6f"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -3603,7 +3607,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="o0O-Dk-h65"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="-1" y="743" width="400" height="57"/>
                                     <mask key="subviews">
                                         <include reference="rj8-Z7-7mp"/>
                                     </mask>
@@ -3934,6 +3939,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="requestCodeAgainSpinner" destination="utk-2S-Qc7" id="9W8-ZF-1fI"/>
                         <outlet property="sendCodeViaSMSAgainButton" destination="9dl-sl-tZN" id="P3C-jR-K09"/>
                         <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
+                        <outlet property="submitCodeSpinner" destination="fpT-Yt-dBo" id="6iE-SR-BE9"/>
                     </connections>
                 </viewController>
                 <exit id="ZUP-dD-a8s" userLabel="Exit" sceneMemberID="exit"/>
