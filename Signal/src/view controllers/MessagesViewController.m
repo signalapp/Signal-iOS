@@ -669,6 +669,7 @@ typedef enum : NSUInteger {
 - (void)deleteMessageAtIndexPath:(NSIndexPath*)indexPath {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+        [[TSAdapterCacheManager sharedManager] clearCacheEntryForInteractionId:interaction.uniqueId];
         [interaction removeWithTransaction:transaction];
     }];
 }
@@ -928,8 +929,6 @@ typedef enum : NSUInteger {
             {
                 case YapDatabaseViewChangeDelete :
                 {
-                    TSInteraction * interaction = [self interactionAtIndexPath:rowChange.indexPath];
-                    [[TSAdapterCacheManager sharedManager] clearCacheEntryForInteractionId:interaction.uniqueId];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     break;
                 }
