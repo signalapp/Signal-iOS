@@ -62,7 +62,7 @@
                 }
             }
         }
-        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor blueColor] font:[UIFont systemFontOfSize:30] diameter:100] avatarImage];
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont systemFontOfSize:30] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
     }
 
