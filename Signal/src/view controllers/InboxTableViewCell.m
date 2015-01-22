@@ -62,7 +62,7 @@
                 }
             }
         }
-        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage]; //TODOTYLERFONT
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
     }
 
@@ -141,17 +141,14 @@
 
 -(void)updateCellForUnreadMessage
 {
-    _nameLabel.font = [UIFont ows_mediumFontWithSize:17.0f]; //TODOTYLERFONT
+    _nameLabel.font = [UIFont ows_boldFontWithSize:14.0f]; //TODOTYLERFONT
     _snippetLabel.textColor = [UIColor blackColor];
     _timeLabel.textColor = [UIColor ows_materialBlueColor];
-    [_contactPictureView.layer setBorderWidth:1.0f];
-    [_contactPictureView.layer setBorderColor:[[UIColor ows_materialBlueColor] CGColor]];
-    
 }
 
 -(void)updateCellForReadMessage
 {
-    _nameLabel.font = [UIFont ows_lightFontWithSize:17.0f]; // TODOTYLERFONT
+    _nameLabel.font = [UIFont ows_regularFontWithSize:14.0f]; // TODOTYLERFONT
     _snippetLabel.textColor = [UIColor lightGrayColor];
 }
 
