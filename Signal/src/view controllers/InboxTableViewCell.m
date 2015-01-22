@@ -143,9 +143,9 @@
 {
     _nameLabel.font = [UIFont ows_mediumFontWithSize:17.0f];
     _snippetLabel.textColor = [UIColor blackColor];
-    _timeLabel.textColor = [UIColor ows_blueColor];
+    _timeLabel.textColor = [UIColor ows_materialBlueColor];
     [_contactPictureView.layer setBorderWidth:1.0f];
-    [_contactPictureView.layer setBorderColor:[[UIColor ows_blueColor] CGColor]];
+    [_contactPictureView.layer setBorderColor:[[UIColor ows_materialBlueColor] CGColor]];
     
 }
 
@@ -182,7 +182,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     if (_scrollView.contentOffset.x < 0) {
-        _archiveImageView.image = [_archiveImageView.image jsq_imageMaskedWithColor:[UIColor ows_blueColor]];
+        _archiveImageView.image = [_archiveImageView.image jsq_imageMaskedWithColor:[UIColor ows_materialBlueColor]];
         _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
                                               _archiveImageView.bounds.origin.y,
                                               ARCHIVE_IMAGE_VIEW_WIDTH,
