@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TSContactThread.h"
+#import "MessagesViewController.h"
 
 @interface FingerprintViewController : UIViewController
 
