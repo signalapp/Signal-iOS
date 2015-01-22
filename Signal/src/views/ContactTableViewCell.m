@@ -3,7 +3,7 @@
 
 #import "Environment.h"
 #import "PhoneManager.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 
 #define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
 
