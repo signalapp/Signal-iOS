@@ -78,6 +78,7 @@
         NSError *responseError = [self errorForResponse:badResponse];
         
         failure(responseError);
+         [_submitCodeSpinner stopAnimating];
     }];
 }
 

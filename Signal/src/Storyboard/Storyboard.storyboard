@@ -3354,7 +3354,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="xhB-mH-aQJ"/>
                                         </connections>
                                     </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="fpT-Yt-dBo">
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="fpT-Yt-dBo">
                                         <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="3FZ-2w-74C"/>
@@ -3380,6 +3380,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
                                     </constraint>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="DCo-uF-wnB"/>
+                                    <constraint firstItem="5Nx-nz-ht7" firstAttribute="trailing" secondItem="fpT-Yt-dBo" secondAttribute="trailing" constant="15" id="FO8-Kg-1A1"/>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="bottom" secondItem="fpT-Yt-dBo" secondAttribute="bottom" constant="13" id="QQz-sJ-g9s"/>
                                     <constraint firstItem="fpT-Yt-dBo" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" constant="14" id="Ttk-Nc-doc"/>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="Yd9-hW-I38"/>
@@ -3400,14 +3401,15 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <exclude reference="sPb-zU-Xyo"/>
+                                        <exclude reference="Ttk-Nc-doc"/>
+                                        <exclude reference="epG-wE-L6f"/>
                                         <exclude reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
+                                        <exclude reference="FO8-Kg-1A1"/>
                                         <exclude reference="QQz-sJ-g9s"/>
                                         <exclude reference="Yd9-hW-I38"/>
                                         <exclude reference="g9B-Vj-VPO"/>
                                         <exclude reference="gb0-Cl-5TE"/>
-                                        <exclude reference="Ttk-Nc-doc"/>
-                                        <exclude reference="epG-wE-L6f"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -3417,14 +3419,15 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <include reference="sPb-zU-Xyo"/>
+                                        <include reference="Ttk-Nc-doc"/>
+                                        <exclude reference="epG-wE-L6f"/>
                                         <include reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
+                                        <include reference="FO8-Kg-1A1"/>
                                         <exclude reference="QQz-sJ-g9s"/>
                                         <include reference="Yd9-hW-I38"/>
                                         <exclude reference="g9B-Vj-VPO"/>
                                         <include reference="gb0-Cl-5TE"/>
-                                        <include reference="Ttk-Nc-doc"/>
-                                        <include reference="epG-wE-L6f"/>
                                     </mask>
                                 </variation>
                             </view>
