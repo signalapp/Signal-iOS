@@ -122,8 +122,16 @@ typedef enum : NSUInteger {
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+
+-(void) hideInputIfNeeded {
+    if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
+        [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     
     [self markAllMessagesAsRead];
     
@@ -222,17 +230,12 @@ typedef enum : NSUInteger {
         }
     }
     else {
-        if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
-            [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
-        }
-        else {
-            UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
-            UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
-            
-            UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-            self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
-        }
-    }
+        UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
+        UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
+        
+        UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
+        self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
+}
     for(UIButton *button in self.navController.dropDownToolbar.items) {
         [button setTintColor:[UIColor ows_materialBlueColor]];
     }
@@ -258,6 +261,7 @@ typedef enum : NSUInteger {
     self.navController = (APNavigationController*)self.navigationController;
     //self.navController.activeBarButtonTitle = @"Hide";
     [self setNavigationTitle];
+    [self hideInputIfNeeded];
 }
 
 -(void)initializeBubbles
@@ -1196,40 +1200,7 @@ typedef enum : NSUInteger {
 
 
 #pragma mark group action view
--(void)didPressGroupMenuButton:(UIButton *)sender
-{
-    [self.inputToolbar.contentView.textView resignFirstResponder];
-    
-    UIView *presenter = self.parentViewController.view;
-    
-    [DJWActionSheet showInView:presenter
-                     withTitle:nil
-             cancelButtonTitle:@"Cancel"
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Update group", @"Leave group"] //@"Delete thread"] // TODOGROUP delete thread
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              NSLog(@"User Cancelled");
-                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              NSLog(@"Destructive button tapped");
-                          }else {
-                              switch (tappedButtonIndex) {
-                                  case 0:
-                                      [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
-                                      break;
-                                  case 1:
-                                      [self leaveGroup];
-                                      break;
-                                  case 2:
-                                      DDLogDebug(@"delete thread");
-                                      //TODOGROUP delete thread
-                                      break;
-                                  default:
-                                      break;
-                              }
-                          }
-                      }];
-}
+
 
 
 #pragma mark Accessory View
@@ -1338,7 +1309,16 @@ typedef enum : NSUInteger {
     }
 }
 
+-(void)updateGroup {
+    [self.navController hideDropDown:self];
+
+    [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
+}
+
+
 - (void) leaveGroup {
+    [self.navController hideDropDown:self];
+
     TSGroupThread* gThread = (TSGroupThread*)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
     message.groupMetaMessage = TSGroupMessageQuit;
@@ -1349,6 +1329,7 @@ typedef enum : NSUInteger {
         gThread.groupModel.groupMemberIds = newGroupMemberIds;
         [gThread saveWithTransaction:transaction];
     }];
+    [self hideInputIfNeeded];
 }
 
 - (void) updateGroupModelTo:(TSGroupModel*)newGroupModel {
