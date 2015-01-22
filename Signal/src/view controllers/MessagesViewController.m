@@ -24,7 +24,7 @@
 #import "JSQErrorMessage.h"
 
 #import "UIUtil.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>

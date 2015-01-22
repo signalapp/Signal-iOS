@@ -7,7 +7,7 @@
 //
 
 #import "SettingsTableViewController.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import "SettingsTableViewCell.h"
 
 #import "TSAccountManager.h"

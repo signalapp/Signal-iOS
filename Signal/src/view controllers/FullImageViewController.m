@@ -7,7 +7,7 @@
 //
 
 #import "FullImageViewController.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import "TSAttachmentStream.h"
 
 #define kImageViewCornerRadius 5.0f
