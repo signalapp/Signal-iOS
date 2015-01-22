@@ -71,7 +71,7 @@
     
     self.fingerprintLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 150, 25)];
     self.fingerprintLabel.textColor = [UIColor lightGrayColor];
-    self.fingerprintLabel.font = [UIFont ows_lightFontWithSize:16.0f];
+    self.fingerprintLabel.font = [UIFont ows_regularFontWithSize:16.0f]; //TODOTYLERFONT
     self.fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     
     self.fingerprintCell.accessoryView = self.fingerprintLabel;

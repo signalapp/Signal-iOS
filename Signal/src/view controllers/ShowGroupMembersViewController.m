@@ -157,11 +157,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize]; //TODOTYLERFONT
+        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize]; //TODOTYLERFONT
     } else{
-        firstNameFont = [UIFont ows_lightFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize]; //TODOTYLERFONT
+        lastNameFont  = [UIFont systemFontOfSize:cell.textLabel.font.pointSize]; //TODOTYLERFONT
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];

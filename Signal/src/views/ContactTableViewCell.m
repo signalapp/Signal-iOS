@@ -68,11 +68,10 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT
-        lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT // TODOCHRISTINEFONT: color ows_lightgrey
-    } else{
-        firstNameFont = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT // TODOCHRISTINEFONT: color ows_lightgrey
-        lastNameFont  = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT
+        firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
+        lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
+        lastNameFont  = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
