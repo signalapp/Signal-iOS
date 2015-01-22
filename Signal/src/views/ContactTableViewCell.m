@@ -70,6 +70,8 @@
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
         firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
+    }
+    else {
         firstNameFont = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
         lastNameFont  = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
     }
