@@ -216,17 +216,17 @@ typedef enum : NSUInteger {
 
     if (!isGroupConversation) {
         
-        UIBarButtonItem* contactAddOrLaunch = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-add@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:nil];
+        //UIBarButtonItem* contactAddOrLaunch = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-add@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:nil];
         
         UIBarButtonItem* contactSecurity = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"contact-security@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
         
         
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-call@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
-            self.navController.dropDownToolbar.items = @[spaceEdge, contactAddOrLaunch, spaceMiddleWords, callButton,spaceMiddleWords, contactSecurity, spaceEdge];
+            self.navController.dropDownToolbar.items = @[spaceEdge, callButton,spaceMiddleWords, contactSecurity, spaceEdge];
         }
         else {
-            self.navController.dropDownToolbar.items  = @[spaceEdge, contactAddOrLaunch, spaceMiddleWords, spaceEdge, spaceMiddleWords, contactSecurity, spaceEdge];
+            self.navController.dropDownToolbar.items  = @[spaceMiddleWords, contactSecurity, spaceMiddleWords];
         }
     }
     else {
@@ -234,6 +234,7 @@ typedef enum : NSUInteger {
         UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
         
         UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
+        
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
 }
     for(UIButton *button in self.navController.dropDownToolbar.items) {
