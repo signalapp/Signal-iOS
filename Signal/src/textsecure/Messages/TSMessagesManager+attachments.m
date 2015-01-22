@@ -48,7 +48,7 @@ dispatch_queue_t attachmentsQueue() {
         for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
             TSAttachmentPointer *attachmentPointer = (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate)) ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay avatarOfGroupId:content.group.id] : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id key:pointer.key contentType:pointer.contentType relay:message.relay];
             
-            if ([attachmentPointer.contentType hasPrefix:@"image/"]||[attachmentPointer.contentType hasPrefix:@"video/"]||[attachmentPointer.contentType hasPrefix:@"audio/"]) {
+            if ([attachmentPointer.contentType hasPrefix:@"image/"]||[attachmentPointer.contentType hasPrefix:@"video/"]) {
                 [attachmentPointer saveWithTransaction:transaction];
                 
                 dispatch_async(attachmentsQueue(), ^{
@@ -59,7 +59,7 @@ dispatch_queue_t attachmentsQueue() {
                 shouldProcessMessage = YES;
             }
             else {
-                
+                //[attachmentPointer.contentType hasPrefix:@"audio/"] for example
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
                 TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                                                              inThread:thread
