@@ -84,6 +84,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *incomingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingMessageFailedImageData;
+@property (nonatomic, strong) NSTimer *audioPlayerPoller;
 
 @property (nonatomic, retain) NSTimer *readTimer;
 
@@ -130,6 +131,7 @@ typedef enum : NSUInteger {
     }
 }
 - (void)viewDidLoad {
+    NSLog(@"viewdidload");
     [super viewDidLoad];
     
     
@@ -150,6 +152,8 @@ typedef enum : NSUInteger {
     
     [self initializeToolbars];
     [self initializeCollectionViewLayout];
+    
+    [self initializeAudioBubbles];
     
     self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
@@ -272,7 +276,6 @@ typedef enum : NSUInteger {
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
-    
 }
 
 -(void)initializeCollectionViewLayout
@@ -287,6 +290,30 @@ typedef enum : NSUInteger {
         
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    }
+}
+
+-(void)initializeAudioBubbles
+{
+    // initialize duration of each audio bubble
+    JSQMessagesCollectionView *collectionView = self.collectionView;
+    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+    for (NSInteger i=0; i<num_bubbles; i++) {
+        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+            if ([msgMedia isAudio]) {
+                __block TSAttachment *attachment = nil;
+                [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    attachment = [TSAttachment fetchObjectWithUniqueID:msgMedia.attachmentId transaction:transaction];
+                }];
+                TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
+                NSError *error;
+                AVAudioPlayer *tempPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
+                [msgMedia setDurationOfAudio:tempPlayer.duration];
+            }
+        }
     }
 }
 
@@ -626,8 +653,8 @@ typedef enum : NSUInteger {
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                         NSFileManager *fileManager = [NSFileManager defaultManager];
                         if([messageMedia isVideo]) {
-                            if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
-                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL];
+                            if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
+                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
 
                                 [[NSNotificationCenter defaultCenter] addObserver:self
@@ -640,15 +667,61 @@ typedef enum : NSUInteger {
                                 [self.view addSubview: _videoPlayer.view];
                                 [_videoPlayer setFullscreen:YES animated:YES];
                             }
-                        }
-                        else if([messageMedia isAudio]){
-                            DDLogDebug(@"audio location is %@",attStream.videoURL);
-                            NSError *error;
-                            _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.videoURL error:&error];
-                            DDLogDebug(@"audio debug is %@",error);
-                            [_audioPlayer prepareToPlay];
-                            [_audioPlayer play];
-                        
+                        } else if([messageMedia isAudio]){
+                            if (messageMedia.isAudioPlaying) {
+                                // if you had started playing an audio msg and now you're tapping it to pause
+                                messageMedia.isAudioPlaying = NO;
+                                [_audioPlayer pause];
+                                messageMedia.isPaused = YES;
+                                [_audioPlayerPoller invalidate];
+                                double current = [_audioPlayer currentTime]/[_audioPlayer duration];
+                                [messageMedia setAudioProgressFromFloat:(float)current];
+                                [messageMedia setAudioIconToPlay];
+                            } else {
+                                BOOL isResuming = NO;
+                                [_audioPlayerPoller invalidate];
+                                
+                                // loop through all the other bubbles and set their isPlaying to false
+                                NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+                                for (NSInteger i=0; i<num_bubbles; i++) {
+                                    NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+                                    TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+                                    if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+                                        TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+                                        if ([msgMedia isAudio]) {
+                                            if (msgMedia == messageMedia && messageMedia.isPaused) {
+                                                isResuming = YES;
+                                            } else {
+                                                msgMedia.isAudioPlaying = NO;
+                                                msgMedia.isPaused = NO;
+                                                [msgMedia setAudioIconToPlay];
+                                                [msgMedia setAudioProgressFromFloat:0];
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                if (isResuming) {
+                                    // if you had paused an audio msg and now you're tapping to resume
+                                    [_audioPlayer prepareToPlay];
+                                    [_audioPlayer play];
+                                    [messageMedia setAudioIconToPause];
+                                    messageMedia.isAudioPlaying = YES;
+                                    messageMedia.isPaused = NO;
+                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
+                                } else {
+                                    // if you are tapping an audio msg for the first time to play
+                                    messageMedia.isAudioPlaying = YES;
+                                    NSError *error;
+                                    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
+                                    NSString *key = [NSString stringWithFormat:@"%@", (NSString *)_audioPlayer];
+                                    [_audioPlayer prepareToPlay];
+                                    [_audioPlayer play];
+                                    [messageMedia setAudioIconToPause];
+                                    _audioPlayer.delegate = self;
+                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
+                                }
+                            }
                         }
                     }
                 }
@@ -666,7 +739,6 @@ typedef enum : NSUInteger {
             break;
     }
 }
-
 
 -(NSURL*) changeFile:(NSURL*)originalFile toHaveExtension:(NSString*)extension {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -1206,6 +1278,68 @@ typedef enum : NSUInteger {
 #pragma mark group action view
 
 
+#pragma mark - Audio
+
+-(void)recordAudio {
+    // Define the recorder setting
+    NSArray *pathComponents = [NSArray arrayWithObjects:
+                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
+                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
+                               nil];
+    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+    
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    
+    
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    
+    // Initiate and prepare the recorder
+    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
+    _audioRecorder.delegate = self;
+    _audioRecorder.meteringEnabled = YES;
+    [_audioRecorder prepareToRecord];
+}
+
+- (void)audioPlayerUpdated:(NSTimer*)timer {
+    NSDictionary *dict = [timer userInfo];
+    TSVideoAttachmentAdapter *messageMedia = dict[@"adapter"];
+    double current = [_audioPlayer currentTime]/[_audioPlayer duration];
+    [messageMedia setAudioProgressFromFloat:(float)current];
+}
+
+- (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
+    // stop audio polling
+    [_audioPlayerPoller invalidate];
+    
+    // reset all audio bars to 0
+    JSQMessagesCollectionView *collectionView = self.collectionView;
+    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+    for (NSInteger i=0; i<num_bubbles; i++) {
+        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+            if ([msgMedia isAudio]) {
+                [msgMedia setAudioProgressFromFloat:0];
+                [msgMedia setAudioIconToPlay];
+            }
+        }
+    }
+}
+
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
+                           successfully:(BOOL)flag {
+    if(flag) {
+        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
+    }
+}
+
 
 #pragma mark Accessory View
 
@@ -1245,39 +1379,6 @@ typedef enum : NSUInteger {
                               }
                           }
                       }];
-}
-
--(void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray arrayWithObjects:
-                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
-                               nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
-    
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
-    
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
-    
-    // Initiate and prepare the recorder
-    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
-}
-
-- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
-                           successfully:(BOOL)flag {
-    if(flag) {
-        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
-    }
 }
 
 - (void)markAllMessagesAsRead {
