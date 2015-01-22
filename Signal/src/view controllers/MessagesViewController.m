@@ -136,7 +136,7 @@ typedef enum : NSUInteger {
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];
-    
+    [self initializeTextInputBox];
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
                                                                       view:TSMessageDatabaseViewExtensionName];
     
@@ -158,6 +158,12 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+-(void) initializeTextInputBox { //TODOFONTCHRISTINE
+   // would like the placeholder text and input text to be ows_regular font, 17.0f or 18.0f to taste
+    // would like the send button should be 15.0f ows_medium
+    // paperclip should be ows_blue
 }
 
 -(void)viewWillAppear:(BOOL)animated
