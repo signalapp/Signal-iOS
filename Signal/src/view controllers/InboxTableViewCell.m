@@ -49,7 +49,7 @@
     _snippetLabel.text        = thread.lastMessageLabel;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
     if([thread isKindOfClass:[TSGroupThread class]] ) {
-        _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"group_photo.png"];
+        _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"empty-group-avatar@1x"];
     }
     else {
         NSMutableString *initials = [NSMutableString string];
