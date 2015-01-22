@@ -198,6 +198,8 @@
 }
 
 - (void)shredDiscussionsWithContact {
+    NSLog(@"shred discussions");
+    _messagesViewController = nil;
     [self.thread remove]; // this removes the thread and all it's discussion (YapDatabaseRelationships)
     __block SignalsNavigationController *vc = (SignalsNavigationController*)[self presentingViewController];
     [vc dismissViewControllerAnimated:YES completion:^{

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TSContactThread.h"
+#import "MessagesViewController.h"
 
 @interface FingerprintViewController : UIViewController
 
@@ -31,6 +32,8 @@
 @property (nonatomic, strong) IBOutlet UIButton    * closeButton;
 @property (nonatomic, strong) IBOutlet UIButton    * shredMessagesAndContactButton;
 @property (nonatomic, strong) IBOutlet UIButton    * infoButton;
+
+@property (nonatomic, strong) MessagesViewController *messagesViewController;
 
 // returns my public identity key as NSData
 -(NSData*) getMyPublicIdentityKey;
