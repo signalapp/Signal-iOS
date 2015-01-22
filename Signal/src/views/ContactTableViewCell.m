@@ -86,16 +86,22 @@
     UIFont *lastNameFont;
     
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_thinFontWithSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT
+        lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT // TODOCHRISTINEFONT: color ows_lightgrey
     } else{
-        firstNameFont = [UIFont ows_thinFontWithSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont systemFontOfSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT // TODOCHRISTINEFONT: color ows_lightgrey
+        lastNameFont  = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize]; //TODOTYLERFONT
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName value:firstNameFont range:NSMakeRange(0, contact.firstName.length)];
     [fullNameAttributedString addAttribute:NSFontAttributeName value:lastNameFont range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-    
     [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, contact.fullName.length)];
+    
+    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
+        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    }
+    else {
+        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(0, contact.firstName.length)];
+    }
     return fullNameAttributedString;
 }
 
