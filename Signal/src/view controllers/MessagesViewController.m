@@ -603,7 +603,10 @@ typedef enum : NSUInteger {
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                             FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
-                            [vc presentFromViewController:self];
+                            
+                            [self presentViewController:vc animated:YES completion:^{
+                                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+                            }];
                         }
                     } else {
                         DDLogWarn(@"Currently unsupported");
