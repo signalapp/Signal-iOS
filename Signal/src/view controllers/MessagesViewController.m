@@ -1219,7 +1219,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video",@"Record audio"]
+             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video"]//,@"Record audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
