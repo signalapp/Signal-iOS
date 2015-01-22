@@ -1306,6 +1306,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <include reference="E8F-MK-xK2"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <segue destination="fOo-Na-9Ro" kind="unwind" unwindAction="unwindToUserCancelledChangeNumber:" id="fs8-4f-8UU"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
@@ -2169,6 +2172,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
+                        <outlet property="cancelReregButton" destination="g4f-YY-nOK" id="E9G-jz-GOg"/>
                         <outlet property="countryCodeButton" destination="VvN-1x-NvR" id="4lX-oF-LcQ"/>
                         <outlet property="countryNameButton" destination="ngV-Kv-6Ax" id="g5m-JR-9we"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
@@ -2178,6 +2182,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rfK-ej-7ve" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="fOo-Na-9Ro" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-7417.5" y="-774"/>
         </scene>

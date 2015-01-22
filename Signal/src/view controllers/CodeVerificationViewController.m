@@ -150,7 +150,7 @@
         [registrationErrorAV show];
     
         [self enableServerActions:YES];
-        [_requestCodeAgainSpinner stopAnimating];
+        [_requestCodeAgainSpinner stopAnimating];   
     }];
 }
 
