@@ -103,14 +103,6 @@ typedef enum {
     }
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    switch (indexPath.section) {
-        case kRegisteredNumberSection:
-            return kProfileCellHeight;
-        default:
-            return kStandardCellHeight;
-    }
-}
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
