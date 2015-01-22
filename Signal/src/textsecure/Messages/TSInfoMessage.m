@@ -39,7 +39,7 @@
         case TSInfoMessageTypeSessionDidEnd:
             return @"Secure session was reset.";
         case TSInfoMessageTypeUnsupportedMessage:
-            return @"Media messages are currently not supported.";
+            return @"Audio messages are currently not supported.";
         case TSInfoMessageUserNotRegistered:
             return @"The user is not registered.";
         case TSInfoMessageTypeGroupQuit:

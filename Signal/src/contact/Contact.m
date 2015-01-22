@@ -70,6 +70,15 @@ static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
 	return fullName;
 }
 
+- (NSString *)allPhoneNumbers {
+    NSString * allNumbers = @"";
+    for (PhoneNumber *number in self.parsedPhoneNumbers) {
+        allNumbers = [allNumbers stringByAppendingString:number.toE164];
+        allNumbers = [allNumbers stringByAppendingString:@";"];
+    }
+    return allNumbers;
+}
+
 -(NSString *)description {
     return [NSString stringWithFormat:@"%@ %@: %@", firstName, lastName, userTextPhoneNumbers];
 }

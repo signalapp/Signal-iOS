@@ -8,6 +8,7 @@
 
 #import "TSAttachmentStream.h"
 #import "UIImage+contentTypes.h"
+#import <AVFoundation/AVFoundation.h>
 
 NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
@@ -21,11 +22,8 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
     [[NSFileManager defaultManager] createFileAtPath:self.filePath contents:data attributes:nil];
     
+    _isDownloaded = YES;
     return self;
-}
-
-- (BOOL)isDownloaded{
-    return YES;
 }
 
 - (NSArray *)yapDatabaseRelationshipEdges {
@@ -55,31 +53,52 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (NSString*)filePath {
-    return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    if ([self isVideo] || [self isAudio]) {
+        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
+
+    }
+    else {
+        return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
+    }
+}
+
+-(NSURL*) videoURL {
+    return [NSURL fileURLWithPath:[self filePath]];
 }
 
 - (BOOL)isImage {
-    if ([self.contentType containsString:@"image/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"image/"];
+}
+
+-(NSString*)mediaExtension {
+    return [[self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""] stringByReplacingOccurrencesOfString:@"audio/" withString:@""];
 }
 
 - (BOOL)isVideo {
-    if ([self.contentType containsString:@"video/"]) {
-        return YES;
-    } else{
-        return NO;
-    }
+    return [self.contentType containsString:@"video/"];
+}
+
+-(BOOL)isAudio {
+    return [self.contentType containsString:@"audio/"];
 }
 
 - (UIImage*)image {
     if (![self isImage]) {
-        return nil;
+        return [self videoThumbnail];
     }
 
     return [UIImage imageWithContentsOfFile:self.filePath];
+}
+
+
+- (UIImage*)videoThumbnail {
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:self.filePath] options:nil];
+    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+    return [[UIImage alloc] initWithCGImage:imgRef];
+    
 }
 
 + (void)deleteAttachments {

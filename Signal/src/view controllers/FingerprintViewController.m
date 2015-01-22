@@ -12,7 +12,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <25519/Curve25519.h>
 #import "NSData+hexString.h"
-#import "DJWActionSheet.h"
+#import "DJWActionSheet+OWS.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+SessionStore.h"

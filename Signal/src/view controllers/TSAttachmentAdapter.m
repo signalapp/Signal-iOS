@@ -27,6 +27,7 @@
         _image           = attachment.image;
         _cachedImageView = nil;
         _attachmentId    = attachment.uniqueId;
+        
     }
     return self;
 }

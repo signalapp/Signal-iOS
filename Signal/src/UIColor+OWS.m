@@ -11,10 +11,12 @@
 @implementation UIColor (OWS)
 
 
-+ (UIColor*) ows_blueColor
++ (UIColor*) ows_materialBlueColor
 {
-    return [UIColor colorWithRed:0 green:122.f/255.f blue:255.f/255.f alpha:1.f];
+    return [UIColor colorWithRed:32.f/255.f green:144.f/255.f blue:234.f/255.f  alpha:1.f];
 }
+
+
 
 + (UIColor*) ows_darkGrayColor
 {

@@ -13,6 +13,7 @@
 #import "LocalizableText.h"
 #import "NBAsYouTypeFormatter.h"
 #import "PhoneNumber.h"
+#import "CodeVerificationViewController.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PhoneNumberUtil.h"
 #import "PreferencesUtil.h"
@@ -25,10 +26,14 @@
 
 #import <Pastelog.h>
 
-#define kKeyboardPadding 10.0f
+#define kKeyboardPadding 40.0f
+#define kDoNotScroll 667.0f
 
+static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
+
+@property CGFloat sendCodeButtonOriginalY;
 
 @end
 
@@ -37,9 +42,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
     [self initializeKeyboardHandlers];
+    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -62,15 +68,15 @@
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
     NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
     
-    _countryCodeLabel.text = [NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc];
-    _countryNameLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    [_countryCodeButton setTitle:[NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc] forState:UIControlStateNormal];
+    [_countryNameButton setTitle:[PhoneNumberUtil countryNameFromCountryCode:countryCode] forState:UIControlStateNormal];
 }
 
 
 #pragma mark - Actions
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeLabel.text, _phoneNumberTextField.text];
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _countryCodeButton.titleLabel.text, _phoneNumberTextField.text];
     PhoneNumber* localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     if(localNumber==nil){ return; }
     
@@ -139,54 +145,32 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)-keyboardSize.height+kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
+                                           CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView animateWithDuration:duration animations:^{
-        CGSize keyboardSize = [[notification userInfo][UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-        self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                       CGRectGetMinY(self.view.frame)+keyboardSize.height-kKeyboardPadding,
-                                       CGRectGetWidth(self.view.frame),
-                                       CGRectGetHeight(self.view.frame));
-    }];
+    if(self.view.frame.size.height<kDoNotScroll) {
+        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        [UIView animateWithDuration:duration animations:^{
+            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
+                                           CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
+                                           CGRectGetHeight(self.view.frame));
+        }];
+    }
 }
 
 
 
-#pragma mark - CountryCodeViewControllerDelegate
 
-- (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)code
-                       forCountry:(NSString *)country {
-    
-    //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
-    _countryCodeLabel.text = code;
-    _countryNameLabel.text = country;
-    
-    // Reformat phone number
-    NSString* digits = _phoneNumberTextField.text.digitsOnly;
-    NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
-    _phoneNumberTextField.text = reformattedNumber;
-    UITextPosition *pos = _phoneNumberTextField.endOfDocument;
-    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
-    
-    // Done choosing country
-    [vc dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)countryCodeViewControllerDidCancel:(CountryCodeViewController *)vc {
-    [vc dismissViewControllerAnimated:YES completion:nil];
-}
 
 #pragma mark - UITextFieldDelegate
 
@@ -217,7 +201,7 @@
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = string.length == 0;
     NSString* textAfterReformat = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
-                                                                               withSpecifiedCountryCodeString:_countryCodeLabel.text];
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat
@@ -237,14 +221,36 @@
     
 }
 
-/*
-#pragma mark - Navigation
+- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue {
+    
+}
 
+- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue {
+    CountryCodeViewController *vc = [segue sourceViewController];
+    
+    //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
+    [_countryCodeButton setTitle:vc.callingCodeSelected forState:UIControlStateNormal];
+    [_countryNameButton setTitle:vc.countryNameSelected forState:UIControlStateNormal];
+    
+    // Reformat phone number
+    NSString* digits = _phoneNumberTextField.text.digitsOnly;
+    NSString* reformattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
+                                                                               withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+    _phoneNumberTextField.text = reformattedNumber;
+    UITextPosition *pos = _phoneNumberTextField.endOfDocument;
+    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
+    
+}
+
+
+
+#pragma mark - Navigation
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if([[segue identifier] isEqualToString:kCodeSentSegue]) {
+        CodeVerificationViewController* vc =  [segue destinationViewController];
+        vc.formattedPhoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+    }
 }
-*/
 
 @end

@@ -5,7 +5,7 @@
 
 @implementation PhoneNumberUtil
 
-
+// country code -> country name
 + (NSString *)countryNameFromCountryCode:(NSString *)code {
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode: code};
     NSString *identifier = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
@@ -14,11 +14,13 @@
     return country;
 }
 
+// country code -> calling code
 + (NSString *)callingCodeFromCountryCode:(NSString *)code {
     NSNumber *callingCode = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:code];
     return [NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode];
 }
 
+// search term -> country codes
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
     
     NSArray *countryCodes = NSLocale.ISOCountryCodes;
@@ -32,10 +34,12 @@
     return countryCodes;
 }
 
+// normalizes a phone number, so parentheses and spaces are stripped
 + (NSString*) normalizePhoneNumber:(NSString *) number {
     return [NBPhoneNumberUtil.sharedInstance normalizePhoneNumber:number];
 }
 
+// black  magic
 +(NSUInteger) translateCursorPosition:(NSUInteger)offset
                                  from:(NSString*)source
                                    to:(NSString*)target

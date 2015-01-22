@@ -12,7 +12,9 @@
 #import "Environment.h"
 #import "MessagesViewController.h"
 #import "SignalsViewController.h"
+#import "InCallViewController.h"
 #import "TSStorageManager.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSSocketManager.h"
 #import "TSContactThread.h"
@@ -33,6 +35,8 @@
 
 static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier = @"showSegue";
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
 
@@ -40,6 +44,8 @@ static NSString *const kSegueIndentifier = @"showSegue";
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic) CellState viewingThreadsIn;
+@property (nonatomic) long inboxCount;
 
 @end
 
@@ -51,30 +57,33 @@ static NSString *const kSegueIndentifier = @"showSegue";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self tableViewSetUp];
     
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
-    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                     view:TSThreadDatabaseViewExtensionName];
-    
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
-        [self.threadMappings updateWithTransaction:transaction];
-    }];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
+    [self selectedInbox:self];
+    
+    [self updateInboxCountLabel];
+
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self  updateTableViewHeader];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if (![TSAccountManager isRegistered]){
+        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -110,7 +119,7 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [cell configureWithThread:thread];
-    [cell configureForState:_inboxArchiveSwitch.selectedSegmentIndex == 0 ? kInboxState : kArchiveState];
+    [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
     
     return cell;
 }
@@ -143,16 +152,27 @@ static NSString *const kSegueIndentifier = @"showSegue";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
     }];
+    _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
-    thread.archivalDate    = _inboxArchiveSwitch.selectedSegmentIndex == 0 ? [NSDate date] : nil ;
+    thread.archivalDate    = self.viewingThreadsIn == kInboxState ? [NSDate date] : nil ;
     
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
+    
+}
+
+
+-(void) updateInboxCountLabel {
+    _inboxCount = (self.viewingThreadsIn == kInboxState) ? (long)[self tableView:self.tableView numberOfRowsInSection:0] : _inboxCount;
+
+    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",_inboxCount];
+    self.inboxCountLabel.hidden = (_inboxCount == 0);
+
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -180,33 +200,37 @@ static NSString *const kSegueIndentifier = @"showSegue";
         else if (thread) {
             [vc setupWithThread:thread];
         }
-        
-        
-        
+    }
+    else if ([segue.identifier isEqualToString:kCallSegue]) {
+        InCallViewController* vc = [segue destinationViewController];
+        [vc configureWithLatestCall:_latestCall];
+        _latestCall = nil;
     }
 }
 
 #pragma mark - IBAction
 
--(IBAction)segmentDidChange:(id)sender
-{
-    switch (_inboxArchiveSwitch.selectedSegmentIndex) {
-        case 0:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSInboxGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-            
-        case 1:
-            self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[TSArchiveGroup]
-                                                                             view:TSThreadDatabaseViewExtensionName];
-            break;
-    }
-    
+-(IBAction)selectedInbox:(id)sender {
+    self.viewingThreadsIn = kInboxState;
+    [self.inboxButton setSelected:YES];
+    [self.archiveButton setSelected:NO];
+    [self changeToGrouping:TSInboxGroup];
+}
+
+-(IBAction)selectedArchive:(id)sender {
+    self.viewingThreadsIn = kArchiveState;
+    [self.inboxButton setSelected:NO];
+    [self.archiveButton setSelected:YES];
+    [self changeToGrouping:TSArchiveGroup];
+}
+
+-(void) changeToGrouping:(NSString*)grouping {
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
+                                                                     view:TSThreadDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
-    [self updateTableViewHeader];
 }
 
 #pragma mark Database delegates
@@ -271,12 +295,14 @@ static NSString *const kSegueIndentifier = @"showSegue";
             {
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount += (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeInsert :
             {
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
+                _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeMove :
@@ -297,23 +323,12 @@ static NSString *const kSegueIndentifier = @"showSegue";
     }
     
     [self.tableView endUpdates];
-    [self updateTableViewHeader];
+    [self updateInboxCountLabel];
 }
 
-- (void)updateTableViewHeader{
-    if ([self.threadMappings numberOfItemsInAllGroups]==0)
-    {
-        CGRect r = CGRectMake(0, 60, 300, 70);
-        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
-        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyViewLabel.text = @"You have no messages yet.";
-        self.tableView.tableHeaderView = _emptyViewLabel;
-    } else {
-        _emptyViewLabel = nil;
-        self.tableView.tableHeaderView = nil;
-    }
+
+- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
+    
 }
 
 @end

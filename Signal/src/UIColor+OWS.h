@@ -10,7 +10,7 @@
 
 @interface UIColor (OWS)
 
-+ (UIColor *) ows_blueColor;
++ (UIColor*) ows_materialBlueColor;
 
 + (UIColor *) ows_fadedBlueColor;
 
