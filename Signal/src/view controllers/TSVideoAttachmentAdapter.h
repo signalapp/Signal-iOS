@@ -14,13 +14,18 @@
 
 @property NSString *attachmentId;
 @property (nonatomic,strong) NSString* contentType;
+@property (nonatomic) BOOL isAudioPlaying;
+@property (nonatomic) BOOL isPaused;
 
 - (instancetype)initWithAttachment:(TSAttachmentStream*)attachment;
 
 - (BOOL)isImage;
 - (BOOL)isAudio;
 - (BOOL)isVideo;
-
-
+- (void)setAudioProgressFromFloat:(float)progress;
+- (void)setAudioIconToPlay;
+- (void)setAudioIconToPause;
+- (void)setDurationOfAudio:(NSTimeInterval)duration;
+- (void)removeDurationLabel;
 
 @end
