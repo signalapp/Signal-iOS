@@ -27,6 +27,9 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <25519/Curve25519.h>
 #import "NSData+hexString.h"
+#import "Environment.h"
+#import "ContactsManager.h"
+#import "Contact.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 
@@ -71,6 +74,8 @@ typedef enum {
     [super viewDidLoad];
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     self.registeredNumber.text     = [TSAccountManager registeredNumber];
+    [self findAndSetRegisteredName];
+    
     [self initializeObserver];
     [TSSocketManager sendNotification];
 }
@@ -81,6 +86,12 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
 }
 
+-(void) findAndSetRegisteredName {
+    NSString *name = @"Registered Number:";
+    PhoneNumber* myNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager registeredNumber]];
+    Contact *me  = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:myNumber];
+    self.registeredName.text = [me fullName] ? [me fullName] : name;
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
