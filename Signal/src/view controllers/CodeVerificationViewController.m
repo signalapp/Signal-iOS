@@ -131,11 +131,12 @@
 - (IBAction)sendCodeSMSAction:(id)sender {
   
     [self enableServerActions:NO];
-
-  
+    
+    [_requestCodeAgainSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
-
         [self enableServerActions:YES];
+        [_requestCodeAgainSpinner stopAnimating];
+
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
     
         DDLogError(@"Registration failed with information %@", error.description);
@@ -149,6 +150,7 @@
         [registrationErrorAV show];
     
         [self enableServerActions:YES];
+        [_requestCodeAgainSpinner stopAnimating];
     }];
 }
 
