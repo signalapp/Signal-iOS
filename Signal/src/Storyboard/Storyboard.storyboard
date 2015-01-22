@@ -1372,10 +1372,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="y0A-n2-Thn"/>
-                                        <exclude reference="H4p-pC-GKK"/>
-                                        <exclude reference="ejc-s3-FLg"/>
-                                        <exclude reference="jMu-sr-ay8"/>
-                                        <exclude reference="ojn-s9-Ixu"/>
                                         <exclude reference="2qQ-bp-3s5"/>
                                         <exclude reference="8w9-ls-jhp"/>
                                         <exclude reference="IWQ-ML-HCa"/>
@@ -1404,6 +1400,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="eIP-IT-GJI"/>
                                         <exclude reference="nDH-ky-DFB"/>
                                         <exclude reference="uis-Dr-X0G"/>
+                                        <exclude reference="H4p-pC-GKK"/>
+                                        <exclude reference="ejc-s3-FLg"/>
+                                        <exclude reference="jMu-sr-ay8"/>
+                                        <exclude reference="ojn-s9-Ixu"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -1412,10 +1412,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="y0A-n2-Thn"/>
-                                        <include reference="H4p-pC-GKK"/>
-                                        <include reference="ejc-s3-FLg"/>
-                                        <include reference="jMu-sr-ay8"/>
-                                        <include reference="ojn-s9-Ixu"/>
                                         <exclude reference="2qQ-bp-3s5"/>
                                         <include reference="8w9-ls-jhp"/>
                                         <exclude reference="IWQ-ML-HCa"/>
@@ -1444,6 +1440,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="eIP-IT-GJI"/>
                                         <exclude reference="nDH-ky-DFB"/>
                                         <exclude reference="uis-Dr-X0G"/>
+                                        <include reference="H4p-pC-GKK"/>
+                                        <include reference="ejc-s3-FLg"/>
+                                        <include reference="jMu-sr-ay8"/>
+                                        <include reference="ojn-s9-Ixu"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -1807,7 +1807,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <action selector="sendCodeAction:" destination="sL4-Zw-2Og" eventType="touchUpInside" id="T8X-Mx-4I6"/>
                                         </connections>
                                     </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Uhw-zc-NhO">
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Uhw-zc-NhO">
                                         <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="EN0-Kc-yUf"/>
@@ -2082,6 +2082,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="m2d-pE-Bog"/>
                                 <include reference="os0-kg-6Xt"/>
                                 <exclude reference="vhq-mR-ULu"/>
+                                <exclude reference="QWk-je-Ei2"/>
                                 <include reference="BWm-zI-175"/>
                                 <exclude reference="KQJ-bB-VfX"/>
                                 <exclude reference="Kfi-ob-ixg"/>
@@ -2092,7 +2093,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="aP2-MT-dWD"/>
                                 <exclude reference="dRZ-o5-umS"/>
                                 <exclude reference="g5z-Nt-oAS"/>
-                                <exclude reference="QWk-je-Ei2"/>
                             </mask>
                         </variation>
                     </view>
@@ -2104,6 +2104,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="countryNameButton" destination="ngV-Kv-6Ax" id="g5m-JR-9we"/>
                         <outlet property="phoneNumberTextField" destination="tTJ-pq-Z9L" id="gPX-pu-twz"/>
                         <outlet property="sendCodeButton" destination="7IK-hd-tli" id="zj7-3u-4OR"/>
+                        <outlet property="spinnerView" destination="Uhw-zc-NhO" id="Qck-ul-rgQ"/>
                         <segue destination="3Uo-Ow-qOD" kind="show" identifier="codeSent" id="KhC-MI-Evx"/>
                     </connections>
                 </viewController>
@@ -3063,13 +3064,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="EfR-Eb-pTB"/>
                                         <exclude reference="tQe-yp-fbw"/>
-                                        <exclude reference="Knz-Ao-YeP"/>
-                                        <exclude reference="LTL-js-I15"/>
-                                        <exclude reference="Pms-ZK-2Vc"/>
-                                        <exclude reference="TjF-lM-NEV"/>
-                                        <exclude reference="TrR-hW-ZWs"/>
-                                        <exclude reference="sUs-Na-g8d"/>
-                                        <exclude reference="vAZ-0p-f1H"/>
                                         <exclude reference="4Cu-O5-LNU"/>
                                         <exclude reference="82b-mx-FQe"/>
                                         <exclude reference="8ob-4c-A08"/>
@@ -3093,6 +3087,13 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="q7z-h0-T60"/>
                                         <exclude reference="wfy-ZE-69J"/>
                                         <exclude reference="xul-Wd-q4X"/>
+                                        <exclude reference="Knz-Ao-YeP"/>
+                                        <exclude reference="LTL-js-I15"/>
+                                        <exclude reference="Pms-ZK-2Vc"/>
+                                        <exclude reference="TjF-lM-NEV"/>
+                                        <exclude reference="TrR-hW-ZWs"/>
+                                        <exclude reference="sUs-Na-g8d"/>
+                                        <exclude reference="vAZ-0p-f1H"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -3102,13 +3103,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="EfR-Eb-pTB"/>
                                         <include reference="tQe-yp-fbw"/>
-                                        <exclude reference="Knz-Ao-YeP"/>
-                                        <include reference="LTL-js-I15"/>
-                                        <exclude reference="Pms-ZK-2Vc"/>
-                                        <include reference="TjF-lM-NEV"/>
-                                        <include reference="TrR-hW-ZWs"/>
-                                        <exclude reference="sUs-Na-g8d"/>
-                                        <exclude reference="vAZ-0p-f1H"/>
                                         <exclude reference="4Cu-O5-LNU"/>
                                         <exclude reference="82b-mx-FQe"/>
                                         <exclude reference="8ob-4c-A08"/>
@@ -3132,6 +3126,13 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="q7z-h0-T60"/>
                                         <exclude reference="wfy-ZE-69J"/>
                                         <exclude reference="xul-Wd-q4X"/>
+                                        <exclude reference="Knz-Ao-YeP"/>
+                                        <include reference="LTL-js-I15"/>
+                                        <exclude reference="Pms-ZK-2Vc"/>
+                                        <include reference="TjF-lM-NEV"/>
+                                        <include reference="TrR-hW-ZWs"/>
+                                        <exclude reference="sUs-Na-g8d"/>
+                                        <exclude reference="vAZ-0p-f1H"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -3316,8 +3317,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="gb0-Cl-5TE"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" ambiguous="YES">
-                                    <rect key="frame" x="0.0" y="340" width="400" height="47"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <include reference="sPb-zU-Xyo"/>

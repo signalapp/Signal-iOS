@@ -22,6 +22,7 @@
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
 
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinnerView;
 
 - (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
 - (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;

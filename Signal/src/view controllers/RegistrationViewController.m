@@ -53,6 +53,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [super viewDidAppear:animated];
     
     [_sendCodeButton setEnabled:YES];
+    [_spinnerView stopAnimating];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -81,11 +82,13 @@ static NSString *const kCodeSentSegue = @"codeSent";
     if(localNumber==nil){ return; }
     
     [_sendCodeButton setEnabled:NO];
+    [_spinnerView startAnimating];
     [_phoneNumberTextField resignFirstResponder];
     [SignalKeyingStorage setLocalNumberTo:localNumber];
     
     [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall requestVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
         [self performSegueWithIdentifier:@"codeSent" sender:self];
+        [_spinnerView stopAnimating];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         
         DDLogError(@"Registration failed with information %@", error.description);
@@ -99,6 +102,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
         [registrationErrorAV show];
         
         [_sendCodeButton setEnabled:YES];
+        [_spinnerView startAnimating];
     }];
     
 }
