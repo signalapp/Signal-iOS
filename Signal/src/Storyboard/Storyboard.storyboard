@@ -3072,6 +3072,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </button>
                                     <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="ZYC-du-EoE">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="174" y="94" width="82" height="82"/>
+                                        </variation>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="H86-pu-aKA">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
@@ -3354,6 +3357,25 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="xhB-mH-aQJ"/>
                                         </connections>
                                     </button>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="vmS-8s-cvA">
+                                        <rect key="frame" x="-10" y="-10" width="20" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="20" id="IkO-na-VRc"/>
+                                            <constraint firstAttribute="height" constant="20" id="rNO-wM-YcD"/>
+                                        </constraints>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="IkO-na-VRc"/>
+                                                <exclude reference="rNO-wM-YcD"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact">
+                                            <mask key="constraints">
+                                                <include reference="IkO-na-VRc"/>
+                                                <include reference="rNO-wM-YcD"/>
+                                            </mask>
+                                        </variation>
+                                    </activityIndicatorView>
                                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="oPQ-nC-GaF">
                                         <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                         <constraints>
@@ -3379,12 +3401,14 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="leading" secondItem="95o-ce-XGu" secondAttribute="leading" id="1C6-X7-eAN">
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
                                     </constraint>
+                                    <constraint firstItem="vmS-8s-cvA" firstAttribute="leading" secondItem="5Nx-nz-ht7" secondAttribute="leading" constant="293" id="4an-gm-yvg"/>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="DCo-uF-wnB"/>
                                     <constraint firstItem="oPQ-nC-GaF" firstAttribute="trailing" secondItem="5Nx-nz-ht7" secondAttribute="trailing" constant="-14" id="Rho-0j-EkO"/>
                                     <constraint firstItem="5Nx-nz-ht7" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" id="Yd9-hW-I38"/>
                                     <constraint firstAttribute="trailing" secondItem="5Nx-nz-ht7" secondAttribute="trailing" constant="64" id="gb0-Cl-5TE">
                                         <variation key="heightClass=regular-widthClass=compact" constant="36"/>
                                     </constraint>
+                                    <constraint firstItem="vmS-8s-cvA" firstAttribute="top" secondItem="5Nx-nz-ht7" secondAttribute="top" constant="14" id="h9J-Cx-dkh"/>
                                     <constraint firstItem="oPQ-nC-GaF" firstAttribute="top" secondItem="95o-ce-XGu" secondAttribute="top" constant="14" id="izh-5p-arC"/>
                                     <constraint firstAttribute="trailing" secondItem="oPQ-nC-GaF" secondAttribute="trailing" constant="58" id="koo-tZ-7aJ">
                                         <variation key="heightClass=regular-widthClass=compact" constant="50"/>
@@ -3396,6 +3420,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
+                                        <exclude reference="vmS-8s-cvA"/>
                                         <exclude reference="oPQ-nC-GaF"/>
                                     </mask>
                                     <mask key="constraints">
@@ -3408,9 +3433,14 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="DCo-uF-wnB"/>
                                         <exclude reference="Yd9-hW-I38"/>
                                         <exclude reference="gb0-Cl-5TE"/>
+                                        <exclude reference="4an-gm-yvg"/>
+                                        <exclude reference="h9J-Cx-dkh"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="subviews">
+                                        <include reference="vmS-8s-cvA"/>
+                                    </mask>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <include reference="sPb-zU-Xyo"/>
@@ -3421,6 +3451,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="DCo-uF-wnB"/>
                                         <include reference="Yd9-hW-I38"/>
                                         <include reference="gb0-Cl-5TE"/>
+                                        <include reference="4an-gm-yvg"/>
+                                        <include reference="h9J-Cx-dkh"/>
                                     </mask>
                                 </variation>
                             </view>
