@@ -134,7 +134,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     if (c.isRedPhoneContact)
     {
-        cell.contactCallButton.tintColor = [UIColor ows_blueColor];
+        cell.contactCallButton.tintColor = [UIColor ows_materialBlueColor];
         [cell.contactCallButton addTarget:self action:@selector(initiateRedPhoneCall) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactCallButton.tintColor = [UIColor ows_darkGrayColor];
@@ -143,7 +143,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
     
     if (c.isTextSecureContact)
     {
-        cell.contactTextButton.tintColor = [UIColor ows_blueColor];
+        cell.contactTextButton.tintColor = [UIColor ows_materialBlueColor];
         [cell.contactTextButton addTarget:self action:@selector(openTextSecureConversation) forControlEvents:UIControlEventTouchUpInside];
     } else {
         cell.contactTextButton.tintColor = [UIColor ows_darkGrayColor];

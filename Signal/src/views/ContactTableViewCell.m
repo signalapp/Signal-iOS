@@ -59,7 +59,7 @@
     {
         UIImage * callImage = [[UIImage imageNamed:@"call_dark"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_callButton setImage:callImage forState:UIControlStateNormal];
-        _callButton.tintColor = [UIColor ows_blueColor];
+        _callButton.tintColor = [UIColor ows_materialBlueColor];
     } else {
         [_callButton setImage:[UIImage imageNamed:@"call_dotted"] forState:UIControlStateNormal];
     }
@@ -68,7 +68,7 @@
     {
         UIImage * messageImage = [[UIImage imageNamed:@"signal"]imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_messageButton setImage:messageImage forState:UIControlStateNormal];
-        _messageButton.tintColor = [UIColor ows_blueColor];
+        _messageButton.tintColor = [UIColor ows_materialBlueColor];
     } else {
         [_messageButton setImage:[UIImage imageNamed:@"signal_dotted"] forState:UIControlStateNormal];
     }

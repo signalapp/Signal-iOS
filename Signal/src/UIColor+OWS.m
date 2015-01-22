@@ -17,10 +17,6 @@
 }
 
 
-+ (UIColor*) ows_blueColor
-{
-    return [UIColor colorWithRed:0 green:122.f/255.f blue:255.f/255.f alpha:1.f];
-}
 
 + (UIColor*) ows_darkGrayColor
 {
