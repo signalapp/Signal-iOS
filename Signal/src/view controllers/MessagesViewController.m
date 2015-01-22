@@ -122,8 +122,16 @@ typedef enum : NSUInteger {
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+
+-(void) hideInputIfNeeded {
+    if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
+        [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     
     [self markAllMessagesAsRead];
     
@@ -196,33 +204,38 @@ typedef enum : NSUInteger {
 
 - (IBAction)didSelectShow:(id)sender {
     
-    UIBarButtonItem *alignRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *spaceRight = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spaceRight.width = 10;
+    UIBarButtonItem *spaceEdge = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+
+    spaceEdge.width = 40;
+    
+    UIBarButtonItem *spaceMiddleIcons = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spaceMiddleIcons.width = 61;
+
+    UIBarButtonItem *spaceMiddleWords = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+
 
     if (!isGroupConversation) {
-        UIBarButtonItem * lockButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"lock"] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+        
+        UIBarButtonItem* contactAddOrLaunch = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-add@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:nil];
+        
+        UIBarButtonItem* contactSecurity = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"contact-security@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+        
+        
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
-            UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"call_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
-            [callButton setImageInsets:UIEdgeInsetsMake(0, -10, 0, -50)];
-
-            
-            self.navController.dropDownToolbar.items = @[alignRight, lockButton, callButton, spaceRight];
+            UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-call@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
+            self.navController.dropDownToolbar.items = @[spaceEdge, contactAddOrLaunch, spaceMiddleWords, callButton,spaceMiddleWords, contactSecurity, spaceEdge];
         }
         else {
-            self.navController.dropDownToolbar.items  = @[alignRight, lockButton, spaceRight];
+            self.navController.dropDownToolbar.items  = @[spaceEdge, contactAddOrLaunch, spaceMiddleWords, spaceEdge, spaceMiddleWords, contactSecurity, spaceEdge];
         }
     }
     else {
-        if(![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
-            [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
-        }
-        else {
-            UIBarButtonItem *groupMenuButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(didPressGroupMenuButton:)];
-            UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"contacts_tab"] style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-            self.navController.dropDownToolbar.items  = @[alignRight, groupMenuButton, showGroupMembersButton, spaceRight];
-        }
-    }
+        UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
+        UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
+        
+        UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
+        self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
+}
     for(UIButton *button in self.navController.dropDownToolbar.items) {
         [button setTintColor:[UIColor ows_materialBlueColor]];
     }
@@ -246,8 +259,9 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars {
     
     self.navController = (APNavigationController*)self.navigationController;
-    self.navController.activeBarButtonTitle = @"Hide";
+    //self.navController.activeBarButtonTitle = @"Hide";
     [self setNavigationTitle];
+    [self hideInputIfNeeded];
 }
 
 -(void)initializeBubbles
@@ -1186,40 +1200,7 @@ typedef enum : NSUInteger {
 
 
 #pragma mark group action view
--(void)didPressGroupMenuButton:(UIButton *)sender
-{
-    [self.inputToolbar.contentView.textView resignFirstResponder];
-    
-    UIView *presenter = self.parentViewController.view;
-    
-    [DJWActionSheet showInView:presenter
-                     withTitle:nil
-             cancelButtonTitle:@"Cancel"
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Update group", @"Leave group"] //@"Delete thread"] // TODOGROUP delete thread
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              NSLog(@"User Cancelled");
-                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              NSLog(@"Destructive button tapped");
-                          }else {
-                              switch (tappedButtonIndex) {
-                                  case 0:
-                                      [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
-                                      break;
-                                  case 1:
-                                      [self leaveGroup];
-                                      break;
-                                  case 2:
-                                      DDLogDebug(@"delete thread");
-                                      //TODOGROUP delete thread
-                                      break;
-                                  default:
-                                      break;
-                              }
-                          }
-                      }];
-}
+
 
 
 #pragma mark Accessory View
@@ -1328,7 +1309,16 @@ typedef enum : NSUInteger {
     }
 }
 
+-(void)updateGroup {
+    [self.navController hideDropDown:self];
+
+    [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
+}
+
+
 - (void) leaveGroup {
+    [self.navController hideDropDown:self];
+
     TSGroupThread* gThread = (TSGroupThread*)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
     message.groupMetaMessage = TSGroupMessageQuit;
@@ -1339,6 +1329,7 @@ typedef enum : NSUInteger {
         gThread.groupModel.groupMemberIds = newGroupMemberIds;
         [gThread saveWithTransaction:transaction];
     }];
+    [self hideInputIfNeeded];
 }
 
 - (void) updateGroupModelTo:(TSGroupModel*)newGroupModel {
