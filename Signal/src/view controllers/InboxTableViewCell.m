@@ -141,14 +141,14 @@
 
 -(void)updateCellForUnreadMessage
 {
-    _nameLabel.font = [UIFont ows_boldFontWithSize:14.0f]; //TODOTYLERFONT
+    _nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
     _snippetLabel.textColor = [UIColor blackColor];
     _timeLabel.textColor = [UIColor ows_materialBlueColor];
 }
 
 -(void)updateCellForReadMessage
 {
-    _nameLabel.font = [UIFont ows_regularFontWithSize:14.0f]; // TODOTYLERFONT
+    _nameLabel.font = [UIFont ows_regularFontWithSize:14.0f];
     _snippetLabel.textColor = [UIColor lightGrayColor];
 }
 
@@ -167,7 +167,7 @@
 
     
     [attributedString addAttribute:NSFontAttributeName
-                             value:[UIFont ows_lightFontWithSize:TIME_LABEL_SIZE] //TODOTYLERFONT
+                             value:[UIFont ows_regularFontWithSize:TIME_LABEL_SIZE]
                              range:NSMakeRange(0, timeString.length)];
 
     
