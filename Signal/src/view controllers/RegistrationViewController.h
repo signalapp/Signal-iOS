@@ -21,6 +21,7 @@
 
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
+@property(nonatomic, strong) IBOutlet UIButton* cancelReregButton;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinnerView;
 

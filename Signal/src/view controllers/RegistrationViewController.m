@@ -22,6 +22,7 @@
 #import "SignalUtil.h"
 #import "SignalKeyingStorage.h"
 #import "ThreadManager.h"
+#import "TSAccountManager.h"
 #import "Util.h"
 
 #import <Pastelog.h>
@@ -46,6 +47,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [self populateDefaultCountryNameAndCode];
     [self initializeKeyboardHandlers];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
+    _cancelReregButton.hidden = ([TSAccountManager registeredNumber]==nil);
 }
 
 -(void)viewDidAppear:(BOOL)animated
