@@ -3354,7 +3354,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <action selector="verifyChallengeAction:" destination="3Uo-Ow-qOD" eventType="touchUpInside" id="xhB-mH-aQJ"/>
                                         </connections>
                                     </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="vmS-8s-cvA">
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="vmS-8s-cvA">
                                         <rect key="frame" x="-10" y="-10" width="20" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="20" id="IkO-na-VRc"/>
@@ -3935,6 +3935,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="requestCodeAgainSpinner" destination="utk-2S-Qc7" id="9W8-ZF-1fI"/>
                         <outlet property="sendCodeViaSMSAgainButton" destination="9dl-sl-tZN" id="P3C-jR-K09"/>
                         <outlet property="sendCodeViaVoiceButton" destination="2I5-tm-rMi" id="h8C-UP-pj7"/>
+                        <outlet property="submitCodeSpinner" destination="vmS-8s-cvA" id="6Yh-84-o0p"/>
                     </connections>
                 </viewController>
                 <exit id="ZUP-dD-a8s" userLabel="Exit" sceneMemberID="exit"/>
