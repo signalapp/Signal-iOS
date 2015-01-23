@@ -18,6 +18,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     // Do any additional setup after loading the view.
     [TSSocketManager sendNotification];
 }

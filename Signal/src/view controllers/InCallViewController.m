@@ -45,6 +45,7 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     [self showCallState];
     [self setPotentiallyKnownContact:_potentiallyKnownContact];
     [self localizeButtons];

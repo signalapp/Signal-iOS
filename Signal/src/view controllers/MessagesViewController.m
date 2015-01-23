@@ -130,9 +130,9 @@ typedef enum : NSUInteger {
     }
 }
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    
+    [super viewDidLoad];    
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];

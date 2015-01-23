@@ -23,7 +23,7 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
+
     CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
     
     [filter setDefaults];

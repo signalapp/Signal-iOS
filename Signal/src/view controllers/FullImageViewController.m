@@ -61,7 +61,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [self initializeBackground];
     [self initializeScrollView];
     [self initializeImageView];

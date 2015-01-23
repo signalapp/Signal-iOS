@@ -38,7 +38,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.navigationController.navigationBar setTranslucent:NO];    
     [self initializeSearch];
     
     contacts = [[Environment getCurrent] contactsManager].textSecureContacts;

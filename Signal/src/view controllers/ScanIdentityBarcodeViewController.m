@@ -17,6 +17,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     self.title = @"Scan key";
     
     self.highlightView = [[UIView alloc] init];
