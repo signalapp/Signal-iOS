@@ -365,17 +365,16 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zFI-eF-Feb" userLabel="Their Fingerprint">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JFv-Xu-qls">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JFv-Xu-qls">
                                                     <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                                    <color key="backgroundColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                     <state key="normal">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
-                                                    <variation key="heightClass=regular-widthClass=compact" fixedFrame="YES">
-                                                        <rect key="frame" x="0.0" y="0.0" width="400" height="221"/>
-                                                    </variation>
+                                                    <variation key="heightClass=regular-widthClass=compact"/>
                                                     <connections>
-                                                        <segue destination="7qX-e8-QDY" kind="showDetail" identifier="ScanIdentityBarcodeViewSegue" id="UAi-Jm-zU9"/>
+                                                        <segue destination="7qX-e8-QDY" kind="show" identifier="" id="J8E-Ia-LuP"/>
                                                     </connections>
                                                 </button>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AwQ-ec-WBO">
@@ -526,7 +525,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </variation>
                                             <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="subviews">
-                                                    <include reference="JFv-Xu-qls"/>
+                                                    <exclude reference="JFv-Xu-qls"/>
                                                     <include reference="AwQ-ec-WBO"/>
                                                     <include reference="HyV-ht-MrM"/>
                                                     <include reference="Ii9-7N-hCc"/>
@@ -1003,8 +1002,10 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="contactImageView" destination="HyV-ht-MrM" id="eg1-Cw-B8S"/>
                         <outlet property="infoMyFingerprint" destination="9Wg-UP-VDC" id="78r-JU-b4l"/>
                         <outlet property="infoTheirFingerprint" destination="ge0-8K-A4F" id="DyU-To-aJG"/>
+                        <outlet property="myFingerprintView" destination="B4o-Rc-z68" id="FjV-Xs-aV8"/>
                         <outlet property="presentationLabel" destination="DV4-GV-ZPf" id="pz1-G0-dVx"/>
                         <outlet property="shredMessagesAndContactButton" destination="aff-6Q-MJH" id="EhF-8C-qur"/>
+                        <outlet property="theirFingerprintView" destination="zFI-eF-Feb" id="UqY-Fb-DLM"/>
                         <outlet property="userFingerprintLabel" destination="e7E-iS-3Oc" id="aR7-ww-NCi"/>
                         <outlet property="userFingerprintTitleLabel" destination="5De-Jq-XWv" id="68F-0n-IMn"/>
                         <outlet property="userImageView" destination="YOs-e5-ee3" id="zC3-Wp-ew3"/>
