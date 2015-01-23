@@ -85,16 +85,6 @@
     
 }
 
-
-//
-//-(void)scrollViewDidScroll:(UIScrollView *)scrollView
-//{
-//    UISearchBar *searchBar = self.searchController.searchBar;
-//    CGRect rect = searchBar.frame;
-//    rect.origin.y = MIN(0, scrollView.contentOffset.y);
-//    searchBar.frame = rect;
-//}
-
 -(void)initializeObservers
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
