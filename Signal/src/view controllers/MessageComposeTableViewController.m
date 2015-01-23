@@ -19,6 +19,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 #import "ContactTableViewCell.h"
+#import "UIColor+OWS.h"
 
 @interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating, MFMessageComposeViewControllerDelegate>
 {
@@ -71,24 +72,20 @@
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = @"Search by name or number";
 
-//#if 0
-    // This code added by @joyceyan would allow the user to send a text to an unknown number, but it causes issues in the search bar presentation on searching
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    UIColor *iosBlue = self.view.tintColor;
-    [sendTextButton setBackgroundColor:iosBlue];
+    [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
     [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    sendTextButton.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + 44.0, self.view.frame.size.width, 44.0);
+    sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 44.0, self.searchController.searchBar.frame.size.width, 44.0);
     [self.view addSubview:sendTextButton];
     sendTextButton.hidden = YES;
     
-    [sendTextButton addTarget:self
-               action:@selector(sendText)
-     forControlEvents:UIControlEventTouchUpInside];
-//#endif
+    [sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [self initializeObservers];
     [self initializeRefreshControl];
     
 }
+
+
 //
 //-(void)scrollViewDidScroll:(UIScrollView *)scrollView
 //{
