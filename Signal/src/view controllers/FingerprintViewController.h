@@ -33,8 +33,6 @@
 @property (nonatomic, strong) IBOutlet UIButton    * shredMessagesAndContactButton;
 @property (nonatomic, strong) IBOutlet UIButton    * infoButton;
 
-@property (nonatomic, strong) MessagesViewController *messagesViewController;
-
 // returns my public identity key as NSData
 -(NSData*) getMyPublicIdentityKey;
 // returns recipient's public identity key as NSData

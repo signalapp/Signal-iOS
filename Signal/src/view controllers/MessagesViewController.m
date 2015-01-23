@@ -712,7 +712,6 @@ typedef enum : NSUInteger {
     
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
-        vc.messagesViewController = self;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [vc configWithThread:self.thread];
         }];
