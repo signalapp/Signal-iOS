@@ -58,19 +58,21 @@
     
     self.searchController.searchResultsUpdater = self;
     
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
     
     self.tableView.tableHeaderView = self.searchController.searchBar;
     
-    self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.hidesNavigationBarDuringPresentation = NO;
-    
-    self.definesPresentationContext = YES;
     
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = @"Search by name or number";
-    
+
+//#if 0
+    // This code added by @joyceyan would allow the user to send a text to an unknown number, but it causes issues in the search bar presentation on searching
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     UIColor *iosBlue = self.view.tintColor;
     [sendTextButton setBackgroundColor:iosBlue];
@@ -82,10 +84,19 @@
     [sendTextButton addTarget:self
                action:@selector(sendText)
      forControlEvents:UIControlEventTouchUpInside];
-    
+//#endif
     [self initializeObservers];
     [self initializeRefreshControl];
+    
 }
+//
+//-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//    UISearchBar *searchBar = self.searchController.searchBar;
+//    CGRect rect = searchBar.frame;
+//    rect.origin.y = MIN(0, scrollView.contentOffset.y);
+//    searchBar.frame = rect;
+//}
 
 -(void)initializeObservers
 {
@@ -117,6 +128,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     [self updateSearchResultsForSearchController:self.searchController];
+
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -147,6 +159,7 @@
     } else {
         sendTextButton.hidden = YES;
     }
+
 }
 
 
@@ -195,7 +208,10 @@
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
-    [self presentViewController:alertController animated:YES completion:nil];
+    
+    // resign first responder of the keyboard
+    [self.searchController resignFirstResponder];
+   // [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - SMS Composer Delegate
