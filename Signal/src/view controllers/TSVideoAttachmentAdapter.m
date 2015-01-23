@@ -81,8 +81,8 @@
 
 -(void) setDurationOfAudio:(NSTimeInterval)duration {
     double dur = duration;
-    int minutes = (dur/60);
-    int seconds = dur - minutes*60;
+    int minutes = (int) (dur/60);
+    int seconds = (int) (dur - minutes*60);
     NSString *minutes_str = [NSString stringWithFormat:@"%01d", minutes];
     NSString *seconds_str = [NSString stringWithFormat:@"%02d", seconds];
     NSString *label_text = [NSString stringWithFormat:@"%@:%@", minutes_str, seconds_str];
@@ -99,30 +99,6 @@
 - (UIView *)mediaView
 {
     CGSize size = [self mediaViewDisplaySize];
-    if (self.cachedImageView == nil) {
-        CGSize size = [self mediaViewDisplaySize];
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
-        imageView.frame = CGRectMake(0.0f, 0.0f, size.width, size.height);
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.clipsToBounds = YES;
-        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView isOutgoing:self.appliesMediaViewMaskAsOutgoing];
-        self.cachedImageView = imageView;
-        UIImage *img = [UIImage imageNamed:@"play_button"];
-        _playButton = [[UIImageView alloc] initWithImage:img];
-        _playButton.frame = CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37);
-        [self.cachedImageView addSubview:_playButton];
-        _playButton.hidden = YES;
-        _maskLayer = [CALayer layer];
-        [_maskLayer setBackgroundColor:[UIColor ows_blackColor].CGColor];
-        [_maskLayer setOpacity:0.4f];
-        [_maskLayer setFrame:self.cachedImageView.frame];
-        [self.cachedImageView.layer addSublayer:_maskLayer];
-        _progressView = [[FFCircularProgressView alloc] initWithFrame:CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37)];
-        [_cachedImageView addSubview:_progressView];
-        if (_attachment.isDownloaded) {
-            _playButton.hidden = NO;
-            _maskLayer.hidden = YES;
-            _progressView.hidden = YES;
     if ([self isVideo]) {
         if (self.cachedImageView == nil) {
             UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
@@ -151,7 +127,6 @@
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentUploadProgress:) name:@"attachmentUploadProgress" object:nil];
         }
     } else if ([self isAudio]) {
-        NSURL *audioURL = [[NSBundle mainBundle] URLForResource:@"fart-08" withExtension:@"mp3"];
         UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, 30)];
         backgroundImage.backgroundColor = [UIColor colorWithRed:189/255.0f green:190/255.0f blue:194/255.0f alpha:1.0f];
 
@@ -163,19 +138,30 @@
 
         return _audioProgress;
     }
-
     return self.cachedImageView;
 }
 
 - (CGSize)mediaViewDisplaySize
 {
+    CGSize mediaDisplaySize;
     if ([self isVideo]) {
-        return [super mediaViewDisplaySize];
+        mediaDisplaySize = [super mediaViewDisplaySize];
     } else if ([self isAudio]) {
         CGSize size = [super mediaViewDisplaySize];
         size.height = AUDIO_BAR_HEIGHT;
-        return size;
+        mediaDisplaySize = size;
     }
+    return mediaDisplaySize;
+}
+
+- (UIView *)mediaPlaceholderView
+{
+    return [self mediaView];
+}
+
+- (NSUInteger)hash
+{
+    return [super hash];
 }
 
 - (void)attachmentUploadProgress:(NSNotification*)notification {
@@ -184,7 +170,7 @@
     NSString *attachmentID = [userinfo objectForKey:@"attachmentID"];
     if ([_attachmentId isEqualToString:attachmentID]) {
         NSLog(@"is downloaded: %d", _attachment.isDownloaded);
-        [_progressView setProgress:progress];
+        [_progressView setProgress: (float)progress];
         if (progress >= 1) {
             _maskLayer.hidden = YES;
             _progressView.hidden = YES;

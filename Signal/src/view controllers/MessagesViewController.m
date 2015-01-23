@@ -154,8 +154,6 @@ typedef enum : NSUInteger {
     [self initializeToolbars];
     [self initializeCollectionViewLayout];
 
-    [self initializeAudioBubbles];
-
     self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
 
@@ -201,8 +199,28 @@ typedef enum : NSUInteger {
         // back button was pressed.
         [self.navController hideDropDown:self];
     }
-    [super viewDidDisappear:animated];
-
+    [super viewWillDisappear:animated];
+    
+    [_audioPlayerPoller invalidate];
+    [_audioPlayer stop];
+    
+    // reset all audio bars to 0
+    JSQMessagesCollectionView *collectionView = self.collectionView;
+    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+    for (NSInteger i=0; i<num_bubbles; i++) {
+        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+            if ([msgMedia isAudio]) {
+                msgMedia.isPaused = NO;
+                msgMedia.isAudioPlaying = NO;
+                [msgMedia setAudioProgressFromFloat:0];
+                [msgMedia setAudioIconToPlay];
+            }
+        }
+    }
+    
     [self cancelReadTimer];
 }
 
@@ -297,30 +315,6 @@ typedef enum : NSUInteger {
 
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
-    }
-}
-
--(void)initializeAudioBubbles
-{
-    // initialize duration of each audio bubble
-    JSQMessagesCollectionView *collectionView = self.collectionView;
-    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
-    for (NSInteger i=0; i<num_bubbles; i++) {
-        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
-        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
-        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
-            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
-            if ([msgMedia isAudio]) {
-                __block TSAttachment *attachment = nil;
-                [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                    attachment = [TSAttachment fetchObjectWithUniqueID:msgMedia.attachmentId transaction:transaction];
-                }];
-                TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
-                NSError *error;
-                AVAudioPlayer *tempPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
-                [msgMedia setDurationOfAudio:tempPlayer.duration];
-            }
-        }
     }
 }
 
@@ -721,7 +715,6 @@ typedef enum : NSUInteger {
                                     messageMedia.isAudioPlaying = YES;
                                     NSError *error;
                                     _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
-                                    NSString *key = [NSString stringWithFormat:@"%@", (NSString *)_audioPlayer];
                                     [_audioPlayer prepareToPlay];
                                     [_audioPlayer play];
                                     [messageMedia setAudioIconToPause];
