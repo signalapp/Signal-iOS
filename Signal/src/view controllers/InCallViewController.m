@@ -194,6 +194,8 @@ static NSInteger connectingFlashCounter = 0;
     _explainAuthenticationStringLabel.text = @"";
     _contactImageView.image = nil;
     _safeWordsView.hidden = YES;
+    _muteButton.hidden = YES;
+    _speakerButton.hidden = YES;
     [self displayAcceptRejectButtons:NO];
 }
 
@@ -207,8 +209,10 @@ static NSInteger connectingFlashCounter = 0;
 }
 -(void) handleIncomingDetails {
     [_callState.futureShortAuthenticationString thenDo:^(NSString* sas) {
-        _authenicationStringLabel.textColor = [UIColor colorWithRed:0.f/255.f green:12.f/255.f blue:255.f/255.f alpha:1.0f];
+        _authenicationStringLabel.textColor = [UIColor ows_materialBlueColor];
         _safeWordsView.hidden = NO;
+        _muteButton.hidden = NO;
+        _speakerButton.hidden = NO;
         _authenicationStringLabel.text = sas;
         [self performCallInSessionAnimation];
     }];
@@ -251,11 +255,11 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 - (void)muteButtonTapped {
-	_muteButton.selected = [Environment.phoneManager toggleMute];
+    [_muteButton setSelected:[Environment.phoneManager toggleMute]];
 }
 
 - (void)speakerButtonTapped {
-    _speakerButton.selected = [AppAudioManager.sharedInstance toggleSpeakerPhone];
+    [_speakerButton setSelected:[AppAudioManager.sharedInstance toggleSpeakerPhone]];
 }
 
 - (void)answerButtonTapped {

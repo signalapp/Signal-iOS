@@ -2526,7 +2526,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <constraint firstAttribute="height" constant="31" id="HEv-nI-1Sb"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="22"/>
-                                        <color key="textColor" red="0.12549019607843137" green="0.56470588235294117" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="textColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                         <variation key="default">
                                             <mask key="constraints">
@@ -2594,6 +2594,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <state key="normal" image="speaker-inactive">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <state key="selected" image="speaker-active"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="CCC-wz-iw7"/>
@@ -2619,6 +2620,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <state key="normal" image="mute-inactive">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <state key="selected" image="mute-active"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="0QK-nC-B88"/>
@@ -5424,7 +5426,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -5662,6 +5664,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="endcall.png" width="100" height="100"/>
         <image name="inbox-active@1x" width="66" height="66"/>
         <image name="inbox-inactive@1x" width="66" height="66"/>
+        <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="notification_no_preview_no_name.png" width="640" height="128"/>
         <image name="notification_no_preview_with_name.png" width="640" height="128"/>
@@ -5674,6 +5677,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="shred.png" width="200" height="200"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
+        <image name="speaker-active" width="80" height="80"/>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
