@@ -208,10 +208,10 @@
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
-    
-    // resign first responder of the keyboard
-    [self.searchController resignFirstResponder];
-   // [self presentViewController:alertController animated:YES completion:nil];
+    sendTextButton.hidden = YES;
+    self.searchController.searchBar.text = @"";
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - SMS Composer Delegate
