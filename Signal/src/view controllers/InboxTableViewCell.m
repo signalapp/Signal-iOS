@@ -142,7 +142,7 @@
 -(void)updateCellForUnreadMessage
 {
     _nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
-    _snippetLabel.textColor = [UIColor blackColor];
+    _snippetLabel.textColor = [UIColor ows_blackColor];
     _timeLabel.textColor = [UIColor ows_materialBlueColor];
 }
 

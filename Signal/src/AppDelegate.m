@@ -281,7 +281,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         vc.view.frame        = [[UIScreen mainScreen] bounds];
         imgView.frame        = [[UIScreen mainScreen] bounds];
         [vc.view addSubview:imgView];
-        [vc.view setBackgroundColor:[UIColor blackColor]];
+        [vc.view setBackgroundColor:[UIColor ows_blackColor]];
         window.rootViewController = vc;
         
         window;

@@ -24,5 +24,6 @@
 
 + (UIColor *) ows_redColor;
 
++ (UIColor*) ows_blackColor;
 
 @end

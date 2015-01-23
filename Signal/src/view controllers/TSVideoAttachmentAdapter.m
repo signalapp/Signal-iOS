@@ -14,6 +14,7 @@
 #import "FFCircularProgressView.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSNetworkManager.h"
+#import "UIColor+OWS.h"
 
 @interface TSVideoAttachmentAdapter ()
 
@@ -79,7 +80,7 @@
         [self.cachedImageView addSubview:_playButton];
         _playButton.hidden = YES;
         _maskLayer = [CALayer layer];
-        [_maskLayer setBackgroundColor:[UIColor blackColor].CGColor];
+        [_maskLayer setBackgroundColor:[UIColor ows_blackColor].CGColor];
         [_maskLayer setOpacity:0.4f];
         [_maskLayer setFrame:self.cachedImageView.frame];
         [self.cachedImageView.layer addSublayer:_maskLayer];

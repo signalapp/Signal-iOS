@@ -17,7 +17,7 @@
 		
     if (isSelected) {
 
-        UIColor *color = [UIColor blackColor];
+        UIColor *color = [UIColor ows_blackColor];
         self.layer.shadowColor = [color CGColor];
         self.layer.shadowRadius = 15.0f;
         self.layer.shadowOpacity = 1.0f;

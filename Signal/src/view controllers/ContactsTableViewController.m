@@ -191,7 +191,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[UIColor blackColor]];
+    [header.textLabel setTextColor:[UIColor ows_blackColor]];
     [header.textLabel setFont:[UIFont ows_thinFontWithSize:14.0f]];
     
 }
@@ -321,7 +321,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
         _emptyViewLabel.text = @"None of your contacts are Signal users yet.";
-        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.textColor = [UIColor ows_darkGrayColor];
         _emptyViewLabel.font = [UIFont ows_thinFontWithSize:14.0f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
         self.tableView.tableFooterView = _emptyViewLabel;
