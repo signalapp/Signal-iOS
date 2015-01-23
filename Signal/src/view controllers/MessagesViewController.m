@@ -284,7 +284,7 @@ typedef enum : NSUInteger {
 -(void)initializeCollectionViewLayout
 {
     if (self.collectionView){
-        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_regularFontWithSize:16.0f]];
+        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_regularFontWithSize:15.0f]];
         
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
