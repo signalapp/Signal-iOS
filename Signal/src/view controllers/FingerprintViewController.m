@@ -25,7 +25,6 @@
 
 @interface FingerprintViewController ()
 @property TSContactThread *thread;
-@property BOOL didShowInfo;
 @end
 
 @implementation FingerprintViewController
@@ -39,14 +38,12 @@
     [super viewDidLoad];
     [self.view setAlpha:0];
     
-    [self hideInfo];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     
-    [self setHisKeyInformation];
+    [self setTheirKeyInformation];
     
     NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
     self.userFingerprintLabel.text = [TSFingerprintGenerator getFingerprintForDisplay:myPublicKey];
@@ -60,7 +57,7 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)setHisKeyInformation {
+- (void)setTheirKeyInformation {
     self.contactFingerprintTitleLabel.text = self.thread.name;
     NSData *identityKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
     self.contactFingerprintLabel.text = [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
@@ -75,52 +72,6 @@
     
 }
 
--(void)showInfo
-{
-    _didShowInfo = YES;
-    
-    _infoArrowTop.hidden         = NO;
-    _infoArrowBottom.hidden      = NO;
-    _infoMyFingerprint.hidden    = NO;
-    _infoTheirFingerprint.hidden = NO;
-    
-    [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^(){
-        _infoArrowTop.alpha         = 1;
-        _infoArrowBottom.alpha      = 1;
-        _infoMyFingerprint.alpha    = 1;
-        _infoTheirFingerprint.alpha = 1;
-        _presentationLabel.alpha    = 0;
-    } completion:nil];
-    
-    _presentationLabel.hidden    = YES;
-    
-}
-
--(void)hideInfo
-{
-    
-    _didShowInfo = NO;
-    _presentationLabel.hidden    = NO;
-    
-    [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^(){
-        _infoArrowTop.alpha         = 0;
-        _infoArrowBottom.alpha      = 0;
-        _infoMyFingerprint.alpha    = 0;
-        _infoTheirFingerprint.alpha = 0;
-        _presentationLabel.alpha    = 1;
-    } completion:^(BOOL done){
-        
-        if (done) {
-            _infoArrowTop.hidden         = YES;
-            _infoArrowBottom.hidden      = YES;
-            _infoMyFingerprint.hidden    = YES;
-            _infoTheirFingerprint.hidden = YES;
-        }
-        
-    }];
-    
-    
-}
 
 #pragma mark - Action
 - (IBAction)closeButtonAction:(id)sender
@@ -133,14 +84,6 @@
     
 }
 
-- (IBAction)showInfoAction:(id)sender
-{
-    if (!_didShowInfo) {
-        [self showInfo];
-    } else {
-        [self hideInfo];
-    }
-}
 
 - (IBAction)shredAndDelete:(id)sender
 {
@@ -193,7 +136,7 @@
 - (void)shredKeyingMaterial {
     [[TSStorageManager sharedManager] removeIdentityKeyForRecipient:self.thread.contactIdentifier];
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:self.thread.contactIdentifier];
-    [self setHisKeyInformation];
+    [self setTheirKeyInformation];
 }
 
 - (void)shredDiscussionsWithContact {

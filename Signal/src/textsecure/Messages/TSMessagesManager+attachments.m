@@ -59,7 +59,6 @@ dispatch_queue_t attachmentsQueue() {
                 shouldProcessMessage = YES;
             }
             else {
-                //[attachmentPointer.contentType hasPrefix:@"audio/"] for example
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
                 TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                                                              inThread:thread
