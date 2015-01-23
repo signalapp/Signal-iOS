@@ -62,7 +62,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     }
 }
 
--(NSURL*) videoURL {
+-(NSURL*) mediaURL {
     return [NSURL fileURLWithPath:[self filePath]];
 }
 
