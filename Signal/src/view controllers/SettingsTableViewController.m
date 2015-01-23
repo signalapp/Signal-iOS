@@ -75,7 +75,7 @@ typedef enum {
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-    self.registeredNumber.text     = [TSAccountManager registeredNumber];
+    self.registeredNumber.text     = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager registeredNumber]];
     [self findAndSetRegisteredName];
     
     [self initializeObserver];
