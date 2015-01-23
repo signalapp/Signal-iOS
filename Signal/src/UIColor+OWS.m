@@ -11,45 +11,45 @@
 @implementation UIColor (OWS)
 
 
-+ (UIColor*) ows_materialBlueColor
-{
++ (UIColor*) ows_materialBlueColor {
+    // blue: #2090EA
     return [UIColor colorWithRed:32.f/255.f green:144.f/255.f blue:234.f/255.f  alpha:1.f];
 }
 
++ (UIColor*) ows_blackColor {
+    // black: #080A00
+    return [UIColor colorWithRed:8.f/255.f green:10.f/255.f blue:0./255.f  alpha:1.f];
+}
 
 
-+ (UIColor*) ows_darkGrayColor
-{
++ (UIColor*) ows_darkGrayColor {
     return [UIColor colorWithRed:81.f/255.f green:81.f/255.f blue:81.f/255.f alpha:1.f];
 }
 
-+ (UIColor*) ows_darkBackgroundColor
-{
++ (UIColor*) ows_darkBackgroundColor {
     return [UIColor colorWithRed:35.f/255.f green:31.f/255.f blue:32.f/255.f alpha:1.f];
 }
 
-+ (UIColor *) ows_fadedBlueColor
-{
++ (UIColor *) ows_fadedBlueColor {
     return [UIColor colorWithRed:110.f/255.f green:178.f/255.f blue:1.f alpha:1.f];
 }
 
-+ (UIColor *) ows_yellowColor
-{
-    return [UIColor colorWithRed:239.f/255.f green:189.f/255.f blue:88.f/255.f alpha:1.f];
++ (UIColor *) ows_yellowColor {
+    // gold: #FFBB5C
+    return [UIColor colorWithRed:255./255.f green:87.f/255.f blue:92.f/255.f alpha:1.f];
 }
 
-+ (UIColor *) ows_greenColor
-{
-    return [UIColor colorWithRed:55.f/255.f green:212.f/255.f blue:69.f/255.f alpha:1.f];
++ (UIColor *) ows_greenColor {
+    // green: #92FF8A
+    return [UIColor colorWithRed:92.f/255.f green:255.f/255.f blue:138.f/255.f alpha:1.f];
 }
 
-+ (UIColor *) ows_redColor
-{
-    return [UIColor colorWithRed:195.f/255.f green:0 blue:22.f/255.f alpha:1.f];
++ (UIColor *) ows_redColor {
+    // red: #FF3867
+    return [UIColor colorWithRed:255./255.f green:56.f/255.f blue:103.f/255.f alpha:1.f];
 }
 
-+ (UIColor *) ows_lightBackgroundColor
-{
++ (UIColor *) ows_lightBackgroundColor {
     return [UIColor colorWithRed:242.f/255.f green:242.f/255.f blue:242.f/255.f alpha:1.f];
 }
 
