@@ -84,6 +84,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *incomingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingMessageFailedImageData;
+@property (nonatomic, strong) NSTimer *audioPlayerPoller;
 
 @property (nonatomic, retain) NSTimer *readTimer;
 
@@ -104,7 +105,7 @@ typedef enum : NSUInteger {
 - (void)setupWithTSGroup:(TSGroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-        
+
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
         message.groupMetaMessage = TSGroupMessageNew;
         if(model.groupImage!=nil) {
@@ -130,30 +131,32 @@ typedef enum : NSUInteger {
     }
 }
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
+    [super viewDidLoad];
+
     [self markAllMessagesAsRead];
-    
+
     [self initializeBubbles];
     [self initializeTextInputBox];
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
                                                                       view:TSMessageDatabaseViewExtensionName];
-    
+
     self.page = 0;
-    
+
     [self updateRangeOptionsForPage:self.page];
-    
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-    
+
     [self initializeToolbars];
     [self initializeCollectionViewLayout];
-    
+
     self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReadTimer)
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
@@ -169,9 +172,9 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    
+
     if (numberOfMessages > 0) {
         NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages-1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
@@ -196,8 +199,28 @@ typedef enum : NSUInteger {
         // back button was pressed.
         [self.navController hideDropDown:self];
     }
-    [super viewDidDisappear:animated];
-
+    [super viewWillDisappear:animated];
+    
+    [_audioPlayerPoller invalidate];
+    [_audioPlayer stop];
+    
+    // reset all audio bars to 0
+    JSQMessagesCollectionView *collectionView = self.collectionView;
+    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+    for (NSInteger i=0; i<num_bubbles; i++) {
+        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+            if ([msgMedia isAudio]) {
+                msgMedia.isPaused = NO;
+                msgMedia.isAudioPlaying = NO;
+                [msgMedia setAudioProgressFromFloat:0];
+                [msgMedia setAudioIconToPlay];
+            }
+        }
+    }
+    
     [self cancelReadTimer];
 }
 
@@ -209,11 +232,11 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)didSelectShow:(id)sender {
-    
+
     UIBarButtonItem *spaceEdge = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
 
     spaceEdge.width = 40;
-    
+
     UIBarButtonItem *spaceMiddleIcons = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spaceMiddleIcons.width = 61;
 
@@ -221,12 +244,12 @@ typedef enum : NSUInteger {
 
 
     if (!isGroupConversation) {
-        
+
         //UIBarButtonItem* contactAddOrLaunch = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-add@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:nil];
-        
+
         UIBarButtonItem* contactSecurity = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"contact-security@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
-        
-        
+
+
         if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
             UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-call@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
             self.navController.dropDownToolbar.items = @[spaceEdge, callButton,spaceMiddleWords, contactSecurity, spaceEdge];
@@ -238,9 +261,9 @@ typedef enum : NSUInteger {
     else {
         UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
         UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
-        
+
         UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-        
+
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
 }
     for(UIButton *button in self.navController.dropDownToolbar.items) {
@@ -264,7 +287,7 @@ typedef enum : NSUInteger {
 }
 
 -(void)initializeToolbars {
-    
+
     self.navController = (APNavigationController*)self.navigationController;
     //self.navController.activeBarButtonTitle = @"Hide";
     [self setNavigationTitle];
@@ -274,23 +297,22 @@ typedef enum : NSUInteger {
 -(void)initializeBubbles
 {
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-    
+
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
-    
 }
 
 -(void)initializeCollectionViewLayout
 {
     if (self.collectionView){
         [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_regularFontWithSize:15.0f]];
-        
+
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
-        
+
         [self updateLoadEarlierVisible];
-        
+
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
     }
@@ -329,7 +351,7 @@ typedef enum : NSUInteger {
     if ([self isRedPhoneReachable]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
-        
+
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
         DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
@@ -346,9 +368,9 @@ typedef enum : NSUInteger {
 {
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
-        
+
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
-        
+
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
     }
@@ -365,14 +387,14 @@ typedef enum : NSUInteger {
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
-    
+
     if ([message.senderId isEqualToString:self.senderId]) {
         if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
             return self.outgoingMessageFailedImageData;
         }
         return self.outgoingBubbleImageData;
     }
-    
+
     return self.incomingBubbleImageData;
 }
 
@@ -386,7 +408,7 @@ typedef enum : NSUInteger {
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-    
+
     switch (msg.messageType) {
         case TSIncomingMessageAdapter:
             return [self loadIncomingMessageCellForMessage:msg atIndexPath:indexPath];
@@ -398,7 +420,7 @@ typedef enum : NSUInteger {
             return [self loadInfoMessageCellForMessage:msg atIndexPath:indexPath];
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
-            
+
         default:
             NSLog(@"Something went wrong");
             return nil;
@@ -416,7 +438,7 @@ typedef enum : NSUInteger {
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
-    
+
     return cell;
 }
 
@@ -430,7 +452,7 @@ typedef enum : NSUInteger {
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
-    
+
     return cell;
 }
 
@@ -460,7 +482,7 @@ typedef enum : NSUInteger {
     if ([self showDateAtIndexPath:indexPath]) {
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
-    
+
     return 0.0f;
 }
 
@@ -472,9 +494,9 @@ typedef enum : NSUInteger {
     }
     else {
         TSMessageAdapter *currentMessage =  [self messageAtIndexPath:indexPath];
-        
+
         TSMessageAdapter *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
-        
+
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
             showDate = YES;
@@ -485,19 +507,19 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+
     if ([self showDateAtIndexPath:indexPath]) {
         TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
-        
+
         return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:currentMessage.date];
     }
-    
+
     return nil;
 }
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-    
+
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
@@ -506,11 +528,11 @@ typedef enum : NSUInteger {
         if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1) {
             return [self isMessageOutgoingAndDelivered:currentMessage];
         }
-        
+
         if (![self isMessageOutgoingAndDelivered:currentMessage]) {
             return NO;
         }
-        
+
         TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
         return ![self isMessageOutgoingAndDelivered:nextMessage];
     }
@@ -520,12 +542,12 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter * nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
     int i = 1;
-    
+
     while (indexPath.item+i < [self.collectionView numberOfItemsInSection:indexPath.section]-1 && ![self isMessageOutgoingAndDelivered:nextMessage]) {
         i++;
         nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+i inSection:indexPath.section]];
     }
-    
+
     return nextMessage;
 }
 
@@ -545,7 +567,7 @@ typedef enum : NSUInteger {
             name = name ? name : msg.senderId;
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-            
+
             return (NSAttributedString*)attrStr;
         }
         else {
@@ -554,7 +576,7 @@ typedef enum : NSUInteger {
             textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-            
+
             return (NSAttributedString*)attrStr;
         }
     }
@@ -573,7 +595,7 @@ typedef enum : NSUInteger {
     else if (msg.messageType == TSOutgoingMessageAdapter) {
         return 16.0f;
     }
-    
+
     return 0.0f;
 }
 
@@ -584,20 +606,20 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
-    
+
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
             if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
                 [self handleUnsentMessageTap:(TSOutgoingMessage*)interaction];
             }
         case TSIncomingMessageAdapter:{
-            
+
             BOOL isMediaMessage = [messageItem isMediaMessage];
-            
+
             if (isMediaMessage) {
                 if([[messageItem media] isKindOfClass:[TSAttachmentAdapter class]]) {
                     TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
-                    
+
                     if ([messageMedia isImage]) {
                         tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
                         CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
@@ -605,11 +627,11 @@ typedef enum : NSUInteger {
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                         }];
-                        
+
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                             FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
-                            
+
                             [self presentViewController:vc animated:YES completion:^{
                                 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
                             }];
@@ -622,39 +644,84 @@ typedef enum : NSUInteger {
                     // fileurl disappeared should look up in db as before. will do refactor
                     // full screen, check this setup with a .mov
                     TSVideoAttachmentAdapter* messageMedia = (TSVideoAttachmentAdapter*)[messageItem media];
-                    
+
                     __block TSAttachment *attachment = nil;
                     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                         attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                     }];
-                    
+
                     if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                         NSFileManager *fileManager = [NSFileManager defaultManager];
                         if([messageMedia isVideo]) {
-                            if ([fileManager fileExistsAtPath:[attStream.videoURL path]]) {
-                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.videoURL];
+                            if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
+                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
 
                                 [[NSNotificationCenter defaultCenter] addObserver:self
                                                                          selector:@selector(moviePlayBackDidFinish:)
                                                                              name:MPMoviePlayerPlaybackDidFinishNotification
                                                                            object: _videoPlayer];
-                                
+
                                  _videoPlayer.controlStyle = MPMovieControlStyleDefault;
                                  _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview: _videoPlayer.view];
                                 [_videoPlayer setFullscreen:YES animated:YES];
                             }
-                        }
-                        else if([messageMedia isAudio]){
-                            DDLogDebug(@"audio location is %@",attStream.videoURL);
-                            NSError *error;
-                            _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.videoURL error:&error];
-                            DDLogDebug(@"audio debug is %@",error);
-                            [_audioPlayer prepareToPlay];
-                            [_audioPlayer play];
-                        
+                        } else if([messageMedia isAudio]){
+                            if (messageMedia.isAudioPlaying) {
+                                // if you had started playing an audio msg and now you're tapping it to pause
+                                messageMedia.isAudioPlaying = NO;
+                                [_audioPlayer pause];
+                                messageMedia.isPaused = YES;
+                                [_audioPlayerPoller invalidate];
+                                double current = [_audioPlayer currentTime]/[_audioPlayer duration];
+                                [messageMedia setAudioProgressFromFloat:(float)current];
+                                [messageMedia setAudioIconToPlay];
+                            } else {
+                                BOOL isResuming = NO;
+                                [_audioPlayerPoller invalidate];
+
+                                // loop through all the other bubbles and set their isPlaying to false
+                                NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+                                for (NSInteger i=0; i<num_bubbles; i++) {
+                                    NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+                                    TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+                                    if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+                                        TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+                                        if ([msgMedia isAudio]) {
+                                            if (msgMedia == messageMedia && messageMedia.isPaused) {
+                                                isResuming = YES;
+                                            } else {
+                                                msgMedia.isAudioPlaying = NO;
+                                                msgMedia.isPaused = NO;
+                                                [msgMedia setAudioIconToPlay];
+                                                [msgMedia setAudioProgressFromFloat:0];
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (isResuming) {
+                                    // if you had paused an audio msg and now you're tapping to resume
+                                    [_audioPlayer prepareToPlay];
+                                    [_audioPlayer play];
+                                    [messageMedia setAudioIconToPause];
+                                    messageMedia.isAudioPlaying = YES;
+                                    messageMedia.isPaused = NO;
+                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
+                                } else {
+                                    // if you are tapping an audio msg for the first time to play
+                                    messageMedia.isAudioPlaying = YES;
+                                    NSError *error;
+                                    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
+                                    [_audioPlayer prepareToPlay];
+                                    [_audioPlayer play];
+                                    [messageMedia setAudioIconToPause];
+                                    _audioPlayer.delegate = self;
+                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.01 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
+                                }
+                            }
                         }
                     }
                 }
@@ -672,7 +739,6 @@ typedef enum : NSUInteger {
             break;
     }
 }
-
 
 -(NSURL*) changeFile:(NSURL*)originalFile toHaveExtension:(NSString*)extension {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -693,47 +759,47 @@ typedef enum : NSUInteger {
     if ([self shouldShowLoadEarlierMessages]) {
         self.page++;
     }
-    
+
     NSInteger item = (NSInteger)[self scrollToItem];
-    
+
     [self updateRangeOptionsForPage:self.page];
-    
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-    
+
     [self updateLayoutForEarlierMessagesWithOffset:item];
-    
+
 }
 
 -(BOOL)shouldShowLoadEarlierMessages
 {
     __block BOOL show = YES;
-    
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         show = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] < [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
-    
+
     return show;
 }
 
 -(NSUInteger)scrollToItem
 {
     __block NSUInteger item = kYapDatabaseRangeLength*(self.page+1) - [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        
+
         NSUInteger numberOfVisibleMessages = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] ;
         NSUInteger numberOfTotalMessages = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId] ;
         NSUInteger numberOfMessagesToLoad =  numberOfTotalMessages - numberOfVisibleMessages ;
-        
+
         BOOL canLoadFullRange = numberOfMessagesToLoad >= kYapDatabaseRangeLength;
-        
+
         if (!canLoadFullRange) {
             item = numberOfMessagesToLoad;
         }
     }];
-    
+
     return item == 0 ? item : item - 1;
 }
 
@@ -746,21 +812,21 @@ typedef enum : NSUInteger {
 {
     [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     [self.collectionView reloadData];
-    
+
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:offset inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
-    
+
     [self updateLoadEarlierVisible];
 }
 
 -(void)updateRangeOptionsForPage:(NSUInteger)page
 {
     YapDatabaseViewRangeOptions *rangeOptions = [YapDatabaseViewRangeOptions flexibleRangeWithLength:kYapDatabaseRangeLength*(page+1) offset:0 from:YapDatabaseViewEnd];
-    
+
     rangeOptions.maxLength = kYapDatabaseRangeMaxLength;
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
-    
+
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
-    
+
 }
 
 #pragma mark Bubble User Actions
@@ -794,9 +860,9 @@ typedef enum : NSUInteger {
         NSString *newKeyFingerprint = [errorMessage newIdentityKey];
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
-        
+
          [self.inputToolbar.contentView.textView resignFirstResponder];
-        
+
         [DJWActionSheet showInView:self.tabBarController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                 NSLog(@"User Cancelled");
@@ -823,7 +889,7 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
+
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -857,13 +923,13 @@ typedef enum : NSUInteger {
     picker.delegate = self;
     picker.allowsEditing = NO;
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    
+
     if ([UIImagePickerController isSourceTypeAvailable:
          UIImagePickerControllerSourceTypeCamera]) {
         picker.mediaTypes = @[(NSString*)kUTTypeImage,(NSString*)kUTTypeMovie];
         [self presentViewController:picker animated:YES completion:NULL];
     }
-    
+
 }
 
 -(void)chooseFromLibrary:(kMediaTypes)mediaType
@@ -871,15 +937,15 @@ typedef enum : NSUInteger {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    
+
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
     {
         NSArray* pictureTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
-        
+
         NSArray* videoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
-        
+
         picker.mediaTypes = (mediaType == kMediaTypePicture) ? pictureTypeArray : videoTypeArray;
-        
+
         [self presentViewController:picker animated:YES completion:nil];
     }
 }
@@ -905,24 +971,24 @@ typedef enum : NSUInteger {
         [self sendQualityAdjustedAttachment:videoURL];
     }
     else {
-        
+
         UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
         if(picture_camera) {
             DDLogVerbose(@"Sending picture attachement ...");
             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] ofType:@"image/jpeg"];
         }
     }
-    
+
 }
 
 -(void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:nil attachments:[NSMutableArray array]];
-    
+
     [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
     [self finishSendingMessage];
-    
+
     [self dismissViewControllerAnimated:YES completion:nil];
-    
+
 }
 
 -(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
@@ -931,47 +997,47 @@ typedef enum : NSUInteger {
     AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
     exportSession.shouldOptimizeForNetworkUse = YES;
     exportSession.outputFileType = AVFileTypeMPEG4;
-    
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     basePath = [basePath stringByAppendingPathComponent:@"videos"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    
+
     NSURL *compressedVideoUrl = [NSURL fileURLWithPath:basePath];
     long currentTime = [[NSDate date] timeIntervalSince1970];
     NSString *strImageName = [NSString stringWithFormat:@"%ld",currentTime];
     compressedVideoUrl=[compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
-    
+
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        
+
     }];
     while(exportSession.progress!=1){
 
     }
     [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
-    
+
 #if 0
     return [NSData dataWithContentsOfURL:movieURL];
 #endif
 #if 0
     NSString *serializationQueueDescription = [NSString stringWithFormat:@"%@ serialization queue", self];
-    
+
     // Create the main serialization queue.
     self.mainSerializationQueue = dispatch_queue_create([serializationQueueDescription UTF8String], NULL);
     NSString *rwAudioSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw audio serialization queue", self];
-    
+
     // Create the serialization queue to use for reading and writing the audio data.
     self.rwAudioSerializationQueue = dispatch_queue_create([rwAudioSerializationQueueDescription UTF8String], NULL);
     NSString *rwVideoSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw video serialization queue", self];
-    
+
     // Create the serialization queue to use for reading and writing the video data.
     self.rwVideoSerializationQueue = dispatch_queue_create([rwVideoSerializationQueueDescription UTF8String], NULL);
 
-    
-    
+
+
     int videoWidth = 1920;
     int videoHeight = 1920;
     int desiredKeyframeInterval = 2;
@@ -983,19 +1049,19 @@ typedef enum : NSUInteger {
                                                               error:&error];
     NSParameterAssert(videoWriter);
 
-    
+
     NSDictionary* settings = @{AVVideoCodecKey:AVVideoCodecH264,
                                AVVideoCompressionPropertiesKey:@{AVVideoAverageBitRateKey:[NSNumber numberWithInt:desiredBitrate],AVVideoProfileLevelKey:AVVideoProfileLevelH264Main31},
                                AVVideoWidthKey: [NSNumber numberWithInt:videoWidth],
                                AVVideoHeightKey:[NSNumber numberWithInt:videoHeight]};
-    
-    
+
+
     AVAssetWriterInput* writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
     NSParameterAssert(writerInput);
     NSParameterAssert([videoWriter canAddInput:writerInput]);
     [videoWriter addInput:writerInput];
 #endif
-    
+
 
 }
 
@@ -1010,7 +1076,7 @@ typedef enum : NSUInteger {
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
             return image;
-            
+
         case TSImageQualityHigh:
             correctedWidth = 2048;
             break;
@@ -1023,7 +1089,7 @@ typedef enum : NSUInteger {
         default:
             break;
     }
-    
+
     return [self imageScaled:image toMaxSize:correctedWidth];
 }
 
@@ -1031,21 +1097,21 @@ typedef enum : NSUInteger {
 {
     CGFloat scaleFactor;
     CGFloat aspectRatio = image.size.height / image.size.width;
-    
+
     if( aspectRatio > 1 ) {
         scaleFactor = size / image.size.width;
     }
     else {
         scaleFactor = size / image.size.height;
     }
-    
+
     CGSize newSize = CGSizeMake(image.size.width * scaleFactor, image.size.height * scaleFactor);
-    
+
     UIGraphicsBeginImageContext(newSize);
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage* updatedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
+
     return updatedImage;
 }
 
@@ -1101,20 +1167,20 @@ typedef enum : NSUInteger {
     // and get the change-set(s) as applies to my view and mappings configuration.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *messageRowChanges = nil;
-    
+
     [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:nil
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
-    
+
     __block BOOL scrollToBottom = NO;
-    
+
     if (!messageRowChanges) {
         return;
     }
-    
+
     [self.collectionView performBatchUpdates:^{
-        
+
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
             switch (rowChange.type)
@@ -1143,16 +1209,16 @@ typedef enum : NSUInteger {
                 case YapDatabaseViewChangeUpdate :
                 {
                     NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
-                    
+
                     if (_lastDeliveredMessageIndexPath) {
                         [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                     }
-                    
+
                     for (NSIndexPath* indexPath in rowsToUpdate) {
                         TSInteraction * interaction = [self interactionAtIndexPath:indexPath];
                         [[TSAdapterCacheManager sharedManager] cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
                     }
-                    
+
                     [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                     scrollToBottom = YES;
                     break;
@@ -1187,24 +1253,24 @@ typedef enum : NSUInteger {
         NSUInteger row = (NSUInteger)indexPath.row;
         NSUInteger section = (NSUInteger)indexPath.section;
         NSUInteger numberOfItemsInSection = [self.messageMappings numberOfItemsInSection:section];
-        
+
         NSAssert(row < numberOfItemsInSection, @"Cannot fetch message because row %d is >= numberOfItemsInSection %d", (int)row, (int)numberOfItemsInSection);
-        
+
         message = [viewTransaction objectAtRow:row inSection:section withMappings:self.messageMappings];
         NSParameterAssert(message != nil);
     }];
-    
+
     return message;
 }
 
 - (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
     TSAdapterCacheManager * manager = [TSAdapterCacheManager sharedManager];
-    
+
     if (![manager containsCacheEntryForInteractionId:interaction.uniqueId]) {
         [manager cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
     }
-    
+
     return [manager adapterForInteractionId:interaction.uniqueId];
 }
 
@@ -1212,15 +1278,77 @@ typedef enum : NSUInteger {
 #pragma mark group action view
 
 
+#pragma mark - Audio
+
+-(void)recordAudio {
+    // Define the recorder setting
+    NSArray *pathComponents = [NSArray arrayWithObjects:
+                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
+                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
+                               nil];
+    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+
+
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+
+    // Initiate and prepare the recorder
+    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
+    _audioRecorder.delegate = self;
+    _audioRecorder.meteringEnabled = YES;
+    [_audioRecorder prepareToRecord];
+}
+
+- (void)audioPlayerUpdated:(NSTimer*)timer {
+    NSDictionary *dict = [timer userInfo];
+    TSVideoAttachmentAdapter *messageMedia = dict[@"adapter"];
+    double current = [_audioPlayer currentTime]/[_audioPlayer duration];
+    [messageMedia setAudioProgressFromFloat:(float)current];
+}
+
+- (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
+    // stop audio polling
+    [_audioPlayerPoller invalidate];
+
+    // reset all audio bars to 0
+    JSQMessagesCollectionView *collectionView = self.collectionView;
+    NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
+    for (NSInteger i=0; i<num_bubbles; i++) {
+        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+        TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+            TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+            if ([msgMedia isAudio]) {
+                [msgMedia setAudioProgressFromFloat:0];
+                [msgMedia setAudioIconToPlay];
+            }
+        }
+    }
+}
+
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
+                           successfully:(BOOL)flag {
+    if(flag) {
+        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
+    }
+}
+
 
 #pragma mark Accessory View
 
 -(void)didPressAccessoryButton:(UIButton *)sender
 {
     [self.inputToolbar.contentView.textView resignFirstResponder];
-    
+
     UIView *presenter = self.parentViewController.view;
-    
+
     [DJWActionSheet showInView:presenter
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
@@ -1253,39 +1381,6 @@ typedef enum : NSUInteger {
                       }];
 }
 
--(void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray arrayWithObjects:
-                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
-                               nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
-    
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
-    
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
-    
-    // Initiate and prepare the recorder
-    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
-}
-
-- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
-                           successfully:(BOOL)flag {
-    if(flag) {
-        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
-    }
-}
-
 - (void)markAllMessagesAsRead {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
@@ -1305,7 +1400,7 @@ typedef enum : NSUInteger {
     if (action == @selector(delete:)) {
         return YES;
     }
-    
+
     return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
 }
 
@@ -1355,7 +1450,7 @@ typedef enum : NSUInteger {
         else {
             [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
         }
-        
+
         self.thread = gThread;
     }];
 }
