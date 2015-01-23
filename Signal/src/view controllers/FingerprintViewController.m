@@ -37,7 +37,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self.view setAlpha:0];
     
     [self hideInfo];

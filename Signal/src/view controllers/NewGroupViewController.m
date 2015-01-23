@@ -43,6 +43,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     contacts = [Environment getCurrent].contactsManager.textSecureContacts;
 
     contacts = [contacts filter:^int(Contact* contact) {

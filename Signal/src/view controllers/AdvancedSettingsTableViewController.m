@@ -26,7 +26,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.navigationController.navigationBar setTranslucent:NO];    
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 

@@ -42,6 +42,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
     self.title = _thread.groupModel.groupName;
 
     NSMutableArray *contactsInGroup = [[NSMutableArray alloc] init];

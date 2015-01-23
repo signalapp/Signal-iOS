@@ -19,6 +19,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
 }
 

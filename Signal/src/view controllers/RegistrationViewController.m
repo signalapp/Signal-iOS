@@ -42,6 +42,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     // Do any additional setup after loading the view.
     _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];

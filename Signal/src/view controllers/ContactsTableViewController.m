@@ -43,7 +43,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self.navigationController.navigationBar setTranslucent:NO];
     [self initializeObservers];
     [self initializeRefreshControl];
     [self initializeTableView];

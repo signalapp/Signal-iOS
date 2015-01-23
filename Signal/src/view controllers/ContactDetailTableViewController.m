@@ -55,6 +55,7 @@ static NSString *const kContactDetailSegue = @"DetailSegue";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
     doesImageExist = YES;
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
