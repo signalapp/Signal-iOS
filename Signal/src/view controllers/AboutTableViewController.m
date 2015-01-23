@@ -60,7 +60,7 @@
     //Footer
     self.footerView = [[UILabel alloc]init];
     self.footerView.text = @"Copyright Open Whisper Systems \n Licensed under the GPLv3";
-    self.footerView.textColor = [UIColor darkGrayColor];
+    self.footerView.textColor = [UIColor ows_darkGrayColor];
     self.footerView.font = [UIFont ows_regularFontWithSize:15.0f];
     self.footerView.numberOfLines = 2;
     self.footerView.textAlignment = NSTextAlignmentCenter;
