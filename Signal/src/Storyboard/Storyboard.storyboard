@@ -291,8 +291,8 @@
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="new-conversation-icon@1x" width="120" style="plain" id="Oft-fU-tf5">
-                            <inset key="imageInsets" minX="15" minY="12" maxX="5" maxY="8"/>
+                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="120" style="plain" id="Oft-fU-tf5">
+                            <inset key="imageInsets" minX="10" minY="10" maxX="8" maxY="8"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -326,8 +326,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="rightBarButtonItem" image="contact-options-action@1x" style="plain" id="662-pN-RLf">
-                            <inset key="imageInsets" minX="10" minY="5" maxX="5" maxY="10"/>
+                        <barButtonItem key="rightBarButtonItem" image="contact-options-action" style="plain" id="662-pN-RLf">
+                            <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="didSelectShow:" destination="DtA-8O-wrT" id="ktP-VG-5bo"/>
@@ -3399,13 +3399,13 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <exclude reference="sPb-zU-Xyo"/>
+                                        <exclude reference="4an-gm-yvg"/>
+                                        <exclude reference="NKV-4w-3iV"/>
+                                        <exclude reference="h9J-Cx-dkh"/>
                                         <exclude reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
                                         <exclude reference="Yd9-hW-I38"/>
                                         <exclude reference="gb0-Cl-5TE"/>
-                                        <exclude reference="4an-gm-yvg"/>
-                                        <exclude reference="NKV-4w-3iV"/>
-                                        <exclude reference="h9J-Cx-dkh"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -3415,13 +3415,13 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <mask key="constraints">
                                         <exclude reference="mab-6F-p8B"/>
                                         <include reference="sPb-zU-Xyo"/>
+                                        <exclude reference="4an-gm-yvg"/>
+                                        <include reference="NKV-4w-3iV"/>
+                                        <include reference="h9J-Cx-dkh"/>
                                         <include reference="1C6-X7-eAN"/>
                                         <exclude reference="DCo-uF-wnB"/>
                                         <include reference="Yd9-hW-I38"/>
                                         <include reference="gb0-Cl-5TE"/>
-                                        <exclude reference="4an-gm-yvg"/>
-                                        <include reference="NKV-4w-3iV"/>
-                                        <include reference="h9J-Cx-dkh"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -5497,8 +5497,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="64" width="400" height="100"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -5552,9 +5551,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="172" width="400" height="628"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
@@ -5649,11 +5645,12 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="21"/>
+        <image name="add-conversation" width="44" height="44"/>
         <image name="archive-active@1x" width="66" height="66"/>
         <image name="archive-inactive@1x" width="66" height="66"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
-        <image name="contact-options-action@1x" width="44" height="44"/>
+        <image name="contact-options-action" width="44" height="44"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="empty-group-avatar@1x" width="500" height="500"/>
         <image name="endcall.png" width="100" height="100"/>
@@ -5662,7 +5659,6 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="info.png" width="200" height="200"/>
         <image name="lock_white.png" width="100" height="100"/>
         <image name="mute-inactive" width="80" height="80"/>
-        <image name="new-conversation-icon@1x" width="44" height="44"/>
         <image name="notification_no_preview_no_name.png" width="640" height="128"/>
         <image name="notification_no_preview_with_name.png" width="640" height="128"/>
         <image name="notification_with_preview.png" width="640" height="128"/>
@@ -5677,8 +5673,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="D0d-4f-lcI"/>
-        <segue reference="ZcV-Ck-baL"/>
+        <segue reference="DR8-fx-0PD"/>
         <segue reference="xo7-5J-BJb"/>
+        <segue reference="gZ1-lh-srF"/>
     </inferredMetricsTieBreakers>
 </document>
