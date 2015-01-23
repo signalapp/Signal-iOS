@@ -26,5 +26,6 @@
 - (void)setAudioIconToPlay;
 - (void)setAudioIconToPause;
 - (void)setDurationOfAudio:(NSTimeInterval)duration;
+- (void)removeDurationLabel;
 
 @end
