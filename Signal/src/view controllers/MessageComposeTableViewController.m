@@ -19,6 +19,7 @@
 #import <MessageUI/MFMessageComposeViewController.h>
 
 #import "ContactTableViewCell.h"
+#import "UIColor+OWS.h"
 
 @interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating, MFMessageComposeViewControllerDelegate>
 {
@@ -58,33 +59,30 @@
     
     self.searchController.searchResultsUpdater = self;
     
+    self.searchController.dimsBackgroundDuringPresentation = NO;
+    
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
     
     self.tableView.tableHeaderView = self.searchController.searchBar;
     
-    self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.hidesNavigationBarDuringPresentation = NO;
-    
-    self.definesPresentationContext = YES;
     
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = @"Search by name or number";
-    
+
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    UIColor *iosBlue = self.view.tintColor;
-    [sendTextButton setBackgroundColor:iosBlue];
+    [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
     [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    sendTextButton.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + 44.0, self.view.frame.size.width, 44.0);
+    sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 44.0, self.searchController.searchBar.frame.size.width, 44.0);
     [self.view addSubview:sendTextButton];
     sendTextButton.hidden = YES;
     
-    [sendTextButton addTarget:self
-               action:@selector(sendText)
-     forControlEvents:UIControlEventTouchUpInside];
-    
+    [sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [self initializeObservers];
     [self initializeRefreshControl];
+    
 }
 
 -(void)initializeObservers
@@ -117,6 +115,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     [self updateSearchResultsForSearchController:self.searchController];
+
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -147,6 +146,7 @@
     } else {
         sendTextButton.hidden = YES;
     }
+
 }
 
 
@@ -195,6 +195,9 @@
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
+    sendTextButton.hidden = YES;
+    self.searchController.searchBar.text = @"";
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 

@@ -303,6 +303,9 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 -(void)setupAppearance {
     [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    
+    [[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+
 
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
