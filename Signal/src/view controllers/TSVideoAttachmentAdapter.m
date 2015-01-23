@@ -80,6 +80,7 @@
 }
 
 -(void) setDurationOfAudio:(NSTimeInterval)duration {
+    [_durationLabel removeFromSuperview];
     double dur = duration;
     int minutes = (int) (dur/60);
     int seconds = (int) (dur - minutes*60);
@@ -88,10 +89,14 @@
     NSString *label_text = [NSString stringWithFormat:@"%@:%@", minutes_str, seconds_str];
 
     CGSize size = [self mediaViewDisplaySize];
-    _durationLabel = [[UILabel alloc] initWithFrame:CGRectMake(size.width - 50, 0, 50, 30)];
+    _durationLabel = [[UILabel alloc] initWithFrame:CGRectMake(size.width - 40, 0, 50, 30)];
     _durationLabel.text = label_text;
     _durationLabel.textColor = [UIColor whiteColor];
     [_audioProgress addSubview:_durationLabel];
+}
+
+-(void) removeDurationLabel {
+    [_durationLabel removeFromSuperview];
 }
 
 #pragma mark - JSQMessageMediaData protocol

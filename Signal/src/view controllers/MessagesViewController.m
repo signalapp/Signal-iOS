@@ -1311,6 +1311,8 @@ typedef enum : NSUInteger {
     TSVideoAttachmentAdapter *messageMedia = dict[@"adapter"];
     double current = [_audioPlayer currentTime]/[_audioPlayer duration];
     [messageMedia setAudioProgressFromFloat:(float)current];
+    NSTimeInterval duration = ([_audioPlayer duration] - [_audioPlayer currentTime]);
+    [messageMedia setDurationOfAudio:duration];
 }
 
 - (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
@@ -1328,6 +1330,7 @@ typedef enum : NSUInteger {
             if ([msgMedia isAudio]) {
                 [msgMedia setAudioProgressFromFloat:0];
                 [msgMedia setAudioIconToPlay];
+                [msgMedia removeDurationLabel];
             }
         }
     }
