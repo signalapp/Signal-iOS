@@ -61,6 +61,13 @@
     self.contactFingerprintTitleLabel.text = self.thread.name;
     NSData *identityKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
     self.contactFingerprintLabel.text = [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
+    
+    if([self.contactFingerprintLabel.text length] == 0) {
+        // no fingerprint, hide this view
+        _presentationLabel.hidden = YES;
+        _theirFingerprintView.hidden = YES;
+    }
+    
 }
 
 -(NSData*) getMyPublicIdentityKey {

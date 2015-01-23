@@ -1002,8 +1002,10 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="contactImageView" destination="HyV-ht-MrM" id="eg1-Cw-B8S"/>
                         <outlet property="infoMyFingerprint" destination="9Wg-UP-VDC" id="78r-JU-b4l"/>
                         <outlet property="infoTheirFingerprint" destination="ge0-8K-A4F" id="DyU-To-aJG"/>
+                        <outlet property="myFingerprintView" destination="B4o-Rc-z68" id="FjV-Xs-aV8"/>
                         <outlet property="presentationLabel" destination="DV4-GV-ZPf" id="pz1-G0-dVx"/>
                         <outlet property="shredMessagesAndContactButton" destination="aff-6Q-MJH" id="EhF-8C-qur"/>
+                        <outlet property="theirFingerprintView" destination="zFI-eF-Feb" id="UqY-Fb-DLM"/>
                         <outlet property="userFingerprintLabel" destination="e7E-iS-3Oc" id="aR7-ww-NCi"/>
                         <outlet property="userFingerprintTitleLabel" destination="5De-Jq-XWv" id="68F-0n-IMn"/>
                         <outlet property="userImageView" destination="YOs-e5-ee3" id="zC3-Wp-ew3"/>
