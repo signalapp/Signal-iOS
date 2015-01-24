@@ -104,7 +104,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 
-#pragma mark - Table view data source
+#pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return (NSInteger)[self.threadMappings numberOfSections];
@@ -168,8 +168,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+- (void)tableViewCellTappedDelete:(NSIndexPath*)indexPath {
+    //NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     if([thread isKindOfClass:[TSGroupThread class]]) {
         DDLogDebug(@"leaving the group");

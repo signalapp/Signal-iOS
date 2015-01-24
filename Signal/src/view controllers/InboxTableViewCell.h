@@ -19,7 +19,6 @@ typedef enum : NSUInteger {
 @class InboxTableViewCell;
 @protocol TableViewCellDelegate <NSObject>
 
-- (void)tableViewCellTappedDelete:(InboxTableViewCell *)cell;
 - (void)tableViewCellTappedArchive:(InboxTableViewCell *)cell;
 
 @end
