@@ -36,8 +36,7 @@
     
     CGRect bar = self.navigationBar.frame;
     _socketStatusView.frame = CGRectMake(0, bar.size.height-1.0f, self.view.frame.size.width, 1.0f);
-    _socketStatusView.progressTintColor = [UIColor ows_redColor];
-    _socketStatusView.progress = 1.0f;
+    _socketStatusView.progress = 0.05f;
     [self.navigationBar addSubview:_socketStatusView];
 }
 
@@ -59,18 +58,32 @@
 
 -(void)socketDidOpen
 {
-    _socketStatusView.progressTintColor = [UIColor ows_greenColor];
+    [_updateStatusTimer invalidate];
+    _socketStatusView.hidden = YES;
 }
 
 -(void)socketDidClose
 {
-    _socketStatusView.progressTintColor = [UIColor ows_redColor];
+    [_updateStatusTimer invalidate];
+    _socketStatusView.hidden = NO;
+    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
+    _socketStatusView.progress = 0.9f;
+    
+}
+
+-(void ) updateSocketConnecting {
+    double progress = _socketStatusView.progress + 0.05;
+    _socketStatusView.progress = (float)MIN(progress, 0.85);
     
 }
 
 -(void)socketIsConnecting
 {
-    _socketStatusView.progressTintColor = [UIColor ows_yellowColor];
+    _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateSocketConnecting) userInfo:nil repeats:YES];
+
+    _socketStatusView.hidden = NO;
+    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
+    
 }
 
 

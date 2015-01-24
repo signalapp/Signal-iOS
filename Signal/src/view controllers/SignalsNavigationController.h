@@ -11,5 +11,5 @@
 #import "APNavigationController.h"
 @interface SignalsNavigationController : APNavigationController
 @property (nonatomic, strong) UIProgressView* socketStatusView;
-
+@property (nonatomic, strong) NSTimer *updateStatusTimer;
 @end
