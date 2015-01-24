@@ -368,7 +368,11 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     _emptyBoxImage = nil;
     self.tableView.tableHeaderView = nil;
 
-    if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
+    if ([self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0 &&  [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {
+        _emptyBoxImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"first-screen"] highlightedImage:[UIImage imageNamed:@"first-screen"]];
+        self.tableView.tableHeaderView = _emptyBoxImage;
+    }
+    else if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
         (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0)) {
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
@@ -382,11 +386,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
         if(self.viewingThreadsIn == kInboxState) {
             // Check if this is the first launch
-            /*
-            [_emptyBoxImage setImage:[UIImage imageNamed:@"first-screen"]];
-            self.tableView.tableHeaderView = _emptyBoxImage;
-             return;
-             */
             firstLine =  @"Done. Done. Done.";
             secondLine = @"Tip: add a conversation as a reminder.";
         }
@@ -403,9 +402,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         
         _emptyViewLabel.attributedText = fullLabelString;
         self.tableView.tableHeaderView = _emptyViewLabel;
-        
-        
-
     }
 }
 
