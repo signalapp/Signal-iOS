@@ -54,8 +54,12 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
 - (NSString*)filePath {
     if ([self isVideo] || [self isAudio]) {
-        return [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
-
+        NSString *path = [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
+        NSURL *pathURL = [NSURL URLWithString:path];
+        NSString *mp3String = [NSString stringWithFormat:@"%@.mp3", [[pathURL URLByDeletingPathExtension] absoluteString]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:mp3String]) {
+            return mp3String;
+        } else return path;
     }
     else {
         return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
