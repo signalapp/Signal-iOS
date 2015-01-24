@@ -367,12 +367,13 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     _emptyViewLabel = nil;
     _emptyBoxImage = nil;
     self.tableView.tableHeaderView = nil;
-
-    if ([self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0 &&  [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {
-        _emptyBoxImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"first-screen"] highlightedImage:[UIImage imageNamed:@"first-screen"]];
-        self.tableView.tableHeaderView = _emptyBoxImage;
-    }
-    else if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
+    // Something like this can be used to put in a tutorial image. currently malformatted.
+//    if (userHasNeverSentMessage) {
+//        _emptyBoxImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"first-screen"] highlightedImage:[UIImage imageNamed:@"first-screen"]];
+//        self.tableView.tableHeaderView = _emptyBoxImage;
+//    }
+//    else
+    if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
         (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0)) {
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
