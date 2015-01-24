@@ -5441,7 +5441,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -5522,8 +5522,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="100"/>
+                                <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -5577,9 +5576,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
-                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="108" width="400" height="628"/>
-                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
