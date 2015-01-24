@@ -211,7 +211,7 @@ typedef enum : NSUInteger {
     for (NSInteger i=0; i<num_bubbles; i++) {
         NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
         TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
-        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage && [msgAdapter isKindOfClass:[TSVideoAttachmentAdapter class]]) {
             TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
             if ([msgMedia isAudio]) {
                 msgMedia.isPaused = NO;
