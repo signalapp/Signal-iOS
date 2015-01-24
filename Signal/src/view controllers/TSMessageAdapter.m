@@ -109,7 +109,7 @@
                         break;
                     }
                     else {
-                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream];
+                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
                     }

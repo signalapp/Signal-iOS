@@ -15,26 +15,30 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSNetworkManager.h"
 #import "UIColor+OWS.h"
+#import "SCWaveformView.h"
 
-#define AUDIO_BAR_HEIGHT 30;
+#define AUDIO_BAR_HEIGHT 36
 
 @interface TSVideoAttachmentAdapter ()
 
 @property UIImage *image;
 @property (strong, nonatomic) UIImageView *cachedImageView;
-@property (strong, nonatomic) UIImageView *playButton;
+@property (strong, nonatomic) UIImageView *videoPlayButton;
 @property (strong, nonatomic) CALayer *maskLayer;
 @property (strong, nonatomic) FFCircularProgressView *progressView;
 @property (strong, nonatomic) TSAttachmentStream *attachment;
 @property (strong, nonatomic) UIProgressView *audioProgress;
-@property (strong, nonatomic) UIImageView *playPauseButton;
-@property (nonatomic) UILabel *durationLabel;
+@property (strong, nonatomic) SCWaveformView *waveform;
+@property (strong, nonatomic) UIButton *audioPlayPauseButton;
+@property (strong, nonatomic) UILabel *durationLabel;
+@property (strong, nonatomic) UIView *audioBubble;
+@property (nonatomic) BOOL incoming;
 
 @end
 
 @implementation TSVideoAttachmentAdapter
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment{
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment incoming:(BOOL)incoming {
     self = [super initWithFileURL:[attachment mediaURL] isReadyToPlay:YES];
 
     if (self) {;
@@ -42,7 +46,8 @@
         _cachedImageView = nil;
         _attachmentId    = attachment.uniqueId;
         _contentType     = attachment.contentType;
-        _attachment = attachment;
+        _attachment      = attachment;
+        _incoming        = incoming;
 
     }
     return self;
@@ -61,38 +66,40 @@
     return [_contentType containsString:@"video/"];
 }
 
--(void) setAudioProgressFromFloat:(float)progress {
-    [_audioProgress setProgress:progress];
-}
-
--(void) setAudioIconToPause {
-    [_playPauseButton removeFromSuperview];
-    _playPauseButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pause_icon"]];
-    _playPauseButton.frame = CGRectMake(10, 8, 10, 14);
-    [_audioProgress addSubview:_playPauseButton];
-}
-
--(void) setAudioIconToPlay {
-    [_playPauseButton removeFromSuperview];
-    _playPauseButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"play_icon"]];
-    _playPauseButton.frame = CGRectMake(10, 8, 10, 14);
-    [_audioProgress addSubview:_playPauseButton];
-}
-
--(void) setDurationOfAudio:(NSTimeInterval)duration {
-    [_durationLabel removeFromSuperview];
+-(NSString*)formatDuration:(NSTimeInterval)duration {
     double dur = duration;
     int minutes = (int) (dur/60);
     int seconds = (int) (dur - minutes*60);
     NSString *minutes_str = [NSString stringWithFormat:@"%01d", minutes];
     NSString *seconds_str = [NSString stringWithFormat:@"%02d", seconds];
     NSString *label_text = [NSString stringWithFormat:@"%@:%@", minutes_str, seconds_str];
+    return label_text;
+}
 
-    CGSize size = [self mediaViewDisplaySize];
-    _durationLabel = [[UILabel alloc] initWithFrame:CGRectMake(size.width - 40, 0, 50, 30)];
-    _durationLabel.text = label_text;
-    _durationLabel.textColor = [UIColor whiteColor];
-    [_audioProgress addSubview:_durationLabel];
+- (void)setAudioProgressFromFloat:(float)progress {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_waveform setProgress:progress];
+        [_waveform generateWaveforms];
+        [_waveform setNeedsDisplay];
+    });
+}
+
+- (void)resetAudioDuration {
+    NSError *err;
+    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:_attachment.mediaURL error:&err];
+    _durationLabel.text = [self formatDuration:player.duration];
+}
+
+- (void)setDurationOfAudio:(NSTimeInterval)duration {
+    _durationLabel.text = [self formatDuration:duration];
+}
+
+- (void)setAudioIconToPlay {
+    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"] forState:UIControlStateNormal];
+}
+
+- (void)setAudioIconToPause {
+    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_pause_button_blue"] forState:UIControlStateNormal];
 }
 
 -(void) removeDurationLabel {
@@ -113,10 +120,10 @@
             [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView isOutgoing:self.appliesMediaViewMaskAsOutgoing];
             self.cachedImageView = imageView;
             UIImage *img = [UIImage imageNamed:@"play_button"];
-            _playButton = [[UIImageView alloc] initWithImage:img];
-            _playButton.frame = CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37);
-            [self.cachedImageView addSubview:_playButton];
-            _playButton.hidden = YES;
+            _videoPlayButton = [[UIImageView alloc] initWithImage:img];
+            _videoPlayButton.frame = CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37);
+            [self.cachedImageView addSubview:_videoPlayButton];
+            _videoPlayButton.hidden = YES;
             _maskLayer = [CALayer layer];
             [_maskLayer setBackgroundColor:[UIColor blackColor].CGColor];
             [_maskLayer setOpacity:0.4f];
@@ -125,23 +132,60 @@
             _progressView = [[FFCircularProgressView alloc] initWithFrame:CGRectMake((size.width/2)-18, (size.height/2)-18, 37, 37)];
             [_cachedImageView addSubview:_progressView];
             if (_attachment.isDownloaded) {
-                _playButton.hidden = NO;
+                _videoPlayButton.hidden = NO;
                 _maskLayer.hidden = YES;
                 _progressView.hidden = YES;
             }
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentUploadProgress:) name:@"attachmentUploadProgress" object:nil];
         }
     } else if ([self isAudio]) {
-        UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, 30)];
-        backgroundImage.backgroundColor = [UIColor colorWithRed:189/255.0f green:190/255.0f blue:194/255.0f alpha:1.0f];
+        //aac files like from android don't play, gotta convert
+        
+        NSString *convertedFile = [NSString stringWithFormat:@"%@.mp3", _attachment.mediaURL.URLByDeletingPathExtension.absoluteString];
+        NSError * err = NULL;
+        NSFileManager *fm = [NSFileManager defaultManager];
+        [fm moveItemAtURL:_attachment.mediaURL toURL:[NSURL URLWithString:convertedFile] error:&err];
+        
+        NSURL *url = [NSURL URLWithString:convertedFile];
+        AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+        _waveform = [[SCWaveformView alloc] init];
+        _waveform.frame = CGRectMake(42.0, 0.0, size.width-84, size.height);
+        _waveform.asset = asset;
+        _waveform.progressColor = [UIColor whiteColor];
+        _waveform.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
+        [_waveform generateWaveforms];
+        _waveform.progress = 0.0;
+        
+        _audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+        _audioBubble.backgroundColor = [UIColor colorWithRed:10/255.0f green:130/255.0f blue:253/255.0f alpha:1.0f];
+        _audioBubble.layer.cornerRadius = 18;
+        _audioBubble.layer.masksToBounds = YES;
 
-        _audioProgress = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 0, size.width, 4)];
-
-        _playPauseButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"play_icon"]];
-        _playPauseButton.frame = CGRectMake(10, 8, 10, 14);
-        [_audioProgress addSubview:_playPauseButton];
-
-        return _audioProgress;
+        _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
+        [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"] forState:UIControlStateNormal];
+        
+        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+        _durationLabel = [[UILabel alloc] init];
+        _durationLabel.text = [self formatDuration:player.duration];
+        _durationLabel.font = [UIFont systemFontOfSize:14];
+        [_durationLabel sizeToFit];
+        _durationLabel.frame = CGRectMake((size.width - _durationLabel.frame.size.width) - 10, _durationLabel.frame.origin.y, _durationLabel.frame.size.width, AUDIO_BAR_HEIGHT);
+        _durationLabel.backgroundColor = [UIColor clearColor];
+        _durationLabel.textColor = [UIColor whiteColor];
+        
+        if (_incoming) {
+            _audioBubble.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
+            _waveform.normalColor = [UIColor whiteColor];
+            _waveform.progressColor = [UIColor colorWithRed:107/255.0f green:185/255.0f blue:254/255.0f alpha:1.0f];
+            [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"] forState:UIControlStateNormal];
+            _durationLabel.textColor = [UIColor darkTextColor];
+        }
+        
+        [_audioBubble addSubview:_waveform];
+        [_audioBubble addSubview:_audioPlayPauseButton];
+        [_audioBubble addSubview:_durationLabel];
+        
+        return _audioBubble;
     }
     return self.cachedImageView;
 }
@@ -179,7 +223,7 @@
         if (progress >= 1) {
             _maskLayer.hidden = YES;
             _progressView.hidden = YES;
-            _playButton.hidden = NO;
+            _videoPlayButton.hidden = NO;
             _attachment.isDownloaded = YES;
             [[TSMessagesManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [_attachment saveWithTransaction:transaction];

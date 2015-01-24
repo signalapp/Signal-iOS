@@ -147,7 +147,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     return [latestAlphabeticalContacts valueForKey:self.latestSortedAlphabeticalContactKeys[index]];
 }
 
-
 -(NSMutableDictionary*)alphabetDictionaryInit
 {
     NSDictionary * dic;
@@ -166,7 +165,6 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     
     return [dic mutableCopy];
 }
-
 
 #pragma mark - Table view data source
 

@@ -45,6 +45,7 @@ PODS:
   - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
   - ProtocolBuffers (1.9.3)
+  - SCWaveformView (1.0.0)
   - SocketRocket (0.3.1-beta2)
   - SQLCipher/common (3.1.0)
   - SQLCipher/fts (3.1.0):
@@ -71,6 +72,7 @@ DEPENDENCIES:
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.200)
   - PastelogKit (~> 1.2)
+  - SCWaveformView
   - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `954750c018`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
@@ -117,6 +119,7 @@ SPEC CHECKSUMS:
   OpenSSL: 4c7be3eca71139f52984542d8c4c0752154d26c3
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
   ProtocolBuffers: e80f9e4fc401aec9d3c30be70db87fcd5f1cb880
+  SCWaveformView: 55f0cd6e80df1a46ff70892bc4041f5b7d8ad43c
   SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
   SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8
   SSKeychain: cc48bd3ad24fcd9125adb9e0d23dd50b8bbd08b9

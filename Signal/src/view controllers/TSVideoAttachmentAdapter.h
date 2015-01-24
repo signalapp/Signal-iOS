@@ -17,7 +17,7 @@
 @property (nonatomic) BOOL isAudioPlaying;
 @property (nonatomic) BOOL isPaused;
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment;
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment incoming:(BOOL)incoming;
 
 - (BOOL)isImage;
 - (BOOL)isAudio;
@@ -26,6 +26,6 @@
 - (void)setAudioIconToPlay;
 - (void)setAudioIconToPause;
 - (void)setDurationOfAudio:(NSTimeInterval)duration;
-- (void)removeDurationLabel;
+- (void)resetAudioDuration;
 
 @end
