@@ -14,7 +14,8 @@
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
 #define TIME_LABEL_SIZE 11
-#define DATE_LABEL_SIZE 13
+#define DATE_LABEL_SIZE 13tableViewCellTappedDelete
+#define SWIPE_ARCHIVE_OFFSET -50
 
 
 @implementation InboxTableViewCell
@@ -219,16 +220,26 @@
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset {
     
-    if (_scrollView.contentOffset.x < 0) {
+    if (_scrollView.contentOffset.x < SWIPE_ARCHIVE_OFFSET) {
         [_delegate tableViewCellTappedArchive:self];
+    } else if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)/4) {
+        *targetContentOffset = scrollView.contentOffset;
+        
+        UIAlertView *warnBeforeDelete = [[UIAlertView alloc] initWithTitle:@"Warning" message:@"Are you sure you want to delete this entire thread permanently?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+        [warnBeforeDelete show];
     } else {
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }
-    
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)/4) {
-        [_delegate tableViewCellTappedDelete:self];
+}
+
+#pragma mark - UIAlertView Delegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        self.scrollView.contentOffset = CGPointMake(0,0);
     } else {
-        *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
+        [_delegate tableViewCellTappedDelete:self];
     }
 }
 
