@@ -10,6 +10,6 @@
 #import "TSSocketManager.h"
 #import "APNavigationController.h"
 @interface SignalsNavigationController : APNavigationController
-
+@property (nonatomic, strong) UIProgressView* socketStatusView;
 
 @end
