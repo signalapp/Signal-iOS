@@ -99,7 +99,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 
-#pragma mark - Table view data source
+#pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return (NSInteger)[self.threadMappings numberOfSections];
@@ -140,10 +140,31 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     return CELL_HEIGHT;
 }
 
+#pragma mark Table Swipe to Delete
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    return;
+}
+
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // add the ability to delete the cell
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"X          " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        [self tableViewCellTappedDelete:indexPath];
+    }];
+    deleteAction.backgroundColor = [UIColor ows_redColor];
+    
+    return @[deleteAction];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(InboxTableViewCell*)cell {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+- (void)tableViewCellTappedDelete:(NSIndexPath*)indexPath {
+    //NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     if([thread isKindOfClass:[TSGroupThread class]]) {
         DDLogDebug(@"leaving the group");

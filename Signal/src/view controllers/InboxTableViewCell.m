@@ -15,7 +15,7 @@
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
 #define TIME_LABEL_SIZE 11
 #define DATE_LABEL_SIZE 13
-
+#define SWIPE_ARCHIVE_OFFSET -50
 
 @implementation InboxTableViewCell
 
@@ -195,39 +195,17 @@
                                               _archiveImageView.bounds.size.height);
         
     }
-    
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)*2) {
-        _deleteImageView.image = [_deleteImageView.image jsq_imageMaskedWithColor:[UIColor ows_redColor]];
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             DELETE_IMAGE_VIEW_WIDTH,
-                                             _deleteImageView.bounds.size.height);
-    } else {
-        
-        _deleteImageView.image = [_deleteImageView.image jsq_imageMaskedWithColor:[UIColor ows_darkGrayColor]];
-        double ratio = _scrollView.contentOffset.x / (CGRectGetWidth(_deleteView.frame)*2);
-        double newWidth = DELETE_IMAGE_VIEW_WIDTH/2.0f + (DELETE_IMAGE_VIEW_WIDTH * ratio)/2.0f;
-        
-        _deleteImageView.bounds = CGRectMake(_deleteImageView.bounds.origin.x,
-                                             _deleteImageView.bounds.origin.y,
-                                             (CGFloat)newWidth,
-                                             _deleteImageView.bounds.size.height);
-    }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset {
     
-    if (_scrollView.contentOffset.x < 0) {
+    if (_scrollView.contentOffset.x < SWIPE_ARCHIVE_OFFSET) {
+        // archive the thread
         [_delegate tableViewCellTappedArchive:self];
     } else {
-        *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-    }
-    
-    if (scrollView.contentOffset.x > CGRectGetWidth(_archiveView.frame)/4) {
-        [_delegate tableViewCellTappedDelete:self];
-    } else {
+        // don't do anything
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }
 }
