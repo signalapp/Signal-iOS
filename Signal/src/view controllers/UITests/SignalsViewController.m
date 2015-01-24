@@ -373,23 +373,39 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         CGRect r = CGRectMake(0, 60, 300, 70);
         _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
         _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_regularFontWithSize:14.0f];
+        _emptyViewLabel.font = [UIFont ows_regularFontWithSize:18.f];
         _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
         _emptyViewLabel.numberOfLines = 2;
+        
+        NSString* firstLine = @"";
+        NSString* secondLine = @"";
 
         if(self.viewingThreadsIn == kInboxState) {
             // Check if this is the first launch
             /*
             [_emptyBoxImage setImage:[UIImage imageNamed:@"first-screen"]];
             self.tableView.tableHeaderView = _emptyBoxImage;
+             return;
              */
-            _emptyViewLabel.text = @"Done. Done. Done.\nTip: add a conversation as a reminder.";
-            self.tableView.tableHeaderView = _emptyViewLabel;
+            firstLine =  @"Done. Done. Done.";
+            secondLine = @"Tip: add a conversation as a reminder.";
         }
         else {
-            _emptyViewLabel.text = @"Squeaky Freaking Clean.\n None. Zero. Zilch. Nada.";
-            self.tableView.tableHeaderView = _emptyViewLabel;
+            firstLine = @"Squeaky Freaking Clean.";
+            secondLine = @"None. Zero. Zilch. Nada.";
         }
+        NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];
+        
+        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_boldFontWithSize:17.f] range:NSMakeRange(0,firstLine.length)];
+        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_regularFontWithSize:16.f] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
+        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+        
+        _emptyViewLabel.attributedText = fullLabelString;
+        self.tableView.tableHeaderView = _emptyViewLabel;
+        
+        
+
     }
 }
 
