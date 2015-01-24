@@ -24,7 +24,7 @@ typedef enum : NSUInteger {
 
 @end
 
-@interface InboxTableViewCell : UITableViewCell  <UIScrollViewDelegate>
+@interface InboxTableViewCell : UITableViewCell  <UIScrollViewDelegate, UIAlertViewDelegate>
 
 
 @property (nonatomic, strong) IBOutlet UIImageView* lastActionImageView;
