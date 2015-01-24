@@ -36,7 +36,7 @@ PODS:
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (6.1.1):
     - JSQSystemSoundPlayer (~> 2.0.0)
-  - JSQSystemSoundPlayer (2.0.0)
+  - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.7.5)
   - Mantle (1.5.1):
     - Mantle/extobjc (= 1.5.1)
@@ -66,7 +66,7 @@ DEPENDENCIES:
   - AxolotlKit (~> 0.5)
   - DJWActionSheet
   - FFCircularProgressView (>= 0.1)
-  - JSQMessagesViewController (from `https://github.com/dtsbourg/JSQMessagesViewController`, branch `JSignalQ`)
+  - JSQMessagesViewController (from `https://github.com/joyceyan/JSQMessagesViewController`, branch `format_calls`)
   - libPhoneNumber-iOS (~> 0.7)
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.110)
@@ -82,8 +82,8 @@ EXTERNAL SOURCES:
     :branch: master
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :branch: JSignalQ
-    :git: https://github.com/dtsbourg/JSQMessagesViewController
+    :branch: format_calls
+    :git: https://github.com/joyceyan/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
@@ -95,8 +95,8 @@ CHECKOUT OPTIONS:
     :commit: cf63307d5e3833b16caa9a07f3b5ea06359913f9
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: ed9858bd6df609bba83b21a029701cbf13682981
-    :git: https://github.com/dtsbourg/JSQMessagesViewController
+    :commit: 5218c5fa05e06fb7e10e5c999aa1f64847fd6a75
+    :git: https://github.com/joyceyan/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018
     :git: https://github.com/square/SocketRocket.git
@@ -111,7 +111,7 @@ SPEC CHECKSUMS:
   FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 554430bbaeb0b2dbed8d4aaa2bdf64559e67f353
-  JSQSystemSoundPlayer: c98443b1cbb3b45db09d0d3d6c2355cf78294981
+  JSQSystemSoundPlayer: 55528c699a283aae2220d3ae7b8b527d2ecef4b4
   libPhoneNumber-iOS: 16b9556d7fdf4819eabeb7b7356fea3373fa47f9
   Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
   OpenSSL: 72a82aa51b056ae5833307a3fef9b571f38ce11c

@@ -39,8 +39,8 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
-
-@property (strong, nonatomic) UILabel * emptyViewLabel;
+@property (nonatomic, strong) UILabel *emptyViewLabel;
+@property (nonatomic, strong) UIImageView *emptyBoxImage;
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
@@ -78,6 +78,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self  updateTableViewHeader];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -176,6 +177,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [thread removeWithTransaction:transaction];
     }];
     _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
+    [self updateTableViewHeader];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -186,7 +188,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
-    
+    [self updateTableViewHeader];
 }
 
 
@@ -254,6 +256,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
+    [self updateTableViewHeader];
+
 }
 
 #pragma mark Database delegates
@@ -347,6 +351,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     
     [self.tableView endUpdates];
     [self updateInboxCountLabel];
+    [self updateTableViewHeader];
 }
 
 
@@ -356,6 +361,36 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (IBAction)unwindMessagesView:(UIStoryboardSegue *)segue {
     
+}
+
+- (void)updateTableViewHeader{
+    _emptyViewLabel = nil;
+    _emptyBoxImage = nil;
+    self.tableView.tableHeaderView = nil;
+
+    if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
+        (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0)) {
+        CGRect r = CGRectMake(0, 60, 300, 70);
+        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
+        _emptyViewLabel.textColor = [UIColor grayColor];
+        _emptyViewLabel.font = [UIFont ows_regularFontWithSize:14.0f];
+        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
+        _emptyViewLabel.numberOfLines = 2;
+
+        if(self.viewingThreadsIn == kInboxState) {
+            // Check if this is the first launch
+            /*
+            [_emptyBoxImage setImage:[UIImage imageNamed:@"first-screen"]];
+            self.tableView.tableHeaderView = _emptyBoxImage;
+             */
+            _emptyViewLabel.text = @"Done. Done. Done.\nTip: add a conversation as a reminder.";
+            self.tableView.tableHeaderView = _emptyViewLabel;
+        }
+        else {
+            _emptyViewLabel.text = @"Squeaky Freaking Clean.\n None. Zero. Zilch. Nada.";
+            self.tableView.tableHeaderView = _emptyViewLabel;
+        }
+    }
 }
 
 @end
