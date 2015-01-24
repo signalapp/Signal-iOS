@@ -35,6 +35,7 @@
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -139,7 +140,7 @@ typedef enum : NSUInteger {
     [self markAllMessagesAsRead];
 
     [self initializeBubbles];
-    [self initializeTextInputBox];
+    [self initializeTextView];
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
                                                                       view:TSMessageDatabaseViewExtensionName];
 
@@ -163,10 +164,10 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
--(void) initializeTextInputBox { //TODOFONTCHRISTINE
-   // would like the placeholder text and input text to be ows_regular font, 17.0f or 18.0f to taste
-    // would like the send button should be 15.0f ows_medium
-    // paperclip should be ows_blue
+-(void) initializeTextView {
+    [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
+    [self.inputToolbar.contentView.rightBarButtonItem.titleLabel setFont:[UIFont ows_mediumFontWithSize:15.f]];
+    [self.inputToolbar.contentView.rightBarButtonItem setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
 }
 
 -(void)viewWillAppear:(BOOL)animated
