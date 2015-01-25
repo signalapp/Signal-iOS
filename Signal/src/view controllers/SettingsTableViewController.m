@@ -37,6 +37,7 @@
 #import "MediaSettingsTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "AboutTableViewController.h"
+#import "PushManager.h"
 
 #define kProfileCellHeight      87.0f
 #define kStandardCellHeight     44.0f
@@ -175,12 +176,19 @@ typedef enum {
 
 -(IBAction)unregisterUser:(id)sender {
     [TSAccountManager unregisterTextSecureWithSuccess:^{
-        [[TSStorageManager sharedManager] wipe];
-        exit(0);
+        [PushManager.sharedManager registrationForPushWithSuccess:^(NSData* pushToken){
+            [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
+                [[TSStorageManager sharedManager] wipe];
+                exit(0);
+            } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
+            }];
+        } failure:^{
+            SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
+        }];
     } failure:^(NSError *error) {
-        SignalAlertView(@"Failed to unregister", @"");
+       SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
     }];
-    
 }
 
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
