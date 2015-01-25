@@ -5271,7 +5271,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <variation key="heightClass=regular-widthClass=compact" constant="60"/>
                                             </constraint>
                                         </constraints>
-                                        <state key="normal" image="empty-group-avatar@1x">
+                                        <state key="normal" image="empty-group-avatar">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <variation key="default">
@@ -5475,7 +5475,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact-options-action" width="44" height="44"/>
         <image name="delete_history.png" width="50" height="50"/>
-        <image name="empty-group-avatar@1x" width="500" height="500"/>
+        <image name="empty-group-avatar" width="52" height="52"/>
         <image name="endcall.png" width="100" height="100"/>
         <image name="inbox-active@1x" width="66" height="66"/>
         <image name="inbox-inactive@1x" width="66" height="66"/>
