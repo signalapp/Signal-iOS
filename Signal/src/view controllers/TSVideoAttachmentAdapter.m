@@ -78,9 +78,11 @@
 
 - (void)setAudioProgressFromFloat:(float)progress {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_waveform setProgress:progress];
-        [_waveform generateWaveforms];
-        [_waveform setNeedsDisplay];
+        if(!isnan(progress)) {
+            [_waveform setProgress:progress];
+            [_waveform generateWaveforms];
+            [_waveform setNeedsDisplay];
+        }
     });
 }
 
@@ -219,7 +221,9 @@
     NSString *attachmentID = [userinfo objectForKey:@"attachmentID"];
     if ([_attachmentId isEqualToString:attachmentID]) {
         NSLog(@"is downloaded: %d", _attachment.isDownloaded);
-        [_progressView setProgress: (float)progress];
+        if(!isnan(progress)) {
+            [_progressView setProgress: (float)progress];
+        }
         if (progress >= 1) {
             _maskLayer.hidden = YES;
             _progressView.hidden = YES;
