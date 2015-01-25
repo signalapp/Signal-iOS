@@ -210,6 +210,7 @@
                                  self.view.userInteractionEnabled = YES;
                                  _isPresenting = NO;
                              }];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     }];
 
 }
