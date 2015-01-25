@@ -55,6 +55,8 @@
  *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
  */
 
+-(TOCFuture*)registerPushNotificationFuture;
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure;
 @property TOCFutureSource *pushNotificationFutureSource;
 @property TOCFutureSource *userNotificationFutureSource;
 

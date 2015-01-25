@@ -86,10 +86,12 @@
     return apiCall;
 }
 
-+ (RPAPICall*)unregister {
++ (RPAPICall*)unregisterWithPushToken:(NSData*)pushToken {
     RPAPICall *apiCall         = [self defaultAPICall];
     apiCall.method             = HTTP_DELETE;
-    apiCall.endPoint           = @"/apn";
+    apiCall.endPoint           = [NSString stringWithFormat:@"/apn/%@", pushToken.encodedAsHexString];
+    apiCall.parameters         = nil;
+    apiCall.requestSerializer  = [self basicAuthenticationSerializer];
     return apiCall;
 }
 
