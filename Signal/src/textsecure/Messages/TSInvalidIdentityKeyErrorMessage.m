@@ -70,6 +70,7 @@
                 }
             }
         }];
+        [self removeWithTransaction:transaction];
     }];
     
     for (IncomingPushMessageSignal *aSignal in messagesToDecrypt) {

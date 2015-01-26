@@ -238,7 +238,11 @@
     }];
 }
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments {
+- (void)handleReceivedMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content attachments:(NSArray *)attachments{
+    [self handleReceivedMessage:message withContent:content attachments:attachments completionBlock:nil];
+}
+
+- (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments completionBlock:(void (^)(NSString* messageIdentifier))completionBlock {
     uint64_t timeStamp  = message.timestamp;
     NSString *body      = content.body;
     NSData   *groupId   = content.hasGroup?content.group.id:nil;
@@ -294,6 +298,9 @@
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
             [incomingMessage saveWithTransaction:transaction];
             thread = cThread;
+            if (completionBlock) {
+                completionBlock(incomingMessage.uniqueId);
+            }
         }
         NSString *name = [thread name];
         [self notifyUserForIncomingMessage:incomingMessage from:name];
