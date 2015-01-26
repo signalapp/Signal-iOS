@@ -48,7 +48,6 @@
 
 - (UIView *)mediaView
 {
-    NSLog(@"attachment adapter");
     if (self.image == nil) {
         return nil;
     }

@@ -233,7 +233,7 @@
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:[SignalKeyingStorage.localNumber toE164] transaction:transaction];
         [cThread saveWithTransaction:transaction];
-        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timeStamp + 1) inThread:cThread messageBody:outgoingMessage.body attachments:outgoingMessage.attachments];
+        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1) inThread:cThread messageBody:outgoingMessage.body attachments:outgoingMessage.attachments];
         [incomingMessage saveWithTransaction:transaction];
     }];
 }

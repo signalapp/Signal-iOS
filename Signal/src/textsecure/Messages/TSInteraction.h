@@ -27,9 +27,9 @@ extern const struct TSMessageEdges {
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread*)thread;
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
+@property (nonatomic, readonly) uint64_t timestamp;
 
 - (NSDate*)date;
-- (uint64_t)timeStamp;
 - (NSString*)description;
 
 #pragma mark Utility Method 

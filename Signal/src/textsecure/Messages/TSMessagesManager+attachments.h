@@ -12,6 +12,10 @@
 @interface TSMessagesManager (attachments)
 
 - (void)handleReceivedMediaMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content;
-- (void)sendAttachment:(NSData*)attachmentData contentType:(NSString*)contentType inMessage:(TSOutgoingMessage*)outgoingMessage thread:(TSThread*)thread;
+
+- (void)sendAttachment:(NSData*)attachmentData
+           contentType:(NSString*)contentType
+             inMessage:(TSOutgoingMessage*)outgoingMessage
+                thread:(TSThread*)thread;
 
 @end

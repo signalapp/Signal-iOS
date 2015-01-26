@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
 - (UIImage*)image;
 
 @property (getter=isBlocked) BOOL blocked;
-@property (nonatomic) uint64_t lastMessageId;
+@property (nonatomic) NSString* latestMessageId;
 @property NSDate *archivalDate;
 
 - (NSDate*)lastMessageDate;

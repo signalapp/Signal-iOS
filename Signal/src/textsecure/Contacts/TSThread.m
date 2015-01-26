@@ -29,7 +29,7 @@
     
     if (self) {
         _blocked       = NO;
-        _lastMessageId = 0;
+        _latestMessageId = nil;
     }
     
     return self;
@@ -40,21 +40,20 @@
     return FALSE;
 }
 
-- (uint64_t)lastMessageId{
-    return _lastMessageId;
-}
-
 - (NSDate*)lastMessageDate{
     __block NSDate *date;
-    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        date = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction].date;
-    }];
     
-    if (date) {
-        return date;
-    } else{
-        return [NSDate date];
+    if (self.latestMessageId) {
+        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            date = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction].date;
+        }];
+        
+        if (date) {
+            return date;
+        }
     }
+    
+    return [NSDate date];
 }
 
 - (UIImage*)image{
@@ -64,7 +63,7 @@
 - (NSString*)lastMessageLabel{
     __block TSInteraction *interaction;
     [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
     }];
     return interaction.description;
 }
@@ -73,7 +72,7 @@
 {
     __block TSInteraction *interaction;
     [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
     }];
     
     return [self lastActionForInteraction:interaction];
@@ -126,7 +125,7 @@
     __block TSInteraction * interaction;
     __block BOOL hasUnread = NO;
     [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:_lastMessageId] transaction:transaction];
+        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
         if ([interaction isKindOfClass:[TSIncomingMessage class]]){
             hasUnread = ![(TSIncomingMessage*)interaction wasRead];
         }

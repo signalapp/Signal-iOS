@@ -109,7 +109,7 @@ dispatch_queue_t sendingQueue() {
         remainingAttempts -= 1;
         
         [self outgoingMessages:message toRecipient:recipient inThread:thread completion:^(NSArray *messages) {
-            TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timeStamp];
+            TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId messages:messages relay:recipient.relay timeStamp:message.timestamp];
             
             [[TSNetworkManager sharedManager] queueAuthenticatedRequest:request success:^(NSURLSessionDataTask *task, id responseObject) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -252,13 +252,13 @@ dispatch_queue_t sendingQueue() {
     else if(message.groupMetaMessage==TSGroupMessageQuit) {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             
-            [[[TSInfoMessage alloc] initWithTimestamp:message.timeStamp inThread:thread messageType:TSInfoMessageTypeGroupQuit] saveWithTransaction:transaction];
+            [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp inThread:thread messageType:TSInfoMessageTypeGroupQuit] saveWithTransaction:transaction];
         }];
     }
     else {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             
-            [[[TSInfoMessage alloc] initWithTimestamp:message.timeStamp inThread:thread messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction]; 
+            [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp inThread:thread messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
         }];
     }
 }
