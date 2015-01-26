@@ -11,10 +11,9 @@
 
 @property (nonatomic, strong) IBOutlet UILabel *nameLabel;
 @property (nonatomic, strong) IBOutlet UIButton *callButton ;
-@property (nonatomic, strong) IBOutlet UIButton *messageButton;
 
 @property BOOL shouldShowContactButtons;
 
 - (void)configureWithContact:(Contact *)contact;
-
+-(IBAction)callContact:(id)sender;
 @end

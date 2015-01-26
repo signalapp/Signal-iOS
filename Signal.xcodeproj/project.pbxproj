@@ -274,7 +274,6 @@
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
-		A507A3B01A6C60E300BEED0D /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A507A3AE1A6C60E300BEED0D /* ContactTableViewCell.xib */; };
 		A507A3B11A6C60E300BEED0D /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */; };
 		A547DD741A70A87800103EC7 /* DJWActionSheet+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = A547DD721A70A87800103EC7 /* DJWActionSheet+OWS.m */; };
 		A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */; };
@@ -876,7 +875,6 @@
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		A507A3AE1A6C60E300BEED0D /* ContactTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ContactTableViewCell.xib; path = "Signal/src/view controllers/ContactTableViewCell.xib"; sourceTree = SOURCE_ROOT; };
 		A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = InboxTableViewCell.xib; path = "Signal/src/view controllers/InboxTableViewCell.xib"; sourceTree = SOURCE_ROOT; };
 		A547DD721A70A87800103EC7 /* DJWActionSheet+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "DJWActionSheet+OWS.m"; path = "util/DJWActionSheet+OWS.m"; sourceTree = "<group>"; };
 		A547DD731A70A87800103EC7 /* DJWActionSheet+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "DJWActionSheet+OWS.h"; path = "util/DJWActionSheet+OWS.h"; sourceTree = "<group>"; };
@@ -1942,7 +1940,6 @@
 		76EB053818170B33006006FC /* xibs */ = {
 			isa = PBXGroup;
 			children = (
-				A507A3AE1A6C60E300BEED0D /* ContactTableViewCell.xib */,
 				A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */,
 			);
 			path = xibs;
@@ -2995,7 +2992,6 @@
 				FC3BD97C1A2CD385005B96BB /* signal_dotted@2x.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				B633C5CD1A1D190B0059AC12 /* photo@2x.png in Resources */,
-				A507A3B01A6C60E300BEED0D /* ContactTableViewCell.xib in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
