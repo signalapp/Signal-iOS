@@ -5473,17 +5473,17 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="empty-group-avatar" width="52" height="52"/>
         <image name="endcall.png" width="100" height="100"/>
-        <image name="inbox-active@1x" width="66" height="66"/>
-        <image name="inbox-inactive@1x" width="66" height="66"/>
+        <image name="inbox-active@1x" width="40" height="51"/>
+        <image name="inbox-inactive@1x" width="40" height="51"/>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="qr.png" width="100" height="100"/>
         <image name="qr_scan_fingerprint.png" width="100" height="100"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="44" height="44"/>
+        <image name="settings-icon@1x" width="25" height="24"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="shred.png" width="200" height="200"/>
-        <image name="signal-navigation-icon" width="44" height="44"/>
+        <image name="signal-navigation-icon" width="32" height="32"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker-active" width="80" height="80"/>
