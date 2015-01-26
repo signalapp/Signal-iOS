@@ -51,10 +51,6 @@ dispatch_queue_t attachmentsQueue() {
             if ([attachmentPointer.contentType hasPrefix:@"image/"]||[attachmentPointer.contentType hasPrefix:@"video/"] || [attachmentPointer.contentType hasPrefix:@"audio/"]) {
                 [attachmentPointer saveWithTransaction:transaction];
                 
-                dispatch_async(attachmentsQueue(), ^{
-                    [self retrieveAttachment:attachmentPointer messageId:[TSInteraction stringFromTimeStamp:message.timestamp]];
-                });
-                
                 [retrievedAttachments addObject:attachmentPointer.uniqueId];
                 shouldProcessMessage = YES;
             }
@@ -70,7 +66,16 @@ dispatch_queue_t attachmentsQueue() {
     }];
     
     if (shouldProcessMessage) {
-        [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments];
+        [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments completionBlock:^(NSString *messageIdentifier) {
+            for (NSString *pointerId in retrievedAttachments) {
+                dispatch_async(attachmentsQueue(), ^{
+                    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        TSAttachmentPointer *pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId transaction:transaction];
+                        [self retrieveAttachment:pointer messageId:messageIdentifier];
+                    }];
+                });
+            }
+        }];
     }
 }
 
