@@ -332,7 +332,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="leftBarButtonItem" image="signal-navigation-icon" style="plain" id="L4I-fY-NfP">
+                        <barButtonItem key="leftBarButtonItem" image="btnSignalLogo--white" style="plain" id="L4I-fY-NfP">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="imi-Ms-CTi" kind="unwind" unwindAction="unwindMessagesView:" id="Ntb-xe-Zdr"/>
@@ -5486,7 +5486,6 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="settings-icon@1x" width="25" height="24"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="shred.png" width="200" height="200"/>
-        <image name="signal-navigation-icon" width="32" height="32"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker-active" width="80" height="80"/>
