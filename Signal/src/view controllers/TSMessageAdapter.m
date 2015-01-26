@@ -135,6 +135,12 @@
         adapter.infoMessageType = infoMessage.messageType;
         adapter.messageBody = infoMessage.description;
         adapter.messageType = TSInfoMessageAdapter;
+        if(adapter.infoMessageType == TSInfoMessageTypeGroupQuit || adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
+            // repurposing call display for info message stuff for group updates, ! adapter will know because the date is nil
+            CallStatus status = 0;
+            JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status];
+            return call;
+        }
     } else {
         TSErrorMessage * errorMessage = (TSErrorMessage*)interaction;
         adapter.infoMessageType = errorMessage.errorType;
