@@ -20,9 +20,7 @@
 - (instancetype)initWithContactId:(NSString*)contactId{
     
     NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];
-    
     self = [super initWithUniqueId:uniqueIdentifier];
-    
     return self;
 }
 

@@ -214,6 +214,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     if ([segue.identifier isEqualToString:kSegueIndentifier]){
+        [self selectedInbox:self];
         MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         TSThread *thread               = [self threadForIndexPath:selectedIndexPath];

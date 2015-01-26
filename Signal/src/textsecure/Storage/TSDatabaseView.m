@@ -127,14 +127,15 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
 + (BOOL)threadShouldBeInInbox:(TSThread*)thread {
     NSDate *lastMessageDate  = thread.lastMessageDate;
     NSDate *archivalDate = thread.archivalDate;
-    if (lastMessageDate&&archivalDate) { // this is what is called
-        return ([lastMessageDate timeIntervalSinceDate:archivalDate]>0)?YES:NO; // if there hasn't been a new message since the archive date, it's in the archive. an issue is that empty threads are always given with a lastmessage date of the present on every launch
+    if (lastMessageDate&&archivalDate) {
+        return ([lastMessageDate timeIntervalSinceDate:archivalDate]>0)?YES:NO;
     }
     else if(archivalDate) {
         return NO;
     }
-    
-    return YES;
+    else {
+        return YES;
+    }
 }
 
 + (YapDatabaseViewSorting*)threadSorting {
