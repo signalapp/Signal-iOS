@@ -20,19 +20,16 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="contact-call@1x" translatesAutoresizingMaskIntoConstraints="NO" id="eyV-Pd-jXO">
-                        <rect key="frame" x="268" y="-1" width="44" height="45"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="44" id="0pq-Wj-c1U"/>
-                            <constraint firstAttribute="width" constant="44" id="z3C-XN-iyJ"/>
-                        </constraints>
-                    </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pUn-E0-OEJ">
+                        <rect key="frame" x="283" y="9" width="25" height="25.5"/>
+                        <state key="normal" title="Button" image="btnPhone--blue">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="3" firstAttribute="top" secondItem="Ibd-RS-koG" secondAttribute="topMargin" constant="-4" id="H8v-R2-KWU"/>
                     <constraint firstAttribute="trailingMargin" secondItem="3" secondAttribute="trailing" constant="70" id="KCJ-gu-mnE"/>
-                    <constraint firstItem="eyV-Pd-jXO" firstAttribute="top" secondItem="Ibd-RS-koG" secondAttribute="topMargin" constant="-9" id="NSd-54-Eqx"/>
-                    <constraint firstItem="eyV-Pd-jXO" firstAttribute="trailing" secondItem="Ibd-RS-koG" secondAttribute="trailingMargin" id="Ydb-Fa-d8N"/>
                     <constraint firstItem="3" firstAttribute="leading" secondItem="Ibd-RS-koG" secondAttribute="leadingMargin" constant="37" id="hEW-rs-zJ0"/>
                     <constraint firstItem="3" firstAttribute="leading" secondItem="Ibd-RS-koG" secondAttribute="leadingMargin" constant="12" id="jFH-FI-5hp"/>
                     <constraint firstAttribute="bottomMargin" secondItem="3" secondAttribute="bottom" constant="-4.5" id="vDP-VK-QhQ"/>
@@ -50,6 +47,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="contact-call@1x" width="66" height="66"/>
+        <image name="btnPhone--blue" width="45" height="44"/>
     </resources>
 </document>

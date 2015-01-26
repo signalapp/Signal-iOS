@@ -286,21 +286,19 @@
                     <navigationItem key="navigationItem" id="Um0-0y-8lr">
                         <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="120" style="plain" id="PYj-7F-J24">
-                            <inset key="imageInsets" minX="0.0" minY="10" maxX="20" maxY="10"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
                         <button key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ktT-AR-smT">
-                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                            <rect key="frame" x="277" y="7" width="46" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="signal-navigation-icon">
+                            <state key="normal" image="btnSignalLogo--white">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                         </button>
-                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="120" style="plain" id="Oft-fU-tf5">
-                            <inset key="imageInsets" minX="10" minY="10" maxX="8" maxY="8"/>
+                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="51" style="plain" id="Oft-fU-tf5">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -334,7 +332,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="leftBarButtonItem" image="signal-navigation-icon" style="plain" id="L4I-fY-NfP">
+                        <barButtonItem key="leftBarButtonItem" image="btnSignalLogo--white" style="plain" id="L4I-fY-NfP">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="imi-Ms-CTi" kind="unwind" unwindAction="unwindMessagesView:" id="Ntb-xe-Zdr"/>
@@ -5211,12 +5209,14 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bP2-Tc-byJ">
+                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" style="plain" id="bP2-Tc-byJ">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="closeAction:" destination="Qga-41-bw2" id="i8h-aS-Y3o"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Group" id="Xmt-s8-mRN">
+                        <barButtonItem key="rightBarButtonItem" image="btnGroup--white" style="plain" id="Xmt-s8-mRN">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <segue destination="bDi-2Q-XOC" kind="show" id="D0d-4f-lcI"/>
                             </connections>
@@ -5463,35 +5463,37 @@ A0 09 9A FF A8 8A 09 99</string>
     <resources>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
-        <image name="_arrow_button" width="12" height="21"/>
-        <image name="add-conversation" width="44" height="44"/>
-        <image name="archive-active@1x" width="66" height="66"/>
-        <image name="archive-inactive@1x" width="66" height="66"/>
+        <image name="_arrow_button" width="12" height="23"/>
+        <image name="add-conversation" width="26" height="26"/>
+        <image name="archive-active@1x" width="40" height="51"/>
+        <image name="archive-inactive@1x" width="40" height="51"/>
+        <image name="btnCancel--white" width="20" height="20"/>
+        <image name="btnGroup--white" width="29" height="26"/>
+        <image name="btnSignalLogo--white" width="32" height="32"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact-options-action" width="44" height="44"/>
         <image name="delete_history.png" width="50" height="50"/>
-        <image name="empty-group-avatar" width="52" height="52"/>
+        <image name="empty-group-avatar" width="53" height="53"/>
         <image name="endcall.png" width="100" height="100"/>
-        <image name="inbox-active@1x" width="66" height="66"/>
-        <image name="inbox-inactive@1x" width="66" height="66"/>
+        <image name="inbox-active@1x" width="40" height="51"/>
+        <image name="inbox-inactive@1x" width="40" height="51"/>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="qr.png" width="100" height="100"/>
         <image name="qr_scan_fingerprint.png" width="100" height="100"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="44" height="44"/>
+        <image name="settings-icon@1x" width="25" height="24"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="shred.png" width="200" height="200"/>
-        <image name="signal-navigation-icon" width="44" height="44"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker-active" width="80" height="80"/>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZcV-Ck-baL"/>
-        <segue reference="xo7-5J-BJb"/>
+        <segue reference="DR8-fx-0PD"/>
         <segue reference="gZ1-lh-srF"/>
+        <segue reference="xo7-5J-BJb"/>
     </inferredMetricsTieBreakers>
 </document>
