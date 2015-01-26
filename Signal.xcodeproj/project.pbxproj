@@ -356,6 +356,7 @@
 		B63AF5D21A1F757900D01AAD /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C31A1F757900D01AAD /* TSNetworkManager.m */; };
 		B63AF5D31A1F757900D01AAD /* TSSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5C61A1F757900D01AAD /* TSSocketManager.m */; };
 		B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5D71A1F889500D01AAD /* SubProtocol.pb.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B63BAD6D1A74DA8F00269E74 /* TSStorageManager+messageIDs.m in Sources */ = {isa = PBXBuildFile; fileRef = B63BAD6C1A74DA8F00269E74 /* TSStorageManager+messageIDs.m */; };
 		B640C4771A477B0F005C7C8A /* TSAttachementsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B640C4761A477B0F005C7C8A /* TSAttachementsTest.m */; };
 		B6416FB8199A0478003C5699 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6416F57199A0478003C5699 /* Localizable.strings */; };
 		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
@@ -987,6 +988,8 @@
 		B63AF5C61A1F757900D01AAD /* TSSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSocketManager.m; sourceTree = "<group>"; };
 		B63AF5D61A1F889500D01AAD /* SubProtocol.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubProtocol.pb.h; sourceTree = "<group>"; };
 		B63AF5D71A1F889500D01AAD /* SubProtocol.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubProtocol.pb.m; sourceTree = "<group>"; };
+		B63BAD6B1A74DA8F00269E74 /* TSStorageManager+messageIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSStorageManager+messageIDs.h"; sourceTree = "<group>"; };
+		B63BAD6C1A74DA8F00269E74 /* TSStorageManager+messageIDs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TSStorageManager+messageIDs.m"; sourceTree = "<group>"; };
 		B640C4761A477B0F005C7C8A /* TSAttachementsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachementsTest.m; sourceTree = "<group>"; };
 		B6416F58199A0478003C5699 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
@@ -2427,6 +2430,8 @@
 				B6B0964E1A1D25ED008BFAA6 /* TSStorageManager+keyingMaterial.m */,
 				B6B0964F1A1D25ED008BFAA6 /* TSStorageManager.h */,
 				B6B096501A1D25ED008BFAA6 /* TSStorageManager.m */,
+				B63BAD6B1A74DA8F00269E74 /* TSStorageManager+messageIDs.h */,
+				B63BAD6C1A74DA8F00269E74 /* TSStorageManager+messageIDs.m */,
 				B6B096511A1D25ED008BFAA6 /* TSYapDatabaseObject.h */,
 				B6B096521A1D25ED008BFAA6 /* TSYapDatabaseObject.m */,
 			);
@@ -3158,6 +3163,7 @@
 				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,
 				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */,
+				B63BAD6D1A74DA8F00269E74 /* TSStorageManager+messageIDs.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
 				B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */,
 				FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */,

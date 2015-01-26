@@ -7,6 +7,7 @@
 //
 
 #import "TSInteraction.h"
+#import "TSStorageManager+messageIDs.h"
 
 const struct TSMessageRelationships TSMessageRelationships = {
     .threadUniqueId = @"threadUniqueId",
@@ -18,10 +19,11 @@ const struct TSMessageEdges TSMessageEdges = {
 
 @implementation TSInteraction
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread*)thread{
-    self = [super initWithUniqueId:[[self class] stringFromTimeStamp:timestamp]];
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread*)thread {
+    self = [super initWithUniqueId:nil];
     
     if (self) {
+        _timestamp      = timestamp;
         _uniqueThreadId = thread.uniqueId;
     }
     
@@ -51,18 +53,13 @@ const struct TSMessageEdges TSMessageEdges = {
 
 #pragma mark Date operations
 
-- (uint64_t)identifierToTimestamp{
-    return [[self class] timeStampFromString:self.uniqueId];
+- (uint64_t)millisecondsTimestamp{
+    return self.timestamp;
 }
 
 - (NSDate*)date{
-    uint64_t milliseconds = [self identifierToTimestamp];
-    uint64_t seconds      = milliseconds/1000;
+    uint64_t seconds      = self.timestamp/1000;
     return [NSDate dateWithTimeIntervalSince1970:seconds];
-}
-
-- (UInt64)timeStamp{
-    return [self identifierToTimestamp];
 }
 
 + (NSString*)stringFromTimeStamp:(uint64_t)timestamp{
@@ -81,15 +78,18 @@ const struct TSMessageEdges TSMessageEdges = {
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction{
-    [super saveWithTransaction:transaction];
-    TSThread *fetchedThread     = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
-    uint64_t timeStamp          = [TSInteraction timeStampFromString:self.uniqueId];
+    if (!self.uniqueId) {
+        self.uniqueId = [TSStorageManager getAndIncrementMessageIdWithTransaction:transaction];
+    }
     
-    if (timeStamp > fetchedThread.lastMessageId) {
-        fetchedThread.lastMessageId = timeStamp;
+    [super saveWithTransaction:transaction];
+    
+    TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+    
+    if (!fetchedThread.latestMessageId || [self.date timeIntervalSinceDate:fetchedThread.lastMessageDate] > 0) {
+        fetchedThread.latestMessageId = self.uniqueId;
     }
     [fetchedThread saveWithTransaction:transaction];
 }
-
 
 @end

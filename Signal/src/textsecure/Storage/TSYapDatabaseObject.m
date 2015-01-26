@@ -19,9 +19,9 @@
     return self;
 }
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId{
+- (instancetype)initWithUniqueId:(NSString *)aUniqueId{
     if (self = [super init]) {
-        _uniqueId = uniqueId;
+        _uniqueId = aUniqueId;
     }
     return self;
 }

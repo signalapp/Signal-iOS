@@ -65,7 +65,6 @@ MacrosSingletonImplemention
             break;
             
         case HTTP_DELETE:
-            NSLog(@"endpoint %@, request serializer %@",apiCall.endPoint,apiCall.requestSerializer);
             [self.operationManager DELETE:apiCall.endPoint parameters:apiCall.parameters success:success failure:failure];
             break;
             

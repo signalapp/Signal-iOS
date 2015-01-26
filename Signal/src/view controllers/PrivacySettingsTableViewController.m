@@ -141,7 +141,7 @@
     switch (indexPath.section) {
         case 1:
         {
-            [DJWActionSheet showInView:self.tabBarController.view
+            [DJWActionSheet showInView:self.parentViewController.view
                              withTitle:@"Are you sure you want to delete all your history (messages, attachments, call history ...) ? This action cannot be reverted."
                      cancelButtonTitle:@"Cancel"
                 destructiveButtonTitle:@"I'm sure."

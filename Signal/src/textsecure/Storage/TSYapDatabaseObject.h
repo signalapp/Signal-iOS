@@ -64,7 +64,8 @@
  *  The unique identifier of the stored object
  */
 
-@property (nonatomic, readonly) NSString *uniqueId;
+
+@property (nonatomic) NSString *uniqueId;
 
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction*)transaction;
