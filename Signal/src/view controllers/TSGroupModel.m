@@ -50,15 +50,18 @@
 }
 
 - (NSString*) getInfoStringAboutUpdateTo:(TSGroupModel*)newModel {
-    NSString* updatedGroupInfoString = @"Group updated. ";
+    NSString* updatedGroupInfoString = @"";
     if (self == newModel) {
-        return updatedGroupInfoString;
+        return @"Group updated.";
     }
     if (![_groupName isEqual:newModel.groupName]) {
         updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"Title is now '%@'. ",newModel.groupName]];
     }
     if(_groupImage!=nil  && newModel.groupImage!=nil  && !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
         updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Avatar changed. "];
+    }
+    if([updatedGroupInfoString length]==0) {
+        updatedGroupInfoString = @"Group updated";
     }
     NSSet* oldMembers = [NSSet setWithArray:_groupMemberIds];
     NSSet* newMembers = [NSSet setWithArray:newModel.groupMemberIds];
