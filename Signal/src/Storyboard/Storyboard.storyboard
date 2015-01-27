@@ -267,22 +267,22 @@
                                 <exclude reference="PaA-ol-uQT"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="7iL-hd-xP7"/>
+                                <exclude reference="GCa-EH-8Vh"/>
+                                <exclude reference="LzX-41-FwR"/>
+                                <exclude reference="s5v-Hl-a3k"/>
+                                <exclude reference="9eN-l2-dkv"/>
+                                <exclude reference="jlZ-yQ-LLc"/>
+                                <exclude reference="yfL-K8-woe"/>
                                 <exclude reference="EdI-ia-IjN"/>
                                 <exclude reference="OD6-Pc-Zug"/>
                                 <exclude reference="ouV-vM-Vyv"/>
                                 <exclude reference="wn4-O9-ILm"/>
-                                <exclude reference="9eN-l2-dkv"/>
-                                <exclude reference="jlZ-yQ-LLc"/>
-                                <exclude reference="yfL-K8-woe"/>
                                 <exclude reference="6gc-oZ-IMJ"/>
                                 <exclude reference="AP2-DE-zts"/>
                                 <exclude reference="Fc5-tN-hro"/>
                                 <exclude reference="La3-rh-BpY"/>
                                 <exclude reference="xlM-od-Zuu"/>
-                                <exclude reference="7iL-hd-xP7"/>
-                                <exclude reference="GCa-EH-8Vh"/>
-                                <exclude reference="LzX-41-FwR"/>
-                                <exclude reference="s5v-Hl-a3k"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -292,22 +292,22 @@
                                 <include reference="PaA-ol-uQT"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="7iL-hd-xP7"/>
+                                <exclude reference="GCa-EH-8Vh"/>
+                                <include reference="LzX-41-FwR"/>
+                                <include reference="s5v-Hl-a3k"/>
+                                <include reference="9eN-l2-dkv"/>
+                                <include reference="jlZ-yQ-LLc"/>
+                                <include reference="yfL-K8-woe"/>
                                 <include reference="EdI-ia-IjN"/>
                                 <exclude reference="OD6-Pc-Zug"/>
                                 <include reference="ouV-vM-Vyv"/>
                                 <include reference="wn4-O9-ILm"/>
-                                <include reference="9eN-l2-dkv"/>
-                                <include reference="jlZ-yQ-LLc"/>
-                                <include reference="yfL-K8-woe"/>
                                 <exclude reference="6gc-oZ-IMJ"/>
                                 <include reference="AP2-DE-zts"/>
                                 <include reference="Fc5-tN-hro"/>
                                 <include reference="La3-rh-BpY"/>
                                 <exclude reference="xlM-od-Zuu"/>
-                                <include reference="7iL-hd-xP7"/>
-                                <exclude reference="GCa-EH-8Vh"/>
-                                <include reference="LzX-41-FwR"/>
-                                <include reference="s5v-Hl-a3k"/>
                             </mask>
                         </variation>
                     </view>
