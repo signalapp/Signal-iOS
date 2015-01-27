@@ -7,7 +7,10 @@
 //
 
 #import "TSInteraction.h"
+
+#import "TSDatabaseSecondaryIndexes.h"
 #import "TSStorageManager+messageIDs.h"
+
 
 const struct TSMessageRelationships TSMessageRelationships = {
     .threadUniqueId = @"threadUniqueId",
@@ -28,6 +31,25 @@ const struct TSMessageEdges TSMessageEdges = {
     }
     
     return self;
+}
+
++ (instancetype)interactionForTimestamp:(uint64_t)timestamp withTransaction:(YapDatabaseReadWriteTransaction *)transaction{
+    __block int counter = 0;
+    __block TSInteraction *interaction;
+    
+    [TSDatabaseSecondaryIndexes enumerateMessagesWithTimestamp:timestamp withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+        
+        if (counter != 0) {
+            DDLogWarn(@"The database contains two colliding timestamps at: %lld.", timestamp);
+            return;
+        }
+        
+        interaction = [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+        
+        counter ++;
+    } usingTransaction:transaction];
+    
+    return interaction;
 }
 
 
@@ -84,7 +106,8 @@ const struct TSMessageEdges TSMessageEdges = {
     
     [super saveWithTransaction:transaction];
     
-    TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+    TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId
+                                                    transaction:transaction];
     
     if (!fetchedThread.latestMessageId || [self.date timeIntervalSinceDate:fetchedThread.lastMessageDate] > 0) {
         fetchedThread.latestMessageId = self.uniqueId;

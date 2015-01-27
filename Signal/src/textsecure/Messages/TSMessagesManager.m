@@ -41,6 +41,7 @@
 #import "ContactsManager.h"
 
 #import <CocoaLumberjack/DDLog.h>
+#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 #define ddLogLevel LOG_LEVEL_VERBOSE
 
@@ -102,10 +103,12 @@
 
 - (void)handleDeliveryReceipt:(IncomingPushMessageSignal*)signal{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:signal.timestamp] transaction:transaction];
-        if(![message isKindOfClass:[TSInfoMessage class]]){
-            message.messageState = TSOutgoingMessageStateDelivered;
-            [message saveWithTransaction:transaction];
+        TSInteraction *interaction = [TSInteraction interactionForTimestamp:signal.timestamp withTransaction:transaction];
+        if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage*)interaction;
+            outgoingMessage.messageState       = TSOutgoingMessageStateDelivered;
+            
+            [outgoingMessage saveWithTransaction:transaction];
         }
     }];
 }
@@ -118,7 +121,8 @@
         
         if (![storageManager containsSession:recipientId deviceId:deviceId]) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage withTransaction:transaction];
+                TSErrorMessage *errorMessage = [TSErrorMessage missingSessionWithSignal:secureMessage
+                                                                        withTransaction:transaction];
                 [errorMessage saveWithTransaction:transaction];
             }];
             return;
@@ -293,11 +297,16 @@
             thread = gThread;
         }
         else{
-            TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
+            TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source
+                                                                           transaction:transaction];
             [cThread saveWithTransaction:transaction];
-            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:cThread messageBody:body attachments:attachments];
+            incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
+                                                                  inThread:cThread
+                                                               messageBody:body
+                                                               attachments:attachments];
             [incomingMessage saveWithTransaction:transaction];
             thread = cThread;
+            
             if (completionBlock) {
                 completionBlock(incomingMessage.uniqueId);
             }

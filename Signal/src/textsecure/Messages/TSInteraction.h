@@ -37,4 +37,7 @@ extern const struct TSMessageEdges {
 + (NSString*)stringFromTimeStamp:(uint64_t)timestamp;
 + (uint64_t)timeStampFromString:(NSString*)string;
 
++ (instancetype)interactionForTimestamp:(uint64_t)timestamp withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
+
+
 @end

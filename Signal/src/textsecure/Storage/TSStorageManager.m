@@ -21,6 +21,7 @@
 
 #import <SSKeychain/SSKeychain.h>
 #import "TSDatabaseView.h"
+#import "TSDatabaseSecondaryIndexes.h"
 
 
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
@@ -72,6 +73,8 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
+    
+    [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     
     [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }

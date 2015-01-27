@@ -367,6 +367,7 @@
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B68B0E8A1A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */; };
+		B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6A3EB4B1A423B3800B2236B /* TSAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */; };
 		B6AE33BD1A1EB121003DF39D /* TSGroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* TSGroupModel.m */; };
@@ -1007,6 +1008,8 @@
 		B68B0E881A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyErrorMessage.h; sourceTree = "<group>"; };
 		B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeyErrorMessage.m; sourceTree = "<group>"; };
 		B68B0E8D1A542AD700DE8A02 /* TSErrorMessage_privateConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSErrorMessage_privateConstructor.h; sourceTree = "<group>"; };
+		B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDatabaseSecondaryIndexes.h; sourceTree = "<group>"; };
+		B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDatabaseSecondaryIndexes.m; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6A3EB491A423B3800B2236B /* TSAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentAdapter.h; sourceTree = "<group>"; };
 		B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentAdapter.m; sourceTree = "<group>"; };
@@ -2422,6 +2425,8 @@
 				B6B0963F1A1D25ED008BFAA6 /* AxolotlStore */,
 				B6B0964A1A1D25ED008BFAA6 /* TSDatabaseView.h */,
 				B6B0964B1A1D25ED008BFAA6 /* TSDatabaseView.m */,
+				B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */,
+				B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */,
 				B6B0964C1A1D25ED008BFAA6 /* TSStorageKeys.h */,
 				B6B0964D1A1D25ED008BFAA6 /* TSStorageManager+keyingMaterial.h */,
 				B6B0964E1A1D25ED008BFAA6 /* TSStorageManager+keyingMaterial.m */,
@@ -3202,6 +3207,7 @@
 				B6B096681A1D25ED008BFAA6 /* TSRecipient.m in Sources */,
 				76EB05FE18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB05CA18170B33006006FC /* RecipientUnavailable.m in Sources */,
+				B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */,
 				B6B0968D1A1D25ED008BFAA6 /* TSStorageManager+keyingMaterial.m in Sources */,
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
 				76EB062C18170B33006006FC /* OperationFailed.m in Sources */,
