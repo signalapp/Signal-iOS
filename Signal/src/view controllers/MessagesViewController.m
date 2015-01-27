@@ -62,6 +62,9 @@
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
 #define kYapDatabaseRangeMinLength 20
+#define JSQ_TOOLBAR_ICON_HEIGHT 22
+#define JSQ_TOOLBAR_ICON_WIDTH 22
+#define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
@@ -94,6 +97,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
+@property (nonatomic, retain) UIGestureRecognizer *showFingerprintDisplay;
+@property (nonatomic, retain) UITapGestureRecognizer *toggleContactPhoneDisplay;
+@property (nonatomic) BOOL displayPhoneAsTitle;
 
 @property NSUInteger page;
 
@@ -143,19 +149,30 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
+    
+    _showFingerprintDisplay = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
+    
+    _toggleContactPhoneDisplay = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
+    _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
     _callButton = [[UIButton alloc] init];
-    [_callButton setBackgroundImage:[UIImage imageNamed:@"btnPhone--blue"] forState:UIControlStateNormal];
     [_callButton addTarget:self action:@selector(callAction) forControlEvents:UIControlEventTouchUpInside];
-    [_callButton setFrame:CGRectMake(0, 0, 30, 30)];
-    
+    [_callButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
+    _callButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
+
+    [_callButton setImage:[UIImage imageNamed:@"btnPhone--blue"] forState:UIControlStateNormal];
+
     _messageButton = [[UIButton alloc] init];
-    [_messageButton setBackgroundImage:[UIImage imageNamed:@"btnSend--blue"] forState:UIControlStateNormal];
-    [_messageButton setFrame:CGRectMake(0, 0, 30, 30)];
+    [_messageButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
+    _messageButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
+    [_messageButton setImage:[UIImage imageNamed:@"btnSend--blue"] forState:UIControlStateNormal];
+
 
     _attachButton = [[UIButton alloc] init];
-    [_attachButton setBackgroundImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
-    [_attachButton setFrame:CGRectMake(0, 0, 30, 30)];
+    [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
+    _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
+    [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
+
 
     [super viewDidLoad];
 
@@ -190,7 +207,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
     self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
 
-    if(!isGroupConversation&& [self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+    if([self canCall]) {
         self.inputToolbar.contentView.rightBarButtonItem = _callButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
@@ -252,6 +269,11 @@ typedef enum : NSUInteger {
     }
     
     [self cancelReadTimer];
+    [[self.navController.navigationBar.subviews objectAtIndex:0] removeGestureRecognizer:_showFingerprintDisplay];
+    [[self.navController.navigationBar.subviews objectAtIndex:0] removeGestureRecognizer:_toggleContactPhoneDisplay];
+
+    [[self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:NO];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -307,12 +329,20 @@ typedef enum : NSUInteger {
 }
 
 -(void)initializeToolbars {
-
+    
     self.navController = (APNavigationController*)self.navigationController;
+
     if(!isGroupConversation) {
         self.navigationItem.rightBarButtonItem = nil;
+       
+        [[ self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:YES];
+        [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_showFingerprintDisplay];
+        [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_toggleContactPhoneDisplay];
+
     }
     [self setNavigationTitle];
+    
+    
     
     [self hideInputIfNeeded];
 }
@@ -349,6 +379,16 @@ typedef enum : NSUInteger {
     [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:self];
 }
 
+
+-(void) toggleContactPhone {
+    _displayPhoneAsTitle = !_displayPhoneAsTitle;
+    if(_displayPhoneAsTitle) {
+        self.title = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[[self phoneNumberForThread] toE164]];
+    }
+    else {
+        [self setNavigationTitle];
+    }
+}
 
 -(void)showGroupMembers {
     [self.navController hideDropDown:self];
@@ -395,12 +435,16 @@ typedef enum : NSUInteger {
     }
 }
 
+-(BOOL) canCall {
+    return !isGroupConversation && [self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]];
+}
+                                                                   
 - (void)textViewDidChange:(UITextView *)textView {
     if([textView.text length]>0) {
         self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
-    else if(!isGroupConversation) {
+    else if([self canCall]) {
         self.inputToolbar.contentView.rightBarButtonItem = _callButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
@@ -425,7 +469,7 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
     }
-    if(!isGroupConversation) {
+    if([self canCall]) {
         self.inputToolbar.contentView.rightBarButtonItem = _callButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }

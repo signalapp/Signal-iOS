@@ -12,6 +12,8 @@
 
 + (UIColor*) ows_materialBlueColor;
 
+
+
 + (UIColor *) ows_fadedBlueColor;
 
 + (UIColor *) ows_darkBackgroundColor;

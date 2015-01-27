@@ -14,19 +14,6 @@
                 <rect key="frame" x="0.0" y="0.0" width="318" height="71"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3rD-4i-EKG" userLabel="Delete View">
-                        <rect key="frame" x="299" y="0.0" width="102" height="72"/>
-                        <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="btnDelete--white" translatesAutoresizingMaskIntoConstraints="NO" id="TBw-ud-Ysk">
-                                <rect key="frame" x="50" y="23" width="19" height="25"/>
-                                <color key="backgroundColor" red="0.97896391153335571" green="0.3013535737991333" blue="0.023711061105132103" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" red="0.94901960780000005" green="0.21186716179592704" blue="0.099555311452974679" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="102" id="sEr-Wb-h8b"/>
-                        </constraints>
-                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
                         <rect key="frame" x="-32" y="1" width="200" height="71"/>
                         <subviews>
@@ -164,15 +151,11 @@
                     <constraint firstItem="bG5-iK-ql3" firstAttribute="trailing" secondItem="yBY-TS-2tI" secondAttribute="trailing" constant="400" id="Efu-Ej-DLZ"/>
                     <constraint firstItem="yBY-TS-2tI" firstAttribute="leading" secondItem="BRG-hJ-lRa" secondAttribute="leadingMargin" constant="-8" id="HBi-XD-XdK"/>
                     <constraint firstAttribute="centerY" secondItem="bG5-iK-ql3" secondAttribute="centerY" constant="-0.25" id="IQe-4d-baG"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="3rD-4i-EKG" secondAttribute="trailing" constant="23" id="LCr-QP-vla"/>
                     <constraint firstAttribute="centerY" secondItem="yBY-TS-2tI" secondAttribute="centerY" constant="-0.5" id="LFd-ft-Cx2"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="3rD-4i-EKG" secondAttribute="bottom" constant="-8.5" id="SPU-lp-rQv"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="3rD-4i-EKG" secondAttribute="trailing" constant="-9" id="SbS-PB-jL2"/>
                     <constraint firstItem="yBY-TS-2tI" firstAttribute="leading" secondItem="BRG-hJ-lRa" secondAttribute="leadingMargin" constant="-40" id="ZTu-mT-wNL"/>
                     <constraint firstItem="yBY-TS-2tI" firstAttribute="leading" secondItem="BRG-hJ-lRa" secondAttribute="leadingMargin" constant="-8" id="dJ9-E4-MkG"/>
                     <constraint firstAttribute="trailingMargin" secondItem="bG5-iK-ql3" secondAttribute="trailing" constant="-8" id="ikW-Es-Ngp"/>
                     <constraint firstItem="yBY-TS-2tI" firstAttribute="leading" secondItem="BRG-hJ-lRa" secondAttribute="leadingMargin" id="lMh-PN-kR2"/>
-                    <constraint firstItem="3rD-4i-EKG" firstAttribute="top" secondItem="BRG-hJ-lRa" secondAttribute="topMargin" constant="-8" id="yxg-lB-7gK"/>
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">
@@ -182,7 +165,6 @@
                         <exclude reference="LFd-ft-Cx2"/>
                         <exclude reference="dJ9-E4-MkG"/>
                         <exclude reference="lMh-PN-kR2"/>
-                        <exclude reference="LCr-QP-vla"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>
@@ -191,8 +173,6 @@
                 <outlet property="archiveView" destination="yBY-TS-2tI" id="Olb-KX-yw5"/>
                 <outlet property="contactPictureView" destination="p9o-x6-nT5" id="oUA-O3-JIc"/>
                 <outlet property="contentContainerView" destination="kq8-RD-txC" id="yaJ-z3-8sC"/>
-                <outlet property="deleteImageView" destination="TBw-ud-Ysk" id="a1T-GR-0cx"/>
-                <outlet property="deleteView" destination="3rD-4i-EKG" id="oak-Hh-6CC"/>
                 <outlet property="nameLabel" destination="gWV-cB-qZe" id="drr-G2-EB6"/>
                 <outlet property="scrollView" destination="bG5-iK-ql3" id="wEp-AH-Pdu"/>
                 <outlet property="snippetLabel" destination="Qgj-EY-BWC" id="EIb-je-Cw5"/>
@@ -201,7 +181,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="btnDelete--white" width="19" height="24"/>
         <image name="cellBtnMoveToArchive--blue" width="30" height="30"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
     </resources>

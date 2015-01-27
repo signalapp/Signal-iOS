@@ -31,17 +31,18 @@
 }
 
 + (UIColor *) ows_fadedBlueColor {
-    return [UIColor colorWithRed:110.f/255.f green:178.f/255.f blue:1.f alpha:1.f];
+    // blue: #B6DEF4
+    return [UIColor colorWithRed:182.f/255.f green:222.f/255.f blue:244.f/255.f  alpha:1.f];
 }
 
 + (UIColor *) ows_yellowColor {
     // gold: #FFBB5C
-    return [UIColor colorWithRed:255./255.f green:87.f/255.f blue:92.f/255.f alpha:1.f];
+    return [UIColor colorWithRed:245.f/255.f green:186.f/255.f blue:98.f/255.f alpha:1.f];
 }
 
 + (UIColor *) ows_greenColor {
     // green: #92FF8A
-    return [UIColor colorWithRed:92.f/255.f green:255.f/255.f blue:138.f/255.f alpha:1.f];
+    return [UIColor colorWithRed:146.f/255.f green:255.f/255.f blue:138.f/255.f alpha:1.f];
 }
 
 + (UIColor *) ows_redColor {

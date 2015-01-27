@@ -25,7 +25,11 @@
 
 @interface FingerprintViewController ()
 @property TSContactThread *thread;
+@property (nonatomic) BOOL isPresentingDialog;
 @end
+
+static NSString* const kPresentIdentityQRCodeViewSegue = @"PresentIdentityQRCodeViewSegue";
+static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeViewSegue";
 
 @implementation FingerprintViewController
 
@@ -37,7 +41,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setAlpha:0];
+    UITapGestureRecognizer *tapToShowFingerprint = [[UITapGestureRecognizer alloc]  initWithTarget:self action:@selector(showFingerprint)];
+    tapToShowFingerprint.numberOfTapsRequired = 1;
+
+    UITapGestureRecognizer *tapToScanFingerprint = [[UITapGestureRecognizer alloc]  initWithTarget:self action:@selector(scanFingerprint)];
+    tapToScanFingerprint.numberOfTapsRequired = 1;
     
+    UILongPressGestureRecognizer *longpressToResetSession = [[UILongPressGestureRecognizer alloc]  initWithTarget:self action:@selector(shredAndDelete:)];
+    longpressToResetSession.minimumPressDuration = 1.0;
+    [self.view addGestureRecognizer:longpressToResetSession];
+    [self.view addGestureRecognizer:tapToShowFingerprint];
+    [_theirFingerprintView addGestureRecognizer:tapToScanFingerprint];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -51,6 +66,7 @@
     [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self.view setAlpha:1];
     } completion:nil];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -94,34 +110,45 @@
 
 - (IBAction)shredAndDelete:(id)sender
 {
-    [DJWActionSheet showInView:self.view withTitle:@"Are you sure wou want to shred the following? This action is irreversible."
-             cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@[@"Shred all keying material", @"Also shred communications"]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              NSLog(@"User Cancelled");
-                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              NSLog(@"Destructive button tapped");
-                          }else {
-                              switch (tappedButtonIndex) {
-                                  case 0:
-                                      [self shredKeyingMaterial];
-                                      break;
-                                  case 1:
-                                      [self shredKeyingMaterial];
-                                      [self shredDiscussionsWithContact];
-                                      break;
-                                  default:
-                                      break;
+    if(!_isPresentingDialog) {
+        _isPresentingDialog = YES;
+        [DJWActionSheet showInView:self.view withTitle:@"Are you sure wou want to shred the following? This action is irreversible."
+                 cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@[@"Shred all keying material"]
+                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                              _isPresentingDialog = NO;
+                              if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                                  NSLog(@"User Cancelled");
+                              } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                                  NSLog(@"Destructive button tapped");
+                              }else {
+                                  switch (tappedButtonIndex) {
+                                      case 0:
+                                          [self shredKeyingMaterial];
+                                          break;
+                                      default:
+                                          break;
+                                  }
                               }
-                          }
-                      }];
+                          }];
+    }
 }
 
+
+-(void) showFingerprint {
+    [self performSegueWithIdentifier:kPresentIdentityQRCodeViewSegue sender:self];
+}
+
+
+-(void) scanFingerprint {
+    [self performSegueWithIdentifier:kScanIdentityBarcodeViewSegue sender:self];
+}
+
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if([[segue identifier] isEqualToString:@"PresentIdentityQRCodeViewSegue"]){
+    if([[segue identifier] isEqualToString:kPresentIdentityQRCodeViewSegue]){
         [segue.destinationViewController setIdentityKey:[[self getMyPublicIdentityKey] prependKeyType]];
     }
-    else if([[segue identifier] isEqualToString:@"ScanIdentityBarcodeViewSegue"]){
+    else if([[segue identifier] isEqualToString:kScanIdentityBarcodeViewSegue]){
         [segue.destinationViewController setIdentityKey:[[self getTheirPublicIdentityKey] prependKeyType]];
     }
     

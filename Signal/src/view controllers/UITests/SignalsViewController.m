@@ -20,6 +20,7 @@
 #import "TSSocketManager.h"
 #import "TSContactThread.h"
 #import "TSMessagesManager+sendMessages.h"
+#import "UIImage+normalizeImage.h"
 
 #import "NSDate+millisecondTimeStamp.h"
 
@@ -149,15 +150,25 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     return;
 }
 
+
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // add the ability to delete the cell
-    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"X          " handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath){
+    UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"           " handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath){
+        
         [self tableViewCellTappedDelete:swipedIndexPath];
     }];
-    deleteAction.backgroundColor = [UIColor ows_redColor];
+    
+    
+    UIImage* buttonImage = [[UIImage imageNamed:@"cellBtnDelete"] resizedImageToSize:CGSizeMake(82.0f, 72.0f)];
+    
+    deleteAction.backgroundColor = [[UIColor alloc] initWithPatternImage:buttonImage];
+
+    //deleteAction.backgroundColor = [UIColor ows_redColor];
     
     return @[deleteAction];
+
+    return nil;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -369,13 +380,47 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [_tableView setHidden:NO];
     if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) {
         _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyContact"];
+        [self setEmptyBoxText];
         [_tableView setHidden:YES];
-
     }
-    else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {
+    else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {        
         _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
+        [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
+    
+    
+    
+  
+}
+
+-(void) setEmptyBoxText {
+    _emptyBoxLabel.textColor = [UIColor grayColor];
+    _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
+    _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
+    _emptyBoxLabel.numberOfLines = 4;
+
+    NSString* firstLine = @"";
+    NSString* secondLine = @"";
+    
+    if(self.viewingThreadsIn == kInboxState) {
+        // Check if this is the first launch
+        firstLine =  @"No Messages :(";
+        secondLine = @"Tap compose to send a message or invite a friend to Signal.";
+    }
+    else {
+        firstLine = @"No archived messages.";
+        secondLine = @"Swipe right on any message in your inbox and archive it here.";
+    }
+    NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];
+    
+    [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_boldFontWithSize:15.f] range:NSMakeRange(0,firstLine.length)];
+    [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_regularFontWithSize:14.f] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+    [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
+    [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
+    _emptyBoxLabel.attributedText = fullLabelString;
+
+    
 }
 
 @end

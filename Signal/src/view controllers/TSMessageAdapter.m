@@ -129,7 +129,9 @@
     } else if ([interaction isKindOfClass:[TSCall class]]){
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
-        return [self jsqCallForTSCall:(TSCall*)interaction thread:(TSContactThread*)thread];
+        JSQCall *call =  [self jsqCallForTSCall:(TSCall*)interaction thread:(TSContactThread*)thread];
+        call.useThumbnail = YES;
+        return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
         TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
         adapter.infoMessageType = infoMessage.messageType;
@@ -138,7 +140,14 @@
         if(adapter.infoMessageType == TSInfoMessageTypeGroupQuit || adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
             // repurposing call display for info message stuff for group updates, ! adapter will know because the date is nil
             CallStatus status = 0;
+            if(adapter.infoMessageType==TSInfoMessageTypeGroupQuit) {
+                status = kGroupUpdateLeft;
+            }
+            else if(adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
+                status = kGroupUpdate;
+            }
             JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status];
+            call.useThumbnail = YES;
             return call;
         }
     } else {
