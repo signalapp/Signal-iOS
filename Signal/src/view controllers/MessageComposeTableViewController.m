@@ -312,6 +312,7 @@
 
 - (void)contactsDidRefresh {
     [self updateSearchResultsForSearchController:self.searchController];
+    [self.tableView reloadData];
     [self.refreshControl endRefreshing];
 }
 
