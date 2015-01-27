@@ -89,6 +89,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
+@property (nonatomic, retain) UIButton *callButton;
+@property (nonatomic, retain) UIButton *messageButton;
+@property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
 
@@ -131,10 +134,28 @@ typedef enum : NSUInteger {
         [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
         self.navigationItem.rightBarButtonItem = nil;
     }
+    else if(![self isTextSecureReachable] ){
+        [self inputToolbar].hidden= YES; // only RedPhone
+        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
+        
+    }
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
+
+    _callButton = [[UIButton alloc] init];
+    [_callButton setBackgroundImage:[UIImage imageNamed:@"btnPhone--blue"] forState:UIControlStateNormal];
+    [_callButton addTarget:self action:@selector(callAction) forControlEvents:UIControlEventTouchUpInside];
+    [_callButton setFrame:CGRectMake(0, 0, 30, 30)];
+    
+    _messageButton = [[UIButton alloc] init];
+    [_messageButton setBackgroundImage:[UIImage imageNamed:@"btnSend--blue"] forState:UIControlStateNormal];
+    [_messageButton setFrame:CGRectMake(0, 0, 30, 30)];
+
+    _attachButton = [[UIButton alloc] init];
+    [_attachButton setBackgroundImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
+    [_attachButton setFrame:CGRectMake(0, 0, 30, 30)];
 
     [super viewDidLoad];
 
@@ -167,8 +188,15 @@ typedef enum : NSUInteger {
 
 -(void) initializeTextView {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
-    [self.inputToolbar.contentView.rightBarButtonItem.titleLabel setFont:[UIFont ows_mediumFontWithSize:15.f]];
-    [self.inputToolbar.contentView.rightBarButtonItem setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
+
+    if(!isGroupConversation&& [self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
+        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+    }
+    else {
+        self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -234,56 +262,46 @@ typedef enum : NSUInteger {
 
 
 - (IBAction)didSelectShow:(id)sender {
+    if (isGroupConversation) {
+        UIBarButtonItem *spaceEdge = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
 
-    UIBarButtonItem *spaceEdge = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        spaceEdge.width = 40;
 
-    spaceEdge.width = 40;
+        UIBarButtonItem *spaceMiddleIcons = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        spaceMiddleIcons.width = 61;
 
-    UIBarButtonItem *spaceMiddleIcons = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spaceMiddleIcons.width = 61;
-
-    UIBarButtonItem *spaceMiddleWords = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
-
-    if (!isGroupConversation) {
-
-        //UIBarButtonItem* contactAddOrLaunch = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-add@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:nil];
-
-        UIBarButtonItem* contactSecurity = [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"contact-security@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(showFingerprint)];
+        UIBarButtonItem *spaceMiddleWords = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
 
-        if ([self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
-            UIBarButtonItem * callButton = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-call@1x"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
-            self.navController.dropDownToolbar.items = @[spaceEdge, callButton,spaceMiddleWords, contactSecurity, spaceEdge];
-        }
-        else {
-            self.navController.dropDownToolbar.items  = @[spaceMiddleWords, contactSecurity, spaceMiddleWords];
-        }
-    }
-    else {
+
+ 
         UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
         UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
 
         UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
 
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
-}
-    for(UIButton *button in self.navController.dropDownToolbar.items) {
-        [button setTintColor:[UIColor ows_materialBlueColor]];
+
+        for(UIButton *button in self.navController.dropDownToolbar.items) {
+            [button setTintColor:[UIColor ows_materialBlueColor]];
+        }
+        if(self.navController.isDropDownVisible){
+            [self.navController hideDropDown:sender];
+        }
+        else{
+            [self.navController showDropDown:sender];
+        }
+        // Can also toggle toolbar from current state
+        // [self.navController toggleToolbar:sender];
+        [self setNavigationTitle];
     }
-    if(self.navController.isDropDownVisible){
-        [self.navController hideDropDown:sender];
-    }
-    else{
-        [self.navController showDropDown:sender];
-    }
-    // Can also toggle toolbar from current state
-    // [self.navController toggleToolbar:sender];
-    [self setNavigationTitle];
 }
 
 -(void) setNavigationTitle {
     NSString* navTitle = !isGroupConversation ? self.thread.name : ((TSGroupThread*)self.thread).groupModel.groupName;
+    if(isGroupConversation && [navTitle length]==0) {
+        navTitle = @"New Group";
+    }
     self.navController.activeNavigationBarTitle = nil;
     self.title = navTitle;
 }
@@ -291,8 +309,11 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars {
 
     self.navController = (APNavigationController*)self.navigationController;
-    //self.navController.activeBarButtonTitle = @"Hide";
+    if(!isGroupConversation) {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
     [self setNavigationTitle];
+    
     [self hideInputIfNeeded];
 }
 
@@ -342,24 +363,52 @@ typedef enum : NSUInteger {
     return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
 }
 
+
+-(BOOL)isTextSecureReachable {
+    if(isGroupConversation) {
+        return YES;
+    }
+    else {
+        PhoneNumber *number = [self phoneNumberForThread];
+        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
+        return [contact isTextSecureContact];
+    }
+}
+
 -(PhoneNumber*)phoneNumberForThread
 {
     NSString * contactId = [(TSContactThread*)self.thread contactIdentifier];
     return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
 }
 
+
+
+
 -(void)callAction
 {
     if ([self isRedPhoneReachable]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
-
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
         DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
     }
 }
 
+- (void)textViewDidChange:(UITextView *)textView {
+    if([textView.text length]>0) {
+        self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+    }
+    else if(!isGroupConversation) {
+        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
+        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+    }
+    else {
+        self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
+    }
+
+}
 #pragma mark - JSQMessagesViewController method overrides
 
 - (void)didPressSendButton:(UIButton *)button
@@ -376,7 +425,12 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
     }
+    if(!isGroupConversation) {
+        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
+        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+    }
 }
+
 
 
 #pragma mark - JSQMessages CollectionView DataSource

@@ -28,8 +28,6 @@
     if (self) {
         _scrollView.contentSize   = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
                                              CGRectGetHeight(_scrollView.frame));
-
-        [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
         _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -48,8 +46,11 @@
     _nameLabel.text           = thread.name;
     _snippetLabel.text        = thread.lastMessageLabel;
     _timeLabel.attributedText = [self dateAttributedString:thread.lastMessageDate];
-    if([thread isKindOfClass:[TSGroupThread class]] ) {
+    if([thread isKindOfClass:[TSGroupThread class]]) {
         _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"empty-group-avatar"];
+        if([_nameLabel.text length]==0) {
+            _nameLabel.text = @"New Group";
+        }
     }
     else {
         NSMutableString *initials = [NSMutableString string];
@@ -64,6 +65,14 @@
         }
         UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
+        if(thread.image==nil) {
+            UIImage *overlayImage = [UIImage imageNamed:@"circContact--empty"];
+            UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:overlayImage];
+            [_contactPictureView addSubview:overlayImageView];
+        }
+        else {
+            [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
+        }
     }
 
     self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
@@ -75,7 +84,7 @@
 {
     switch (state) {
         case kArchiveState:
-            _archiveImageView.image = [[UIImage imageNamed:@"reply"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            _archiveImageView.image = [[UIImage imageNamed:@"cellBtnMoveToInbox--blue"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
             break;
         case kInboxState:
             break;
