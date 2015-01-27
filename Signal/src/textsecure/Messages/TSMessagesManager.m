@@ -289,14 +289,14 @@
                 
                 [gThread saveWithTransaction:transaction];
                 [[[TSInfoMessage alloc] initWithTimestamp:timeStamp inThread:gThread messageType:TSInfoMessageTypeGroupUpdate customMessage:updateGroupInfo] saveWithTransaction:transaction];
-            }
-            else {
+            } else {
                 incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp inThread:gThread authorId:message.source messageBody:body attachments:attachments];
                 [incomingMessage saveWithTransaction:transaction];
             }
+            
             thread = gThread;
-        }
-        else{
+            
+        } else{
             TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source
                                                                            transaction:transaction];
             [cThread saveWithTransaction:transaction];
@@ -304,13 +304,40 @@
                                                                   inThread:cThread
                                                                messageBody:body
                                                                attachments:attachments];
-            [incomingMessage saveWithTransaction:transaction];
             thread = cThread;
             
-            if (completionBlock) {
-                completionBlock(incomingMessage.uniqueId);
-            }
         }
+        
+        if (thread && incomingMessage) {
+            
+            if ([attachments count] > 0) { // Android allows attachments to be sent with body.
+                uint64_t textMessageTimestamp = timeStamp + 1; // We want the text to be displayed under the attachment
+                
+                if ([thread isGroupThread]) {
+                    TSGroupThread *gThread = (TSGroupThread*)thread;
+                    TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                                         inThread:gThread
+                                                                                         authorId:message.source
+                                                                                      messageBody:body
+                                                                                      attachments:nil];
+                    [textMessage saveWithTransaction:transaction];
+                } else{
+                    TSContactThread *cThread= (TSContactThread*)thread;
+                    TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                                         inThread:cThread
+                                                                                      messageBody:body
+                                                                                      attachments:nil];
+                    [textMessage saveWithTransaction:transaction];
+                }
+            }
+            
+            [incomingMessage saveWithTransaction:transaction];
+        }
+        
+        if (completionBlock) {
+            completionBlock(incomingMessage.uniqueId);
+        }
+        
         NSString *name = [thread name];
         [self notifyUserForIncomingMessage:incomingMessage from:name];
     }];
