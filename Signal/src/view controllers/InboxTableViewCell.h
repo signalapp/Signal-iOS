@@ -34,9 +34,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIView *contentContainerView;
 
-@property (nonatomic, strong) IBOutlet UIView *deleteView;
 @property (nonatomic, strong) IBOutlet UIView *archiveView;
-@property (nonatomic, strong) IBOutlet UIImageView *deleteImageView;
 @property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 

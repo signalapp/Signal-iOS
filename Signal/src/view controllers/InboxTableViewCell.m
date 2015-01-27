@@ -30,7 +30,6 @@
                                              CGRectGetHeight(_scrollView.frame));
         
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-        _deleteImageView.image    = [_deleteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         _lastActionImageView.image = [_lastActionImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         

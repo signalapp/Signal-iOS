@@ -37,14 +37,14 @@ PODS:
   - JSQMessagesViewController (6.1.1):
     - JSQSystemSoundPlayer (~> 2.0.0)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.7.5)
-  - Mantle (1.5.1):
-    - Mantle/extobjc (= 1.5.1)
-  - Mantle/extobjc (1.5.1)
+  - libPhoneNumber-iOS (0.7.6)
+  - Mantle (1.5.4):
+    - Mantle/extobjc (= 1.5.4)
+  - Mantle/extobjc (1.5.4)
   - OpenSSL (1.0.200)
   - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
-  - ProtocolBuffers (1.9.3)
+  - ProtocolBuffers (1.9.7)
   - SCWaveformView (1.0.0)
   - SocketRocket (0.3.1-beta2)
   - SQLCipher/common (3.1.0)
@@ -97,7 +97,7 @@ CHECKOUT OPTIONS:
     :commit: cf63307d5e3833b16caa9a07f3b5ea06359913f9
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: c8262eee36cf84eded334062dc80e1f2a1c495ab
+    :commit: 26fb5cbcf4a2bf15b6f384d29028b15a5e1a62f5
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018
@@ -114,11 +114,11 @@ SPEC CHECKSUMS:
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 554430bbaeb0b2dbed8d4aaa2bdf64559e67f353
   JSQSystemSoundPlayer: 55528c699a283aae2220d3ae7b8b527d2ecef4b4
-  libPhoneNumber-iOS: 16b9556d7fdf4819eabeb7b7356fea3373fa47f9
-  Mantle: d7c5ac734579ec751c58fecbf56189853056c58c
+  libPhoneNumber-iOS: d4316d494d4997c40a6059faf35a970d7f4eb1c0
+  Mantle: d5fbaf30fbc58031223af13812c060e15934a1fe
   OpenSSL: 4c7be3eca71139f52984542d8c4c0752154d26c3
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
-  ProtocolBuffers: e80f9e4fc401aec9d3c30be70db87fcd5f1cb880
+  ProtocolBuffers: 37fdd327d36856f965ea9029b5ec0c7120e3a452
   SCWaveformView: 55f0cd6e80df1a46ff70892bc4041f5b7d8ad43c
   SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
   SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8

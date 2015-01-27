@@ -22,6 +22,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *archiveButton;
 @property (nonatomic, retain) IBOutlet UILabel *inboxCountLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *emptyBoxImage;
+@property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
 
 @property (nonatomic, retain) CallState* latestCall;
 
