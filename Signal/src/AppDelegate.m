@@ -315,6 +315,8 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
                                                [UIColor clearColor], UITextAttributeTextShadowColor,
                                                [NSValue valueWithUIOffset:UIOffsetMake(-1, 0)], UITextAttributeTextShadowOffset, nil];
     
+    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
+    
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 
 }

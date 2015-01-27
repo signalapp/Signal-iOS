@@ -40,8 +40,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
-@property (nonatomic, strong) UILabel *emptyViewLabel;
-@property (nonatomic, strong) UIImageView *emptyBoxImage;
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
@@ -82,7 +80,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self  updateTableViewHeader];
+    [self  checkIfEmptyView];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -181,7 +179,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [thread removeWithTransaction:transaction];
     }];
     _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
-    [self updateTableViewHeader];
+    [self checkIfEmptyView];
 }
 
 - (void)tableViewCellTappedArchive:(InboxTableViewCell*)cell {
@@ -192,7 +190,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread saveWithTransaction:transaction];
     }];
-    [self updateTableViewHeader];
+    [self checkIfEmptyView];
 }
 
 
@@ -260,7 +258,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
-    [self updateTableViewHeader];
+    [self checkIfEmptyView];
 
 }
 
@@ -355,7 +353,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     
     [self.tableView endUpdates];
     [self updateInboxCountLabel];
-    [self updateTableViewHeader];
+    [self checkIfEmptyView];
 }
 
 
@@ -367,46 +365,16 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     
 }
 
-- (void)updateTableViewHeader{
-    _emptyViewLabel = nil;
-    _emptyBoxImage = nil;
-    self.tableView.tableHeaderView = nil;
-    // Something like this can be used to put in a tutorial image. currently malformatted.
-//    if (userHasNeverSentMessage) {
-//        _emptyBoxImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"first-screen"] highlightedImage:[UIImage imageNamed:@"first-screen"]];
-//        self.tableView.tableHeaderView = _emptyBoxImage;
-//    }
-//    else
-    if ((self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) ||
-        (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0)) {
-        CGRect r = CGRectMake(0, 60, 300, 70);
-        _emptyViewLabel = [[UILabel alloc]initWithFrame:r];
-        _emptyViewLabel.textColor = [UIColor grayColor];
-        _emptyViewLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        _emptyViewLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyViewLabel.numberOfLines = 2;
-        
-        NSString* firstLine = @"";
-        NSString* secondLine = @"";
+- (void)checkIfEmptyView{
+    [_tableView setHidden:NO];
+    if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) {
+        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyContact"];
+        [_tableView setHidden:YES];
 
-        if(self.viewingThreadsIn == kInboxState) {
-            // Check if this is the first launch
-            firstLine =  @"Done. Done. Done.";
-            secondLine = @"Tip: add a conversation as a reminder.";
-        }
-        else {
-            firstLine = @"Squeaky Freaking Clean.";
-            secondLine = @"None. Zero. Zilch. Nada.";
-        }
-        NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];
-        
-        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_boldFontWithSize:17.f] range:NSMakeRange(0,firstLine.length)];
-        [fullLabelString addAttribute:NSFontAttributeName value:[UIFont ows_regularFontWithSize:16.f] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
-        [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-        
-        _emptyViewLabel.attributedText = fullLabelString;
-        self.tableView.tableHeaderView = _emptyViewLabel;
+    }
+    else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {
+        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
+        [_tableView setHidden:YES];
     }
 }
 

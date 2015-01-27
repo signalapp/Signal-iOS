@@ -31,7 +31,8 @@
 }
 
 @property (nonatomic, strong) UISearchController *searchController;
-
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic, strong) UIBarButtonItem *addGroup;
 @end
 
 @implementation MessageComposeTableViewController
@@ -39,11 +40,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];    
-    [self initializeSearch];
     
     contacts = [[Environment getCurrent] contactsManager].textSecureContacts;
     searchResults = contacts;
+    [self initializeSearch];
 
+    self.searchController.searchBar.hidden = NO;
+    
+    
+
+    UIView* loadingView = [[UIView alloc] initWithFrame:self.tableView.frame];
+    UIImageView *loadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"uiEmpty"]];
+    [loadingImageView setBackgroundColor:[UIColor whiteColor]];
+    [loadingImageView setContentMode:UIViewContentModeCenter];
+    [loadingImageView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight)];
+    [loadingImageView  setFrame:self.tableView.frame];
+    [loadingView addSubview:loadingImageView];
+    
+    self.tableView.backgroundView = loadingView;
+    self.tableView.backgroundView.opaque = YES;
+    
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
@@ -236,6 +252,17 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if([contacts count] == 0) {
+        self.tableView.backgroundView.hidden = NO;
+        self.searchController.searchBar.hidden = YES;
+        _addGroup =  self.navigationItem.rightBarButtonItem!=nil ? _addGroup : self.navigationItem.rightBarButtonItem;
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    else {
+        self.tableView.backgroundView.hidden = YES;
+        self.searchController.searchBar.hidden = NO;
+        self.navigationItem.rightBarButtonItem =  self.navigationItem.rightBarButtonItem!=nil ? self.navigationItem.rightBarButtonItem : _addGroup;
+    }
     
     if (self.searchController.active) {
         return (NSInteger)[searchResults count];
