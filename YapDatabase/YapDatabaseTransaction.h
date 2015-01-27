@@ -62,6 +62,15 @@
 **/
 @property (nonatomic, unsafe_unretained, readonly) YapDatabaseConnection *connection;
 
+/**
+ * The userInfo property allows arbitrary info to be associated with the transaction.
+ * This propery is not used by YapDatabaseTransaction in any way.
+ * 
+ * Keep in mind that transactions are short lived objects.
+ * Each transaction is a new/different transaction object.
+**/
+@property (nonatomic, strong, readwrite) id userInfo;
+
 #pragma mark Count
 
 /**
