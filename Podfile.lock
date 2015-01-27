@@ -97,7 +97,7 @@ CHECKOUT OPTIONS:
     :commit: cf63307d5e3833b16caa9a07f3b5ea06359913f9
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: 184f53b07b6a80709b9801d605f666fd61e297fb
+    :commit: c8262eee36cf84eded334062dc80e1f2a1c495ab
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 954750c018

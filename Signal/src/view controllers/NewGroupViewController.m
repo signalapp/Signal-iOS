@@ -47,6 +47,9 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
     contacts = [Environment getCurrent].contactsManager.textSecureContacts;
 
+    
+    self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);
+    self.tableView.tableHeaderView = self.tableView.tableHeaderView;
     contacts = [contacts filter:^int(Contact* contact) {
         for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
             if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
@@ -61,7 +64,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self initializeKeyboardHandlers];
 
     if(_thread==nil) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
+        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"add-conversation"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
         self.navigationItem.title = @"New Group";
         
     }
@@ -73,7 +76,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
         // Select the contacts already selected:
-        for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]-1; r++) {
+        for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]; r++) {
             // TODOGROUP this will not scale well
             NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
             NSMutableArray *contactPhoneNumbers = [[NSMutableArray alloc] init];
@@ -82,7 +85,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             }
             [usersInGroup intersectSet:[NSSet setWithArray:contactPhoneNumbers]];
             if([usersInGroup count]>0) {
-                [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:(r+1) inSection:0]
+                [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:r inSection:0]
                                         animated:NO
                                   scrollPosition:UITableViewScrollPositionNone];
             }
@@ -131,7 +134,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 -(void)updateGroup {
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
-        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
     _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
@@ -146,7 +149,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
-        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row-1] textSecureIdentifiers]];
+        [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
     // Also add the originator
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
@@ -249,7 +252,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[contacts count]+1;
+    return (NSInteger)[contacts count];
     
 }
 
@@ -259,19 +262,12 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     
     if (cell == nil) {
         
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: indexPath.row == 0 ? @"HeaderCell" : @"GroupSearchCell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GroupSearchCell"];
     }
-    if (indexPath.row > 0) {
-        NSUInteger row = (NSUInteger)indexPath.row;
-        Contact* contact = contacts[row-1];
-        
-        cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
+    NSUInteger row = (NSUInteger)indexPath.row;
+    Contact* contact = contacts[row];
     
-    } else {
-        cell.textLabel.text = @"Add People:";
-        cell.textLabel.textColor = [UIColor lightGrayColor];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
+    cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -282,18 +278,14 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    if(indexPath.row>0) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    if(indexPath.row>0) {
-        cell.accessoryType = UITableViewCellAccessoryNone;
-    }
+    cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
 #pragma mark - Text Field Delegate

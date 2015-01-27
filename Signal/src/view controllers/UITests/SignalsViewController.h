@@ -21,6 +21,8 @@
 @property (nonatomic, retain) IBOutlet UIButton *inboxButton;
 @property (nonatomic, retain) IBOutlet UIButton *archiveButton;
 @property (nonatomic, retain) IBOutlet UILabel *inboxCountLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *emptyBoxImage;
+
 @property (nonatomic, retain) CallState* latestCall;
 
 -(IBAction)selectedInbox:(id)sender;
