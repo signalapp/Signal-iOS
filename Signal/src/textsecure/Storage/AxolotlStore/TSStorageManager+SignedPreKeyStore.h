@@ -9,6 +9,9 @@
 #import "TSStorageManager.h"
 #import <AxolotlKit/SignedPreKeyStore.h>
 
+
+#define TSStorageManagerSignedPreKeyStoreCollection @"TSStorageManagerSignedPreKeyStoreCollection"
+
 @interface TSStorageManager (SignedPreKeyStore) <SignedPreKeyStore>
 
 - (SignedPreKeyRecord*)generateRandomSignedRecord;

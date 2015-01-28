@@ -7,12 +7,17 @@
 //
 
 #import "TSPreKeyManager.h"
+
+#import "TSAvailablePreKeysCountRequest.h"
+#import "TSCurrentSignedPreKeyRequest.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSNetworkManager.h"
 #import "TSRegisterPrekeysRequest.h"
+
+#define EPHEMERAL_PREKEYS_MINIMUM 15
 
 @implementation TSPreKeyManager
 
@@ -45,6 +50,77 @@
         failureBlock([TSAccountManager errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:0]);
     }];
     
+}
+
++ (void)refreshPreKeys {
+    TSAvailablePreKeysCountRequest *preKeyCountRequest = [[TSAvailablePreKeysCountRequest alloc] init];
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:preKeyCountRequest success:^(NSURLSessionDataTask *task, NSDictionary* responseObject){
+        NSString *preKeyCountKey = @"count";
+        NSNumber *count          = [responseObject objectForKey:preKeyCountKey];
+        
+        if (count.integerValue > EPHEMERAL_PREKEYS_MINIMUM) {
+            DDLogVerbose(@"Available prekeys sufficient: %@", count.stringValue);
+            return;
+        } else {
+            [self registerPreKeysWithSuccess:^{
+                DDLogInfo(@"New PreKeys registered with server.");
+                
+                [self clearSignedPreKeyRecords];
+            } failure:^(NSError *error) {
+                DDLogWarn(@"Failed to update prekeys with the server");
+            }];
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        DDLogError(@"Failed to retreive the number of available prekeys.");
+    }];
+}
+
++ (void)clearSignedPreKeyRecords {
+
+    TSRequest *currentSignedPreKey = [[TSCurrentSignedPreKeyRequest alloc] init];
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:currentSignedPreKey success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
+        NSString *keyIdDictKey = @"keyId";
+        NSNumber *keyId        = [responseObject objectForKey:keyIdDictKey];
+        
+        [self clearSignedPreKeyRecordsWithKeyId:keyId];
+        
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        DDLogWarn(@"Failed to retreive current prekey.");
+    }];
+}
+
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber*)keyId{
+    if (!keyId) {
+        DDLogError(@"The server returned an incomplete ");
+        return;
+    }
+    
+    TSStorageManager *storageManager  = [TSStorageManager sharedManager];
+    SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekey:keyId.intValue];
+    NSArray *allSignedPrekeys         = [storageManager loadSignedPreKeys];
+    NSArray *oldSignedPrekeys         = [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys];
+    
+    if ([oldSignedPrekeys count] > 3) {
+        for (SignedPreKeyRecord *deletionCandidate in oldSignedPrekeys) {
+            DDLogInfo(@"Old signed prekey record: %@", deletionCandidate.generatedAt);
+            
+            if ([deletionCandidate.generatedAt timeIntervalSinceNow] > SignedPreKeysDeletionTime) {
+                [storageManager removeSignedPreKey:deletionCandidate.Id];
+            }
+        }
+    }
+}
+
++ (NSArray*)removeCurrentRecord:(SignedPreKeyRecord*)currentRecord fromRecords:(NSArray*)allRecords {
+    NSMutableArray *oldRecords = [NSMutableArray array];
+    
+    for (SignedPreKeyRecord *record in allRecords) {
+        if (currentRecord.Id != record.Id) {
+            [oldRecords addObject:record];
+        }
+    }
+    
+    return oldRecords;
 }
 
 @end

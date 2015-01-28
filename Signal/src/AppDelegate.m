@@ -13,6 +13,7 @@
 #import "Release.h"
 #import "SignalsViewController.h"
 #import "TSAccountManager.h"
+#import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager.h"
 #import "Util.h"
@@ -123,9 +124,11 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [vc performSegueWithIdentifier:kCallSegue sender:self];
     } onThread:NSThread.mainThread untilCancelled:nil];
     
-    [TSSocketManager becomeActive];
-    
-    [self refreshContacts];
+    if ([TSAccountManager isRegistered]) {
+        [TSSocketManager becomeActive];
+        [self refreshContacts];
+        [TSPreKeyManager refreshPreKeys];
+    }
     
     return YES;
 }

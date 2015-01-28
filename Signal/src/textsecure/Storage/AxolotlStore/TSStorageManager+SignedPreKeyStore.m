@@ -12,7 +12,6 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import "TSStorageManager+keyFromIntLong.h"
 
-#define TSStorageManagerSignedPreKeyStoreCollection @"TSStorageManagerSignedPreKeyStoreCollection"
 
 @implementation TSStorageManager (SignedPreKeyStore)
 

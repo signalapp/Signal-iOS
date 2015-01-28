@@ -35,12 +35,14 @@ typedef enum {
 //#define textSecureWebSocketAPI  @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
 //#define textSecureServerURL     @"https://textsecure-service-staging.whispersystems.org/"
 
-#define textSecureGeneralAPI     @"v1"
-#define textSecureAccountsAPI    @"v1/accounts"
-#define textSecureMessagesAPI    @"v1/messages/"
-#define textSecureKeysAPI        @"v2/keys"
-#define textSecureDirectoryAPI   @"v1/directory"
-#define textSecureAttachmentsAPI @"v1/attachments"
+#define textSecureGeneralAPI      @"v1"
+#define textSecureAccountsAPI     @"v1/accounts"
+#define textSecureMessagesAPI     @"v1/messages/"
+#define textSecureKeysAPI         @"v2/keys"
+#define textSecureSignedKeysAPI   @"v2/keys/signed"
+#define textSecureDirectoryAPI    @"v1/directory"
+#define textSecureAttachmentsAPI  @"v1/attachments"
+
 
 typedef void(^successCompletionBlock)(void);
 typedef void(^failedRegistrationRequestBlock)(void);

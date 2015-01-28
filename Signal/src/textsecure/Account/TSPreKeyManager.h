@@ -10,8 +10,13 @@
 #import "TSConstants.h"
 #import "TSAccountManager.h"
 
+// Time before deletion of signed PreKeys (measured in seconds)
+#define SignedPreKeysDeletionTime 14*24*60*60
+
 @interface TSPreKeyManager : NSObject
 
 + (void)registerPreKeysWithSuccess:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock;
+
++ (void)refreshPreKeys;
 
 @end
