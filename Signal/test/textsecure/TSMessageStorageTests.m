@@ -153,6 +153,49 @@
     }];
 }
 
-// TODO: group storage tests
+- (void)testGroupMessagesDeletedOnThreadDeletion {
+    uint64_t timestamp = 666;
+    NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
+    
+    __block TSGroupThread *thread;
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd" memberIds:[@[] mutableCopy] image:nil groupId:[NSData data]] transaction:transaction];
+        
+        [thread saveWithTransaction:transaction];
+    }];
+    
+    TSStorageManager *manager         = [TSStorageManager sharedManager];
+    [manager purgeCollection:[TSMessage collection]];
+    
+    for (uint64_t i = timestamp; i<100; i++) {
+        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i inThread:thread authorId:@"Ed" messageBody:body attachments:nil];
+        
+        [newMessage save];
+    }
+    
+    
+    
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (uint64_t i = timestamp; i<100; i++) {
+            TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
+            
+            NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
+            NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
+            NSAssert([fetchedMessage.uniqueId isEqualToString:[TSInteraction stringFromTimeStamp:timestamp]], @"Unique identifier is accurate");
+            NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
+            NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");
+        }
+    }];
+    
+    
+    [self.thread remove];
+    
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (uint64_t i = timestamp; i<1000; i++) {
+            TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
+            NSAssert(fetchedMessage == nil, @"Message should be deleted!");
+        }
+    }];
+}
 
 @end
