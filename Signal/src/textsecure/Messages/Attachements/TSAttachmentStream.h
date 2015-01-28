@@ -22,6 +22,8 @@
 - (BOOL)isImage;
 - (BOOL)isVideo;
 -(NSURL*)mediaURL;
+
 + (void)deleteAttachments;
++ (NSString*)attachmentsFolder;
 
 @end

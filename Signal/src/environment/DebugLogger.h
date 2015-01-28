@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <CocoaLumberjack/DDFileLogger.h>
+
 @interface DebugLogger : NSObject
 
 MacrosSingletonInterface
@@ -19,5 +21,7 @@ MacrosSingletonInterface
 - (void)enableTTYLogging;
 
 - (void)wipeLogs;
+
+@property (nonatomic) DDFileLogger *fileLogger;
 
 @end

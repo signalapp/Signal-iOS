@@ -11,11 +11,8 @@
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 
 #import <CocoaLumberjack/DDTTYLogger.h>
-#import <CocoaLumberjack/DDFileLogger.h>
 
 @interface DebugLogger ()
-
-@property (nonatomic) DDFileLogger *fileLogger;
 
 @end
 

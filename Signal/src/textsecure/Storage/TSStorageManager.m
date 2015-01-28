@@ -11,6 +11,7 @@
 #import <YapDatabase/YapDatabaseRelationship.h>
 #import <CocoaLumberjack/DDLog.h>
 #import "CryptoTools.h"
+#import "DebugLogger.h"
 #import "NSData+Base64.h"
 
 #import "TSThread.h"
@@ -43,7 +44,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] init];
-        [sharedMyManager protectDatabaseFile];
+        [sharedMyManager protectSignalFiles];
     });
     return sharedMyManager;
 }
@@ -79,32 +80,25 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
-/**
- *  Protects the preference and logs file with disk encryption and prevents them to leak to iCloud.
- */
+- (void)protectSignalFiles{
+    [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
+    [self protectFolderAtPath:[self dbPath]];
+    [self protectFolderAtPath:[NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"]];
+}
 
-- (void)protectDatabaseFile{
-    
-    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication};
+- (void)protectFolderAtPath:(NSString*)path {
     NSError *error;
+    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication,
+                   NSURLIsExcludedFromBackupKey:@YES};
     
     
-    [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:[self dbPath] error:&error];
-    [[NSURL fileURLWithPath:[self dbPath]] setResourceValue:@YES
-                                                     forKey:NSURLIsExcludedFromBackupKey
-                                                      error:&error];
+    BOOL success = [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:path error:&error];
     
-    if (error) {
-        DDLogError(@"Error while removing log files from backup: %@", error.description);
-        UIAlertView *alert  = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"WARNING", @"")
-                                                        message:NSLocalizedString(@"DISABLING_BACKUP_FAILED", @"")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                              otherButtonTitles:nil];
-        [alert show];
+    if (error || !success) {
+        DDLogError(@"Error while removing files from backup: %@", error.description);
+        SignalAlertView(NSLocalizedString(@"WARNING", @""), @"DISABLING_BACKUP_FAILED");
         return;
     }
-    
 }
 
 - (YapDatabaseConnection *)newDatabaseConnection {

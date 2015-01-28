@@ -228,19 +228,17 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 -(void) applicationDidBecomeActive:(UIApplication *)application {
-    [TSSocketManager becomeActive];
-    [AppAudioManager.sharedInstance awake];
-    
+    if ([TSAccountManager isRegistered]) {
+        [TSSocketManager becomeActive];
+        [AppAudioManager.sharedInstance awake];
+        [PushManager.sharedManager verifyPushPermissions];
+        [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
+    }
     // Hacky way to clear notification center after processed push
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
     
     [self removeScreenProtection];
-    
-    if (Environment.isRedPhoneRegistered) {
-        [PushManager.sharedManager verifyPushPermissions];
-        [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
-    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application{
