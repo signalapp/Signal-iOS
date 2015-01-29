@@ -7,9 +7,8 @@
 //
 
 #import "TSAttachmentStream.h"
-#import "UIImage+contentTypes.h"
 #import <AVFoundation/AVFoundation.h>
-
+#import "MIMETypeUtil.h"
 NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
 @implementation TSAttachmentStream
@@ -53,17 +52,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (NSString*)filePath {
-    if ([self isVideo] || [self isAudio]) {
-        NSString *path = [[[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId] stringByAppendingPathExtension:[self mediaExtension]];
-        NSURL *pathURL = [NSURL URLWithString:path];
-        NSString *mp3String = [NSString stringWithFormat:@"%@.mp3", [[pathURL URLByDeletingPathExtension] absoluteString]];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:mp3String]) {
-            return mp3String;
-        } else return path;
-    }
-    else {
-        return [[[self class] attachmentsFolder] stringByAppendingFormat:@"/%@", self.uniqueId];
-    }
+    return [MIMETypeUtil filePathForAttachment:self.uniqueId ofMIMEType:self.contentType inFolder:[[self class] attachmentsFolder]];
 }
 
 -(NSURL*) mediaURL {
@@ -71,19 +60,17 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (BOOL)isImage {
-    return [self.contentType containsString:@"image/"];
+    return [MIMETypeUtil isImage:self.contentType];
 }
 
--(NSString*)mediaExtension {
-    return [[self.contentType stringByReplacingOccurrencesOfString:@"video/" withString:@""] stringByReplacingOccurrencesOfString:@"audio/" withString:@""];
-}
+
 
 - (BOOL)isVideo {
-    return [self.contentType containsString:@"video/"];
+    return [MIMETypeUtil isVideo:self.contentType];
 }
 
 -(BOOL)isAudio {
-    return [self.contentType containsString:@"audio/"];
+    return [MIMETypeUtil isAudio:self.contentType];
 }
 
 - (UIImage*)image {
