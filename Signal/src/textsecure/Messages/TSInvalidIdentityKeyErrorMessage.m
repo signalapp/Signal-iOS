@@ -41,7 +41,7 @@
     if (self.errorType != TSErrorMessageWrongTrustedIdentityKey || !self.pushSignal) {
         return;
     }
-
+    
     TSStorageManager *storage         = [TSStorageManager sharedManager];
     IncomingPushMessageSignal *signal = [IncomingPushMessageSignal parseFromData:self.pushSignal];
     PreKeyWhisperMessage *message     = [[PreKeyWhisperMessage alloc] initWithData:signal.message];
@@ -51,7 +51,7 @@
     
     [[TSMessagesManager sharedManager] handleMessageSignal:signal];
     
-    __block NSMutableSet *messagesToDecrypt = [NSMutableSet set];
+    __block NSMutableSet *messagesToDecrypt  = [NSMutableSet set];
     
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[transaction ext:TSMessageDatabaseViewExtensionName]enumerateKeysAndObjectsInGroup:self.uniqueThreadId withOptions:NSEnumerationReverse usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
@@ -66,16 +66,22 @@
                 NSData *newKeyCandidate        = [pkwm.identityKey removeKeyType];
                 
                 if ([newKeyCandidate isEqualToData:newKey]) {
-                    [messagesToDecrypt addObject:invalidMessageSignal];
+                    [messagesToDecrypt addObject:invalidKeyMessage];
                 }
             }
         }];
-        [self removeWithTransaction:transaction];
     }];
     
-    for (IncomingPushMessageSignal *aSignal in messagesToDecrypt) {
-        [[TSMessagesManager sharedManager] handleMessageSignal:aSignal];
+    
+    for (TSInvalidIdentityKeyErrorMessage *errorMessage in messagesToDecrypt) {
+        
+        [[TSMessagesManager sharedManager] handleMessageSignal:[IncomingPushMessageSignal parseFromData:errorMessage.pushSignal]];
+        
+        [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [errorMessage removeWithTransaction:transaction];
+        }];
     }
+    
 }
 
 - (NSString *)newIdentityKey{
