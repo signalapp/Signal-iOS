@@ -309,9 +309,8 @@
         }
         
         if (thread && incomingMessage) {
-            
-            if ([attachments count] > 0) { // Android allows attachments to be sent with body.
-                uint64_t textMessageTimestamp = timeStamp + 1; // We want the text to be displayed under the attachment
+            if ([attachments count] > 0 && body != nil && ![body isEqualToString:@""]) { // Android allows attachments to be sent with body.
+                uint64_t textMessageTimestamp = timeStamp+1000; // We want the text to be displayed under the attachment
                 
                 if ([thread isGroupThread]) {
                     TSGroupThread *gThread = (TSGroupThread*)thread;
