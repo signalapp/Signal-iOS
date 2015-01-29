@@ -842,16 +842,7 @@ typedef enum : NSUInteger {
     }
 }
 
--(NSURL*) changeFile:(NSURL*)originalFile toHaveExtension:(NSString*)extension {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString* newPath = [[originalFile path] stringByAppendingPathExtension:extension];
-    if (![fileManager fileExistsAtPath:newPath]) {
-        NSError *error = nil;
-        [fileManager createSymbolicLinkAtPath:newPath withDestinationPath:[originalFile path] error: &error];
-        return [NSURL URLWithString:newPath];
-    }
-    return originalFile;
-}
+
 -(void)moviePlayBackDidFinish:(id)sender {
     DDLogDebug(@"playback finished");
 }
@@ -1095,7 +1086,7 @@ typedef enum : NSUInteger {
 }
 
 -(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
-
+    // TODO: should support anything that is in the videos directory
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
     exportSession.shouldOptimizeForNetworkUse = YES;
@@ -1117,54 +1108,11 @@ typedef enum : NSUInteger {
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
 
     }];
+    //SHOULD PROBABLY REMOVE THIS
     while(exportSession.progress!=1){
 
     }
     [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
-
-#if 0
-    return [NSData dataWithContentsOfURL:movieURL];
-#endif
-#if 0
-    NSString *serializationQueueDescription = [NSString stringWithFormat:@"%@ serialization queue", self];
-
-    // Create the main serialization queue.
-    self.mainSerializationQueue = dispatch_queue_create([serializationQueueDescription UTF8String], NULL);
-    NSString *rwAudioSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw audio serialization queue", self];
-
-    // Create the serialization queue to use for reading and writing the audio data.
-    self.rwAudioSerializationQueue = dispatch_queue_create([rwAudioSerializationQueueDescription UTF8String], NULL);
-    NSString *rwVideoSerializationQueueDescription = [NSString stringWithFormat:@"%@ rw video serialization queue", self];
-
-    // Create the serialization queue to use for reading and writing the video data.
-    self.rwVideoSerializationQueue = dispatch_queue_create([rwVideoSerializationQueueDescription UTF8String], NULL);
-
-
-
-    int videoWidth = 1920;
-    int videoHeight = 1920;
-    int desiredKeyframeInterval = 2;
-    int desiredBitrate = 3000;
-    NSError *error = nil;
-    AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:
-                                  [NSURL fileURLWithPath:@"hello"]
-                                                           fileType:AVFileTypeQuickTimeMovie
-                                                              error:&error];
-    NSParameterAssert(videoWriter);
-
-
-    NSDictionary* settings = @{AVVideoCodecKey:AVVideoCodecH264,
-                               AVVideoCompressionPropertiesKey:@{AVVideoAverageBitRateKey:[NSNumber numberWithInt:desiredBitrate],AVVideoProfileLevelKey:AVVideoProfileLevelH264Main31},
-                               AVVideoWidthKey: [NSNumber numberWithInt:videoWidth],
-                               AVVideoHeightKey:[NSNumber numberWithInt:videoHeight]};
-
-
-    AVAssetWriterInput* writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:settings];
-    NSParameterAssert(writerInput);
-    NSParameterAssert([videoWriter canAddInput:writerInput]);
-    [videoWriter addInput:writerInput];
-#endif
-
 
 }
 
