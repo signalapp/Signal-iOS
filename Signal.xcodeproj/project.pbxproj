@@ -535,7 +535,6 @@
 		FCD274E51A5AFDB800202277 /* MediaSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */; };
 		FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */; };
 		FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */; };
-		FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A071A01A765006BC849 /* ContactsTableViewController.m */; };
 		FCF72A131A02D27F006BC849 /* ContactDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */; };
 		FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
 		FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */; };
@@ -1267,8 +1266,6 @@
 		FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
 		FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AboutTableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		FCF72A061A01A765006BC849 /* ContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTableViewController.h; sourceTree = "<group>"; };
-		FCF72A071A01A765006BC849 /* ContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTableViewController.m; sourceTree = "<group>"; };
 		FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailTableViewController.m; sourceTree = "<group>"; };
 		FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailTableViewController.h; sourceTree = "<group>"; };
 		FCFA64B21A24F3880007FB87 /* UIColor+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+OWS.h"; sourceTree = "<group>"; };
@@ -2743,8 +2740,6 @@
 			children = (
 				FCF72A121A02D27F006BC849 /* ContactDetailTableViewController.h */,
 				FCF72A111A02D27F006BC849 /* ContactDetailTableViewController.m */,
-				FCF72A061A01A765006BC849 /* ContactsTableViewController.h */,
-				FCF72A071A01A765006BC849 /* ContactsTableViewController.m */,
 			);
 			name = Contacts;
 			sourceTree = "<group>";
@@ -3239,7 +3234,6 @@
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
-				FCF72A081A01A765006BC849 /* ContactsTableViewController.m in Sources */,
 				A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */,
 				FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */,
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
