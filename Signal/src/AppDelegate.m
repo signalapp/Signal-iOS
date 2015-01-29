@@ -311,10 +311,14 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIColor whiteColor], UITextAttributeTextColor,
-                                               [UIColor clearColor], UITextAttributeTextShadowColor,
-                                               [NSValue valueWithUIOffset:UIOffsetMake(-1, 0)], UITextAttributeTextShadowOffset, nil];
+    
+    NSShadow *shadow = [NSShadow new];
+    [shadow setShadowColor:[UIColor clearColor]];
+    
+    NSDictionary *navbarTitleTextAttributes = @{
+                                                NSForegroundColorAttributeName:[UIColor whiteColor],
+                                                NSShadowAttributeName:shadow,
+                                                };
     
     [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
     

@@ -35,12 +35,13 @@
 #define HEADER_HEIGHT 44.0f
 
 
-static NSString *const inboxTableViewCell      = @"inBoxTableViewCell";
-static NSString *const kSegueIndentifier = @"showSegue";
-static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+static NSString *const inboxTableViewCell   = @"inBoxTableViewCell";
+static NSString *const kSegueIndentifier    = @"showSegue";
+static NSString* const kCallSegue           = @"2.0_6.0_Call_Segue";
 static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
+
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
@@ -164,11 +165,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     
     deleteAction.backgroundColor = [[UIColor alloc] initWithPatternImage:buttonImage];
 
-    //deleteAction.backgroundColor = [UIColor ows_redColor];
+
     
     return @[deleteAction];
-
-    return nil;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -178,7 +177,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 #pragma mark - HomeFeedTableViewCellDelegate
 
 - (void)tableViewCellTappedDelete:(NSIndexPath*)indexPath {
-    //NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     if([thread isKindOfClass:[TSGroupThread class]]) {
         DDLogDebug(@"leaving the group");
@@ -389,10 +387,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
-    
-    
-    
-  
 }
 
 -(void) setEmptyBoxText {
@@ -420,8 +414,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
     [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
-
-    
 }
 
 @end
