@@ -20,6 +20,7 @@
 #import "VersionMigrations.h"
 #import "UIColor+OWS.h"
 #import "CodeVerificationViewController.h"
+#import "MIMETypeUtil.h"
 
 #import <PastelogKit/Pastelog.h>
 
@@ -65,7 +66,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
     BOOL loggingIsEnabled;
     [self setupAppearance];
 #ifdef DEBUG
@@ -129,6 +129,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [self refreshContacts];
         [TSPreKeyManager refreshPreKeys];
     }
+    [MIMETypeUtil initialize];
     
     return YES;
 }
