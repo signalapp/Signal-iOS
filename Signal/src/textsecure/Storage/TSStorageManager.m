@@ -248,15 +248,19 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     [TSAttachmentStream deleteAttachments];
 }
 
-- (void)wipe{
+- (void)wipeSignalStorage{
     self.database = nil;
     NSError *error;
+    
+    [SSKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
     [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
+    
     
     if (error) {
         DDLogError(@"Failed to delete database: %@", error.description);
     }
     
+    [TSAttachmentStream deleteAttachments];
     [self setupDatabase];
 }
 

@@ -22,9 +22,12 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 + (instancetype)sharedManager;
 - (void)setupDatabase;
 - (void)deleteThreadsAndMessages;
+- (void)wipeSignalStorage;
 
 - (YapDatabase*)database;
 - (YapDatabaseConnection*)newDatabaseConnection;
+
+
 
 - (void)setObject:(id)object forKey:(NSString*)key inCollection:(NSString*)collection;
 - (void)removeObjectForKey:(NSString*)string inCollection:(NSString *)collection;
@@ -44,5 +47,4 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-- (void)wipe;
 @end
