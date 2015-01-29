@@ -174,8 +174,6 @@ typedef enum : NSUInteger {
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
 
 
-    [super viewDidLoad];
-
     [self markAllMessagesAsRead];
 
     [self initializeBubbles];
@@ -191,7 +189,6 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
 
-    [self initializeToolbars];
     [self initializeCollectionViewLayout];
 
     self.senderId          = ME_MESSAGE_IDENTIFIER
@@ -226,6 +223,7 @@ typedef enum : NSUInteger {
         NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages-1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
     }
+    [self initializeToolbars];
 }
 
 - (void)startReadTimer{
