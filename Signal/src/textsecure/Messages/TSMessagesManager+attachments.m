@@ -85,7 +85,7 @@ dispatch_queue_t attachmentsQueue() {
         dispatch_async(attachmentsQueue(), ^{
             if ([responseObject isKindOfClass:[NSDictionary class]]){
                 NSDictionary *responseDict = (NSDictionary*)responseObject;
-                NSString *attachementId    = [[responseDict objectForKey:@"id"] stringValue];
+                NSString *attachementId    = [(NSNumber*)[responseDict objectForKey:@"id"] stringValue];
                 NSString *location         = [responseDict objectForKey:@"location"];
         
                 TSAttachmentEncryptionResult *result =

@@ -1109,8 +1109,8 @@ typedef enum : NSUInteger {
     }
 
     NSURL *compressedVideoUrl = [NSURL fileURLWithPath:basePath];
-    long currentTime = [[NSDate date] timeIntervalSince1970];
-    NSString *strImageName = [NSString stringWithFormat:@"%ld",currentTime];
+    double currentTime = [[NSDate date] timeIntervalSince1970];
+    NSString *strImageName = [NSString stringWithFormat:@"%f",currentTime];
     compressedVideoUrl=[compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
 
     exportSession.outputURL = compressedVideoUrl;
