@@ -30,6 +30,7 @@
     if (self) {
         _blocked       = NO;
         _latestMessageId = nil;
+        _creationDate = [NSDate date];
     }
     
     return self;
@@ -51,9 +52,13 @@
         if (date) {
             return date;
         }
+        else {
+            return [NSDate date];
+        }
     }
-    
-    return [NSDate date];
+    else {
+        return _creationDate;
+    }
 }
 
 - (UIImage*)image{
