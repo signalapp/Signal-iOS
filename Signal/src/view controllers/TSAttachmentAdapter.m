@@ -75,6 +75,16 @@
     return YES;
 }
 
+
+-(BOOL) isAudio {
+    return NO;
+}
+
+
+-(BOOL) isVideo {
+    return NO;
+}
+
 #pragma mark - Utility
 
 -(CGSize)getBubbleSizeForImage:(UIImage*)image

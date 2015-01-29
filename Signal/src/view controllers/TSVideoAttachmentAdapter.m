@@ -16,7 +16,7 @@
 #import "TSNetworkManager.h"
 #import "UIColor+OWS.h"
 #import "SCWaveformView.h"
-
+#import "MIMETypeUtil.h"
 #define AUDIO_BAR_HEIGHT 36
 
 @interface TSVideoAttachmentAdapter ()
@@ -58,12 +58,12 @@
 }
 
 -(BOOL) isAudio {
-    return [_contentType containsString:@"audio/"];
+    return [MIMETypeUtil isSupportedAudioMIMEType:_contentType];
 }
 
 
 -(BOOL) isVideo {
-    return [_contentType containsString:@"video/"];
+    return [MIMETypeUtil isSupportedVideoMIMEType:_contentType];
 }
 
 -(NSString*)formatDuration:(NSTimeInterval)duration {
@@ -141,14 +141,9 @@
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentUploadProgress:) name:@"attachmentUploadProgress" object:nil];
         }
     } else if ([self isAudio]) {
-        //aac files like from android don't play, gotta convert
-        
-        NSString *convertedFile = [NSString stringWithFormat:@"%@.mp3", _attachment.mediaURL.URLByDeletingPathExtension.absoluteString];
         NSError * err = NULL;
-        NSFileManager *fm = [NSFileManager defaultManager];
-        [fm moveItemAtURL:_attachment.mediaURL toURL:[NSURL URLWithString:convertedFile] error:&err];
+        NSURL* url = [MIMETypeUtil simLinkCorrectExtensionOfFile:_attachment.mediaURL ofMIMEType:_attachment.contentType];
         
-        NSURL *url = [NSURL URLWithString:convertedFile];
         AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
         _waveform = [[SCWaveformView alloc] init];
         _waveform.frame = CGRectMake(42.0, 0.0, size.width-84, size.height);
