@@ -1019,7 +1019,10 @@ typedef enum : NSUInteger {
     if ([UIImagePickerController isSourceTypeAvailable:
          UIImagePickerControllerSourceTypeCamera]) {
         picker.mediaTypes = @[(NSString*)kUTTypeImage,(NSString*)kUTTypeMovie];
-        [self presentViewController:picker animated:YES completion:NULL];
+        [self presentViewController:picker animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
+
     }
 
 }
@@ -1038,7 +1041,9 @@ typedef enum : NSUInteger {
 
         picker.mediaTypes = (mediaType == kMediaTypePicture) ? pictureTypeArray : videoTypeArray;
 
-        [self presentViewController:picker animated:YES completion:nil];
+        [self presentViewController:picker animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
     }
 }
 

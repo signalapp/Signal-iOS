@@ -152,7 +152,9 @@
         [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
         tweetSheet.completionHandler = ^(SLComposeViewControllerResult result) {
         };
-        [self presentViewController:tweetSheet animated:YES completion:nil];
+        [self presentViewController:tweetSheet animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
     }
 
 }

@@ -112,7 +112,9 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (IBAction)changeCountryCodeTapped {
     CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
-    [self presentViewController:countryCodeController animated:YES completion:nil];
+    [self presentViewController:countryCodeController animated:YES completion:^{
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    }];
 }
 
 - (void)presentInvalidCountryCodeError {
