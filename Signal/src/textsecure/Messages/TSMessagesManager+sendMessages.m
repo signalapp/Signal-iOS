@@ -289,6 +289,8 @@ dispatch_queue_t sendingQueue() {
                         processAttachments = NO;
                     }
                 }
+                [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
+                [groupBuilder setName:gThread.groupModel.groupName];
                 [groupBuilder setType:PushMessageContentGroupContextTypeUpdate];
                 break;
             }
@@ -297,10 +299,6 @@ dispatch_queue_t sendingQueue() {
                 break;
         }
         [groupBuilder setId:gThread.groupModel.groupId];
-        if(message.groupMetaMessage!=TSGroupMessageQuit) {
-            [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
-            [groupBuilder setName:gThread.groupModel.groupName];
-        }
         [builder setGroup:groupBuilder.build];
     }
     if(processAttachments) {

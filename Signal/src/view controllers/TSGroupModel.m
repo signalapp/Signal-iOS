@@ -74,11 +74,11 @@
     
     
     if([membersWhoLeft count] > 0 ) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"%@ left the group. ",[[membersWhoLeft allObjects] componentsJoinedByString:@", "]]];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@" %@ left the group. ",[[membersWhoLeft allObjects] componentsJoinedByString:@", "]]];
     }
     
     if([membersWhoJoined count] > 0 ) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"%@ joined the group. ",[[membersWhoJoined allObjects] componentsJoinedByString:@", "]]];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@" %@ joined the group. ",[[membersWhoJoined allObjects] componentsJoinedByString:@", "]]];
     }
     
     return updatedGroupInfoString;

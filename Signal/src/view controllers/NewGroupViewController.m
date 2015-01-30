@@ -53,7 +53,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     contacts = [contacts filter:^int(Contact* contact) {
         for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
             if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+                // remove local number
                 return NO;
+            }
+            else if(_thread!=nil && _thread.groupModel.groupMemberIds){
+                return ![_thread.groupModel.groupMemberIds containsObject:[number toE164]];
             }
         }
         return YES;
@@ -73,24 +77,9 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         self.navigationItem.title = _thread.groupModel.groupName;
         self.nameGroupTextField.text = _thread.groupModel.groupName;
         if(_thread.groupModel.groupImage!=nil) {
+            _groupImage = _thread.groupModel.groupImage;
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
-        // Select the contacts already selected:
-        for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]; r++) {
-            // TODOGROUP this will not scale well
-            NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
-            NSMutableArray *contactPhoneNumbers = [[NSMutableArray alloc] init];
-            for(PhoneNumber* number in [[contacts objectAtIndex:(NSUInteger)r] parsedPhoneNumbers]) {
-                [contactPhoneNumbers addObject:[number toE164]];
-            }
-            [usersInGroup intersectSet:[NSSet setWithArray:contactPhoneNumbers]];
-            if([usersInGroup count]>0) {
-                [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:r inSection:0]
-                                        animated:NO
-                                  scrollPosition:UITableViewScrollPositionNone];
-            }
-        }
-        
     }
 
 }
@@ -136,7 +125,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
-    [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
+    [mut addObjectsFromArray:_thread.groupModel.groupMemberIds];
     _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
@@ -145,17 +134,15 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(TSGroupModel*)makeGroup {
     NSString* title = _nameGroupTextField.text;
-    UIImage* img = _thread.groupModel.groupImage;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
-    // Also add the originator
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
-    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:_groupImage groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender
@@ -233,6 +220,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     if (picture_camera) {
         UIImage *small = [picture_camera resizedImageToFitInSize:CGSizeMake(100.00,100.00) scaleIfSmaller:NO];
         _thread.groupModel.groupImage = small;
+        _groupImage = small;
         [self setupGroupImageButton:small];
 
     }
@@ -240,9 +228,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 -(void)setupGroupImageButton:(UIImage*)image {
-    [self.groupImageButton setImage:image forState:UIControlStateNormal];
-    _groupImageButton.imageView.layer.cornerRadius = 4.0f;
-    _groupImageButton.imageView.clipsToBounds = YES;
+    [_groupImageButton setImage:image forState:UIControlStateNormal];
+    _groupImageButton.imageView.layer.cornerRadius = CGRectGetWidth([_groupImageButton.imageView frame])/2.0f;
+    _groupImageButton.imageView.layer.masksToBounds = YES;
+    _groupImageButton.imageView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    _groupImageButton.imageView.layer.borderWidth = 0.5f;
 }
 
 #pragma mark - Table view data source

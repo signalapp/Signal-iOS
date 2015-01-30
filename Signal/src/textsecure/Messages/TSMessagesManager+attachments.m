@@ -96,12 +96,12 @@ dispatch_queue_t attachmentsQueue() {
                 }];
                 outgoingMessage.body = nil;
                 [outgoingMessage.attachments addObject:attachementId];
-                //the state change is needed for the db to get a modification and it takes 200 milliseconds, why?
-                [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [outgoingMessage saveWithTransaction:transaction];
-                }];
-                
+                if(outgoingMessage.groupMetaMessage!=TSGroupMessageNew&&outgoingMessage.groupMetaMessage!=TSGroupMessageUpdate) {
+                    [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [outgoingMessage saveWithTransaction:transaction];
+                    }];
+                }
                 BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachementId];
                 if (success) {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -109,7 +109,6 @@ dispatch_queue_t attachmentsQueue() {
                         [result.pointer saveWithTransaction:transaction];
                         NSLog(@"finished uploading");
                     }];
-                    
                     [self sendMessage:outgoingMessage inThread:thread];
                 } else{
                     DDLogWarn(@"Failed to upload attachment");

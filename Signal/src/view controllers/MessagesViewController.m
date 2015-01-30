@@ -292,15 +292,45 @@ typedef enum : NSUInteger {
 
         UIBarButtonItem *spaceMiddleWords = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
+        NSDictionary* buttonTextAttributes = @{NSFontAttributeName:[UIFont ows_regularFontWithSize:15.0f],
+                                               NSForegroundColorAttributeName:[UIColor ows_materialBlueColor]};
 
+        
+        
+        
+        UIButton* groupUpdateButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
+        NSMutableAttributedString *updateTitle = [[NSMutableAttributedString alloc] initWithString:@"Update"];
+        [updateTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [updateTitle length])];
+        [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
+        [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
+        [groupUpdateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        
+        UIBarButtonItem *groupUpdateBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+        groupUpdateBarButton.customView = groupUpdateButton;
+        groupUpdateBarButton.customView.userInteractionEnabled = YES;
+        
+        UIButton* groupLeaveButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,50,24)];
+        NSMutableAttributedString *leaveTitle = [[NSMutableAttributedString alloc] initWithString:@"Leave"];
+        [leaveTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [leaveTitle length])];
+        [groupLeaveButton setAttributedTitle:leaveTitle forState:UIControlStateNormal];
+        [groupLeaveButton addTarget:self action:@selector(leaveGroup) forControlEvents:UIControlEventTouchUpInside];
+        [groupLeaveButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        UIBarButtonItem *groupLeaveBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+        groupLeaveBarButton.customView = groupLeaveButton;
+        groupLeaveBarButton.customView.userInteractionEnabled = YES;
+        
+        UIButton* groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
+        NSMutableAttributedString *membersTitle = [[NSMutableAttributedString alloc] initWithString:@"Members"];
+        [membersTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [membersTitle length])];
+        [groupMembersButton setAttributedTitle:membersTitle forState:UIControlStateNormal];
+        [groupMembersButton addTarget:self action:@selector(showGroupMembers) forControlEvents:UIControlEventTouchUpInside];
+        [groupMembersButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        UIBarButtonItem *groupMembersBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
+        groupMembersBarButton.customView = groupMembersButton;
+        groupMembersBarButton.customView.userInteractionEnabled = YES;
+        
 
- 
-        UIBarButtonItem *groupUpdateButton =  [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
-        UIBarButtonItem *groupLeaveButton =  [[UIBarButtonItem alloc] initWithTitle:@"Leave" style:UIBarButtonItemStylePlain target:self action:@selector(leaveGroup)];
-
-        UIBarButtonItem *showGroupMembersButton =  [[UIBarButtonItem alloc] initWithTitle:@"Members" style:UIBarButtonItemStylePlain target:self action:@selector(showGroupMembers)];
-
-        self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateButton, spaceMiddleWords, groupLeaveButton, spaceMiddleWords, showGroupMembersButton, spaceEdge];
+        self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateBarButton, spaceMiddleWords, groupLeaveBarButton, spaceMiddleWords, groupMembersBarButton, spaceEdge];
 
         for(UIButton *button in self.navController.dropDownToolbar.items) {
             [button setTintColor:[UIColor ows_materialBlueColor]];
