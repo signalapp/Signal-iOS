@@ -4,7 +4,7 @@ inhibit_all_warnings!
 
 link_with ["Signal", "SignalTests"]
 
-pod 'SocketRocket',               :git => 'https://github.com/square/SocketRocket.git', :commit => '954750c018'
+pod 'SocketRocket',               :git => 'https://github.com/FredericJacobs/SocketRocket.git', :commit => '73d8a19'
 pod 'OpenSSL',		          '~> 1.0.200'
 pod 'libPhoneNumber-iOS',         '~> 0.7'
 pod 'AxolotlKit',                 '~> 0.5'

@@ -38,8 +38,10 @@
     if (self = [super init]) {
         NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL] sessionConfiguration:sessionConf];
-        AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey];
+        AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
         policy.allowInvalidCertificates = YES;
+        policy.validatesDomainName = NO;
+        policy.validatesCertificateChain = NO;
         NSString *certPath = [NSBundle.mainBundle pathForResource:@"textsecure" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));

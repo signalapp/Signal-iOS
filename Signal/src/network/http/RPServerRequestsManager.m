@@ -36,7 +36,7 @@ MacrosSingletonImplemention
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
         NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.defaultSessionConfiguration;
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConf];
-        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+        self.operationManager.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModePublicKey];
         self.operationManager.securityPolicy.allowInvalidCertificates = YES;
         NSString *certPath = [NSBundle.mainBundle pathForResource:@"redphone" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];

@@ -73,7 +73,7 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.200)
   - PastelogKit (~> 1.2)
   - SCWaveformView
-  - SocketRocket (from `https://github.com/square/SocketRocket.git`, commit `954750c018`)
+  - SocketRocket (from `https://github.com/FredericJacobs/SocketRocket.git`, commit `73d8a19`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
@@ -87,8 +87,8 @@ EXTERNAL SOURCES:
     :branch: JSignalQ
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
-    :commit: 954750c018
-    :git: https://github.com/square/SocketRocket.git
+    :commit: 73d8a19
+    :git: https://github.com/FredericJacobs/SocketRocket.git
   UICKeyChainStore:
     :podspec: Podspecs/UICKeyChainStore.podspec
 
@@ -100,8 +100,8 @@ CHECKOUT OPTIONS:
     :commit: 26fb5cbcf4a2bf15b6f384d29028b15a5e1a62f5
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
-    :commit: 954750c018
-    :git: https://github.com/square/SocketRocket.git
+    :commit: 73d8a19
+    :git: https://github.com/FredericJacobs/SocketRocket.git
 
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
