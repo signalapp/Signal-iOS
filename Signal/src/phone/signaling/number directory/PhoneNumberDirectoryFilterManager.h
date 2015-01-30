@@ -17,4 +17,6 @@
 -(void) startUntilCancelled:(TOCCancelToken*)cancelToken;
 -(PhoneNumberDirectoryFilter*) getCurrentFilter;
 
+@property BOOL isRefreshing;
+
 @end

@@ -26,6 +26,7 @@
 - (id)init {
     if (self = [super init]) {
         phoneNumberDirectoryFilter = PhoneNumberDirectoryFilter.phoneNumberDirectoryFilterDefault;
+        _isRefreshing              = NO;
     }
     return self;
 }
@@ -70,7 +71,7 @@
 
 
 - (void) updateRedPhone {
-    
+    _isRefreshing = YES;
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask *task, id responseObject) {
         PhoneNumberDirectoryFilter *directory = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)task.response body:responseObject];
         
@@ -145,9 +146,12 @@
             }
         }];
         
+        _isRefreshing = NO;
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+        
         [self scheduleUpdate];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        _isRefreshing = NO;
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }

@@ -130,7 +130,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [TSPreKeyManager refreshPreKeys];
     }
     [MIMETypeUtil initialize];
-    
     return YES;
 }
 

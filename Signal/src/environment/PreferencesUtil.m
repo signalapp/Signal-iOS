@@ -26,7 +26,6 @@
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 #define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
 #define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
-
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
 @implementation PropertyListPreferences (PropertyUtil)
@@ -110,7 +109,6 @@
     } else{
         return NO;
     }
-    
 }
 
 - (BOOL)loggingIsEnabled{
@@ -130,6 +128,8 @@
         return NO;
     }
 }
+
+
 
 -(NotificationType)notificationPreviewType {
     NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
@@ -191,8 +191,6 @@
 - (void) setIsMigratingToVersion2Dot0:(BOOL)enabled {
     [self setValueForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY toValue:@(enabled)];
 }
-
-
 
 -(NSString*)setAndGetCurrentVersion{
     NSString *lastVersion = self.lastRanVersion;

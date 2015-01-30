@@ -43,4 +43,5 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 -(NSString*)lastRanVersion;
 -(NSString*)setAndGetCurrentVersion;
 
+
 @end
