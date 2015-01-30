@@ -152,7 +152,11 @@
     
     // formats the user input into a pretty number to display
     NSString *formattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:normalizedNumber];
-    
+    if([searchText length]>0 && [formattedNumber length]>0 && [[searchText substringToIndex:1] isEqualToString:@"+"] && ![[formattedNumber substringToIndex:1] isEqualToString:@"+"]) {
+        // if an international number's + was removed by pretty formatting attempt, add it back in
+        normalizedNumber = [@"+" stringByAppendingString:normalizedNumber];
+        formattedNumber = [@"+" stringByAppendingString:formattedNumber];
+    }
     // text to a non-signal number if we have no results and a valid phone #
     if (searchResults.count == 0 && normalizedNumber.length > 8) {
         NSString *sendTextTo = @"Send SMS to: ";
