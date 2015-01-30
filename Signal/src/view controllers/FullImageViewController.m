@@ -9,6 +9,7 @@
 #import "FullImageViewController.h"
 #import "DJWActionSheet+OWS.h"
 #import "TSAttachmentStream.h"
+#import "UIUtil.h"
 
 #define kImageViewCornerRadius 5.0f
 
@@ -210,7 +211,7 @@
                                  self.view.userInteractionEnabled = YES;
                                  _isPresenting = NO;
                              }];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        [UIUtil modalCompletionBlock]();
     }];
 
 }

@@ -12,7 +12,6 @@
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
-		707E549218FF26E800C8649D /* SmsInvite.m in Sources */ = {isa = PBXBuildFile; fileRef = 707E549118FF26E800C8649D /* SmsInvite.m */; };
 		7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */; };
 		70B800A6190C53180042E3F0 /* libspandsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800A3190C529C0042E3F0 /* libspandsp.a */; };
 		70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
@@ -593,8 +592,6 @@
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
 		7038632518F70C0700D4A43F /* EvpSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpSymetricUtil.h; sourceTree = "<group>"; };
 		7038632618F70C0700D4A43F /* EvpSymetricUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpSymetricUtil.m; sourceTree = "<group>"; };
-		707E549018FF26E800C8649D /* SmsInvite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmsInvite.h; sourceTree = "<group>"; };
-		707E549118FF26E800C8649D /* SmsInvite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmsInvite.m; sourceTree = "<group>"; };
 		7095B7AE18F46D35002C66E2 /* PhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberUtil.h; sourceTree = "<group>"; };
 		7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
 		70B8009E190C529C0042E3F0 /* spandsp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = spandsp.xcodeproj; path = Libraries/spandsp/spandsp/spandsp.xcodeproj; sourceTree = "<group>"; };
@@ -1841,8 +1838,6 @@
 				7095B7AE18F46D35002C66E2 /* PhoneNumberUtil.h */,
 				7095B7AF18F46D35002C66E2 /* PhoneNumberUtil.m */,
 				76EB04F018170B33006006FC /* protocols */,
-				707E549018FF26E800C8649D /* SmsInvite.h */,
-				707E549118FF26E800C8649D /* SmsInvite.m */,
 				76EB04F518170B33006006FC /* StringUtil.h */,
 				76EB04F618170B33006006FC /* StringUtil.m */,
 				76EB04F718170B33006006FC /* ThreadManager.h */,
@@ -3226,7 +3221,6 @@
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
 				76EB062C18170B33006006FC /* OperationFailed.m in Sources */,
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
-				707E549218FF26E800C8649D /* SmsInvite.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,

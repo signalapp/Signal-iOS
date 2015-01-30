@@ -20,6 +20,7 @@
 
 #import "ContactTableViewCell.h"
 #import "UIColor+OWS.h"
+#import "UIUtil.h"
 
 @interface MessageComposeTableViewController () <UISearchBarDelegate, UISearchResultsUpdating, MFMessageComposeViewControllerDelegate>
 {
@@ -198,10 +199,8 @@
                                                
                                                picker.recipients = [NSArray arrayWithObject:currentSearchTerm];
                                                picker.body = @"I'm inviting you to install Signal! Here is the link: https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
-                                               [self presentViewController:picker animated:YES completion:^{
-                                                   [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-                                               }];
-                                           } else {
+                                               [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+                                            } else {
                                                // TODO: better backup for iPods (just don't support on)
                                                UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                                                
@@ -214,7 +213,7 @@
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 #pragma mark - SMS Composer Delegate

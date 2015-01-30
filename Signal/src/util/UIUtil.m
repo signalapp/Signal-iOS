@@ -16,4 +16,12 @@
     [[*imageView layer] setCornerRadius:0];
 }
 
++ (completionBlock)modalCompletionBlock {
+    completionBlock block = ^void() {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    };
+    
+    return block;
+}
+
 @end
