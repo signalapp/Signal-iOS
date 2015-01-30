@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -156,7 +156,9 @@
                                     <constraint firstItem="WVY-Zl-dpP" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" constant="220" id="Ydg-FL-fwr"/>
                                     <constraint firstItem="hSN-Ka-PzS" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" id="cJB-rq-7bY"/>
                                     <constraint firstItem="Q8M-tN-1ve" firstAttribute="leading" secondItem="hSN-Ka-PzS" secondAttribute="leading" id="eIX-uj-15n"/>
-                                    <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-15" id="fp7-UH-t0O"/>
+                                    <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-15" id="fp7-UH-t0O">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="-12"/>
+                                    </constraint>
                                     <constraint firstAttribute="height" constant="66" id="lM2-AA-dzm"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-18" id="lZW-eB-ucq"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" constant="66" id="tIb-ee-zav"/>
@@ -3176,6 +3178,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </button>
                                     <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="ZYC-du-EoE">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="174" y="94" width="82" height="82"/>
+                                        </variation>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="H86-pu-aKA">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
