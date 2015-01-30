@@ -32,6 +32,7 @@
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
     [_phoneNumberEntered setText:_formattedPhoneNumber];
+    [self adjustScreenSizes];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -194,11 +195,24 @@
 - (void)initializeKeyboardHandlers{
     UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
-        
 }
 
 - (void)dismissKeyboardFromAppropriateSubView {
     [self.view endEditing:NO];
+}
+
+- (void)adjustScreenSizes {
+    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+    CGFloat blueHeaderHeight;
+    
+    if (screenHeight < 568) {
+        self.signalLogo.hidden = YES;
+        blueHeaderHeight = screenHeight - 400;
+    } else {
+        blueHeaderHeight = screenHeight - 410;
+    }
+    
+    _headerConstraint.constant = blueHeaderHeight;
 }
 
 @end
