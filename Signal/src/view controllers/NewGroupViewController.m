@@ -53,7 +53,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     contacts = [contacts filter:^int(Contact* contact) {
         for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
             if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
+                // remove local number
                 return NO;
+            }
+            else if(_thread!=nil && _thread.groupModel.groupMemberIds){
+                return ![_thread.groupModel.groupMemberIds containsObject:[number toE164]];
             }
         }
         return YES;
@@ -75,22 +79,6 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         if(_thread.groupModel.groupImage!=nil) {
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
-        // Select the contacts already selected:
-        for (NSInteger r = 0; r < [_tableView numberOfRowsInSection:0]; r++) {
-            // TODOGROUP this will not scale well
-            NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
-            NSMutableArray *contactPhoneNumbers = [[NSMutableArray alloc] init];
-            for(PhoneNumber* number in [[contacts objectAtIndex:(NSUInteger)r] parsedPhoneNumbers]) {
-                [contactPhoneNumbers addObject:[number toE164]];
-            }
-            [usersInGroup intersectSet:[NSSet setWithArray:contactPhoneNumbers]];
-            if([usersInGroup count]>0) {
-                [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:r inSection:0]
-                                        animated:NO
-                                  scrollPosition:UITableViewScrollPositionNone];
-            }
-        }
-        
     }
 
 }
@@ -136,7 +124,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
-    [mut addObject:[SignalKeyingStorage.localNumber toE164]];   // Also add the originator
+    [mut addObjectsFromArray:_thread.groupModel.groupMemberIds];
     _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
@@ -151,7 +139,6 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
-    // Also add the originator
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
