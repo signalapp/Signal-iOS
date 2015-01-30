@@ -73,6 +73,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         self.navigationItem.title = _thread.groupModel.groupName;
         self.nameGroupTextField.text = _thread.groupModel.groupName;
         if(_thread.groupModel.groupImage!=nil) {
+            _groupImage = _thread.groupModel.groupImage;
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
         // Select the contacts already selected:
@@ -145,7 +146,6 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(TSGroupModel*)makeGroup {
     NSString* title = _nameGroupTextField.text;
-    UIImage* img = _thread.groupModel.groupImage;
     NSMutableArray* mut = [[NSMutableArray alloc]init];
     
     for (NSIndexPath* idx in _tableView.indexPathsForSelectedRows) {
@@ -155,7 +155,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
-    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:img groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:_groupImage groupId:groupId];
 }
 
 -(IBAction)addGroupPhoto:(id)sender
@@ -233,6 +233,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     if (picture_camera) {
         UIImage *small = [picture_camera resizedImageToFitInSize:CGSizeMake(100.00,100.00) scaleIfSmaller:NO];
         _thread.groupModel.groupImage = small;
+        _groupImage = small;
         [self setupGroupImageButton:small];
 
     }
@@ -240,9 +241,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 -(void)setupGroupImageButton:(UIImage*)image {
-    [self.groupImageButton setImage:image forState:UIControlStateNormal];
-    _groupImageButton.imageView.layer.cornerRadius = 4.0f;
-    _groupImageButton.imageView.clipsToBounds = YES;
+    [_groupImageButton setImage:image forState:UIControlStateNormal];
+    _groupImageButton.imageView.layer.cornerRadius = CGRectGetWidth([_groupImageButton.imageView frame])/2.0f;
+    _groupImageButton.imageView.layer.masksToBounds = YES;
+    _groupImageButton.imageView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    _groupImageButton.imageView.layer.borderWidth = 0.5f;
 }
 
 #pragma mark - Table view data source

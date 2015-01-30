@@ -11,6 +11,7 @@
     [[*imageView layer] setMasksToBounds:YES];
 }
 
+
 + (void)removeRoundedBorderToImageView:(UIImageView *__strong*)imageView {
     [[*imageView layer] setBorderWidth:0];
     [[*imageView layer] setCornerRadius:0];

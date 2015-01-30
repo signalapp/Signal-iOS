@@ -50,6 +50,9 @@
         if([_nameLabel.text length]==0) {
             _nameLabel.text = @"New Group";
         }
+        if(_contactPictureView.image!=nil) {
+             [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
+        }
     }
     else {
         NSMutableString *initials = [NSMutableString string];
