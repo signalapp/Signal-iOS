@@ -759,7 +759,7 @@ typedef enum : NSUInteger {
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                             FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
-
+    
                             [vc presentFromViewController:self.navigationController];
                         }
                     } else {
@@ -781,6 +781,7 @@ typedef enum : NSUInteger {
                         NSFileManager *fileManager = [NSFileManager defaultManager];
                         if([messageMedia isVideo]) {
                             if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
+                                [self dismissKeyBoard];
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
 
@@ -953,7 +954,7 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage*)message{
-    [self.inputToolbar.contentView.textView resignFirstResponder];
+    [self dismissKeyBoard];
     [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
             NSLog(@"User Cancelled");
@@ -983,7 +984,7 @@ typedef enum : NSUInteger {
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
    
-        [self.inputToolbar.contentView.textView resignFirstResponder];
+        [self dismissKeyBoard];
         
         [DJWActionSheet showInView:self.parentViewController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
@@ -1406,7 +1407,7 @@ typedef enum : NSUInteger {
 
 -(void)didPressAccessoryButton:(UIButton *)sender
 {
-    [self.inputToolbar.contentView.textView resignFirstResponder];
+    [self dismissKeyBoard];
 
     UIView *presenter = self.parentViewController.view;
 
@@ -1517,13 +1518,17 @@ typedef enum : NSUInteger {
 }
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
-    [self.inputToolbar.contentView.textView resignFirstResponder];
+    [self dismissKeyBoard];
     NewGroupViewController *ngc = [segue sourceViewController];
     TSGroupModel* newGroupModel = [ngc groupModel];
     NSMutableArray* groupMemberIds = [[NSMutableArray alloc] initWithArray:newGroupModel.groupMemberIds];
     [groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
     newGroupModel.groupMemberIds = groupMemberIds;
     [self updateGroupModelTo:newGroupModel];
+}
+
+- (void)dismissKeyBoard {
+    [self.inputToolbar.contentView.textView resignFirstResponder];
 }
 
 - (void)dealloc{

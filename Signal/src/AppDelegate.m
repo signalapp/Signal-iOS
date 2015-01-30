@@ -304,6 +304,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 -(void)setupAppearance {
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     
