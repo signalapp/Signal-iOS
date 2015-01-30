@@ -22,7 +22,9 @@
         
         [parent presentViewController:messageController
                              animated:YES
-                           completion:nil];
+                           completion:^{
+                               [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+                           }];
     }
 }
 

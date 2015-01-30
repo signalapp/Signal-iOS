@@ -197,7 +197,9 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
          UIImagePickerControllerSourceTypeCamera])
     {
         picker.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *)kUTTypeImage,  nil];
-        [self presentViewController:picker animated:YES completion:NULL];
+        [self presentViewController:picker animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
     }
 }
 
@@ -210,7 +212,10 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum])
     {
         picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
-        [self presentViewController:picker animated:YES completion:nil];
+        [self presentViewController:picker animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
+
     }
 
 }
