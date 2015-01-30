@@ -21,9 +21,12 @@
 
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
-@property(nonatomic, strong) IBOutlet UIButton* cancelReregButton;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinnerView;
+@property (nonatomic) IBOutlet UIImageView *signalLogo;
+@property (nonatomic) IBOutlet UIView *registrationHeader;
+
+@property (nonatomic) IBOutlet NSLayoutConstraint *headerHeightConstraint;
 
 - (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
 - (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;

@@ -12,6 +12,8 @@
 
 @interface CodeVerificationViewController : UIViewController
 
+@property(nonatomic, strong) IBOutlet UIImageView* signalLogo;
+
 // Where the user enters the verification code they wish to document
 @property(nonatomic, strong) IBOutlet UITextField* challengeTextField;
 
@@ -26,6 +28,7 @@
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCodeAgainSpinner;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCallSpinner;
 
+@property(nonatomic) IBOutlet NSLayoutConstraint *headerConstraint;
 
 // Displays phone number entered in previous step. There is a UI option (segue) which allows the user to go back and edit this.
 @property (nonatomic, strong) IBOutlet UILabel* phoneNumberEntered;

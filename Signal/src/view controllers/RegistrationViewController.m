@@ -27,9 +27,6 @@
 
 #import <Pastelog.h>
 
-#define kKeyboardPadding 40.0f
-#define kDoNotScroll 667.0f
-
 static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
@@ -42,13 +39,15 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     // Do any additional setup after loading the view.
     _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
-    [self initializeKeyboardHandlers];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
-    _cancelReregButton.hidden = ([TSAccountManager registeredNumber]==nil);
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [self adjustScreenSizes];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -57,6 +56,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     
     [_sendCodeButton setEnabled:YES];
     [_spinnerView stopAnimating];
+    [_phoneNumberTextField becomeFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -129,53 +129,11 @@ static NSString *const kCodeSentSegue = @"codeSent";
 - (void)initializeKeyboardHandlers{
     UITapGestureRecognizer *outsideTabRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
-    
-    [self observeKeyboardNotifications];
 }
 
 -(void) dismissKeyboardFromAppropriateSubView {
     [self.view endEditing:NO];
 }
-
-- (void)observeKeyboardNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
-}
-
-- (void)keyboardWillShow:(NSNotification *)notification {
-    if(self.view.frame.size.height<kDoNotScroll) {
-        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-        [UIView animateWithDuration:duration animations:^{
-            _sendCodeButtonOriginalY = _sendCodeButton.frame.origin.y+_sendCodeButton.frame.size.height;
-            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                           CGRectGetMinY(self.view.frame)-_sendCodeButtonOriginalY-kKeyboardPadding,
-                                           CGRectGetWidth(self.view.frame),
-                                           CGRectGetHeight(self.view.frame));
-        }];
-    }
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    if(self.view.frame.size.height<kDoNotScroll) {
-        double duration = [[notification userInfo][UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-        [UIView animateWithDuration:duration animations:^{
-            self.view.frame = CGRectMake(CGRectGetMinX(self.view.frame),
-                                           CGRectGetMinY(self.view.frame)+_sendCodeButtonOriginalY+kKeyboardPadding,                                       CGRectGetWidth(self.view.frame),
-                                           CGRectGetHeight(self.view.frame));
-        }];
-    }
-}
-
-
-
-
 
 #pragma mark - UITextFieldDelegate
 
@@ -221,8 +179,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 #pragma mark - Unwind segue
 
-- (IBAction)unwindToChangeNumber:(UIStoryboardSegue*)sender
-{
+- (IBAction)unwindToChangeNumber:(UIStoryboardSegue*)sender {
     
 }
 
@@ -232,8 +189,6 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue {
     CountryCodeViewController *vc = [segue sourceViewController];
-    
-    //NOTE: It seems [PhoneNumberUtil countryNameFromCountryCode:] doesn't return the country at all. Will investigate.
     [_countryCodeButton setTitle:vc.callingCodeSelected forState:UIControlStateNormal];
     [_countryNameButton setTitle:vc.countryNameSelected forState:UIControlStateNormal];
     
@@ -247,15 +202,29 @@ static NSString *const kCodeSentSegue = @"codeSent";
     
 }
 
-
-
 #pragma mark - Navigation
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([[segue identifier] isEqualToString:kCodeSentSegue]) {
         CodeVerificationViewController* vc =  [segue destinationViewController];
-        vc.formattedPhoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text                                                                         withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+        vc.formattedPhoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     }
+}
+
+#pragma mark iPhone 4S - Specific Code
+
+- (void)adjustScreenSizes {
+    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+    CGFloat blueHeaderHeight;
+    
+    if (screenHeight < 568) {
+        self.signalLogo.hidden = YES;
+        blueHeaderHeight = screenHeight - 408;
+    } else {
+        blueHeaderHeight = screenHeight - 420;
+    }
+    
+    _headerHeightConstraint.constant = blueHeaderHeight;
 }
 
 @end
