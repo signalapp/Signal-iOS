@@ -145,16 +145,14 @@
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
     // search by contact name or number
-    NSString *normalizedNumber = [PhoneNumberUtil normalizePhoneNumber:searchText];
-    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, normalizedNumber];
+    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, searchText];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) searchResults = contacts;
     
-    // formats the user input into a pretty number to display
-    NSString *formattedNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:normalizedNumber];
+    NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
     
     // text to a non-signal number if we have no results and a valid phone #
-    if (searchResults.count == 0 && normalizedNumber.length > 8) {
+    if (searchResults.count == 0 && searchText.length > 8) {
         NSString *sendTextTo = @"Send SMS to: ";
         sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
