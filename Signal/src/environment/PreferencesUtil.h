@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (BOOL) getIsMigratingToVersion2Dot0;
 - (void) setIsMigratingToVersion2Dot0:(BOOL)enabled;
 
+- (BOOL) getIsRefreshingContactsAllServices;
+- (void) setIsRefreshingContactsAllServices:(BOOL)enabled;
+
 -(BOOL)loggingIsEnabled;
 -(void)setLoggingEnabled:(BOOL)flag;
 
@@ -42,5 +45,6 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 -(NSString*)lastRanVersion;
 -(NSString*)setAndGetCurrentVersion;
+
 
 @end

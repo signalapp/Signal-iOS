@@ -378,7 +378,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)checkIfEmptyView{
     [_tableView setHidden:NO];
     if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) {
-        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyContact"];
+        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyInbox"];
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }

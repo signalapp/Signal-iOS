@@ -233,7 +233,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lKc-rv-FH5" userLabel="empty state view">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="uiEmptyArchive" translatesAutoresizingMaskIntoConstraints="NO" id="Off-ZL-54G">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="uiEmptyInbox" translatesAutoresizingMaskIntoConstraints="NO" id="Off-ZL-54G">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="140" id="QR5-Mr-y2f">
@@ -5763,7 +5763,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker-active" width="80" height="80"/>
         <image name="speaker-inactive" width="80" height="80"/>
-        <image name="uiEmptyArchive" width="227" height="227"/>
+        <image name="uiEmptyInbox" width="227" height="227"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="DR8-fx-0PD"/>
