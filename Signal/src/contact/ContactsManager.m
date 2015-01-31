@@ -381,8 +381,19 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 #pragma mark - Whisper User Management
 
 -(NSArray*) getSignalUsersFromContactsArray:(NSArray*)contacts {
-	return [contacts filter:^int(Contact* contact) {
+	return [[contacts filter:^int(Contact* contact) {
         return [self isContactRegisteredWithRedPhone:contact] || contact.isTextSecureContact;
+    }]sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        Contact *contact1 = (Contact*)obj1;
+        Contact *contact2 = (Contact*)obj2;
+        
+        BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
+        
+        if (firstNameOrdering) {
+            return [contact1.firstName compare:contact2.firstName];
+        } else {
+            return [contact1.lastName compare:contact2.lastName];
+        }
     }];
 }
 
