@@ -28,7 +28,6 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
 @implementation TSDatabaseView
 
 + (BOOL)registerUnreadDatabaseView {
-    
     YapDatabaseView *unreadView = [[TSStorageManager sharedManager].database registeredExtension:TSUnreadDatabaseViewExtensionName];
     if (unreadView) {
         return YES;

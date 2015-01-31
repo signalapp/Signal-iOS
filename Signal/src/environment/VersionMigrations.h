@@ -14,5 +14,6 @@
 
 + (void)migrateFrom1Dot0Dot2ToGreater;
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0;
++ (void)migrateFrom2Dot0BetaTo2Dot0Dot10;
 
 @end
