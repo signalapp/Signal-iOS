@@ -386,6 +386,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
+-(NSArray*) signalContacts {
+    return [self getSignalUsersFromContactsArray:self.allContacts];
+}
+
 -(NSArray*) textSecureContacts {
     return [[self.allContacts filter:^int(Contact* contact) {
         return [contact isTextSecureContact];

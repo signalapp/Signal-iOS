@@ -341,7 +341,6 @@
 		B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E719E1FBE8005735D1 /* HttpRequestOrResponse.m */; };
 		B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */; };
 		B63761EF19E1FBE8005735D1 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B63761EB19E1FBE8005735D1 /* HttpResponse.m */; };
-		B63885CD1A26772D00A226A6 /* TSMessagesManager+callRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = B63885CC1A26772D00A226A6 /* TSMessagesManager+callRecorder.m */; };
 		B63885D01A2685D700A226A6 /* PreKeyBundle+jsonDict.m in Sources */ = {isa = PBXBuildFile; fileRef = B63885CF1A2685D700A226A6 /* PreKeyBundle+jsonDict.m */; };
 		B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AD1A1F757900D01AAD /* TSContactsIntersectionRequest.m */; };
 		B63AF5C81A1F757900D01AAD /* TSUnregisterAccountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B63AF5AF1A1F757900D01AAD /* TSUnregisterAccountRequest.m */; };
@@ -960,8 +959,6 @@
 		B63761E919E1FBE8005735D1 /* HttpRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestUtil.m; sourceTree = "<group>"; };
 		B63761EA19E1FBE8005735D1 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		B63761EB19E1FBE8005735D1 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
-		B63885CB1A26772D00A226A6 /* TSMessagesManager+callRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSMessagesManager+callRecorder.h"; sourceTree = "<group>"; };
-		B63885CC1A26772D00A226A6 /* TSMessagesManager+callRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TSMessagesManager+callRecorder.m"; sourceTree = "<group>"; };
 		B63885CE1A2685D700A226A6 /* PreKeyBundle+jsonDict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PreKeyBundle+jsonDict.h"; sourceTree = "<group>"; };
 		B63885CF1A2685D700A226A6 /* PreKeyBundle+jsonDict.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PreKeyBundle+jsonDict.m"; sourceTree = "<group>"; };
 		B63AF5AC1A1F757900D01AAD /* TSContactsIntersectionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactsIntersectionRequest.h; sourceTree = "<group>"; };
@@ -2401,8 +2398,6 @@
 				B6B096121A1D25ED008BFAA6 /* TSMessage.m */,
 				B6B50AA91A4192C500F8F607 /* TSMessagesManager+attachments.h */,
 				B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachments.m */,
-				B63885CB1A26772D00A226A6 /* TSMessagesManager+callRecorder.h */,
-				B63885CC1A26772D00A226A6 /* TSMessagesManager+callRecorder.m */,
 				B6B096131A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.h */,
 				B6B096141A1D25ED008BFAA6 /* TSMessagesManager+sendMessages.m */,
 				B6B096151A1D25ED008BFAA6 /* TSMessagesManager.h */,
@@ -3341,7 +3336,6 @@
 				B6B096761A1D25ED008BFAA6 /* TSServerMessage.m in Sources */,
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
-				B63885CD1A26772D00A226A6 /* TSMessagesManager+callRecorder.m in Sources */,
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
 				B6B096901A1D25ED008BFAA6 /* Cryptography.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
@@ -3749,7 +3743,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0905ca6e-ed58-486b-8af7-5d20168a2d59";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;
@@ -3803,7 +3797,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Signal;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0905ca6e-ed58-486b-8af7-5d20168a2d59";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_AFTER_BUILD = YES;

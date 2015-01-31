@@ -42,6 +42,7 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 +(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
 
 - (NSArray*)allContacts;
+- (NSArray*)signalContacts;
 - (NSArray*)textSecureContacts;
 
 - (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact;

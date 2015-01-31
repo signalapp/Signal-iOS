@@ -45,7 +45,7 @@
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];    
     
-    contacts = [[Environment getCurrent] contactsManager].textSecureContacts;
+    contacts = [[Environment getCurrent] contactsManager].signalContacts;
     searchResults = contacts;
     [self initializeSearch];
 
@@ -447,6 +447,7 @@
 }
 
 - (void)contactsDidRefresh {
+    contacts = [[Environment getCurrent] contactsManager].signalContacts;
     [self updateSearchResultsForSearchController:self.searchController];
     [self.tableView reloadData];
     [self updateAfterRefreshTry];
