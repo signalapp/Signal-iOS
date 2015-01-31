@@ -126,7 +126,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
     [mut addObjectsFromArray:_thread.groupModel.groupMemberIds];
-    _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId];
+    _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId associatedAttachmentId:nil];
 
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
 }
@@ -142,7 +142,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [mut addObject:[SignalKeyingStorage.localNumber toE164]];
     NSData* groupId =  [SecurityUtils generateRandomBytes:16];
     
-    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:_groupImage groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:_groupImage groupId:groupId associatedAttachmentId:nil];
 }
 
 -(IBAction)addGroupPhoto:(id)sender

@@ -8,13 +8,16 @@
 
 #import "TSGroupModel.h"
 
+NSString * const TSAttachementGroupAvatarFileRelationshipEdge = @"TSAttachementGroupAvatarFileEdge";
+
 @implementation TSGroupModel
 
--(instancetype)initWithTitle:(NSString*)title memberIds:(NSMutableArray*)memberIds image:(UIImage*)image groupId:(NSData *)groupId{
-    _groupName      = title;
-    _groupMemberIds = [memberIds copy];
-    _groupImage     = image;
-    _groupId        = groupId;
+-(instancetype)initWithTitle:(NSString*)title memberIds:(NSMutableArray*)memberIds image:(UIImage*)image groupId:(NSData *)groupId associatedAttachmentId:(NSString*)attachmentId {
+    _groupName                  = title;
+    _groupMemberIds             = [memberIds copy];
+    _groupImage                 = image;
+    _associatedAttachmentId     = attachmentId;
+    _groupId                    = groupId;
 
     return self;
 }
@@ -82,6 +85,19 @@
     }
     
     return updatedGroupInfoString;
+}
+
+- (NSArray *)yapDatabaseRelationshipEdges {
+        if([_associatedAttachmentId length]>0){
+            YapDatabaseRelationshipEdge *fileEdge = [[YapDatabaseRelationshipEdge alloc] initWithName:TSAttachementGroupAvatarFileRelationshipEdge
+                                                                                   destinationKey:_associatedAttachmentId
+                                                                                       collection:[TSAttachment collection]
+                                                                                  nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
+            return @[fileEdge];
+        }
+        else {
+            return nil;
+        }
 }
 
 @end
