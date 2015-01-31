@@ -103,6 +103,8 @@ typedef enum : NSUInteger {
 
 @property NSUInteger page;
 
+@property BOOL isVisible;
+
 @end
 
 @implementation MessagesViewController
@@ -143,11 +145,12 @@ typedef enum : NSUInteger {
     else if(![self isTextSecureReachable] ){
         [self inputToolbar].hidden= YES; // only RedPhone
         self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
-        
     }
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _isVisible = NO;
     [self.navigationController.navigationBar setTranslucent:NO];
     
     _showFingerprintDisplay = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
@@ -185,6 +188,7 @@ typedef enum : NSUInteger {
 
     [self updateRangeOptionsForPage:self.page];
 
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
@@ -216,7 +220,8 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
+    [self.collectionView reloadData];
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 
     if (numberOfMessages > 0) {
@@ -237,6 +242,7 @@ typedef enum : NSUInteger {
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self startReadTimer];
+    _isVisible = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -272,6 +278,10 @@ typedef enum : NSUInteger {
 
     [[self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:NO];
     
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    _isVisible = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -448,9 +458,6 @@ typedef enum : NSUInteger {
     NSString * contactId = [(TSContactThread*)self.thread contactIdentifier];
     return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
 }
-
-
-
 
 -(void)callAction
 {
@@ -1251,24 +1258,44 @@ typedef enum : NSUInteger {
             [self initializeToolbars];
         }];
     }
-    // Process the notification(s),
-    // and get the change-set(s) as applies to my view and mappings configuration.
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    NSArray *messageRowChanges = nil;
 
-    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:nil
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    
+    if ( ![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications])
+    {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+        return;
+    }
+    
+    if (!_isVisible)
+    {
+        // Since we moved our databaseConnection to a new commit,
+        // we need to update the mappings too.
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+        return;
+    }
+    
+    NSArray *messageRowChanges = nil;
+    NSArray *sectionChanges    = nil;
+    
+    
+    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
 
     __block BOOL scrollToBottom = NO;
-
-    if (!messageRowChanges) {
+    
+    if ([sectionChanges count] == 0 & [messageRowChanges count] == 0)
+    {
         return;
     }
-
+    
     [self.collectionView performBatchUpdates:^{
-
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
         {
             switch (rowChange.type)
