@@ -21,7 +21,7 @@
 #import "TSContactThread.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "UIImage+normalizeImage.h"
-
+#import "PreferencesUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
 
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -88,7 +88,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
-    if (![TSAccountManager isRegistered]){
+    if (![TSAccountManager isRegistered] && ![Environment.preferences getIsMigratingToVersion2Dot0]){
         [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
     }
 }

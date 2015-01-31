@@ -80,6 +80,8 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
+
+
 - (void)protectSignalFiles{
     [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
     [self protectFolderAtPath:[self dbPath]];

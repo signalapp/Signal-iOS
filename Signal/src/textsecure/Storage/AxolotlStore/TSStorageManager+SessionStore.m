@@ -82,6 +82,7 @@
                 inCollection:TSStorageManagerSessionStoreCollection];
 }
 
+
 - (NSNumber*)keyForInt:(int)number {
     return [NSNumber numberWithInt:number];
 }

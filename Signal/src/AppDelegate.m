@@ -21,7 +21,7 @@
 #import "UIColor+OWS.h"
 #import "CodeVerificationViewController.h"
 #import "MIMETypeUtil.h"
-
+#import "TSDatabaseView.h"
 #import <PastelogKit/Pastelog.h>
 
 #define kSignalVersionKey @"SignalUpdateVersionKey"
@@ -49,20 +49,31 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 - (void)performUpdateCheck{
     NSString *previousVersion = Environment.preferences.lastRanVersion;
     NSString *currentVersion = [Environment.preferences setAndGetCurrentVersion];
+    // TODO: remove
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
         [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
     }
-    else if ([Environment.preferences getIsMigratingToVersion2Dot0] || [currentVersion compare:previousVersion options:NSNumericSearch] == NSOrderedDescending){
-        if([self isVersion:previousVersion atLeast:@"1.0.2"]) {
-            [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0]; // this is only necessary for older apps
+    else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || [Environment.preferences getIsMigratingToVersion2Dot0] ) {
+            [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
         }
+    else if([self isVersion:previousVersion atLeast:@"2.0" andLessThan:@"2.0.10"]){
+        [VersionMigrations migrateFrom2Dot0BetaTo2Dot0Dot10];
     }
 }
 
 
+
+-(BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)openLowerBoundVersionString andLessThan:(NSString *)closedUpperBoundVersionString {
+    return [self isVersion:thisVersionString atLeast:openLowerBoundVersionString] && [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
+}
+
 - (BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString {
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] != NSOrderedAscending;
+}
+
+- (BOOL) isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString {
+    return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -90,12 +101,14 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
     self.notificationTracker = [NotificationTracker notificationTracker];
     
-    [self performUpdateCheck];
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+    
+    [self performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
+
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
