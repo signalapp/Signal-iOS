@@ -31,10 +31,6 @@
     [self storeData:[CryptoTools generateSecureRandomData:ZID_LENGTH] forKey:ZID_KEY];
 }
 
-+(void)wipeKeychain{
-    [TSStorageManager.sharedManager purgeCollection:SignalKeyingCollection];
-}
-
 +(int64_t) getAndIncrementOneTimeCounter {
     __block int64_t oldCounter;
     oldCounter = [[self stringForKey:PASSWORD_COUNTER_KEY] longLongValue];
@@ -116,9 +112,5 @@
 +(void)storeString:(NSString*)string forKey:(NSString*)key{
     [TSStorageManager.sharedManager setObject:string forKey:key inCollection:SignalKeyingCollection];
 }
-
-
-
-
 
 @end

@@ -11,6 +11,7 @@
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
+#import "TSStorageManager.h"
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
@@ -201,12 +202,9 @@ phoneDirectoryManager;
 }
 
 + (void)resetAppData{
-    [SignalKeyingStorage wipeKeychain];
+    [[TSStorageManager sharedManager] wipeSignalStorage];
     [Environment.preferences clear];
-    if (self.preferences.loggingIsEnabled) {
-        [DebugLogger.sharedInstance wipeLogs];
-    }
-    [self.preferences setAndGetCurrentVersion];
+    [DebugLogger.sharedInstance wipeLogs];
 }
 
 @end

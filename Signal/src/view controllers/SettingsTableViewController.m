@@ -178,7 +178,7 @@ typedef enum {
     [TSAccountManager unregisterTextSecureWithSuccess:^{
         [PushManager.sharedManager registrationForPushWithSuccess:^(NSData* pushToken){
             [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
-                [[TSStorageManager sharedManager] wipe];
+                [Environment resetAppData];
                 exit(0);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
@@ -247,7 +247,5 @@ typedef enum {
 - (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue {
     
 }
-
-
 
 @end
