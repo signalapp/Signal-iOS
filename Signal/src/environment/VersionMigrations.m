@@ -16,6 +16,8 @@
 #import "RecentCallManager.h"
 #import "SignalKeyingStorage.h"
 #import "UICKeyChainStore.h"
+#import "TSStorageManager.h"
+#import "TSDatabaseView.h"
 
 @interface SignalKeyingStorage(VersionMigrations)
 
@@ -44,6 +46,10 @@
     }];
 
     
+}
+
++ (void)migrateFrom2Dot0BetaTo2Dot0Dot10 {
+    [[TSStorageManager sharedManager] deleteThreadsAndMessages];
 }
 
 + (void)migrateFrom1Dot0Dot2ToGreater {
