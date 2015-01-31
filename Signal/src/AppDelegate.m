@@ -67,6 +67,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     BOOL loggingIsEnabled;
+    [Environment.preferences setIsRefreshingContactsAllServices:NO];
     [self setupAppearance];
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
@@ -130,7 +131,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [TSPreKeyManager refreshPreKeys];
     }
     [MIMETypeUtil initialize];
-    
     return YES;
 }
 

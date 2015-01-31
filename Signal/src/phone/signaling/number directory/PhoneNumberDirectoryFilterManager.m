@@ -70,7 +70,7 @@
 
 
 - (void) updateRedPhone {
-    
+    [Environment.preferences setIsRefreshingContactsAllServices:YES];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall fetchBloomFilter] success:^(NSURLSessionDataTask *task, id responseObject) {
         PhoneNumberDirectoryFilter *directory = [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterFromURLResponse:(NSHTTPURLResponse*)task.response body:responseObject];
         
@@ -145,9 +145,12 @@
             }
         }];
         
+        [Environment.preferences setIsRefreshingContactsAllServices:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
+        
         [self scheduleUpdate];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [Environment.preferences setIsRefreshingContactsAllServices:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_FAILED object:nil];
     }];
 }

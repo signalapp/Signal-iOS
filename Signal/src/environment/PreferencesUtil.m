@@ -26,7 +26,7 @@
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 #define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
 #define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
-
+#define IS_REFRESHING_CONTACTS_ALL_SERVICES_KEY @"Refreshing Contacts of All Services"
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
 @implementation PropertyListPreferences (PropertyUtil)
@@ -110,7 +110,15 @@
     } else{
         return NO;
     }
-    
+}
+
+- (BOOL) getIsRefreshingContactsAllServices {
+    NSNumber *preference = [self tryGetValueForKey:IS_REFRESHING_CONTACTS_ALL_SERVICES_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return NO;
+    }   
 }
 
 - (BOOL)loggingIsEnabled{
@@ -130,6 +138,8 @@
         return NO;
     }
 }
+
+
 
 -(NotificationType)notificationPreviewType {
     NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
@@ -190,6 +200,11 @@
 
 - (void) setIsMigratingToVersion2Dot0:(BOOL)enabled {
     [self setValueForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY toValue:@(enabled)];
+}
+
+
+- (void) setIsRefreshingContactsAllServices:(BOOL)enabled {
+    [self setValueForKey:IS_REFRESHING_CONTACTS_ALL_SERVICES_KEY toValue:@(enabled)];
 }
 
 
