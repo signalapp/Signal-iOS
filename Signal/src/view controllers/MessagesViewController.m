@@ -1078,16 +1078,24 @@ typedef enum : NSUInteger {
  */
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [UIUtil modalCompletionBlock]();
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void) resetFrame {
+    // fixes bug on frame being off after this selection
+    CGRect frame = [UIScreen mainScreen].applicationFrame;
+    self.view.frame = frame;
 }
 
 /*
  *  Fetching data from UIImagePickerController
  */
-
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-
+    [UIUtil modalCompletionBlock]();
+    [self resetFrame];
+    
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
     if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
         NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
