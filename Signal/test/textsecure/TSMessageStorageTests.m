@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "Cryptography.h"
 #import "TSThread.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -146,22 +147,28 @@
     [self.thread remove];
     
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (uint64_t i = timestamp; i<1000; i++) {
+        for (uint64_t i = timestamp; i<100; i++) {
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
             NSAssert(fetchedMessage == nil, @"Message should be deleted!");
         }
     }];
 }
 
+
 - (void)testGroupMessagesDeletedOnThreadDeletion {
     uint64_t timestamp = 666;
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
     
+    
+    TSAttachmentStream *pointer = [[TSAttachmentStream alloc] initWithIdentifier:@"helloid" data:[Cryptography generateRandomBytes:16] key:[Cryptography generateRandomBytes:16] contentType:@"data/random"];
+
     __block TSGroupThread *thread;
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd" memberIds:[@[] mutableCopy] image:nil groupId:[NSData data]] transaction:transaction];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd" memberIds:[@[] mutableCopy] image:nil groupId:[NSData data] associatedAttachmentId:pointer.uniqueId] transaction:transaction];
         
         [thread saveWithTransaction:transaction];
+        [pointer saveWithTransaction:transaction];
+
     }];
     
     TSStorageManager *manager         = [TSStorageManager sharedManager];
@@ -178,6 +185,9 @@
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (uint64_t i = timestamp; i<100; i++) {
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
+            TSAttachmentStream *fetchedPointer = [TSAttachmentStream fetchObjectWithUniqueID:pointer.uniqueId];
+            NSAssert([fetchedPointer.image isEqual:pointer.image], @"attachment pointers not equal");
+            
             
             NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
             NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
@@ -191,8 +201,10 @@
     [self.thread remove];
     
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (uint64_t i = timestamp; i<1000; i++) {
+        for (uint64_t i = timestamp; i<100; i++) {
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
+            TSAttachmentStream *fetchedPointer = [TSAttachmentStream fetchObjectWithUniqueID:pointer.uniqueId];
+            NSAssert(fetchedPointer == nil, @"Attachment pointer should be deleted");
             NSAssert(fetchedMessage == nil, @"Message should be deleted!");
         }
     }];

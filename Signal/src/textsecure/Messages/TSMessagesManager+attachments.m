@@ -107,6 +107,7 @@ dispatch_queue_t attachmentsQueue() {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         result.pointer.isDownloaded = YES;
                         [result.pointer saveWithTransaction:transaction];
+                        
                         NSLog(@"finished uploading");
                     }];
                     [self sendMessage:outgoingMessage inThread:thread];
@@ -158,13 +159,13 @@ dispatch_queue_t attachmentsQueue() {
                                                                         contentType:attachment.contentType];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
-            
             if([attachment.avatarOfGroupId length]!=0) {
-                TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
+                TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId associatedAttachmentId:attachment.uniqueId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
                 TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
                 gThread.groupModel.groupImage=[stream image];
                 [gThread saveWithTransaction:transaction];
-            } else {
+            }
+            else {
                 // Causing message to be reloaded in view.
                 TSMessage *message = [TSMessage fetchObjectWithUniqueID:messageId transaction:transaction];
                 [message saveWithTransaction:transaction];
