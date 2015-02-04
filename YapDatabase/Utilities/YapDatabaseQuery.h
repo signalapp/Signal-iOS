@@ -35,6 +35,17 @@
 **/
 + (instancetype)queryWithFormat:(NSString *)format, ...;
 
+/**
+ * Shim that allows YapDatabaseQuery to be used from Swift.
+ *
+ * Define the following somewhere in your Swift code:
+ *
+ * extension YapDatabaseQuery {
+ *     class func queryWithFormat(format: String, _ arguments: CVarArgType...) -> YapDatabaseQuery? {
+ *         return withVaList(arguments, { YapDatabaseQuery(format: format, arguments: $0) })
+ *     }
+ * }
+ **/
 + (instancetype)queryWithFormat:(NSString *)format arguments:(va_list)arguments;
 
 /**
@@ -47,16 +58,3 @@
 @property (nonatomic, strong, readonly) NSArray *queryParameters;
 
 @end
-
-/**
- * Shim that allows YapDatabaseQuery to be used from Swift.
- *
- * Define the following somewhere in your Swift code:
- *
- * extension YapDatabaseQuery {
- *     class func queryWithFormat(format: String, _ arguments: CVarArgType...) -> YapDatabaseQuery? {
- *         return withVaList(arguments, { __YapDatabaseQuerySwift(format, $0) })
- *     }
- * }
-**/
-YapDatabaseQuery *__YapDatabaseQuerySwift(NSString *format, va_list arguments);
