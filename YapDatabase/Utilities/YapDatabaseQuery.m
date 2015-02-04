@@ -47,8 +47,17 @@
  *                                           usingBlock:^(NSString *key, id object, BOOL *stop){
  *     ...
  * }];
-**/
+ **/
 + (instancetype)queryWithFormat:(NSString *)format, ...
+{
+    va_list arguments;
+    va_start(arguments, format);
+    id query = [self queryWithFormat:format arguments:arguments];
+    va_end(arguments);
+    return query;
+}
+
++ (instancetype)queryWithFormat:(NSString *)format arguments:(va_list)args
 {
 	if (format == nil) return nil;
 	
@@ -77,9 +86,6 @@
 	// You MUST wrap these using NSNumber.
 	
 	NSMutableArray *queryParameters = [NSMutableArray arrayWithCapacity:paramCount];
-	
-	va_list args;
-	va_start(args, format);
 	
 	@try
 	{
@@ -128,8 +134,6 @@
 		queryParameters = nil;
 	}
 	
-	va_end(args);
-	
 	if (queryParameters || (paramCount == 0))
 	{
 		return [[YapDatabaseQuery alloc] initWithQueryString:format queryParameters:queryParameters];
@@ -140,11 +144,10 @@
 	}
 }
 
-
 /**
  * Shorthand for a query with no 'WHERE' clause.
  * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
-**/
+ **/
 + (instancetype)queryMatchingAll
 {
 	return [[YapDatabaseQuery alloc] initWithQueryString:@"" queryParameters:nil];
@@ -164,3 +167,18 @@
 @synthesize queryParameters;
 
 @end
+
+/**
+ * Shim that allows YapDatabaseQuery to be used from Swift.
+ *
+ * Define the following somewhere in your Swift code:
+ *
+ * extension YapDatabaseQuery {
+ *     class func queryWithFormat(format: String, _ arguments: CVarArgType...) -> YapDatabaseQuery? {
+ *         return withVaList(arguments, { __YapDatabaseQuerySwift(format, $0) })
+ *     }
+ * }
+ **/
+YapDatabaseQuery *__YapDatabaseQuerySwift(NSString *format, va_list arguments) {
+    return [YapDatabaseQuery queryWithFormat:format arguments:arguments];
+}
