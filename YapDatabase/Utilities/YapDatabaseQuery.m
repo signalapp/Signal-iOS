@@ -22,33 +22,16 @@
 	NSArray *queryParameters;
 }
 
-/**
- * A YapDatabaseQuery is everything after the SELECT clause of a query.
- * Methods that take YapDatabaseQuery parameters will prefix your query string similarly to:
- *
- * fullQuery = @"SELECT rowid FROM 'database' " + [yapDatabaseQuery queryString];
- *
- * Example 1:
- *
- * query = [YapDatabaseQuery queryWithFormat:@"WHERE jid = ?", message.jid];
- * [secondaryIndex enumerateKeysAndObjectsMatchingQuery:query
- *                                           usingBlock:^(NSString *key, id object, BOOL *stop){
- *     ...
- * }];
- *
- * Please note that you can ONLY pass objective-c objects as parameters.
- * Primitive types such as int, float, double, etc are NOT supported.
- * You MUST wrap these using NSNumber.
- *
- * Example 2:
- *
- * query = [YapDatabaseQuery queryWithFormat:@"WHERE department = ? AND salary >= ?", dept, @(minSalary)];
- * [secondaryIndex enumerateKeysAndObjectsMatchingQuery:query
- *                                           usingBlock:^(NSString *key, id object, BOOL *stop){
- *     ...
- * }];
-**/
 + (instancetype)queryWithFormat:(NSString *)format, ...
+{
+    va_list arguments;
+    va_start(arguments, format);
+    id query = [self queryWithFormat:format arguments:arguments];
+    va_end(arguments);
+    return query;
+}
+
++ (instancetype)queryWithFormat:(NSString *)format arguments:(va_list)args
 {
 	if (format == nil) return nil;
 	
@@ -77,9 +60,6 @@
 	// You MUST wrap these using NSNumber.
 	
 	NSMutableArray *queryParameters = [NSMutableArray arrayWithCapacity:paramCount];
-	
-	va_list args;
-	va_start(args, format);
 	
 	@try
 	{
@@ -128,8 +108,6 @@
 		queryParameters = nil;
 	}
 	
-	va_end(args);
-	
 	if (queryParameters || (paramCount == 0))
 	{
 		return [[YapDatabaseQuery alloc] initWithQueryString:format queryParameters:queryParameters];
@@ -140,11 +118,6 @@
 	}
 }
 
-
-/**
- * Shorthand for a query with no 'WHERE' clause.
- * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
-**/
 + (instancetype)queryMatchingAll
 {
 	return [[YapDatabaseQuery alloc] initWithQueryString:@"" queryParameters:nil];

@@ -35,6 +35,8 @@
 **/
 + (instancetype)queryWithFormat:(NSString *)format, ...;
 
++ (instancetype)queryWithFormat:(NSString *)format arguments:(va_list)arguments;
+
 /**
  * Shorthand for a query with no 'WHERE' clause.
  * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
