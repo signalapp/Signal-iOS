@@ -137,3 +137,7 @@
 @synthesize queryParameters;
 
 @end
+
+YapDatabaseQuery *__YapDatabaseQuerySwift(NSString *format, va_list arguments) {
+    return [YapDatabaseQuery queryWithFormat:format arguments:arguments];
+}
