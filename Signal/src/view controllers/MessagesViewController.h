@@ -16,7 +16,7 @@
 
 @interface MessagesViewController : JSQMessagesViewController   <UIImagePickerControllerDelegate,
                                                                 UINavigationControllerDelegate,
-                                                                UITextViewDelegate,AVAudioRecorderDelegate,AVAudioPlayerDelegate>
+                                                                UITextViewDelegate,AVAudioRecorderDelegate,AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
 
 @property (nonatomic, retain) APNavigationController *navController;
