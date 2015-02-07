@@ -7,6 +7,7 @@
 //
 
 #import "UIColor+OWS.h"
+#import "Cryptography.h"
 
 @implementation UIColor (OWS)
 
@@ -52,6 +53,36 @@
 
 + (UIColor *) ows_lightBackgroundColor {
     return [UIColor colorWithRed:242.f/255.f green:242.f/255.f blue:242.f/255.f alpha:1.f];
+}
+
++ (UIColor*) backgroundColorForContact:(NSString*)contactIdentifier {
+    NSArray *colors = @[[UIColor colorWithRed:204.f/255.f green:148.f/255.f blue:102.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:187.f/255.f green:104.f/255.f blue:62.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:145.f/255.f green:78.f/255.f blue:48.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:122.f/255.f green:63.f/255.f blue:41.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:80.f/255.f green:46.f/255.f blue:27.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:57.f/255.f green:45.f/255.f blue:19.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:37.f/255.f green:38.f/255.f blue:13.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:23.f/255.f green:31.f/255.f blue:10.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:6.f/255.f green:19.f/255.f blue:10.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:13.f/255.f green:4.f/255.f blue:16.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:27.f/255.f green:12.f/255.f blue:44.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:18.f/255.f green:17.f/255.f blue:64.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:20.f/255.f green:42.f/255.f blue:77.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:18.f/255.f green:55.f/255.f blue:68.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:18.f/255.f green:68.f/255.f blue:61.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:19.f/255.f green:73.f/255.f blue:26.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:13.f/255.f green:48.f/255.f blue:15.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:44.f/255.f green:165.f/255.f blue:137.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:137.f/255.f green:181.f/255.f blue:48.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:208.f/255.f green:204.f/255.f blue:78.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:227.f/255.f green:162.f/255.f blue:150.f/255.f alpha:1.f]];
+    NSData *contactData = [contactIdentifier dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *hashData = [Cryptography  computeSHA256:contactData  truncatedToBytes:8];
+    unsigned long choose;
+    [hashData getBytes:&choose length:8];
+    return [colors objectAtIndex:(choose % [colors count])];
+
 }
 
 
