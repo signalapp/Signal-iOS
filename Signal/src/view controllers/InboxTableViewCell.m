@@ -10,6 +10,7 @@
 #import "Util.h"
 #import "UIImage+JSQMessages.h"
 #import "TSGroupThread.h"
+#import "TSContactThread.h"
 #import "JSQMessagesAvatarImageFactory.h"
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
@@ -65,7 +66,9 @@
                 }
             }
         }
-        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
+        
+        UIColor *backgroundColor = thread.isGroupThread ? [UIColor whiteColor] : [UIColor backgroundColorForContact:((TSContactThread*)thread).contactIdentifier];
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:backgroundColor textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
         if(thread.image==nil) {
             UIImage *overlayImage = [UIImage imageNamed:@"circContact--empty"];

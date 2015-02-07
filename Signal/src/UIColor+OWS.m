@@ -7,6 +7,7 @@
 //
 
 #import "UIColor+OWS.h"
+#import "Cryptography.h"
 
 @implementation UIColor (OWS)
 
@@ -52,6 +53,19 @@
 
 + (UIColor *) ows_lightBackgroundColor {
     return [UIColor colorWithRed:242.f/255.f green:242.f/255.f blue:242.f/255.f alpha:1.f];
+}
+
++ (UIColor*) backgroundColorForContact:(NSString*)contactIdentifier {
+    NSArray *colors = @[[UIColor colorWithRed:213.f/255.f green:190.f/255.f blue:112.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:18.f/255.f green:211.f/255.f blue:102.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:32.f/255.f green:144.f/255.f blue:234.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:180.f/255.f green:138.f/255.f blue:255.f/255.f alpha:1.f],
+                        [UIColor colorWithRed:255.f/255.f green:145.f/255.f blue:81.f/255.f alpha:1.f]];
+    NSData *contactData = [contactIdentifier dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *hashData = [Cryptography  computeSHA256:contactData  truncatedToBytes:1];
+    unsigned int choose;
+    [hashData getBytes:&choose range:NSMakeRange(0, 1)];
+    return [colors objectAtIndex:(choose % 5)];
 }
 
 
