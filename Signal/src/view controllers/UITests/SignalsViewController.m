@@ -376,12 +376,10 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)checkIfEmptyView{
     [_tableView setHidden:NO];
     if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup]==0) {
-        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyInbox"];
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
     else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {        
-        _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
@@ -397,13 +395,28 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     NSString* secondLine = @"";
     
     if(self.viewingThreadsIn == kInboxState) {
-        // Check if this is the first launch
-        firstLine =  @"No Messages :(";
-        secondLine = @"Tap compose to send a message or invite a friend to Signal.";
+        if([Environment.preferences getHasSentAMessage]) {
+            _emptyBoxImage.image = nil;
+            firstLine =  @"Done. Done. Done.";
+            secondLine = @"Tip: add a conversation as a reminder!";
+        }
+        else {
+            _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyInbox"];
+            firstLine = @"Start your first Signal conversation!";
+            secondLine = @"Tap on the + button.";
+        }
     }
     else {
-        firstLine = @"No archived messages.";
-        secondLine = @"Swipe right on any message in your inbox and archive it here.";
+        if([Environment.preferences getHasArchivedAMessage]) {
+            _emptyBoxImage.image = nil;
+            firstLine = @"Squeaky Freaking Clean.";
+            secondLine = @"None. Zero. Zilch. Nada.";
+        }
+        else {
+            _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
+            firstLine = @"Save conversations for reference.";
+            secondLine = @"You can swipe conversations into your Archive from the Inbox.";
+        }
     }
     NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];
     
