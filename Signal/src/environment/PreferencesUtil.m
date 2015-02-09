@@ -26,6 +26,8 @@
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 #define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
 #define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
+#define HAS_SENT_A_MESSAGE_KEY @"User has sent a message"
+#define HAS_ARCHIVED_A_MESSAGE_KEY @"User archived a message"
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 
 @implementation PropertyListPreferences (PropertyUtil)
@@ -129,6 +131,25 @@
     }
 }
 
+- (BOOL) getHasSentAMessage{
+    NSNumber *preference = [self tryGetValueForKey:HAS_SENT_A_MESSAGE_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return NO;
+    }
+
+}
+
+- (BOOL) getHasArchivedAMessage {
+    NSNumber *preference = [self tryGetValueForKey:HAS_ARCHIVED_A_MESSAGE_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return NO;
+    }
+
+}
 
 
 -(NotificationType)notificationPreviewType {
@@ -191,6 +212,16 @@
 - (void) setIsMigratingToVersion2Dot0:(BOOL)enabled {
     [self setValueForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY toValue:@(enabled)];
 }
+
+- (void) setHasSentAMessage:(BOOL)enabled{
+    [self setValueForKey:HAS_SENT_A_MESSAGE_KEY toValue:@(enabled)];
+}
+
+- (void) setHasArchivedAMessage:(BOOL)enabled{
+    [self setValueForKey:HAS_ARCHIVED_A_MESSAGE_KEY toValue:@(enabled)];
+}
+
+
 
 -(NSString*)setAndGetCurrentVersion{
     NSString *lastVersion = self.lastRanVersion;
