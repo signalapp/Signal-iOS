@@ -7,6 +7,8 @@
 //
 
 #import "InboxTableViewCell.h"
+#import "Environment.h"
+#import "PreferencesUtil.h"
 #import "Util.h"
 #import "UIImage+JSQMessages.h"
 #import "TSGroupThread.h"
@@ -157,11 +159,12 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset {
-    
     if (_scrollView.contentOffset.x < SWIPE_ARCHIVE_OFFSET) {
         // archive the thread
         [_delegate tableViewCellTappedArchive:self];
-    } else {
+        [Environment.preferences setHasArchivedAMessage:YES];
+    }
+    else {
         // don't do anything
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }
