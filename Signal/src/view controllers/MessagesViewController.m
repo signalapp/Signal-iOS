@@ -1040,20 +1040,16 @@ typedef enum : NSUInteger {
 
 }
 
--(void)chooseFromLibrary:(kMediaTypes)mediaType
-{
+-(void)chooseFromLibrary {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
-    {
-        NSArray* pictureTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 
-        NSArray* videoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
+        NSArray* photoOrVideoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage,(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
 
-        picker.mediaTypes = (mediaType == kMediaTypePicture) ? pictureTypeArray : videoTypeArray;
-
+        picker.mediaTypes = photoOrVideoTypeArray;
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }
 }
@@ -1428,7 +1424,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video"]//,@"Record audio"]
+             otherButtonTitles:@[@"Take Photo or Video", @" Choose from Library..."]//,@"Record audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
@@ -1440,13 +1436,9 @@ typedef enum : NSUInteger {
                                       [self takePictureOrVideo];
                                       break;
                                   case 1:
-                                      [self chooseFromLibrary:kMediaTypePicture];
+                                      [self chooseFromLibrary];
                                       break;
-
                                   case 2:
-                                      [self chooseFromLibrary:kMediaTypeVideo];
-                                      break;
-                                  case 3:
                                       [self recordAudio];
                                       break;
                                   default:
