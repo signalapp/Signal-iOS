@@ -68,14 +68,9 @@
         }
         
         UIColor *backgroundColor = thread.isGroupThread ? [UIColor whiteColor] : [UIColor backgroundColorForContact:((TSContactThread*)thread).contactIdentifier];
-        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:backgroundColor textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:backgroundColor textColor:[UIColor whiteColor] font:[UIFont ows_boldFontWithSize:36.0] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
-        if(thread.image==nil) {
-            UIImage *overlayImage = [UIImage imageNamed:@"circContact--empty"];
-            UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:overlayImage];
-            [_contactPictureView addSubview:overlayImageView];
-        }
-        else {
+        if(thread.image!=nil) {
             [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         }
     }
