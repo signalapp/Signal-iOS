@@ -36,6 +36,7 @@
 #import "TSDatabaseView.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import "UIButton+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -156,11 +157,7 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
-    _messageButton = [[UIButton alloc] init];
-    [_messageButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
-    _messageButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
-    [_messageButton setImage:[UIImage imageNamed:@"btnSend--blue"] forState:UIControlStateNormal];
-
+    _messageButton = [UIButton ows_blueButtonWithTitle:@"Send"];
 
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
