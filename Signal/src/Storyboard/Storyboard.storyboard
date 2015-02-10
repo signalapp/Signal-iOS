@@ -7,7 +7,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Signals View Controller-->
+        <!--Conversations-->
         <scene sceneID="82U-Xj-21R">
             <objects>
                 <viewController id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
@@ -430,21 +430,14 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="Um0-0y-8lr">
-                        <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="120" id="PYj-7F-J24">
+                    <navigationItem key="navigationItem" title="Conversations" id="Um0-0y-8lr">
+                        <barButtonItem key="backBarButtonItem" title=" " id="a19-h1-1ZS"/>
+                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="100" style="plain" id="PYj-7F-J24">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <button key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ktT-AR-smT">
-                            <rect key="frame" x="277" y="7" width="46" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="btnSignalLogo--white">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
                         <barButtonItem key="rightBarButtonItem" image="add-conversation" width="51" id="Oft-fU-tf5">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
@@ -481,12 +474,6 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="leftBarButtonItem" image="btnSignalLogo--white" id="L4I-fY-NfP">
-                            <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <segue destination="imi-Ms-CTi" kind="unwind" unwindAction="unwindMessagesView:" id="Ntb-xe-Zdr"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="contact-options-action" id="662-pN-RLf">
                             <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -502,7 +489,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="imi-Ms-CTi" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-4462.5" y="-1624.5"/>
         </scene>
@@ -5028,7 +5014,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP" userLabel="_7.0a - Navigation Bar">
-                        <barButtonItem key="rightBarButtonItem" image="btnSignalLogo--white" id="fL4-BJ-gHP">
+                        <barButtonItem key="rightBarButtonItem" title="Close" id="fL4-BJ-gHP">
                             <color key="tintColor" red="0.99989169840000003" green="1" blue="0.99988096950000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="na1-9P-hTS"/>
@@ -5223,6 +5209,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
+                        <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
                         <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -5251,7 +5238,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -5359,9 +5346,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="10" y="274" width="94" height="21"/>
-                                            </variation>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -5515,7 +5499,6 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="btnPhone--blue" width="45" height="44"/>
         <image name="btnQRShow--white" width="66" height="66"/>
         <image name="btnQRShow--white-1" width="66" height="66"/>
-        <image name="btnSignalLogo--white" width="32" height="32"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact-options-action" width="44" height="44"/>
@@ -5527,7 +5510,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="25" height="24"/>
+        <image name="settings-icon@1x" width="44" height="44"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
@@ -5536,8 +5519,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="uiEmptyInbox" width="227" height="227"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="DR8-fx-0PD"/>
+        <segue reference="D0d-4f-lcI"/>
+        <segue reference="ZcV-Ck-baL"/>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="gZ1-lh-srF"/>
     </inferredMetricsTieBreakers>
 </document>

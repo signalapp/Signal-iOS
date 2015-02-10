@@ -331,7 +331,6 @@
 		B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
 		B633C5D01A1D190B0059AC12 /* red-delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54E1A1D190B0059AC12 /* red-delete@2x.png */; };
 		B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
-		B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5581A1D190B0059AC12 /* settings_dark@2x.png */; };
 		B633C5DB1A1D190B0059AC12 /* share@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5591A1D190B0059AC12 /* share@2x.png */; };
 		B633C5DC1A1D190B0059AC12 /* shred@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C55A1A1D190B0059AC12 /* shred@2x.png */; };
 		B633C5DF1A1D190B0059AC12 /* signal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C55E1A1D190B0059AC12 /* signal@2x.png */; };
@@ -493,7 +492,6 @@
 		F995AC2FFD6D4442B012604A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8313AE91B4954215858A5662 /* libPods.a */; };
 		FC15B7BF1A1F80F200F59801 /* defaultConctact_light@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */; };
 		FC1F90C01A22342B004F8253 /* group_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90BF1A22342B004F8253 /* group_photo@2x.png */; };
-		FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C41A223991004F8253 /* settings_tab@2x.png */; };
 		FC1F90C71A223991004F8253 /* signals_tab@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1F90C51A223991004F8253 /* signals_tab@2x.png */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
@@ -946,7 +944,6 @@
 		B633C54C1A1D190B0059AC12 /* quit@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quit@2x.png"; sourceTree = "<group>"; };
 		B633C54E1A1D190B0059AC12 /* red-delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "red-delete@2x.png"; sourceTree = "<group>"; };
 		B633C5501A1D190B0059AC12 /* savephoto@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "savephoto@2x.png"; sourceTree = "<group>"; };
-		B633C5581A1D190B0059AC12 /* settings_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_dark@2x.png"; sourceTree = "<group>"; };
 		B633C5591A1D190B0059AC12 /* share@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "share@2x.png"; sourceTree = "<group>"; };
 		B633C55A1A1D190B0059AC12 /* shred@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shred@2x.png"; sourceTree = "<group>"; };
 		B633C55E1A1D190B0059AC12 /* signal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signal@2x.png"; sourceTree = "<group>"; };
@@ -1207,7 +1204,6 @@
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC15B7BE1A1F80F200F59801 /* defaultConctact_light@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "defaultConctact_light@2x.png"; sourceTree = "<group>"; };
 		FC1F90BF1A22342B004F8253 /* group_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_photo@2x.png"; sourceTree = "<group>"; };
-		FC1F90C41A223991004F8253 /* settings_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_tab@2x.png"; sourceTree = "<group>"; };
 		FC1F90C51A223991004F8253 /* signals_tab@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signals_tab@2x.png"; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
@@ -2218,8 +2214,6 @@
 				B633C54E1A1D190B0059AC12 /* red-delete@2x.png */,
 				FCA52AE51A2B676C00CCADFA /* reply@2x.png */,
 				B633C5501A1D190B0059AC12 /* savephoto@2x.png */,
-				B633C5581A1D190B0059AC12 /* settings_dark@2x.png */,
-				FC1F90C41A223991004F8253 /* settings_tab@2x.png */,
 				B633C5591A1D190B0059AC12 /* share@2x.png */,
 				B633C55A1A1D190B0059AC12 /* shred@2x.png */,
 				FC3BD97A1A2CD385005B96BB /* signal_dotted@2x.png */,
@@ -2959,7 +2953,6 @@
 				AD41D7B51A6F6F0600241130 /* play_button.png in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				B633C5B41A1D190B0059AC12 /* keypad@2x.png in Resources */,
-				B633C5DA1A1D190B0059AC12 /* settings_dark@2x.png in Resources */,
 				B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */,
 				FCA52AEC1A2B676C00CCADFA /* message_error@2x.png in Resources */,
 				B633C5BC1A1D190B0059AC12 /* message_bubble@2x.png in Resources */,
@@ -2985,7 +2978,6 @@
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FCB626B71A3B067900FDB504 /* ArrowTop@3x.png in Resources */,
-				FC1F90C61A223991004F8253 /* settings_tab@2x.png in Resources */,
 				FCA52AEA1A2B676C00CCADFA /* call_outgoing@2x.png in Resources */,
 				FCB626B61A3B067900FDB504 /* ArrowBottom@3x.png in Resources */,
 				B633C5B61A1D190B0059AC12 /* lock_white@2x.png in Resources */,

@@ -204,6 +204,7 @@ typedef enum : NSUInteger {
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self initializeToolbars];
     
     [self.collectionView reloadData];
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
@@ -212,7 +213,6 @@ typedef enum : NSUInteger {
         NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages-1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
     }
-    [self initializeToolbars];
 }
 
 - (void)startReadTimer{
@@ -227,6 +227,7 @@ typedef enum : NSUInteger {
     [super viewDidAppear:animated];
     [self startReadTimer];
     _isVisible = YES;
+    [self initializeTitleLabelGestureRecognizer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -257,11 +258,6 @@ typedef enum : NSUInteger {
     }
     
     [self cancelReadTimer];
-    [[self.navController.navigationBar.subviews objectAtIndex:0] removeGestureRecognizer:_showFingerprintDisplay];
-    [[self.navController.navigationBar.subviews objectAtIndex:0] removeGestureRecognizer:_toggleContactPhoneDisplay];
-
-    [[self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:NO];
-    
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -355,17 +351,36 @@ typedef enum : NSUInteger {
     self.navController = (APNavigationController*)self.navigationController;
 
     if(!isGroupConversation) {
-        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
-               [[ self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:YES];
-        [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_showFingerprintDisplay];
-        [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_toggleContactPhoneDisplay];
-
+        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
     }
-    [self setNavigationTitle];
-    
-    
     
     [self hideInputIfNeeded];
+    [self setNavigationTitle];
+}
+
+- (void)initializeTitleLabelGestureRecognizer {
+    if(isGroupConversation) {
+        return;
+    }
+    
+    
+    UIView *navItemView;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
+            navItemView = view;
+            for (UIView *aView in navItemView.subviews) {
+                if ([aView isKindOfClass:[UILabel class]]) {
+                    [aView.superview.superview setUserInteractionEnabled:YES];
+                    [aView.superview setUserInteractionEnabled:YES];
+                    [aView setUserInteractionEnabled:YES];
+                    [view bringSubviewToFront:aView];
+                    [aView addGestureRecognizer:_showFingerprintDisplay];
+                    [aView addGestureRecognizer:_toggleContactPhoneDisplay];
+                }
+                return;
+            }
+        }
+    }
 }
 
 -(void)initializeBubbles

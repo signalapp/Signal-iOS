@@ -203,11 +203,20 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 
 -(void) updateInboxCountLabel {
-    _inboxCount = (self.viewingThreadsIn == kInboxState) ? (long)[self tableView:self.tableView numberOfRowsInSection:0] : _inboxCount;
-
-    self.inboxCountLabel.text = [NSString stringWithFormat:@"%ld",_inboxCount];
-    self.inboxCountLabel.hidden = (_inboxCount == 0);
-
+    
+    __block NSUInteger numberOfItems;
+    [_editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+    }];
+    
+    NSNumber *badgeNumber = [NSNumber numberWithUnsignedInteger:numberOfItems];
+    NSString *badgeValue  = nil;
+    
+    if (![badgeNumber isEqualToNumber:@0]) {
+        badgeValue = [badgeNumber stringValue];
+    }
+    
+    self.inboxCountLabel.text = badgeValue;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -299,6 +308,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     if ([sectionChanges count] == 0 && [rowChanges count] == 0){
         return;
     }
+    
+    [self updateInboxCountLabel];
     
     [self.tableView beginUpdates];
     
