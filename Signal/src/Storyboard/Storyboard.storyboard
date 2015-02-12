@@ -5490,9 +5490,9 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="archive-active@1x" width="40" height="51"/>
         <image name="archive-inactive@1x" width="40" height="51"/>
         <image name="btnCamera--white" width="52" height="40"/>
-        <image name="btnCancel--white" width="20" height="20"/>
-        <image name="btnGroup--white" width="29" height="26"/>
-        <image name="btnPhone--blue" width="45" height="44"/>
+        <image name="btnCancel--white" width="44" height="44"/>
+        <image name="btnGroup--white" width="44" height="44"/>
+        <image name="btnPhone--blue" width="44" height="44"/>
         <image name="btnQRShow--white" width="66" height="66"/>
         <image name="btnQRShow--white-1" width="66" height="66"/>
         <image name="call.png" width="100" height="100"/>
@@ -5515,8 +5515,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="uiEmptyInbox" width="227" height="227"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="D0d-4f-lcI"/>
         <segue reference="ZcV-Ck-baL"/>
         <segue reference="xo7-5J-BJb"/>
+        <segue reference="D0d-4f-lcI"/>
     </inferredMetricsTieBreakers>
 </document>
