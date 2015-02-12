@@ -31,8 +31,6 @@
         
         _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
         _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        _lastActionImageView.image = [_lastActionImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        
     }
     return self;
 }
@@ -77,9 +75,7 @@
         }
     }
 
-    self.separatorInset       = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
-
-    [self setUpLastActionForThread:thread];
+    self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
 }
 
 -(void)configureForState:(CellState)state
@@ -96,78 +92,30 @@
     }
 }
 
--(void)setUpLastActionForThread:(TSThread*)thread
-{
-    TSLastActionType lastAction = [thread lastAction];
-    
-    switch (lastAction) {
-        case TSLastActionNone:
-            _lastActionImageView.image = nil;
-            break;
-        case TSLastActionCallIncoming:
-            _lastActionImageView.image = [UIImage imageNamed:@"call_incoming"];
-            break;
-        case TSLastActionCallIncomingMissed:
-            _lastActionImageView.image = [UIImage imageNamed:@"call_missed"];
-            break;
-        case TSLastActionCallOutgoing:
-            _lastActionImageView.image = [UIImage imageNamed:@"call_outgoing"];
-            break;
-        case TSLastActionCallOutgoingMissed:
-            _lastActionImageView.image = [UIImage imageNamed:@"call_canceled"];
-            break;
-        case TSLastActionCallOutgoingFailed:
-            _lastActionImageView.image = [UIImage imageNamed:@"call_failed"];
-            break;
-        case TSLastActionMessageAttemptingOut:
-            _lastActionImageView.image = nil;
-            break;
-        case TSLastActionMessageUnsent:
-            _lastActionImageView.image = [UIImage imageNamed:@"message_error"];
-            break;
-        case TSLastActionMessageSent:
-            _lastActionImageView.image = [UIImage imageNamed:@"reply"];
-            break;
-        case TSLastActionMessageDelivered:
-            _lastActionImageView.image = [UIImage imageNamed:@"checkmark_light"];
-            break;
-        case TSLastActionMessageIncomingRead:
-            _lastActionImageView.image = nil;
-            break;
-        case TSLastActionMessageIncomingUnread:
-            [self updateCellForUnreadMessage];
-            _lastActionImageView.image = nil;
-            break;
-        case TSLastActionInfoMessage:
-            _lastActionImageView.image = [UIImage imageNamed:@"warning_white"];
-            break;
-        case TSLastActionErrorMessage:
-            _lastActionImageView.image = [UIImage imageNamed:@"error_white"];
-            break;
-        default:
-            _lastActionImageView.image = nil;
-            break;
-    }
-}
-
 -(void)updateCellForUnreadMessage
 {
-    _nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
+    _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
     _snippetLabel.textColor = [UIColor ows_blackColor];
-    _timeLabel.textColor = [UIColor ows_materialBlueColor];
+    _timeLabel.textColor    = [UIColor ows_materialBlueColor];
 }
 
 -(void)updateCellForReadMessage
 {
-    _nameLabel.font = [UIFont ows_regularFontWithSize:14.0f];
+    _nameLabel.font         = [UIFont ows_regularFontWithSize:14.0f];
     _snippetLabel.textColor = [UIColor lightGrayColor];
 }
 
 #pragma mark - Date formatting
 
 - (NSAttributedString *)dateAttributedString:(NSDate *)date {
+    NSString *timeString;
     
-    NSString *timeString = [[DateUtil timeFormatter] stringFromDate:date];
+    if ([date timeIntervalSinceNow] > (- 60 * 60 * 24)) {
+        timeString = [[DateUtil timeFormatter] stringFromDate:date];
+    } else {
+        
+        timeString = [[DateUtil dateFormatter] stringFromDate:date];
+    }
     
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:timeString];
     

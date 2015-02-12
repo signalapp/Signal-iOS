@@ -12,7 +12,7 @@ static NSString *const DATE_FORMAT_HOUR_MINUTE = @"h:mm a   ";
 
 + (NSDateFormatter *)dateFormatter {
     NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
     return formatter;
 }
 
