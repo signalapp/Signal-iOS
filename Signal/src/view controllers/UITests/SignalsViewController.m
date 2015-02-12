@@ -71,7 +71,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
-    
     [self updateInboxCountLabel];
     
     [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
@@ -224,7 +223,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         TSThread *thread               = [self threadForIndexPath:selectedIndexPath];
-        [self selectedInbox:self];
         if (self.contactIdentifierFromCompose){
             [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
             self.contactIdentifierFromCompose = nil;
