@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -7,7 +7,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Signals View Controller-->
+        <!--Conversations-->
         <scene sceneID="82U-Xj-21R">
             <objects>
                 <viewController id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
@@ -430,21 +430,14 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="Um0-0y-8lr">
-                        <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="120" id="PYj-7F-J24">
+                    <navigationItem key="navigationItem" title="Conversations" id="Um0-0y-8lr">
+                        <barButtonItem key="backBarButtonItem" title=" " id="a19-h1-1ZS"/>
+                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="100" style="plain" id="PYj-7F-J24">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <button key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ktT-AR-smT">
-                            <rect key="frame" x="277" y="7" width="46" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="btnSignalLogo--white">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
                         <barButtonItem key="rightBarButtonItem" image="add-conversation" width="51" id="Oft-fU-tf5">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
@@ -481,12 +474,6 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="leftBarButtonItem" image="btnSignalLogo--white" id="L4I-fY-NfP">
-                            <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <segue destination="imi-Ms-CTi" kind="unwind" unwindAction="unwindMessagesView:" id="Ntb-xe-Zdr"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="contact-options-action" id="662-pN-RLf">
                             <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -502,7 +489,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="imi-Ms-CTi" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-4462.5" y="-1624.5"/>
         </scene>
@@ -1371,7 +1357,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5f-8V-ASm" userLabel="_1.0a Registration Screen Title">
                                 <rect key="frame" x="-20" y="-20" width="440" height="284"/>
                                 <subviews>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" misplaced="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
                                         <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                                         <constraints>
@@ -1390,7 +1376,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="pjp-QF-hen"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="160" y="100" width="82" height="82"/>
                                             <mask key="constraints">
                                                 <include reference="69J-jd-lwK"/>
                                                 <exclude reference="BEa-1M-H8m"/>
@@ -1400,7 +1387,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </mask>
                                         </variation>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="223" id="8lm-oa-608"/>
@@ -1415,8 +1402,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="T1b-ph-zPv"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                            <rect key="frame" x="1" y="190" width="400" height="29"/>
                                             <mask key="constraints">
                                                 <exclude reference="8lm-oa-608"/>
                                                 <include reference="T1b-ph-zPv"/>
@@ -3017,10 +3005,10 @@ A0 09 9A FF A8 8A 09 99</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lIs-Ck-sAt" userLabel="_1.1a Validation Screen Title">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lIs-Ck-sAt" userLabel="_1.1a Validation Screen Title">
                                 <rect key="frame" x="-20" y="-20" width="440" height="284"/>
                                 <subviews>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" misplaced="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="hW3-07-YNo" userLabel="signal_icon">
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="hW3-07-YNo" userLabel="signal_icon">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
                                         <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                                         <constraints>
@@ -3032,24 +3020,25 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
-                                                <exclude reference="a8j-KR-NpB"/>
-                                                <exclude reference="Wlg-7O-XdE"/>
-                                                <exclude reference="jlJ-an-IhP"/>
-                                                <exclude reference="cmg-JE-a0T"/>
                                                 <exclude reference="6PG-XN-ctl"/>
+                                                <exclude reference="Wlg-7O-XdE"/>
+                                                <exclude reference="a8j-KR-NpB"/>
+                                                <exclude reference="cmg-JE-a0T"/>
+                                                <exclude reference="jlJ-an-IhP"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="160" y="100" width="82" height="82"/>
                                             <mask key="constraints">
-                                                <include reference="a8j-KR-NpB"/>
-                                                <exclude reference="Wlg-7O-XdE"/>
-                                                <include reference="jlJ-an-IhP"/>
-                                                <exclude reference="cmg-JE-a0T"/>
                                                 <exclude reference="6PG-XN-ctl"/>
+                                                <exclude reference="Wlg-7O-XdE"/>
+                                                <include reference="a8j-KR-NpB"/>
+                                                <exclude reference="cmg-JE-a0T"/>
+                                                <include reference="jlJ-an-IhP"/>
                                             </mask>
                                         </variation>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8Y-At-xEK">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8Y-At-xEK">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="29" id="Mem-ez-9kw"/>
@@ -3060,15 +3049,16 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <nil key="highlightedColor"/>
                                         <variation key="default">
                                             <mask key="constraints">
-                                                <exclude reference="lBf-Vx-2UH"/>
                                                 <exclude reference="Mem-ez-9kw"/>
+                                                <exclude reference="lBf-Vx-2UH"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                            <rect key="frame" x="1" y="191" width="400" height="29"/>
                                             <mask key="constraints">
-                                                <exclude reference="lBf-Vx-2UH"/>
                                                 <include reference="Mem-ez-9kw"/>
+                                                <exclude reference="lBf-Vx-2UH"/>
                                             </mask>
                                         </variation>
                                     </label>
@@ -3092,12 +3082,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="5bj-kr-L4s"/>
-                                        <exclude reference="yE0-ct-KoU"/>
                                         <exclude reference="thQ-Jf-aYE"/>
                                         <exclude reference="y9O-xU-MkB"/>
+                                        <exclude reference="yE0-ct-KoU"/>
+                                        <exclude reference="Dso-vy-b1P"/>
                                         <exclude reference="OE3-vm-S0c"/>
                                         <exclude reference="bvU-yG-1oi"/>
-                                        <exclude reference="Dso-vy-b1P"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -3107,12 +3097,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="5bj-kr-L4s"/>
-                                        <include reference="yE0-ct-KoU"/>
                                         <exclude reference="thQ-Jf-aYE"/>
                                         <include reference="y9O-xU-MkB"/>
+                                        <include reference="yE0-ct-KoU"/>
+                                        <include reference="Dso-vy-b1P"/>
                                         <include reference="OE3-vm-S0c"/>
                                         <include reference="bvU-yG-1oi"/>
-                                        <include reference="Dso-vy-b1P"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -3698,15 +3688,28 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="UWb-Di-S2f"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="3UN-Zb-j14"/>
-                                <exclude reference="8Vt-pz-DHH"/>
-                                <exclude reference="ppb-ts-aZV"/>
                                 <exclude reference="186-I2-PpT"/>
                                 <exclude reference="DLn-mq-TQC"/>
                                 <exclude reference="TCD-DU-Svm"/>
                                 <exclude reference="Yqu-ew-0Ox"/>
                                 <exclude reference="j0t-My-vWM"/>
                                 <exclude reference="qbD-ea-npC"/>
+                                <exclude reference="JCm-AV-mvA"/>
+                                <exclude reference="x9N-aq-ABK"/>
+                                <exclude reference="JXl-Js-EdT"/>
+                                <exclude reference="V1z-SJ-QA5"/>
+                                <exclude reference="dqK-wN-Qqd"/>
+                                <exclude reference="zDg-Za-jzf"/>
+                                <exclude reference="3UN-Zb-j14"/>
+                                <exclude reference="8Vt-pz-DHH"/>
+                                <exclude reference="ppb-ts-aZV"/>
+                                <exclude reference="6Vf-Ko-FBr"/>
+                                <exclude reference="JNa-NP-PKr"/>
+                                <exclude reference="Weg-Fb-C0D"/>
+                                <exclude reference="dJ1-z6-uc7"/>
+                                <exclude reference="e8e-kK-ZKM"/>
+                                <exclude reference="gln-Vt-qVB"/>
+                                <exclude reference="oFo-la-7kN"/>
                                 <exclude reference="1PA-ZM-HLt"/>
                                 <exclude reference="4Gv-TO-4Gh"/>
                                 <exclude reference="7aG-Eg-thY"/>
@@ -3729,19 +3732,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="sQW-xX-kB4"/>
                                 <exclude reference="tIc-Lo-cxr"/>
                                 <exclude reference="ulI-zy-iTI"/>
-                                <exclude reference="6Vf-Ko-FBr"/>
-                                <exclude reference="JNa-NP-PKr"/>
-                                <exclude reference="Weg-Fb-C0D"/>
-                                <exclude reference="dJ1-z6-uc7"/>
-                                <exclude reference="e8e-kK-ZKM"/>
-                                <exclude reference="gln-Vt-qVB"/>
-                                <exclude reference="oFo-la-7kN"/>
-                                <exclude reference="JXl-Js-EdT"/>
-                                <exclude reference="V1z-SJ-QA5"/>
-                                <exclude reference="dqK-wN-Qqd"/>
-                                <exclude reference="zDg-Za-jzf"/>
-                                <exclude reference="JCm-AV-mvA"/>
-                                <exclude reference="x9N-aq-ABK"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -3751,15 +3741,28 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="UWb-Di-S2f"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="3UN-Zb-j14"/>
-                                <include reference="8Vt-pz-DHH"/>
-                                <include reference="ppb-ts-aZV"/>
                                 <include reference="186-I2-PpT"/>
                                 <include reference="DLn-mq-TQC"/>
                                 <exclude reference="TCD-DU-Svm"/>
                                 <include reference="Yqu-ew-0Ox"/>
                                 <exclude reference="j0t-My-vWM"/>
                                 <exclude reference="qbD-ea-npC"/>
+                                <include reference="JCm-AV-mvA"/>
+                                <include reference="x9N-aq-ABK"/>
+                                <include reference="JXl-Js-EdT"/>
+                                <include reference="V1z-SJ-QA5"/>
+                                <include reference="dqK-wN-Qqd"/>
+                                <include reference="zDg-Za-jzf"/>
+                                <include reference="3UN-Zb-j14"/>
+                                <include reference="8Vt-pz-DHH"/>
+                                <include reference="ppb-ts-aZV"/>
+                                <exclude reference="6Vf-Ko-FBr"/>
+                                <exclude reference="JNa-NP-PKr"/>
+                                <exclude reference="Weg-Fb-C0D"/>
+                                <include reference="dJ1-z6-uc7"/>
+                                <include reference="e8e-kK-ZKM"/>
+                                <include reference="gln-Vt-qVB"/>
+                                <exclude reference="oFo-la-7kN"/>
                                 <include reference="1PA-ZM-HLt"/>
                                 <exclude reference="4Gv-TO-4Gh"/>
                                 <exclude reference="7aG-Eg-thY"/>
@@ -3782,19 +3785,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="sQW-xX-kB4"/>
                                 <exclude reference="tIc-Lo-cxr"/>
                                 <exclude reference="ulI-zy-iTI"/>
-                                <exclude reference="6Vf-Ko-FBr"/>
-                                <exclude reference="JNa-NP-PKr"/>
-                                <exclude reference="Weg-Fb-C0D"/>
-                                <include reference="dJ1-z6-uc7"/>
-                                <include reference="e8e-kK-ZKM"/>
-                                <include reference="gln-Vt-qVB"/>
-                                <exclude reference="oFo-la-7kN"/>
-                                <include reference="JXl-Js-EdT"/>
-                                <include reference="V1z-SJ-QA5"/>
-                                <include reference="dqK-wN-Qqd"/>
-                                <include reference="zDg-Za-jzf"/>
-                                <include reference="JCm-AV-mvA"/>
-                                <include reference="x9N-aq-ABK"/>
                             </mask>
                         </variation>
                     </view>
@@ -5024,7 +5014,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP" userLabel="_7.0a - Navigation Bar">
-                        <barButtonItem key="rightBarButtonItem" image="btnSignalLogo--white" id="fL4-BJ-gHP">
+                        <barButtonItem key="rightBarButtonItem" title="Close" id="fL4-BJ-gHP">
                             <color key="tintColor" red="0.99989169840000003" green="1" blue="0.99988096950000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="na1-9P-hTS"/>
@@ -5219,6 +5209,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
+                        <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
                         <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -5247,7 +5238,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -5328,7 +5319,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="64" width="400" height="100"/>
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -5355,6 +5347,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="10" y="274" width="94" height="21"/>
+                                            </variation>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -5407,6 +5402,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="172" width="400" height="628"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
@@ -5508,7 +5506,6 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="btnPhone--blue" width="45" height="44"/>
         <image name="btnQRShow--white" width="66" height="66"/>
         <image name="btnQRShow--white-1" width="66" height="66"/>
-        <image name="btnSignalLogo--white" width="32" height="32"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact-options-action" width="44" height="44"/>
@@ -5520,7 +5517,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="25" height="24"/>
+        <image name="settings-icon@1x" width="44" height="44"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
@@ -5529,8 +5526,9 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="uiEmptyInbox" width="227" height="227"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="DR8-fx-0PD"/>
+        <segue reference="D0d-4f-lcI"/>
+        <segue reference="ZcV-Ck-baL"/>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="gZ1-lh-srF"/>
+        <segue reference="D0d-4f-lcI"/>
     </inferredMetricsTieBreakers>
 </document>
