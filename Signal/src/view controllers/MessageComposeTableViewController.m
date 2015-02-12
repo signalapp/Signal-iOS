@@ -50,6 +50,8 @@
     [self initializeSearch];
 
     self.searchController.searchBar.hidden = NO;
+    self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
+    
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
 }
@@ -273,7 +275,7 @@
     NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
     
     // text to a non-signal number if we have no results and a valid phone #
-    if (searchResults.count == 0 && searchText.length > 8) {
+    if (searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
         NSString *sendTextTo = @"Send SMS to: ";
         sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
@@ -333,8 +335,10 @@
     [alertController addAction:okAction];
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
- 
-    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+
+    [self.parentViewController dismissViewControllerAnimated:NO completion:^{
+        [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+    }];
 }
 
 #pragma mark - SMS Composer Delegate
@@ -485,7 +489,5 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
-
 
 @end
