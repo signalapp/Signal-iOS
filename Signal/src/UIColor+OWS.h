@@ -12,8 +12,6 @@
 
 + (UIColor*) ows_materialBlueColor;
 
-
-
 + (UIColor *) ows_fadedBlueColor;
 
 + (UIColor *) ows_darkBackgroundColor;
@@ -27,5 +25,7 @@
 + (UIColor *) ows_redColor;
 
 + (UIColor*) ows_blackColor;
+
++ (UIColor*) backgroundColorForContact:(NSString*)contactIdentifier;
 
 @end
