@@ -280,6 +280,7 @@
 		A5578C721A646E5300704A25 /* VersionMigrationsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A5578C711A646E5300704A25 /* VersionMigrationsTests.m */; };
 		A56977911A351BC400173BF2 /* ScanIdentityBarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */; };
 		A56977921A351BC400173BF2 /* PresentIdentityQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */; };
+		A5988A811A8A70D0002AD6BE /* UIButton+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = A5988A801A8A70D0002AD6BE /* UIButton+OWS.m */; };
 		A59E6D721A79E5D100D98E2E /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A59E6D711A79E5D100D98E2E /* MIMETypeUtil.m */; };
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
 		A5E9D4BB1A65FAD800E4481C /* TSVideoAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */; };
@@ -875,6 +876,8 @@
 		A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanIdentityBarcodeViewController.m; sourceTree = "<group>"; };
 		A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresentIdentityQRCodeViewController.m; sourceTree = "<group>"; };
 		A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresentIdentityQRCodeViewController.h; sourceTree = "<group>"; };
+		A5988A7F1A8A70D0002AD6BE /* UIButton+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIButton+OWS.h"; path = "util/UIButton+OWS.h"; sourceTree = "<group>"; };
+		A5988A801A8A70D0002AD6BE /* UIButton+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIButton+OWS.m"; path = "util/UIButton+OWS.m"; sourceTree = "<group>"; };
 		A59E6D701A79E5D100D98E2E /* MIMETypeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIMETypeUtil.h; sourceTree = "<group>"; };
 		A59E6D711A79E5D100D98E2E /* MIMETypeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIMETypeUtil.m; sourceTree = "<group>"; };
 		A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2709,6 +2712,8 @@
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
 			isa = PBXGroup;
 			children = (
+				A5988A7F1A8A70D0002AD6BE /* UIButton+OWS.h */,
+				A5988A801A8A70D0002AD6BE /* UIButton+OWS.m */,
 				A547DD731A70A87800103EC7 /* DJWActionSheet+OWS.h */,
 				A547DD721A70A87800103EC7 /* DJWActionSheet+OWS.m */,
 				FCFA64B21A24F3880007FB87 /* UIColor+OWS.h */,
@@ -3125,6 +3130,7 @@
 				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				B63AF5C91A1F757900D01AAD /* TSRecipientPrekeyRequest.m in Sources */,
 				B63BAD6D1A74DA8F00269E74 /* TSStorageManager+messageIDs.m in Sources */,
+				A5988A811A8A70D0002AD6BE /* UIButton+OWS.m in Sources */,
 				7095B7B018F46D35002C66E2 /* PhoneNumberUtil.m in Sources */,
 				B63AF5D81A1F889500D01AAD /* SubProtocol.pb.m in Sources */,
 				FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */,

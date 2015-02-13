@@ -36,6 +36,7 @@
 #import "TSDatabaseView.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import "UIButton+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
 
@@ -92,7 +93,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, retain) UIButton *callButton;
 @property (nonatomic, retain) UIButton *messageButton;
 @property (nonatomic, retain) UIButton *attachButton;
 
@@ -140,11 +140,10 @@ typedef enum : NSUInteger {
 -(void) hideInputIfNeeded {
     if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
         [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
-        self.navigationItem.rightBarButtonItem = nil;
+        self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     }
     else if(![self isTextSecureReachable] ){
         [self inputToolbar].hidden= YES; // only RedPhone
-        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
     }
 }
 
@@ -158,18 +157,7 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
-    _callButton = [[UIButton alloc] init];
-    [_callButton addTarget:self action:@selector(callAction) forControlEvents:UIControlEventTouchUpInside];
-    [_callButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
-    _callButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
-
-    [_callButton setImage:[UIImage imageNamed:@"btnPhone--blue"] forState:UIControlStateNormal];
-
-    _messageButton = [[UIButton alloc] init];
-    [_messageButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
-    _messageButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
-    [_messageButton setImage:[UIImage imageNamed:@"btnSend--blue"] forState:UIControlStateNormal];
-
+    _messageButton = [UIButton ows_blueButtonWithTitle:@"Send"];
 
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
@@ -210,13 +198,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
     self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
 
-    if([self canCall]) {
-        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
-    }
-    else {
-        self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
-    }
+    self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -373,9 +355,8 @@ typedef enum : NSUInteger {
     self.navController = (APNavigationController*)self.navigationController;
 
     if(!isGroupConversation) {
-        self.navigationItem.rightBarButtonItem = nil;
-       
-        [[ self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:YES];
+        self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
+               [[ self.navController.navigationBar.subviews objectAtIndex:0] setUserInteractionEnabled:YES];
         [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_showFingerprintDisplay];
         [[ self.navController.navigationBar.subviews objectAtIndex:0] addGestureRecognizer:_toggleContactPhoneDisplay];
 
@@ -481,10 +462,6 @@ typedef enum : NSUInteger {
         self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
-    else if([self canCall]) {
-        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
-    }
     else {
         self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
     }
@@ -505,10 +482,6 @@ typedef enum : NSUInteger {
 
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
-    }
-    if([self canCall]) {
-        self.inputToolbar.contentView.rightBarButtonItem = _callButton;
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
 }
 
@@ -1064,20 +1037,16 @@ typedef enum : NSUInteger {
 
 }
 
--(void)chooseFromLibrary:(kMediaTypes)mediaType
-{
+-(void)chooseFromLibrary {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
-    {
-        NSArray* pictureTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 
-        NSArray* videoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
+        NSArray* photoOrVideoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage,(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
 
-        picker.mediaTypes = (mediaType == kMediaTypePicture) ? pictureTypeArray : videoTypeArray;
-
+        picker.mediaTypes = photoOrVideoTypeArray;
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }
 }
@@ -1452,7 +1421,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video"]//,@"Record audio"]
+             otherButtonTitles:@[@"Take Photo or Video", @" Choose from Library..."]//,@"Record audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
@@ -1464,13 +1433,9 @@ typedef enum : NSUInteger {
                                       [self takePictureOrVideo];
                                       break;
                                   case 1:
-                                      [self chooseFromLibrary:kMediaTypePicture];
+                                      [self chooseFromLibrary];
                                       break;
-
                                   case 2:
-                                      [self chooseFromLibrary:kMediaTypeVideo];
-                                      break;
-                                  case 3:
                                       [self recordAudio];
                                       break;
                                   default:
