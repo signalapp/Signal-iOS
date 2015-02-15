@@ -1404,6 +1404,8 @@ typedef enum : NSUInteger {
 
 - (void)setupAudioUI {
     _recordCount = 0;
+    [_audioRecorderTimer invalidate];
+    _audioRecorderTimer = nil;
     
     // Allow cancellation of audio
     self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelAudio)];
