@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -157,7 +157,7 @@
                                     <constraint firstItem="hSN-Ka-PzS" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" id="cJB-rq-7bY"/>
                                     <constraint firstItem="Q8M-tN-1ve" firstAttribute="leading" secondItem="hSN-Ka-PzS" secondAttribute="leading" id="eIX-uj-15n"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-15" id="fp7-UH-t0O">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="-12"/>
+                                        <variation key="heightClass=regular-widthClass=compact" constant="-21"/>
                                     </constraint>
                                     <constraint firstAttribute="height" constant="66" id="lM2-AA-dzm"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-18" id="lZW-eB-ucq"/>
@@ -1376,7 +1376,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="pjp-QF-hen"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="160" y="100" width="82" height="82"/>
                                             <mask key="constraints">
                                                 <include reference="69J-jd-lwK"/>
                                                 <exclude reference="BEa-1M-H8m"/>
@@ -1401,8 +1402,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="T1b-ph-zPv"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                            <rect key="frame" x="1" y="190" width="400" height="29"/>
                                             <mask key="constraints">
                                                 <exclude reference="8lm-oa-608"/>
                                                 <include reference="T1b-ph-zPv"/>
@@ -3025,7 +3027,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="jlJ-an-IhP"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="160" y="100" width="82" height="82"/>
                                             <mask key="constraints">
                                                 <exclude reference="6PG-XN-ctl"/>
                                                 <exclude reference="Wlg-7O-XdE"/>
@@ -3050,8 +3053,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <exclude reference="lBf-Vx-2UH"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                            <rect key="frame" x="1" y="191" width="400" height="29"/>
                                             <mask key="constraints">
                                                 <include reference="Mem-ez-9kw"/>
                                                 <exclude reference="lBf-Vx-2UH"/>
@@ -5342,6 +5346,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="10" y="274" width="94" height="21"/>
+                                            </variation>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -5487,8 +5494,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="23"/>
         <image name="add-conversation" width="26" height="26"/>
-        <image name="archive-active@1x" width="40" height="51"/>
-        <image name="archive-inactive@1x" width="40" height="51"/>
+        <image name="archive-active@1x" width="66" height="66"/>
+        <image name="archive-inactive@1x" width="66" height="66"/>
         <image name="btnCamera--white" width="52" height="40"/>
         <image name="btnCancel--white" width="44" height="44"/>
         <image name="btnGroup--white" width="44" height="44"/>
@@ -5501,8 +5508,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="empty-group-avatar" width="53" height="53"/>
         <image name="endcall.png" width="100" height="100"/>
-        <image name="inbox-active@1x" width="40" height="51"/>
-        <image name="inbox-inactive@1x" width="40" height="51"/>
+        <image name="inbox-active@1x" width="66" height="66"/>
+        <image name="inbox-inactive@1x" width="66" height="66"/>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="quit.png" width="50" height="50"/>
