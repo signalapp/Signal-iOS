@@ -5,6 +5,7 @@
 
 @synthesize isPersistent = isPersistent;
 @synthesize allowedCollections = allowedCollections;
+@synthesize skipInitialViewPopulation = skipInitialViewPopulation;
 
 - (id)init
 {
@@ -20,7 +21,8 @@
 	YapDatabaseViewOptions *copy = [[[self class] alloc] init]; // [self class] required to support subclassing
 	copy->isPersistent = isPersistent;
 	copy->allowedCollections = allowedCollections;
-	
+	copy->skipInitialViewPopulation = skipInitialViewPopulation;
+
 	return copy;
 }
 

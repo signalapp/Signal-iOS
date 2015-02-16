@@ -120,7 +120,11 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		// So we can skip all the checks because we know we need to create the memory tables.
 		
 		if (![self createTables]) return NO;
-		if (![self populateView]) return NO;
+		
+		if (!viewConnection->view->options.skipInitialViewPopulation)
+		{
+			if (![self populateView]) return NO;
+		}
 		
 		// Store initial versionTag in prefs table
 		
@@ -166,7 +170,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			// First time registration
 			
 			needsCreateTables = YES;
-			needsPopulateView = YES;
+			needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
 		}
 		else if (oldClassVersion != classVersion)
 		{
@@ -174,7 +178,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			
 			[self dropTablesForOldClassVersion:oldClassVersion];
 			needsCreateTables = YES;
-			needsPopulateView = YES;
+			needsPopulateView = YES; // Not initialViewPopulation, but rather codebase upgrade.
 		}
 	
 		// Create the database tables (if needed)
@@ -215,7 +219,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			
 			if (![oldVersionTag isEqualToString:versionTag])
 			{
-				needsPopulateView = YES;
+				needsPopulateView = YES; // Not initialViewPopulation, but rather versionTag upgrade.
 			}
 		}
 		
