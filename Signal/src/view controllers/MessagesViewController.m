@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 
+#import <AddressBookUI/AddressBookUI.h>
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
@@ -82,6 +83,8 @@ typedef enum : NSUInteger {
     BOOL isGroupConversation;
 }
 
+
+@property (nonatomic, weak)   UIView *navView;
 @property (nonatomic, retain) TSThread *thread;
 @property (nonatomic, strong) YapDatabaseConnection   *editingDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseConnection   *uiDatabaseConnection;
@@ -118,17 +121,17 @@ typedef enum : NSUInteger {
 - (void)setupWithTSGroup:(TSGroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
-        message.groupMetaMessage = TSGroupMessageNew;
-        if(model.groupImage!=nil) {
-            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
-        }
-        else {
-            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-        }
-        isGroupConversation = YES;
     }];
+    
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+    message.groupMetaMessage = TSGroupMessageNew;
+    if(model.groupImage!=nil) {
+        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
+    }
+    else {
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+    }
+    isGroupConversation = YES;
 }
 
 - (void)setupWithThread:(TSThread *)thread{
@@ -156,36 +159,36 @@ typedef enum : NSUInteger {
     
     _toggleContactPhoneDisplay = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
-
+    
     _messageButton = [UIButton ows_blueButtonWithTitle:@"Send"];
-
+    
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
     _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
-
-
+    
+    
     [self markAllMessagesAsRead];
-
+    
     [self initializeBubbles];
     [self initializeTextView];
     self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[self.thread.uniqueId]
                                                                       view:TSMessageDatabaseViewExtensionName];
-
+    
     self.page = 0;
-
+    
     [self updateRangeOptionsForPage:self.page];
-
+    
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-
+    
     [self initializeCollectionViewLayout];
-
+    
     self.senderId          = ME_MESSAGE_IDENTIFIER
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReadTimer)
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
@@ -197,7 +200,7 @@ typedef enum : NSUInteger {
 -(void) initializeTextView {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
     self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
-
+    
     self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
 }
 
@@ -208,7 +211,7 @@ typedef enum : NSUInteger {
     
     [self.collectionView reloadData];
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
+    
     if (numberOfMessages > 0) {
         NSIndexPath * lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages-1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
@@ -258,6 +261,7 @@ typedef enum : NSUInteger {
     }
     
     [self cancelReadTimer];
+    [self removeTitleLabelGestureRecognizer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -274,17 +278,17 @@ typedef enum : NSUInteger {
 - (IBAction)didSelectShow:(id)sender {
     if (isGroupConversation) {
         UIBarButtonItem *spaceEdge = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-
+        
         spaceEdge.width = 40;
-
+        
         UIBarButtonItem *spaceMiddleIcons = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
         spaceMiddleIcons.width = 61;
-
+        
         UIBarButtonItem *spaceMiddleWords = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
+        
         NSDictionary* buttonTextAttributes = @{NSFontAttributeName:[UIFont ows_regularFontWithSize:15.0f],
                                                NSForegroundColorAttributeName:[UIColor ows_materialBlueColor]};
-
+        
         
         
         
@@ -319,9 +323,9 @@ typedef enum : NSUInteger {
         groupMembersBarButton.customView = groupMembersButton;
         groupMembersBarButton.customView.userInteractionEnabled = YES;
         
-
+        
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateBarButton, spaceMiddleWords, groupLeaveBarButton, spaceMiddleWords, groupMembersBarButton, spaceEdge];
-
+        
         for(UIButton *button in self.navController.dropDownToolbar.items) {
             [button setTintColor:[UIColor ows_materialBlueColor]];
         }
@@ -338,7 +342,7 @@ typedef enum : NSUInteger {
 }
 
 -(void) setNavigationTitle {
-    NSString* navTitle = !isGroupConversation ? self.thread.name : ((TSGroupThread*)self.thread).groupModel.groupName;
+    NSString* navTitle = self.thread.name;
     if(isGroupConversation && [navTitle length]==0) {
         navTitle = @"New Group";
     }
@@ -349,9 +353,10 @@ typedef enum : NSUInteger {
 -(void)initializeToolbars {
     
     self.navController = (APNavigationController*)self.navigationController;
-
+    
     if(!isGroupConversation) {
         self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
+        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     }
     
     [self hideInputIfNeeded];
@@ -363,20 +368,38 @@ typedef enum : NSUInteger {
         return;
     }
     
-    
-    UIView *navItemView;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            navItemView = view;
-            for (UIView *aView in navItemView.subviews) {
+            self.navView = view;
+            for (UIView *aView in self.navView.subviews) {
                 if ([aView isKindOfClass:[UILabel class]]) {
-                    [aView.superview.superview setUserInteractionEnabled:YES];
-                    [aView.superview setUserInteractionEnabled:YES];
-                    [aView setUserInteractionEnabled:YES];
-                    [view bringSubviewToFront:aView];
-                    [aView addGestureRecognizer:_showFingerprintDisplay];
-                    [aView addGestureRecognizer:_toggleContactPhoneDisplay];
+                    UILabel *label = (UILabel*)aView;
+                    if ([label.text isEqualToString:self.title]) {
+                        [self.navView setUserInteractionEnabled:YES];
+                        [aView setUserInteractionEnabled:YES];
+                        [aView addGestureRecognizer:_showFingerprintDisplay];
+                        [aView addGestureRecognizer:_toggleContactPhoneDisplay];
+                        return;
+                    }
                 }
+            }
+        }
+    }
+}
+
+- (void)removeTitleLabelGestureRecognizer {
+    if(isGroupConversation) {
+        return;
+    }
+    
+    for (UIView *aView in self.navView.subviews) {
+        if ([aView isKindOfClass:[UILabel class]]) {
+            UILabel *label = (UILabel*)aView;
+            if ([label.text isEqualToString:self.title]) {
+                [self.navView setUserInteractionEnabled:NO];
+                [aView setUserInteractionEnabled:NO];
+                [aView removeGestureRecognizer:_showFingerprintDisplay];
+                [aView removeGestureRecognizer:_toggleContactPhoneDisplay];
                 return;
             }
         }
@@ -386,7 +409,7 @@ typedef enum : NSUInteger {
 -(void)initializeBubbles
 {
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-
+    
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
@@ -396,12 +419,12 @@ typedef enum : NSUInteger {
 {
     if (self.collectionView){
         [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_regularFontWithSize:15.0f]];
-
+        
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
-
+        
         [self updateLoadEarlierVisible];
-
+        
         self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
         self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
     }
@@ -418,6 +441,36 @@ typedef enum : NSUInteger {
 
 -(void) toggleContactPhone {
     _displayPhoneAsTitle = !_displayPhoneAsTitle;
+    
+    if (!_thread.isGroupThread) {
+        
+        Contact *contact = [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:[self phoneNumberForThread]];
+        if (!contact) {
+            ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
+            
+            ABRecordRef aContact = ABPersonCreate();
+            CFErrorRef anError = NULL;
+            
+            ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+            
+            ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef) [self phoneNumberForThread].toE164, kABPersonPhoneMainLabel, NULL);
+            
+            ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
+            CFRelease(phone);
+            
+            if (anError) {
+                aContact = nil;
+            }
+            
+            view.displayedPerson = aContact; // Assume person is already defined.
+            view.allowsAddingToAddressBook = YES;
+            
+            [self.navigationController pushViewController:view animated:YES];
+            CFRelease(aContact);
+            
+        }
+    }
+    
     if(_displayPhoneAsTitle) {
         self.title = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[[self phoneNumberForThread] toE164]];
     }
@@ -445,9 +498,11 @@ typedef enum : NSUInteger {
         return YES;
     }
     else {
-        PhoneNumber *number = [self phoneNumberForThread];
-        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
-        return [contact isTextSecureContact];
+        __block TSRecipient *recipient;
+        [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            recipient = [TSRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164 withTransaction:transaction];
+        }];
+        return recipient?YES:NO;
     }
 }
 
@@ -471,7 +526,7 @@ typedef enum : NSUInteger {
 -(BOOL) canCall {
     return !isGroupConversation && [self isRedPhoneReachable] && ![((TSContactThread*)_thread).contactIdentifier isEqualToString:[SignalKeyingStorage.localNumber toE164]];
 }
-                                                                   
+
 - (void)textViewDidChange:(UITextView *)textView {
     if([textView.text length]>0) {
         self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
@@ -480,7 +535,7 @@ typedef enum : NSUInteger {
     else {
         self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
     }
-
+    
 }
 #pragma mark - JSQMessagesViewController method overrides
 
@@ -492,15 +547,13 @@ typedef enum : NSUInteger {
 {
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
-
+        
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
-
+        
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
     }
 }
-
-
 
 #pragma mark - JSQMessages CollectionView DataSource
 
@@ -512,14 +565,14 @@ typedef enum : NSUInteger {
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
-
+    
     if ([message.senderId isEqualToString:self.senderId]) {
         if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
             return self.outgoingMessageFailedImageData;
         }
         return self.outgoingBubbleImageData;
     }
-
+    
     return self.incomingBubbleImageData;
 }
 
@@ -533,7 +586,7 @@ typedef enum : NSUInteger {
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-
+    
     switch (msg.messageType) {
         case TSIncomingMessageAdapter:
             return [self loadIncomingMessageCellForMessage:msg atIndexPath:indexPath];
@@ -545,7 +598,7 @@ typedef enum : NSUInteger {
             return [self loadInfoMessageCellForMessage:msg atIndexPath:indexPath];
         case TSErrorMessageAdapter:
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
-
+            
         default:
             NSLog(@"Something went wrong");
             return nil;
@@ -563,7 +616,7 @@ typedef enum : NSUInteger {
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
-
+    
     return cell;
 }
 
@@ -577,7 +630,7 @@ typedef enum : NSUInteger {
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
-
+    
     return cell;
 }
 
@@ -607,7 +660,7 @@ typedef enum : NSUInteger {
     if ([self showDateAtIndexPath:indexPath]) {
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
-
+    
     return 0.0f;
 }
 
@@ -619,9 +672,9 @@ typedef enum : NSUInteger {
     }
     else {
         TSMessageAdapter *currentMessage =  [self messageAtIndexPath:indexPath];
-
+        
         TSMessageAdapter *previousMessage = [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row-1 inSection:indexPath.section]];
-
+        
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
             showDate = YES;
@@ -632,19 +685,19 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    
     if ([self showDateAtIndexPath:indexPath]) {
         TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
-
+        
         return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:currentMessage.date];
     }
-
+    
     return nil;
 }
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-
+    
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
@@ -653,11 +706,11 @@ typedef enum : NSUInteger {
         if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1) {
             return [self isMessageOutgoingAndDelivered:currentMessage];
         }
-
+        
         if (![self isMessageOutgoingAndDelivered:currentMessage]) {
             return NO;
         }
-
+        
         TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
         return ![self isMessageOutgoingAndDelivered:nextMessage];
     }
@@ -667,12 +720,12 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter * nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
     int i = 1;
-
+    
     while (indexPath.item+i < [self.collectionView numberOfItemsInSection:indexPath.section]-1 && ![self isMessageOutgoingAndDelivered:nextMessage]) {
         i++;
         nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+i inSection:indexPath.section]];
     }
-
+    
     return nextMessage;
 }
 
@@ -692,7 +745,7 @@ typedef enum : NSUInteger {
             name = name ? name : msg.senderId;
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-
+            
             return (NSAttributedString*)attrStr;
         }
         else {
@@ -701,7 +754,7 @@ typedef enum : NSUInteger {
             textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
             NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-
+            
             return (NSAttributedString*)attrStr;
         }
     }
@@ -720,7 +773,7 @@ typedef enum : NSUInteger {
     else if (msg.messageType == TSOutgoingMessageAdapter) {
         return 16.0f;
     }
-
+    
     return 0.0f;
 }
 
@@ -731,20 +784,20 @@ typedef enum : NSUInteger {
 {
     TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction    *interaction = [self interactionAtIndexPath:indexPath];
-
+    
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
             if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
                 [self handleUnsentMessageTap:(TSOutgoingMessage*)interaction];
             }
         case TSIncomingMessageAdapter:{
-
+            
             BOOL isMediaMessage = [messageItem isMediaMessage];
-
+            
             if (isMediaMessage) {
                 if([[messageItem media] isKindOfClass:[TSAttachmentAdapter class]]) {
                     TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
-
+                    
                     if ([messageMedia isImage]) {
                         tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
                         CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
@@ -752,11 +805,11 @@ typedef enum : NSUInteger {
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                         }];
-
+                        
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                             FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
-    
+                            
                             [vc presentFromViewController:self.navigationController];
                         }
                     } else {
@@ -772,7 +825,7 @@ typedef enum : NSUInteger {
                     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                         attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                     }];
-
+                    
                     if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                         TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
                         NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -781,14 +834,14 @@ typedef enum : NSUInteger {
                                 [self dismissKeyBoard];
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
-
+                                
                                 [[NSNotificationCenter defaultCenter] addObserver:self
                                                                          selector:@selector(moviePlayBackDidFinish:)
                                                                              name:MPMoviePlayerPlaybackDidFinishNotification
                                                                            object: _videoPlayer];
-
-                                 _videoPlayer.controlStyle = MPMovieControlStyleDefault;
-                                 _videoPlayer.shouldAutoplay = YES;
+                                
+                                _videoPlayer.controlStyle = MPMovieControlStyleDefault;
+                                _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview: _videoPlayer.view];
                                 [_videoPlayer setFullscreen:YES animated:YES];
                             }
@@ -826,7 +879,7 @@ typedef enum : NSUInteger {
                                         }
                                     }
                                 }
-
+                                
                                 if (isResuming) {
                                     // if you had paused an audio msg and now you're tapping to resume
                                     [_audioPlayer prepareToPlay];
@@ -878,47 +931,47 @@ typedef enum : NSUInteger {
     if ([self shouldShowLoadEarlierMessages]) {
         self.page++;
     }
-
+    
     NSInteger item = (NSInteger)[self scrollToItem];
-
+    
     [self updateRangeOptionsForPage:self.page];
-
+    
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-
+    
     [self updateLayoutForEarlierMessagesWithOffset:item];
-
+    
 }
 
 -(BOOL)shouldShowLoadEarlierMessages
 {
     __block BOOL show = YES;
-
+    
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         show = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] < [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
-
+    
     return show;
 }
 
 -(NSUInteger)scrollToItem
 {
     __block NSUInteger item = kYapDatabaseRangeLength*(self.page+1) - [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
+    
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-
+        
         NSUInteger numberOfVisibleMessages = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] ;
         NSUInteger numberOfTotalMessages = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId] ;
         NSUInteger numberOfMessagesToLoad =  numberOfTotalMessages - numberOfVisibleMessages ;
-
+        
         BOOL canLoadFullRange = numberOfMessagesToLoad >= kYapDatabaseRangeLength;
-
+        
         if (!canLoadFullRange) {
             item = numberOfMessagesToLoad;
         }
     }];
-
+    
     return item == 0 ? item : item - 1;
 }
 
@@ -931,21 +984,21 @@ typedef enum : NSUInteger {
 {
     [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     [self.collectionView reloadData];
-
+    
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:offset inSection:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
-
+    
     [self updateLoadEarlierVisible];
 }
 
 -(void)updateRangeOptionsForPage:(NSUInteger)page
 {
     YapDatabaseViewRangeOptions *rangeOptions = [YapDatabaseViewRangeOptions flexibleRangeWithLength:kYapDatabaseRangeLength*(page+1) offset:0 from:YapDatabaseViewEnd];
-
+    
     rangeOptions.maxLength = kYapDatabaseRangeMaxLength;
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
-
+    
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
-
+    
 }
 
 #pragma mark Bubble User Actions
@@ -980,7 +1033,7 @@ typedef enum : NSUInteger {
         NSString *newKeyFingerprint = [errorMessage newIdentityKey];
         NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
         NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
-   
+        
         [self dismissKeyBoard];
         
         [DJWActionSheet showInView:self.parentViewController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
@@ -1009,7 +1062,7 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-
+    
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]){
         FingerprintViewController *vc = [segue destinationViewController];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1043,24 +1096,24 @@ typedef enum : NSUInteger {
     picker.delegate = self;
     picker.allowsEditing = NO;
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-
+    
     if ([UIImagePickerController isSourceTypeAvailable:
          UIImagePickerControllerSourceTypeCamera]) {
         picker.mediaTypes = @[(NSString*)kUTTypeImage,(NSString*)kUTTypeMovie];
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }
-
+    
 }
 
 -(void)chooseFromLibrary {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-
+        
         NSArray* photoOrVideoTypeArray = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage,(NSString *)kUTTypeMovie, (NSString*)kUTTypeVideo, nil];
-
+        
         picker.mediaTypes = photoOrVideoTypeArray;
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }
@@ -1095,24 +1148,22 @@ typedef enum : NSUInteger {
         [self sendQualityAdjustedAttachment:videoURL];
     }
     else {
-
         UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
         if(picture_camera) {
             DDLogVerbose(@"Sending picture attachement ...");
             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] ofType:@"image/jpeg"];
         }
     }
-
+    
 }
 
 -(void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:nil attachments:[NSMutableArray array]];
-
-    [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
-    [self finishSendingMessage];
-
-    [self dismissViewControllerAnimated:YES completion:nil];
-
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
+        [self finishSendingMessage];
+    }];
 }
 
 -(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
@@ -1121,29 +1172,23 @@ typedef enum : NSUInteger {
     AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
     exportSession.shouldOptimizeForNetworkUse = YES;
     exportSession.outputFileType = AVFileTypeMPEG4;
-
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     basePath = [basePath stringByAppendingPathComponent:@"videos"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
     }
-
+    
     NSURL *compressedVideoUrl = [NSURL fileURLWithPath:basePath];
     double currentTime = [[NSDate date] timeIntervalSince1970];
     NSString *strImageName = [NSString stringWithFormat:@"%f",currentTime];
-    compressedVideoUrl=[compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
-
+    compressedVideoUrl = [compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
+    
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-
+        [self  sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
     }];
-    //SHOULD PROBABLY REMOVE THIS
-    while(exportSession.progress!=1){
-
-    }
-    [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
-
 }
 
 -(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
@@ -1157,7 +1202,7 @@ typedef enum : NSUInteger {
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
             return image;
-
+            
         case TSImageQualityHigh:
             correctedWidth = 2048;
             break;
@@ -1170,7 +1215,7 @@ typedef enum : NSUInteger {
         default:
             break;
     }
-
+    
     return [self imageScaled:image toMaxSize:correctedWidth];
 }
 
@@ -1178,21 +1223,21 @@ typedef enum : NSUInteger {
 {
     CGFloat scaleFactor;
     CGFloat aspectRatio = image.size.height / image.size.width;
-
+    
     if( aspectRatio > 1 ) {
         scaleFactor = size / image.size.width;
     }
     else {
         scaleFactor = size / image.size.height;
     }
-
+    
     CGSize newSize = CGSizeMake(image.size.width * scaleFactor, image.size.height * scaleFactor);
-
+    
     UIGraphicsBeginImageContext(newSize);
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage* updatedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
+    
     return updatedImage;
 }
 
@@ -1244,7 +1289,7 @@ typedef enum : NSUInteger {
             [self initializeToolbars];
         }];
     }
-
+    
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     
     if ( ![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications])
@@ -1273,7 +1318,7 @@ typedef enum : NSUInteger {
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
-
+    
     __block BOOL scrollToBottom = NO;
     
     if ([sectionChanges count] == 0 & [messageRowChanges count] == 0)
@@ -1308,16 +1353,16 @@ typedef enum : NSUInteger {
                 case YapDatabaseViewChangeUpdate :
                 {
                     NSMutableArray *rowsToUpdate = [@[rowChange.indexPath] mutableCopy];
-
+                    
                     if (_lastDeliveredMessageIndexPath) {
                         [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                     }
-
+                    
                     for (NSIndexPath* indexPath in rowsToUpdate) {
                         TSInteraction * interaction = [self interactionAtIndexPath:indexPath];
                         [[TSAdapterCacheManager sharedManager] cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
                     }
-
+                    
                     [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                     scrollToBottom = YES;
                     break;
@@ -1352,24 +1397,24 @@ typedef enum : NSUInteger {
         NSUInteger row = (NSUInteger)indexPath.row;
         NSUInteger section = (NSUInteger)indexPath.section;
         NSUInteger numberOfItemsInSection = [self.messageMappings numberOfItemsInSection:section];
-
+        
         NSAssert(row < numberOfItemsInSection, @"Cannot fetch message because row %d is >= numberOfItemsInSection %d", (int)row, (int)numberOfItemsInSection);
-
+        
         message = [viewTransaction objectAtRow:row inSection:section withMappings:self.messageMappings];
         NSParameterAssert(message != nil);
     }];
-
+    
     return message;
 }
 
 - (TSMessageAdapter*)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
     TSAdapterCacheManager * manager = [TSAdapterCacheManager sharedManager];
-
+    
     if (![manager containsCacheEntryForInteractionId:interaction.uniqueId]) {
         [manager cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread] forInteractionId:interaction.uniqueId];
     }
-
+    
     return [manager adapterForInteractionId:interaction.uniqueId];
 }
 
@@ -1386,16 +1431,16 @@ typedef enum : NSUInteger {
                                [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
                                nil];
     NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
-
+    
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
+    
     NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
     [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
     [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
-
+    
     // Initiate and prepare the recorder
     _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
     _audioRecorder.delegate = self;
@@ -1429,9 +1474,9 @@ typedef enum : NSUInteger {
 -(void)didPressAccessoryButton:(UIButton *)sender
 {
     [self dismissKeyBoard];
-
+    
     UIView *presenter = self.parentViewController.view;
-
+    
     [DJWActionSheet showInView:presenter
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
@@ -1461,16 +1506,8 @@ typedef enum : NSUInteger {
 }
 
 - (void)markAllMessagesAsRead {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        NSUInteger numberOfItemsInSection = [viewTransaction numberOfItemsInGroup:self.thread.uniqueId];
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *writeTransaction) {
-            for (NSUInteger i = 0; i < numberOfItemsInSection; i++) {
-                TSIncomingMessage *message = [viewTransaction objectAtIndex:i inGroup:self.thread.uniqueId];
-                message.read               = YES;
-                [message saveWithTransaction:writeTransaction];
-            }
-        }];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.thread markAllAsReadWithTransaction:transaction];
     }];
 }
 
@@ -1479,7 +1516,7 @@ typedef enum : NSUInteger {
     if (action == @selector(delete:)) {
         return YES;
     }
-
+    
     return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
 }
 
@@ -1495,14 +1532,14 @@ typedef enum : NSUInteger {
 
 -(void)updateGroup {
     [self.navController hideDropDown:self];
-
+    
     [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
 }
 
 
 - (void) leaveGroup {
     [self.navController hideDropDown:self];
-
+    
     TSGroupThread* gThread = (TSGroupThread*)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
     message.groupMetaMessage = TSGroupMessageQuit;
@@ -1517,21 +1554,26 @@ typedef enum : NSUInteger {
 }
 
 - (void) updateGroupModelTo:(TSGroupModel*)newGroupModel {
+    __block TSGroupThread     *groupThread;
+    __block TSOutgoingMessage *message;
+    
+    
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
-        gThread.groupModel = newGroupModel;
-        [gThread saveWithTransaction:transaction];
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+        groupThread.groupModel = newGroupModel;
+        [groupThread saveWithTransaction:transaction];
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:groupThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
         message.groupMetaMessage = TSGroupMessageUpdate;
-        if(newGroupModel.groupImage!=nil) {
-            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage) contentType:@"image/png" inMessage:message thread:gThread];
-        }
-        else {
-            [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
-        }
-
-        self.thread = gThread;
     }];
+    
+    if(newGroupModel.groupImage!=nil) {
+        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage) contentType:@"image/png" inMessage:message thread:groupThread];
+    }
+    else {
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread];
+    }
+    
+    self.thread = groupThread;
 }
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{

@@ -63,8 +63,6 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return [MIMETypeUtil isImage:self.contentType];
 }
 
-
-
 - (BOOL)isVideo {
     return [MIMETypeUtil isVideo:self.contentType];
 }
@@ -85,6 +83,7 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 - (UIImage*)videoThumbnail {
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:self.filePath] options:nil];
     AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generate.appliesPreferredTrackTransform = YES;
     NSError *err = NULL;
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];

@@ -36,7 +36,7 @@
 }
 
 - (int)localRegistrationId {
-    return [TSAccountManager getOrGenerateRegistrationId];
+    return (int)[TSAccountManager getOrGenerateRegistrationId];
 }
 
 - (void)saveRemoteIdentity:(NSData*)identityKey recipientId:(NSString*)recipientId {

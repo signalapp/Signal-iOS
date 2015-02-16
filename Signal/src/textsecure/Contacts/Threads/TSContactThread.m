@@ -9,6 +9,7 @@
 #import "TSContactThread.h"
 
 #import "Environment.h"
+#import "IncomingPushMessageSignal.pb.h"
 #import "TSStorageManager.h"
 #import "ContactsManager.h"
 #import "TSRecipient.h"
@@ -24,6 +25,17 @@
     self = [super initWithUniqueId:uniqueIdentifier];
     
     return self;
+}
+
++ (instancetype)getOrCreateThreadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction pushSignal:(IncomingPushMessageSignal*)pushSignal{
+    TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
+    
+    if (!recipient) {
+        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:contactId relay:pushSignal.hasRelay?pushSignal.relay:nil];
+        [recipient saveWithTransaction:transaction];
+    }
+    
+    return [self getOrCreateThreadWithContactId:contactId transaction:transaction];
 }
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction {

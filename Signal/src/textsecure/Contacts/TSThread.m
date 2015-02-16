@@ -8,6 +8,7 @@
 
 #import "TSThread.h"
 #import "ContactsManager.h"
+#import "TSDatabaseView.h"
 #import "TSInteraction.h"
 #import "TSStorageManager.h"
 
@@ -20,6 +21,7 @@
 @interface TSThread ()
 
 @property (nonatomic, retain) NSDate   *creationDate;
+@property (nonatomic, copy)   NSDate   *archivalDate;
 @property (nonatomic, retain) NSDate   *lastMessageDate;
 @property (nonatomic, copy  ) NSString *latestMessageId;
 
@@ -35,6 +37,7 @@
     self = [super initWithUniqueId:uniqueId];
     
     if (self) {
+        _archivalDate    = nil;
         _latestMessageId = nil;
         _lastMessageDate = nil;
         _creationDate    = [NSDate date];
@@ -58,6 +61,10 @@
 
 - (UIImage*)image{
     return nil;
+}
+
+- (NSDate *)archivalDate{
+    return _archivalDate;
 }
 
 - (NSString*)lastMessageLabel{
@@ -132,6 +139,32 @@
     }];
     
     return hasUnread;
+}
+
+- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction {
+    YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
+    NSUInteger numberOfItemsInSection           = [viewTransaction numberOfItemsInGroup:self.uniqueId];
+    for (NSUInteger i = 0; i < numberOfItemsInSection; i++) {
+        TSIncomingMessage *message = [viewTransaction objectAtIndex:i inGroup:self.uniqueId];
+        message.read = YES;
+        [message saveWithTransaction:transaction];
+    }
+}
+
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [self archiveThreadWithTransaction:transaction referenceDate:[NSDate date]];
+}
+
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction referenceDate:(NSDate*)date {
+    [self markAllAsReadWithTransaction:transaction];
+    _archivalDate = date;
+    
+    [self saveWithTransaction:transaction];
+}
+
+- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction {
+    _archivalDate = nil;
+    [self saveWithTransaction:transaction];
 }
 
 - (void)updateWithLastMessage:(TSInteraction*)lastMessage transaction:(YapDatabaseReadWriteTransaction*)transaction {

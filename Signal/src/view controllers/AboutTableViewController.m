@@ -69,7 +69,7 @@
     
     //Twitter Invite
     self.twitterInviteCell = [[UITableViewCell alloc]init];
-    self.twitterInviteCell.textLabel.text = @"Share install link";
+    self.twitterInviteCell.textLabel.text = @"Share Install Link";
     
     UIImageView* twitterImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"twitter_logo"]];
     [twitterImageView setFrame:CGRectMake(0, 0, 34, 34)];

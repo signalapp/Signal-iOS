@@ -49,7 +49,7 @@ typedef void(^failedVerificationBlock)(NSError *error);
  *  @return registrationID;
  */
 
-+ (int)getOrGenerateRegistrationId;
++ (uint32_t)getOrGenerateRegistrationId;
 
 /**
  *  Sets the user as registered

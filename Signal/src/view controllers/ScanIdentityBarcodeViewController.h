@@ -17,6 +17,5 @@
 @property(nonatomic,strong) AVCaptureVideoPreviewLayer *prevLayer;
 
 @property(nonatomic,strong) UIView *highlightView;
-@property(nonatomic,strong) UILabel *label;
 @property(nonatomic,strong) NSData *identityKey;
 @end

@@ -50,6 +50,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     
     self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);
     self.tableView.tableHeaderView = self.tableView.tableHeaderView;
+    
+    
     contacts = [contacts filter:^int(Contact* contact) {
         for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
             if([[number toE164] isEqualToString:[SignalKeyingStorage.localNumber toE164]]) {
@@ -246,20 +248,23 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SearchCell"];
     
     if (cell == nil) {
-        
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GroupSearchCell"];
     }
+    
     NSUInteger row = (NSUInteger)indexPath.row;
     Contact* contact = contacts[row];
     
     cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    if ([[tableView indexPathsForSelectedRows] containsObject:indexPath]) {
+        [self adjustSelected:cell];
+    }
     
     return cell;
 }
@@ -268,9 +273,12 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    [self adjustSelected:cell];
 }
 
+- (void)adjustSelected:(UITableViewCell*)cell {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+}
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {

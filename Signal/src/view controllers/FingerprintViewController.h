@@ -45,5 +45,5 @@
 // This is called when the recipient's public key is verified. Later can be used to mark as such if we want a step above TOFU in UX.
 - (IBAction)unwindToIdentityKeyWasVerified:(UIStoryboardSegue *)segue;
 // Just a cancelation of the user's request to verify reciepient fingerprint or have their fingerprint verified by recipient
-- (IBAction)unwindCancel:(UIStoryboardSegue *)segue;
+- (IBAction)unwindIdentityVerificationCancel:(UIStoryboardSegue *)segue;
 @end

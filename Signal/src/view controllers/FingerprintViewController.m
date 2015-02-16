@@ -41,18 +41,10 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view setAlpha:0];
-    UITapGestureRecognizer *tapToShowFingerprint = [[UITapGestureRecognizer alloc]  initWithTarget:self action:@selector(showFingerprint)];
-    tapToShowFingerprint.numberOfTapsRequired = 1;
-
-    UITapGestureRecognizer *tapToScanFingerprint = [[UITapGestureRecognizer alloc]  initWithTarget:self action:@selector(scanFingerprint)];
-    tapToScanFingerprint.numberOfTapsRequired = 1;
     
     UILongPressGestureRecognizer *longpressToResetSession = [[UILongPressGestureRecognizer alloc]  initWithTarget:self action:@selector(shredAndDelete:)];
     longpressToResetSession.minimumPressDuration = 1.0;
     [self.view addGestureRecognizer:longpressToResetSession];
-    [self.view addGestureRecognizer:tapToShowFingerprint];
-    [_theirFingerprintView addGestureRecognizer:tapToScanFingerprint];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -102,7 +94,7 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
     [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self.view setAlpha:0];
     } completion:^(BOOL succeeded){
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self dismissViewControllerAnimated:NO completion:nil];
     }];
     
 }
@@ -134,15 +126,14 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 }
 
 
--(void) showFingerprint {
+-(IBAction) showFingerprint {
     [self performSegueWithIdentifier:kPresentIdentityQRCodeViewSegue sender:self];
 }
 
 
--(void) scanFingerprint {
+-(IBAction) scanFingerprint {
     [self performSegueWithIdentifier:kScanIdentityBarcodeViewSegue sender:self];
 }
-
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([[segue identifier] isEqualToString:kPresentIdentityQRCodeViewSegue]){
@@ -160,7 +151,7 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 }
 
 
-- (IBAction)unwindCancel:(UIStoryboardSegue *)segue{
+- (IBAction)unwindIdentityVerificationCancel:(UIStoryboardSegue *)segue{
     NSLog(@"action cancelled");
     // Can later be used to mark identity key as verified if we want step above TOFU in UX
 }

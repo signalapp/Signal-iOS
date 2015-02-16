@@ -299,7 +299,8 @@
             
         } else{
             TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source
-                                                                           transaction:transaction];
+                                                                           transaction:transaction
+                                                                            pushSignal:message];
             [cThread saveWithTransaction:transaction];
             incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                   inThread:cThread

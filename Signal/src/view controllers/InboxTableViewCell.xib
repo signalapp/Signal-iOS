@@ -14,8 +14,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="318" height="71"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
-                        <rect key="frame" x="-32" y="0.5" width="200" height="72"/>
+                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
+                        <rect key="frame" x="-32" y="1" width="200" height="72"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cellBtnMoveToArchive--blue" translatesAutoresizingMaskIntoConstraints="NO" id="WyX-Hb-Mpn">
                                 <rect key="frame" x="60" y="25" width="22" height="22"/>

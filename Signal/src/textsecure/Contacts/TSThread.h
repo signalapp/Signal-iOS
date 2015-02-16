@@ -61,10 +61,12 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
  *  @return UIImage of the thread, or nil.
  */
 
+
 - (UIImage*)image;
 
 - (NSDate*)lastMessageDate;
 - (NSString*)lastMessageLabel;
+- (NSDate*)archivalDate;
 
 - (void)updateWithLastMessage:(TSInteraction*)lastMessage transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
@@ -72,6 +74,11 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
 
 - (BOOL)hasUnreadMessages;
 
-@property NSDate *archivalDate;
+- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction;
+
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction;
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction referenceDate:(NSDate*)date;
+
+- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 @end

@@ -52,4 +52,6 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
 - (UIImage*)imageForPhoneIdentifier:(NSString*)identifier;
 
++ (NSComparator)contactComparator;
+
 @end

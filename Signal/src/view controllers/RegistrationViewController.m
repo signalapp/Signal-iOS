@@ -217,7 +217,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
     CGFloat blueHeaderHeight;
     
-    if (screenHeight < 568) {
+    if (screenHeight < 667) {
         self.signalLogo.hidden = YES;
         blueHeaderHeight = screenHeight - 408;
     } else {

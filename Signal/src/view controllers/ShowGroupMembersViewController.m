@@ -7,33 +7,37 @@
 //
 
 #import "ShowGroupMembersViewController.h"
+
+
 #import "SignalsViewController.h"
-#import "ContactDetailTableViewController.h"
+
 #import "Contact.h"
 #import "ContactsManager.h"
+#import "GroupContactsResult.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
-
 
 #import "Contact.h"
 #import "TSGroupModel.h"
 #import "SecurityUtils.h"
-#import "SignalKeyingStorage.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet+OWS.h"
+
+#import <AddressBookUI/AddressBookUI.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
 
 static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 
-@interface ShowGroupMembersViewController () {
-    NSArray* contacts;
-}
+@interface ShowGroupMembersViewController ()
+
+@property GroupContactsResult *groupContacts;
 @property TSGroupThread* thread;
 
 @end
+
 @implementation ShowGroupMembersViewController
 
 - (void)configWithThread:(TSGroupThread *)gThread{
@@ -45,26 +49,15 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.title = _thread.groupModel.groupName;
-
-    NSMutableArray *contactsInGroup = [[NSMutableArray alloc] init];
-    // Select the contacts already selected:
-    for (Contact* contact in [Environment getCurrent].contactsManager.textSecureContacts) {
-        // TODOGROUP this will not scale well; ~same code in NewGroupViewController
-        NSMutableSet *usersInGroup = [NSMutableSet setWithArray:_thread.groupModel.groupMemberIds];
-        NSMutableArray *contactPhoneNumbers = [[NSMutableArray alloc] init];
-        for(PhoneNumber* number in [contact parsedPhoneNumbers]) {
-            [contactPhoneNumbers addObject:[number toE164]];
-        }
-        [usersInGroup intersectSet:[NSSet setWithArray:contactPhoneNumbers]];
-        if([usersInGroup count]>0) {
-            [contactsInGroup addObject:contact];
-        }
-    }
-    contacts = contactsInGroup;
-
     
     [self initializeTableView];
     
+    self.groupContacts = [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
+    
+    [[Environment.getCurrent contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
+        self.groupContacts = [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
+        [self.tableView reloadData];
+    } onThread:[NSThread mainThread] untilCancelled:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -79,10 +72,6 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
-#pragma mark - Keyboard notifications
-
-
-
 #pragma mark - Actions
 
 #pragma mark - Table view data source
@@ -92,10 +81,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[contacts count]+1;
-    
+    return (NSInteger)[self.groupContacts numberOfMembers]+1;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SearchCell"];
@@ -105,12 +92,15 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier: indexPath.row == 0 ? @"HeaderCell" : @"GroupSearchCell"];
     }
     if (indexPath.row > 0) {
-        Contact* contact = [self contactForIndexPath:indexPath];
-        
-        cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
-    
+        NSIndexPath *relativeIndexPath = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:indexPath.section];
+        if ([self.groupContacts isContactAtIndexPath:relativeIndexPath]) {
+            Contact* contact = [self contactForIndexPath:relativeIndexPath];
+            cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
+        } else{
+            cell.textLabel.text = [self.groupContacts identifierForIndexPath:relativeIndexPath];
+        }
     } else {
-        cell.textLabel.text = @"Group conversation Recipients:";
+        cell.textLabel.text = @"Group Members:";
         cell.textLabel.textColor = [UIColor lightGrayColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
@@ -123,32 +113,50 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.row>0) {
-        [self performSegueWithIdentifier:@"DetailSegue" sender:self];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSIndexPath *relativeIndexPath = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:indexPath.section];
+    
+    if(indexPath.row >0 && [self.groupContacts isContactAtIndexPath:relativeIndexPath]) {
+        ABPersonViewController *view = [[ABPersonViewController alloc] init];
+        
+        Contact *contact = [self.groupContacts contactForIndexPath:relativeIndexPath];
+        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
+        view.displayedPerson = ABAddressBookGetPersonWithRecordID(addressBookRef, contact.recordID); // Assume person is already defined.
+        view.allowsActions   = NO;
+        view.allowsEditing   = YES;
+        
+        [self.navigationController pushViewController:view animated:YES];
+    } else {
+        ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
+    
+        ABRecordRef aContact = ABPersonCreate();
+        CFErrorRef anError = NULL;
+        
+        ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        
+        ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)[self.tableView cellForRowAtIndexPath:indexPath].textLabel.text, kABPersonPhoneMainLabel, NULL);
+        
+        ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
+        CFRelease(phone);
+        
+        if (anError) {
+            aContact = nil;
+        }
+        
+        view.displayedPerson = aContact; // Assume person is already defined.
+        view.allowsAddingToAddressBook = YES;
+        
+        [self.navigationController pushViewController:view animated:YES];
+        CFRelease(aContact);
     }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 -(Contact*)contactForIndexPath:(NSIndexPath*)indexPath
 {
-    Contact *contact = contacts[(NSUInteger)(indexPath.row-1)];
+    Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
     return contact;
 }
-
-
-#pragma mark - Segue
-
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([segue.identifier isEqualToString:@"DetailSegue"]) {
-        ContactDetailTableViewController * detailvc = [segue destinationViewController];
-        NSIndexPath * indexPath = [self.tableView indexPathForSelectedRow]; // this is nil
-        Contact *contact = [self contactForIndexPath:indexPath];
-        detailvc.contact = contact;
-    }
-}
-
-
 
 #pragma mark - Cell Utility
 

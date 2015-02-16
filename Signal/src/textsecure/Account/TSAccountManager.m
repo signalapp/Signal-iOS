@@ -49,19 +49,19 @@
     return phoneNumber;
 }
 
-+ (int)getOrGenerateRegistrationId {
++ (uint32_t)getOrGenerateRegistrationId {
     YapDatabaseConnection *dbConn = [[TSStorageManager sharedManager] newDatabaseConnection];
-    __block int registrationID;
+    __block uint32_t registrationID = 0;
     
     [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        registrationID  = [[transaction objectForKey:TSStorageLocalRegistrationId inCollection:TSStorageUserAccountCollection] intValue];
+        registrationID  = [[transaction objectForKey:TSStorageLocalRegistrationId inCollection:TSStorageUserAccountCollection] unsignedIntValue];
     }];
     
-    if (!registrationID ) {
-        uint32_t localIdentifier = arc4random_uniform(16380);
+    if (registrationID == 0) {
+        registrationID = (uint32_t)arc4random_uniform(16380);
         
         [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction setObject:[NSNumber numberWithUnsignedInt:localIdentifier]
+            [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
                             forKey:TSStorageLocalRegistrationId
                       inCollection:TSStorageUserAccountCollection];
         }];

@@ -16,6 +16,8 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "UIUtil.h"
 
+#define TAP_TO_COPYSTRING NSLocalizedString(@"Tap to copy.",nil)
+
 @interface PrivacySettingsTableViewController ()
 
 @property (nonatomic, strong) UITableViewCell * enableScreenSecurityCell;
@@ -68,7 +70,7 @@
     //Fingerprint Cell
     self.fingerprintCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Identifier"];
     self.fingerprintCell.textLabel.text = @"Fingerprint";
-    self.fingerprintCell.detailTextLabel.text = @"Tap to copy";
+    self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
     self.fingerprintCell.detailTextLabel.textColor = [UIColor lightGrayColor];
     
     self.fingerprintLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 150, 25)];
@@ -168,9 +170,9 @@
                     //Timer to change label to copied (NSTextAttachment checkmark)
                     if (self.copiedTimer == nil) {
                         self.copiedTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(endTimer:) userInfo:nil repeats:NO];
-                        self.fingerprintCell.detailTextLabel.text = @"Copied !";
+                        self.fingerprintCell.detailTextLabel.text = @"Copied!";
                     } else {
-                        self.fingerprintCell.detailTextLabel.text = @"Tap to copy";
+                        self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
                     }
                     [[UIPasteboard generalPasteboard] setString:self.fingerprintLabel.text];
                     break;
@@ -196,7 +198,7 @@
 
 -(void)endTimer:(id)sender
 {
-    self.fingerprintCell.detailTextLabel.text = @"Tap to copy";
+    self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
     [self.copiedTimer invalidate];
     self.copiedTimer = nil;
 }

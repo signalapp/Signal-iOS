@@ -67,7 +67,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     ContactsManager* contactsManager = (__bridge ContactsManager*)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [contactsManager pullLatestAddressBook];
-        
     });
 }
 
@@ -383,7 +382,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 -(NSArray*) getSignalUsersFromContactsArray:(NSArray*)contacts {
 	return [[contacts filter:^int(Contact* contact) {
         return [self isContactRegisteredWithRedPhone:contact] || contact.isTextSecureContact;
-    }]sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    }]sortedArrayUsingComparator:[[self class] contactComparator]];
+}
+
++ (NSComparator)contactComparator {
+    return ^NSComparisonResult(id obj1, id obj2) {
         Contact *contact1 = (Contact*)obj1;
         Contact *contact2 = (Contact*)obj2;
         
@@ -393,8 +396,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             return [contact1.firstName compare:contact2.firstName];
         } else {
             return [contact1.lastName compare:contact2.lastName];
-        }
-    }];
+        };
+    };
 }
 
 -(NSArray*) signalContacts {
@@ -404,18 +407,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 -(NSArray*) textSecureContacts {
     return [[self.allContacts filter:^int(Contact* contact) {
         return [contact isTextSecureContact];
-    }] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        Contact *contact1 = (Contact*)obj1;
-        Contact *contact2 = (Contact*)obj2;
-        
-        BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
-        
-        if (firstNameOrdering) {
-            return [contact1.firstName compare:contact2.firstName];
-        } else {
-            return [contact1.lastName compare:contact2.lastName];
-        }
-    }];
+    }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 
 -(NSArray*) getNewItemsFrom:(NSArray*) newArray comparedTo:(NSArray*) oldArray {

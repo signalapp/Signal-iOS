@@ -26,15 +26,6 @@
     self.highlightView.layer.borderWidth = 4;
     [self.view addSubview:self.highlightView];
     
-    self.label = [[UILabel alloc] init];
-    self.label.frame = CGRectMake(0, self.view.bounds.size.height - 40, self.view.bounds.size.width, 40);
-    self.label.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-    self.label.backgroundColor = [UIColor colorWithWhite:0.15 alpha:0.65];
-    self.label.textColor = [UIColor whiteColor];
-    self.label.textAlignment = NSTextAlignmentCenter;
-    self.label.text = @"(none)";
-    [self.view addSubview:self.label];
-    
     self.session = [[AVCaptureSession alloc] init];
     self.device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     NSError *error = nil;
@@ -60,7 +51,6 @@
     [self.session startRunning];
     
     [self.view bringSubviewToFront:self.highlightView];
-    [self.view bringSubviewToFront:self.label];
 }
 
 
@@ -71,7 +61,6 @@
     NSArray *barCodeTypes = @[AVMetadataObjectTypeQRCode];
     
     for (AVMetadataObject *metadata in metadataObjects) {
-        NSLog(@"metadata %@",metadata);
         for (NSString *type in barCodeTypes) {
             if ([metadata.type isEqualToString:type]) {
                 barCodeObject = (AVMetadataMachineReadableCodeObject *)[self.prevLayer transformedMetadataObjectForMetadataObject:(AVMetadataMachineReadableCodeObject *)metadata];
@@ -81,43 +70,46 @@
             }
         }
         if (detectionString != nil) {
-            self.label.text = detectionString;
             NSData* detectionData = [NSData dataFromBase64String:detectionString];
+        
+            NSString *dialogTitle;
+            NSString *dialogDescription;
+            
             if([detectionData isEqualToData:self.identityKey]) {
-                self.label.text = @"verified!";
+                dialogTitle = NSLocalizedString(@"Verified!", nil);
+                dialogDescription = NSLocalizedString(@"The scanned fingerprint matches the one on the record.", nil);
             }
             else {
-                self.label.text = @"identity keys do not match";
+                dialogTitle = NSLocalizedString(@"Conflict!", nil);
+                dialogDescription = NSLocalizedString(@"The scanned fingerprint doesn't match the one on the record.", nil);
             }
+            
             [self.session stopRunning];
+            UIAlertController *controller = [UIAlertController alertControllerWithTitle:dialogTitle message:dialogDescription preferredStyle:UIAlertControllerStyleAlert];
+            
+            [self presentViewController:controller animated:YES completion:^{
+                [self performSelector:@selector(dismissScannerAfterSuccesfullScan) withObject:nil afterDelay:5];
+            }];
+        
             break;
         }
-        else {
-            self.label.text = @"searching...";
-        }
-    }
-    if([self.label.text isEqualToString:@"verified!"]) {
-        [self performSegueWithIdentifier:@"UnwindToIdentityKeyWasVerifiedSegue" sender:self];
     }
 
     self.highlightView.frame = highlightViewRect;
 }
 
 #pragma mark - Action
-- (IBAction)closeButtonAction:(id)sender
-{
-    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        [self.view setAlpha:0];
-    } completion:^(BOOL succeeded){
-        [self dismissViewControllerAnimated:YES completion:nil];
+
+- (void)dismissScannerAfterSuccesfullScan {
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self closeButtonAction:nil];
     }];
-    
 }
 
-
-
-
-
+- (IBAction)closeButtonAction:(id)sender
+{
+    [self performSegueWithIdentifier:@"UnwindToIdentityKeyWasVerifiedSegue" sender:self];
+}
 
 @end
 

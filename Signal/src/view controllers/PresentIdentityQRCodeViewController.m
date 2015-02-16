@@ -45,17 +45,4 @@
     CGImageRelease(cgImage);
 }
 
-#pragma mark - Action
-- (IBAction)closeButtonAction:(id)sender
-{
-    [UIView animateWithDuration:0.6 delay:0. options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        [self.view setAlpha:0];
-    } completion:^(BOOL succeeded){
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }];
-    
-}
-
-
-
 @end

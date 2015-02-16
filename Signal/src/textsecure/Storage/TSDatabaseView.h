@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <YapDatabase/YapDatabaseViewTransaction.h>
 
 @interface TSDatabaseView : NSObject
 

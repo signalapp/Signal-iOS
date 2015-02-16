@@ -34,7 +34,7 @@
     
     _nameLabel.attributedText = [self attributedStringForContact:contact];
     if (!contact.isTextSecureContact) {
-        _nameLabel.textColor = [UIColor grayColor];
+        _nameLabel.textColor = [UIColor lightGrayColor];
     }
 }
 

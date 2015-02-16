@@ -53,8 +53,6 @@ static NSInteger connectingFlashCounter = 0;
     [[[[Environment getCurrent] contactsManager] getObservableContacts] watchLatestValue:^(NSArray *latestContacts) {
         [self setPotentiallyKnownContact:[[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:_callState.remoteNumber]];
     } onThread:[NSThread mainThread] untilCancelled:nil];
-    
-    [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
 
 -(void)linkActions
@@ -66,6 +64,7 @@ static NSInteger connectingFlashCounter = 0;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self startConnectingFlashAnimation];
+    [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -73,9 +72,6 @@ static NSInteger connectingFlashCounter = 0;
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
     [AppAudioManager.sharedInstance cancellAllAudio];
-}
-
-- (void)dealloc {
     [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
 }
 
@@ -288,7 +284,6 @@ static NSInteger connectingFlashCounter = 0;
 }
 
 -(void) dismissViewWithOptionalDelay:(BOOL) useDelay {
-    [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
     if(useDelay && UIApplicationStateActive == [UIApplication.sharedApplication applicationState]){
         [self dismissViewControllerAfterDelay:END_CALL_CLEANUP_DELAY];
     }else{
