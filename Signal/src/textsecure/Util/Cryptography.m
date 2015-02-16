@@ -36,9 +36,6 @@
     return randomBytes;
 }
 
-
-
-
 #pragma mark SHA1
 
 +(NSString*)truncatedSHA1Base64EncodedWithoutPadding:(NSString*)string{

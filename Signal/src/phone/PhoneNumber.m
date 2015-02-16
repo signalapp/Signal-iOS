@@ -3,8 +3,9 @@
 #import "Util.h"
 #import "PreferencesUtil.h"
 #import "Environment.h"
-#import "NBPhoneNumber.h"
+#import "PhoneNumberUtil.h"
 #import "NBAsYouTypeFormatter.h"
+#import "NBPhoneNumber.h"
 
 static NSString *const RPDefaultsKeyPhoneNumberString = @"RPDefaultsKeyPhoneNumberString";
 static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
@@ -15,7 +16,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     require(text != nil);
     require(regionCode != nil);
     
-    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
+    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedInstance].nbPhoneNumberUtil;
     
     NSError* parseError = nil;
     NBPhoneNumber *number = [phoneUtil parse:text
@@ -73,7 +74,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 
 +(NSString*) regionCodeFromCountryCodeString:(NSString*) countryCodeString {
-    NBPhoneNumberUtil* phoneUtil = NBPhoneNumberUtil.sharedInstance;
+    NBPhoneNumberUtil* phoneUtil = [PhoneNumberUtil sharedInstance].nbPhoneNumberUtil;
     NSString* regionCode = [phoneUtil getRegionCodeForCountryCode:@([[countryCodeString substringFromIndex:1] integerValue])];
     return regionCode;
 }
@@ -136,11 +137,11 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 -(BOOL)isValid {
-    return [NBPhoneNumberUtil.sharedInstance isValidNumber:phoneNumber];
+    return [[PhoneNumberUtil sharedInstance].nbPhoneNumberUtil isValidNumber:phoneNumber];
 }
 
 -(NSString *)localizedDescriptionForUser {
-    NBPhoneNumberUtil *phoneUtil = NBPhoneNumberUtil.sharedInstance;
+    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedInstance].nbPhoneNumberUtil;
 
     NSError* formatError = nil;
     NSString* pretty = [phoneUtil format:phoneNumber

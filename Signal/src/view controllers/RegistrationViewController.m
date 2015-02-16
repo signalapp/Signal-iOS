@@ -70,7 +70,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 - (void)populateDefaultCountryNameAndCode {
     NSLocale *locale = NSLocale.currentLocale;
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
-    NSNumber *cc = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:countryCode];
+    NSNumber *cc = [[PhoneNumberUtil sharedInstance].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
     
     [_countryCodeButton setTitle:[NSString stringWithFormat:@"%@%@",COUNTRY_CODE_PREFIX, cc] forState:UIControlStateNormal];
     [_countryNameButton setTitle:[PhoneNumberUtil countryNameFromCountryCode:countryCode] forState:UIControlStateNormal];

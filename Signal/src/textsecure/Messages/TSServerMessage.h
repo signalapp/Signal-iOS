@@ -14,6 +14,7 @@
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  destination:(NSString*)destination
                       device:(int)deviceId
-                        body:(NSData*)data;
+                        body:(NSData*)body
+              registrationId:(int)registrationId;
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "TSThread.h"
-#import "Environment.h"
 #import "ContactsManager.h"
 #import "TSInteraction.h"
 #import "TSStorageManager.h"
@@ -17,6 +16,14 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSErrorMessage.h"
+
+@interface TSThread ()
+
+@property (nonatomic, retain) NSDate   *creationDate;
+@property (nonatomic, retain) NSDate   *lastMessageDate;
+@property (nonatomic, copy  ) NSString *latestMessageId;
+
+@end
 
 @implementation TSThread
 
@@ -28,9 +35,9 @@
     self = [super initWithUniqueId:uniqueId];
     
     if (self) {
-        _blocked       = NO;
         _latestMessageId = nil;
-        _creationDate = [NSDate date];
+        _lastMessageDate = nil;
+        _creationDate    = [NSDate date];
     }
     
     return self;
@@ -41,22 +48,10 @@
     return FALSE;
 }
 
-- (NSDate*)lastMessageDate{
-    __block NSDate *date;
-    
-    if (self.latestMessageId) {
-        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            date = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction].date;
-        }];
-        
-        if (date) {
-            return date;
-        }
-        else {
-            return [NSDate date];
-        }
-    }
-    else {
+- (NSDate *)lastMessageDate{
+    if (_lastMessageDate) {
+        return _lastMessageDate;
+    } else {
         return _creationDate;
     }
 }
@@ -137,6 +132,14 @@
     }];
     
     return hasUnread;
+}
+
+- (void)updateWithLastMessage:(TSInteraction*)lastMessage transaction:(YapDatabaseReadWriteTransaction*)transaction {
+    if (!_lastMessageDate || [lastMessage.date timeIntervalSinceDate:self.lastMessageDate] > 0) {
+        _latestMessageId = lastMessage.uniqueId;
+        _lastMessageDate = lastMessage.date;
+        [self saveWithTransaction:transaction];
+    }
 }
 
 - (NSString *)name{

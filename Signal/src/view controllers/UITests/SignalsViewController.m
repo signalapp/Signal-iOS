@@ -262,6 +262,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 -(void) changeToGrouping:(NSString*)grouping {
     self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
                                                                      view:TSThreadDatabaseViewExtensionName];
+    [self.threadMappings setIsReversed:YES forGroup:grouping];
+    
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];

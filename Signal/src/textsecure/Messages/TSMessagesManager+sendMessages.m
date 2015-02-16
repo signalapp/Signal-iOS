@@ -120,6 +120,7 @@ dispatch_queue_t sendingQueue() {
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 long statuscode = response.statusCode;
+                NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
                 
                 switch (statuscode) {
                     case 404:{
@@ -135,10 +136,23 @@ dispatch_queue_t sendingQueue() {
                         // Mismatched devices
                         DDLogError(@"Missing some devices");
                         break;
-                    case 410:
+                    case 410:{
                         // staledevices
                         DDLogWarn(@"Stale devices");
+                        
+                        if (!responseData) {
+                            DDLogWarn(@"Stale devices but server didn't specify devices in response.");
+                            return;
+                        }
+                        
+                        [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
+                        
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
+                        });
+                        
                         break;
+                    }
                     default:
                         [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
                         break;
@@ -169,7 +183,7 @@ dispatch_queue_t sendingQueue() {
             }
         }
         @catch (NSException *exception) {
-            [self processException:exception outgoingMessage:message];
+            [self processException:exception outgoingMessage:message inThread:thread];
             return;
         }
     }
@@ -180,7 +194,7 @@ dispatch_queue_t sendingQueue() {
 - (NSDictionary*)encryptedMessageWithPlaintext:(NSData*)plainText toRecipient:(NSString*)identifier deviceId:(NSNumber*)deviceNumber keyingStorage:(TSStorageManager*)storage{
 
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *bundle;
         
         [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier deviceId:[deviceNumber stringValue]] success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -201,7 +215,15 @@ dispatch_queue_t sendingQueue() {
                                                                   identityKeyStore:storage
                                                                        recipientId:identifier
                                                                           deviceId:[deviceNumber intValue]];
-            [builder processPrekeyBundle:bundle];
+            @try {
+                [builder processPrekeyBundle:bundle];
+            }
+            @catch (NSException *exception) {
+                if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+                    @throw [NSException exceptionWithName:UntrustedIdentityKeyException reason:nil userInfo:@{TSInvalidPreKeyBundleKey:bundle, TSInvalidRecipientKey:identifier}];
+                }
+                @throw exception;
+            }
         }
     }
     
@@ -220,7 +242,8 @@ dispatch_queue_t sendingQueue() {
     TSServerMessage *serverMessage = [[TSServerMessage alloc] initWithType:messageType
                                                                destination:identifier
                                                                     device:[deviceNumber intValue]
-                                                                      body:serializedMessage];
+                                                                      body:serializedMessage
+                                                            registrationId:cipher.remoteRegistrationId];
     
     
     return [MTLJSONAdapter JSONDictionaryFromModel:serverMessage];
@@ -320,6 +343,22 @@ dispatch_queue_t sendingQueue() {
         [builder setAttachmentsArray:attachmentsArray];
     }
     return [builder.build data];
+}
+
+- (void)handleStaleDevicesWithResponse:(NSData*)responseData recipientId:(NSString*)identifier {
+    dispatch_async(sendingQueue(), ^{
+        NSDictionary *serialization = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil];
+        NSArray *devices            = serialization[@"staleDevices"];
+        
+        if (!([devices count] > 0)) {
+            return;
+        }
+        
+        for (NSUInteger i = 0; i < [devices count]; i++) {
+            int deviceNumber = [devices[i] intValue];
+            [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
+        }
+    });
 }
 
 @end

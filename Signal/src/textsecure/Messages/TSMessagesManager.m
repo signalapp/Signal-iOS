@@ -19,7 +19,7 @@
 
 #import "TSIncomingMessage.h"
 #import "TSErrorMessage.h"
-#import "TSInvalidIdentityKeyErrorMessage.h"
+#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSInfoMessage.h"
 
 #import "TSStorageManager+keyingMaterial.h"
@@ -278,11 +278,11 @@
             }
             else if(content.group.type==PushMessageContentGroupContextTypeQuit) {
                 NSString *nameString = [[Environment.getCurrent contactsManager] nameStringForPhoneIdentifier:message.source];
-    
+                
                 if (!nameString) {
                     nameString = message.source;
                 }
-    
+                
                 NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",nameString];
                 NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
                 [newGroupMembers removeObject:message.source];
@@ -360,7 +360,7 @@
         } else if ([exception.name isEqualToString:InvalidVersionException]){
             errorMessage = [TSErrorMessage invalidVersionWithSignal:signal withTransaction:transaction];
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]){
-            errorMessage = [TSInvalidIdentityKeyErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
+            errorMessage = [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
         } else {
             errorMessage = [TSErrorMessage corruptedMessageWithSignal:signal withTransaction:transaction];
         }
@@ -369,15 +369,24 @@
     }];
 }
 
-- (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message{
+- (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread {
     DDLogWarn(@"Got exception: %@", exception.description);
-    if(message.groupMetaMessage==TSGroupMessageNone) {
-        // Only update this with exception if it is not a group message as group messages may except for one group send but not another and the UI doesn't know how to handle that
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSErrorMessage *errorMessage;
+        
+        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+            errorMessage = [TSInvalidIdentityKeySendingErrorMessage untrustedKeyWithOutgoingMessage:message inThread:thread forRecipient:exception.userInfo[TSInvalidRecipientKey] preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey] withTransaction:transaction];
+            message.messageState = TSOutgoingMessageStateUnsent;
+            [message saveWithTransaction:transaction];
+        } else if (message.groupMetaMessage==TSGroupMessageNone) {
+            // Only update this with exception if it is not a group message as group messages may except for one group send but not another and the UI doesn't know how to handle that
             [message setMessageState:TSOutgoingMessageStateUnsent];
             [message saveWithTransaction:transaction];
-        }];
-    }
+        }
+        
+        [errorMessage saveWithTransaction:transaction];
+    }];
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{

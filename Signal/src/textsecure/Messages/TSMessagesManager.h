@@ -10,6 +10,7 @@
 #import "IncomingPushMessageSignal.pb.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
+#import "TSInvalidIdentityKeySendingErrorMessage.h"
 
 @interface TSMessagesManager : NSObject
 
@@ -19,11 +20,11 @@
 
 - (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
 
-- (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message;
+- (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread;
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments completionBlock:(void (^)(NSString* messageIdentifier))completionBlock ;
 
--(void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage;
+- (void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage;
 
 @end

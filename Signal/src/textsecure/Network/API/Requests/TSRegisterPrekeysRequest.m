@@ -14,6 +14,8 @@
 #import <AxolotlKit/SignedPreKeyStore.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+#import "TSStorageManager+IdentityKeyStore.h"
+
 @implementation TSRegisterPrekeysRequest
 
 - (id)initWithPrekeyArray:(NSArray*)prekeys identityKey:(NSData*)identityKeyPublic signedPreKeyRecord:(SignedPreKeyRecord*)signedRecord preKeyLastResort:(PreKeyRecord*)lastResort {
@@ -26,8 +28,12 @@
     for (PreKeyRecord *preKey in prekeys) {
         [serializedPrekeyList addObject:[self dictionaryFromPreKey:preKey]];
     }
-    
-    NSDictionary *serializedKeyRegistrationParameters = @{@"preKeys": serializedPrekeyList, @"lastResortKey":[self dictionaryFromPreKey:lastResort], @"signedPreKey":[self dictionaryFromSignedPreKey:signedRecord] , @"identityKey":publicIdentityKey};
+        
+    NSDictionary *serializedKeyRegistrationParameters = @{@"preKeys": serializedPrekeyList,
+                                                          @"lastResortKey":[self dictionaryFromPreKey:lastResort],
+                                                          @"signedPreKey":[self dictionaryFromSignedPreKey:signedRecord] ,
+                                                          @"identityKey":publicIdentityKey
+                                                          };
     
     self.parameters = [serializedKeyRegistrationParameters mutableCopy];
     

@@ -12,6 +12,11 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
-@property NSData *pushSignal;
+@property NSData       *pushSignal;
+
+@property NSDictionary *pendingOutgoingMessage;
+
+#define TSPendingOutgoingMessageKey          @"TSPendingOutgoingMessageKey"
+#define TSPendingOutgoingMessageRecipientKey @"TSPendingOutgoingMessageRecipientKey"
 
 @end

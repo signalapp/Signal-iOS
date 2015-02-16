@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "TSYapDatabaseObject.h"
 
+@class TSInteraction;
+
 typedef NS_ENUM(NSInteger, TSLastActionType) {
     TSLastActionNone,
     
@@ -61,17 +63,15 @@ typedef NS_ENUM(NSInteger, TSLastActionType) {
 
 - (UIImage*)image;
 
-@property (getter=isBlocked) BOOL blocked;
-@property (nonatomic) NSString* latestMessageId;
-@property NSDate *archivalDate;
-@property (nonatomic) NSDate *creationDate;
-
 - (NSDate*)lastMessageDate;
-
 - (NSString*)lastMessageLabel;
+
+- (void)updateWithLastMessage:(TSInteraction*)lastMessage transaction:(YapDatabaseReadWriteTransaction*)transaction;
 
 - (TSLastActionType)lastAction;
 
 - (BOOL)hasUnreadMessages;
+
+@property NSDate *archivalDate;
 
 @end

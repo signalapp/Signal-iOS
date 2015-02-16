@@ -305,6 +305,9 @@
 		B60FB9AD1A46F831006A5A66 /* UIImage+contentTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FB9AC1A46F831006A5A66 /* UIImage+contentTypes.m */; };
 		B60FB9B01A4711D4006A5A66 /* TSAttachmentEncryptionResult.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FB9AF1A4711D4006A5A66 /* TSAttachmentEncryptionResult.m */; };
 		B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */; };
+		B62EFBEC1A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B62EFBE71A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m */; };
+		B62EFBED1A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B62EFBE91A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m */; };
+		B62EFBEE1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B62EFBEB1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m */; };
 		B633C5801A1D190B0059AC12 /* archive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C4FE1A1D190B0059AC12 /* archive@2x.png */; };
 		B633C5831A1D190B0059AC12 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5011A1D190B0059AC12 /* backspace.png */; };
 		B633C5841A1D190B0059AC12 /* backspace@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5021A1D190B0059AC12 /* backspace@2x.png */; };
@@ -365,7 +368,6 @@
 		B68112ED1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */; };
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
-		B68B0E8A1A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */; };
 		B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6A3EB4B1A423B3800B2236B /* TSAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */; };
@@ -908,6 +910,12 @@
 		B60FB9AF1A4711D4006A5A66 /* TSAttachmentEncryptionResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentEncryptionResult.m; sourceTree = "<group>"; };
 		B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSMessageAdapter.h; sourceTree = "<group>"; };
 		B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageAdapter.m; sourceTree = "<group>"; };
+		B62EFBE61A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyErrorMessage.h; sourceTree = "<group>"; };
+		B62EFBE71A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeyErrorMessage.m; sourceTree = "<group>"; };
+		B62EFBE81A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyReceivingErrorMessage.h; sourceTree = "<group>"; };
+		B62EFBE91A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeyReceivingErrorMessage.m; sourceTree = "<group>"; };
+		B62EFBEA1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeySendingErrorMessage.h; sourceTree = "<group>"; };
+		B62EFBEB1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeySendingErrorMessage.m; sourceTree = "<group>"; };
 		B633C4FE1A1D190B0059AC12 /* archive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive@2x.png"; sourceTree = "<group>"; };
 		B633C5011A1D190B0059AC12 /* backspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backspace.png; sourceTree = "<group>"; };
 		B633C5021A1D190B0059AC12 /* backspace@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "backspace@2x.png"; sourceTree = "<group>"; };
@@ -993,8 +1001,6 @@
 		B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "JSQMessagesCollectionViewCell+menuBarItems.m"; path = "views/JSQMessagesCollectionViewCell+menuBarItems.m"; sourceTree = "<group>"; };
 		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
-		B68B0E881A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyErrorMessage.h; sourceTree = "<group>"; };
-		B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeyErrorMessage.m; sourceTree = "<group>"; };
 		B68B0E8D1A542AD700DE8A02 /* TSErrorMessage_privateConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSErrorMessage_privateConstructor.h; sourceTree = "<group>"; };
 		B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDatabaseSecondaryIndexes.h; sourceTree = "<group>"; };
 		B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDatabaseSecondaryIndexes.m; sourceTree = "<group>"; };
@@ -2132,6 +2138,19 @@
 			name = TSMessageAdapters;
 			sourceTree = "<group>";
 		};
+		B62EFBE51A91352F0072ADD3 /* InvalidKeyMessages */ = {
+			isa = PBXGroup;
+			children = (
+				B62EFBE61A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.h */,
+				B62EFBE71A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m */,
+				B62EFBE81A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.h */,
+				B62EFBE91A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m */,
+				B62EFBEA1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.h */,
+				B62EFBEB1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m */,
+			);
+			path = InvalidKeyMessages;
+			sourceTree = "<group>";
+		};
 		B633C4FD1A1D190B0059AC12 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2347,6 +2366,7 @@
 			isa = PBXGroup;
 			children = (
 				B6FAAAE91A41C7CC007FEC1D /* Attachement */,
+				B62EFBE51A91352F0072ADD3 /* InvalidKeyMessages */,
 				B6B096011A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.h */,
 				B6B096021A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m */,
 				B6B096051A1D25ED008BFAA6 /* TSCall.h */,
@@ -2354,8 +2374,6 @@
 				B6B096071A1D25ED008BFAA6 /* TSErrorMessage.h */,
 				B68B0E8D1A542AD700DE8A02 /* TSErrorMessage_privateConstructor.h */,
 				B6B096081A1D25ED008BFAA6 /* TSErrorMessage.m */,
-				B68B0E881A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.h */,
-				B68B0E891A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m */,
 				B6B0960B1A1D25ED008BFAA6 /* TSIncomingMessage.h */,
 				B6B0960C1A1D25ED008BFAA6 /* TSIncomingMessage.m */,
 				B6B0960D1A1D25ED008BFAA6 /* TSInfoMessage.h */,
@@ -3104,6 +3122,7 @@
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
+				B62EFBEC1A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,
 				B6B096861A1D25ED008BFAA6 /* SecurityUtils.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
@@ -3116,7 +3135,7 @@
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
 				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
-				B68B0E8A1A54284100DE8A02 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,
+				B62EFBEE1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m in Sources */,
 				B6B0968A1A1D25ED008BFAA6 /* TSStorageManager+SessionStore.m in Sources */,
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
 				B6B096891A1D25ED008BFAA6 /* TSStorageManager+PreKeyStore.m in Sources */,
@@ -3288,6 +3307,7 @@
 				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
 				FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
+				B62EFBED1A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */,
 				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
 				B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */,

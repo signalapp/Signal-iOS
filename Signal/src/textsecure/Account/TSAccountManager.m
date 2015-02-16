@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#include <stdlib.h>
+
 #import "Constraints.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
@@ -55,11 +57,11 @@
         registrationID  = [[transaction objectForKey:TSStorageLocalRegistrationId inCollection:TSStorageUserAccountCollection] intValue];
     }];
     
-    if (!registrationID) {
-        int localIdentifier = random()%16380;
+    if (!registrationID ) {
+        uint32_t localIdentifier = arc4random_uniform(16380);
         
         [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction setObject:[NSNumber numberWithInt:localIdentifier]
+            [transaction setObject:[NSNumber numberWithUnsignedInt:localIdentifier]
                             forKey:TSStorageLocalRegistrationId
                       inCollection:TSStorageUserAccountCollection];
         }];

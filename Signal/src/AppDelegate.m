@@ -97,8 +97,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [DebugLogger.sharedInstance enableFileLogging];
     }
     
-    [[TSStorageManager sharedManager] setupDatabase];
-
     self.notificationTracker = [NotificationTracker notificationTracker];
     
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
@@ -106,6 +104,8 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+    
+    [[TSStorageManager sharedManager] setupDatabase];
     
     [self performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
 

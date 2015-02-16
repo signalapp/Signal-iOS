@@ -13,6 +13,9 @@
 
 @interface TSRegisterPrekeysRequest : TSRequest
 
-- (id)initWithPrekeyArray:(NSArray*)prekeys identityKey:(NSData*)identityKeyPublic signedPreKeyRecord:(SignedPreKeyRecord*)signedRecord preKeyLastResort:(PreKeyRecord*)lastResort;
+- (id)initWithPrekeyArray:(NSArray*)prekeys
+              identityKey:(NSData*)identityKeyPublic
+       signedPreKeyRecord:(SignedPreKeyRecord*)signedRecord
+         preKeyLastResort:(PreKeyRecord*)lastResort;
 
 @end

@@ -6,13 +6,10 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSErrorMessage.h"
+#import "TSInvalidIdentityKeyErrorMessage.h"
 
-@interface TSInvalidIdentityKeyErrorMessage : TSErrorMessage
+@interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 + (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
-
-- (void)acceptNewIdentityKey;
-- (NSString*)newIdentityKey;
 
 @end

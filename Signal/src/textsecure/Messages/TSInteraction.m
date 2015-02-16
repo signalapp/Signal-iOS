@@ -108,11 +108,9 @@ const struct TSMessageEdges TSMessageEdges = {
     
     TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId
                                                     transaction:transaction];
-    
-    if (!fetchedThread.latestMessageId || [self.date timeIntervalSinceDate:fetchedThread.lastMessageDate] > 0) {
-        fetchedThread.latestMessageId = self.uniqueId;
-    }
-    [fetchedThread saveWithTransaction:transaction];
+
+
+    [fetchedThread updateWithLastMessage:self transaction:transaction];
 }
 
 @end

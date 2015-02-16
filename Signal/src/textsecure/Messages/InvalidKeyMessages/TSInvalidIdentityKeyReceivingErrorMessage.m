@@ -9,7 +9,7 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-#import "TSInvalidIdentityKeyErrorMessage.h"
+#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
@@ -19,7 +19,7 @@
 #import "TSMessagesManager.h"
 #import "TSFingerprintGenerator.h"
 
-@implementation TSInvalidIdentityKeyErrorMessage
+@implementation TSInvalidIdentityKeyReceivingErrorMessage
 
 - (instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread incomingPushSignal:(NSData*)signal{
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
@@ -33,7 +33,7 @@
 
 + (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal*)preKeyMessage withTransaction:(YapDatabaseReadWriteTransaction*)transaction{
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:preKeyMessage.source transaction:transaction];
-    TSInvalidIdentityKeyErrorMessage *errorMessage = [[self alloc] initForUnknownIdentityKeyWithTimestamp:preKeyMessage.timestamp inThread:contactThread incomingPushSignal:preKeyMessage.data];
+    TSInvalidIdentityKeyReceivingErrorMessage *errorMessage = [[self alloc] initForUnknownIdentityKeyWithTimestamp:preKeyMessage.timestamp inThread:contactThread incomingPushSignal:preKeyMessage.data];
     return errorMessage;
 }
 
@@ -60,7 +60,7 @@
             DDLogVerbose(@"Interaction type: %@", interaction.description);
             
             if ([interaction isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                TSInvalidIdentityKeyErrorMessage *invalidKeyMessage = (TSInvalidIdentityKeyErrorMessage*)interaction;
+                TSInvalidIdentityKeyErrorMessage *invalidKeyMessage = (TSInvalidIdentityKeyReceivingErrorMessage*)interaction;
                 IncomingPushMessageSignal *invalidMessageSignal = [IncomingPushMessageSignal parseFromData:invalidKeyMessage.pushSignal];
                 PreKeyWhisperMessage *pkwm     = [[PreKeyWhisperMessage alloc] initWithData:invalidMessageSignal.message];
                 NSData *newKeyCandidate        = [pkwm.identityKey removeKeyType];
@@ -73,7 +73,7 @@
     }];
     
     
-    for (TSInvalidIdentityKeyErrorMessage *errorMessage in messagesToDecrypt) {
+    for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
         
         [[TSMessagesManager sharedManager] handleMessageSignal:[IncomingPushMessageSignal parseFromData:errorMessage.pushSignal]];
         
@@ -85,7 +85,7 @@
 }
 
 - (NSString *)newIdentityKey{
-    if (self.errorType != TSErrorMessageWrongTrustedIdentityKey || !self.pushSignal) {
+    if (!self.pushSignal) {
         return @"";
     }
     

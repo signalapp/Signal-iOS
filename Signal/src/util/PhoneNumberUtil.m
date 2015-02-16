@@ -1,9 +1,20 @@
 #import "PhoneNumberUtil.h"
 #import "ContactsManager.h"
-#import "NBPhoneNumberUtil.h"
 #import "Util.h"
 
 @implementation PhoneNumberUtil
+
+MacrosSingletonImplemention
+
+- (instancetype)init {
+    self = [super init];
+    
+    if (self) {
+        _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
+    }
+    
+    return self;
+}
 
 // country code -> country name
 + (NSString *)countryNameFromCountryCode:(NSString *)code {
@@ -16,7 +27,7 @@
 
 // country code -> calling code
 + (NSString *)callingCodeFromCountryCode:(NSString *)code {
-    NSNumber *callingCode = [NBPhoneNumberUtil.sharedInstance getCountryCodeForRegion:code];
+    NSNumber *callingCode = [[[self sharedInstance] nbPhoneNumberUtil] getCountryCodeForRegion:code];
     return [NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode];
 }
 
@@ -43,7 +54,7 @@
 
 // normalizes a phone number, so parentheses and spaces are stripped
 + (NSString*) normalizePhoneNumber:(NSString *) number {
-    return [NBPhoneNumberUtil.sharedInstance normalizePhoneNumber:number];
+    return [[[self sharedInstance] nbPhoneNumberUtil]  normalizePhoneNumber:number];
 }
 
 // black  magic

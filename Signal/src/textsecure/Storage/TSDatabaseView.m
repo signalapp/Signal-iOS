@@ -66,7 +66,7 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSThread class]]){
             TSThread *thread = (TSThread*)object;
-            if (thread.archivalDate&&[thread.latestMessageId length]>0) {
+            if (thread.archivalDate) {
                 return ([self threadShouldBeInInbox:thread])?TSInboxGroup:TSArchiveGroup;
             }
             else if(thread.archivalDate) {
@@ -82,7 +82,7 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
     
     YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-    options.isPersistent = YES;
+    options.isPersistent = NO;
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
     
     YapDatabaseView *databaseView = [[YapDatabaseView alloc] initWithGrouping:viewGrouping
@@ -148,12 +148,12 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
                 TSThread *thread1 = (TSThread*)object1;
                 TSThread *thread2 = (TSThread*)object2;
                 
-                return [thread2.lastMessageDate compare:thread1.lastMessageDate];
+                return [thread1.lastMessageDate compare:thread2.lastMessageDate];
             }
         }
-        return NSOrderedSame;
+        
+        return  NSOrderedSame;
     }];
-
 }
 
 + (YapDatabaseViewSorting*)messagesSorting {

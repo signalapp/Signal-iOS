@@ -16,6 +16,7 @@
 @property int type;
 @property NSString *destination;
 @property int      destinationDeviceId;
+@property int      destinationRegistrationId;
 @property NSString *body;
 
 @end
@@ -30,14 +31,16 @@
                  destination:(NSString*)destination
                       device:(int)deviceId
                         body:(NSData*)body
+              registrationId:(int)registrationId
 {
     self = [super init];
-    
+
     if (self) {
-        _type                = type;
-        _destination         = destination;
-        _destinationDeviceId = deviceId;
-        _body                = [body base64EncodedString];
+        _type                      = type;
+        _destination               = destination;
+        _destinationDeviceId       = deviceId;
+        _destinationRegistrationId = registrationId;
+        _body                      = [body base64EncodedString];
     }
 
     return self;
