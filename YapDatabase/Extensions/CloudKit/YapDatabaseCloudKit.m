@@ -629,6 +629,13 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	
 	[self suspend];
 	
+	// Then we reset changeSet.isInFlight to NO (since it failed).
+	//
+	// Note: For partially failed operations this step is done elsewhere.
+	// Specifically, it's performed at the end of the databaseTransaction that removes the items that did complete.
+	
+	[masterQueue resetFailedInFlightChangeSet];
+	
 	// Inform the user about the problem via the operationErrorBlock.
 	
 	NSString *databaseIdentifier = changeSet.databaseIdentifier;

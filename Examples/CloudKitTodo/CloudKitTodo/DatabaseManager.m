@@ -396,6 +396,8 @@ DatabaseManager *MyDatabaseManager;
 		else
 		{
 			// You'll want to add more error handling here.
+			
+			DDLogError(@"Unhandled ckErrorCode: %d", ckErrorCode);
 		}
 	};
 	
@@ -496,7 +498,11 @@ DatabaseManager *MyDatabaseManager;
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	Reachability *reachability = notification.object;
+	
+	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
 	if (reachability.isReachable)
 	{
 		if (cloudKitExtensionNeedsResume)

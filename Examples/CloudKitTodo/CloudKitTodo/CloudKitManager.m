@@ -81,7 +81,11 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	Reachability *reachability = notification.object;
+	
+	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
 	if (reachability.isReachable)
 	{
 		if (self.needsCreateZone || self.needsCreateZoneSubscription)
@@ -97,6 +101,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 
 - (void)configureCloudKit
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit]) {
@@ -239,6 +245,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 **/
 - (void)fetchRecordChangesAfterAppLaunch
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	if (self.needsFetchRecordChangesAfterAppLaunch == NO) return;
 	
 	[self fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
