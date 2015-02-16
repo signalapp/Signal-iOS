@@ -397,7 +397,7 @@ DatabaseManager *MyDatabaseManager;
 		{
 			// You'll want to add more error handling here.
 			
-			DDLogError(@"Unhandled ckErrorCode: %d", ckErrorCode);
+			DDLogError(@"Unhandled ckErrorCode: %ld", (long)ckErrorCode);
 		}
 	};
 	

@@ -238,13 +238,19 @@ static NSString *const TodoCellIdentifier = @"Todo";
 	
 	MyTodo *todo = [self todoAtIndexPath:indexPath];
 	
+	NSString *title = todo.title;
+	if (title == nil)
+		title = @"< missing title >";
+	
 	if (todo.isDone)
 	{
 		UIImage *image = [UIImage imageNamed:@"checkmark-on"];
 		[cell.checkmarkButton setImage:image forState:UIControlStateNormal];
 		
+		
+		
 		NSDictionary *attr = @{NSStrikethroughStyleAttributeName: @(NSUnderlineStyleSingle)};
-		NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:todo.title attributes:attr];
+		NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:title attributes:attr];
 		
 		cell.titleLabel.attributedText = attrStr;
 	}
@@ -253,7 +259,7 @@ static NSString *const TodoCellIdentifier = @"Todo";
 		UIImage *image = [UIImage imageNamed:@"checkmark-off"];
 		[cell.checkmarkButton setImage:image forState:UIControlStateNormal];
 		
-		cell.titleLabel.text = todo.title;
+		cell.titleLabel.text = title;
 	}
 	
 	switch (todo.priority)
