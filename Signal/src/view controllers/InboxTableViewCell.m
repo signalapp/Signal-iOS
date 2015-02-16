@@ -57,6 +57,7 @@
     }
     else {
         NSMutableString *initials = [NSMutableString string];
+        
         if([thread.name length]>0) {
             NSArray *words = [thread.name componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             for (NSString * word in words) {
@@ -66,6 +67,9 @@
                 }
             }
         }
+        
+        NSRange stringRange = {0, MIN([initials length], (NSUInteger)3)}; //Rendering max 3 letters.
+        initials = [[initials substringWithRange:stringRange] mutableCopy];
         
         UIColor *backgroundColor = thread.isGroupThread ? [UIColor whiteColor] : [UIColor backgroundColorForContact:((TSContactThread*)thread).contactIdentifier];
         UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:backgroundColor textColor:[UIColor whiteColor] font:[UIFont ows_boldFontWithSize:36.0] diameter:100] avatarImage];

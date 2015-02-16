@@ -78,11 +78,12 @@
                         [UIColor colorWithRed:208.f/255.f green:204.f/255.f blue:78.f/255.f alpha:1.f],
                         [UIColor colorWithRed:227.f/255.f green:162.f/255.f blue:150.f/255.f alpha:1.f]];
     NSData *contactData = [contactIdentifier dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *hashData = [Cryptography  computeSHA256:contactData  truncatedToBytes:8];
-    unsigned long choose;
-    [hashData getBytes:&choose length:8];
+    
+    NSUInteger hashingLength = 8;
+    unsigned long long choose;
+    NSData *hashData = [Cryptography computeSHA256:contactData truncatedToBytes:hashingLength];
+    [hashData getBytes:&choose length:hashingLength];
     return [colors objectAtIndex:(choose % [colors count])];
-
 }
 
 

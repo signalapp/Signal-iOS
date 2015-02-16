@@ -59,19 +59,18 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-
+    
     [self tableViewSetUp];
     
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
-    [self updateInboxCountLabel];
     
     [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
         [self.tableView reloadData];
@@ -82,14 +81,18 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 {
     [super viewWillAppear:animated];
     [self  checkIfEmptyView];
+    
+    if (![TSAccountManager isRegistered] && ![Environment.preferences getIsMigratingToVersion2Dot0]){
+        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+        return;
+    }
+    
+    [[self tableView] reloadData];
+    [self updateInboxCountLabel];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    if (![TSAccountManager isRegistered] && ![Environment.preferences getIsMigratingToVersion2Dot0]){
-        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
-    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -163,8 +166,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     UIImage* buttonImage = [[UIImage imageNamed:@"cellBtnDelete"] resizedImageToSize:CGSizeMake(82.0f, 72.0f)];
     
     deleteAction.backgroundColor = [[UIColor alloc] initWithPatternImage:buttonImage];
-
-
+    
+    
     
     return @[deleteAction];
 }
@@ -272,13 +275,13 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[grouping]
                                                                      view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
-    
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
     }];
     [self.tableView reloadData];
     [self checkIfEmptyView];
-
+    
 }
 
 #pragma mark Database delegates
@@ -301,7 +304,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *sectionChanges = nil;
     NSArray *rowChanges     = nil;
-
+    
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
@@ -392,7 +395,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
-    else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {        
+    else if (self.viewingThreadsIn == kArchiveState && [self.threadMappings numberOfItemsInGroup:TSArchiveGroup]==0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     }
@@ -403,30 +406,26 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
     _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
     _emptyBoxLabel.numberOfLines = 4;
-
+    
     NSString* firstLine = @"";
     NSString* secondLine = @"";
     
     if(self.viewingThreadsIn == kInboxState) {
         if([Environment.preferences getHasSentAMessage]) {
-            _emptyBoxImage.image = nil;
             firstLine =  @"Done. Done. Done.";
             secondLine = @"Tip: add a conversation as a reminder!";
         }
         else {
-            _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyInbox"];
             firstLine = @"Start your first Signal conversation!";
             secondLine = @"Tap on the + button.";
         }
     }
     else {
         if([Environment.preferences getHasArchivedAMessage]) {
-            _emptyBoxImage.image = nil;
             firstLine = @"Squeaky Freaking Clean.";
             secondLine = @"None. Zero. Zilch. Nada.";
         }
         else {
-            _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
             firstLine = @"Clean Up Your Conversations.";
             secondLine = @"You can archive inactive conversations for later from your Inbox.";
         }
