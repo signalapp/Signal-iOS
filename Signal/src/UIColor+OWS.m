@@ -42,8 +42,8 @@
 }
 
 + (UIColor *) ows_greenColor {
-    // green: #92FF8A
-    return [UIColor colorWithRed:146.f/255.f green:255.f/255.f blue:138.f/255.f alpha:1.f];
+    // green: #BF4240
+    return [UIColor colorWithRed:66.f/255.f green:191.f/255.f blue:64.f/255.f alpha:1.f];
 }
 
 + (UIColor *) ows_redColor {

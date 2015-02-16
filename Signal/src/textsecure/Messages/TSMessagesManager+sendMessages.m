@@ -271,7 +271,7 @@ dispatch_queue_t sendingQueue() {
     }
 }
 
-- (void) saveGroupMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+- (void)saveGroupMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
     if(message.groupMetaMessage==TSGroupMessageDeliver) {
         [self saveMessage:message withState:message.messageState];
     }

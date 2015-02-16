@@ -427,8 +427,8 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         }
         else {
             _emptyBoxImage.image = [UIImage imageNamed:@"uiEmptyArchive"];
-            firstLine = @"Save conversations for reference.";
-            secondLine = @"You can swipe conversations into your Archive from the Inbox.";
+            firstLine = @"Clean Up Your Conversations.";
+            secondLine = @"You can archive inactive conversations for later from your Inbox.";
         }
     }
     NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];

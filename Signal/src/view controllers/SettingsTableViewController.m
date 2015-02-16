@@ -74,7 +74,7 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-
+    
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     self.registeredNumber.text     = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager registeredNumber]];
     [self findAndSetRegisteredName];
@@ -164,7 +164,7 @@ typedef enum {
             
         case kUnregisterSection:
         {
-            [self unregisterUser:self];
+            [self unregisterUser:nil];
             break;
         }
             
@@ -175,6 +175,19 @@ typedef enum {
 
 
 -(IBAction)unregisterUser:(id)sender {
+
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Are you sure you want to destroy your account?"
+                                                                             message:@"This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data."
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [self unregisterUser:self];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)proceedToUnregistration{
     [TSAccountManager unregisterTextSecureWithSuccess:^{
         [PushManager.sharedManager registrationForPushWithSuccess:^(NSData* pushToken){
             [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -187,7 +200,7 @@ typedef enum {
             SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
         }];
     } failure:^(NSError *error) {
-       SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
+        SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
     }];
 }
 

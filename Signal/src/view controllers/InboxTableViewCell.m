@@ -76,6 +76,10 @@
     }
 
     self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
+    
+    if (thread.hasUnreadMessages) {
+        [self updateCellForUnreadMessage];
+    }
 }
 
 -(void)configureForState:(CellState)state
