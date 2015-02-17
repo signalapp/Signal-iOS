@@ -118,17 +118,17 @@ typedef enum : NSUInteger {
 - (void)setupWithTSGroup:(TSGroupModel*)model {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
-        message.groupMetaMessage = TSGroupMessageNew;
-        if(model.groupImage!=nil) {
-            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
-        }
-        else {
-            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
-        }
-        isGroupConversation = YES;
     }];
+    
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
+    message.groupMetaMessage = TSGroupMessageNew;
+    if(model.groupImage!=nil) {
+        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
+    }
+    else {
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+    }
+    isGroupConversation = YES;
 }
 
 - (void)setupWithThread:(TSThread *)thread{
