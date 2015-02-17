@@ -65,6 +65,7 @@
 #define JSQ_TOOLBAR_ICON_HEIGHT 22
 #define JSQ_TOOLBAR_ICON_WIDTH 22
 #define JSQ_IMAGE_INSET 5
+#define RECORD_BUTTON_SIZE 150
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 static NSString *const kUpdateGroupSegueIdentifier = @"updateGroupSegue";
@@ -95,6 +96,12 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) UIButton *callButton;
 @property (nonatomic, retain) UIButton *messageButton;
 @property (nonatomic, retain) UIButton *attachButton;
+
+@property (nonatomic, retain) NSTimer *audioRecorderTimer;
+@property (nonatomic, retain) UIView *audioView;
+@property (nonatomic, retain) UIButton *recordButton;
+@property (nonatomic, retain) UILabel *recordLabel;
+@property double recordCount;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
 @property (nonatomic, retain) UIGestureRecognizer *showFingerprintDisplay;
@@ -1395,28 +1402,99 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
+- (void)setupAudioUI {
+    _recordCount = 0;
+    [_audioRecorderTimer invalidate];
+    _audioRecorderTimer = nil;
+    
+    // Allow cancellation of audio
+    self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelAudio)];
+    
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+    
+    // the dark gray overlay
+    _audioView = [[UIView alloc] init];
+    [_audioView setFrame:[[UIScreen mainScreen] bounds]];
+    _audioView.backgroundColor = [UIColor colorWithWhite:0.1 alpha:0.8];
+    
+    // timestamp of an audio recording
+    _recordLabel = [[UILabel alloc] init];
+    _recordLabel.text = @"0:00";
+    _recordLabel.font = [UIFont ows_mediumFontWithSize:24];
+    _recordLabel.textColor = [UIColor colorWithWhite:0.7 alpha:1.0];
+    _recordLabel.frame = CGRectMake(screenWidth*0.4, screenHeight*0.25, screenWidth*0.2, screenHeight*0.1);
+    [_recordLabel setTextAlignment:NSTextAlignmentCenter];
+    [_audioView addSubview:_recordLabel];
+    
+    // big red record button
+    _recordButton = [[UIButton alloc] init];
+    _recordButton.backgroundColor = [UIColor ows_redColor];
+    _recordButton.frame = CGRectMake((screenWidth-RECORD_BUTTON_SIZE)/2, (screenHeight-RECORD_BUTTON_SIZE)/2, RECORD_BUTTON_SIZE, RECORD_BUTTON_SIZE);
+    _recordButton.layer.cornerRadius = RECORD_BUTTON_SIZE/2;
+    [_recordButton setTitle:@"Record" forState:UIControlStateNormal];
+    [_recordButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_recordButton addTarget:self action:@selector(recordAudio) forControlEvents:UIControlEventTouchUpInside];
+    [_audioView addSubview:_recordButton];
+    
+    [self.view addSubview:_audioView];
+}
+
+- (void)updateRecordLabel:(NSTimer*) timer {
+    _recordCount++;
+    int minutes = (int)floor(_recordCount/60);
+    int seconds = (int)round(_recordCount - minutes*60);
+    _recordLabel.text = [[NSString alloc] initWithFormat:@"%01d:%02d", minutes, seconds];
+}
+
 -(void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray arrayWithObjects:
-                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
-                               nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+    // In case the user's already playing an audio message
+    if (_audioPlayer.playing) {
+        [_audioPlayer stop];
+    }
+    
+    if (_audioRecorder.recording) {
+        // Hit "done"
+        [self cancelAudio];
+    } else {
+        // Update UI
+        [_recordButton setTitle:@"Done" forState:UIControlStateNormal];
+        _audioRecorderTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(updateRecordLabel:) userInfo:nil repeats:YES];
+        
+        // Define the recorder setting
+        NSArray *pathComponents = [NSArray arrayWithObjects:
+                                   [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
+                                   [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
+                                   nil];
+        NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+        
+        // Setup audio session
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+        
+        NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+        [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+        [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+        [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+        
+        // Initiate and prepare the recorder
+        _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
+        _audioRecorder.delegate = self;
+        _audioRecorder.meteringEnabled = YES;
+        [_audioRecorder prepareToRecord];
+//        [_audioRecorder record];
+    }
+}
 
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
-
-    // Initiate and prepare the recorder
-    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
+- (void)cancelAudio {
+//    [_audioRecorder stop];
+//    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+//    [audioSession setActive:NO error:nil];
+    [_audioView removeFromSuperview];
+    self.navigationItem.rightBarButtonItem = nil;
+    [_audioRecorderTimer invalidate];
+    _audioRecorderTimer = nil;
+    _recordCount = 0;
 }
 
 - (void)audioPlayerUpdated:(NSTimer*)timer {
@@ -1438,6 +1516,7 @@ typedef enum : NSUInteger {
     if(flag) {
         [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
     }
+    [self cancelAudio];
 }
 
 #pragma mark Accessory View
@@ -1452,7 +1531,7 @@ typedef enum : NSUInteger {
                      withTitle:nil
              cancelButtonTitle:@"Cancel"
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @"Choose existing Photo",@"Choose existing Video"]//,@"Record audio"]
+             otherButtonTitles:@[@"Take Photo or Video", @"Choose Existing Photo",@"Choose Existing Video",@"Record Audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");
@@ -1471,7 +1550,7 @@ typedef enum : NSUInteger {
                                       [self chooseFromLibrary:kMediaTypeVideo];
                                       break;
                                   case 3:
-                                      [self recordAudio];
+                                      [self setupAudioUI];
                                       break;
                                   default:
                                       break;
