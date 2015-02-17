@@ -130,7 +130,7 @@
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
         JSQCall *call =  [self jsqCallForTSCall:(TSCall*)interaction thread:(TSContactThread*)thread];
-        call.useThumbnail = YES;
+        call.useThumbnail = NO; // disables use of iconography to represent group update actions
         return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
         TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
@@ -147,7 +147,7 @@
                 status = kGroupUpdate;
             }
             JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status];
-            call.useThumbnail = YES;
+            call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
     } else {

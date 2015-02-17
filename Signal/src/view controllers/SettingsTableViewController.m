@@ -74,7 +74,7 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-
+    
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     self.registeredNumber.text     = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager registeredNumber]];
     [self findAndSetRegisteredName];
@@ -164,7 +164,7 @@ typedef enum {
             
         case kUnregisterSection:
         {
-            [self unregisterUser:self];
+            [self unregisterUser:nil];
             break;
         }
             
@@ -175,6 +175,19 @@ typedef enum {
 
 
 -(IBAction)unregisterUser:(id)sender {
+
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Are you sure you want to destroy your account?"
+                                                                             message:@"This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data."
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [self proceedToUnregistration];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)proceedToUnregistration{
     [TSAccountManager unregisterTextSecureWithSuccess:^{
         [PushManager.sharedManager registrationForPushWithSuccess:^(NSData* pushToken){
             [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -187,7 +200,7 @@ typedef enum {
             SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
         }];
     } failure:^(NSError *error) {
-       SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
+        SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
     }];
 }
 
@@ -197,27 +210,6 @@ typedef enum {
         UIAlertView * info = [[UIAlertView alloc]initWithTitle:@"Network Status" message:@"You can check your network status by looking at the colored bar above your inbox." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
     }
-}
-
-#pragma mark - Fingerprint Util
-
-- (NSString*)getFingerprintForTweet:(NSData*)identityKey {
-    // idea here is to insert a space every six characters. there is probably a cleverer/more native way to do this.
-    
-    identityKey = [identityKey prependKeyType];
-    NSString *fingerprint = [identityKey hexadecimalString];
-    __block NSString*  formattedFingerprint = @"";
-    
-    [fingerprint enumerateSubstringsInRange:NSMakeRange(0, [fingerprint length])
-                                    options:NSStringEnumerationByComposedCharacterSequences
-                                 usingBlock:
-     ^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-         if (substringRange.location % 5 == 0 && substringRange.location != [fingerprint length]-1&& substringRange.location != 0) {
-             substring = [substring stringByAppendingString:@" "];
-         }
-         formattedFingerprint = [formattedFingerprint stringByAppendingString:substring];
-     }];
-    return formattedFingerprint;
 }
 
 #pragma mark - Socket Status Notifications
@@ -247,7 +239,5 @@ typedef enum {
 - (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue {
     
 }
-
-
 
 @end

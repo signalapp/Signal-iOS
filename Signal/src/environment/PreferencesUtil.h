@@ -28,6 +28,12 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (BOOL) getIsMigratingToVersion2Dot0;
 - (void) setIsMigratingToVersion2Dot0:(BOOL)enabled;
 
+- (BOOL) getHasSentAMessage;
+- (void) setHasSentAMessage:(BOOL)enabled;
+
+- (BOOL) getHasArchivedAMessage;
+- (void) setHasArchivedAMessage:(BOOL)enabled;
+
 -(BOOL)loggingIsEnabled;
 -(void)setLoggingEnabled:(BOOL)flag;
 

@@ -7,7 +7,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Signals View Controller-->
+        <!--Conversations-->
         <scene sceneID="82U-Xj-21R">
             <objects>
                 <viewController id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
@@ -112,7 +112,7 @@
                                             <constraint firstAttribute="height" constant="21" id="lqu-cE-Dfh"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="15"/>
-                                        <color key="textColor" red="0.12549019607843137" green="0.56470588235294117" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                         <variation key="default">
                                             <mask key="constraints">
@@ -157,7 +157,7 @@
                                     <constraint firstItem="hSN-Ka-PzS" firstAttribute="leading" secondItem="uoq-UX-3fJ" secondAttribute="leading" id="cJB-rq-7bY"/>
                                     <constraint firstItem="Q8M-tN-1ve" firstAttribute="leading" secondItem="hSN-Ka-PzS" secondAttribute="leading" id="eIX-uj-15n"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-15" id="fp7-UH-t0O">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="-12"/>
+                                        <variation key="heightClass=regular-widthClass=compact" constant="-21"/>
                                     </constraint>
                                     <constraint firstAttribute="height" constant="66" id="lM2-AA-dzm"/>
                                     <constraint firstItem="DfA-eN-PyK" firstAttribute="top" secondItem="GV1-fp-iPR" secondAttribute="top" constant="-18" id="lZW-eB-ucq"/>
@@ -235,29 +235,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lKc-rv-FH5" userLabel="empty state view">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="uiEmptyInbox" translatesAutoresizingMaskIntoConstraints="NO" id="Off-ZL-54G">
-                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="140" id="QR5-Mr-y2f">
-                                                <variation key="heightClass=regular-widthClass=compact" constant="110"/>
-                                            </constraint>
-                                            <constraint firstAttribute="width" constant="140" id="s4O-an-5Lc">
-                                                <variation key="heightClass=regular-widthClass=compact" constant="115"/>
-                                            </constraint>
-                                        </constraints>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="QR5-Mr-y2f"/>
-                                                <exclude reference="s4O-an-5Lc"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <include reference="QR5-Mr-y2f"/>
-                                                <include reference="s4O-an-5Lc"/>
-                                            </mask>
-                                        </variation>
-                                    </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Messages :( Tap Compose to send a message or invite a friend to Signal" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Srx-i1-WhD">
                                         <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                         <constraints>
@@ -284,36 +261,24 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="centerX" secondItem="Srx-i1-WhD" secondAttribute="centerX" id="JId-fq-hNc"/>
-                                    <constraint firstItem="Off-ZL-54G" firstAttribute="top" secondItem="lKc-rv-FH5" secondAttribute="top" constant="100" id="RYC-6Y-t2Q"/>
-                                    <constraint firstAttribute="centerX" secondItem="Off-ZL-54G" secondAttribute="centerX" constant="5" id="SyY-V9-AiU">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
-                                    </constraint>
-                                    <constraint firstItem="Srx-i1-WhD" firstAttribute="top" secondItem="Off-ZL-54G" secondAttribute="top" constant="160" id="XOD-ug-Wc7">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="140"/>
-                                    </constraint>
+                                    <constraint firstItem="Srx-i1-WhD" firstAttribute="top" secondItem="lKc-rv-FH5" secondAttribute="top" constant="240" id="uWX-dT-9XP"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
-                                        <exclude reference="Off-ZL-54G"/>
                                         <exclude reference="Srx-i1-WhD"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="JId-fq-hNc"/>
-                                        <exclude reference="XOD-ug-Wc7"/>
-                                        <exclude reference="RYC-6Y-t2Q"/>
-                                        <exclude reference="SyY-V9-AiU"/>
+                                        <exclude reference="uWX-dT-9XP"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <mask key="subviews">
-                                        <include reference="Off-ZL-54G"/>
                                         <include reference="Srx-i1-WhD"/>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="JId-fq-hNc"/>
-                                        <include reference="XOD-ug-Wc7"/>
-                                        <include reference="RYC-6Y-t2Q"/>
-                                        <include reference="SyY-V9-AiU"/>
+                                        <include reference="uWX-dT-9XP"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -430,22 +395,16 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="Um0-0y-8lr">
-                        <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="120" id="PYj-7F-J24">
+                    <navigationItem key="navigationItem" title="Conversations" id="Um0-0y-8lr">
+                        <barButtonItem key="backBarButtonItem" title=" " id="a19-h1-1ZS"/>
+                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="100" id="PYj-7F-J24">
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <button key="titleView" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ktT-AR-smT">
-                            <rect key="frame" x="277" y="7" width="46" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="btnSignalLogo--white">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
-                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="51" id="Oft-fU-tf5">
+                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="100" id="Oft-fU-tf5">
+                            <inset key="imageInsets" minX="0.0" minY="0.0" maxX="-5" maxY="0.0"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -454,7 +413,6 @@
                     </navigationItem>
                     <connections>
                         <outlet property="archiveButton" destination="WVY-Zl-dpP" id="IdE-Kz-1r0"/>
-                        <outlet property="emptyBoxImage" destination="Off-ZL-54G" id="X6W-ws-noW"/>
                         <outlet property="emptyBoxLabel" destination="Srx-i1-WhD" id="wap-un-Cz5"/>
                         <outlet property="inboxButton" destination="DfA-eN-PyK" id="p0D-Qj-YzC"/>
                         <outlet property="inboxCountLabel" destination="GV1-fp-iPR" id="MHq-Gs-bgt"/>
@@ -481,12 +439,6 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="leftBarButtonItem" image="btnSignalLogo--white" id="L4I-fY-NfP">
-                            <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <segue destination="imi-Ms-CTi" kind="unwind" unwindAction="unwindMessagesView:" id="Ntb-xe-Zdr"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="contact-options-action" id="662-pN-RLf">
                             <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -502,7 +454,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="imi-Ms-CTi" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-4462.5" y="-1624.5"/>
         </scene>
@@ -1371,7 +1322,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J5f-8V-ASm" userLabel="_1.0a Registration Screen Title">
                                 <rect key="frame" x="-20" y="-20" width="440" height="284"/>
                                 <subviews>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" misplaced="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="vpb-XQ-s2c">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
                                         <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                                         <constraints>
@@ -1400,7 +1351,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </mask>
                                         </variation>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="50y-cV-8aI">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="223" id="8lm-oa-608"/>
@@ -3017,10 +2968,10 @@ A0 09 9A FF A8 8A 09 99</string>
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lIs-Ck-sAt" userLabel="_1.1a Validation Screen Title">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lIs-Ck-sAt" userLabel="_1.1a Validation Screen Title">
                                 <rect key="frame" x="-20" y="-20" width="440" height="284"/>
                                 <subviews>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" misplaced="YES" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="hW3-07-YNo" userLabel="signal_icon">
+                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="_1.0a_signal_icon" translatesAutoresizingMaskIntoConstraints="NO" id="hW3-07-YNo" userLabel="signal_icon">
                                         <rect key="frame" x="170" y="88" width="101" height="88"/>
                                         <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                                         <constraints>
@@ -3032,24 +2983,24 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
-                                                <exclude reference="a8j-KR-NpB"/>
-                                                <exclude reference="Wlg-7O-XdE"/>
-                                                <exclude reference="jlJ-an-IhP"/>
-                                                <exclude reference="cmg-JE-a0T"/>
                                                 <exclude reference="6PG-XN-ctl"/>
+                                                <exclude reference="Wlg-7O-XdE"/>
+                                                <exclude reference="a8j-KR-NpB"/>
+                                                <exclude reference="cmg-JE-a0T"/>
+                                                <exclude reference="jlJ-an-IhP"/>
                                             </mask>
                                         </variation>
                                         <variation key="heightClass=regular-widthClass=compact">
                                             <mask key="constraints">
-                                                <include reference="a8j-KR-NpB"/>
-                                                <exclude reference="Wlg-7O-XdE"/>
-                                                <include reference="jlJ-an-IhP"/>
-                                                <exclude reference="cmg-JE-a0T"/>
                                                 <exclude reference="6PG-XN-ctl"/>
+                                                <exclude reference="Wlg-7O-XdE"/>
+                                                <include reference="a8j-KR-NpB"/>
+                                                <exclude reference="cmg-JE-a0T"/>
+                                                <include reference="jlJ-an-IhP"/>
                                             </mask>
                                         </variation>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8Y-At-xEK">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Verification" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8Y-At-xEK">
                                         <rect key="frame" x="49" y="188" width="343" height="52"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="29" id="Mem-ez-9kw"/>
@@ -3060,15 +3011,15 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <nil key="highlightedColor"/>
                                         <variation key="default">
                                             <mask key="constraints">
-                                                <exclude reference="lBf-Vx-2UH"/>
                                                 <exclude reference="Mem-ez-9kw"/>
+                                                <exclude reference="lBf-Vx-2UH"/>
                                             </mask>
                                         </variation>
                                         <variation key="heightClass=regular-widthClass=compact">
                                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
                                             <mask key="constraints">
-                                                <exclude reference="lBf-Vx-2UH"/>
                                                 <include reference="Mem-ez-9kw"/>
+                                                <exclude reference="lBf-Vx-2UH"/>
                                             </mask>
                                         </variation>
                                     </label>
@@ -3092,12 +3043,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="5bj-kr-L4s"/>
-                                        <exclude reference="yE0-ct-KoU"/>
                                         <exclude reference="thQ-Jf-aYE"/>
                                         <exclude reference="y9O-xU-MkB"/>
+                                        <exclude reference="yE0-ct-KoU"/>
+                                        <exclude reference="Dso-vy-b1P"/>
                                         <exclude reference="OE3-vm-S0c"/>
                                         <exclude reference="bvU-yG-1oi"/>
-                                        <exclude reference="Dso-vy-b1P"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -3107,12 +3058,12 @@ A0 09 9A FF A8 8A 09 99</string>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="5bj-kr-L4s"/>
-                                        <include reference="yE0-ct-KoU"/>
                                         <exclude reference="thQ-Jf-aYE"/>
                                         <include reference="y9O-xU-MkB"/>
+                                        <include reference="yE0-ct-KoU"/>
+                                        <include reference="Dso-vy-b1P"/>
                                         <include reference="OE3-vm-S0c"/>
                                         <include reference="bvU-yG-1oi"/>
-                                        <include reference="Dso-vy-b1P"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -3698,15 +3649,28 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="UWb-Di-S2f"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="3UN-Zb-j14"/>
-                                <exclude reference="8Vt-pz-DHH"/>
-                                <exclude reference="ppb-ts-aZV"/>
                                 <exclude reference="186-I2-PpT"/>
                                 <exclude reference="DLn-mq-TQC"/>
                                 <exclude reference="TCD-DU-Svm"/>
                                 <exclude reference="Yqu-ew-0Ox"/>
                                 <exclude reference="j0t-My-vWM"/>
                                 <exclude reference="qbD-ea-npC"/>
+                                <exclude reference="JCm-AV-mvA"/>
+                                <exclude reference="x9N-aq-ABK"/>
+                                <exclude reference="JXl-Js-EdT"/>
+                                <exclude reference="V1z-SJ-QA5"/>
+                                <exclude reference="dqK-wN-Qqd"/>
+                                <exclude reference="zDg-Za-jzf"/>
+                                <exclude reference="3UN-Zb-j14"/>
+                                <exclude reference="8Vt-pz-DHH"/>
+                                <exclude reference="ppb-ts-aZV"/>
+                                <exclude reference="6Vf-Ko-FBr"/>
+                                <exclude reference="JNa-NP-PKr"/>
+                                <exclude reference="Weg-Fb-C0D"/>
+                                <exclude reference="dJ1-z6-uc7"/>
+                                <exclude reference="e8e-kK-ZKM"/>
+                                <exclude reference="gln-Vt-qVB"/>
+                                <exclude reference="oFo-la-7kN"/>
                                 <exclude reference="1PA-ZM-HLt"/>
                                 <exclude reference="4Gv-TO-4Gh"/>
                                 <exclude reference="7aG-Eg-thY"/>
@@ -3729,19 +3693,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="sQW-xX-kB4"/>
                                 <exclude reference="tIc-Lo-cxr"/>
                                 <exclude reference="ulI-zy-iTI"/>
-                                <exclude reference="6Vf-Ko-FBr"/>
-                                <exclude reference="JNa-NP-PKr"/>
-                                <exclude reference="Weg-Fb-C0D"/>
-                                <exclude reference="dJ1-z6-uc7"/>
-                                <exclude reference="e8e-kK-ZKM"/>
-                                <exclude reference="gln-Vt-qVB"/>
-                                <exclude reference="oFo-la-7kN"/>
-                                <exclude reference="JXl-Js-EdT"/>
-                                <exclude reference="V1z-SJ-QA5"/>
-                                <exclude reference="dqK-wN-Qqd"/>
-                                <exclude reference="zDg-Za-jzf"/>
-                                <exclude reference="JCm-AV-mvA"/>
-                                <exclude reference="x9N-aq-ABK"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -3751,15 +3702,28 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <include reference="UWb-Di-S2f"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="3UN-Zb-j14"/>
-                                <include reference="8Vt-pz-DHH"/>
-                                <include reference="ppb-ts-aZV"/>
                                 <include reference="186-I2-PpT"/>
                                 <include reference="DLn-mq-TQC"/>
                                 <exclude reference="TCD-DU-Svm"/>
                                 <include reference="Yqu-ew-0Ox"/>
                                 <exclude reference="j0t-My-vWM"/>
                                 <exclude reference="qbD-ea-npC"/>
+                                <include reference="JCm-AV-mvA"/>
+                                <include reference="x9N-aq-ABK"/>
+                                <include reference="JXl-Js-EdT"/>
+                                <include reference="V1z-SJ-QA5"/>
+                                <include reference="dqK-wN-Qqd"/>
+                                <include reference="zDg-Za-jzf"/>
+                                <include reference="3UN-Zb-j14"/>
+                                <include reference="8Vt-pz-DHH"/>
+                                <include reference="ppb-ts-aZV"/>
+                                <exclude reference="6Vf-Ko-FBr"/>
+                                <exclude reference="JNa-NP-PKr"/>
+                                <exclude reference="Weg-Fb-C0D"/>
+                                <include reference="dJ1-z6-uc7"/>
+                                <include reference="e8e-kK-ZKM"/>
+                                <include reference="gln-Vt-qVB"/>
+                                <exclude reference="oFo-la-7kN"/>
                                 <include reference="1PA-ZM-HLt"/>
                                 <exclude reference="4Gv-TO-4Gh"/>
                                 <exclude reference="7aG-Eg-thY"/>
@@ -3782,19 +3746,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                 <exclude reference="sQW-xX-kB4"/>
                                 <exclude reference="tIc-Lo-cxr"/>
                                 <exclude reference="ulI-zy-iTI"/>
-                                <exclude reference="6Vf-Ko-FBr"/>
-                                <exclude reference="JNa-NP-PKr"/>
-                                <exclude reference="Weg-Fb-C0D"/>
-                                <include reference="dJ1-z6-uc7"/>
-                                <include reference="e8e-kK-ZKM"/>
-                                <include reference="gln-Vt-qVB"/>
-                                <exclude reference="oFo-la-7kN"/>
-                                <include reference="JXl-Js-EdT"/>
-                                <include reference="V1z-SJ-QA5"/>
-                                <include reference="dqK-wN-Qqd"/>
-                                <include reference="zDg-Za-jzf"/>
-                                <include reference="JCm-AV-mvA"/>
-                                <include reference="x9N-aq-ABK"/>
                             </mask>
                         </variation>
                     </view>
@@ -5023,14 +4974,16 @@ A0 09 9A FF A8 8A 09 99</string>
                             <outlet property="delegate" destination="n1f-7Y-906" id="qdU-Y6-vJ9"/>
                         </connections>
                     </tableView>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP" userLabel="_7.0a - Navigation Bar">
-                        <barButtonItem key="rightBarButtonItem" image="btnSignalLogo--white" id="fL4-BJ-gHP">
-                            <color key="tintColor" red="0.99989169840000003" green="1" blue="0.99988096950000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="B0V-Wf-lqd">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-                                <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="na1-9P-hTS"/>
+                                <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="ud5-xW-wwg"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="networkStatusLabel" destination="tg3-dQ-odw" id="l6J-8y-maW"/>
                         <outlet property="registeredName" destination="3Pu-Cs-0K2" id="9av-hR-AZO"/>
@@ -5219,6 +5172,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
+                        <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
                         <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -5247,7 +5201,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3">
@@ -5499,38 +5453,36 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="DefaultContactImage.png" width="505" height="314"/>
         <image name="_1.0a_signal_icon" width="82" height="82"/>
         <image name="_arrow_button" width="12" height="23"/>
-        <image name="add-conversation" width="26" height="26"/>
-        <image name="archive-active@1x" width="40" height="51"/>
-        <image name="archive-inactive@1x" width="40" height="51"/>
+        <image name="add-conversation" width="44" height="44"/>
+        <image name="archive-active@1x" width="66" height="66"/>
+        <image name="archive-inactive@1x" width="66" height="66"/>
         <image name="btnCamera--white" width="52" height="40"/>
-        <image name="btnCancel--white" width="20" height="20"/>
-        <image name="btnGroup--white" width="29" height="26"/>
-        <image name="btnPhone--blue" width="45" height="44"/>
+        <image name="btnCancel--white" width="44" height="44"/>
+        <image name="btnGroup--white" width="44" height="44"/>
+        <image name="btnPhone--blue" width="44" height="44"/>
         <image name="btnQRShow--white" width="66" height="66"/>
         <image name="btnQRShow--white-1" width="66" height="66"/>
-        <image name="btnSignalLogo--white" width="32" height="32"/>
         <image name="call.png" width="100" height="100"/>
         <image name="call_dark.png" width="50" height="50"/>
         <image name="contact-options-action" width="44" height="44"/>
         <image name="delete_history.png" width="50" height="50"/>
         <image name="empty-group-avatar" width="53" height="53"/>
         <image name="endcall.png" width="100" height="100"/>
-        <image name="inbox-active@1x" width="40" height="51"/>
-        <image name="inbox-inactive@1x" width="40" height="51"/>
+        <image name="inbox-active@1x" width="66" height="66"/>
+        <image name="inbox-inactive@1x" width="66" height="66"/>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="25" height="24"/>
+        <image name="settings-icon@1x" width="44" height="44"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
         <image name="speaker-active" width="80" height="80"/>
         <image name="speaker-inactive" width="80" height="80"/>
-        <image name="uiEmptyInbox" width="227" height="227"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="DR8-fx-0PD"/>
+        <segue reference="ZcV-Ck-baL"/>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="gZ1-lh-srF"/>
+        <segue reference="D0d-4f-lcI"/>
     </inferredMetricsTieBreakers>
 </document>

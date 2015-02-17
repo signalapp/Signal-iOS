@@ -7,9 +7,12 @@
 //
 
 #import "InboxTableViewCell.h"
+#import "Environment.h"
+#import "PreferencesUtil.h"
 #import "Util.h"
 #import "UIImage+JSQMessages.h"
 #import "TSGroupThread.h"
+#import "TSContactThread.h"
 #import "JSQMessagesAvatarImageFactory.h"
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
@@ -54,6 +57,7 @@
     }
     else {
         NSMutableString *initials = [NSMutableString string];
+        
         if([thread.name length]>0) {
             NSArray *words = [thread.name componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             for (NSString * word in words) {
@@ -63,19 +67,23 @@
                 }
             }
         }
-        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:[UIColor whiteColor] textColor:[UIColor ows_materialBlueColor] font:[UIFont ows_regularFontWithSize:36.0] diameter:100] avatarImage];
+        
+        NSRange stringRange = {0, MIN([initials length], (NSUInteger)3)}; //Rendering max 3 letters.
+        initials = [[initials substringWithRange:stringRange] mutableCopy];
+        
+        UIColor *backgroundColor = thread.isGroupThread ? [UIColor whiteColor] : [UIColor backgroundColorForContact:((TSContactThread*)thread).contactIdentifier];
+        UIImage* image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials backgroundColor:backgroundColor textColor:[UIColor whiteColor] font:[UIFont ows_boldFontWithSize:36.0] diameter:100] avatarImage];
         _contactPictureView.image = thread.image!=nil ? thread.image : image;
-        if(thread.image==nil) {
-            UIImage *overlayImage = [UIImage imageNamed:@"circContact--empty"];
-            UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:overlayImage];
-            [_contactPictureView addSubview:overlayImageView];
-        }
-        else {
+        if(thread.image!=nil) {
             [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         }
     }
 
     self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
+    
+    if (thread.hasUnreadMessages) {
+        [self updateCellForUnreadMessage];
+    }
 }
 
 -(void)configureForState:(CellState)state
@@ -159,11 +167,12 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset {
-    
     if (_scrollView.contentOffset.x < SWIPE_ARCHIVE_OFFSET) {
         // archive the thread
         [_delegate tableViewCellTappedArchive:self];
-    } else {
+        [Environment.preferences setHasArchivedAMessage:YES];
+    }
+    else {
         // don't do anything
         *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }

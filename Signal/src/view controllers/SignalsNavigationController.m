@@ -21,7 +21,6 @@ static double const STALLED_PROGRESS = 0.9;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [self initializeSocketStatusBar];
     [self initializeObserver];
     [TSSocketManager sendNotification];
 }
@@ -38,6 +37,7 @@ static double const STALLED_PROGRESS = 0.9;
     CGRect bar = self.navigationBar.frame;
     _socketStatusView.frame = CGRectMake(0, bar.size.height-1.0f, self.view.frame.size.width, 1.0f);
     _socketStatusView.progress = 0.0f;
+    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
     [self.navigationBar addSubview:_socketStatusView];
 }
 
@@ -60,19 +60,23 @@ static double const STALLED_PROGRESS = 0.9;
 -(void)socketDidOpen
 {
     [_updateStatusTimer invalidate];
-    _socketStatusView.progress = 0.0f;
-    _socketStatusView.hidden = YES;
+    for(UIView*  view in self.navigationBar.subviews) {
+        if([view isKindOfClass:[UIProgressView class]]) {
+            [view removeFromSuperview];
+            _socketStatusView = nil;
+        }
+    }
 }
 
 -(void)socketDidClose
 {
-    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
-    if(_socketStatusView.progress >= STALLED_PROGRESS) {
-        [ _updateStatusTimer invalidate];
-    }
-    else {
-        _socketStatusView.hidden = NO;
+    if(_socketStatusView==nil) {
+        [self initializeSocketStatusBar];
         _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateSocketConnecting) userInfo:nil repeats:YES];
+        
+    }
+    else if(_socketStatusView.progress >= STALLED_PROGRESS) {
+        [ _updateStatusTimer invalidate];
     }
 }
 
@@ -82,9 +86,7 @@ static double const STALLED_PROGRESS = 0.9;
 }
 
 -(void)socketIsConnecting{
-    _socketStatusView.hidden = NO;
-    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
-    
+    // Nothing to see here currently
 }
 
 
