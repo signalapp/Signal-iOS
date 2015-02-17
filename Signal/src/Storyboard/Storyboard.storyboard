@@ -397,14 +397,15 @@
                     </view>
                     <navigationItem key="navigationItem" title="Conversations" id="Um0-0y-8lr">
                         <barButtonItem key="backBarButtonItem" title=" " id="a19-h1-1ZS"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings-icon@1x" width="100" id="PYj-7F-J24">
+                        <barButtonItem key="leftBarButtonItem" image="settings" width="100" id="PYj-7F-J24">
+                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="hxR-Pc-Gxm" kind="showDetail" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="100" id="Oft-fU-tf5">
-                            <inset key="imageInsets" minX="0.0" minY="0.0" maxX="-5" maxY="0.0"/>
+                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="100" style="plain" id="Oft-fU-tf5">
+                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <segue destination="cZ7-de-SUi" kind="presentation" id="Ea3-ew-jtL"/>
@@ -440,7 +441,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
                         <barButtonItem key="rightBarButtonItem" image="contact-options-action" id="662-pN-RLf">
-                            <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
+                            <inset key="imageInsets" minX="17" minY="10" maxX="0.0" maxY="5"/>
                             <color key="tintColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="didSelectShow:" destination="DtA-8O-wrT" id="ktP-VG-5bo"/>
@@ -4977,6 +4978,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP" userLabel="_7.0a - Navigation Bar">
                         <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="B0V-Wf-lqd">
+                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <segue destination="0Ge-H7-b9J" kind="unwind" unwindAction="unwindSettingsDone:" id="ud5-xW-wwg"/>
@@ -5174,6 +5176,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
                         <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
                         <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
+                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="closeAction:" destination="Qga-41-bw2" id="i8h-aS-Y3o"/>
@@ -5282,7 +5285,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <exclude reference="ZIm-Uq-bM8"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="0.0" width="400" height="100"/>
                                     <mask key="subviews">
                                         <include reference="gbm-B5-gCc"/>
                                         <include reference="Ul8-NY-i4c"/>
@@ -5309,6 +5313,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="10" y="274" width="94" height="21"/>
+                                            </variation>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -5361,6 +5368,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="108" width="400" height="628"/>
+                                </variation>
                                 <connections>
                                     <outlet property="dataSource" destination="bDi-2Q-XOC" id="VPO-ms-bH1"/>
                                     <outlet property="delegate" destination="bDi-2Q-XOC" id="rKM-jX-C39"/>
@@ -5473,7 +5483,7 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="mute-active" width="80" height="80"/>
         <image name="mute-inactive" width="80" height="80"/>
         <image name="quit.png" width="50" height="50"/>
-        <image name="settings-icon@1x" width="44" height="44"/>
+        <image name="settings" width="44" height="44"/>
         <image name="settings_tab.png" width="24" height="24"/>
         <image name="signal.png" width="50" height="50"/>
         <image name="signals_tab.png" width="24" height="24"/>
@@ -5483,6 +5493,6 @@ A0 09 9A FF A8 8A 09 99</string>
     <inferredMetricsTieBreakers>
         <segue reference="ZcV-Ck-baL"/>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="D0d-4f-lcI"/>
+        <segue reference="gZ1-lh-srF"/>
     </inferredMetricsTieBreakers>
 </document>
