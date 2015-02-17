@@ -14,8 +14,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="318" height="71"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
-                        <rect key="frame" x="-32" y="0.5" width="200" height="72"/>
+                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yBY-TS-2tI" userLabel="Archive View">
+                        <rect key="frame" x="-32" y="1" width="200" height="72"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cellBtnMoveToArchive--blue" translatesAutoresizingMaskIntoConstraints="NO" id="WyX-Hb-Mpn">
                                 <rect key="frame" x="60" y="25" width="22" height="22"/>
@@ -36,17 +36,17 @@
                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bG5-iK-ql3" customClass="NextResponderScrollView">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="72"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kq8-RD-txC" userLabel="Container View">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kq8-RD-txC" userLabel="Container View">
                                 <rect key="frame" x="0.0" y="0.0" width="400" height="72"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wco-u2-Bz6">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wco-u2-Bz6">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="72"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                     </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="contact_default_feed.png" translatesAutoresizingMaskIntoConstraints="NO" id="p9o-x6-nT5">
                                         <rect key="frame" x="10" y="10" width="52" height="53"/>
                                     </imageView>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" ambiguous="YES" text="Thursday" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bp6-EC-9eP">
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Thursday" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bp6-EC-9eP">
                                         <rect key="frame" x="317" y="20" width="56" height="17"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="17" id="kgo-Kw-ZP3"/>
