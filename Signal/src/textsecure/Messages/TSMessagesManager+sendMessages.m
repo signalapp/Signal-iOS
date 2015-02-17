@@ -13,6 +13,8 @@
 #import <AxolotlKit/SessionBuilder.h>
 #import <Mantle/Mantle.h>
 
+#import "Environment.h"
+#import "PreferencesUtil.h"
 #import "IncomingPushMessageSignal.pb.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+SessionStore.h"
@@ -54,6 +56,7 @@ dispatch_queue_t sendingQueue() {
 }
 
 - (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+    [Environment.preferences setHasSentAMessage:YES];
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread* groupThread = (TSGroupThread*)thread;
@@ -268,7 +271,7 @@ dispatch_queue_t sendingQueue() {
     }
 }
 
-- (void) saveGroupMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+- (void)saveGroupMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
     if(message.groupMetaMessage==TSGroupMessageDeliver) {
         [self saveMessage:message withState:message.messageState];
     }

@@ -94,7 +94,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   APDropDownNavToolbar:
-    :commit: cf63307d5e3833b16caa9a07f3b5ea06359913f9
+    :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :commit: bfb0c58785b33fa30ac3c88ef38477e49a674912
