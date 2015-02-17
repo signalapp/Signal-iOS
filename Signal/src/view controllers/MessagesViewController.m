@@ -143,6 +143,16 @@ typedef enum : NSUInteger {
         self.navigationItem.rightBarButtonItem = nil;
     }
     else if(![self isTextSecureReachable] ){
+        // If someone has sent us a TextSecure message we know they are a TextSecure user even if they aren't in our contacts. This avoids a network call or additional storage hack.
+        JSQMessagesCollectionView *collectionView = self.collectionView;
+        for (NSInteger i=0; i<[self collectionView:collectionView numberOfItemsInSection:0]; i++) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            TSMessageAdapter *msgAdapter = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+            if (msgAdapter.messageType == TSIncomingMessageAdapter && !(msgAdapter.messageType==TSCallAdapter)) {
+                return;
+            }
+        }
+        // Otherwise they are a RedPhone user only 
         [self inputToolbar].hidden= YES; // only RedPhone
         self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];;
     }
