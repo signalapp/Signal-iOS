@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.title = @"Scan key";
+    self.title = NSLocalizedString(@"SCAN_KEY", @"");
     
     self.highlightView = [[UIView alloc] init];
     self.highlightView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleBottomMargin;
@@ -34,7 +34,7 @@
     if (self.input) {
         [self.session addInput:self.input];
     } else {
-        NSLog(@"Error: %@", error);
+        DDLogCDebug(@"Error: %@", error);
     }
     
     self.output = [[AVCaptureMetadataOutput alloc] init];
@@ -76,12 +76,12 @@
             NSString *dialogDescription;
             
             if([detectionData isEqualToData:self.identityKey]) {
-                dialogTitle = NSLocalizedString(@"Verified!", nil);
-                dialogDescription = NSLocalizedString(@"The scanned fingerprint matches the one on the record.", nil);
+                dialogTitle = NSLocalizedString(@"SCAN_KEY_VERIFIED_TITLE", @"");
+                dialogDescription = NSLocalizedString(@"SCAN_KEY_VERIFIED_TEXT", @"");
             }
             else {
-                dialogTitle = NSLocalizedString(@"Conflict!", nil);
-                dialogDescription = NSLocalizedString(@"The scanned fingerprint doesn't match the one on the record.", nil);
+                dialogTitle = NSLocalizedString(@"SCAN_KEY_CONFLICT_TITLE", @"");
+                dialogDescription = NSLocalizedString(@"SCAN_KEY_CONFLICT_TEXT", @"");
             }
             
             [self.session stopRunning];

@@ -76,7 +76,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     } else if ([thread isKindOfClass:[TSGroupThread class]]){
@@ -87,7 +87,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName =  NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     }
@@ -119,12 +119,12 @@
                     adapter.messageType = TSInfoMessageAdapter;
                     
                     if (pointer.isDownloading) {
-                        adapter.messageBody = @"Attachment is downloading.";
+                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
                     } else {
                         if (pointer.hasFailed) {
-                            adapter.messageBody = @"Attachment download failed, tap to retry.";
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
                         } else {
-                            adapter.messageBody = @"New attachment queued for retrieval.";
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
                         }
                     }
                     

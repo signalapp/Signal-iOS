@@ -18,7 +18,8 @@
 
 //Phone number
 @property(nonatomic, strong) IBOutlet UITextField* phoneNumberTextField;
-
+@property(nonatomic, strong) IBOutlet UIButton *phoneNumberButton;
+@property(nonatomic, strong) IBOutlet UILabel* titleLabel;
 //Button
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
 

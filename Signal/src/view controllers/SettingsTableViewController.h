@@ -14,6 +14,12 @@
 @property IBOutlet UILabel *registeredNumber;
 @property IBOutlet UILabel *networkStatusLabel;
 
+@property IBOutlet UILabel *networkStatusHeader;
+@property IBOutlet UILabel *settingsPrivacyTitle;
+@property IBOutlet UILabel *settingsAdvancedTitle;
+@property IBOutlet UILabel *settingsAboutTitle;
+@property IBOutlet UIButton *destroyAccountButton;
+
 -(IBAction)unregisterUser:(id)sender;
 - (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue;
 @end

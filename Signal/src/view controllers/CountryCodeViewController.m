@@ -21,6 +21,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
+    self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 }
 
 #pragma mark - UITableViewDelegate

@@ -83,7 +83,7 @@
         [self updateTextSecureWithRedPhoneSucces:YES];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         DDLogError(@"Error to fetch contact interesection: %@", error.debugDescription);
-        NSString* desc = [NSString stringWithFormat:@"Failed to retrieve directory. Retrying in %f hours.",
+        NSString* desc = [NSString stringWithFormat:NSLocalizedString(@"FAILED_RETRYING_DIRECTORY_DOWNLOAD", @""),
                           DIRECTORY_UPDATE_RETRY_PERIOD/HOUR];
         Environment.errorNoter(desc, error, false);
         BloomFilter* filter = [phoneNumberDirectoryFilter bloomFilter];

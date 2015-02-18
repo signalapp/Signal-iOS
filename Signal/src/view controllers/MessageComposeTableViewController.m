@@ -54,6 +54,7 @@
     
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
+    self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
 - (void)didReceiveMemoryWarning {
@@ -123,7 +124,7 @@
     [loadingProgressView setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-loadingProgressView.frame.size.width/2.0f, 100+110/2.0f-loadingProgressView.frame.size.height/2.0f, loadingProgressView.frame.size.width, loadingProgressView.frame.size.height)];
     [loadingProgressView setHidesWhenStopped:NO];
     [loadingProgressView startAnimating];
-    UILabel *loadingLabel = [self createLabelWithFirstLine:@"Loading your contacts." andSecondLine:@"Sit tight."];
+    UILabel *loadingLabel = [self createLabelWithFirstLine:NSLocalizedString(@"LOADING_CONTACTS_LABEL_LINE1", @"") andSecondLine:NSLocalizedString(@"LOADING_CONTACTS_LABEL_LINE2" , @"")];
     [_loadingBackgroundView addSubview:loadingImageView];
     [_loadingBackgroundView addSubview:loadingProgressView];
     [_loadingBackgroundView addSubview:loadingLabel];
@@ -135,9 +136,9 @@
     [emptyImageView  setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-115.0f/2.0f, 100, 115, 110)];
     emptyImageView.contentMode = UIViewContentModeCenter;
     emptyImageView.contentMode = UIViewContentModeScaleAspectFit;
-    UILabel *emptyLabel = [self createLabelWithFirstLine:@"None of your contacts have Signal!" andSecondLine:@"Why don't you invite someone"];
+    UILabel *emptyLabel = [self createLabelWithFirstLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE1", @"") andSecondLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE2" , @"")];
 
-    UIButton *inviteContactButton = [self createButtonWithTitle:@"Invite contact"];
+    UIButton *inviteContactButton = [self createButtonWithTitle:NSLocalizedString(@"EMPTY_CONTACTS_INVITE_BUTTON", @"")];
     
     [inviteContactButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [inviteContactButton setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-inviteContactButton.frame.size.width/1.5f, self.tableView.frame.size.height - 200, 100, 66)];
@@ -209,7 +210,7 @@
     
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.searchBar.delegate = self;
-    self.searchController.searchBar.placeholder = @"Search by name or number";
+    self.searchController.searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
 
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
@@ -276,7 +277,7 @@
     
     // text to a non-signal number if we have no results and a valid phone #
     if (searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
-        NSString *sendTextTo = @"Send SMS to: ";
+        NSString *sendTextTo = NSLocalizedString(@"SEND_SMS_BUTTON", @"");
         sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
         sendTextButton.hidden = NO;
@@ -291,27 +292,27 @@
 #pragma mark - Send Normal Text to Unknown Contact
 
 - (void)sendText {
-    NSString *confirmMessage = @"Invite a friend via insecure SMS?";
+    NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
     if([currentSearchTerm length]>0) {
-        confirmMessage =  @"Would you like to invite the following number to Signal: ";
+        confirmMessage =  NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"");
         confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
-        confirmMessage = [confirmMessage stringByAppendingString:@"?"];
+        confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
     UIAlertController *alertController = [UIAlertController
-                                          alertControllerWithTitle:@"Confirm"
+                                          alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
                                                            message:confirmMessage
                                                     preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *cancelAction = [UIAlertAction
-                                   actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel action")
+                                   actionWithTitle:NSLocalizedString(@"Cancel", @"")
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                       NSLog(@"Cancel action");
+                                       DDLogCDebug(@"Cancel action");
                                    }];
     
     UIAlertAction *okAction = [UIAlertAction
-                               actionWithTitle:NSLocalizedString(@"OK", @"OK action")
+                               actionWithTitle:NSLocalizedString(@"OK", @"")
                                          style:UIAlertActionStyleDefault
                                        handler:^(UIAlertAction *action) {
                                            [self.searchController setActive:NO];
@@ -322,11 +323,11 @@
                                                picker.messageComposeDelegate = self;
                                                
                                                picker.recipients = [currentSearchTerm length]> 0 ? [NSArray arrayWithObject:currentSearchTerm] : nil;
-                                               picker.body = @"I'm inviting you to install Signal! Here is the link: https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
+                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
                                                [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                                             } else {
                                                // TODO: better backup for iPods (just don't support on)
-                                               UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"Alert" message:@"Your device doesn't support this feature." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                                               UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
                                                [notPermitted show];
                                            }
                                        }];
@@ -350,15 +351,15 @@
         case MessageComposeResultCancelled:
             break;
         case MessageComposeResultFailed: {
-            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"SEND_SMS_INVITE_FAILURE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
             [warningAlert show];
             break;
         }
         case MessageComposeResultSent: {
             [self dismissViewControllerAnimated:NO completion:^{
-                NSLog(@"view controller dismissed");
+                DDLogCDebug(@"view controller dismissed");
             }];
-            UIAlertView *successAlert = [[UIAlertView alloc] initWithTitle:@"Success" message:@"You've invited your friend to use Signal!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            UIAlertView *successAlert = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"SEND_SMS_INVITE_SUCCESS", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
             [successAlert show];
             break;
         }

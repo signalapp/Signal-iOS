@@ -486,7 +486,6 @@
 		FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB11D921A12A4AA002F93FB /* FullImageViewController.m */; };
 		FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
 		FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */; };
-		FCD274E51A5AFDB800202277 /* MediaSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */; };
 		FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */; };
 		FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */; };
 		FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
@@ -1167,8 +1166,6 @@
 		FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+TSHardwareVersion.m"; sourceTree = "<group>"; };
 		FCD274E01A5AFD8000202277 /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		FCD274E31A5AFDB800202277 /* MediaSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaSettingsTableViewController.h; sourceTree = "<group>"; };
-		FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaSettingsTableViewController.m; sourceTree = "<group>"; };
 		FCD274E61A5AFDC900202277 /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
 		FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
 		FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
@@ -1818,7 +1815,6 @@
 			children = (
 				FCFD25791A1543D500F4C644 /* Signup */,
 				FC3196321A08142D0094C78E /* Signals */,
-				FC3196331A0814360094C78E /* Contacts */,
 				FC3196311A08141D0094C78E /* Settings */,
 				76EB050B18170B33006006FC /* InCallViewController.h */,
 				76EB050C18170B33006006FC /* InCallViewController.m */,
@@ -2165,15 +2161,6 @@
 			path = WebSockets;
 			sourceTree = "<group>";
 		};
-		B6416F56199A0478003C5699 /* en.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				B6416F57199A0478003C5699 /* Localizable.strings */,
-			);
-			name = en.lproj;
-			path = translations/en.lproj;
-			sourceTree = "<group>";
-		};
 		B65EDA0F19E1BE2200AAA7CB /* Requests */ = {
 			isa = PBXGroup;
 			children = (
@@ -2361,7 +2348,7 @@
 		B6B6C3C419193F5B00C0B76B /* Translations */ = {
 			isa = PBXGroup;
 			children = (
-				B6416F56199A0478003C5699 /* en.lproj */,
+				B6416F57199A0478003C5699 /* Localizable.strings */,
 			);
 			name = Translations;
 			sourceTree = "<group>";
@@ -2562,8 +2549,6 @@
 				FC31962F1A0814130094C78E /* SettingsTableViewController.m */,
 				FCD274E01A5AFD8000202277 /* PrivacySettingsTableViewController.h */,
 				FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */,
-				FCD274E31A5AFDB800202277 /* MediaSettingsTableViewController.h */,
-				FCD274E41A5AFDB800202277 /* MediaSettingsTableViewController.m */,
 				FCD274E61A5AFDC900202277 /* AdvancedSettingsTableViewController.h */,
 				FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */,
 				FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */,
@@ -2598,13 +2583,6 @@
 				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 			);
 			name = Signals;
-			sourceTree = "<group>";
-		};
-		FC3196331A0814360094C78E /* Contacts */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Contacts;
 			sourceTree = "<group>";
 		};
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
@@ -2722,47 +2700,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
-				fr,
-				"ca-ES",
-				"cs-CZ",
-				de,
-				"ro-RO",
-				nl,
-				"sv-SE",
-				an,
-				ar,
-				bg_BG,
-				ca,
-				cs,
-				da,
-				es,
-				eu,
-				fa_IR,
-				fa,
-				fi,
-				fil,
-				he,
-				hu,
-				it_IT,
-				ja_JP,
-				lv,
-				nb,
-				pl,
-				pt_BR,
-				ro,
-				ru,
-				sl,
-				sq,
-				sv_SE,
-				ta,
-				tr_TR,
-				uk,
-				zh_CN,
-				zh_TW.Big5,
-				zh_TW,
-				be,
-				el_GR,
+				en
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3084,7 +3022,6 @@
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
-				FCD274E51A5AFDB800202277 /* MediaSettingsTableViewController.m in Sources */,
 				76EB063618170B33006006FC /* DataUtil.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
@@ -3388,6 +3325,7 @@
 				B6416F58199A0478003C5699 /* en */,
 			);
 			name = Localizable.strings;
+			path = translations/en.lproj;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

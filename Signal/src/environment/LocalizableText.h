@@ -23,19 +23,6 @@
 #define TXT_END_CALL_REPLACED_BY_NEXT               NSLocalizedString(@"END_CALL_REPLACED_BY_NEXT", @"")
 #define TXT_END_CALL_MESSAGE_FROM_SERVER_PREFIX     NSLocalizedString(@"END_CALL_MESSAGE_FROM_SERVER_PREFIX", @"")
 
-#pragma mark - Menu Table Cell Titles
-
-#define MAIN_MENU_OPTION_RECENT_CALLS	NSLocalizedString(@"MAIN_MENU_OPTION_RECENT_CALLS",@"")
-#define MAIN_MENU_OPTION_FAVOURITES		NSLocalizedString(@"MAIN_MENU_OPTION_FAVOURITES",@"")
-#define MAIN_MENU_OPTION_CONTACTS		NSLocalizedString(@"MAIN_MENU_OPTION_CONTACTS",@"")
-#define MAIN_MENU_OPTION_DIALER			NSLocalizedString(@"MAIN_MENU_OPTION_DIALER",@"")
-#define MAIN_MENU_INVITE_CONTACTS		NSLocalizedString(@"MAIN_MENU_INVITE_CONTACTS",@"")
-
-#define MAIN_MENU_OPTION_SETTINGS		NSLocalizedString(@"MAIN_MENU_OPTION_SETTINGS",@"")
-#define MAIN_MENU_OPTION_ABOUT			NSLocalizedString(@"MAIN_MENU_OPTION_ABOUT",@"")
-#define MAIN_MENU_OPTION_REPORT_BUG		NSLocalizedString(@"MAIN_MENU_OPTION_REPORT_BUG",@"")
-#define MAIN_MENU_OPTION_BLOG			NSLocalizedString(@"MAIN_MENU_OPTION_BLOG",@"")
-
 #pragma mark - View Controller Titles
 
 #define WHISPER_NAV_BAR_TITLE			NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", @"Title for home feed view controller")
@@ -51,23 +38,6 @@
 #define CONTACT_DETAIL_COMM_TYPE_SECURE NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_SECURE", @"")
 #define CONTACT_DETAIL_COMM_TYPE_INSECURE NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", @"")
 #define CONTACT_DETAIL_COMM_TYPE_NOTES  NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_NOTES", @"")
-
-#pragma mark - Dialer
-
-#define DIALER_NUMBER_1 NSLocalizedString(@"DIALER_NUMBER_1", @"")
-#define DIALER_NUMBER_2 NSLocalizedString(@"DIALER_NUMBER_2", @"")
-#define DIALER_NUMBER_3 NSLocalizedString(@"DIALER_NUMBER_3", @"")
-#define DIALER_NUMBER_4 NSLocalizedString(@"DIALER_NUMBER_4", @"")
-#define DIALER_NUMBER_5 NSLocalizedString(@"DIALER_NUMBER_5", @"")
-#define DIALER_NUMBER_6 NSLocalizedString(@"DIALER_NUMBER_6", @"")
-#define DIALER_NUMBER_7 NSLocalizedString(@"DIALER_NUMBER_7", @"")
-#define DIALER_NUMBER_8 NSLocalizedString(@"DIALER_NUMBER_8", @"")
-#define DIALER_NUMBER_9 NSLocalizedString(@"DIALER_NUMBER_9", @"")
-#define DIALER_NUMBER_0 NSLocalizedString(@"DIALER_NUMBER_0", @"")
-#define DIALER_NUMBER_PLUS NSLocalizedString(@"DIALER_NUMBER_PLUS", @"")
-#define DIALER_NUMBER_POUND NSLocalizedString(@"DIALER_NUMBER_POUND", @"")
-#define TXT_ADD_CONTACT NSLocalizedString(@"TXT_ADD_CONTACT", @"")
-#define CALL_BUTTON_TITLE NSLocalizedString(@"CALL_BUTTON_TITLE", @"")
 
 #define DIALER_CALL_BUTTON_TITLE NSLocalizedString(@"DIALER_CALL_BUTTON_TITLE", @"")
 

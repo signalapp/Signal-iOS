@@ -34,7 +34,6 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 
 #import "PrivacySettingsTableViewController.h"
-#import "MediaSettingsTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "AboutTableViewController.h"
 #import "PushManager.h"
@@ -81,6 +80,13 @@ typedef enum {
     
     [self initializeObserver];
     [TSSocketManager sendNotification];
+    
+    self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE",@"");
+    _networkStatusHeader.text = NSLocalizedString(@"NETWORK_STATUS_HEADER",@"");
+    _settingsPrivacyTitle.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",@"");
+    _settingsAdvancedTitle.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE",@"");
+    _settingsAboutTitle.text  = NSLocalizedString(@"SETTINGS_ABOUT",@"");
+    [_destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DESTROY_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
 }
 
 -(void)dealloc {
@@ -90,7 +96,7 @@ typedef enum {
 }
 
 -(void) findAndSetRegisteredName {
-    NSString *name = @"Registered Number:";
+    NSString *name = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
     PhoneNumber* myNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager registeredNumber]];
     Contact *me  = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:myNumber];
     self.registeredName.text = [me fullName] ? [me fullName] : name;
@@ -176,13 +182,11 @@ typedef enum {
 
 -(IBAction)unregisterUser:(id)sender {
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Are you sure you want to destroy your account?"
-                                                                             message:@"This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data."
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")                                                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"") preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         [self proceedToUnregistration];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") style:UIAlertActionStyleCancel handler:nil]];
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -194,20 +198,20 @@ typedef enum {
                 [[TSStorageManager sharedManager] wipe];
                 exit(0);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
+                SignalAlertView(NSLocalizedString(@"UNREGISTER_REDPHONE_FAIL", @""), @"");
             }];
         } failure:^{
-            SignalAlertView(@"Failed to unregister RedPhone component of Signal", @"");
+            SignalAlertView(NSLocalizedString(@"UNREGISTER_REDPHONE_FAIL", @""), @"");
         }];
     } failure:^(NSError *error) {
-        SignalAlertView(@"Failed to unregister TextSecure component of Signal", @"");
+        SignalAlertView(NSLocalizedString(@"UNREGISTER_TEXTSECURE_FAIL", @""), @"");
     }];
 }
 
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == kNetworkStatusSection) {
-        UIAlertView * info = [[UIAlertView alloc]initWithTitle:@"Network Status" message:@"You can check your network status by looking at the colored bar above your inbox." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        UIAlertView * info = [[UIAlertView alloc]initWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"") message:NSLocalizedString(@"NETWORK_STATUS_TEXT",@"") delegate:self cancelButtonTitle:NSLocalizedString(@"OK",@"") otherButtonTitles: nil];
         [info show];
     }
 }
@@ -222,17 +226,17 @@ typedef enum {
 }
 
 -(void)socketDidOpen {
-    self.networkStatusLabel.text = @"Connected";
+    self.networkStatusLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
     self.networkStatusLabel.textColor = [UIColor ows_greenColor];
 }
 
 -(void)socketDidClose {
-    self.networkStatusLabel.text = @"Offline";
+    self.networkStatusLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
     self.networkStatusLabel.textColor = [UIColor ows_redColor];
 }
 
 -(void)socketIsConnecting {
-    self.networkStatusLabel.text = @"Connecting";
+    self.networkStatusLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
     self.networkStatusLabel.textColor = [UIColor ows_yellowColor];
 }
 
