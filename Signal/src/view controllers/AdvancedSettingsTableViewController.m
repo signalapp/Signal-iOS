@@ -42,11 +42,11 @@
 {
     [super loadView];
     
-    self.title = @"Advanced";
+    self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     
     //Enable Log
     self.enableLogCell = [[UITableViewCell alloc]init];
-    self.enableLogCell.textLabel.text         = @"Enable Debug Log";
+    self.enableLogCell.textLabel.text =  NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
     self.enableLogCell.userInteractionEnabled = YES;
     
     self.enableLogSwitch = [[UISwitch alloc]initWithFrame:CGRectZero];
@@ -58,7 +58,7 @@
     
     //Send Log
     self.submitLogCell = [[UITableViewCell alloc]init];
-    self.submitLogCell.textLabel.text = @"Submit Debug Log";
+    self.submitLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"");
 }
 
 #pragma mark - Table view data source

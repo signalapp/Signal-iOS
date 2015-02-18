@@ -104,14 +104,13 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 {
     if(!_isPresentingDialog) {
         _isPresentingDialog = YES;
-        [DJWActionSheet showInView:self.view withTitle:@"Are you sure wou want to shred the following? This action is irreversible."
-                 cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@[@"Shred all keying material"]
+        [DJWActionSheet showInView:self.view withTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"") cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:nil otherButtonTitles:@[NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")]
                           tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                               _isPresentingDialog = NO;
                               if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                  NSLog(@"User Cancelled");
+                                  DDLogCDebug(@"User Cancelled");
                               } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                  NSLog(@"Destructive button tapped");
+                                  DDLogCDebug(@"Destructive button tapped");
                               }else {
                                   switch (tappedButtonIndex) {
                                       case 0:
@@ -152,7 +151,7 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 
 
 - (IBAction)unwindIdentityVerificationCancel:(UIStoryboardSegue *)segue{
-    NSLog(@"action cancelled");
+    DDLogCDebug(@"action cancelled");
     // Can later be used to mark identity key as verified if we want step above TOFU in UX
 }
 

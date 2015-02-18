@@ -283,7 +283,7 @@
                     nameString = message.source;
                 }
                 
-                NSString* updateGroupInfo = [NSString stringWithFormat:@"%@ has left group",nameString];
+                NSString* updateGroupInfo = [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""),nameString];
                 NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
                 [newGroupMembers removeObject:message.source];
                 gThread.groupModel.groupMemberIds = newGroupMembers;

@@ -38,11 +38,11 @@
 {
     [super loadView];
     
-    self.title = @"About";
+    self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"");
     
     //Version
     self.versionCell = [[UITableViewCell alloc]init];
-    self.versionCell.textLabel.text = @"Version";
+    self.versionCell.textLabel.text = NSLocalizedString(@"SETTINGS_VERSION", @"");
     
     self.versionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 75, 30)];
     self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
@@ -55,12 +55,12 @@
     
     //Support
     self.supportCell = [[UITableViewCell alloc]init];
-    self.supportCell.textLabel.text = @"Support";
+    self.supportCell.textLabel.text = NSLocalizedString(@"SETTINGS_SUPPORT", @"");
     self.supportCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     //Footer
     self.footerView = [[UILabel alloc]init];
-    self.footerView.text = @"Copyright Open Whisper Systems \n Licensed under the GPLv3";
+    self.footerView.text = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
     self.footerView.textColor = [UIColor ows_darkGrayColor];
     self.footerView.font = [UIFont ows_regularFontWithSize:15.0f];
     self.footerView.numberOfLines = 2;
@@ -69,7 +69,7 @@
     
     //Twitter Invite
     self.twitterInviteCell = [[UITableViewCell alloc]init];
-    self.twitterInviteCell.textLabel.text = @"Share Install Link";
+    self.twitterInviteCell.textLabel.text = NSLocalizedString(@"SETTINGS_SHARE_INSTALL", @"");
     
     UIImageView* twitterImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"twitter_logo"]];
     [twitterImageView setFrame:CGRectMake(0, 0, 34, 34)];
@@ -96,9 +96,9 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case 0: return @"Information";
-        case 1: return @"Invite";
-        case 2: return @"Help";
+        case 0: return NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
+        case 1: return NSLocalizedString(@"SETTINGS_INVITE_HEADER", @"");
+        case 2: return NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
         
         default: return nil;
     }
@@ -147,7 +147,7 @@
         SLComposeViewController *tweetSheet = [SLComposeViewController
                                                composeViewControllerForServiceType:SLServiceTypeTwitter];
         
-        NSString *tweetString = [NSString stringWithFormat:@"You can reach me on @whispersystems Signal, get it now."];
+        NSString *tweetString = [NSString stringWithFormat:NSLocalizedString(@"SETTINGS_INVITE_TWITTER_TEXT", @"")];
         [tweetSheet setInitialText:tweetString];
         [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
         tweetSheet.completionHandler = ^(SLComposeViewControllerResult result) {

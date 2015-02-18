@@ -55,16 +55,16 @@ NSString * const TSAttachementGroupAvatarFileRelationshipEdge = @"TSAttachementG
 - (NSString*) getInfoStringAboutUpdateTo:(TSGroupModel*)newModel {
     NSString* updatedGroupInfoString = @"";
     if (self == newModel) {
-        return @"Group updated.";
+        return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
     if (![_groupName isEqual:newModel.groupName]) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@"Title is now '%@'. ",newModel.groupName]];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""),newModel.groupName]];
     }
     if(_groupImage!=nil  && newModel.groupImage!=nil  && !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Avatar changed. "];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
     }
     if([updatedGroupInfoString length]==0) {
-        updatedGroupInfoString = @"Group updated";
+        updatedGroupInfoString = NSLocalizedString(@"GROUP_UPDATED", @"");
     }
     NSSet* oldMembers = [NSSet setWithArray:_groupMemberIds];
     NSSet* newMembers = [NSSet setWithArray:newModel.groupMemberIds];
@@ -77,11 +77,11 @@ NSString * const TSAttachementGroupAvatarFileRelationshipEdge = @"TSAttachementG
     
     
     if([membersWhoLeft count] > 0 ) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@" %@ left the group. ",[[membersWhoLeft allObjects] componentsJoinedByString:@", "]]];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""),[[membersWhoLeft allObjects] componentsJoinedByString:@", "]]];
     }
     
     if([membersWhoJoined count] > 0 ) {
-        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:@" %@ joined the group. ",[[membersWhoJoined allObjects] componentsJoinedByString:@", "]]];
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),[[membersWhoJoined allObjects] componentsJoinedByString:@", "]]];
     }
     
     return updatedGroupInfoString;

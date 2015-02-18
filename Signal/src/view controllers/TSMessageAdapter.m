@@ -76,7 +76,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     } else if ([thread isKindOfClass:[TSGroupThread class]]){
@@ -87,7 +87,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName =  NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     }

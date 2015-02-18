@@ -49,7 +49,7 @@
     if([thread isKindOfClass:[TSGroupThread class]]) {
         _contactPictureView.image = ((TSGroupThread*)thread).groupModel.groupImage!=nil ? ((TSGroupThread*)thread).groupModel.groupImage : [UIImage imageNamed:@"empty-group-avatar"];
         if([_nameLabel.text length]==0) {
-            _nameLabel.text = @"New Group";
+            _nameLabel.text = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
         }
         if(_contactPictureView.image!=nil) {
              [UIUtil applyRoundedBorderToImageView:&_contactPictureView];

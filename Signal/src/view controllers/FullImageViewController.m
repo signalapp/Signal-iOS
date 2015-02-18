@@ -361,7 +361,7 @@
 
 -(void)shareButtonTapped:(UIButton*)sender
 {
-    [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Save to Camera Roll", @"Copy"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+    [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:@[NSLocalizedString(@"CAMERA_ROLL_SAVE_BUTTON", @""), NSLocalizedString(@"CAMERA_ROLL_COPY_BUTTON", @"")] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
 
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
