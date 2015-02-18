@@ -160,7 +160,7 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
     
-    _messageButton = [UIButton ows_blueButtonWithTitle:@"Send"];
+    _messageButton = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
     
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
@@ -293,7 +293,7 @@ typedef enum : NSUInteger {
         
         
         UIButton* groupUpdateButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
-        NSMutableAttributedString *updateTitle = [[NSMutableAttributedString alloc] initWithString:@"Update"];
+        NSMutableAttributedString *updateTitle = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"UPDATE_BUTTON_TITLE", @"")];
         [updateTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [updateTitle length])];
         [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
         [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
@@ -304,7 +304,7 @@ typedef enum : NSUInteger {
         groupUpdateBarButton.customView.userInteractionEnabled = YES;
         
         UIButton* groupLeaveButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,50,24)];
-        NSMutableAttributedString *leaveTitle = [[NSMutableAttributedString alloc] initWithString:@"Leave"];
+        NSMutableAttributedString *leaveTitle = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"")];
         [leaveTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [leaveTitle length])];
         [groupLeaveButton setAttributedTitle:leaveTitle forState:UIControlStateNormal];
         [groupLeaveButton addTarget:self action:@selector(leaveGroup) forControlEvents:UIControlEventTouchUpInside];
@@ -314,7 +314,7 @@ typedef enum : NSUInteger {
         groupLeaveBarButton.customView.userInteractionEnabled = YES;
         
         UIButton* groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
-        NSMutableAttributedString *membersTitle = [[NSMutableAttributedString alloc] initWithString:@"Members"];
+        NSMutableAttributedString *membersTitle = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MEMBERS_BUTTON_TITLE", @"")];
         [membersTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [membersTitle length])];
         [groupMembersButton setAttributedTitle:membersTitle forState:UIControlStateNormal];
         [groupMembersButton addTarget:self action:@selector(showGroupMembers) forControlEvents:UIControlEventTouchUpInside];
@@ -344,7 +344,7 @@ typedef enum : NSUInteger {
 -(void) setNavigationTitle {
     NSString* navTitle = self.thread.name;
     if(isGroupConversation && [navTitle length]==0) {
-        navTitle = @"New Group";
+        navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
     self.navController.activeNavigationBarTitle = nil;
     self.title = navTitle;
@@ -600,7 +600,7 @@ typedef enum : NSUInteger {
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
             
         default:
-            NSLog(@"Something went wrong");
+            DDLogCError(@"Something went wrong");
             return nil;
     }
 }
@@ -752,7 +752,7 @@ typedef enum : NSUInteger {
             _lastDeliveredMessageIndexPath = indexPath;
             NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
             textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
-            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:@"Delivered"];
+            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             
             return (NSAttributedString*)attrStr;
@@ -894,7 +894,7 @@ typedef enum : NSUInteger {
                                     NSError *error;
                                     _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
                                     if (error) {
-                                        NSLog(@"error: %@", error);
+                                        DDLogCError(@"error: %@", error);
                                     }
                                     [_audioPlayer prepareToPlay];
                                     [_audioPlayer play];
@@ -1005,9 +1005,9 @@ typedef enum : NSUInteger {
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage*)message{
     [self dismissKeyBoard];
-    [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:@[@"Send again"] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+    [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:@[NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-            NSLog(@"User Cancelled");
+            DDLogCDebug(@"User Cancelled");
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
             [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                 [message removeWithTransaction:transaction];
@@ -1031,14 +1031,14 @@ typedef enum : NSUInteger {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage*)message;
         NSString *newKeyFingerprint = [errorMessage newIdentityKey];
-        NSString *messageString     = [NSString stringWithFormat:@"Do you want to accept %@'s new identity key: %@", _thread.name, newKeyFingerprint];
-        NSArray  *actions           = @[@"Accept new identity key", @"Copy new identity key to pasteboard"];
+        NSString *messageString     = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), _thread.name, newKeyFingerprint];
+        NSArray  *actions           = @[NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""), NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")];
         
         [self dismissKeyBoard];
         
-        [DJWActionSheet showInView:self.parentViewController.view withTitle:messageString cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+        [DJWActionSheet showInView:self.parentViewController.view withTitle:messageString cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                NSLog(@"User Cancelled");
+                DDLogCDebug(@"User Cancelled");
             } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
                 [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                     [message removeWithTransaction:transaction];
@@ -1479,9 +1479,9 @@ typedef enum : NSUInteger {
     
     [DJWActionSheet showInView:presenter
                      withTitle:nil
-             cancelButtonTitle:@"Cancel"
+             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
         destructiveButtonTitle:nil
-             otherButtonTitles:@[@"Take Photo or Video", @" Choose from Library..."]//,@"Record audio"]
+             otherButtonTitles:@[NSLocalizedString(@"TAKE_MEDIA_BUTTON", @""), NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")]//,@"Record audio"]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
                               DDLogVerbose(@"User Cancelled");

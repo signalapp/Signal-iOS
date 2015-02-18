@@ -31,21 +31,21 @@
 - (NSString*)description{
     switch (_errorType) {
         case TSErrorMessageNoSession:
-            return @"No available session for contact.";
+            return NSLocalizedString(@"ERROR_MESSAGE_NO_SESSION", @"");
         case TSErrorMessageMissingKeyId:
-            return @"Received a message with unknown PreKey.";
+            return NSLocalizedString(@"ERROR_MESSAGE_MISSING_KEY", @"");
         case TSErrorMessageInvalidMessage:
-            return @"Received a corrupted message.";
+            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
         case TSErrorMessageInvalidVersion:
-            return @"Received a message not compatible with this version.";
+            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_VERSION", @"");
         case TSErrorMessageDuplicateMessage:
-            return @"Received a duplicated message.";
+            return NSLocalizedString(@"ERROR_MESSAGE_DUPLICATE_MESSAGE", @"");
         case TSErrorMessageInvalidKeyException:
-            return @"The recipient's key is not valid.";
+            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_KEY_EXCEPTION", @"");
         case TSErrorMessageWrongTrustedIdentityKey:
-            return @"Identity key changed. Tap to verify new key.";
+            return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         default:
-            return @"An unknown error occured.";
+            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
             break;
     }
 }

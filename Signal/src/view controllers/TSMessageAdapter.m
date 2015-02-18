@@ -76,7 +76,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     } else if ([thread isKindOfClass:[TSGroupThread class]]){
@@ -87,7 +87,7 @@
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName = @"Me";
+            adapter.senderDisplayName =  NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType = TSOutgoingMessageAdapter;
         }
     }
@@ -118,7 +118,7 @@
                     // can do loading information here
                     //TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
                     //TODO: Change this status when download failed;
-                    adapter.messageBody = @"Attachment is downloading";
+                    adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", @"");
                     adapter.messageType = TSInfoMessageAdapter;
                 } else {
                     DDLogError(@"We retreived an attachment that doesn't have a known type : %@", NSStringFromClass([attachment class]));

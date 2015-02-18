@@ -89,10 +89,10 @@
 - (void)showAlertForError:(NSError *)error {
     
     if (error == nil) {
-        NSLog(@"%@: Error condition, but no NSError to display", self.class);
+        DDLogCError(@"%@: Error condition, but no NSError to display", self.class);
         return;
     } else if (error.localizedDescription.length == 0) {
-        NSLog(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
+        DDLogCError(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
         return;
     }
     

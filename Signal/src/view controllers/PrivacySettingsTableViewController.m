@@ -16,8 +16,6 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "UIUtil.h"
 
-#define TAP_TO_COPYSTRING NSLocalizedString(@"Tap to copy.",nil)
-
 @interface PrivacySettingsTableViewController ()
 
 @property (nonatomic, strong) UITableViewCell * enableScreenSecurityCell;
@@ -51,11 +49,11 @@
 {
     [super loadView];
     
-    self.title = @"Privacy";
+    self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
     
     //Enable Screen Security Cell
     self.enableScreenSecurityCell = [[UITableViewCell alloc]init];
-    self.enableScreenSecurityCell.textLabel.text = @"Enable Screen Security";
+    self.enableScreenSecurityCell.textLabel.text = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"");
     
     self.enableScreenSecuritySwitch = [[UISwitch alloc]initWithFrame:CGRectZero];
     
@@ -64,13 +62,13 @@
     
     //Clear History Log Cell
     self.clearHistoryLogCell = [[UITableViewCell alloc]init];
-    self.clearHistoryLogCell.textLabel.text = @"Clear History Logs";
+    self.clearHistoryLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"");
     self.clearHistoryLogCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     //Fingerprint Cell
     self.fingerprintCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Identifier"];
-    self.fingerprintCell.textLabel.text = @"Fingerprint";
-    self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
+    self.fingerprintCell.textLabel.text = NSLocalizedString(@"SETTINGS_FINGERPRINT", @"");
+    self.fingerprintCell.detailTextLabel.text = NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY",nil);
     self.fingerprintCell.detailTextLabel.textColor = [UIColor lightGrayColor];
     
     self.fingerprintLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 150, 25)];
@@ -129,9 +127,9 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case 0: return @"Screen Security";
-        case 1: return @"History Log";
-        case 2: return @"Fingerprint";
+        case 0: return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"");
+        case 1: return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"");
+        case 2: return NSLocalizedString(@"SETTINGS_FINGERPRINT", @"");
         default: return nil;
     }
 }
@@ -144,19 +142,19 @@
         case 1:
         {
             [DJWActionSheet showInView:self.parentViewController.view
-                             withTitle:@"Are you sure you want to delete all your history (messages, attachments, call history ...) ? This action cannot be reverted."
-                     cancelButtonTitle:@"Cancel"
-                destructiveButtonTitle:@"I'm sure."
+                             withTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION", @"")
+                     cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                destructiveButtonTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")
                      otherButtonTitles:@[]
                               tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                                   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
                                   if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                      NSLog(@"User Cancelled");
+                                      DDLogCDebug(@"User Cancelled");
                                       
                                   } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
                                       [[TSStorageManager sharedManager] deleteThreadsAndMessages];
                                   } else {
-                                      NSLog(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                      DDLogCDebug(@"The user tapped button at index: %li", (long)tappedButtonIndex);
                                   }
                               }];
 
@@ -170,9 +168,9 @@
                     //Timer to change label to copied (NSTextAttachment checkmark)
                     if (self.copiedTimer == nil) {
                         self.copiedTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(endTimer:) userInfo:nil repeats:NO];
-                        self.fingerprintCell.detailTextLabel.text = @"Copied!";
+                        self.fingerprintCell.detailTextLabel.text = NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY_SUCCESS", @"");
                     } else {
-                        self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
+                        self.fingerprintCell.detailTextLabel.text = NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY",nil);
                     }
                     [[UIPasteboard generalPasteboard] setString:self.fingerprintLabel.text];
                     break;
@@ -198,7 +196,7 @@
 
 -(void)endTimer:(id)sender
 {
-    self.fingerprintCell.detailTextLabel.text = TAP_TO_COPYSTRING;
+    self.fingerprintCell.detailTextLabel.text =  NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY",nil);
     [self.copiedTimer invalidate];
     self.copiedTimer = nil;
 }
