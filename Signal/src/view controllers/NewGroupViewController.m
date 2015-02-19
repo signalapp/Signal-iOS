@@ -71,11 +71,11 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
     if(_thread==nil) {
         self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[[UIImage imageNamed:@"add-conversation"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
-        self.navigationItem.title = @"New Group";
+        self.navigationItem.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
         
     }
     else {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:NSLocalizedString(@"UPDATE_BUTTON_TITLE", @"") style:UIBarButtonItemStylePlain target:self action:@selector(updateGroup)];
         self.navigationItem.title = _thread.groupModel.groupName;
         self.nameGroupTextField.text = _thread.groupModel.groupName;
         if(_thread.groupModel.groupImage!=nil) {
@@ -83,7 +83,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
     }
-
+    _nameGroupTextField.placeholder = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"");
+    _addPeopleLabel.text = NSLocalizedString(@"NEW_GROUP_REQUEST_ADDPEOPLE", @"");
 }
 
 - (void)didReceiveMemoryWarning {
@@ -150,14 +151,14 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 -(IBAction)addGroupPhoto:(id)sender
 {
     [self.nameGroupTextField resignFirstResponder];
-    [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:@"Cancel"
-        destructiveButtonTitle:nil otherButtonTitles:@[@"Take a Picture",@"Choose from Library"]
+    [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+        destructiveButtonTitle:nil otherButtonTitles:@[NSLocalizedString(@"TAKE_PICTURE_BUTTON", @""),NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-            NSLog(@"User Cancelled");
+            DDLogCDebug(@"User Cancelled");
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-            NSLog(@"Destructive button tapped");
+            DDLogCDebug(@"Destructive button tapped");
         }else {
             switch (tappedButtonIndex) {
                 case 0:

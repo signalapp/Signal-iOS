@@ -75,6 +75,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
         [self.tableView reloadData];
     } onThread:[NSThread mainThread] untilCancelled:nil];
+    self.title = NSLocalizedString(@"CONVERSATIONS_VIEW_TITLE", @"");
+
+
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -410,22 +413,22 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     
     if(self.viewingThreadsIn == kInboxState) {
         if([Environment.preferences getHasSentAMessage]) {
-            firstLine =  @"Done. Done. Done.";
-            secondLine = @"Tip: add a conversation as a reminder!";
+            firstLine =  NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
+            secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
         }
         else {
-            firstLine = @"Start your first Signal conversation!";
-            secondLine = @"Tap on the + button.";
+            firstLine =  NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"");
+            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"");
         }
     }
     else {
         if([Environment.preferences getHasArchivedAMessage]) {
-            firstLine = @"Squeaky Freaking Clean.";
-            secondLine = @"None. Zero. Zilch. Nada.";
+            firstLine =  NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
+            secondLine =  NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
         }
         else {
-            firstLine = @"Clean Up Your Conversations.";
-            secondLine = @"You can archive inactive conversations for later from your Inbox.";
+            firstLine =  NSLocalizedString(@"EMPTY_ARCHIVE_TITLE", @"");
+            secondLine =  NSLocalizedString(@"EMPTY_ARCHIVE_TEXT", @"");
         }
     }
     NSMutableAttributedString *fullLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@",firstLine,secondLine]];

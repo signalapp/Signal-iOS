@@ -25,6 +25,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initializeKeyboardHandlers];
+    _headerLabel.text = NSLocalizedString(@"VERIFICATION_HEADER", @"");
+    _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"");
+    _challengeButton.titleLabel.text =  NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"");
+    _sendCodeViaSMSAgainButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"");
+    _sendCodeViaVoiceButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"");
+    _changeNumberButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"");
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -89,10 +95,10 @@
 - (void)showAlertForError:(NSError *)error {
     
     if (error == nil) {
-        NSLog(@"%@: Error condition, but no NSError to display", self.class);
+        DDLogCError(@"%@: Error condition, but no NSError to display", self.class);
         return;
     } else if (error.localizedDescription.length == 0) {
-        NSLog(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
+        DDLogCError(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
         return;
     }
     

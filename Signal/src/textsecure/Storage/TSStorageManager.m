@@ -98,7 +98,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     
     if (error || !success) {
         DDLogError(@"Error while removing files from backup: %@", error.description);
-        SignalAlertView(NSLocalizedString(@"WARNING", @""), @"DISABLING_BACKUP_FAILED");
+        SignalAlertView(NSLocalizedString(@"WARNING_STRING", @""), @"DISABLING_BACKUP_FAILED");
         return;
     }
 }

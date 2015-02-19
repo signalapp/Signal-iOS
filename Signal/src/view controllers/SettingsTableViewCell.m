@@ -42,6 +42,7 @@
 
 -(void)updateImageQualityLabel
 {
+    /* this is currently unused, thus unlocalized. code should probably be excised as this will never be part of design */
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
             self.detailLabel.text = @"Full";

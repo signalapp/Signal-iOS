@@ -44,6 +44,12 @@ static NSString *const kCodeSentSegue = @"codeSent";
     _phoneNumberTextField.delegate = self;
     [self populateDefaultCountryNameAndCode];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
+    
+    _titleLabel.text = NSLocalizedString(@"REGISTRATION_TITLE_LABEL", @"");
+    _countryNameButton.titleLabel.text = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"");
+    _phoneNumberButton.titleLabel.text = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"");
+    _phoneNumberTextField.placeholder = NSLocalizedString(@"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"");
+    _sendCodeButton.titleLabel.text = NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"");
 }
 
 -(void)viewWillAppear:(BOOL)animated{

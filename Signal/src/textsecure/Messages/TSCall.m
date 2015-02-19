@@ -27,11 +27,11 @@
 - (NSString*)description{
     switch (_callType) {
         case RPRecentCallTypeIncoming:
-            return @"Incoming call";
+            return NSLocalizedString(@"INCOMING_CALL", @"");
         case RPRecentCallTypeOutgoing:
-            return @"Outgoing call";
+            return NSLocalizedString(@"OUTGOING_CALL", @"");
         case RPRecentCallTypeMissed:
-            return @"Missed call";
+            return NSLocalizedString(@"MISSED_CALL", @"");
     }
 }
 

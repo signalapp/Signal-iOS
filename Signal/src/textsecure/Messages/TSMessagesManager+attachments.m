@@ -108,7 +108,7 @@ dispatch_queue_t attachmentsQueue() {
                         result.pointer.isDownloaded = YES;
                         [result.pointer saveWithTransaction:transaction];
                         
-                        NSLog(@"finished uploading");
+                        DDLogCDebug(@"finished uploading");
                     }];
                     [self sendMessage:outgoingMessage inThread:thread];
                 } else{

@@ -201,14 +201,14 @@
 - (UIUserNotificationCategory*)userNotificationsMessageCategory{
     UIMutableUserNotificationAction *action_accept  = [UIMutableUserNotificationAction new];
     action_accept.identifier                        = Signal_Message_View_Identifier;
-    action_accept.title                             = NSLocalizedString(@"View", @"");
+    action_accept.title                             = NSLocalizedString(@"PUSH_MANAGER_VIEW", @"");
     action_accept.activationMode                    = UIUserNotificationActivationModeForeground;
     action_accept.destructive                       = NO;
     action_accept.authenticationRequired            = YES;
 
     UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
     action_decline.identifier                       = Signal_Message_MarkAsRead_Identifier;
-    action_decline.title                            = NSLocalizedString(@"Mark as read", @"");
+    action_decline.title                            = NSLocalizedString(@"PUSH_MANAGER_MARKREAD", @"");
     action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
     action_decline.destructive                      = NO;
     action_decline.authenticationRequired           = NO;
