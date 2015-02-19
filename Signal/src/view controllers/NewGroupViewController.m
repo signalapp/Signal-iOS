@@ -83,7 +83,8 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             [self setupGroupImageButton:_thread.groupModel.groupImage];
         }
     }
-
+    _nameGroupTextField.placeholder = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"");
+    _addPeopleLabel.text = NSLocalizedString(@"NEW_GROUP_REQUEST_ADDPEOPLE", @"");
 }
 
 - (void)didReceiveMemoryWarning {

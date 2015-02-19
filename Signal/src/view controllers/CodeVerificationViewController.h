@@ -19,6 +19,7 @@
 
 @property(nonatomic, strong) NSString* formattedPhoneNumber;
 
+@property(nonatomic,strong) IBOutlet UILabel *headerLabel;
 // User action buttons
 @property(nonatomic, strong) IBOutlet UIButton* challengeButton;
 @property(nonatomic, strong) IBOutlet UIButton* sendCodeViaSMSAgainButton;
@@ -27,7 +28,7 @@
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView* submitCodeSpinner;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCodeAgainSpinner;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView* requestCallSpinner;
-
+@property(nonatomic, strong) IBOutlet UIButton* changeNumberButton;
 @property(nonatomic) IBOutlet NSLayoutConstraint *headerConstraint;
 
 // Displays phone number entered in previous step. There is a UI option (segue) which allows the user to go back and edit this.

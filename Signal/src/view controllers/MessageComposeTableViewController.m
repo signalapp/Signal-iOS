@@ -54,6 +54,7 @@
     
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
+    self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
 - (void)didReceiveMemoryWarning {
