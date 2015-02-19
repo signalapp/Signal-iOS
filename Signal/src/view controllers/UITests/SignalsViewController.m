@@ -75,6 +75,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
         [self.tableView reloadData];
     } onThread:[NSThread mainThread] untilCancelled:nil];
+    self.title = NSLocalizedString(@"CONVERSATIONS_VIEW_TITLE", @"");
+
+
 }
 
 -(void)viewWillAppear:(BOOL)animated

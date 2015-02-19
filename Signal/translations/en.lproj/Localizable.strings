@@ -199,6 +199,29 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "The recipient's key is not valid.";
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Identity key changed. Tap to verify new key.";
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occured.";
+"REGISTRATION_TITLE_LABEL" = "Your Phone Number";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
+"REGISTRATION_PHONENUMBER_BUTTON" = "Phone Number";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Enter Number";
+"REGISTRATION_VERIFY_DEVICE" = "Verify This Device";
+"VERIFICATION_HEADER" = "Verify";
+"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verification Code";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Submit Verification Code";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Request Code Again";
+"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Change Number";
+"CONVERSATIONS_VIEW_TITLE" = "Conversations";
+"MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Name this group chat";
+"NEW_GROUP_REQUEST_ADDPEOPLE" = "Add people";
+"FINGERPRINT_INFO_THEIRS" = "Tap to scan another user's fingerprint";
+"FINGERPRINT_INFO_YOURS" = "Tap to display your fingerprint for another user";
+"FINGERPRINT_INFO_ABOUT" = "Compare both fingerprints to verify your contact's identity and the integrity of the message.";
+"FINGERPRINT_YOURS" = "Your Fingerprint";
+"COUNTRYCODE_SELECT_TITLE" = "Select Country Code";
+
+
+
 
 
 

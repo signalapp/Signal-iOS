@@ -41,7 +41,7 @@
     UIImage *resized = [image resizedWithQuality:kCGInterpolationNone rate:5.0];
     
     self.qrCodeView.image = resized;
-    
+    _yourFingerprintLabel.text = NSLocalizedString(@"FINGERPRINT_YOURS",@"");
     CGImageRelease(cgImage);
 }
 

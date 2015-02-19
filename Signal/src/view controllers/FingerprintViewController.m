@@ -45,6 +45,10 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
     UILongPressGestureRecognizer *longpressToResetSession = [[UILongPressGestureRecognizer alloc]  initWithTarget:self action:@selector(shredAndDelete:)];
     longpressToResetSession.minimumPressDuration = 1.0;
     [self.view addGestureRecognizer:longpressToResetSession];
+    _infoTheirFingerprint.text = NSLocalizedString(@"FINGERPRINT_INFO_THEIRS", @"");
+    _infoMyFingerprint.text = NSLocalizedString(@"FINGERPRINT_INFO_YOURS", @"");
+    _presentationLabel.text = NSLocalizedString(@"FINGERPRINT_INFO_ABOUT", @"");
+    _userFingerprintTitleLabel.text = NSLocalizedString(@"FINGERPRINT_YOURS",@"");
 }
 
 - (void)viewWillAppear:(BOOL)animated
