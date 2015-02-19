@@ -110,7 +110,7 @@
         NSString *identifier = [_knownNumbers objectAtIndex:[self knownNumbersIndexForIndexPath:indexPath]];
         return [_associatedContactDict objectForKey:identifier];
     } else {
-        NSAssert(NO, @"Trying to retreive contact from array at an index that is not a contact.");
+        NSAssert(NO, @"Trying to retrieve contact from array at an index that is not a contact.");
         return nil;
     }
 }

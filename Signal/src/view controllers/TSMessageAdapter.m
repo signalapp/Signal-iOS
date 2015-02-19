@@ -115,13 +115,21 @@
                     }
                 }
                 else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
-                    // can do loading information here
-                    //TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
-                    //TODO: Change this status when download failed;
-                    adapter.messageBody = @"Attachment is downloading";
+                    TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
                     adapter.messageType = TSInfoMessageAdapter;
+                    
+                    if (pointer.isDownloading) {
+                        adapter.messageBody = @"Attachment is downloading.";
+                    } else {
+                        if (pointer.hasFailed) {
+                            adapter.messageBody = @"Attachment download failed, tap to retry.";
+                        } else {
+                            adapter.messageBody = @"New attachment queued for retrieval.";
+                        }
+                    }
+                    
                 } else {
-                    DDLogError(@"We retreived an attachment that doesn't have a known type : %@", NSStringFromClass([attachment class]));
+                    DDLogError(@"We retrieved an attachment that doesn't have a known type : %@", NSStringFromClass([attachment class]));
                 }
             }
         }

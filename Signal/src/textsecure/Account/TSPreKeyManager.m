@@ -71,7 +71,7 @@
             }];
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        DDLogError(@"Failed to retreive the number of available prekeys.");
+        DDLogError(@"Failed to retrieve the number of available prekeys.");
     }];
 }
 
@@ -85,7 +85,7 @@
         [self clearSignedPreKeyRecordsWithKeyId:keyId];
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        DDLogWarn(@"Failed to retreive current prekey.");
+        DDLogWarn(@"Failed to retrieve current prekey.");
     }];
 }
 

@@ -88,8 +88,8 @@
                                                                          attachments:nil];
         [newMessage saveWithTransaction:transaction];
         
-        TSIncomingMessage *retreived = [TSIncomingMessage fetchObjectWithUniqueID:[@(messageInt+50) stringValue] transaction:transaction];
-        XCTAssert(retreived.timestamp == uniqueNewTimestamp);
+        TSIncomingMessage *retrieved = [TSIncomingMessage fetchObjectWithUniqueID:[@(messageInt+50) stringValue] transaction:transaction];
+        XCTAssert(retrieved.timestamp == uniqueNewTimestamp);
     }];
 }
 

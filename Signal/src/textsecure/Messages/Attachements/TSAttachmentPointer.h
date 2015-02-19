@@ -25,4 +25,8 @@
 
 @property NSString *relay;
 @property NSData *avatarOfGroupId;
+
+@property (getter=isDownloading) BOOL downloading;
+@property (getter=hasFailed)     BOOL failed;
+
 @end

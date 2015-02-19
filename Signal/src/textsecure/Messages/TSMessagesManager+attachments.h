@@ -7,7 +7,9 @@
 //
 
 #import "TSMessagesManager.h"
-#import "TSAttachment.h"
+
+@class TSAttachment;
+@class TSAttachmentPointer;
 
 @interface TSMessagesManager (attachments)
 
@@ -17,5 +19,7 @@
            contentType:(NSString*)contentType
              inMessage:(TSOutgoingMessage*)outgoingMessage
                 thread:(TSThread*)thread;
+
+- (void)retrieveAttachment:(TSAttachmentPointer*)attachment messageId:(NSString*)messageId;
 
 @end

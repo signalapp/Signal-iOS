@@ -18,7 +18,9 @@
     self = [super initWithIdentifier:[[NSNumber numberWithUnsignedLongLong:identifier] stringValue] encryptionKey:key contentType:contentType];
     
     if (self) {
-        self.relay       = relay;
+        _failed      = FALSE;
+        _downloading = FALSE;
+        _relay       = relay;
     }
     
     return self;

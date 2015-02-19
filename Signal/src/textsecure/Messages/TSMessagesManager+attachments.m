@@ -69,10 +69,13 @@ dispatch_queue_t attachmentsQueue() {
         [self handleReceivedMessage:message withContent:content attachments:retrievedAttachments completionBlock:^(NSString *messageIdentifier) {
             for (NSString *pointerId in retrievedAttachments) {
                 dispatch_async(attachmentsQueue(), ^{
-                    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        TSAttachmentPointer *pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId transaction:transaction];
-                        [self retrieveAttachment:pointer messageId:messageIdentifier];
+                    __block TSAttachmentPointer *pointer;
+                    
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId transaction:transaction];
                     }];
+                    
+                    [self retrieveAttachment:pointer messageId:messageIdentifier];
                 });
             }
         }];
@@ -87,7 +90,7 @@ dispatch_queue_t attachmentsQueue() {
                 NSDictionary *responseDict = (NSDictionary*)responseObject;
                 NSString *attachementId    = [(NSNumber*)[responseDict objectForKey:@"id"] stringValue];
                 NSString *location         = [responseDict objectForKey:@"location"];
-        
+                
                 TSAttachmentEncryptionResult *result =
                 [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachementId];
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -107,8 +110,6 @@ dispatch_queue_t attachmentsQueue() {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         result.pointer.isDownloaded = YES;
                         [result.pointer saveWithTransaction:transaction];
-                        
-                        NSLog(@"finished uploading");
                     }];
                     [self sendMessage:outgoingMessage inThread:thread];
                 } else{
@@ -130,6 +131,8 @@ dispatch_queue_t attachmentsQueue() {
 
 - (void)retrieveAttachment:(TSAttachmentPointer*)attachment messageId:(NSString*)messageId {
     
+    [self setAttachment:attachment isDownloadingInMessage:messageId];
+    
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:[attachment identifier]
                                                                                relay:attachment.relay];
     
@@ -137,14 +140,35 @@ dispatch_queue_t attachmentsQueue() {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             dispatch_async(attachmentsQueue(), ^{
                 NSString *location = [(NSDictionary*)responseObject objectForKey:@"location"];
-                NSData *data = [self downloadFromLocation:location];
+
+                NSData *data = [self downloadFromLocation:location pointer:attachment messageId:messageId];
                 if (data) {
                     [self decryptedAndSaveAttachment:attachment data:data messageId:messageId];
                 }
             });
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        DDLogError(@"Failed task %@ error: %@", task.description, error.description);
+        DDLogError(@"Failed retrieval of attachment with error: %@", error.description);
+        [self setFailedAttachment:attachment inMessage:messageId];
+    }];
+}
+
+- (void)setAttachment:(TSAttachmentPointer*)pointer isDownloadingInMessage:(NSString*)messageId {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [pointer setDownloading:YES];
+        [pointer saveWithTransaction:transaction];
+        TSMessage *message = [TSMessage fetchObjectWithUniqueID:messageId transaction:transaction];
+        [message saveWithTransaction:transaction];
+    }];
+}
+
+- (void)setFailedAttachment:(TSAttachmentPointer*)pointer inMessage:(NSString*)messageId {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [pointer setDownloading:NO];
+        [pointer setFailed:YES];
+        [pointer saveWithTransaction:transaction];
+        TSMessage *message = [TSMessage fetchObjectWithUniqueID:messageId transaction:transaction];
+        [message saveWithTransaction:transaction];
     }];
 }
 
@@ -157,6 +181,7 @@ dispatch_queue_t attachmentsQueue() {
         TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithIdentifier:attachment.uniqueId
                                                                                data:plaintext key:attachment.encryptionKey
                                                                         contentType:attachment.contentType];
+        
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [stream saveWithTransaction:transaction];
             if([attachment.avatarOfGroupId length]!=0) {
@@ -174,7 +199,7 @@ dispatch_queue_t attachmentsQueue() {
     }
 }
 
-- (NSData*)downloadFromLocation:(NSString*)location {
+- (NSData*)downloadFromLocation:(NSString*)location pointer:(TSAttachmentPointer*)pointer messageId:(NSString*)messageId{
     __block NSData *data;
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -182,14 +207,17 @@ dispatch_queue_t attachmentsQueue() {
     [manager.requestSerializer setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue    = dispatch_get_main_queue();
-
+    
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
     [manager GET:location parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         data = responseObject;
         dispatch_semaphore_signal(sema);
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        DDLogError(@"Failed to retreive attachment with error: %@", error.description);
+        DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
+        if (pointer && messageId) {
+            [self setFailedAttachment:pointer inMessage:messageId];
+        }
         dispatch_semaphore_signal(sema);
     }];
     

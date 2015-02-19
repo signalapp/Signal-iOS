@@ -47,6 +47,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSAttachmentAdapter.h"
+#import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
 
 #import "TSMessagesManager+sendMessages.h"
@@ -913,12 +914,38 @@ typedef enum : NSUInteger {
             [self handleErrorMessageTap:(TSErrorMessage*)interaction];
             break;
         case TSInfoMessageAdapter:
+            [self handleWarningTap:interaction];
             break;
         case TSCallAdapter:
             break;
         default:
             break;
     }
+}
+
+- (void)handleWarningTap:(TSInteraction*)interaction {
+    
+    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *message = (TSIncomingMessage*) interaction;
+        
+        for (NSString *attachmentId in message.attachments) {
+            __block TSAttachment *attachment;
+            
+            [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+            }];
+            
+            if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
+                
+                if (!pointer.isDownloading) {
+                    [[TSMessagesManager sharedManager] retrieveAttachment:pointer messageId:message.uniqueId];
+                }
+            }
+        }
+        
+    }
+    
 }
 
 
