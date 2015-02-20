@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -4397,9 +4397,14 @@ A0 09 9A FF A8 8A 09 99</string>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="destroyAccountButton" destination="4Mk-ly-6fq" id="vAP-k4-v2V"/>
+                        <outlet property="networkStatusHeader" destination="uNq-FV-lwt" id="vca-cC-nXG"/>
                         <outlet property="networkStatusLabel" destination="tg3-dQ-odw" id="l6J-8y-maW"/>
                         <outlet property="registeredName" destination="3Pu-Cs-0K2" id="9av-hR-AZO"/>
                         <outlet property="registeredNumber" destination="ipE-BI-sLL" id="uQB-V6-ooY"/>
+                        <outlet property="settingsAboutTitle" destination="6FV-LR-9Hv" id="fOe-Zy-6i7"/>
+                        <outlet property="settingsAdvancedTitle" destination="qix-5C-dh1" id="vhZ-Zv-TIj"/>
+                        <outlet property="settingsPrivacyTitle" destination="TAs-sK-kbi" id="Ea0-do-XJB"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b8Q-ui-1Tb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4907,8 +4912,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="DR8-fx-0PD"/>
-        <segue reference="xo7-5J-BJb"/>
         <segue reference="D0d-4f-lcI"/>
+        <segue reference="ZcV-Ck-baL"/>
+        <segue reference="xo7-5J-BJb"/>
     </inferredMetricsTieBreakers>
 </document>

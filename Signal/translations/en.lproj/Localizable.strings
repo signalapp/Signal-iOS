@@ -199,6 +199,8 @@
 "FINGERPRINT_INFO_ABOUT" = "Compare both fingerprints to verify your contact's identity and the integrity of the message.";
 "FINGERPRINT_YOURS" = "Your Fingerprint";
 "COUNTRYCODE_SELECT_TITLE" = "Select Country Code";
+"SETTINGS_DESTROY_ACCOUNT_BUTTON" = "Destroy Account";
+
 
 
 
