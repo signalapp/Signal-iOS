@@ -221,13 +221,11 @@
     [self setValueForKey:HAS_ARCHIVED_A_MESSAGE_KEY toValue:@(enabled)];
 }
 
-
-
 -(NSString*)setAndGetCurrentVersion{
-    NSString *lastVersion = self.lastRanVersion;
-    [NSUserDefaults.standardUserDefaults setObject:[NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]] forKey:kSignalVersionKey];
+    NSString *currentVersion = [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
+    [NSUserDefaults.standardUserDefaults setObject:currentVersion forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
-    return lastVersion;
+    return currentVersion;
 }
 
 @end

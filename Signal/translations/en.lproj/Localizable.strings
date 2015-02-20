@@ -50,6 +50,7 @@
 "IN_CALL_TERMINATED" = "Done.";
 "KEYPAD_NAV_BAR_TITLE" = "Keypad";
 "OK" = "Ok";
+"APN_Message" = "New Message!";
 "CONFIRMATION_TITLE" = "Confirm";
 "PUSH_SETTINGS_MESSAGE" = "Signal requires push notification alerts and sounds to be enabled to work properly. Please change it in the Settings app >> Notification Center >> Signal.";
 "RECENT_NAV_BAR_TITLE" = "Call Log";

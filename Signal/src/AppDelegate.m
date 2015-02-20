@@ -24,8 +24,6 @@
 #import "TSDatabaseView.h"
 #import <PastelogKit/Pastelog.h>
 
-#define kSignalVersionKey @"SignalUpdateVersionKey"
-
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
