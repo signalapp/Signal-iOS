@@ -58,8 +58,8 @@
     }];
     
     if (registrationID == 0) {
-        registrationID = (uint32_t)arc4random_uniform(16380);
-        
+        registrationID = (uint32_t)arc4random_uniform(16380)+1;
+    
         [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
                             forKey:TSStorageLocalRegistrationId
