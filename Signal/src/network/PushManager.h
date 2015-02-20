@@ -18,6 +18,8 @@
 #define Signal_Message_View_Identifier       @"Signal_Message_Read"
 #define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
 
+typedef void(^failedPushRegistrationBlock)(NSError *error);
+
 /**
  *  The Push Manager is responsible for registering the device for Signal push notifications.
  */
@@ -40,7 +42,7 @@
  *  @param failure Block to executre if push notification registration fails
  */
 
-- (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure;
+- (void)registrationWithSuccess:(void (^)())success failure:(failedPushRegistrationBlock)failure;
 
 /**
  *  Registers the push token with the RedPhone server, then returns the push token and a signup token to be used to register with TextSecure.
@@ -49,14 +51,15 @@
  *  @param failure Failure completion block
  */
 
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure;
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure;
 
 /**
  *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
  */
 
 -(TOCFuture*)registerPushNotificationFuture;
-- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure;
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void(^)(NSError *))failure;
+
 @property TOCFutureSource *pushNotificationFutureSource;
 @property TOCFutureSource *userNotificationFutureSource;
 

@@ -54,6 +54,9 @@
 "PUSH_SETTINGS_MESSAGE" = "Signal requires push notification alerts and sounds to be enabled to work properly. Please change it in the Settings app >> Notification Center >> Signal.";
 "RECENT_NAV_BAR_TITLE" = "Call Log";
 "REGISTER_BUTTON_TITLE" = "REGISTER";
+"REGISTER_TEXTSECURE_COMPONENT" = "Sign up for TextSecure";
+"REGISTER_TEXTSECURE_FAILED" = "We tried to sign you up for TextSecure but we couldn't reach the server. Please try again when connected.";
+"REGISTER_FAILED_TRY_AGAIN" = "Try again";
 "REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Please enter a valid country code";
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Country Code Error";
 "REGISTER_CHALLENGE_ALERT_VIEW_TITLE" = "Incorrect code";

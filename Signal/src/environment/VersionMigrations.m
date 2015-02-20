@@ -28,82 +28,58 @@
 @implementation VersionMigrations
 
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0 {
+    
+    if (!([self wasRedPhoneRegistered] || [Environment.preferences getIsMigratingToVersion2Dot0])) {
+        return;
+    }
+    
     [Environment.preferences setIsMigratingToVersion2Dot0:YES];
-    [self migrateFrom1Dot0Dot2ToGreater];
-    [self migrateRecentCallsToVersion2Dot0]; 
+    [self migrateRecentCallsToVersion2Dot0];
     [self migrateKeyingStorageToVersion2Dot0];
+    
+    UIAlertController *waitingController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_TEXTSECURE_COMPONENT", nil)
+                                                                               message:nil
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+    
+    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController
+                                                                                 animated:YES
+                                                                               completion:nil];
+    
     [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
         [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
             [Environment.preferences setIsMigratingToVersion2Dot0:NO];
             Environment *env = [Environment getCurrent];
             PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
             [manager forceUpdate];
+            [waitingController dismissViewControllerAnimated:YES completion:nil];
         } failure:^(NSError *error) {
-            // TODO: should we have a UI response here?
+            [self refreshLock:waitingController];
+            DDLogError(@"Couldn't register with TextSecure server: %@", error.debugDescription);
         }];
-    } failure:^{
-        // TODO: should we have a UI response here?
+    } failure:^(NSError *error) {
+        [self refreshLock:waitingController];
+        DDLogError(@"Couldn't register with RedPhone server.");
     }];
-
-    
 }
 
-+ (void)migrateFrom2Dot0BetaTo2Dot0Dot10 {
-    [[TSStorageManager sharedManager] deleteThreadsAndMessages];
-}
-
-+ (void)migrateFrom1Dot0Dot2ToGreater {
-    
-    // Preferences were stored in both a preference file and a plist in the documents folder, as a temporary measure, we are going to move all the preferences to the NSUserDefaults preference store, those will be migrated to a SQLCipher-backed database
-    
-    NSString* documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"/Documents/"];
-    NSString *path = [NSString stringWithFormat:@"%@/%@.plist", documentsDirectory, @"RedPhone-Data"];
-    
-    if ([NSFileManager.defaultManager fileExistsAtPath:path]) {
-        NSData *plistData = [NSData dataWithContentsOfFile:path];
++ (void)refreshLock:(UIAlertController*)waitingController {
+    [waitingController dismissViewControllerAnimated:NO completion:^{
+        UIAlertController *retryController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_TEXTSECURE_COMPONENT", nil)
+                                                                                 message:NSLocalizedString(@"REGISTER_TEXTSECURE_FAILED", nil)
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
         
-        NSError *error;
-        NSPropertyListFormat format;
-        NSDictionary *dict = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&format error:&error];
+        [retryController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action) {
+            [self migrateFrom1Dot0Dot2ToVersion2Dot0];
+        }]];
         
-        
-        NSArray *entries = [dict allKeys];
-        NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-        
-        for (NSUInteger i = 0; i < entries.count; i++) {
-            NSString *key = entries[i];
-            [defaults setObject:dict[key] forKey:key];
-        }
-        
-        [defaults synchronize];
-        
-        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
-        
-        if (error) {
-            DDLogError(@"Error while migrating data: %@", error.description);
-        }
-        
-        // Some users push IDs were not correctly registered, by precaution, we are going to re-register all of them
-        
-        [PushManager.sharedManager registrationWithSuccess:^{
-            
-        } failure:^{
-            DDLogError(@"Error re-registering on migration from 1.0.2");
-        }];
-        
-        [NSFileManager.defaultManager removeItemAtPath:path error:&error];
-        
-        if (error) {
-            DDLogError(@"Error upgrading from 1.0.2 : %@", error.description);
-        }
-    }
-    
-    return;
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:retryController animated:YES completion:nil];
+    }];
 }
 
 #pragma mark helper methods
 + (void) migrateRecentCallsToVersion2Dot0 {
-    
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
     NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
     id data = [NSKeyedUnarchiver unarchiveObjectWithData:encodedData];
@@ -116,15 +92,27 @@
         for (RecentCall* recentCall in allRecents) {
             [Environment.getCurrent.recentCallManager addRecentCall:recentCall];
         }
-        // Erasing recent calls in the defaults
-        NSUserDefaults *localDefaults = NSUserDefaults.standardUserDefaults;
-        NSData *saveData = [NSKeyedArchiver archivedDataWithRootObject:[NSMutableArray array]];
-        [localDefaults setObject:saveData forKey:RECENT_CALLS_DEFAULT_KEY];
-        [localDefaults synchronize];
-        
+    
+        NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
     }
 }
 
+
++(BOOL)wasRedPhoneRegistered{
+    BOOL hasPassCounter    = [UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY]!=nil;
+    BOOL hasLocalNumber    = [UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY]!=nil;
+    BOOL hasPassKey        = [UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY]!=nil;
+    BOOL hasSignaling      = [UICKeyChainStore dataForKey:SIGNALING_MAC_KEY]!=nil;
+    BOOL hasCipherKey      = [UICKeyChainStore dataForKey:SIGNALING_CIPHER_KEY]!=nil;
+    BOOL hasZIDKey         = [UICKeyChainStore dataForKey:ZID_KEY]!=nil;
+    BOOL hasSignalingExtra = [UICKeyChainStore dataForKey:SIGNALING_EXTRA_KEY]!=nil;
+    
+    BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:@"isRegistered"] boolValue];
+    
+    return registered &&hasPassCounter && hasLocalNumber && hasPassKey && hasSignaling
+                    && hasCipherKey && hasCipherKey && hasZIDKey && hasSignalingExtra;
+}
 
 + (void)migrateKeyingStorageToVersion2Dot0{
     // if statements ensure that if this migration is called more than once for whatever reason, the original data isn't rewritten the second time

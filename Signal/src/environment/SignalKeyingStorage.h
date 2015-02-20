@@ -24,8 +24,6 @@
 +(void)generateSignaling;
 +(void)generateServerAuthPassword;
 
-+(void)wipeKeychain;
-
 #pragma mark Registered Phone Number
 
 +(PhoneNumber*)localNumber;

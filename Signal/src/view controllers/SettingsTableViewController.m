@@ -195,12 +195,12 @@ typedef enum {
     [TSAccountManager unregisterTextSecureWithSuccess:^{
         [PushManager.sharedManager registrationForPushWithSuccess:^(NSData* pushToken){
             [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
-                [[TSStorageManager sharedManager] wipe];
+                [Environment resetAppData];
                 exit(0);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 SignalAlertView(NSLocalizedString(@"UNREGISTER_REDPHONE_FAIL", @""), @"");
             }];
-        } failure:^{
+        } failure:^(NSError *error) {
             SignalAlertView(NSLocalizedString(@"UNREGISTER_REDPHONE_FAIL", @""), @"");
         }];
     } failure:^(NSError *error) {

@@ -12,7 +12,7 @@
 #import "TSAttachmentAdapter.h"
 
 
-@interface TSGroupModel : TSYapDatabaseObject <YapDatabaseRelationshipNode>
+@interface TSGroupModel : TSYapDatabaseObject
 
 @property (nonatomic, strong) NSMutableArray *groupMemberIds; 
 @property (nonatomic, strong) UIImage *groupImage;

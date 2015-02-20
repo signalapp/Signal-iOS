@@ -24,8 +24,6 @@
     return self;
 }
 
-
-
 + (NSString *)collection{
     return @"TSAttachements";
 }

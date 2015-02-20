@@ -16,6 +16,7 @@
 #import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSAccountManager.h"
+#import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSPreKeyManager.h"
 #import "TSRegisterForPushRequest.h"
@@ -120,6 +121,7 @@
             [self registerForPushNotifications:pushToken success:^{
                 [self registerPreKeys:^{
                     successBlock();
+                    [TSSocketManager becomeActive];
                 } failure:failureBlock];
             } failure:^(NSError *error) {
                 failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:0]);

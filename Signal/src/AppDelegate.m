@@ -49,16 +49,11 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 - (void)performUpdateCheck{
     NSString *previousVersion = Environment.preferences.lastRanVersion;
     NSString *currentVersion = [Environment.preferences setAndGetCurrentVersion];
-    // TODO: remove
+    
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
-        [Environment resetAppData]; // We clean previous keychain entries in case their are some entries remaining.
-    }
-    else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || [Environment.preferences getIsMigratingToVersion2Dot0] ) {
+    } else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || [Environment.preferences getIsMigratingToVersion2Dot0] ) {
             [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
-        }
-    else if([self isVersion:previousVersion atLeast:@"2.0" andLessThan:@"2.0.10"]){
-        [VersionMigrations migrateFrom2Dot0BetaTo2Dot0Dot10];
     }
 }
 
@@ -77,24 +72,11 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    BOOL loggingIsEnabled;
+   
     [self setupAppearance];
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
+    
     if (getenv("runningTests_dontStartApp")) {
         return YES;
-    }
-    
-    loggingIsEnabled = TRUE;
-    [DebugLogger.sharedInstance enableTTYLogging];
-    
-#elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
-#endif
-    
-    if (loggingIsEnabled) {
-        [DebugLogger.sharedInstance enableFileLogging];
     }
     
     self.notificationTracker = [NotificationTracker notificationTracker];
@@ -107,14 +89,20 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     
     [[TSStorageManager sharedManager] setupDatabase];
     
-    [self performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
-
+    BOOL loggingIsEnabled;
     
-    //Accept push notification when app is not open
-    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotif) {
-        DDLogInfo(@"Application was launched by tapping a push notification.");
-        [self application:application didReceiveRemoteNotification:remoteNotif ];
+#ifdef DEBUG
+    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
+    // the phone directory being looked up during tests.
+    loggingIsEnabled = TRUE;
+    [DebugLogger.sharedInstance enableTTYLogging];
+    
+#elif RELEASE
+    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+#endif
+    
+    if (loggingIsEnabled) {
+        [DebugLogger.sharedInstance enableFileLogging];
     }
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
@@ -124,6 +112,15 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     self.window.rootViewController = viewController;
     
     [self.window makeKeyAndVisible];
+    
+    [self performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
+    
+    //Accept push notification when app is not open
+    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotif) {
+        DDLogInfo(@"Application was launched by tapping a push notification.");
+        [self application:application didReceiveRemoteNotification:remoteNotif ];
+    }
     
     [self prepareScreenshotProtection];
     

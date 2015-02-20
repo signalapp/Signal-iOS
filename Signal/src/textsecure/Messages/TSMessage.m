@@ -68,4 +68,13 @@ NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     }
 }
 
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction{
+    for (NSString *attachmentId in _attachments){
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        [attachment removeWithTransaction:transaction];
+    }
+    
+    [super removeWithTransaction:transaction];
+}
+
 @end

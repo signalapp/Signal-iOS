@@ -64,21 +64,17 @@
 
 
 - (void)registerWithSuccess:(void(^)())success failure:(void(^)(NSError *))failure{
-    //TODO: Refactor this to use futures? Better error handling needed. Good enough for PoC
-    
     [_submitCodeSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text] success:^(NSURLSessionDataTask *task, id responseObject) {
         
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
-            
             [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
                 success();
             } failure:^(NSError *error) {
                 failure(error);
             }];
-        } failure:^{
-            // PushManager shows its own error alerts, so we don't want to show a second one
-            failure(nil);
+        } failure:^(NSError *error) {
+            failure(error);
             [_submitCodeSpinner stopAnimating];
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {

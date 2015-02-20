@@ -11,11 +11,13 @@
 #import "RPServerRequestsManager.h"
 #import "TSAccountManager.h"
 
+#define pushManagerDomain @"org.whispersystems.pushmanager"
+
 @interface PushManager ()
 
 @property TOCFutureSource *registerWithServerFutureSource;
-
 @property UIAlertView *missingPermissionsAlertView;
+
 
 @end
 
@@ -45,14 +47,14 @@
 - (void)verifyPushPermissions{
     if (self.isMissingMandatoryNotificationTypes || self.needToRegisterForRemoteNotifications){
         [self registrationWithSuccess:^{
-            DDLogError(@"Re-enabled push succesfully");
-        } failure:^{
-            DDLogError(@"Failed to re-enable push.");
+            DDLogInfo(@"Re-enabled push succesfully");
+        } failure:^(NSError *error) {
+            DDLogError(@"Failed to re-register for push");
         }];
     }
 }
 
-- (void)registrationWithSuccess:(void (^)())success failure:(void (^)())failure{
+- (void)registrationWithSuccess:(void (^)())success failure:(failedPushRegistrationBlock)failure{
     
     if (!self.wantRemoteNotifications) {
         success();
@@ -60,9 +62,9 @@
     }
     
     [self registrationForPushWithSuccess:^(NSData* pushToken){
-        [self registrationForUserNotificationWithSuccess:success failure:^{
+        [self registrationForUserNotificationWithSuccess:success failure:^(NSError *error) {
             [self.missingPermissionsAlertView show];
-            failure();
+            failure([NSError errorWithDomain:pushManagerDomain code:400 userInfo:@{}]);
         }];
     } failure:failure];
 }
@@ -82,7 +84,7 @@
                 [self.registerWithServerFutureSource trySetResult:@YES];
             } else{
                 DDLogError(@"The server returned %@ instead of a 200 status code", task.response);
-                [self.registerWithServerFutureSource trySetFailure:nil];
+                [self.registerWithServerFutureSource trySetFailure:[NSError errorWithDomain:pushManagerDomain code:500 userInfo:nil]];
             }
         } else{
             [self.registerWithServerFutureSource trySetFailure:task.response];
@@ -104,21 +106,12 @@
     return self.pushNotificationFutureSource.future;
 }
 
--(TOCFuture*)registerForUserNotificationsFuture{
-    self.userNotificationFutureSource = [TOCFutureSource new];
-    NSSet *setOfCategories = [NSSet setWithArray:@[[self userNotificationsCallCategory], [self userNotificationsMessageCategory]]];
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                                                             categories:setOfCategories];
-    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
-    return self.userNotificationFutureSource.future;
-}
-
-- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void (^)())failure{
+- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(failedPushRegistrationBlock)failure{
     TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
-        failure();
         [self.missingPermissionsAlertView show];
+        failure(failureObj);
         DDLogError(@"This should not happen on iOS8. No push token was provided");
     }];
     
@@ -126,13 +119,7 @@
         TOCFuture *registerPushTokenFuture = [self registerForPushFutureWithToken:pushToken];
         
         [registerPushTokenFuture catchDo:^(id failureObj) {
-            UIAlertView *failureToRegisterWithServerAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", @"")
-                                                                                       message:NSLocalizedString(@"REGISTRATION_BODY", nil)
-                                                                                      delegate:nil
-                                                                             cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                                             otherButtonTitles:nil, nil];
-            [failureToRegisterWithServerAlert show];
-            failure();
+            failure(failureObj);
         }];
         
         [registerPushTokenFuture thenDo:^(id value) {
@@ -142,8 +129,8 @@
 }
 
 
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(void (^)())failure{
-    [self registrationForPushWithSuccess:^(NSData *pushToken) {        
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure{
+    [self registrationForPushWithSuccess:^(NSData *pushToken) {
         [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
             NSError *error;
             
@@ -151,31 +138,34 @@
             NSString* tsToken = [dictionary objectForKey:@"token"];
             
             if (!tsToken || !pushToken || error) {
-                failure();
+                failure(error);
                 return;
             }
             
             success(pushToken, tsToken);
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure();
+            failure(error);
         }];
-    } failure:^{
-        failure();
-    }];
-    
+    } failure:failure];
+}
+
+-(TOCFuture*)registerForUserNotificationsFuture{
+    self.userNotificationFutureSource = [TOCFutureSource new];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                                                             categories:nil];
+    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
+    return self.userNotificationFutureSource.future;
 }
 
 - (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)())failure{
     TOCFuture *registrerUserNotificationFuture = [self registerForUserNotificationsFuture];
     
     [registrerUserNotificationFuture catchDo:^(id failureObj) {
-        [self.missingPermissionsAlertView show];
         failure();
     }];
     
     [registrerUserNotificationFuture thenDo:^(id types) {
         if (self.isMissingMandatoryNotificationTypes) {
-            [self.missingPermissionsAlertView show];
             failure();
         } else{
             success();
@@ -198,51 +188,6 @@
     return YES;
 }
 
-- (UIUserNotificationCategory*)userNotificationsMessageCategory{
-    UIMutableUserNotificationAction *action_accept  = [UIMutableUserNotificationAction new];
-    action_accept.identifier                        = Signal_Message_View_Identifier;
-    action_accept.title                             = NSLocalizedString(@"PUSH_MANAGER_VIEW", @"");
-    action_accept.activationMode                    = UIUserNotificationActivationModeForeground;
-    action_accept.destructive                       = NO;
-    action_accept.authenticationRequired            = YES;
-
-    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier                       = Signal_Message_MarkAsRead_Identifier;
-    action_decline.title                            = NSLocalizedString(@"PUSH_MANAGER_MARKREAD", @"");
-    action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
-    action_decline.destructive                      = NO;
-    action_decline.authenticationRequired           = NO;
-    
-    UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
-    messageCategory.identifier = Signal_Message_Category;
-    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
-    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
-    
-    return messageCategory;
-}
-
-- (UIUserNotificationCategory*)userNotificationsCallCategory{
-    UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
-    action_accept.identifier = Signal_Call_Accept_Identifier;
-    action_accept.title      = NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"");
-    action_accept.activationMode = UIUserNotificationActivationModeForeground;
-    action_accept.destructive    = NO;
-    action_accept.authenticationRequired = NO;
-    
-    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier = Signal_Call_Decline_Identifier;
-    action_decline.title      = NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"");
-    action_decline.activationMode = UIUserNotificationActivationModeBackground;
-    action_decline.destructive    = NO;
-    action_decline.authenticationRequired = NO;
-    
-    UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier = Signal_Call_Category;
-    [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
-    [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
-    
-    return callCategory;
-}
 
 -(BOOL)isMissingMandatoryNotificationTypes {
     int mandatoryTypes = self.mandatoryNotificationTypes;

@@ -81,11 +81,10 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 }
 
 
-
 - (void)protectSignalFiles{
     [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
     [self protectFolderAtPath:[self dbPath]];
-    [self protectFolderAtPath:[NSHomeDirectory() stringByAppendingString:@"/Library/Caches/Logs/"]];
+    [self protectFolderAtPath:[[DebugLogger sharedInstance] logsDirectory]];
 }
 
 - (void)protectFolderAtPath:(NSString*)path {
@@ -98,7 +97,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     
     if (error || !success) {
         DDLogError(@"Error while removing files from backup: %@", error.description);
-        SignalAlertView(NSLocalizedString(@"WARNING_STRING", @""), @"DISABLING_BACKUP_FAILED");
+        SignalAlertView(NSLocalizedString(@"WARNING_STRING", @""), NSLocalizedString(@"DISABLING_BACKUP_FAILED", @""));
         return;
     }
 }
@@ -250,16 +249,21 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     [TSAttachmentStream deleteAttachments];
 }
 
-- (void)wipe{
+- (void)wipeSignalStorage{
     self.database = nil;
     NSError *error;
+    
+    [SSKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
     [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
+    
     
     if (error) {
         DDLogError(@"Failed to delete database: %@", error.description);
     }
     
-    [self setupDatabase];
+    [TSAttachmentStream deleteAttachments];
+    
+    [[self init] setupDatabase];
 }
 
 @end

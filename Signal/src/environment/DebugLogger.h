@@ -22,6 +22,8 @@ MacrosSingletonInterface
 
 - (void)wipeLogs;
 
+- (NSString*)logsDirectory;
+
 @property (nonatomic) DDFileLogger *fileLogger;
 
 @end

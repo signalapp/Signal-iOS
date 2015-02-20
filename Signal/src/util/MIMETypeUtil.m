@@ -92,8 +92,8 @@ static NSDictionary *supportedImageExtensionTypesToMIMETypes;
                                                 @"jpeg":@"image/jpeg",
                                                 @"jpg":@"image/jpeg",
                                                 @"gif":@"image/gif",
-                                                @".tif":@"image/tiff",
-                                                @".tiff":@"image/tiff"
+                                                @"tif":@"image/tiff",
+                                                @"tiff":@"image/tiff"
                                                 };
 }
 
@@ -175,13 +175,15 @@ static NSDictionary *supportedImageExtensionTypesToMIMETypes;
     if ([self isVideo:contentType]){
         return [MIMETypeUtil filePathForVideo:uniqueId ofMIMEType:contentType inFolder:folder];
     }
-
     else if([self isAudio:contentType]) {
         return [MIMETypeUtil filePathForAudio:uniqueId ofMIMEType:contentType inFolder:folder];
     }
-    else {
+    else if([self isImage:contentType]){
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
     }
+    
+    DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
+    return nil;
 }
 
 +(NSURL*)  simLinkCorrectExtensionOfFile:(NSURL*)mediaURL ofMIMEType:(NSString*)contentType  {
@@ -204,7 +206,7 @@ static NSDictionary *supportedImageExtensionTypesToMIMETypes;
 }
 
 + (NSString*)filePathForImage:(NSString*)uniqueId ofMIMEType:(NSString*)contentType inFolder:(NSString*)folder{
-    return [folder stringByAppendingFormat:@"/%@",uniqueId];
+    return [[folder stringByAppendingFormat:@"/%@",uniqueId] stringByAppendingPathExtension:[self getSupportedExtensionFromImageMIMEType:contentType]];
 }
 
 + (NSString*)filePathForVideo:(NSString*)uniqueId ofMIMEType:(NSString*)contentType inFolder:(NSString*)folder{

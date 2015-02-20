@@ -46,11 +46,9 @@
     return [[self class] groupIdFromThreadId:self.uniqueId];
 }
 
-
 - (NSString*)name{
     return self.groupModel.groupName;
 }
-
 
 + (NSString*)threadIdFromGroupId:(NSData*)groupId{
     return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
@@ -59,8 +57,6 @@
 + (NSData*)groupIdFromThreadId:(NSString*)threadId{
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length-1)]];
 }
-
-
 
 - (NSArray *)recipientsWithTransaction:(YapDatabaseReadTransaction*)transaction{
     NSMutableArray *recipients = [[NSMutableArray alloc] init];
@@ -74,6 +70,5 @@
     }
     return recipients;
 }
-
 
 @end

@@ -103,8 +103,8 @@
 -(void)didToggleSwitch:(UISwitch*)sender
 {
     if (!sender.isOn) {
-        [DebugLogger.sharedInstance disableFileLogging];
         [DebugLogger.sharedInstance wipeLogs];
+        [DebugLogger.sharedInstance disableFileLogging];
     } else {
         [DebugLogger.sharedInstance enableFileLogging];
     }
