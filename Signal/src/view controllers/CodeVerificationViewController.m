@@ -27,10 +27,11 @@
     [self initializeKeyboardHandlers];
     _headerLabel.text = NSLocalizedString(@"VERIFICATION_HEADER", @"");
     _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"");
-    _challengeButton.titleLabel.text =  NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"");
-    _sendCodeViaSMSAgainButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"");
-    _sendCodeViaVoiceButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"");
-    _changeNumberButton.titleLabel.text = NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"");
+    [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"") forState:UIControlStateNormal];
+    
+    [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"") forState:UIControlStateNormal];
+    [_sendCodeViaVoiceButton setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"")] forState:UIControlStateNormal];
+    [_changeNumberButton setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"")] forState:UIControlStateNormal];
 }
 
 -(void)viewWillAppear:(BOOL)animated

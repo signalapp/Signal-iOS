@@ -49,21 +49,21 @@ static unsigned char DH3K_PRIME[]={
     ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) {DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
     return [Environment environmentWithLogging:logging
-                                     andErrorNoter:errorNoter
-                                     andServerPort:31337
-                           andMasterServerHostName:@"master.whispersystems.org"
-                               andDefaultRelayName:@"relay"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-               andCurrentRegionCodeForPhoneNumbers:[(NSLocale*)NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
-                 andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                                   andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
-                              andRecentCallManager:[RecentCallManager new]
-                        andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
-                                   andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
-                                  andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-								andContactsManager:[ContactsManager new]
-						  andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
+                                 andErrorNoter:errorNoter
+                                 andServerPort:31337
+                       andMasterServerHostName:@"master.whispersystems.org"
+                           andDefaultRelayName:@"relay"
+                  andRelayServerHostNameSuffix:@"whispersystems.org"
+                                andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+           andCurrentRegionCodeForPhoneNumbers:[NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
+             andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                               andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
+                          andRecentCallManager:[RecentCallManager new]
+                    andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
+                               andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
+                              andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
+                            andContactsManager:[ContactsManager new]
+                      andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
 }
 
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
@@ -73,21 +73,21 @@ static unsigned char DH3K_PRIME[]={
     }
     
     return [Environment environmentWithLogging:[DiscardingLog discardingLog]
-                                     andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
-                                     andServerPort:31337
-                           andMasterServerHostName:@"master.whispersystems.org"
-                               andDefaultRelayName:@"relay"
-                      andRelayServerHostNameSuffix:@"whispersystems.org"
-                                    andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-               andCurrentRegionCodeForPhoneNumbers:@"US"
-                 andSupportedKeyAgreementProtocols:keyAgreementProtocols
-                                   andPhoneManager:nil
-                              andRecentCallManager:nil
-                        andTestingAndLegacyOptions:testingAndLegacyOptions
-                                   andZrtpClientId:TESTING_ZRTP_CLIENT_ID
-                                  andZrtpVersionId:TESTING_ZRTP_VERSION_ID
-								andContactsManager:nil
-						  andPhoneDirectoryManager:nil];
+                                 andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {}
+                                 andServerPort:31337
+                       andMasterServerHostName:@"master.whispersystems.org"
+                           andDefaultRelayName:@"relay"
+                  andRelayServerHostNameSuffix:@"whispersystems.org"
+                                andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+           andCurrentRegionCodeForPhoneNumbers:@"US"
+             andSupportedKeyAgreementProtocols:keyAgreementProtocols
+                               andPhoneManager:nil
+                          andRecentCallManager:nil
+                    andTestingAndLegacyOptions:testingAndLegacyOptions
+                               andZrtpClientId:TESTING_ZRTP_CLIENT_ID
+                              andZrtpVersionId:TESTING_ZRTP_VERSION_ID
+                            andContactsManager:nil
+                      andPhoneDirectoryManager:nil];
 }
 
 +(NSArray*) supportedKeyAgreementProtocols {
