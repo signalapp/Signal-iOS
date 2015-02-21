@@ -143,9 +143,12 @@
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction {
     YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
-    NSUInteger numberOfItemsInSection           = [viewTransaction numberOfItemsInGroup:self.uniqueId];
-    for (NSUInteger i = 0; i < numberOfItemsInSection; i++) {
-        TSIncomingMessage *message = [viewTransaction objectAtIndex:i inGroup:self.uniqueId];
+    NSMutableArray *array = [NSMutableArray array];
+    [viewTransaction enumerateRowsInGroup:self.uniqueId usingBlock:^(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+        [array addObject:object];
+    }];
+    
+    for (TSIncomingMessage *message in array) {
         message.read = YES;
         [message saveWithTransaction:transaction];
     }
