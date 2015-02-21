@@ -355,9 +355,11 @@ typedef enum : NSUInteger {
     
     self.navController = (APNavigationController*)self.navigationController;
     
-    if(!isGroupConversation) {
+    if([self canCall]) {
         self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(callAction)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
+    } else if(!_thread.isGroupThread) {
+        self.navigationItem.rightBarButtonItem = nil;
     }
     
     [self hideInputIfNeeded];

@@ -101,7 +101,6 @@
     }
 }
 
-
 +(BOOL)wasRedPhoneRegistered{
     BOOL hasLocalNumber    = [UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY]!=nil;
     BOOL hasPassKey        = [UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY]!=nil;
@@ -113,7 +112,7 @@
     BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:@"isRegistered"] boolValue];
     
     return registered && hasLocalNumber && hasPassKey && hasSignaling
-    && hasCipherKey && hasCipherKey && hasZIDKey && hasSignalingExtra;
+    && hasCipherKey && hasZIDKey && hasSignalingExtra;
 }
 
 + (void)migrateKeyingStorageToVersion2Dot0{
