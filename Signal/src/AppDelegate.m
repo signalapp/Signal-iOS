@@ -57,8 +57,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     }
 }
 
-
-
 -(BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)openLowerBoundVersionString andLessThan:(NSString *)closedUpperBoundVersionString {
     return [self isVersion:thisVersionString atLeast:openLowerBoundVersionString] && [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
 }

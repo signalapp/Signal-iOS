@@ -37,6 +37,8 @@
     [self migrateRecentCallsToVersion2Dot0];
     [self migrateKeyingStorageToVersion2Dot0];
     
+    [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:YES];
+    
     UIAlertController *waitingController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_TEXTSECURE_COMPONENT", nil)
                                                                                message:nil
                                                                         preferredStyle:UIAlertControllerStyleAlert];
@@ -47,6 +49,7 @@
     
     [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
         [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+            [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
             [Environment.preferences setIsMigratingToVersion2Dot0:NO];
             Environment *env = [Environment getCurrent];
             PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
@@ -63,16 +66,17 @@
 }
 
 + (void)refreshLock:(UIAlertController*)waitingController {
+    [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
     [waitingController dismissViewControllerAnimated:NO completion:^{
-        UIAlertController *retryController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_TEXTSECURE_COMPONENT", nil)
+        UIAlertController *retryController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_TEXTSECURE_FAILED_TITLE", nil)
                                                                                  message:NSLocalizedString(@"REGISTER_TEXTSECURE_FAILED", nil)
                                                                           preferredStyle:UIAlertControllerStyleAlert];
         
         [retryController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *action) {
-            [self migrateFrom1Dot0Dot2ToVersion2Dot0];
-        }]];
+                                                              [self migrateFrom1Dot0Dot2ToVersion2Dot0];
+                                                          }]];
         
         [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:retryController animated:YES completion:nil];
     }];
@@ -92,7 +96,7 @@
         for (RecentCall* recentCall in allRecents) {
             [Environment.getCurrent.recentCallManager addRecentCall:recentCall];
         }
-    
+        
         NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
     }
@@ -111,7 +115,7 @@
     BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:@"isRegistered"] boolValue];
     
     return registered &&hasPassCounter && hasLocalNumber && hasPassKey && hasSignaling
-                    && hasCipherKey && hasCipherKey && hasZIDKey && hasSignalingExtra;
+    && hasCipherKey && hasCipherKey && hasZIDKey && hasSignalingExtra;
 }
 
 + (void)migrateKeyingStorageToVersion2Dot0{
