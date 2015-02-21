@@ -21,6 +21,7 @@
 #import "TSContactThread.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "UIImage+normalizeImage.h"
+#import "VersionMigrations.h"
 #import "PreferencesUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
 
@@ -85,7 +86,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [super viewWillAppear:animated];
     [self  checkIfEmptyView];
     
-    if (![TSAccountManager isRegistered] && ![Environment.preferences getIsMigratingToVersion2Dot0]){
+    if (![TSAccountManager isRegistered] && ![VersionMigrations isMigratingTo2Dot0]){
         [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
         return;
     }

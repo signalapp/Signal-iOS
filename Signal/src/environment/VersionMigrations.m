@@ -19,6 +19,8 @@
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 
+#define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
+
 @interface SignalKeyingStorage(VersionMigrations)
 
 +(void)storeString:(NSString*)string forKey:(NSString*)key;
@@ -29,13 +31,15 @@
 
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0 {
     
-    if (!([self wasRedPhoneRegistered] || [Environment.preferences getIsMigratingToVersion2Dot0])) {
+    if (!([self wasRedPhoneRegistered] || [self isMigratingTo2Dot0])) {
         return;
     }
     
-    [Environment.preferences setIsMigratingToVersion2Dot0:YES];
-    [self migrateRecentCallsToVersion2Dot0];
-    [self migrateKeyingStorageToVersion2Dot0];
+    if ([self wasRedPhoneRegistered]) {
+        [self migrateRecentCallsToVersion2Dot0];
+        [self migrateKeyingStorageToVersion2Dot0];
+        [self clearUserDefaults];
+    }
     
     [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:YES];
     
@@ -43,14 +47,12 @@
                                                                                message:nil
                                                                         preferredStyle:UIAlertControllerStyleAlert];
     
-    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController
-                                                                                 animated:YES
-                                                                               completion:nil];
+    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController animated:YES completion:nil];
     
     [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
         [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
             [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
-            [Environment.preferences setIsMigratingToVersion2Dot0:NO];
+            [self clearMigrationFlag];
             Environment *env = [Environment getCurrent];
             PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
             [manager forceUpdate];
@@ -96,15 +98,11 @@
         for (RecentCall* recentCall in allRecents) {
             [Environment.getCurrent.recentCallManager addRecentCall:recentCall];
         }
-        
-        NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
     }
 }
 
 
 +(BOOL)wasRedPhoneRegistered{
-    BOOL hasPassCounter    = [UICKeyChainStore stringForKey:PASSWORD_COUNTER_KEY]!=nil;
     BOOL hasLocalNumber    = [UICKeyChainStore stringForKey:LOCAL_NUMBER_KEY]!=nil;
     BOOL hasPassKey        = [UICKeyChainStore stringForKey:SAVED_PASSWORD_KEY]!=nil;
     BOOL hasSignaling      = [UICKeyChainStore dataForKey:SIGNALING_MAC_KEY]!=nil;
@@ -114,7 +112,7 @@
     
     BOOL registered = [[NSUserDefaults.standardUserDefaults objectForKey:@"isRegistered"] boolValue];
     
-    return registered &&hasPassCounter && hasLocalNumber && hasPassKey && hasSignaling
+    return registered && hasLocalNumber && hasPassKey && hasSignaling
     && hasCipherKey && hasCipherKey && hasZIDKey && hasSignalingExtra;
 }
 
@@ -149,6 +147,29 @@
     [UICKeyChainStore removeItemForKey:SIGNALING_CIPHER_KEY];
     [UICKeyChainStore removeItemForKey:ZID_KEY];
     [UICKeyChainStore removeItemForKey:SIGNALING_EXTRA_KEY];
+}
+
++ (void)clearUserDefaults{
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    
+    [Environment.preferences setAndGetCurrentVersion];
+    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (BOOL)isMigratingTo2Dot0{
+    NSNumber *num = [[NSUserDefaults standardUserDefaults] objectForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
+    
+    if (!num) {
+        return NO;
+    } else {
+        return [num boolValue];
+    }
+}
+
++ (void)clearMigrationFlag{
+    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
 }
 
 @end
