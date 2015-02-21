@@ -14,4 +14,6 @@
 
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0;
 
++ (BOOL)isMigratingTo2Dot0;
+
 @end

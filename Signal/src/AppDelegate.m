@@ -45,13 +45,14 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 #pragma mark Detect updates - perform migrations
 
 - (void)performUpdateCheck{
-    NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion = [Environment.preferences setAndGetCurrentVersion];
+    NSString *previousVersion     = Environment.preferences.lastRanVersion;
+    NSString *currentVersion      = [Environment.preferences setAndGetCurrentVersion];
+    BOOL     isCurrentlyMigrating = [VersionMigrations isMigratingTo2Dot0];
     
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
-    } else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || [Environment.preferences getIsMigratingToVersion2Dot0] ) {
-            [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
+    } else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || isCurrentlyMigrating) {
+        [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
     }
 }
 
