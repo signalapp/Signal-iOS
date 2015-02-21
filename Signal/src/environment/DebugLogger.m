@@ -66,7 +66,9 @@ MacrosSingletonImplemention
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:logsDirectory]) {
         NSError *error;
-        //[[NSFileManager defaultManager] createDirectoryAtPath:logsDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:logsDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+        
         if (error) {
             DDLogError(@"Log folder couldn't be created. %@", error.description);
         }

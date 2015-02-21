@@ -55,8 +55,9 @@
 "PUSH_SETTINGS_MESSAGE" = "Signal requires push notification alerts and sounds to be enabled to work properly. Please change it in the Settings app >> Notification Center >> Signal.";
 "RECENT_NAV_BAR_TITLE" = "Call Log";
 "REGISTER_BUTTON_TITLE" = "REGISTER";
-"REGISTER_TEXTSECURE_COMPONENT" = "Sign up for TextSecure";
-"REGISTER_TEXTSECURE_FAILED" = "We tried to sign you up for TextSecure but we couldn't reach the server. Please try again when connected.";
+"REGISTER_TEXTSECURE_COMPONENT" = "Registering for messaging";
+"REGISTER_TEXTSECURE_FAILED_TITLE" = "No Internet Connection";
+"REGISTER_TEXTSECURE_FAILED" = "To add support for messages, please connect to the internet.";
 "REGISTER_FAILED_TRY_AGAIN" = "Try again";
 "REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Please enter a valid country code";
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Country Code Error";
@@ -147,8 +148,8 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to destroy your account?";
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data.";
 "PROCEED_BUTTON" = "Proceed";
-"UNREGISTER_REDPHONE_FAIL" = "Failed to unregister RedPhone component of Signal";
-"UNREGISTER_TEXTSECURE_FAIL" = "Failed to unregister TextSecure component of Signal";
+"UNREGISTER_REDPHONE_FAIL" = "Failed to unregister phone component of Signal";
+"UNREGISTER_TEXTSECURE_FAIL" = "Failed to unregister messaging component of Signal";
 "NETWORK_STATUS_HEADER" = "Network Status";
 "NETWORK_STATUS_TEXT" = "You can check your network status by looking at the colored bar above your inbox.";
 "NETWORK_STATUS_CONNECTED" = "Connected";
