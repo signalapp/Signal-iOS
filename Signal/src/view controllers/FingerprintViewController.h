@@ -14,28 +14,29 @@
 
 - (void)configWithThread:(TSThread*)thread;
 
-@property (nonatomic, strong) IBOutlet UILabel     * presentationLabel;
+@property (nonatomic, strong) IBOutlet UILabel     *presentationLabel;
 
-@property (nonatomic, strong) IBOutlet UIView *myFingerprintView;
-@property (nonatomic, strong) IBOutlet UIView *theirFingerprintView;
+@property (nonatomic, strong) IBOutlet UIView      *myFingerprintView;
+@property (nonatomic, strong) IBOutlet UIView      *theirFingerprintView;
 
 
-@property (nonatomic, strong) IBOutlet UIImageView * contactImageView;
-@property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintTitleLabel;
-@property (nonatomic, strong) IBOutlet UILabel     * contactFingerprintLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *contactImageView;
+@property (nonatomic, strong) IBOutlet UILabel     *contactFingerprintTitleLabel;
+@property (nonatomic, strong) IBOutlet UILabel     *contactFingerprintLabel;
 
-@property (nonatomic, strong) IBOutlet UIImageView * userImageView;
-@property (nonatomic, strong) IBOutlet UILabel     * userFingerprintTitleLabel;
-@property (nonatomic, strong) IBOutlet UILabel     * userFingerprintLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *userImageView;
+@property (nonatomic, strong) IBOutlet UILabel     *userFingerprintTitleLabel;
+@property (nonatomic, strong) IBOutlet UILabel     *userFingerprintLabel;
 
-@property (nonatomic, strong) IBOutlet UILabel     * infoMyFingerprint;
-@property (nonatomic, strong) IBOutlet UILabel     * infoTheirFingerprint;
-@property (nonatomic, strong) IBOutlet UIImageView * infoArrowTop;
-@property (nonatomic, strong) IBOutlet UIImageView * infoArrowBottom;
+@property (nonatomic, strong) IBOutlet UILabel     *infoMyFingerprint;
+@property (nonatomic, strong) IBOutlet UILabel     *infoTheirFingerprint;
+@property (nonatomic, strong) IBOutlet UIImageView *infoArrowTop;
+@property (nonatomic, strong) IBOutlet UIImageView *infoArrowBottom;
 
-@property (nonatomic, strong) IBOutlet UIButton    * closeButton;
-@property (nonatomic, strong) IBOutlet UIButton    * shredMessagesAndContactButton;
-@property (nonatomic, strong) IBOutlet UIButton    * infoButton;
+@property (nonatomic, strong) IBOutlet UIButton    *closeButton;
+@property (nonatomic, strong) IBOutlet UIView      *myFPBorderView;
+
+
 
 // returns my public identity key as NSData
 -(NSData*) getMyPublicIdentityKey;

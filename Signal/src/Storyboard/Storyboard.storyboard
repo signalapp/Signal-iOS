@@ -667,42 +667,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <outletCollection property="gestureRecognizers" destination="fRl-Lt-y39" appends="YES" id="wIa-Aj-hqy"/>
                                             </connections>
                                         </view>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yoz-ex-1gK">
-                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="40" id="3BW-0h-7YP">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="50"/>
-                                                </constraint>
-                                                <constraint firstAttribute="height" constant="40" id="HyD-2g-uiS">
-                                                    <variation key="heightClass=regular-widthClass=compact" constant="50"/>
-                                                </constraint>
-                                                <constraint firstAttribute="width" constant="50" id="Ie5-wL-XEo"/>
-                                                <constraint firstAttribute="height" constant="50" id="aq2-hO-WY0"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="60"/>
-                                            <state key="normal" title="×">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="3BW-0h-7YP"/>
-                                                    <exclude reference="HyD-2g-uiS"/>
-                                                    <exclude reference="Ie5-wL-XEo"/>
-                                                    <exclude reference="aq2-hO-WY0"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="constraints">
-                                                    <exclude reference="3BW-0h-7YP"/>
-                                                    <exclude reference="HyD-2g-uiS"/>
-                                                    <include reference="Ie5-wL-XEo"/>
-                                                    <include reference="aq2-hO-WY0"/>
-                                                </mask>
-                                            </variation>
-                                            <connections>
-                                                <action selector="closeButtonAction:" destination="urv-62-RsD" eventType="touchUpInside" id="m15-1K-9gB"/>
-                                            </connections>
-                                        </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Compare both fingerprints to verify your contact's identity and the integrity of the message." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DV4-GV-ZPf">
                                             <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                             <constraints>
@@ -909,6 +873,42 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 <outletCollection property="gestureRecognizers" destination="Mg3-ad-PGG" appends="YES" id="fDZ-ZY-J04"/>
                                             </connections>
                                         </view>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yoz-ex-1gK">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="40" id="3BW-0h-7YP">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                                                </constraint>
+                                                <constraint firstAttribute="height" constant="40" id="HyD-2g-uiS">
+                                                    <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                                                </constraint>
+                                                <constraint firstAttribute="width" constant="50" id="Ie5-wL-XEo"/>
+                                                <constraint firstAttribute="height" constant="50" id="aq2-hO-WY0"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="60"/>
+                                            <state key="normal" title="×">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="3BW-0h-7YP"/>
+                                                    <exclude reference="HyD-2g-uiS"/>
+                                                    <exclude reference="Ie5-wL-XEo"/>
+                                                    <exclude reference="aq2-hO-WY0"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="heightClass=regular-widthClass=compact">
+                                                <mask key="constraints">
+                                                    <exclude reference="3BW-0h-7YP"/>
+                                                    <exclude reference="HyD-2g-uiS"/>
+                                                    <include reference="Ie5-wL-XEo"/>
+                                                    <include reference="aq2-hO-WY0"/>
+                                                </mask>
+                                            </variation>
+                                            <connections>
+                                                <action selector="closeButtonAction:" destination="urv-62-RsD" eventType="touchUpInside" id="m15-1K-9gB"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Yoz-ex-1gK" secondAttribute="bottom" constant="26" id="9Ja-xm-4Mo"/>
@@ -946,9 +946,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <variation key="default">
                                         <mask key="subviews">
                                             <exclude reference="zFI-eF-Feb"/>
-                                            <exclude reference="Yoz-ex-1gK"/>
                                             <exclude reference="DV4-GV-ZPf"/>
                                             <exclude reference="B4o-Rc-z68"/>
+                                            <exclude reference="Yoz-ex-1gK"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="VHE-LF-wOx"/>
@@ -977,9 +977,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                     <variation key="heightClass=regular-widthClass=compact">
                                         <mask key="subviews">
                                             <include reference="zFI-eF-Feb"/>
-                                            <include reference="Yoz-ex-1gK"/>
                                             <include reference="DV4-GV-ZPf"/>
                                             <include reference="B4o-Rc-z68"/>
+                                            <include reference="Yoz-ex-1gK"/>
                                         </mask>
                                         <mask key="constraints">
                                             <exclude reference="VHE-LF-wOx"/>
@@ -1060,6 +1060,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="contactImageView" destination="HyV-ht-MrM" id="eg1-Cw-B8S"/>
                         <outlet property="infoMyFingerprint" destination="9Wg-UP-VDC" id="78r-JU-b4l"/>
                         <outlet property="infoTheirFingerprint" destination="ge0-8K-A4F" id="DyU-To-aJG"/>
+                        <outlet property="myFPBorderView" destination="WhZ-e0-THb" id="SrI-AN-3OJ"/>
                         <outlet property="myFingerprintView" destination="B4o-Rc-z68" id="FjV-Xs-aV8"/>
                         <outlet property="presentationLabel" destination="DV4-GV-ZPf" id="pz1-G0-dVx"/>
                         <outlet property="theirFingerprintView" destination="zFI-eF-Feb" id="UqY-Fb-DLM"/>
@@ -4733,6 +4734,9 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
+                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                <rect key="frame" x="10" y="274" width="130" height="21"/>
+                                            </variation>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

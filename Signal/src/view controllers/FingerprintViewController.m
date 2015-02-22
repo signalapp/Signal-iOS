@@ -49,6 +49,11 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
     _infoMyFingerprint.text = NSLocalizedString(@"FINGERPRINT_INFO_YOURS", @"");
     _presentationLabel.text = NSLocalizedString(@"FINGERPRINT_INFO_ABOUT", @"");
     _userFingerprintTitleLabel.text = NSLocalizedString(@"FINGERPRINT_YOURS",@"");
+    
+    if ([UIScreen mainScreen].bounds.size.height <= 480) {
+        self.presentationLabel.hidden = YES;
+        self.myFPBorderView.hidden    = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
