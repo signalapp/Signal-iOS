@@ -27,15 +27,8 @@
 
 - (void)configureWithContact:(Contact *)contact {
     _callButton.hidden =  !contact.isRedPhoneContact;
-    if(!contact.isTextSecureContact) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
     _associatedContact = contact;
-    
     _nameLabel.attributedText = [self attributedStringForContact:contact];
-    if (!contact.isTextSecureContact) {
-        _nameLabel.textColor = [UIColor lightGrayColor];
-    }
 }
 
 - (NSAttributedString *)attributedStringForContact:(Contact *)contact {
