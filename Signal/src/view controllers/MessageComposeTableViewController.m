@@ -325,7 +325,7 @@
                                                picker.messageComposeDelegate = self;
                                                
                                                picker.recipients = [NSArray arrayWithObject:number];
-                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
+                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" http://sgnl.link/zhrzvk6"];
                                                [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                                             } else {
                                                // TODO: better backup for iPods (just don't support on)
