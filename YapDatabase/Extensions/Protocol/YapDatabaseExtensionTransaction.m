@@ -326,6 +326,95 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Pre-Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction setObject:object forKey:key inCollection:collection] &
+ *                [transaction setObject:object forKey:key inCollection:collection withMetadata:metadata]
+ * where the object is being inserted (value for collection/key does NOT exist at the moment this method is called).
+ **/
+- (void)handleWillInsertObject:(id)object
+          forCollectionKey:(YapCollectionKey *)collectionKey
+              withMetadata:(id)metadata
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction setObject:object forKey:key inCollection:collection] &
+ *                [transaction setObject:object forKey:key inCollection:collection withMetadata:metadata]
+ * where the object is being updated (value for collection/key DOES exist, and is being updated/changed).
+ **/
+- (void)handleWillUpdateObject:(id)object
+          forCollectionKey:(YapCollectionKey *)collectionKey
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction replaceObject:object forKey:key inCollection:collection].
+ **/
+- (void)handleWillReplaceObject:(id)object
+           forCollectionKey:(YapCollectionKey *)collectionKey
+                  withRowid:(int64_t)rowid
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction replaceMetadata:metadata forKey:key inCollection:collection].
+ **/
+- (void)handleWillReplaceMetadata:(id)metadata
+             forCollectionKey:(YapCollectionKey *)collectionKey
+                    withRowid:(int64_t)rowid
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction removeObjectForKey:key inCollection:collection].
+ **/
+- (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ *
+ * Corresponds to [transaction removeObjectsForKeys:keys inCollection:collection] &
+ *                [transaction removeAllObjectsInCollection:collection].
+ *
+ * IMPORTANT:
+ *   The number of items passed to this method has the following guarantee:
+ *   count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
+ *
+ * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
+ * and then loop over them in "chunks" which are readily processable for extensions.
+ **/
+- (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+{
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
+ * Corresponds to [transaction removeAllObjectsInAllCollections].
+ **/
+- (void)handleWillRemoveAllObjectsInAllCollections
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Configuration Values
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -4261,6 +4261,22 @@
 	}
 	
 	BOOL set = YES;
+    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+    
+    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+    {
+        if (found)
+            [extTransaction handleWillUpdateObject:object
+                                  forCollectionKey:cacheKey
+                                      withMetadata:metadata
+                                             rowid:rowid];
+        else
+            [extTransaction handleWillInsertObject:object
+                                  forCollectionKey:cacheKey
+                                      withMetadata:metadata];
+    }
+    
+    
 	
 	if (found) // update data for key
 	{
@@ -4327,7 +4343,6 @@
 	
 	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	[connection->keyCache setObject:cacheKey forKey:@(rowid)];
 	
@@ -4505,6 +4520,12 @@
 		}
 	}
 	
+    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+    {
+        [extTransaction handleWillReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
+    }
+    
 	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 	// This ensures the data isn't released until it goes out of scope.
 	
@@ -4539,7 +4560,6 @@
 	
 	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	id _object = nil;
 	if (connection->objectPolicy == YapDatabasePolicyContainment) {
@@ -4691,6 +4711,12 @@
 	
 	BOOL updated = YES;
 	
+    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+    {
+        [extTransaction handleWillReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
+    }
+
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
@@ -4706,7 +4732,6 @@
 	
 	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	if (metadata)
 	{
@@ -4806,6 +4831,12 @@
 	
 	BOOL removed = YES;
 	
+    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+    {
+        [extTransaction handleWillRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
+    }
+
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
@@ -4821,7 +4852,6 @@
 	
 	connection->hasDiskChanges = YES;
 	isMutated = YES;  // mutation during enumeration protection
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	NSNumber *rowidNumber = @(rowid);
 	
 	[connection->keyCache removeObjectForKey:rowidNumber];
@@ -4998,6 +5028,13 @@
 				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
 			}
 			
+            for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+            {
+                [extTransaction handleWillRemoveObjectsForKeys:foundKeys
+                                                  inCollection:collection
+                                                    withRowids:foundRowids];
+            }
+            
 			status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
 			{
@@ -5276,6 +5313,13 @@
 				
 				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
 			}
+            
+            for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+            {
+                [extTransaction handleWillRemoveObjectsForKeys:foundKeys
+                                                  inCollection:collection
+                                                    withRowids:foundRowids];
+            }
 			
 			status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -5314,6 +5358,11 @@
 {
 	sqlite3_stmt *statement = [connection removeAllStatement];
 	if (statement == NULL) return;
+
+    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+    {
+        [extTransaction handleWillRemoveAllObjectsInAllCollections];
+    }
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
