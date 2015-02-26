@@ -132,21 +132,16 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         CFErrorRef anError = NULL;
         
         ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-        
         ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)[self.tableView cellForRowAtIndexPath:indexPath].textLabel.text, kABPersonPhoneMainLabel, NULL);
         
         ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
         CFRelease(phone);
         
-        if (anError) {
-            aContact = nil;
+        if (!anError && aContact) {
+            view.displayedPerson = aContact; // Assume person is already defined.
+            view.allowsAddingToAddressBook = YES;
+            [self.navigationController pushViewController:view animated:YES];
         }
-        
-        view.displayedPerson = aContact; // Assume person is already defined.
-        view.allowsAddingToAddressBook = YES;
-        
-        [self.navigationController pushViewController:view animated:YES];
-        CFRelease(aContact);
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

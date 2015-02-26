@@ -461,16 +461,11 @@ typedef enum : NSUInteger {
             ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
             CFRelease(phone);
             
-            if (anError) {
-                aContact = nil;
+            if (!anError && aContact) {
+                view.displayedPerson = aContact; // Assume person is already defined.
+                view.allowsAddingToAddressBook = YES;
+                [self.navigationController pushViewController:view animated:YES];
             }
-            
-            view.displayedPerson = aContact; // Assume person is already defined.
-            view.allowsAddingToAddressBook = YES;
-            
-            [self.navigationController pushViewController:view animated:YES];
-            CFRelease(aContact);
-            
         }
     }
     

@@ -3,6 +3,7 @@
 #import "DiscardingLog.h"
 #import "HostNameEndPoint.h"
 #import "PhoneManager.h"
+#import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 
@@ -48,6 +49,16 @@ static unsigned char DH3K_PRIME[]={
     //ErrorHandlerBlock errorDiscarder = ^(id error, id relatedInfo, bool causedTermination) {};
     ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) {DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
     
+    NSString *defaultRegion;
+#if TARGET_OS_IPHONE
+    defaultRegion = [[PhoneNumberUtil sharedInstance].nbPhoneNumberUtil countryCodeByCarrier];
+#else
+    defaultRegion = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+#endif
+    
+    
+    NSAssert([defaultRegion isKindOfClass:[NSString class]], @"");
+    
     return [Environment environmentWithLogging:logging
                                  andErrorNoter:errorNoter
                                  andServerPort:31337
@@ -55,7 +66,7 @@ static unsigned char DH3K_PRIME[]={
                            andDefaultRelayName:@"relay"
                   andRelayServerHostNameSuffix:@"whispersystems.org"
                                 andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-           andCurrentRegionCodeForPhoneNumbers:[NSLocale.currentLocale objectForKey:NSLocaleCountryCode]
+           andCurrentRegionCodeForPhoneNumbers:defaultRegion
              andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
                                andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
                           andRecentCallManager:[RecentCallManager new]
