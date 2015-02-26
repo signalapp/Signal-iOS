@@ -13,7 +13,7 @@
 "DATESTRING_TODAY" = "Today";
 "DISABLING_BACKUP_FAILED" = "We encountered an issue while disabling the backup of your call log. Call logs might leak in your iTunes/iCloud backups.";
 "ERROR_WAS_DETECTED_TITLE" = "Bummer!";
-"ERROR_WAS_DETECTED_SUBMIT" = "An bug was detected. Help us make Signal better by reporting this incident.";
+"ERROR_WAS_DETECTED_SUBMIT" = "A bug was detected. Help us make Signal better by reporting this incident.";
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "Server Failed!";
 "END_CALL_BUTTON_TITLE" = "End";
 "END_CALL_HANDSHAKE_FAILED" = "Handshake Failed!";

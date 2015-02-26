@@ -12,4 +12,6 @@
 
 - (NSData*)removePadding;
 
+- (NSData*)paddedMessageBody;
+
 @end

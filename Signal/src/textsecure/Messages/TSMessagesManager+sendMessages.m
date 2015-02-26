@@ -16,6 +16,7 @@
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "IncomingPushMessageSignal.pb.h"
+#import "NSData+messagePadding.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager+IdentityKeyStore.h"
@@ -237,7 +238,7 @@ dispatch_queue_t sendingQueue() {
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
     
-    id<CipherMessage> encryptedMessage = [cipher encryptMessage:plainText];
+    id<CipherMessage> encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
     
