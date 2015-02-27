@@ -55,22 +55,26 @@ static NSString *const k_lastModified = @"lastModified";
 		
 		// Notes:
 		//
-		// The CKKey macro translates as follows:
+		// The CloudKey macro translates as follows:
 		//
-		// - CKKey(title)        => [self.syncablePropertyMappings objectForKey:@"title"]        => @"title"
-		// - CKKey(priority)     => [self.syncablePropertyMappings objectForKey:@"priority"]     => @"priority"
-		// - CKKey(isDone)       => [self.syncablePropertyMappings objectForKey:@"isDone"]       => @"isDone"
-		// - CKKey(creationDate) => [self.syncablePropertyMappings objectForKey:@"creationDate"] => @"created"
-		// - CKKey(lastModified) => [self.syncablePropertyMappings objectForKey:@"lastModified"] => @"lastModified"
-		//
-		// Notice the one that's different:
-		// - CKKey(creationDate) => @"created"
+		// - CloudKey(title)     => @"title"
+		// - CKKey(priority)     => @"priority"
+		// - CKKey(isDone)       => @"isDone"
+		// - CKKey(creationDate) => @"created"       // <-- notice the difference here
+		// - CKKey(lastModified) => @"lastModified"
 		
-		title = [record objectForKey:CKKey(title)];
-		priority = [[record objectForKey:CKKey(priority)] integerValue];
-		isDone = [[record objectForKey:CKKey(isDone)] boolValue];
-		creationDate = [record objectForKey:CKKey(creationDate)];
-		lastModified = [record objectForKey:CKKey(lastModified)];
+		NSArray *cloudKeys = @[
+		  CloudKey(title),
+		  CloudKey(priority),
+		  CloudKey(isDone),
+		  CloudKey(creationDate),
+		  CloudKey(lastModified)
+		];
+		
+		for (NSString *cloudKey in cloudKeys)
+		{
+			[self setLocalValueFromCloudValue:[record objectForKey:cloudKey] forCloudKey:cloudKey];
+		}
 	}
 	return self;
 }
@@ -125,41 +129,54 @@ static NSString *const k_lastModified = @"lastModified";
 
 #pragma mark MyDatabaseObject overrides
 
-+ (NSMutableDictionary *)syncablePropertyMappings
++ (NSMutableDictionary *)mappings_localKeyToCloudKey
 {
-	NSMutableDictionary *syncablePropertyMappings = [super syncablePropertyMappings];
-	[syncablePropertyMappings setObject:@"created" forKey:@"creationDate"];
+	NSMutableDictionary *mappings_localKeyToCloudKey = [super mappings_localKeyToCloudKey];
+	mappings_localKeyToCloudKey[@"creationDate"] = @"created";
 	
-	return syncablePropertyMappings;
+	return mappings_localKeyToCloudKey;
 }
 
-#pragma mark KVO
-
-- (void)setValue:(id)value forUndefinedKey:(NSString *)key
+- (id)cloudValueForCloudKey:(NSString *)cloudKey
 {
-	if ([key isEqualToString:@"created"]) {
-		[self setValue:value forKey:@"creationDate"];
-	}
-	else
-	{
-		// May also be invoked if the corresponding CKRecord has:
-		//
-		// - Old/deprecated keys that are no longer available in this newer version.
-		//   Likely the object was created/modified by an older version of the application.
-		//   We should properly handle this case here.
-		//
-		// - New keys that aren't available in this older version.
-		//   Likely the object was created/modified by a newer version of the application.
-		//   We must silently ignore / handle the case here.
-	}
+	// Override me if needed.
+	// For example:
+	//
+	// - (id)cloudValueForCloudKey:(NSString *)cloudKey
+	// {
+	//     if ([cloudKey isEqualToString:@"color"])
+	//     {
+	//         // We store UIColor in the cloud as a string (r,g,b,a)
+	//         return ConvertUIColorToNSString(self.color);
+	//     }
+	//     else
+	//     {
+	//         return [super cloudValueForCloudKey:cloudKey];
+	//     }
+	// }
+	
+	return [super cloudValueForCloudKey:cloudKey];
 }
 
-- (id)valueForUndefinedKey:(NSString *)key
+- (void)setLocalValueFromCloudValue:(id)cloudValue forCloudKey:(NSString *)cloudKey
 {
-	if ([key isEqualToString:@"created"])
-		return creationDate;
-	else
-		return [super valueForUndefinedKey:key];
+	// Override me if needed.
+	// For example:
+	//
+	// - (void)setLocalValueFromCloudValue:(id)cloudValue forCloudKey:(NSString *)cloudKey
+	// {
+	//     if ([cloudKey isEqualToString:@"color"])
+	//     {
+	//         // We store UIColor in the cloud as a string (r,g,b,a)
+	//         self.color = ConvertNSStringToUIColor(cloudValue);
+	//     }
+	//     else
+	//     {
+	//         return [super setLocalValueForCloudValue:cloudValue cloudKey:cloudKey];
+	//     }
+	// }
+	
+	return [super setLocalValueFromCloudValue:cloudValue forCloudKey:cloudKey];
 }
 
 @end

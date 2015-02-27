@@ -29,7 +29,7 @@
  * If there is NOT already an in-flight changeSet, then this method sets the appropriate flag(s),
  * and returns the next changeSet ready for upload.
 **/
-- (YDBCKChangeSet *)makeInFlightChangeSet;
+- (YDBCKChangeSet *)makeInFlightChangeSet:(BOOL *)isAlreadyInFlightPtr;
 
 /**
  * If there is an in-flight changeSet,
@@ -77,6 +77,14 @@
 @property (nonatomic, readonly) BOOL isPendingQueue;
 
 #pragma mark Change-Sets Access
+
+/**
+ * Returns the changeSet.uuid of the "current" changeSet,
+ * which is either the inFlightChangeSet, or the next changeSet to go inFlight once resumed.
+ *
+ * In other words, the first YDBCKChangeSet in the queue.
+**/
+- (NSString *)currentChangeSetUUID;
 
 /**
  * Each commit that makes one or more changes to a CKRecord (insert/modify/delete)

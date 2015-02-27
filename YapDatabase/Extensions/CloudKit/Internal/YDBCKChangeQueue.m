@@ -60,23 +60,32 @@
  * If there is NOT already an in-flight changeSet, then this method sets the appropriate flag(s),
  * and returns the next changeSet ready for upload.
 **/
-- (YDBCKChangeSet *)makeInFlightChangeSet
+- (YDBCKChangeSet *)makeInFlightChangeSet:(BOOL *)isAlreadyInFlightPtr
 {
 	YDBCKChangeSet *inFlightChangeSet = nil;
+	BOOL isAlreadyInFlight = NO;
 	
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
 	{
 		YDBCKChangeSet *nextChangeSet = [oldChangeSets firstObject];
 		
-		if (nextChangeSet && !nextChangeSet.isInFlight)
+		if (nextChangeSet)
 		{
-			nextChangeSet.isInFlight = YES;
-			inFlightChangeSet = [nextChangeSet fullCopy];
+			if (nextChangeSet.isInFlight)
+			{
+				isAlreadyInFlight = YES;
+			}
+			else
+			{
+				nextChangeSet.isInFlight = YES;
+				inFlightChangeSet = [nextChangeSet fullCopy];
+			}
 		}
 	}
 	[masterQueueLock unlock];
 	
+	if (isAlreadyInFlightPtr) *isAlreadyInFlightPtr = isAlreadyInFlight;
 	return inFlightChangeSet;
 }
 
@@ -198,6 +207,29 @@
 }
 - (BOOL)isPendingQueue {
 	return !isMasterQueue;
+}
+
+#pragma mark Change-Sets Access
+
+/**
+ * Returns the changeSet.uuid of the "current" changeSet,
+ * which is either the inFlightChangeSet, or the next changeSet to go inFlight once resumed.
+ * 
+ * In other words, the first YDBCKChangeSet in the queue.
+**/
+- (NSString *)currentChangeSetUUID
+{
+	NSString *firstChangeSetUUID = nil;
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		YDBCKChangeSet *firstChangeSet = [oldChangeSets firstObject];
+		firstChangeSetUUID = firstChangeSet.uuid;
+	}
+	[masterQueueLock unlock];
+	
+	return firstChangeSetUUID;
 }
 
 /**

@@ -188,14 +188,14 @@
 	
 	if (isOperationCompletionTransaction)
 	{
-		BOOL forceNotification = YES;
+		BOOL forceNotification = YES; // inFlightChangeSet is changing (new changeSet or nil)
 		
 		[parent->masterQueue removeCompletedInFlightChangeSet];
 		[parent asyncMaybeDispatchNextOperation:forceNotification];
 	}
 	else if (isOperationPartialCompletionTransaction)
 	{
-		BOOL forceNotification = YES;
+		BOOL forceNotification = YES; // inFlightChangeSet is changing (no longer inFlight)
 		
 		[parent->masterQueue resetFailedInFlightChangeSet];
 		[parent asyncMaybeDispatchNextOperation:forceNotification];

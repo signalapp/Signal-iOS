@@ -50,31 +50,47 @@
  * 
  * Tracking which properties of an object have been changed.
  *
- * The most obvious use of this is for syncing changes to a cloud based service such as CloudKit.
+ * This has a variety of useful applications.
+ * You can use it distinguish UI fields which have been changed.
+ * Or to mark a window as dirty when the corresponding object has unsaved changes.
+ *
+ * It can also simplify code by allowing you to directly pass an object to another method for mutation.
+ * And the caller can simply check the object afterwards to see if it needs to be saved.
+ * 
+ * ***** Concept #3 *****
+ * 
+ * Syncing the object with a cloud-based service.
+ * 
+ * There are often differences between the object that you store locally, and the object that's stored in the cloud.
+ * For example:
+ * 
+ * - Locally you store a UIColor object, but in the cloud you store a string (r,g,b,a)
+ * - Locally your variable is named 'isComplete', but in the cloud it's unfortunately misspelled as 'isCompete'.
+ *
+ * These changes accumulate over time.
+ * And this class provides several easy techniques to provide easy mapping between local & remote (keys/values).
+ *
+ * This technique is recommended for the YapDatabaseCloudKit extension:
  * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit
 **/
 
 
-/**
- * You can use this macro to fetch the CloudKit key for a given property.
- * For example, say your class is configured with the following syncablePropertyMappings:
- * @{ @"uuid"  : @"uuid"
- *    @"color" : @"ck_color"
- * }
- *
- * Then:
- * - CKKey(uuid)  => [self.syncablePropertyMappings objectForKey:@"ivar"] => @"uuid"
- * - CKKey(color) => [self.syncablePropertyMappings objectForKey:@"color"] => @"ck_color"
- * 
- * In other words, it returns the name of the corresponding ivar within the CKRecord.
-**/
-#define CKKey(ivar) [self.syncablePropertyMappings objectForKey:@"" # ivar]
-// translation  ==> [self.syncablePropertyMappings objectForKey:@"ivar"]
-
-
 @interface MyDatabaseObject : NSObject <NSCopying>
 
-// Immutability
+
+#pragma mark Class configuration
+
++ (NSMutableSet *)monitoredProperties;
+@property (nonatomic, readonly) NSSet *monitoredProperties;
+
++ (NSMutableDictionary *)mappings_localKeyToCloudKey;
+@property (nonatomic, readonly) NSDictionary *mappings_localKeyToCloudKey;
+
++ (NSMutableDictionary *)mappings_cloudKeyToLocalKey;
+@property (nonatomic, readonly) NSDictionary *mappings_cloudKeyToLocalKey;
+
+
+#pragma mark Immutability
 
 @property (nonatomic, readonly) BOOL isImmutable;
 
@@ -82,26 +98,51 @@
 
 - (NSException *)immutableExceptionForKey:(NSString *)key;
 
-// Tracking what changed
+
+#pragma mark Monitoring (local)
 
 @property (nonatomic, readonly) NSSet *changedProperties;
 @property (nonatomic, readonly) BOOL hasChangedProperties;
 
 - (void)clearChangedProperties;
 
-// Tracking what changed (the sync-able subset)
 
-@property (nonatomic, readonly) NSSet *allSyncableProperties;
+#pragma mark Monitoring (cloud)
 
-@property (nonatomic, readonly) NSSet *changedSyncableProperties;
-@property (nonatomic, readonly) BOOL hasChangedSyncableProperties;
+@property (nonatomic, readonly) NSSet *allCloudProperties;
 
-// Class configuration
+@property (nonatomic, readonly) NSSet *changedCloudProperties;
+@property (nonatomic, readonly) BOOL hasChangedCloudProperties;
 
-+ (NSMutableSet *)monitoredProperties;
-@property (nonatomic, readonly) NSSet *monitoredProperties;
 
-+ (NSMutableDictionary *)syncablePropertyMappings;
-@property (nonatomic, readonly) NSDictionary *syncablePropertyMappings;
+#pragma mark Getters & Setters (cloud)
+
+- (NSString *)cloudKeyForLocalKey:(NSString *)localKey;
+- (NSString *)localKeyForCloudKey:(NSString *)cloudKey;
+
+- (id)cloudValueForCloudKey:(NSString *)key;
+- (id)cloudValueForLocalKey:(NSString *)key;
+
+- (id)localValueForCloudKey:(NSString *)key;
+- (id)localValueForLocalKey:(NSString *)key;
+
+- (void)setLocalValueFromCloudValue:(id)cloudValue forCloudKey:(NSString *)cloudKey;
+
+/**
+ * You can use this macro WITHIN SUBCLASSES to fetch the CloudKey for a given property.
+ * For example, say your class is configured with the following mappings_localKeyToCloudKey:
+ * @{ @"uuid" : @"uuid"
+ *    @"foo"  : @"bar"
+ * }
+ *
+ * Then:
+ * - CloudKey(uuid) => [self.mappings_localKeyToCloudKey objectForKey:@"uuid"] => @"uuid"
+ * - CloudKey(foo)  => [self.mappings_localKeyToCloudKey objectForKey:@"foo"]  => @"bar"
+ *
+ * If using Apple's CloudKit framework,
+ * then this macro returns the name of the corresponding property within the CKRecord.
+**/
+#define CloudKey(ivar) [self.mappings_localKeyToCloudKey objectForKey:@"" # ivar]
+//    translation  ==> [self.mappings_localKeyToCloudKey objectForKey:@"ivar"]
 
 @end

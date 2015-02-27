@@ -179,7 +179,7 @@ static NSString *const TodoCellIdentifier = @"Todo";
 
 - (void)updateStatusLabels
 {
-	NSUInteger suspendCount = [MyDatabaseManager.cloudKitExtension suspendWithCount:0];
+	NSUInteger suspendCount = [MyDatabaseManager.cloudKitExtension suspendCount];
 	if (suspendCount > 0)
 	{
 		self.ckTopStatusLabel.text =

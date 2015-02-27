@@ -28,4 +28,14 @@ extern CloudKitManager *MyCloudKitManager;
 - (void)fetchRecordChangesWithCompletionHandler:
                             (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler;
 
+/**
+ * This method refetches records that have already been fetched via CKFetchRecordChangesOperation.
+ * However, we somehow managed to screw up merging the information into our local CKRecord.
+ * This is usually due to bugs in the implementation of your YapDatabaseCloudKitMergeBlock.
+ * But bugs are a normal and expected part of development.
+ * So rather than fall into an infinite loop,
+ * we provide this method as a way to bail ourselves out when we make a mistake.
+**/
+- (void)refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler;
+
 @end

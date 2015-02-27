@@ -75,6 +75,16 @@ extern NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification;
 @property (atomic, readonly) BOOL isSuspended;
 
 /**
+ * Returns the current suspendCount.
+ * If the suspendCount is zero, that means isSuspended == NO;
+ * if the suspendCount is non-zero, that means isSuspended == YES;
+ * 
+ * @see suspend
+ * @see resume
+**/
+@property (atomic, readonly) NSUInteger suspendCount;
+
+/**
  * Before the CloudKit stack can begin pushing changes to the cloud, there are generally several steps that
  * must be taken first. These include general configuration steps, as well as querying the server to
  * pull down changes from other devices that occurred while the app was offline.
@@ -172,9 +182,9 @@ extern NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification;
  * 
  * In mathematical notion, the relationships are:
  * 
- * numberOfInFlightChangeSets == numberOfPendingChangeSets - numberOfQueuedChangeSets
- * numberOfQueuedChangeSets   == numberOfPendingChangeSets - numberOfInFlightChangeSets
- * numberOfPendingChangeSets  == numberOfPendingChangeSets + numberOfQueuedChangeSets
+ * numberOfInFlightChangeSets == numberOfPendingChangeSets  - numberOfQueuedChangeSets
+ * numberOfQueuedChangeSets   == numberOfPendingChangeSets  - numberOfInFlightChangeSets
+ * numberOfPendingChangeSets  == numberOfInFlightChangeSets + numberOfQueuedChangeSets
 **/
 @property (atomic, readonly) NSUInteger numberOfInFlightChangeSets;
 @property (atomic, readonly) NSUInteger numberOfQueuedChangeSets;

@@ -9,8 +9,6 @@
 	NSMutableSet *changedProperties;
 }
 
-@synthesize isImmutable = isImmutable;
-
 /**
  * Make sure all your subclasses call this method ([super init]).
 **/
@@ -90,8 +88,190 @@
 //}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Logic
+#pragma mark Class Configuration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method returns a list of all properties that should be monitored.
+ * hat is, they should show up in the changedProperties set if they are modified..
+ * And they should be considered immutable once the makeImmutable method has been invoked.
+ * 
+ * By default this method returns a list of all properties in each subclass in the
+ * hierarchy leading to "[self class]".
+ *
+ * However, this is not always exactly what you want.
+ * For example, if you have any properties which are simply used for caching.
+ * 
+ * @property (nonatomic, strong, readwrite) UIImage *avatarImage;
+ * @property (nonatomic, strong, readwrite) UIImage *cachedTransformedAvatarImage;
+ *
+ * In this example, you store the user's plain avatar image.
+ * However, your code transforms the avatar in various ways for display in the UI.
+ * So to reduce overhead, you'd like to cache these transformed images in the user object.
+ * Thus the 'cachedTransformedAvatarImage' property doesn't actually mutate the user object. It's just a temp cache.
+ *
+ * So your subclass would override this method like so:
+ * 
+ * + (NSMutableSet *)monitoredProperties
+ * {
+ *     NSMutableSet *monitoredProperties = [super immutableProperties];
+ *     [monitoredProperties removeObject:@"cachedTransformedAvatarImage"];
+ *
+ *     return monitoredProperties;
+ * }
+**/
++ (NSMutableSet *)monitoredProperties
+{
+	// Steps to override me (if needed):
+	//
+	// - Invoke [super monitoredProperties]
+	// - Modify resulting mutable dictionary
+	// - Return modified dictionary
+	
+	NSMutableSet *properties = nil;
+	
+	Class rootClass = [MyDatabaseObject class];
+	Class subClass = [self class];
+	
+	while (subClass != rootClass)
+	{
+		unsigned int count = 0;
+		objc_property_t *propertyList = class_copyPropertyList(subClass, &count);
+		if (propertyList)
+		{
+			if (properties == nil)
+				properties = [NSMutableSet setWithCapacity:count];
+			
+			for (unsigned int i = 0; i < count; i++)
+			{
+				const char *name = property_getName(propertyList[i]);
+				NSString *property = [NSString stringWithUTF8String:name];
+				
+				[properties addObject:property];
+			}
+			
+			free(propertyList);
+		}
+		
+		subClass = [subClass superclass];
+	}
+	
+	return properties;
+}
+
+- (NSSet *)monitoredProperties
+{
+	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSSet *monitoredProperties = [[[self class] monitoredProperties] copy];
+	
+	objc_setAssociatedObject([self class], _cmd, monitoredProperties, OBJC_ASSOCIATION_RETAIN);
+	return monitoredProperties;
+}
+
+/**
+ * This method returns a mapping from localPropertyName to cloudPropertyName.
+ * 
+ * By default this method returns a dictionary including everything in [self monitoredProperties],
+ * where the key is equal to the value for every item.
+ * 
+ * For example:
+ * @{ @"title"        : @"title",
+ *    @"isComplete"   : @"isComplete",
+ *    @"creationDate" : @"creationDate",
+ *    @"lastModified" : @"lastModified",
+ *    @"isSeen"       : @"isSeen"
+ * }
+ *
+ * However, this is not always exactly what you want.
+ * For example, you may not want to sync the 'isSeen' property because it's device-specific.
+ *
+ * Additionally you discover that CKRecord has a built-in creationDate property,
+ * and so CKRecord doesn't allow you to use that key for your own purposes. (It's reserved.)
+ *
+ * You can still name your own property "creationDate",
+ * but you'll be forced to use a different name for the CKRecord.
+ * So let's say we decide to use "created" as the corresponding key in the CKRecord.
+ * 
+ * Thus your subclass overrides this method like so:
+ * 
+ * + (NSMutableDictionary *)mappings_localKeyToCloudKey
+ * {
+ *     NSMutableDictionary *mappings_localKeyToCloudKey = [super mappings_localKeyToCloudKey];
+ *
+ *     [mappings_localKeyToCloudKey removeObjectForKey:@"isSeen"];
+ *     [mappings_localKeyToCloudKey setObject:@"created" forKey:@"creationDate"];
+ *     
+ *     return mappings_localKeyToCloudKey;
+ * }
+**/
++ (NSMutableDictionary *)mappings_localKeyToCloudKey
+{
+	// Steps to override me (if needed):
+	//
+	// - Invoke [super mappings_localKeyToCloudKey]
+	// - Modify resulting mutable dictionary
+	// - Return modified dictionary
+	
+	NSMutableSet *properties = [self monitoredProperties];
+	
+	NSMutableDictionary *syncablePropertyMappings = [NSMutableDictionary dictionaryWithCapacity:properties.count];
+	
+	for (NSString *propertyName in properties)
+	{
+		[syncablePropertyMappings setObject:propertyName forKey:propertyName];
+	}
+	
+	return syncablePropertyMappings;
+}
+
+- (NSDictionary *)mappings_localKeyToCloudKey
+{
+	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSDictionary *mappings_localKeyToCloudKey = [[[self class] mappings_localKeyToCloudKey] copy];
+	
+	objc_setAssociatedObject([self class], _cmd, mappings_localKeyToCloudKey, OBJC_ASSOCIATION_RETAIN);
+	return mappings_localKeyToCloudKey;
+}
+
+/**
+ * This method is the inverse of mappings_localKeyToCloudKey.
+ * There is generally no need to override this method.
+**/
++ (NSMutableDictionary *)mappings_cloudKeyToLocalKey
+{
+	NSMutableDictionary *mappings_localKeyToCloudKey = [self mappings_localKeyToCloudKey];
+	NSUInteger capacity = mappings_localKeyToCloudKey.count;
+	
+	NSMutableDictionary *mappings_cloudKeyToLocalKey = [NSMutableDictionary dictionaryWithCapacity:capacity];
+	
+	[mappings_localKeyToCloudKey enumerateKeysAndObjectsUsingBlock:^(id localKey, id cloudKey, BOOL *stop) {
+		
+		mappings_cloudKeyToLocalKey[cloudKey] = localKey;
+	}];
+	
+	return mappings_cloudKeyToLocalKey;
+}
+
+- (NSDictionary *)mappings_cloudKeyToLocalKey
+{
+	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
+	if (cached) return cached;
+	
+	NSDictionary *mappings_cloudKeyToLocalKey = [[[self class] mappings_cloudKeyToLocalKey] copy];
+	
+	objc_setAssociatedObject([self class], _cmd, mappings_cloudKeyToLocalKey, OBJC_ASSOCIATION_RETAIN);
+	return mappings_cloudKeyToLocalKey;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Immutability
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@synthesize isImmutable = isImmutable;
 
 - (void)makeImmutable
 {
@@ -102,16 +282,26 @@
 	}
 }
 
-- (NSSet *)monitoredProperties
+- (NSException *)immutableExceptionForKey:(NSString *)key
 {
-	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
-	if (cached) return cached;
+	NSString *reason;
+	if (key)
+		reason = [NSString stringWithFormat:
+		    @"Attempting to mutate immutable object. Class = %@, property = %@", NSStringFromClass([self class]), key];
+	else
+		reason = [NSString stringWithFormat:
+		    @"Attempting to mutate immutable object. Class = %@", NSStringFromClass([self class])];
 	
-	NSMutableSet *monitoredProperties = [[self class] monitoredProperties];
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		@"To make modifications you should create a copy via [object copy]."
+		@" You may then make changes to the copy before saving it back to the database."};
 	
-	objc_setAssociatedObject([self class], _cmd, monitoredProperties, OBJC_ASSOCIATION_COPY);
-	return monitoredProperties;
+	return [NSException exceptionWithName:@"STDatabaseObjectException" reason:reason userInfo:userInfo];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Monitoring (local)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSSet *)changedProperties
 {
@@ -129,62 +319,64 @@
 	return ([changedProperties count] > 0);
 }
 
-- (NSDictionary *)syncablePropertyMappings
+- (void)clearChangedProperties
 {
-	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
-	if (cached) return cached;
-	
-	NSMutableDictionary *syncablePropertyMappings = [[self class] syncablePropertyMappings];
-	
-	objc_setAssociatedObject([self class], _cmd, syncablePropertyMappings, OBJC_ASSOCIATION_COPY);
-	return syncablePropertyMappings;
+	changedProperties = nil;
 }
 
-- (NSSet *)allSyncableProperties
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Monitoring (cloud)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSSet *)allCloudProperties
 {
 	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
 	if (cached) return cached;
 	
-	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
-	NSMutableSet *allSyncableProperties = [NSMutableSet setWithCapacity:syncablePropertyMappings.count];
+	NSDictionary *mappings_localKeyToCloudKey = self.mappings_localKeyToCloudKey;
+	NSUInteger capacity = mappings_localKeyToCloudKey.count;
 	
-	for (NSString *syncablePropertyName in [syncablePropertyMappings objectEnumerator])
+	NSMutableSet *allCloudProperties = [NSMutableSet setWithCapacity:capacity];
+	
+	for (NSString *cloudKey in [mappings_localKeyToCloudKey objectEnumerator])
 	{
-		[allSyncableProperties addObject:syncablePropertyName];
+		[allCloudProperties addObject:cloudKey];
 	}
 	
-	objc_setAssociatedObject([self class], _cmd, allSyncableProperties, OBJC_ASSOCIATION_COPY);
-	return allSyncableProperties;
+	NSSet *result = [allCloudProperties copy];
+	
+	objc_setAssociatedObject([self class], _cmd, result, OBJC_ASSOCIATION_RETAIN);
+	return result;
 }
 
-- (NSSet *)changedSyncableProperties
+- (NSSet *)changedCloudProperties
 {
 	if ([changedProperties count] == 0) return nil;
 	
-	NSMutableSet *changedSyncableProperties = [NSMutableSet setWithCapacity:changedProperties.count];
-	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
+	NSMutableSet *changedCloudProperties = [NSMutableSet setWithCapacity:changedProperties.count];
+	NSDictionary *mappings_localKeyToCloudKey = self.mappings_localKeyToCloudKey;
 	
-	for (NSString *propertyName in changedProperties)
+	for (NSString *localKey in changedProperties)
 	{
-		NSString *syncablePropertyName = [syncablePropertyMappings objectForKey:propertyName];
-		if (syncablePropertyName) {
-			[changedSyncableProperties addObject:syncablePropertyName];
+		NSString *cloudKey = mappings_localKeyToCloudKey[localKey];
+		if (cloudKey) {
+			[changedCloudProperties addObject:cloudKey];
 		}
 	}
 	
-	return changedSyncableProperties;
+	return changedCloudProperties;
 }
 
-- (BOOL)hasChangedSyncableProperties
+- (BOOL)hasChangedCloudProperties
 {
 	if ([changedProperties count] == 0) return NO;
 	
-	NSDictionary *syncablePropertyMappings = self.syncablePropertyMappings;
+	NSDictionary *mappings_localKeyToCloudKey = self.mappings_localKeyToCloudKey;
 	
-	for (NSString *propertyName in changedProperties)
+	for (NSString *localKey in changedProperties)
 	{
-		NSString *syncablePropertyName = [syncablePropertyMappings objectForKey:propertyName];
-		if (syncablePropertyName) {
+		NSString *cloudKey = mappings_localKeyToCloudKey[localKey];
+		if (cloudKey) {
 			return YES;
 		}
 	}
@@ -192,9 +384,78 @@
 	return NO;
 }
 
-- (void)clearChangedProperties
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Getters & Setters (cloud)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSString *)cloudKeyForLocalKey:(NSString *)localKey
 {
-	changedProperties = nil;
+	return self.mappings_localKeyToCloudKey[localKey];
+}
+
+- (NSString *)localKeyForCloudKey:(NSString *)cloudKey
+{
+	return self.mappings_cloudKeyToLocalKey[cloudKey];
+}
+
+- (id)cloudValueForCloudKey:(NSString *)cloudKey
+{
+	// Override me if needed.
+	// For example:
+	//
+	// - (id)cloudValueForCloudKey:(NSString *)cloudKey
+	// {
+	//     if ([cloudKey isEqualToString:@"color"])
+	//     {
+	//         // We store UIColor in the cloud as a string (r,g,b,a)
+	//         return ConvertUIColorToNSString(self.color);
+	//     }
+	//     else
+	//     {
+	//         return [super cloudValueForCloudKey:cloudKey];
+	//     }
+	// }
+	
+	return [self localValueForCloudKey:cloudKey];
+}
+
+- (id)cloudValueForLocalKey:(NSString *)localKey
+{
+	NSString *cloudKey = [self cloudKeyForLocalKey:localKey];
+	return [self cloudValueForCloudKey:cloudKey];
+}
+
+- (id)localValueForCloudKey:(NSString *)cloudKey
+{
+	NSString *localKey = [self localKeyForCloudKey:cloudKey];
+	return [self valueForKey:localKey];
+}
+
+- (id)localValueForLocalKey:(NSString *)localKey
+{
+	return [self valueForKey:localKey];
+}
+
+- (void)setLocalValueFromCloudValue:(id)cloudValue forCloudKey:(NSString *)cloudKey
+{
+	// Override me if needed.
+	// For example:
+	//
+	// - (void)setLocalValueFromCloudValue:(id)cloudValue forCloudKey:(NSString *)cloudKey
+	// {
+	//     if ([cloudKey isEqualToString:@"color"])
+	//     {
+	//         // We store UIColor in the cloud as a string (r,g,b,a)
+	//         self.color = ConvertNSStringToUIColor(cloudValue);
+	//     }
+	//     else
+	//     {
+	//         return [super setLocalValueForCloudValue:cloudValue cloudKey:cloudKey];
+	//     }
+	// }
+	
+	NSString *localKey = [self localKeyForCloudKey:cloudKey];
+	[self setValue:cloudValue forKey:localKey];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,141 +523,6 @@
 	
 	[changedProperties addObject:key];
 	[super didChangeValueForKey:key];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Class Configuration
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-+ (NSMutableSet *)monitoredProperties
-{
-	// This method returns a list of all properties that should be monitored.
-	// That is, they should show up in the changedProperties set if they are modified..
-	// And they should be considered immutable once the makeImmutable method has been invoked.
-	//
-	// By default this method returns a list of all properties in each subclass in the
-	// hierarchy leading to "[self class]".
-	//
-	// However, this is not always exactly what you want.
-	// For example, if you have any properties which are simply used for caching.
-	//
-	// @property (nonatomic, strong, readwrite) UIImage *avatarImage;
-	// @property (nonatomic, strong, readwrite) UIImage *cachedTransformedAvatarImage;
-	//
-	// In this example, you store the user's plain avatar image.
-	// However, your code transforms the avatar in various ways for display in the UI.
-	// So to reduce overhead, you'd like to cache these transformed images in the user object.
-	// Thus the 'cachedTransformedAvatarImage' property doesn't actually mutate the user object. It's just temporary.
-	//
-	// So your subclass would override this method like so:
-	//
-	// + (NSMutableSet *)monitoredProperties
-	// {
-	//     NSMutableSet *monitoredProperties = [super immutableProperties];
-	//     [monitoredProperties removeObject:@"cachedTransformedAvatarImage"];
-	//
-	//     return monitoredProperties;
-	// }
-	
-	NSMutableSet *properties = nil;
-	
-	Class rootClass = [MyDatabaseObject class];
-	Class subClass = [self class];
-	
-	while (subClass != rootClass)
-	{
-		unsigned int count = 0;
-		objc_property_t *propertyList = class_copyPropertyList(subClass, &count);
-		if (propertyList)
-		{
-			if (properties == nil)
-				properties = [NSMutableSet setWithCapacity:count];
-			
-			for (unsigned int i = 0; i < count; i++)
-			{
-				const char *name = property_getName(propertyList[i]);
-				NSString *property = [NSString stringWithUTF8String:name];
-				
-				[properties addObject:property];
-			}
-			
-			free(propertyList);
-		}
-		
-		subClass = [subClass superclass];
-	}
-	
-	return properties;
-}
-
-+ (NSMutableDictionary *)syncablePropertyMappings
-{
-	// This method returns a mapping from localPropertyName to ckRecordPropertyName.
-	//
-	// By default this method returns a dictionary including everything in [self immutableProperties],
-	// where the key is equal to the value for every item.
-	//
-	// For example:
-	// @{ @"title" = @"title",
-	//    @"isCompleted" = @"isCompleted",
-	//    @"creationDate" = @"creationDate",
-	//    @"lastModified" = @"lastModified",
-	//    @"isSeen" = @"isSeen"
-	// }
-	//
-	// However, this is not always exactly what you want.
-	// For example, you may not want to sync the 'isSeen' property because its device-specific.
-	//
-	// Additionally you discover that CKRecord has a built-in creationDate property,
-	// and so CKRecord doesn't allow you to use that key for your own purposes. (It's reserved.)
-	//
-	// You can still name your own property "creationDate",
-	// but you'll be forced to use a different name for the CKRecord.
-	// So let's say we decide to use "created" as the corresponding key in the CKRecord.
-	//
-	// Thus your subclass overrides this method like so:
-	//
-	// + (NSMutableDictionary *)syncablePropertyMappings
-	// {
-	//     NSMutableDictionary *syncablePropertyMappings = [super syncablePropertyMappings];
-	//
-	//     [syncablePropertyMappings removeObjectForKey:@"isSeen"];
-	//     [syncablePropertyMappings setObject:@"created" forKey:@"creationDate"];
-	//
-	//     return syncablePropertyMappings;
-	// }
-	
-	NSMutableSet *properties = [self monitoredProperties];
-	
-	NSMutableDictionary *syncablePropertyMappings = [NSMutableDictionary dictionaryWithCapacity:properties.count];
-	
-	for (NSString *propertyName in properties)
-	{
-		[syncablePropertyMappings setObject:propertyName forKey:propertyName];
-	}
-	
-	return syncablePropertyMappings;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Exceptions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSException *)immutableExceptionForKey:(NSString *)key
-{
-	NSString *reason;
-	if (key)
-		reason = [NSString stringWithFormat:
-		    @"Attempting to mutate immutable object. Class = %@, property = %@", NSStringFromClass([self class]), key];
-	else
-		reason = [NSString stringWithFormat:
-		    @"Attempting to mutate immutable object. Class = %@", NSStringFromClass([self class])];
-	
-	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
-		@"To make modifications you should create a copy via [object copy]."
-		@" You may then make changes to the copy before saving it back to the database."};
-	
-	return [NSException exceptionWithName:@"STDatabaseObjectException" reason:reason userInfo:userInfo];
 }
 
 @end

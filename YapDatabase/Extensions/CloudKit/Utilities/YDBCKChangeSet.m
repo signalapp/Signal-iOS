@@ -73,6 +73,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	{
 		fullCopy->deletedRecordIDs = [deletedRecordIDs mutableCopy];
 	}
+	
 	if (modifiedRecords)
 	{
 	#if DEBUG
@@ -85,16 +86,23 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	return fullCopy;
 }
 
+/**
+ * Array of CKRecordID's for CKModifyRecordsOperation
+**/
 - (NSArray *)recordIDsToDelete
 {
 	return [deletedRecordIDs copy];
 }
 
+/**
+ * Array of CKRecord's for CKModifyRecordsOperation.
+**/
 - (NSArray *)recordsToSave
 {
-	if (modifiedRecords.count == 0) return nil;
+	NSUInteger modifiedRecordsCount = modifiedRecords.count;
+	if (modifiedRecordsCount == 0) return nil;
 	
-	NSMutableArray *array = [NSMutableArray arrayWithCapacity:[modifiedRecords count]];
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:modifiedRecordsCount];
 	
 	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
@@ -104,6 +112,10 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	return array;
 }
 
+/**
+ * Private API for YapDatabaseCloudKit extension internals only.
+ * NOT for external use under any circumstances !!!
+**/
 - (NSArray *)recordsToSave_noCopy
 {
 	if (modifiedRecords.count == 0) return nil;
@@ -118,14 +130,38 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	return array;
 }
 
-- (NSUInteger)recordIDsToDeleteCount
+/**
+ * Array of CKRecordID's (from recordsToSave).
+**/
+- (NSArray *)recordIDsToSave
 {
-	return [deletedRecordIDs count];
+	NSUInteger modifiedRecordsCount = modifiedRecords.count;
+	if (modifiedRecordsCount == 0) return 0;
+	
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:modifiedRecordsCount];
+	
+	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
+	{
+		[array addObject:changeRecord.recordID];
+	}
+	
+	return array;
 }
 
+/**
+ * Shortcut if you just want the count (for CKModifyRecordsOperation.recordIDsToDelete).
+**/
+- (NSUInteger)recordIDsToDeleteCount
+{
+	return deletedRecordIDs.count;
+}
+
+/**
+ * Shortcut if you just want the count (for CKModifyRecordsOperation.recordsToSave).
+**/
 - (NSUInteger)recordsToSaveCount
 {
-	return [modifiedRecords count];
+	return modifiedRecords.count;
 }
 
 - (NSData *)serializeDeletedRecordIDs

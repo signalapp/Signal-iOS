@@ -272,24 +272,31 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 - (void)fetchRecordChangesWithCompletionHandler:
         (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
-	__block CKServerChangeToken *serverChangeToken = nil;
+	__block CKServerChangeToken *prevServerChangeToken = nil;
 	
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-	
-		serverChangeToken = [transaction objectForKey:Key_ServerChangeToken inCollection:Collection_CloudKit];
+	[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		prevServerChangeToken = [transaction objectForKey:Key_ServerChangeToken inCollection:Collection_CloudKit];
+		
+	} completionBlock:^{
+		
+		[self fetchRecordChangesWithPrevServerChangeToken:prevServerChangeToken completionHandler:completionHandler];
 	}];
-	
+}
+
+- (void)fetchRecordChangesWithPrevServerChangeToken:(CKServerChangeToken *)prevServerChangeToken
+								  completionHandler:
+        (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
+{
 	CKRecordZoneID *recordZoneID =
 	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
 	
 	CKFetchRecordChangesOperation *operation =
 	  [[CKFetchRecordChangesOperation alloc] initWithRecordZoneID:recordZoneID
-	                                    previousServerChangeToken:serverChangeToken];
+	                                    previousServerChangeToken:prevServerChangeToken];
 	
 	__block NSMutableArray *deletedRecordIDs = nil;
 	__block NSMutableArray *changedRecords = nil;
-	
-	__weak CKFetchRecordChangesOperation *weakOperation = operation;
 	
 	operation.recordWithIDWasDeletedBlock = ^(CKRecordID *recordID){
 		
@@ -307,13 +314,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		[changedRecords addObject:record];
 	};
 	
+	__weak CKFetchRecordChangesOperation *weakOperation = operation;
 	operation.fetchRecordChangesCompletionBlock =
-	^(CKServerChangeToken *serverChangeToken, NSData *clientChangeTokenData, NSError *operationError){
+	^(CKServerChangeToken *newServerChangeToken, NSData *clientChangeTokenData, NSError *operationError){
 		
 		DDLogVerbose(@"CKFetchRecordChangesOperation.fetchRecordChangesCompletionBlock");
 		
-		DDLogVerbose(@"CKFetchRecordChangesOperation: serverChangeToken: %@", serverChangeToken);
+		DDLogVerbose(@"CKFetchRecordChangesOperation: serverChangeToken: %@", newServerChangeToken);
 		DDLogVerbose(@"CKFetchRecordChangesOperation: clientChangeTokenData: %@", clientChangeTokenData);
+		
+		BOOL hasChanges = NO;
+		if (!operationError)
+		{
+			if (deletedRecordIDs.count > 0)
+				hasChanges = YES;
+			else if (changedRecords.count > 0)
+				hasChanges = YES;
+		}
 		
 		if (operationError)
 		{
@@ -327,7 +344,27 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				completionHandler(UIBackgroundFetchResultFailed, NO);
 			}
 		}
-		else
+		else if (!hasChanges)
+		{
+			// Just to be safe, we're going to go ahead and save the newServerChangeToken.
+			//
+			// By the way:
+			// - The CKServerChangeToken class has no API
+			// - Comparing two serverChangeToken's via isEqual doesn't work
+			// - Archiving two serverChangeToken's into NSData, and comparing that doesn't work either
+			
+			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+				
+				[transaction setObject:newServerChangeToken
+				                forKey:Key_ServerChangeToken
+				          inCollection:Collection_CloudKit];
+			}];
+			
+			if (completionHandler) {
+				completionHandler(UIBackgroundFetchResultNoData, NO);
+			}
+		}
+		else // if (hasChanges)
 		{
 			BOOL moreComing = weakOperation.moreComing;
 			
@@ -393,7 +430,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				}
 				
 				// And save the serverChangeToken (in the same atomic transaction)
-				[transaction setObject:serverChangeToken
+				[transaction setObject:newServerChangeToken
 				                forKey:Key_ServerChangeToken
 				          inCollection:Collection_CloudKit];
 				
@@ -401,12 +438,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 				if (completionHandler)
 				{
-					if (([deletedRecordIDs count] > 0) || ([changedRecords count] > 0)) {
+					if (hasChanges)
 						completionHandler(UIBackgroundFetchResultNewData, moreComing);
-					}
-					else {
+					else
 						completionHandler(UIBackgroundFetchResultNoData, moreComing);
-					}
 				}
 			}];
 			
@@ -414,6 +449,55 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			{
 				[self fetchRecordChangesWithCompletionHandler:completionHandler];
 			}
+		
+		} // end if (hasChanges)
+	};
+	
+	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
+}
+
+/**
+ * This method refetches records that have already been fetched via CKFetchRecordChangesOperation.
+ * However, we somehow managed to screw up merging the information into our local CKRecord.
+ * This is usually due to bugs in the implementation of your YapDatabaseCloudKitMergeBlock.
+ * But bugs are a normal and expected part of development.
+ * So rather than fall into an infinite loop,
+ * we provide this method as a way to bail ourselves out when we make a mistake.
+**/
+- (void)refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler
+{
+	CKFetchRecordsOperation *operation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:recordIDs];
+	
+	operation.perRecordCompletionBlock = ^(CKRecord *record, CKRecordID *recordID, NSError *error) {
+		
+		if (error) {
+			DDLogError(@"CKFetchRecordsOperation.perRecordCompletionBlock: %@ -> %@", recordID, error);
+		}
+	};
+	
+	operation.fetchRecordsCompletionBlock = ^(NSDictionary *recordsByRecordID, NSError *operationError) {
+		
+		if (operationError)
+		{
+			if (completionHandler) {
+				completionHandler(operationError);
+			}
+		}
+		else
+		{
+			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+				
+				for (CKRecord *record in [recordsByRecordID objectEnumerator])
+				{
+					[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
+				}
+				
+			} completionBlock:^{
+				
+				if (completionHandler) {
+					completionHandler(nil);
+				}
+			}];
 		}
 	};
 	

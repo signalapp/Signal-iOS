@@ -191,15 +191,20 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 
 - (BOOL)isSuspended
 {
-	BOOL isSuspended = NO;
+	return ([self suspendCount] > 0);
+}
+
+- (NSUInteger)suspendCount
+{
+	NSUInteger currentSuspendCount = 0;
 	
 	OSSpinLockLock(&suspendCountLock);
 	{
-		isSuspended = (suspendCount > 0);
+		currentSuspendCount = suspendCount;
 	}
 	OSSpinLockUnlock(&suspendCountLock);
 	
-	return isSuspended;
+	return currentSuspendCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -411,12 +416,19 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	                                 queuedChangeSets:numQueuedChangeSetsPtr];
 }
 
-- (void)postInFlightChangeSetChangedNotification
+- (void)postInFlightChangeSetChangedNotification:(NSString *)newChangeSetUUID
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
+		NSDictionary *details = nil;
+		if (newChangeSetUUID) {
+			details = @{ @"uuid" : newChangeSetUUID };
+		}
+		
 		[[NSNotificationCenter defaultCenter]
-		  postNotificationName:YapDatabaseCloudKitInFlightChangeSetChangedNotification object:self];
+		  postNotificationName:YapDatabaseCloudKitInFlightChangeSetChangedNotification
+		                object:self
+		              userInfo:details];
 	}};
 	
 	if ([NSThread isMainThread])
@@ -465,6 +477,9 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 {
 	YDBLogAutoTrace();
 	
+	// The 'forceNotification' parameter will be YES when this method
+	// is being called after successfully completing a previous operation.
+	
 	dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_async(bgQueue, ^{ @autoreleasepool {
 		
@@ -472,33 +487,47 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		{
 			YDBLogVerbose(@"Skipping dispatch operation - suspended");
 			
-			if (forceNotification) [self postInFlightChangeSetChangedNotification];
+			if (forceNotification) {
+				[self postInFlightChangeSetChangedNotification:[masterQueue currentChangeSetUUID]];
+			}
 			return;
 		}
 		
-		YDBCKChangeSet *nextChangeSet = [masterQueue makeInFlightChangeSet]; // this method is thread-safe
+		BOOL isAlreadyInFlight = NO;
+		YDBCKChangeSet *nextChangeSet = nil;
+		
+		nextChangeSet = [masterQueue makeInFlightChangeSet:&isAlreadyInFlight]; // this method is thread-safe
 		if (nextChangeSet == nil)
 		{
-			YDBLogVerbose(@"Skipping dispatch operation - upload in progress || nothing to upload");
+			if (isAlreadyInFlight)
+				YDBLogVerbose(@"Skipping dispatch operation - upload in progress");
+			else
+				YDBLogVerbose(@"Skipping dispatch operation - nothing to upload");
 			
-			if (forceNotification) [self postInFlightChangeSetChangedNotification];
+			if (forceNotification) {
+				[self postInFlightChangeSetChangedNotification:[masterQueue currentChangeSetUUID]];
+			}
 			return;
 		}
 		
 		if ([nextChangeSet->deletedRecordIDs count] == 0 &&
 		    [nextChangeSet->modifiedRecords count] == 0)
 		{
-			YDBLogVerbose(@"Dropping empty queuee operation: %@", nextChangeSet);
+			YDBLogVerbose(@"Dropping empty queued operation: %@", nextChangeSet);
+			
+			NSString *changeSetUUID = nextChangeSet.uuid;
 			
 			[self handleCompletedOperationWithChangeSet:nextChangeSet savedRecords:nil deletedRecordIDs:nil];
-			[self postInFlightChangeSetChangedNotification];
+			[self postInFlightChangeSetChangedNotification:changeSetUUID];
 		}
 		else
 		{
 			YDBLogVerbose(@"Queueing operation: %@", nextChangeSet);
 			
+			NSString *changeSetUUID = nextChangeSet.uuid;
+			
 			[self queueOperationsForChangeSets:@[ nextChangeSet ]];
-			[self postInFlightChangeSetChangedNotification];
+			[self postInFlightChangeSetChangedNotification:changeSetUUID];
 		}
 	}});
 }
@@ -635,6 +664,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	// Specifically, it's performed at the end of the databaseTransaction that removes the items that did complete.
 	
 	[masterQueue resetFailedInFlightChangeSet];
+	[self postInFlightChangeSetChangedNotification:changeSet.uuid];
 	
 	// Inform the user about the problem via the operationErrorBlock.
 	
@@ -695,21 +725,28 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	// Start the database transaction to update the queue(s) by removing those items that have succeeded.
 	
 	NSString *extName = self.registeredName;
+	NSString *databaseIdentifier = changeSet.databaseIdentifier;
 	
 	[[self completionDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
 		[[transaction ext:extName] handlePartiallyCompletedOperationWithChangeSet:changeSet
 		                                                             savedRecords:success_savedRecords
 		                                                         deletedRecordIDs:success_deletedRecordIDs];
+		
+	} completionBlock:^{
+		
+		// Inform the user about the problem via the operationErrorBlock.
+		
+		opErrorBlock(databaseIdentifier, operationError);
 	}];
 	
 	// Inform the user about the problem via the operationErrorBlock.
 	
-	NSString *databaseIdentifier = changeSet.databaseIdentifier;
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		opErrorBlock(databaseIdentifier, operationError);
-	});
+//	NSString *databaseIdentifier = changeSet.databaseIdentifier;
+//	dispatch_async(dispatch_get_main_queue(), ^{
+//
+//		opErrorBlock(databaseIdentifier, operationError);
+//	});
 }
 
 - (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
