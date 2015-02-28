@@ -130,6 +130,12 @@
 #pragma mark Merge Handling
 
 /**
+ * Returns YES if there are any pending records in the pendingChangeSetsFromPreviousCommits.
+**/
+- (BOOL)hasChangesForRecordID:(CKRecordID *)recordID
+           databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
  * This method enumerates pendingChangeSetsFromPreviousCommits, from oldest commit to newest commit,
  * and merges the changedKeys & values into the given record.
  * Thus, if the value for a particular key has been changed multiple times,
@@ -137,7 +143,7 @@
  * 
  * The given record is expected to be a sanitized record.
  * 
- * Returns YES if there were any pending records in the pendingChangeSetsFromPreviousCommits.
+ * Returns YES if there are any pending records in the pendingChangeSetsFromPreviousCommits.
 **/
 - (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID
              databaseIdentifier:(NSString *)databaseIdentifier
@@ -161,7 +167,7 @@
  * This method:
  * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
  * - adds the record to the changeSet
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -173,7 +179,7 @@
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -186,7 +192,7 @@
  * This method:
  * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
  * - adds the deleted recordID to the changeSet
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -198,7 +204,7 @@
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed),
+ * - modifies the changeSets from previous commits that also modified the same record (if needed),
  *   if the mergedRecord disagrees with the pending record.
  * - If the mergedRecord contains values that aren're represending in previous commits,
  *   then it creates a changeSet for the given databaseIdentifier for the current commit,
@@ -214,7 +220,7 @@
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -224,7 +230,13 @@
         databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
- *
+ * This method
+ * - removes the record from the inFlightChangeSet (if isOpPartialCompletion)
+ * - if modifications for the same record are queued in other changeSets, then updates the base record (system metadata)
+ *   for those records (such that the have the latest recordChangeTag, etc)
+ * 
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
            withSavedRecord:(CKRecord *)record

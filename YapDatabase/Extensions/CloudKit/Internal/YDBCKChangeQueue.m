@@ -219,6 +219,8 @@
 **/
 - (NSString *)currentChangeSetUUID
 {
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
 	NSString *firstChangeSetUUID = nil;
 	
 	// Get lock for access to 'oldChangeSets'
@@ -399,6 +401,40 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 #pragma mark Merge Handling
 
 /**
+ * Returns YES if there are any pending records in the pendingChangeSetsFromPreviousCommits.
+**/
+- (BOOL)hasChangesForRecordID:(CKRecordID *)recordID
+           databaseIdentifier:(NSString *)databaseIdentifier
+{
+	BOOL hasPendingChanges = NO;
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	
+	@try {
+		
+		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+		{
+			if (CompareDatabaseIdentifiers(databaseIdentifier, prevChangeSet.databaseIdentifier))
+			{
+				YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
+				if (prevRecord)
+				{
+					hasPendingChanges = YES;
+					break;
+				}
+			}
+		}
+		
+	} @finally {
+	
+		[masterQueueLock unlock];
+	}
+	
+	return hasPendingChanges;
+}
+
+/**
  * This method enumerates pendingChangeSetsFromPreviousCommits, from oldest commit to newest commit,
  * and merges the changedKeys & values into the given record.
  * Thus, if the value for a particular key has been changed multiple times,
@@ -496,7 +532,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
  * This method:
  * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
  * - adds the record to the changeSet
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -595,7 +631,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -663,7 +699,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
  * This method:
  * - creates a changeSet for the given databaseIdentifier for the current commit (if needed)
  * - adds the deleted recordID to the changeSet
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -752,7 +788,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed),
+ * - modifies the changeSets from previous commits that also modified the same record (if needed),
  *   if the mergedRecord disagrees with the pending record.
  * - If the mergedRecord contains values that aren're represending in previous commits,
  *   then it creates a changeSet for the given databaseIdentifier for the current commit,
@@ -812,21 +848,18 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 						[keysToRemove addObject:key];
 				}
 				
-				if (keysToCompare.count > 0)
+				for (NSString *key in keysToCompare)
 				{
-					for (NSString *key in keysToCompare)
+					id localValue = [localRecord objectForKey:key];
+					id mergedValue = [mergedRecord objectForKey:key];
+					
+					if ((localValue == nil && mergedValue == nil) || [localValue isEqual:mergedValue])
 					{
-						id localValue = [localRecord objectForKey:key];
-						id mergedValue = [mergedRecord objectForKey:key];
-						
-						if ((localValue == nil && mergedValue == nil) || [localValue isEqual:mergedValue])
-						{
-							[mergedRecordHandledKeys addObject:key];
-						}
-						else
-						{
-							[keysToRemove addObject:key];
-						}
+						[mergedRecordHandledKeys addObject:key];
+					}
+					else
+					{
+						[keysToRemove addObject:key];
 					}
 				}
 				
@@ -933,7 +966,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 
 /**
  * This method:
- * - modifies the changeSets from previous commits that also modified the same rowid (if needed)
+ * - modifies the changeSets from previous commits that also modified the same record (if needed)
  *
  * The following may be modified:
  * - pendingQueue.changeSetsFromPreviousCommits
@@ -999,6 +1032,15 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	} // end for (YDBCKChangeSet *mqPrevChangeSet in masterQueue->oldChangeSets)
 }
 
+/**
+ * This method
+ * - removes the record from the inFlightChangeSet (if isOpPartialCompletion)
+ * - if modifications for the same record are queued in other changeSets, then updates the base record (system metadata)
+ *   for those records (such that the have the latest recordChangeTag, etc)
+ *
+ * The following may be modified:
+ * - pendingQueue.changeSetsFromPreviousCommits
+**/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
            withSavedRecord:(CKRecord *)record
         databaseIdentifier:(NSString *)databaseIdentifier

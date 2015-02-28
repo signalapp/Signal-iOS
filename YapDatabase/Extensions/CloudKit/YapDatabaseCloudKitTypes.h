@@ -144,7 +144,15 @@ typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *data
 @property (nonatomic, strong, readonly) id versionInfo;
 
 /**
+ * When this property is non-nil, the recordHandler MUST restore the specified keys.
  * 
+ * YapDatabaseCloudKit uses various storage optimization techniques to reduce disk IO,
+ * and reduce the amount of duplicate data that gets stored in the database.
+ * Essentially it skips storing any values that are already stored within the original database object(s).
+ * And so, if the application quits before all uploads have made it to the CloudKit server,
+ * then YapDatabaseCloudKit will need to restore some CKRecords, and may need to restore certain values.
+ * 
+ * You MUST check for this property within your recordHandler implementation.
 **/
 @property (nonatomic, strong, readonly) NSArray *changedKeysToRestore;
 

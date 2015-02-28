@@ -173,8 +173,8 @@ static NSString *const changeset_key_reset            = @"reset";
  *
  * - databaseIdentifier : The databaseIdentifier for all deleted CKRecordIDs & modified CKRecords
  * 
- * - deletedRecordIDs   : A blob of the CKRecordIDs that are to be marked as deleted.
- * - modifiedRecords    : A blob represending the rowid & modified info (either CKRecord or just changedKeys array).
+ * - deletedRecordIDs   : Array of CKRecordID's
+ * - modifiedRecords    : Array of YDBCKChangeRecord's (storing either a CKRecord or just changedKeys array)
 **/
 @interface YDBCKChangeSet () {
 @public

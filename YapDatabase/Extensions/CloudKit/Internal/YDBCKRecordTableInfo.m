@@ -4,12 +4,13 @@
 @implementation YDBCKCleanRecordTableInfo
 
 @synthesize databaseIdentifier = databaseIdentifier;
-@synthesize ownerCount = ownerCount;
 @synthesize record = record;
+@synthesize ownerCount = ownerCount;
+
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
-                                ownerCount:(NSNumber *)inOwnerCount
                                     record:(CKRecord *)inRecord
+                                ownerCount:(int64_t)inOwnerCount
 {
 	if ((self = [super init]))
 	{
@@ -38,18 +39,18 @@
 {
 	YDBCKCleanRecordTableInfo *copy = [[YDBCKCleanRecordTableInfo alloc] init];
 	copy->databaseIdentifier = databaseIdentifier;
-	copy->ownerCount = ownerCount;
 	copy->record = newRecord;
+	copy->ownerCount = ownerCount;
 	
 	return copy;
 }
 
-- (NSNumber *)current_ownerCount {
-	return ownerCount;
-}
-
 - (CKRecord *)current_record {
 	return record;
+}
+
+- (int64_t)current_ownerCount {
+	return ownerCount;
 }
 
 @end
@@ -63,8 +64,8 @@
 
 @synthesize clean_ownerCount = clean_ownerCount;
 
-@synthesize dirty_ownerCount;
-@synthesize dirty_record;
+@synthesize dirty_record = dirty_record;
+@synthesize dirty_ownerCount = dirty_ownerCount;
 
 @synthesize skipUploadRecord;
 @synthesize skipUploadDeletion;
@@ -73,7 +74,7 @@
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                   recordID:(CKRecordID *)inRecordID
-                                ownerCount:(NSNumber *)in_clean_ownerCount
+                                ownerCount:(int64_t)in_clean_ownerCount
 {
 	if ((self = [super init]))
 	{
@@ -85,41 +86,37 @@
 	return self;
 }
 
-- (NSNumber *)current_ownerCount {
-	return dirty_ownerCount;
-}
-
 - (CKRecord *)current_record {
 	return dirty_record;
 }
 
+- (int64_t)current_ownerCount {
+	return dirty_ownerCount;
+}
+
 - (void)incrementOwnerCount
 {
-	int64_t ownerCount = [dirty_ownerCount longLongValue];
-	if (ownerCount >= 0)
-	{
-		dirty_ownerCount = @(ownerCount + 1);
+	if (dirty_ownerCount < INT64_MAX) {
+		dirty_ownerCount++;
 	}
 }
 
 - (void)decrementOwnerCount
 {
-	int64_t ownerCount = [dirty_ownerCount longLongValue];
-	if (ownerCount > 0)
-	{
-		dirty_ownerCount = @(ownerCount - 1);
+	if (dirty_ownerCount > 0) {
+		dirty_ownerCount--;
 	}
 }
 
 - (BOOL)ownerCountChanged
 {
-	return [clean_ownerCount longLongValue] != [dirty_ownerCount longLongValue];
+	return (clean_ownerCount != dirty_ownerCount);
 }
 
 - (BOOL)hasNilRecordOrZeroOwnerCount
 {
 	if (dirty_record == 0) return YES;
-	if ([dirty_ownerCount longLongValue] == 0) return YES;
+	if (dirty_ownerCount <= 0) return YES;
 	
 	return NO;
 }
@@ -128,8 +125,8 @@
 {
 	YDBCKCleanRecordTableInfo *cleanCopy =
 	  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
-	                                                     ownerCount:dirty_ownerCount
-	                                                         record:newRecord];
+	                                                         record:newRecord
+	                                                     ownerCount:dirty_ownerCount];
 	return cleanCopy;
 }
 
