@@ -179,4 +179,16 @@ static NSString *const k_lastModified = @"lastModified";
 	return [super setLocalValueFromCloudValue:cloudValue forCloudKey:cloudKey];
 }
 
+#pragma mark MyDatabaseObject overrides
+
+- (void)setNilValueForKey:(NSString *)key
+{
+	if ([key isEqualToString:@"priority"]) {
+		self.priority = TodoPriorityNormal;
+	}
+	else {
+		[super setNilValueForKey:key];
+	}
+}
+
 @end
