@@ -42,9 +42,10 @@
                          inThread:(TSGroupThread*)thread
                          authorId:(NSString*)authorId
                       messageBody:(NSString*)body
-                     attachments:(NSArray*)attachments;
+                      attachments:(NSArray*)attachments;
 
 @property (nonatomic, readonly) NSString *authorId;
 @property (nonatomic, getter = wasRead) BOOL read;
+@property (nonatomic, readonly) NSDate   *receivedAt;
 
 @end

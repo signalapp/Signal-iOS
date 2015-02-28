@@ -19,8 +19,9 @@
     self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachments:attachments];
     
     if (self) {
-        _authorId = authorId;
-        _read     = NO;
+        _authorId   = authorId;
+        _read       = NO;
+        _receivedAt = [NSDate date];
     }
     
     return self;
@@ -34,8 +35,9 @@
     self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachments:attachments];
     
     if (self) {
-        _authorId = nil;
-        _read     = NO;
+        _authorId   = nil;
+        _read       = NO;
+        _receivedAt = [NSDate date];
     }
     
     return self;

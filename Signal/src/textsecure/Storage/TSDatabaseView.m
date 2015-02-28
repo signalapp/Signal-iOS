@@ -163,11 +163,42 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
             TSInteraction *message1 = (TSInteraction*)object1;
             TSInteraction *message2 = (TSInteraction*)object2;
             
-            return [message1.date compare:message2.date];
+            NSDate *date1 = [self localTimeReceiveDateForInteraction:message1];
+            NSDate *date2 = [self localTimeReceiveDateForInteraction:message2];
+            
+            NSComparisonResult result = [date1 compare:date2];
+            
+            // NSDates are only accurate to the second, we might want finer precision
+            if (result != NSOrderedSame) {
+                return result;
+            }
+            
+            if (message1.timestamp > message2.timestamp) {
+                return NSOrderedDescending;
+            } else if (message1.timestamp < message2.timestamp){
+                return NSOrderedAscending;
+            } else{
+                return NSOrderedSame;
+            }
         }
         
         return NSOrderedSame;
     }];
+}
+
++ (NSDate*)localTimeReceiveDateForInteraction:(TSInteraction*)interaction{
+    NSDate *interactionDate = interaction.date;
+    
+    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *message = (TSIncomingMessage*)interaction;
+        
+        if (message.receivedAt) {
+            interactionDate = message.receivedAt;
+        }
+        
+    }
+    
+    return interactionDate;
 }
 
 @end
