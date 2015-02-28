@@ -141,13 +141,15 @@ typedef enum : NSUInteger {
 }
 
 
--(void) hideInputIfNeeded {
+- (void)hideInputIfNeeded {
     if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
         [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     }
     else if(![self isTextSecureReachable] ){
         [self inputToolbar].hidden= YES; // only RedPhone
+    } else {
+        [self loadDraftInCompose];
     }
 }
 
@@ -162,6 +164,7 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
     
     _messageButton = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
+    _messageButton.enabled = FALSE;
     
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
@@ -198,9 +201,9 @@ typedef enum : NSUInteger {
     self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
 }
 
--(void) initializeTextView {
+- (void)initializeTextView {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
-    self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
+    self.inputToolbar.contentView.leftBarButtonItem  = _attachButton;
     
     self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
 }
@@ -263,6 +266,7 @@ typedef enum : NSUInteger {
     
     [self cancelReadTimer];
     [self removeTitleLabelGestureRecognizer];
+    [self saveDraft];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -527,7 +531,6 @@ typedef enum : NSUInteger {
 
 - (void)textViewDidChange:(UITextView *)textView {
     if([textView.text length]>0) {
-        self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
         self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
     }
     else {
@@ -1186,7 +1189,6 @@ typedef enum : NSUInteger {
     
     [self dismissViewControllerAnimated:YES completion:^{
         [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
-        [self finishSendingMessage];
     }];
 }
 
@@ -1310,7 +1312,6 @@ typedef enum : NSUInteger {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupThread* gThread = (TSGroupThread*)self.thread;
             self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
-            [self initializeToolbars];
         }];
     }
     
@@ -1560,7 +1561,6 @@ typedef enum : NSUInteger {
     [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
 }
 
-
 - (void)leaveGroup {
     [self.navController hideDropDown:self];
     
@@ -1613,6 +1613,30 @@ typedef enum : NSUInteger {
 
 - (void)dismissKeyBoard {
     [self.inputToolbar.contentView.textView resignFirstResponder];
+}
+
+#pragma mark Drafts
+
+- (void)loadDraftInCompose
+{
+    __block NSString *placeholder;
+    [self.editingDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        placeholder = [_thread currentDraftWithTransaction:transaction];
+    } completionBlock:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.inputToolbar.contentView.textView setText:placeholder];
+            [self textViewDidChange:self.inputToolbar.contentView.textView];
+        });
+    }];
+}
+
+- (void)saveDraft
+{
+    if (self.inputToolbar.hidden == NO) {
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [_thread setDraft:self.inputToolbar.contentView.textView.text transaction:transaction];
+        }];
+    }
 }
 
 - (void)dealloc{

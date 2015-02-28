@@ -21,37 +21,89 @@
 @interface TSThread ()
 
 @property (nonatomic, retain) NSDate   *creationDate;
-@property (nonatomic, copy)   NSDate   *archivalDate;
+@property (nonatomic, copy  ) NSDate   *archivalDate;
 @property (nonatomic, retain) NSDate   *lastMessageDate;
 @property (nonatomic, copy  ) NSString *latestMessageId;
-
+@property (nonatomic, copy  ) NSString *messageDraft;
 @end
 
 @implementation TSThread
 
-+ (NSString *)collection{
++ (NSString *)collection
+{
     return @"TSThread";
 }
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId{
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+{
     self = [super initWithUniqueId:uniqueId];
-    
+
     if (self) {
         _archivalDate    = nil;
         _latestMessageId = nil;
         _lastMessageDate = nil;
         _creationDate    = [NSDate date];
+        _messageDraft    = nil;
     }
-    
+
     return self;
 }
 
-- (BOOL)isGroupThread{
+#pragma mark To be subclassed.
+
+- (BOOL)isGroupThread
+{
     NSAssert(false, @"An abstract method on TSThread was called.");
     return FALSE;
 }
 
-- (NSDate *)lastMessageDate{
+- (NSString *)name
+{
+    NSAssert(FALSE, @"Should be implemented in subclasses");
+    return nil;
+}
+
+- (UIImage *)image
+{
+    return nil;
+}
+
+#pragma mark Read Status
+
+- (BOOL)hasUnreadMessages
+{
+    __block TSInteraction *interaction;
+    __block BOOL hasUnread = NO;
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+      interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
+      if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+          hasUnread = ![(TSIncomingMessage *)interaction wasRead];
+      }
+    }];
+
+    return hasUnread;
+}
+
+- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
+    NSMutableArray *array = [NSMutableArray array];
+    [viewTransaction enumerateRowsInGroup:self.uniqueId
+                               usingBlock:^(NSString *collection, NSString *key, id object, id metadata,
+                                            NSUInteger index, BOOL *stop) {
+                                 [array addObject:object];
+                               }];
+
+    for (TSIncomingMessage *message in array) {
+        message.read = YES;
+        [message saveWithTransaction:transaction];
+    }
+}
+
+#pragma mark Last Interactions
+
+- (NSDate *)lastMessageDate
+{
     if (_lastMessageDate) {
         return _lastMessageDate;
     } else {
@@ -59,128 +111,68 @@
     }
 }
 
-- (UIImage*)image{
-    return nil;
-}
-
-- (NSDate *)archivalDate{
-    return _archivalDate;
-}
-
-- (NSString*)lastMessageLabel{
+- (NSString *)lastMessageLabel
+{
     __block TSInteraction *interaction;
     [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
+      interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
     }];
     return interaction.description;
 }
 
-- (TSLastActionType)lastAction
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    __block TSInteraction *interaction;
-    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
-    }];
-    
-    return [self lastActionForInteraction:interaction];
-}
-
-- (TSLastActionType)lastActionForInteraction:(TSInteraction*)interaction
-{
-    if ([interaction isKindOfClass:[TSCall class]])
-    {
-        TSCall * callInteraction = (TSCall*)interaction;
-        
-        switch (callInteraction.callType) {
-            case RPRecentCallTypeMissed:
-                return TSLastActionCallIncomingMissed;
-            case RPRecentCallTypeIncoming:
-                return TSLastActionCallIncoming;
-            case RPRecentCallTypeOutgoing:
-                return TSLastActionCallOutgoing;
-            default:
-                return TSLastActionNone;
-        }
-    } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        TSOutgoingMessage * outgoingMessageInteraction = (TSOutgoingMessage*)interaction;
-        
-        switch (outgoingMessageInteraction.messageState) {
-            case TSOutgoingMessageStateAttemptingOut:
-                return TSLastActionNone;
-            case TSOutgoingMessageStateUnsent:
-                return TSLastActionMessageUnsent;
-            case TSOutgoingMessageStateSent:
-                return TSLastActionMessageSent;
-            case TSOutgoingMessageStateDelivered:
-                return TSLastActionMessageDelivered;
-            default:
-                return TSLastActionNone;
-        }
-        
-    } else if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        return self.hasUnreadMessages ? TSLastActionMessageIncomingUnread : TSLastActionMessageIncomingRead ;
-    } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        return TSLastActionErrorMessage;
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        return TSLastActionInfoMessage;
-    } else {
-        return TSLastActionNone;
-    }
-}
-
-- (BOOL)hasUnreadMessages{
-    __block TSInteraction * interaction;
-    __block BOOL hasUnread = NO;
-    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        interaction = [TSInteraction fetchObjectWithUniqueID:self.latestMessageId transaction:transaction];
-        if ([interaction isKindOfClass:[TSIncomingMessage class]]){
-            hasUnread = ![(TSIncomingMessage*)interaction wasRead];
-        }
-    }];
-    
-    return hasUnread;
-}
-
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction {
-    YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
-    NSMutableArray *array = [NSMutableArray array];
-    [viewTransaction enumerateRowsInGroup:self.uniqueId usingBlock:^(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-        [array addObject:object];
-    }];
-    
-    for (TSIncomingMessage *message in array) {
-        message.read = YES;
-        [message saveWithTransaction:transaction];
-    }
-}
-
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [self archiveThreadWithTransaction:transaction referenceDate:[NSDate date]];
-}
-
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction referenceDate:(NSDate*)date {
-    [self markAllAsReadWithTransaction:transaction];
-    _archivalDate = date;
-    
-    [self saveWithTransaction:transaction];
-}
-
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction*)transaction {
-    _archivalDate = nil;
-    [self saveWithTransaction:transaction];
-}
-
-- (void)updateWithLastMessage:(TSInteraction*)lastMessage transaction:(YapDatabaseReadWriteTransaction*)transaction {
     if (!_lastMessageDate || [lastMessage.date timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _latestMessageId = lastMessage.uniqueId;
         _lastMessageDate = lastMessage.date;
+
         [self saveWithTransaction:transaction];
     }
 }
 
-- (NSString *)name{
-    NSAssert(FALSE, @"Should be implemented in subclasses");
-    return nil;
+#pragma mark Archival
+
+- (NSDate *)archivalDate
+{
+    return _archivalDate;
+}
+
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self archiveThreadWithTransaction:transaction referenceDate:[NSDate date]];
+}
+
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date
+{
+    [self markAllAsReadWithTransaction:transaction];
+    _archivalDate = date;
+
+    [self saveWithTransaction:transaction];
+}
+
+- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    _archivalDate = nil;
+    [self saveWithTransaction:transaction];
+}
+
+#pragma mark Drafts
+
+- (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    if (thread.messageDraft) {
+        return thread.messageDraft;
+    } else {
+        return @"";
+    }
+}
+
+- (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    thread.messageDraft = draftString;
+    [thread saveWithTransaction:transaction];
 }
 
 @end
