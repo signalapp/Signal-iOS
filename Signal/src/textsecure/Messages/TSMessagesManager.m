@@ -255,7 +255,7 @@
         TSIncomingMessage *incomingMessage;
         TSThread          *thread;
         if (groupId) {
-            TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:content.group.name memberIds:[[NSMutableArray alloc ] initWithArray:content.group.members] image:nil groupId:content.group.id associatedAttachmentId:nil];
+            TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:content.group.name memberIds:[[[NSSet setWithArray:content.group.members] allObjects] mutableCopy] image:nil groupId:content.group.id associatedAttachmentId:nil];
             TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
             [gThread saveWithTransaction:transaction];
             if(content.group.type==PushMessageContentGroupContextTypeUpdate) {

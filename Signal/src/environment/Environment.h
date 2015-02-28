@@ -84,6 +84,6 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
 + (void)messageIdentifier:(NSString*)identifier;
-+ (void)groupModel:(TSGroupModel*)model;
++ (void)messageGroupModel:(TSGroupModel*)model;
 
 @end

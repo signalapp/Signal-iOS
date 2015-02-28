@@ -183,7 +183,7 @@ phoneDirectoryManager;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
 }
 
-+ (void)groupModel:(TSGroupModel*)model {
++ (void)messageGroupModel:(TSGroupModel*)model {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
     
@@ -194,11 +194,6 @@ phoneDirectoryManager;
     [vc.navigationController popToRootViewControllerAnimated:YES];
     vc.groupFromCompose = model;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
-    
-    UITabBarController *tabBarController = (UITabBarController*)vc.parentViewController.parentViewController;
-    if ([tabBarController respondsToSelector:@selector(selectedIndex)]) {
-        tabBarController.selectedIndex = 1;
-    }
 }
 
 + (void)resetAppData{

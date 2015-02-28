@@ -126,7 +126,7 @@ typedef enum : NSUInteger {
     
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
     message.groupMetaMessage = TSGroupMessageNew;
-    if(model.groupImage!=nil) {
+    if(model.groupImage != nil) {
         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
     }
     else {
@@ -1554,14 +1554,14 @@ typedef enum : NSUInteger {
     }
 }
 
--(void)updateGroup {
+- (void)updateGroup {
     [self.navController hideDropDown:self];
     
     [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
 }
 
 
-- (void) leaveGroup {
+- (void)leaveGroup {
     [self.navController hideDropDown:self];
     
     TSGroupThread* gThread = (TSGroupThread*)_thread;
@@ -1601,13 +1601,14 @@ typedef enum : NSUInteger {
 }
 
 - (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
-    [self dismissKeyBoard];
     NewGroupViewController *ngc = [segue sourceViewController];
     TSGroupModel* newGroupModel = [ngc groupModel];
-    NSMutableArray* groupMemberIds = [[NSMutableArray alloc] initWithArray:newGroupModel.groupMemberIds];
+    NSMutableSet* groupMemberIds = [NSMutableSet setWithArray:newGroupModel.groupMemberIds];
     [groupMemberIds addObject:[SignalKeyingStorage.localNumber toE164]];
-    newGroupModel.groupMemberIds = groupMemberIds;
+    newGroupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
     [self updateGroupModelTo:newGroupModel];
+    [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+    [self.collectionView reloadData];
 }
 
 - (void)dismissKeyBoard {

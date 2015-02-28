@@ -119,7 +119,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 #pragma mark - Actions
 -(void)createGroup {
     TSGroupModel* model = [self makeGroup];
-    [Environment groupModel:model];
+    [Environment messageGroupModel:model];
 }
 
 
@@ -129,8 +129,15 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
     }
     [mut addObjectsFromArray:_thread.groupModel.groupMemberIds];
-    _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text memberIds:[NSMutableArray arrayWithArray:[[NSSet setWithArray:mut] allObjects]] image:_thread.groupModel.groupImage groupId:_thread.groupModel.groupId associatedAttachmentId:nil];
-
+    
+    _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text
+                                            memberIds:[[[NSSet setWithArray:mut] allObjects] mutableCopy]
+                                                image:_thread.groupModel.groupImage
+                                              groupId:_thread.groupModel.groupId
+                               associatedAttachmentId:nil];
+    
+    [self.nameGroupTextField resignFirstResponder];
+    
     [self performSegueWithIdentifier:kUnwindToMessagesViewSegue sender:self];
 }
 
