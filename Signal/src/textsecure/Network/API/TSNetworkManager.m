@@ -40,8 +40,8 @@
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL] sessionConfiguration:sessionConf];
         AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
         policy.allowInvalidCertificates = YES;
-        policy.validatesDomainName = NO;
-        policy.validatesCertificateChain = NO;
+        policy.allowInvalidCertificates  = YES; //The certificate is not signed by a CA in the iOS trust store.
+        policy.validatesCertificateChain = NO;  //Looking at AFNetworking's implementation of chain checking, we don't need to pin all certs in chain. https://github.com/AFNetworking/AFNetworking/blob/104ce04105098466ea0ea4e337af554d7b9df195/AFNetworking/AFSecurityPolicy.m#L281 Trust to the trusted cert is already vertified before by AFServerTrustIsValid();
         NSString *certPath = [NSBundle.mainBundle pathForResource:@"textsecure" ofType:@"cer"];
         NSData *certData = [NSData dataWithContentsOfFile:certPath];
         SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));

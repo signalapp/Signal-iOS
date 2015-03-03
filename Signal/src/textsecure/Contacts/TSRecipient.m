@@ -12,7 +12,6 @@
 @interface TSRecipient ()
 
 @property (nonatomic, retain) NSMutableSet *devices;
-@property (nonatomic, copy)   NSData *verifiedKey;
 
 @end
 
@@ -27,7 +26,6 @@
     
     if (self) {
         _devices     = [NSMutableSet setWithObject:[NSNumber numberWithInt:1]];
-        _verifiedKey = nil;
         _relay       = relay;
     }
     
@@ -49,32 +47,5 @@
 - (void)removeDevices:(NSSet *)set{
     [_devices minusSet:set];
 }
-
-#pragma mark Fingerprint verification
-
-- (BOOL)hasVerifiedFingerprint{
-    if (self.verifiedKey) {
-        BOOL equalsStoredValue = [self.verifiedKey isEqualToData:[[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId]];
-        
-        if (equalsStoredValue) {
-            return YES;
-        } else{
-            self.verifiedKey = nil;
-            return NO;
-        }
-        
-    } else{
-        return NO;
-    }
-}
-
-- (void)setFingerPrintVerified:(BOOL)verified transaction:(YapDatabaseReadTransaction*)transaction{
-    if (verified) {
-        self.verifiedKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.uniqueId];
-    } else{
-        self.verifiedKey = nil;
-    }
-}
-
 
 @end

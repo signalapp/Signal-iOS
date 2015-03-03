@@ -20,12 +20,6 @@
 
 - (void)removeDevices:(NSSet *)set;
 
-#pragma mark Fingerprint verification
-
-- (BOOL)hasVerifiedFingerprint;
-
-- (void)setFingerPrintVerified:(BOOL)verified transaction:(YapDatabaseReadTransaction*)transaction;
-
 @property (nonatomic, readonly) NSString *relay;
 
 @end
