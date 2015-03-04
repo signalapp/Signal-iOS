@@ -2430,6 +2430,7 @@
 				420DEC7C09ED549B971FBF67 /* Pods */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		D221A08A169C9E5E00537ABF /* Products */ = {
 			isa = PBXGroup;
