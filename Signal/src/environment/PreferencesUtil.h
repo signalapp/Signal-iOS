@@ -31,17 +31,10 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (BOOL) getHasArchivedAMessage;
 - (void) setHasArchivedAMessage:(BOOL)enabled;
 
--(BOOL)loggingIsEnabled;
--(void)setLoggingEnabled:(BOOL)flag;
-
--(BOOL)screenSecurityIsEnabled;
--(void)setScreenSecurity:(BOOL)flag;
-
--(NotificationType)notificationPreviewType;
--(void)setNotificationPreviewType:(NotificationType)type;
-
--(TSImageQuality)imageUploadQuality;
--(void)setImageUploadQuality:(TSImageQuality)quality;
+@property (nonatomic, readwrite, assign, getter = loggingIsEnabled) BOOL loggingEnabled;
+@property (nonatomic, readwrite, assign, getter = screenSecurityIsEnabled) BOOL screenSecurity;
+@property (nonatomic, readwrite, assign) NotificationType notificationPreviewType;
+@property (nonatomic, readwrite, assign) TSImageQuality imageUploadQuality;
 
 -(NSString*)lastRanVersion;
 -(NSString*)setAndGetCurrentVersion;
