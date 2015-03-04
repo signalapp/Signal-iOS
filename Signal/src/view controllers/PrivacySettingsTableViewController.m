@@ -16,6 +16,14 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "UIUtil.h"
 
+typedef NS_ENUM(NSInteger, TSSettingsSections) {
+    TSSettingsSecuritySection,
+    TSSettingsHistorySection,
+    TSSettingsFingerprintSection,
+    
+    TSSettingsSectionCount
+};
+
 @interface PrivacySettingsTableViewController ()
 
 @property (nonatomic, strong) UITableViewCell * enableScreenSecurityCell;
@@ -97,14 +105,14 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return TSSettingsSectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0: return 1;
-        case 1: return 1;
-        case 2: return 1;
+        case TSSettingsSecuritySection: return 2;
+        case TSSettingsHistorySection: return 1;
+        case TSSettingsFingerprintSection: return 1;
         default: return 0;
     }
 }
@@ -112,9 +120,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (indexPath.section) {
-        case 0: return self.enableScreenSecurityCell;
-        case 1: return self.clearHistoryLogCell;
-        case 2:
+        case TSSettingsSecuritySection:
+        case TSSettingsHistorySection: return self.clearHistoryLogCell;
+        case TSSettingsFingerprintSection:
             switch (indexPath.row) {
                 case 0: return self.fingerprintCell;
                 case 1: return self.shareFingerprintCell;
@@ -127,9 +135,9 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case 0: return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"");
-        case 1: return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"");
-        case 2: return NSLocalizedString(@"SETTINGS_FINGERPRINT", @"");
+        case TSSettingsSecuritySection: return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"");
+        case TSSettingsHistorySection: return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"");
+        case TSSettingsFingerprintSection: return NSLocalizedString(@"SETTINGS_FINGERPRINT_TITLE", @"");
         default: return nil;
     }
 }
@@ -139,7 +147,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     switch (indexPath.section) {
-        case 1:
+        case TSSettingsHistorySection:
         {
             [DJWActionSheet showInView:self.parentViewController.view
                              withTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION", @"")
@@ -161,7 +169,7 @@
             break;
         }
         
-        case 2:
+        case TSSettingsFingerprintSection:
             switch (indexPath.row) {
                 case 0:
                 {
