@@ -12,6 +12,7 @@
 #import "PriorityQueue.h"
 #import "Release.h"
 #import "SignalsViewController.h"
+#import "TouchIDHelper.h"
 #import "TSAccountManager.h"
 #import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
@@ -38,6 +39,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 
 @property (nonatomic) TOCFutureSource *callPickUpFuture;
 
+@property (nonatomic, assign) BOOL touchIDResignGracePeriod;
 @end
 
 @implementation AppDelegate
@@ -245,11 +247,19 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
     
-    [self removeScreenProtection];
+    if (Environment.preferences.touchIDSecurityIsEnabled && self.blankWindow.hidden
+        && !self.touchIDResignGracePeriod) {
+        // TouchID shows a different window, so we need to give a graceperiod of 1 second after a successful touchID unlock for the second didBecomeActive to fire.
+        [self protectScreen]; // Protect on first launch
+    }
+    
+    [self tryRemoveScreenProtection];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application{
-    [self protectScreen];
+    if (!self.touchIDResignGracePeriod) {
+        [self protectScreen];
+    }
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
@@ -303,10 +313,57 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     }
 }
 
+- (void)tryRemoveScreenProtection {
+    static BOOL trying = NO;
+    
+    @synchronized(self.blankWindow) {
+        // It's probably not good to call Apple to authenticate TouchID multiple times simultaneously
+        if (trying) {
+            return;
+        }
+        trying = YES;
+        
+        if (Environment.preferences.touchIDSecurityIsEnabled && !self.touchIDResignGracePeriod) {
+            [TouchIDHelper authenticateViaPasswordOrTouchIDCompletion:^(TSTouchIDAuthResult result) {
+                trying = NO;
+                if (result == TSTouchIDAuthResultSuccess) {
+                    [self removeScreenProtection];
+                } else if (result == TSTouchIDAuthResultUnavailable) {
+                    // This should probably only happen in the simulator, or a broken device.
+                    
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"TOUCHID_UNAVAILABLE_TITLE", @"")
+                                                message:NSLocalizedString(@"TXT_PLEASE_TRY_LATER",@"")
+                                               delegate:nil
+                                      cancelButtonTitle:NSLocalizedString(@"TXT_OKAY_TITLE", @"")
+                                      otherButtonTitles:nil] show];
+#if TARGET_IPHONE_SIMULATOR
+                    [self removeScreenProtection];
+#endif
+                } else {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        // Try again in a second
+                        [self tryRemoveScreenProtection];
+                    });
+                }
+            }];
+        } else {
+            [self removeScreenProtection];
+            
+            trying = NO;
+        }
+    }
+}
 - (void)removeScreenProtection{
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = YES;
     }
+    
+    // TouchID launches a separate window/process which causes willResignActive & didBecomeActive
+    // to toggle, so we need a graceperiod to allow async delegate methods to be called on appdelegate
+    self.touchIDResignGracePeriod = YES;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.touchIDResignGracePeriod = NO;
+    });
 }
 
 -(void)setupAppearance {
