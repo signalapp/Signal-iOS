@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E0C488A1AA7CAA700501CE7 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */; };
+		2E2C15B61AA7AE8500EF351C /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 70377AA81916BA0500CAF501 /* InteractiveLabel.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
@@ -536,6 +538,7 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AA71916BA0500CAF501 /* InteractiveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveLabel.h; sourceTree = "<group>"; };
@@ -1222,6 +1225,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E2C15B61AA7AE8500EF351C /* LocalAuthentication.framework in Frameworks */,
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
@@ -1249,6 +1253,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E0C488A1AA7CAA700501CE7 /* LocalAuthentication.framework in Frameworks */,
 				B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */,
 				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
 				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
@@ -2444,6 +2449,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */,
 				FC3BD9871A30A790005B96BB /* Social.framework */,
 				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
 				FCB11D8B1A129A76002F93FB /* CoreMedia.framework */,
