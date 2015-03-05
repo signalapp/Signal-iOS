@@ -31,7 +31,8 @@
     TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
     
     if (!recipient) {
-        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:contactId relay:pushSignal.hasRelay?pushSignal.relay:nil];
+        NSString *relay = pushSignal.hasRelay && ![pushSignal.relay isEqualToString:@""]?pushSignal.relay:nil;
+        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay];
         [recipient saveWithTransaction:transaction];
     }
     
