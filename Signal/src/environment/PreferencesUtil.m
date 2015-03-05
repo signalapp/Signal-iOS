@@ -22,6 +22,7 @@
 #define HISTORY_LOG_ENABLED_KEY @"History Log Enabled Key"
 #define PUSH_REVOKED_KEY @"Push Revoked Key"
 #define SCREEN_SECURITY_KEY @"Screen Security Key"
+#define TOUCHID_SECURITY_KEY @"TouchID Security Key"
 #define DEBUG_IS_ENABLED_KEY @"Debugging Log Enabled Key"
 #define NOTIFICATION_PREVIEW_TYPE_KEY @"Notification Preview Type Key"
 #define IMAGE_UPLOAD_QUALITY_KEY @"Image Upload Quality Key"
@@ -68,6 +69,8 @@
     require(value >= 0);
     [self setValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY toValue:@(value)];
 }
+
+#pragma mark - Getters
 
 -(BOOL) getFreshInstallTutorialsEnabled {
     NSNumber *preference = [self tryGetValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY];
@@ -120,6 +123,14 @@
     }
 }
 
+-(BOOL)touchIDSecurityIsEnabled{
+    NSNumber *preference = [self tryGetValueForKey:TOUCHID_SECURITY_KEY];
+    if ([preference isKindOfClass: NSNumber.class]) {
+        return preference.boolValue;
+    }
+    return NO;
+}
+
 - (BOOL) getHasSentAMessage{
     NSNumber *preference = [self tryGetValueForKey:HAS_SENT_A_MESSAGE_KEY];
     if (preference) {
@@ -156,6 +167,8 @@
     return TSImageQualityMedium;
 }
 
+#pragma mark Setters
+
 -(void)setImageUploadQuality:(TSImageQuality)quality {
     [self setValueForKey:IMAGE_UPLOAD_QUALITY_KEY toValue:@(quality)];
 }
@@ -167,6 +180,10 @@
 
 -(void)setScreenSecurity:(BOOL)flag{
     [self setValueForKey:SCREEN_SECURITY_KEY toValue:@(flag)];
+}
+
+-(void)setTouchIDSecurity:(BOOL)flag{
+    [self setValueForKey:TOUCHID_SECURITY_KEY toValue:@(flag)];
 }
 
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {

@@ -32,7 +32,10 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (void) setHasArchivedAMessage:(BOOL)enabled;
 
 @property (nonatomic, readwrite, assign, getter = loggingIsEnabled) BOOL loggingEnabled;
+
 @property (nonatomic, readwrite, assign, getter = screenSecurityIsEnabled) BOOL screenSecurity;
+@property (nonatomic, readwrite, assign, getter = touchIDSecurityIsEnabled) BOOL touchIDSecurity;
+
 @property (nonatomic, readwrite, assign) NotificationType notificationPreviewType;
 @property (nonatomic, readwrite, assign) TSImageQuality imageUploadQuality;
 
