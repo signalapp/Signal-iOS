@@ -260,7 +260,7 @@ static NSMutableArray *keys;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSLog(@" \n\n\n ");
-		NSLog(@"YapDatabase Benchmarks:");
+		NSLog(@"YapDatabase Benchmarks: (sqlite %@)", database.sqliteVersion);
 		NSLog(@"====================================================");
 		NSLog(@"POPULATE DATABASE");
 		

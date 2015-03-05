@@ -625,7 +625,7 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
  *     Flushes all pre-compiled sqlite statements.
  * 
  * YapDatabaseConnectionFlushMemoryFlags_All:
- *     Full flush of all caches and  pre-compiled sqlite statements.
+ *     Full flush of all caches and pre-compiled sqlite statements.
 **/
 - (void)flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 
@@ -654,7 +654,7 @@ __attribute((deprecated("Use method asyncReadWriteWithBlock:completionQueue:comp
  * This means the existing database file won't be properly truncated as you delete information from the db.
  * That is, the data will be removed, but the pages will be moved to the freelist,
  * and the file itself will remain the same size on disk. (I.e. the file size can grow, but not shrink.)
- * To correct this problem, you should run the vacuum operation is at least once.
+ * To correct this problem, you should run the vacuum operation at least once.
  * After it is run, the "auto_vacuum=FULL" mode will be set,
  * and the database file size will automatically shrink in the future (as you delete data).
  * 

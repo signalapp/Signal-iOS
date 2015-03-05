@@ -688,10 +688,10 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	// We need to figure out what succeeded.
 	// So first we get a set of the recordIDs that failed.
 	
-	NSDictionary *partialErrorsByItemIDKey = [operationError.userInfo objectForKey:CKPartialErrorsByItemIDKey];
-	NSMutableSet *failedRecordIDs = [NSMutableSet setWithCapacity:[partialErrorsByItemIDKey count]];
+	NSDictionary *partialErrorsByItemID = [operationError.userInfo objectForKey:CKPartialErrorsByItemIDKey];
+	NSMutableSet *failedRecordIDs = [NSMutableSet setWithCapacity:[partialErrorsByItemID count]];
 	
-	[partialErrorsByItemIDKey enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[partialErrorsByItemID enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 		
 		__unsafe_unretained CKRecordID *recordID = (CKRecordID *)key;
 	//	__unsafe_unretained NSError *recordError = (NSError *)obj;
@@ -739,14 +739,6 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		
 		opErrorBlock(databaseIdentifier, operationError);
 	}];
-	
-	// Inform the user about the problem via the operationErrorBlock.
-	
-//	NSString *databaseIdentifier = changeSet.databaseIdentifier;
-//	dispatch_async(dispatch_get_main_queue(), ^{
-//
-//		opErrorBlock(databaseIdentifier, operationError);
-//	});
 }
 
 - (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet

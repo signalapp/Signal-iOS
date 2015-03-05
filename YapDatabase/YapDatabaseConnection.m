@@ -51,6 +51,26 @@ NS_INLINE BOOL YDBIsMainThread()
 @implementation YapDatabaseConnection {
 @private
 	
+	uint64_t snapshot;
+	
+	id sharedKeySetForInternalChangeset;
+	id sharedKeySetForExternalChangeset;
+	
+	YapDatabaseReadTransaction *longLivedReadTransaction;
+	BOOL throwExceptionsForImplicitlyEndingLongLivedReadTransaction;
+	NSMutableArray *pendingChangesets;
+	NSMutableArray *processedChangesets;
+	
+	NSDictionary *registeredExtensions;
+	BOOL registeredExtensionsChanged;
+	
+	NSDictionary *registeredMemoryTables;
+	BOOL registeredMemoryTablesChanged;
+	
+	NSMutableDictionary *extensions;
+	BOOL extensionsReady;
+	id sharedKeySetForExtensions;
+	
 	sqlite3_stmt *beginTransactionStatement;
 	sqlite3_stmt *commitTransactionStatement;
 	sqlite3_stmt *rollbackTransactionStatement;

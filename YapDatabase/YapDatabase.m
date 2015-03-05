@@ -60,7 +60,37 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #define DEFAULT_CONNECTION_POOL_LIFETIME  90.0 // seconds
 
 
-@implementation YapDatabase
+@implementation YapDatabase {
+@private
+	
+	YapDatabaseOptions *options;
+	
+	sqlite3 *db; // Used for setup & checkpoints
+	
+	NSMutableArray *changesets;
+	uint64_t snapshot;
+	
+	dispatch_queue_t internalQueue;
+	dispatch_queue_t checkpointQueue;
+	
+	YapDatabaseConnectionDefaults *connectionDefaults;
+	
+	NSDictionary *registeredExtensions;
+	NSDictionary *registeredMemoryTables;
+	
+	NSArray *extensionsOrder;
+	NSDictionary *extensionDependencies;
+	
+	YapDatabaseConnection *registrationConnection;
+	
+	NSUInteger maxConnectionPoolCount;
+	NSTimeInterval connectionPoolLifetime;
+	dispatch_source_t connectionPoolTimer;
+	NSMutableArray *connectionPoolValues;
+	NSMutableArray *connectionPoolDates;
+	
+	NSString *sqliteVersion;
+}
 
 /**
  * The default serializer & deserializer use NSCoding (NSKeyedArchiver & NSKeyedUnarchiver).
@@ -177,10 +207,22 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 @synthesize metadataPostSanitizer = metadataPostSanitizer;
 
 @dynamic options;
+@dynamic sqliteVersion;
 
 - (YapDatabaseOptions *)options
 {
 	return [options copy];
+}
+
+- (NSString *)sqliteVersion
+{
+	__block NSString *result = nil;
+	
+	dispatch_sync(snapshotQueue, ^{
+		result = sqliteVersion;
+	});
+	
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,14 +760,14 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (NSString *)sqliteVersionUsing:(sqlite3 *)db
++ (NSString *)sqliteVersionUsing:(sqlite3 *)aDb
 {
 	sqlite3_stmt *statement;
 	
-	int status = sqlite3_prepare_v2(db, "SELECT sqlite_version();", -1, &statement, NULL);
+	int status = sqlite3_prepare_v2(aDb, "SELECT sqlite_version();", -1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 		return nil;
 	}
 	
@@ -741,7 +783,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	}
 	else
 	{
-		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 	}
 	
 	sqlite3_finalize(statement);
@@ -750,17 +792,17 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	return version;
 }
 
-+ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)db
++ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)aDb
 {
 	if (pragmaSetting == nil) return -1;
 	
 	sqlite3_stmt *statement;
 	NSString *pragma = [NSString stringWithFormat:@"PRAGMA %@;", pragmaSetting];
 	
-	int status = sqlite3_prepare_v2(db, [pragma UTF8String], -1, &statement, NULL);
+	int status = sqlite3_prepare_v2(aDb, [pragma UTF8String], -1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
-		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 		return NO;
 	}
 	
@@ -773,7 +815,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
 	}
 	
 	sqlite3_finalize(statement);
@@ -1131,9 +1173,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	[self beginTransaction];
 	{
-		#if 0
-		YDBLogVerbose(@"sqlite version = %@", [YapDatabase sqliteVersionUsing:db]);
-		#endif
+		sqliteVersion = [YapDatabase sqliteVersionUsing:db];
+		YDBLogVerbose(@"sqlite version = %@", sqliteVersion);
 		
 		[self fetchPreviouslyRegisteredExtensionNames];
 		[self writeSnapshot];
