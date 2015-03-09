@@ -62,6 +62,8 @@
 
 #import "TSAdapterCacheManager.h"
 
+#import "EZAudio.h"
+
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
 #define kYapDatabaseRangeMinLength 20
@@ -79,7 +81,7 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
-@interface MessagesViewController () {
+@interface MessagesViewController () <EZMicrophoneDelegate> {
     UIImage* tappedImage;
     BOOL isGroupConversation;
 }
@@ -103,6 +105,27 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
 @property (nonatomic, retain) UIGestureRecognizer *showFingerprintDisplay;
 @property (nonatomic, retain) UITapGestureRecognizer *toggleContactPhoneDisplay;
+
+//waveform miscellania
+@property (nonatomic, strong) EZMicrophone *microphone;
+@property (nonatomic, strong) EZRecorder *recorder;
+@property (nonatomic, strong) EZAudioPlot  *audioRecorderPlot;
+@property (nonatomic, strong) UILabel *audioRecorderTimerLabel;
+@property (nonatomic, strong) UIView *recorderContainer;
+@property (nonatomic, strong) UIView *stopIcon;
+@property (nonatomic, strong) NSTimer *updateWaveformLabelTimer;
+@property (nonatomic, strong) NSDate *recorderStartedTime;
+@property (nonatomic, strong) UIButton *recordCancelButton;
+@property (nonatomic, strong) NSURL *waveformAudioFile;
+@property (nonatomic) NSTimeInterval composeWaveformCurrentTime;
+@property (nonatomic)         BOOL waveformInComposeWindow;
+@property (nonatomic)         BOOL waveformAudioPlaying;
+@property (nonatomic)         BOOL waveformAudioPaused;
+@property (nonatomic, retain) UIButton *recordButton;
+@property (nonatomic, retain) UIView   *recordCircle;
+@property (nonatomic, strong) UILongPressGestureRecognizer *recordRecognizer;
+
+
 @property (nonatomic) BOOL displayPhoneAsTitle;
 
 @property NSUInteger page;
@@ -168,7 +191,13 @@ typedef enum : NSUInteger {
     _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
     
-    
+    _recordButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 42, (self.inputToolbar.contentView.frame.size.height/2) - (32/2), 32, 32)];
+    _recordButton.imageEdgeInsets = UIEdgeInsetsMake(3, 3, 3, 3);
+    [_recordButton setImage:[UIImage imageNamed:@"microphone"] forState:UIControlStateNormal];
+    [self.inputToolbar.contentView addSubview:_recordButton];
+    self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
+    _composeWaveformCurrentTime = 0;
+
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];
@@ -195,6 +224,11 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(inputViewDidChange)
+                                                 name:UITextViewTextDidChangeNotification
+                                               object:nil];
+    
     self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
 }
 
@@ -202,7 +236,15 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
     self.inputToolbar.contentView.leftBarButtonItem = _attachButton;
     
-    self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+    _recordRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(recording:)];
+    [_recordButton addGestureRecognizer:_recordRecognizer];
+}
+
+- (NSString *) applicationDocumentsDirectory
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    return basePath;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -531,10 +573,12 @@ typedef enum : NSUInteger {
 - (void)textViewDidChange:(UITextView *)textView {
     if([textView.text length]>0) {
         self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+        self.inputToolbar.contentView.rightBarButtonItem.hidden = NO;
+        _recordButton.hidden = YES;
     }
     else {
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
+        self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
+        _recordButton.hidden = NO;
     }
     
 }
@@ -546,7 +590,9 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
-    if (text.length > 0) {
+    if (_waveformInComposeWindow) {
+        [self sendAudioFile];
+    } else if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
         
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
@@ -848,18 +894,13 @@ typedef enum : NSUInteger {
                             }
                         } else if([messageMedia isAudio]){
                             if (messageMedia.isAudioPlaying) {
-                                // if you had started playing an audio msg and now you're tapping it to pause
                                 messageMedia.isAudioPlaying = NO;
-                                [_audioPlayer pause];
-                                messageMedia.isPaused = YES;
+                                messageMedia.audioCurrentTime = _audioPlayer.currentTime;
+                                [_audioPlayer stop];
                                 [_audioPlayerPoller invalidate];
-                                double current = [_audioPlayer currentTime]/[_audioPlayer duration];
-                                [messageMedia setAudioProgressFromFloat:(float)current];
+                                _waveformAudioPlaying = NO;
                                 [messageMedia setAudioIconToPlay];
                             } else {
-                                BOOL isResuming = NO;
-                                [_audioPlayerPoller invalidate];
-                                
                                 // loop through all the other bubbles and set their isPlaying to false
                                 NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
                                 for (NSInteger i=0; i<num_bubbles; i++) {
@@ -868,11 +909,9 @@ typedef enum : NSUInteger {
                                     if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
                                         TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
                                         if ([msgMedia isAudio]) {
-                                            if (msgMedia == messageMedia && messageMedia.isPaused) {
-                                                isResuming = YES;
-                                            } else {
+                                            if (msgMedia != messageMedia) {
                                                 msgMedia.isAudioPlaying = NO;
-                                                msgMedia.isPaused = NO;
+                                                msgMedia.audioCurrentTime = 0;
                                                 [msgMedia setAudioIconToPlay];
                                                 [msgMedia setAudioProgressFromFloat:0];
                                                 [msgMedia resetAudioDuration];
@@ -881,28 +920,16 @@ typedef enum : NSUInteger {
                                     }
                                 }
                                 
-                                if (isResuming) {
-                                    // if you had paused an audio msg and now you're tapping to resume
-                                    [_audioPlayer prepareToPlay];
-                                    [_audioPlayer play];
-                                    [messageMedia setAudioIconToPause];
-                                    messageMedia.isAudioPlaying = YES;
-                                    messageMedia.isPaused = NO;
-                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
-                                } else {
-                                    // if you are tapping an audio msg for the first time to play
-                                    messageMedia.isAudioPlaying = YES;
-                                    NSError *error;
-                                    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
-                                    if (error) {
-                                        NSLog(@"error: %@", error);
-                                    }
-                                    [_audioPlayer prepareToPlay];
-                                    [_audioPlayer play];
-                                    [messageMedia setAudioIconToPause];
-                                    _audioPlayer.delegate = self;
-                                    _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
-                                }
+                                [_audioRecorderPlot setProgress:0.0f];
+                                _composeWaveformCurrentTime = 0;
+                                NSError *error;
+                                _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
+                                [_audioPlayer prepareToPlay];
+                                _audioPlayer.currentTime = messageMedia.audioCurrentTime;
+                                [_audioPlayer play];
+                                [messageMedia setAudioIconToPause];
+                                messageMedia.isAudioPlaying = YES;
+                                _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"adapter": messageMedia} repeats:YES];
                             }
                         }
                     }
@@ -1451,49 +1478,250 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
--(void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray arrayWithObjects:
-                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               [NSString stringWithFormat:@"%lld.m4a",[NSDate ows_millisecondTimeStamp]],
-                               nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+- (void)recording:(UILongPressGestureRecognizer*)recordRecognizer {
+    if (recordRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.inputToolbar.contentView.textView.hidden = YES;
+        self.inputToolbar.contentView.leftBarButtonItem.hidden = YES;
+        CGRect textviewFrame = self.inputToolbar.contentView.textView.frame;
+        textviewFrame.origin.x = textviewFrame.origin.x - 12;
+        _recorderContainer = [[UIView alloc] initWithFrame:textviewFrame];
+        _recorderContainer.backgroundColor = [UIColor colorWithRed:171/255.0f green:178/255.0f blue:188/255.0f alpha:1.0f];;
+        _recorderContainer.layer.cornerRadius = textviewFrame.size.height/2;
+        
+        _audioRecorderPlot = [[EZAudioPlot alloc] initWithFrame:CGRectMake(8, 3, textviewFrame.size.width-50, textviewFrame.size.height-6)];
+        _audioRecorderPlot.backgroundColor = [UIColor colorWithRed:171/255.0f green:178/255.0f blue:188/255.0f alpha:1.0f];
+        _audioRecorderPlot.color = [UIColor whiteColor];
+        _audioRecorderPlot.progressColor = [UIColor colorWithRed:63/255.0f green:163/255.0f blue:244/255.0f alpha:1.0f];
+        _audioRecorderPlot.plotType = EZPlotTypeRollingBlock;
+        _audioRecorderPlot.shouldMirror = YES;
+        _audioRecorderPlot.shouldFill = YES;
+        _audioRecorderPlot.gain = 1.8f;
+        _audioRecorderPlot.plotSpeed = 1;
+        _audioRecorderPlot.oneWay = YES;
+        _audioRecorderPlot.layer.cornerRadius = textviewFrame.size.height/2;
+        
+        _audioRecorderTimerLabel = [[UILabel alloc] initWithFrame:CGRectMake(textviewFrame.size.width-36, 0, 25, textviewFrame.size.height)];
+        _audioRecorderTimerLabel.text = @"0:00";
+        _audioRecorderTimerLabel.textColor = [UIColor whiteColor];
+        _audioRecorderTimerLabel.font = [UIFont systemFontOfSize:12];
+        _recorderStartedTime = [NSDate date];
+        
+        _updateWaveformLabelTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                                     target:self
+                                                                   selector:@selector(updateWaveformLabel:)
+                                                                   userInfo:nil
+                                                                    repeats:YES];
+        
+        [_recorderContainer addSubview:_audioRecorderTimerLabel];
+        [_recorderContainer addSubview:_audioRecorderPlot];
+        [self.inputToolbar.contentView addSubview:_recorderContainer];
+        
+        NSString *documentsDir = [self applicationDocumentsDirectory];
+        NSString *audioFile = [documentsDir stringByAppendingString:@"/audiofile.mp4"];
+        
+        [EZMicrophone sharedMicrophone].microphoneDelegate = self;
+        [_audioPlayer stop];
+        [[EZMicrophone sharedMicrophone] startFetchingAudio];
+        
+        self.recorder = [EZRecorder recorderWithDestinationURL:[NSURL fileURLWithPath:audioFile] sourceFormat:[EZMicrophone sharedMicrophone].audioStreamBasicDescription destinationFileType:EZRecorderFileTypeM4A];
+        
+        CGRect inputRect = self.inputToolbar.contentView.frame;
+        _recordCircle = [[UIButton alloc] initWithFrame:CGRectMake(inputRect.size.width - (_recordCircle.frame.size.width/2)-1, inputRect.size.height/2, 1, 1)];
+        _recordCircle.alpha = 0.5;
+        _recordCircle.layer.cornerRadius = 1;
+        _recordCircle.backgroundColor = [UIColor redColor];
+        _stopIcon = [[UIView alloc] initWithFrame:CGRectMake(inputRect.size.width - 28.5, inputRect.size.height-.5, 1, 1)];
+        _stopIcon.layer.cornerRadius = 1;
+        _stopIcon.backgroundColor = [UIColor whiteColor];
+        [self.inputToolbar.contentView addSubview:_recordCircle];
+        [self.inputToolbar.contentView addSubview:_stopIcon];
+        _recordButton.hidden = YES;
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             _recordCircle.frame = CGRectMake(inputRect.size.width - 58, inputRect.size.height - 56, 66, 66);
+                             _recordCircle.layer.cornerRadius = _recordCircle.frame.size.height/2;
+                             _stopIcon.frame = CGRectMake(inputRect.size.width - 58 + (_recordCircle.frame.size.width/2) - 6, inputRect.size.height - 56 + (_recordCircle.frame.size.height/2) - 6, 12, 12);
+                         }];
+        
+    } else if (recordRecognizer.state == UIGestureRecognizerStateEnded) {
+        CGRect inputRect = self.inputToolbar.contentView.frame;
+        _waveformInComposeWindow = YES;
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             [_recordCircle setFrame:CGRectMake(inputRect.size.width - 26, inputRect.size.height/2, 0, 0)];
+                             _stopIcon.frame = CGRectMake(inputRect.size.width - 26, inputRect.size.height/2, 0, 0);
+                         }
+                         completion:^(BOOL finished) {
+                             _stopIcon.hidden = YES;
+                             _recordButton.hidden = NO;
+                             self.inputToolbar.contentView.rightBarButtonItem.hidden = NO;
+                         }
+         ];
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"cornerRadius"];
+        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+        animation.fromValue = [NSNumber numberWithFloat:(float)_recordCircle.layer.cornerRadius];
+        animation.toValue = [NSNumber numberWithFloat:0.0f];
+        animation.duration = 0.5;
+        [_recordCircle.layer addAnimation:animation forKey:@"cornerRadius"];
+        [_recordCircle.layer setCornerRadius:0.0];
+        [NSTimer scheduledTimerWithTimeInterval:0.5
+                                         target:self
+                                       selector:@selector(stopRecording:)
+                                       userInfo:nil
+                                        repeats:NO];
+    }
+}
+
+- (void)stopRecording:(id)sender {
+    [[EZMicrophone sharedMicrophone] stopFetchingAudio];
+    [_updateWaveformLabelTimer invalidate];
+    _recordCancelButton = [[UIButton alloc] initWithFrame:CGRectMake(2, 5, 32, 32)];
+    _recordCancelButton.imageEdgeInsets = UIEdgeInsetsMake(3, 3, 3, 3);
+    [_recordCancelButton setImage:[UIImage imageNamed:@"greyxbutton"] forState:UIControlStateNormal];
+    [_recordCancelButton addTarget:self action:@selector(cancelWaveform:) forControlEvents:UIControlEventTouchUpInside];
+    [self.inputToolbar.contentView addSubview:_recordCancelButton];
+    [_recordButton removeFromSuperview];
     
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    NSString *documentsDir = [self applicationDocumentsDirectory];
+    _waveformAudioFile = [NSURL fileURLWithPath:[documentsDir stringByAppendingString:@"/audiofile.mp4"]];
+    NSLog(@"file: %@", _waveformAudioFile);
+    [self.recorder closeAudioFile];
+    EZAudioFile *ezAudioFile = [EZAudioFile audioFileWithURL:_waveformAudioFile];
+    NSLog(@"audio file: %@", _waveformAudioFile);
+    [ezAudioFile getWaveformDataWithCompletionBlock:^(float *waveformData, UInt32 length) {
+        [_audioRecorderPlot generateWaveform:waveformData length:(int)length];
+    }];
     
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    UITapGestureRecognizer *waveformTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(composeWaveformTapped:)];
+    [_audioRecorderPlot addGestureRecognizer:waveformTapRecognizer];
     
-    // Initiate and prepare the recorder
-    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
+    self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+    self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
+}
+
+- (void)composeWaveformTapped:(id)sender {
+    if (_waveformAudioPaused) {
+        _waveformAudioPaused = NO;
+        NSError *error;
+        _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:_waveformAudioFile error:&error];
+        _audioPlayer.currentTime = _composeWaveformCurrentTime;
+        [_audioPlayer play];
+        _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"compose": @YES} repeats:YES];
+        //iterate through all media adapters and reset them to 0 and change the icon.
+        
+        
+        NSInteger num_bubbles = [self collectionView:self.collectionView numberOfItemsInSection:0];
+        for (NSInteger i=0; i<num_bubbles; i++) {
+            NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
+            TSMessageAdapter *msgAdapter = [self.collectionView.dataSource collectionView:self.collectionView messageDataForItemAtIndexPath:index_path];
+            if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage) {
+                TSVideoAttachmentAdapter* msgMedia = (TSVideoAttachmentAdapter*)[msgAdapter media];
+                if ([msgMedia isAudio]) {
+                    msgMedia.isAudioPlaying = NO;
+                    msgMedia.audioCurrentTime = 0;
+                    [msgMedia setAudioIconToPlay];
+                    [msgMedia setAudioProgressFromFloat:0];
+                    [msgMedia resetAudioDuration];
+                }
+            }
+        }
+        
+        
+    } else {
+        _waveformAudioPaused = YES;
+        [_audioPlayer stop];
+        _composeWaveformCurrentTime = _audioPlayer.currentTime;
+        [_audioPlayerPoller invalidate];
+    }
+}
+
+-(NSString*)formatDuration:(NSTimeInterval)duration {
+    double dur = duration;
+    int minutes = (int) (dur/60);
+    int seconds = (int) (dur - minutes*60);
+    NSString *minutes_str = [NSString stringWithFormat:@"%01d", minutes];
+    NSString *seconds_str = [NSString stringWithFormat:@"%02d", seconds];
+    NSString *label_text = [NSString stringWithFormat:@"%@:%@", minutes_str, seconds_str];
+    return label_text;
+}
+
+- (void)updateWaveformLabel:(id)sender {
+    NSTimeInterval interval = fabs([_recorderStartedTime timeIntervalSinceNow]);
+    NSLog(@"interval: %f", interval);
+    _audioRecorderTimerLabel.text = [self formatDuration:interval];
+}
+
+- (void)cancelWaveform:(id)sender {
+    _recorderContainer.hidden = YES;
+    _recordCancelButton.hidden = YES;
+    self.inputToolbar.contentView.textView.hidden = NO;
+    self.inputToolbar.contentView.leftBarButtonItem.hidden = NO;
+    self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
+    [self.inputToolbar.contentView addSubview:_recordButton];
+    _waveformInComposeWindow = NO;
+}
+
+-(void) microphone:(EZMicrophone *)microphone
+     hasBufferList:(AudioBufferList *)bufferList
+    withBufferSize:(UInt32)bufferSize
+withNumberOfChannels:(UInt32)numberOfChannels {
+    [self.recorder appendDataFromBufferList:bufferList
+                             withBufferSize:bufferSize];
+}
+
+-(void)microphone:(EZMicrophone *)microphone
+ hasAudioReceived:(float **)buffer
+   withBufferSize:(UInt32)bufferSize
+withNumberOfChannels:(UInt32)numberOfChannels {
+    // Getting audio data as an array of float buffer arrays. What does that mean? Because the audio is coming in as a stereo signal the data is split into a left and right channel. So buffer[0] corresponds to the float* data for the left channel while buffer[1] corresponds to the float* data for the right channel.
+    
+    // See the Thread Safety warning above, but in a nutshell these callbacks happen on a separate audio thread. We wrap any UI updating in a GCD block on the main thread to avoid blocking that audio flow.
+    dispatch_async(dispatch_get_main_queue(),^{
+        // All the audio plot needs is the buffer data (float*) and the size. Internally the audio plot will handle all the drawing related code, history management, and freeing its own resources. Hence, one badass line of code gets you a pretty plot :)
+        [_audioRecorderPlot updateBuffer:buffer[0] withBufferSize:bufferSize];
+    });
+}
+
+-(void)microphone:(EZMicrophone *)microphone hasAudioStreamBasicDescription:(AudioStreamBasicDescription)audioStreamBasicDescription {
+    // The AudioStreamBasicDescription of the microphone stream. This is useful when configuring the EZRecorder or telling another component what audio format type to expect.
+    // Here's a print function to allow you to inspect it a little easier
+    [EZAudio printASBD:audioStreamBasicDescription];
 }
 
 - (void)audioPlayerUpdated:(NSTimer*)timer {
     double current = [_audioPlayer currentTime]/[_audioPlayer duration];
     double interval = [_audioPlayer duration] - [_audioPlayer currentTime];
-    [_currentMediaAdapter setDurationOfAudio:interval];
-    [_currentMediaAdapter setAudioProgressFromFloat:(float)current];
+    if (timer.userInfo[@"compose"]) { //if audio player event sent by waveform in compose window
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_audioRecorderPlot setProgress:(float)current];
+        });
+    } else {
+        [_currentMediaAdapter setDurationOfAudio:interval];
+        [_currentMediaAdapter setAudioProgressFromFloat:(float)current];
+    }
 }
 
 - (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
-    [_audioPlayerPoller invalidate];
-    [_currentMediaAdapter setAudioProgressFromFloat:0];
-    [_currentMediaAdapter setDurationOfAudio:_audioPlayer.duration];
-    [_currentMediaAdapter setAudioIconToPlay];
+    if (_waveformAudioPlaying) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_audioRecorderPlot setProgress:0.0f];
+        });
+        [_audioPlayerPoller invalidate];
+        _waveformAudioPlaying = NO;
+        _waveformAudioPaused = NO;
+        _composeWaveformCurrentTime = 0;
+    } else {
+        [_audioPlayerPoller invalidate];
+        _currentMediaAdapter.audioCurrentTime = 0;
+        [_currentMediaAdapter setAudioProgressFromFloat:0];
+        [_currentMediaAdapter setDurationOfAudio:_audioPlayer.duration];
+        [_currentMediaAdapter setAudioIconToPlay];
+    }
 }
 
-- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder
-                           successfully:(BOOL)flag {
-    if(flag) {
-        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
-    }
+- (void)sendAudioFile {
+    NSLog(@"should send");
+    [self sendMessageAttachment:[NSData dataWithContentsOfURL:_waveformAudioFile] ofType:@"audio/m4a"];
 }
 
 #pragma mark Accessory View
@@ -1521,9 +1749,6 @@ typedef enum : NSUInteger {
                                       break;
                                   case 1:
                                       [self chooseFromLibrary];
-                                      break;
-                                  case 2:
-                                      [self recordAudio];
                                       break;
                                   default:
                                       break;
@@ -1615,6 +1840,11 @@ typedef enum : NSUInteger {
 
 - (void)dismissKeyBoard {
     [self.inputToolbar.contentView.textView resignFirstResponder];
+}
+
+- (void)inputViewDidChange {
+    NSLog(@"input view did change");
+    NSLog(@"text length now: %@", self.inputToolbar.contentView.textView.text);
 }
 
 - (void)dealloc{
