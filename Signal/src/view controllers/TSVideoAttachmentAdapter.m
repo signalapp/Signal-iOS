@@ -15,7 +15,7 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSNetworkManager.h"
 #import "UIColor+OWS.h"
-#import "SCWaveformView.h"
+#import "EZAudio.h"
 #import "MIMETypeUtil.h"
 #define AUDIO_BAR_HEIGHT 36
 
@@ -28,11 +28,12 @@
 @property (strong, nonatomic) FFCircularProgressView *progressView;
 @property (strong, nonatomic) TSAttachmentStream *attachment;
 @property (strong, nonatomic) UIProgressView *audioProgress;
-@property (strong, nonatomic) SCWaveformView *waveform;
-@property (strong, nonatomic) UIButton *audioPlayPauseButton;
+@property (strong, nonatomic) EZAudioPlot *audioWaveform;
+@property (strong, nonatomic) UIImageView *audioPlayPauseButton;
 @property (strong, nonatomic) UILabel *durationLabel;
 @property (strong, nonatomic) UIView *audioBubble;
 @property (nonatomic) BOOL incoming;
+
 
 @end
 
@@ -79,9 +80,7 @@
 - (void)setAudioProgressFromFloat:(float)progress {
     dispatch_async(dispatch_get_main_queue(), ^{
         if(!isnan(progress)) {
-            [_waveform setProgress:progress];
-            [_waveform generateWaveforms];
-            [_waveform setNeedsDisplay];
+            [_audioWaveform setProgress:progress];
         }
     });
 }
@@ -97,11 +96,19 @@
 }
 
 - (void)setAudioIconToPlay {
-    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"] forState:UIControlStateNormal];
+    if (_incoming) {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button_blue"];
+    } else {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button"];
+    }
 }
 
 - (void)setAudioIconToPause {
-    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_pause_button_blue"] forState:UIControlStateNormal];
+    if (_incoming) {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_pause_button_blue"];
+    } else {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_pause_button"];
+    }
 }
 
 -(void) removeDurationLabel {
@@ -144,22 +151,27 @@
         NSError * err = NULL;
         NSURL* url = [MIMETypeUtil simLinkCorrectExtensionOfFile:_attachment.mediaURL ofMIMEType:_attachment.contentType];
         
-        AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-        _waveform = [[SCWaveformView alloc] init];
-        _waveform.frame = CGRectMake(42.0, 0.0, size.width-84, size.height);
-        _waveform.asset = asset;
-        _waveform.progressColor = [UIColor whiteColor];
-        _waveform.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
-        [_waveform generateWaveforms];
-        _waveform.progress = 0.0;
+        _audioWaveform = [[EZAudioPlot alloc] initWithFrame:CGRectMake(38.0, 0.0, size.width-84, size.height)];
+        _audioWaveform.color = [UIColor whiteColor];
+        _audioWaveform.progressColor = [UIColor colorWithRed:170/255.0f green:192/255.0f blue:210/255.0f alpha:1.0f];
+        _audioWaveform.backgroundColor = [UIColor colorWithRed:10/255.0f green:130/255.0f blue:253/255.0f alpha:1.0f];
+        _audioWaveform.plotType = EZPlotTypeRollingBlock;
+        _audioWaveform.shouldMirror = YES;
+        _audioWaveform.shouldFill = YES;
+        [_audioWaveform setGain:3.5];
+        
+        EZAudioFile *audioFile = [EZAudioFile audioFileWithURL:url];
+        [audioFile getWaveformDataWithCompletionBlock:^(float *waveformData, UInt32 length) {
+            [_audioWaveform generateWaveform:waveformData length:(int)length];
+        }];
         
         _audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
         _audioBubble.backgroundColor = [UIColor colorWithRed:10/255.0f green:130/255.0f blue:253/255.0f alpha:1.0f];
         _audioBubble.layer.cornerRadius = 18;
         _audioBubble.layer.masksToBounds = YES;
 
-        _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
-        [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"] forState:UIControlStateNormal];
+        _audioPlayPauseButton = [[UIImageView alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button"];
         
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
         _durationLabel = [[UILabel alloc] init];
@@ -170,15 +182,17 @@
         _durationLabel.backgroundColor = [UIColor clearColor];
         _durationLabel.textColor = [UIColor whiteColor];
         
+        NSLog(@"incoming: %d", _incoming);
+        
         if (_incoming) {
             _audioBubble.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
-            _waveform.normalColor = [UIColor whiteColor];
-            _waveform.progressColor = [UIColor colorWithRed:107/255.0f green:185/255.0f blue:254/255.0f alpha:1.0f];
-            [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"] forState:UIControlStateNormal];
+            _audioWaveform.color  = [UIColor whiteColor];
+            _audioWaveform.progressColor = [UIColor colorWithRed:107/255.0f green:185/255.0f blue:254/255.0f alpha:1.0f];
+            _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button_blue"];
             _durationLabel.textColor = [UIColor darkTextColor];
         }
         
-        [_audioBubble addSubview:_waveform];
+        [_audioBubble addSubview:_audioWaveform];
         [_audioBubble addSubview:_audioPlayPauseButton];
         [_audioBubble addSubview:_durationLabel];
         
