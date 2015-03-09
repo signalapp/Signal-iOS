@@ -32,6 +32,7 @@ PODS:
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - DJWActionSheet (1.0.4)
+  - EZAudio (0.0.6)
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (6.1.3):
@@ -45,7 +46,6 @@ PODS:
   - PastelogKit (1.2):
     - CocoaLumberjack (~> 1.9)
   - ProtocolBuffers (1.9.7)
-  - SCWaveformView (1.0.0)
   - SocketRocket (0.3.1-beta2)
   - SQLCipher/common (3.1.0)
   - SQLCipher/fts (3.1.0):
@@ -66,13 +66,13 @@ DEPENDENCIES:
   - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`, branch `master`)
   - AxolotlKit (~> 0.6.2)
   - DJWActionSheet
+  - EZAudio (from `https://github.com/jackflips/EZAudio`)
   - FFCircularProgressView (>= 0.1)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.8.2)
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.200)
   - PastelogKit (~> 1.2)
-  - SCWaveformView
   - SocketRocket (from `https://github.com/FredericJacobs/SocketRocket.git`, commit `73d8a19`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
@@ -83,6 +83,8 @@ EXTERNAL SOURCES:
   APDropDownNavToolbar:
     :branch: master
     :git: https://github.com/corbett/APDropDownNavToolbar.git
+  EZAudio:
+    :git: https://github.com/jackflips/EZAudio
   JSQMessagesViewController:
     :branch: JSignalQ
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
@@ -96,6 +98,9 @@ CHECKOUT OPTIONS:
   APDropDownNavToolbar:
     :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
     :git: https://github.com/corbett/APDropDownNavToolbar.git
+  EZAudio:
+    :commit: f155c2fb62af95774c24aa089d6a9c3684efc3e4
+    :git: https://github.com/jackflips/EZAudio
   JSQMessagesViewController:
     :commit: bfb0c58785b33fa30ac3c88ef38477e49a674912
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
@@ -110,6 +115,7 @@ SPEC CHECKSUMS:
   AxolotlKit: c8d6fdd73754aa6432a106ae73f4c24385e253da
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
+  EZAudio: b9bf15bcc2d2f420770652bd594bfe0c7a165726
   FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
   JSQMessagesViewController: 4cc4ff3b26599e8743166b7e8e908528c8f01a80
@@ -119,7 +125,6 @@ SPEC CHECKSUMS:
   OpenSSL: 4c7be3eca71139f52984542d8c4c0752154d26c3
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
   ProtocolBuffers: 37fdd327d36856f965ea9029b5ec0c7120e3a452
-  SCWaveformView: 55f0cd6e80df1a46ff70892bc4041f5b7d8ad43c
   SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
   SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8
   SSKeychain: cc48bd3ad24fcd9125adb9e0d23dd50b8bbd08b9
