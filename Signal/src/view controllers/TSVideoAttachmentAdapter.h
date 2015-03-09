@@ -16,6 +16,7 @@
 @property (nonatomic,strong) NSString* contentType;
 @property (nonatomic) BOOL isAudioPlaying;
 @property (nonatomic) BOOL isPaused;
+@property (nonatomic) NSTimeInterval audioCurrentTime;
 
 - (instancetype)initWithAttachment:(TSAttachmentStream*)attachment incoming:(BOOL)incoming;
 
