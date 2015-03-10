@@ -40,7 +40,6 @@
 #import "UIButton+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
-
 #import "TSMessageAdapter.h"
 #import "TSErrorMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -191,7 +190,10 @@ typedef enum : NSUInteger {
     _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
     
-    _recordButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 42, (self.inputToolbar.contentView.frame.size.height/2) - (32/2), 32, 32)];
+    CGRect inputViewRect = self.inputToolbar.contentView.frame;
+    NSLog(@"way before circle: %@", NSStringFromCGRect(inputViewRect));
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    _recordButton = [[UIButton alloc] initWithFrame:CGRectMake(screenWidth - 42, (self.inputToolbar.contentView.frame.size.height/2) - (32/2), 32, 32)];
     _recordButton.imageEdgeInsets = UIEdgeInsetsMake(3, 3, 3, 3);
     [_recordButton setImage:[UIImage imageNamed:@"microphone"] forState:UIControlStateNormal];
     [self.inputToolbar.contentView addSubview:_recordButton];
@@ -223,11 +225,6 @@ typedef enum : NSUInteger {
                                                  name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(inputViewDidChange)
-                                                 name:UITextViewTextDidChangeNotification
-                                               object:nil];
     
     self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
 }
@@ -1526,6 +1523,7 @@ typedef enum : NSUInteger {
         self.recorder = [EZRecorder recorderWithDestinationURL:[NSURL fileURLWithPath:audioFile] sourceFormat:[EZMicrophone sharedMicrophone].audioStreamBasicDescription destinationFileType:EZRecorderFileTypeM4A];
         
         CGRect inputRect = self.inputToolbar.contentView.frame;
+        NSLog(@"before record circle: %@", NSStringFromCGRect(inputRect));
         _recordCircle = [[UIButton alloc] initWithFrame:CGRectMake(inputRect.size.width - (_recordCircle.frame.size.width/2)-1, inputRect.size.height/2, 1, 1)];
         _recordCircle.alpha = 0.5;
         _recordCircle.layer.cornerRadius = 1;
@@ -1720,8 +1718,8 @@ withNumberOfChannels:(UInt32)numberOfChannels {
 }
 
 - (void)sendAudioFile {
-    NSLog(@"should send");
     [self sendMessageAttachment:[NSData dataWithContentsOfURL:_waveformAudioFile] ofType:@"audio/m4a"];
+    [self cancelWaveform:nil];
 }
 
 #pragma mark Accessory View
@@ -1840,11 +1838,6 @@ withNumberOfChannels:(UInt32)numberOfChannels {
 
 - (void)dismissKeyBoard {
     [self.inputToolbar.contentView.textView resignFirstResponder];
-}
-
-- (void)inputViewDidChange {
-    NSLog(@"input view did change");
-    NSLog(@"text length now: %@", self.inputToolbar.contentView.textView.text);
 }
 
 - (void)dealloc{
