@@ -191,7 +191,6 @@ typedef enum : NSUInteger {
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
     
     CGRect inputViewRect = self.inputToolbar.contentView.frame;
-    NSLog(@"way before circle: %@", NSStringFromCGRect(inputViewRect));
     CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
     _recordButton = [[UIButton alloc] initWithFrame:CGRectMake(screenWidth - 42, (self.inputToolbar.contentView.frame.size.height/2) - (32/2), 32, 32)];
     _recordButton.imageEdgeInsets = UIEdgeInsetsMake(3, 3, 3, 3);
@@ -1523,7 +1522,6 @@ typedef enum : NSUInteger {
         self.recorder = [EZRecorder recorderWithDestinationURL:[NSURL fileURLWithPath:audioFile] sourceFormat:[EZMicrophone sharedMicrophone].audioStreamBasicDescription destinationFileType:EZRecorderFileTypeM4A];
         
         CGRect inputRect = self.inputToolbar.contentView.frame;
-        NSLog(@"before record circle: %@", NSStringFromCGRect(inputRect));
         _recordCircle = [[UIButton alloc] initWithFrame:CGRectMake(inputRect.size.width - (_recordCircle.frame.size.width/2)-1, inputRect.size.height/2, 1, 1)];
         _recordCircle.alpha = 0.5;
         _recordCircle.layer.cornerRadius = 1;
