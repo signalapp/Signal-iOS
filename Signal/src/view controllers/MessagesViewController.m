@@ -920,6 +920,7 @@ typedef enum : NSUInteger {
                                 _composeWaveformCurrentTime = 0;
                                 NSError *error;
                                 _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
+                                _audioPlayer.delegate = self;
                                 [_audioPlayer prepareToPlay];
                                 _audioPlayer.currentTime = messageMedia.audioCurrentTime;
                                 [_audioPlayer play];
@@ -1214,6 +1215,12 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:attachmentType inMessage:message thread:self.thread];
         [self finishSendingMessage];
     }];
+}
+
+- (void)sendAudioMessageAttachment:(NSData*)attachmentData {
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:nil attachments:[NSMutableArray array]];
+    [[TSMessagesManager sharedManager] sendAttachment:attachmentData contentType:@"audio/mp4" inMessage:message thread:self.thread];
+    [self finishSendingMessage];
 }
 
 -(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
@@ -1716,7 +1723,7 @@ withNumberOfChannels:(UInt32)numberOfChannels {
 }
 
 - (void)sendAudioFile {
-    [self sendMessageAttachment:[NSData dataWithContentsOfURL:_waveformAudioFile] ofType:@"audio/m4a"];
+    [self sendAudioMessageAttachment:[NSData dataWithContentsOfURL:_waveformAudioFile]];
     [self cancelWaveform:nil];
 }
 

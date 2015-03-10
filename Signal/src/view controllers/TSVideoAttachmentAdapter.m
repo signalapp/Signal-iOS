@@ -34,6 +34,7 @@
 @property (strong, nonatomic) UIView *audioBubble;
 @property (nonatomic) BOOL incoming;
 
+
 @end
 
 @implementation TSVideoAttachmentAdapter
@@ -95,11 +96,19 @@
 }
 
 - (void)setAudioIconToPlay {
-    _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button_blue"];
+    if (_incoming) {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button_blue"];
+    } else {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button"];
+    }
 }
 
 - (void)setAudioIconToPause {
-    _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_pause_button_blue"];
+    if (_incoming) {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_pause_button_blue"];
+    } else {
+        _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_pause_button"];
+    }
 }
 
 -(void) removeDurationLabel {
@@ -143,9 +152,9 @@
         NSURL* url = [MIMETypeUtil simLinkCorrectExtensionOfFile:_attachment.mediaURL ofMIMEType:_attachment.contentType];
         
         _audioWaveform = [[EZAudioPlot alloc] initWithFrame:CGRectMake(38.0, 0.0, size.width-84, size.height)];
-        _audioWaveform.color = [UIColor colorWithRed:107/255.0f green:185/255.0f blue:254/255.0f alpha:1.0f];
-        _audioWaveform.progressColor = [UIColor whiteColor];
-        _audioWaveform.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
+        _audioWaveform.color = [UIColor whiteColor];
+        _audioWaveform.progressColor = [UIColor colorWithRed:170/255.0f green:192/255.0f blue:210/255.0f alpha:1.0f];
+        _audioWaveform.backgroundColor = [UIColor colorWithRed:10/255.0f green:130/255.0f blue:253/255.0f alpha:1.0f];
         _audioWaveform.plotType = EZPlotTypeRollingBlock;
         _audioWaveform.shouldMirror = YES;
         _audioWaveform.shouldFill = YES;
@@ -172,6 +181,8 @@
         _durationLabel.frame = CGRectMake((size.width - _durationLabel.frame.size.width) - 10, _durationLabel.frame.origin.y, _durationLabel.frame.size.width, AUDIO_BAR_HEIGHT);
         _durationLabel.backgroundColor = [UIColor clearColor];
         _durationLabel.textColor = [UIColor whiteColor];
+        
+        NSLog(@"incoming: %d", _incoming);
         
         if (_incoming) {
             _audioBubble.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
