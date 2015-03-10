@@ -66,7 +66,7 @@ DEPENDENCIES:
   - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`, branch `master`)
   - AxolotlKit (~> 0.6.2)
   - DJWActionSheet
-  - EZAudio (from `https://github.com/jackflips/EZAudio`)
+  - EZAudio (from `https://github.com/jackflips/EZAudio`, commit `1620f19`)
   - FFCircularProgressView (>= 0.1)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, branch `JSignalQ`)
   - libPhoneNumber-iOS (~> 0.8.2)
@@ -84,6 +84,7 @@ EXTERNAL SOURCES:
     :branch: master
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   EZAudio:
+    :commit: 1620f19
     :git: https://github.com/jackflips/EZAudio
   JSQMessagesViewController:
     :branch: JSignalQ
@@ -99,7 +100,7 @@ CHECKOUT OPTIONS:
     :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   EZAudio:
-    :commit: f155c2fb62af95774c24aa089d6a9c3684efc3e4
+    :commit: 1620f19
     :git: https://github.com/jackflips/EZAudio
   JSQMessagesViewController:
     :commit: bfb0c58785b33fa30ac3c88ef38477e49a674912
