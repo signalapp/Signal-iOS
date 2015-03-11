@@ -53,6 +53,8 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         DDLogError(@"No previous version found. Possibly first launch since install.");
     } else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || isCurrentlyMigrating) {
         [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
+    } else if(([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.18"])) {
+        [VersionMigrations migrateBloomFilter];
     }
 }
 

@@ -11,6 +11,7 @@
 #import "Environment.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "TSAccountManager.h"
 #import "RecentCallManager.h"
@@ -21,6 +22,8 @@
 
 #define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
 
+
+
 @interface SignalKeyingStorage(VersionMigrations)
 
 +(void)storeString:(NSString*)string forKey:(NSString*)key;
@@ -28,6 +31,13 @@
 @end
 
 @implementation VersionMigrations
+
++ (void)migrateBloomFilter {
+    // The bloom filter had to be moved to the cache folder after rejection of the 2.0.1
+    NSString *oldBloomKey = @"Directory Bloom Data";
+    [[Environment preferences] setValueForKey:oldBloomKey toValue:nil];
+    return;
+}
 
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0 {
     

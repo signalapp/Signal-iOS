@@ -396,6 +396,7 @@
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachments.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachments.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
+		B6BE7EED1AB100250038D0C8 /* BloomFilterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */; };
 		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
 		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
@@ -1071,6 +1072,7 @@
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilterTests.m; sourceTree = "<group>"; };
 		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
 		B6C6AE541A305ED1006BAF8F /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
@@ -2021,6 +2023,7 @@
 			children = (
 				A157073017F0CD6D007C2BD6 /* PhoneNumberTest.m */,
 				A157073117F0CD6D007C2BD6 /* signaling */,
+				B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */,
 			);
 			path = phone;
 			sourceTree = "<group>";
@@ -2726,7 +2729,7 @@
 						};
 					};
 					D221A0A9169C9E5F00537ABF = {
-						DevelopmentTeam = AWR2FBJU75;
+						DevelopmentTeam = U68MSDN6DR;
 						TestTargetID = D221A088169C9E5E00537ABF;
 					};
 				};
@@ -3238,6 +3241,7 @@
 				A157075717F0CD6D007C2BD6 /* AudioFrameTest.m in Sources */,
 				76EB063F18170B33006006FC /* Operation.m in Sources */,
 				76EB05AB18170B33006006FC /* SequenceCounter.m in Sources */,
+				B6BE7EED1AB100250038D0C8 /* BloomFilterTests.m in Sources */,
 				76EB061D18170B33006006FC /* ArrayUtil.m in Sources */,
 				76EB05E318170B33006006FC /* SecureEndPoint.m in Sources */,
 				76EB060D18170B33006006FC /* CategorizingLogger.m in Sources */,

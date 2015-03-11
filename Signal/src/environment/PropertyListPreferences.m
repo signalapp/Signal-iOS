@@ -4,6 +4,7 @@
 
 #define SignalDatabaseCollection @"SignalPreferences"
 
+
 @implementation PropertyListPreferences
 
 -(void) clear {
@@ -32,7 +33,5 @@
         return newValue;
     }
 }
-
-
 
 @end
