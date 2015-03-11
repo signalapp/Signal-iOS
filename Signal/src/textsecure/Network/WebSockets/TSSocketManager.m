@@ -19,7 +19,7 @@
 #import "Cryptography.h"
 #import "IncomingPushMessageSignal.pb.h"
 
-#define kWebSocketHeartBeat    15
+#define kWebSocketHeartBeat    30
 #define kWebSocketReconnectTry 5
 
 NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
