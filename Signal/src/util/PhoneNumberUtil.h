@@ -12,6 +12,7 @@ MacrosSingletonInterface
 + (NSString *)countryNameFromCountryCode:(NSString *)code;
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
 + (NSString*) normalizePhoneNumber:(NSString *) number;
++(NSArray *)validCountryCallingPrefixes:(NSString *)string;
 
 +(NSUInteger) translateCursorPosition:(NSUInteger)offset
                                  from:(NSString*)source
