@@ -73,9 +73,4 @@ __attribute((deprecated("Use method initWithParentViewName:filtering:versionTag:
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType filteringBlockType;
 
-/**
- * The options allow you to specify things like creating an IN-MEMORY-ONLY VIEW (non persistent).
-**/
-@property (nonatomic, copy, readonly) YapDatabaseViewOptions *options;
-
 @end
