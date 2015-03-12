@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E0C48881AA7C00600501CE7 /* TouchIDHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E0C48871AA7C00600501CE7 /* TouchIDHelper.m */; };
+		2E0C48891AA7C00600501CE7 /* TouchIDHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E0C48871AA7C00600501CE7 /* TouchIDHelper.m */; };
+		2E0C488A1AA7CAA700501CE7 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */; };
+		2E2C15B61AA7AE8500EF351C /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 70377AA81916BA0500CAF501 /* InteractiveLabel.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
@@ -537,6 +541,9 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		2E0C48861AA7C00600501CE7 /* TouchIDHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchIDHelper.h; sourceTree = "<group>"; };
+		2E0C48871AA7C00600501CE7 /* TouchIDHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchIDHelper.m; sourceTree = "<group>"; };
+		2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AA71916BA0500CAF501 /* InteractiveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveLabel.h; sourceTree = "<group>"; };
@@ -1227,6 +1234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E2C15B61AA7AE8500EF351C /* LocalAuthentication.framework in Frameworks */,
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
@@ -1254,6 +1262,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E0C488A1AA7CAA700501CE7 /* LocalAuthentication.framework in Frameworks */,
 				B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */,
 				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
 				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
@@ -1788,6 +1797,8 @@
 				76EB04F818170B33006006FC /* ThreadManager.m */,
 				76EB04F918170B33006006FC /* TimeUtil.h */,
 				76EB04FA18170B33006006FC /* TimeUtil.m */,
+				2E0C48861AA7C00600501CE7 /* TouchIDHelper.h */,
+				2E0C48871AA7C00600501CE7 /* TouchIDHelper.m */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
 				76EB04FB18170B33006006FC /* Util.h */,
@@ -2436,6 +2447,7 @@
 				420DEC7C09ED549B971FBF67 /* Pods */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		D221A08A169C9E5E00537ABF /* Products */ = {
 			isa = PBXGroup;
@@ -2449,6 +2461,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2E2C15B51AA7AE8500EF351C /* LocalAuthentication.framework */,
 				FC3BD9871A30A790005B96BB /* Social.framework */,
 				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
 				FCB11D8B1A129A76002F93FB /* CoreMedia.framework */,
@@ -3076,6 +3089,7 @@
 				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
+				2E0C48881AA7C00600501CE7 /* TouchIDHelper.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */,
 				B6019E971A2492AB001118DF /* NSDate+millisecondTimeStamp.mm in Sources */,
@@ -3307,6 +3321,7 @@
 				76EB062718170B33006006FC /* Queue.m in Sources */,
 				76EB05C118170B33006006FC /* DhPacket.m in Sources */,
 				76EB060B18170B33006006FC /* SignalUtil.m in Sources */,
+				2E0C48891AA7C00600501CE7 /* TouchIDHelper.m in Sources */,
 				A157076C17F0CD6D007C2BD6 /* NetworkStreamTest.m in Sources */,
 				76EB065B18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB05BB18170B33006006FC /* CommitPacket.m in Sources */,
