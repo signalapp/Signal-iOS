@@ -1,9 +1,11 @@
 #import "YDBCKChangeQueue.h"
 #import "YDBCKChangeSet.h"
 #import "YDBCKChangeRecord.h"
-#import "YapDatabaseCKRecord.h"
+#import "YDBCKRecord.h"
 #import "YapDatabaseCloudKitPrivate.h"
-//#import "YapDebugDictionary.h"
+#if DEBUG
+#import "YapDebugDictionary.h"
+#endif
 
 
 @interface YDBCKChangeQueue ()
@@ -503,7 +505,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	// Create change record
 	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
-	currentRecord.canStoreOnlyChangedKeys = YES;
+	currentRecord.needsStoreFullRecord = NO;
 	
 	// Update current changeSet
 	
@@ -553,7 +555,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	// Create change record
 	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
-	currentRecord.canStoreOnlyChangedKeys = YES;
+	currentRecord.needsStoreFullRecord = NO;
 	
 	// Update previous changeSets (if needed)
 	
@@ -565,7 +567,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
-				if (mqPrevRecord.canStoreOnlyChangedKeys &&
+				if (mqPrevRecord.needsStoreFullRecord == NO &&
 				    [mqPrevRecord.changedKeysSet intersectsSet:currentRecord.changedKeysSet])
 				{
 					// The prevRecord is configured to only store the changedKeys array to disk.
@@ -598,7 +600,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					}
 					
 					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
-					pqPrevRecord.canStoreOnlyChangedKeys = NO;
+					pqPrevRecord.needsStoreFullRecord = YES;
 				}
 			}
 		}
@@ -657,7 +659,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
-				if (mqPrevRecord.canStoreOnlyChangedKeys)
+				if (mqPrevRecord.needsStoreFullRecord == NO)
 				{
 					// The masterPrevRecord is configured to only store the changedKeys array to disk.
 					//
@@ -686,7 +688,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					}
 					
 					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
-					pqPrevRecord.canStoreOnlyChangedKeys = NO;
+					pqPrevRecord.needsStoreFullRecord = YES;
 				}
 			}
 		}
@@ -726,7 +728,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 			YDBCKChangeRecord *mqPrevRecord = [mqPrevChangeSet->modifiedRecords objectForKey:recordID];
 			if (mqPrevRecord)
 			{
-				if (mqPrevRecord.canStoreOnlyChangedKeys)
+				if (mqPrevRecord.needsStoreFullRecord == NO)
 				{
 					// The mqPrevRecord is configured to only store the changedKeys array to disk.
 					//
@@ -758,7 +760,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 					}
 					
 					YDBCKChangeRecord *pqPrevRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
-					pqPrevRecord.canStoreOnlyChangedKeys = NO;
+					pqPrevRecord.needsStoreFullRecord = YES;
 				}
 			}
 		}
@@ -865,7 +867,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				// We need to get the system metadata from the mergedRecord,
 				// and inject the values from the localRecord.
-				CKRecord *newLocalRecord = [YapDatabaseCKRecord sanitizedRecord:mergedRecord];
+				CKRecord *newLocalRecord = [YDBCKRecord sanitizedRecord:mergedRecord];
 				
 				for (NSString *key in localRecord.changedKeys)
 				{
@@ -924,7 +926,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		NSMutableSet *mergedRecordUnhandledKeys = [mergedRecordChangedKeysSet mutableCopy];
 		[mergedRecordUnhandledKeys minusSet:mergedRecordHandledKeys];
 		
-		CKRecord *newMergedRecord = [YapDatabaseCKRecord sanitizedRecord:mergedRecord];
+		CKRecord *newMergedRecord = [YDBCKRecord sanitizedRecord:mergedRecord];
 		
 		for (NSString *key in mergedRecordUnhandledKeys)
 		{
@@ -939,7 +941,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		// and add to newChangeSets for this transaction.
 		
 		YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:newMergedRecord];
-		currentRecord.canStoreOnlyChangedKeys = YES;
+		currentRecord.needsStoreFullRecord = NO;
 		
 		id key = [self keyForDatabaseIdentifier:databaseIdentifier];
 		
@@ -1127,7 +1129,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				if (sanitizedRecord == nil)
 				{
-					sanitizedRecord = [YapDatabaseCKRecord sanitizedRecord:record];
+					sanitizedRecord = [YDBCKRecord sanitizedRecord:record];
 				}
 				
 				YDBCKChangeRecord *pqChangeRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];

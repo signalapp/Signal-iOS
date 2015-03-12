@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8CDE399427C371AE35373288 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 951E571D3B3D45328846F778 /* libPods.a */; };
+		DC16CA401AAD44D00013AB33 /* YDBCKRecordKeysRow.m in Sources */ = {isa = PBXBuildFile; fileRef = DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */; };
 		DC6071471A33F3FF00207DE9 /* TodoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6071461A33F3FF00207DE9 /* TodoCell.m */; };
 		DC60714A1A33FC3900207DE9 /* checkmark-off.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071481A33FC3900207DE9 /* checkmark-off.png */; };
 		DC60714B1A33FC3900207DE9 /* checkmark-on.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071491A33FC3900207DE9 /* checkmark-on.png */; };
@@ -37,7 +38,7 @@
 		DCDE78311A302A7E001D8FCE /* YDBCKChangeRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77821A302A7E001D8FCE /* YDBCKChangeRecord.m */; };
 		DCDE78321A302A7E001D8FCE /* YDBCKMappingTableInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77841A302A7E001D8FCE /* YDBCKMappingTableInfo.m */; };
 		DCDE78331A302A7E001D8FCE /* YDBCKRecordTableInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77861A302A7E001D8FCE /* YDBCKRecordTableInfo.m */; };
-		DCDE78341A302A7E001D8FCE /* YapDatabaseCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77891A302A7E001D8FCE /* YapDatabaseCKRecord.m */; };
+		DCDE78341A302A7E001D8FCE /* YDBCKRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77891A302A7E001D8FCE /* YDBCKRecord.m */; };
 		DCDE78351A302A7E001D8FCE /* YDBCKChangeSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE778B1A302A7E001D8FCE /* YDBCKChangeSet.m */; };
 		DCDE78361A302A7E001D8FCE /* YapDatabaseCloudKit.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE778D1A302A7E001D8FCE /* YapDatabaseCloudKit.m */; };
 		DCDE78371A302A7E001D8FCE /* YapDatabaseCloudKitConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE778F1A302A7E001D8FCE /* YapDatabaseCloudKitConnection.m */; };
@@ -113,6 +114,8 @@
 		6E0153BF132BA4F8966C9CD2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		951E571D3B3D45328846F778 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C845CFA8C6F6A2549AFE15A6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		DC16CA3E1AAD44D00013AB33 /* YDBCKRecordKeysRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecordKeysRow.h; sourceTree = "<group>"; };
+		DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecordKeysRow.m; sourceTree = "<group>"; };
 		DC6071451A33F3FF00207DE9 /* TodoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoCell.h; sourceTree = "<group>"; };
 		DC6071461A33F3FF00207DE9 /* TodoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoCell.m; sourceTree = "<group>"; };
 		DC6071481A33FC3900207DE9 /* checkmark-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-off.png"; sourceTree = "<group>"; };
@@ -169,8 +172,8 @@
 		DCDE77841A302A7E001D8FCE /* YDBCKMappingTableInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKMappingTableInfo.m; sourceTree = "<group>"; };
 		DCDE77851A302A7E001D8FCE /* YDBCKRecordTableInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecordTableInfo.h; sourceTree = "<group>"; };
 		DCDE77861A302A7E001D8FCE /* YDBCKRecordTableInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecordTableInfo.m; sourceTree = "<group>"; };
-		DCDE77881A302A7E001D8FCE /* YapDatabaseCKRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseCKRecord.h; sourceTree = "<group>"; };
-		DCDE77891A302A7E001D8FCE /* YapDatabaseCKRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCKRecord.m; sourceTree = "<group>"; };
+		DCDE77881A302A7E001D8FCE /* YDBCKRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecord.h; sourceTree = "<group>"; };
+		DCDE77891A302A7E001D8FCE /* YDBCKRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecord.m; sourceTree = "<group>"; };
 		DCDE778A1A302A7E001D8FCE /* YDBCKChangeSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKChangeSet.h; sourceTree = "<group>"; };
 		DCDE778B1A302A7E001D8FCE /* YDBCKChangeSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKChangeSet.m; sourceTree = "<group>"; };
 		DCDE778C1A302A7E001D8FCE /* YapDatabaseCloudKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseCloudKit.h; sourceTree = "<group>"; };
@@ -486,16 +489,16 @@
 			children = (
 				DCDE777B1A302A7E001D8FCE /* Internal */,
 				DCDE77871A302A7E001D8FCE /* Utilities */,
+				DCDE77941A302A7E001D8FCE /* YapDatabaseCloudKitTypes.h */,
+				DCDE77951A302A7E001D8FCE /* YapDatabaseCloudKitTypes.m */,
+				DCDE77901A302A7E001D8FCE /* YapDatabaseCloudKitOptions.h */,
+				DCDE77911A302A7E001D8FCE /* YapDatabaseCloudKitOptions.m */,
 				DCDE778C1A302A7E001D8FCE /* YapDatabaseCloudKit.h */,
 				DCDE778D1A302A7E001D8FCE /* YapDatabaseCloudKit.m */,
 				DCDE778E1A302A7E001D8FCE /* YapDatabaseCloudKitConnection.h */,
 				DCDE778F1A302A7E001D8FCE /* YapDatabaseCloudKitConnection.m */,
-				DCDE77901A302A7E001D8FCE /* YapDatabaseCloudKitOptions.h */,
-				DCDE77911A302A7E001D8FCE /* YapDatabaseCloudKitOptions.m */,
 				DCDE77921A302A7E001D8FCE /* YapDatabaseCloudKitTransaction.h */,
 				DCDE77931A302A7E001D8FCE /* YapDatabaseCloudKitTransaction.m */,
-				DCDE77941A302A7E001D8FCE /* YapDatabaseCloudKitTypes.h */,
-				DCDE77951A302A7E001D8FCE /* YapDatabaseCloudKitTypes.m */,
 			);
 			path = CloudKit;
 			sourceTree = "<group>";
@@ -514,6 +517,8 @@
 				DCDE77841A302A7E001D8FCE /* YDBCKMappingTableInfo.m */,
 				DCDE77851A302A7E001D8FCE /* YDBCKRecordTableInfo.h */,
 				DCDE77861A302A7E001D8FCE /* YDBCKRecordTableInfo.m */,
+				DC16CA3E1AAD44D00013AB33 /* YDBCKRecordKeysRow.h */,
+				DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -521,8 +526,8 @@
 		DCDE77871A302A7E001D8FCE /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				DCDE77881A302A7E001D8FCE /* YapDatabaseCKRecord.h */,
-				DCDE77891A302A7E001D8FCE /* YapDatabaseCKRecord.m */,
+				DCDE77881A302A7E001D8FCE /* YDBCKRecord.h */,
+				DCDE77891A302A7E001D8FCE /* YDBCKRecord.m */,
 				DCDE778A1A302A7E001D8FCE /* YDBCKChangeSet.h */,
 				DCDE778B1A302A7E001D8FCE /* YDBCKChangeSet.m */,
 			);
@@ -972,6 +977,7 @@
 				DCDE78691A302A7E001D8FCE /* YapMemoryTable.m in Sources */,
 				DCDE77761A302A66001D8FCE /* EditViewController.m in Sources */,
 				DCDE78501A302A7E001D8FCE /* YapDatabaseSearchResultsViewTransaction.m in Sources */,
+				DC16CA401AAD44D00013AB33 /* YDBCKRecordKeysRow.m in Sources */,
 				DCDE78361A302A7E001D8FCE /* YapDatabaseCloudKit.m in Sources */,
 				DCDE77641A3024A8001D8FCE /* DDContextFilterLogFormatter.m in Sources */,
 				DC927FFD1A344BA500FEEAEA /* TodoTextView.m in Sources */,
@@ -1005,7 +1011,7 @@
 				DCDE78681A302A7E001D8FCE /* YapDebugDictionary.m in Sources */,
 				DCDE78751A302A7E001D8FCE /* YapDatabaseConnection.m in Sources */,
 				DCDE78761A302A7E001D8FCE /* YapDatabaseOptions.m in Sources */,
-				DCDE78341A302A7E001D8FCE /* YapDatabaseCKRecord.m in Sources */,
+				DCDE78341A302A7E001D8FCE /* YDBCKRecord.m in Sources */,
 				DCDE78521A302A7E001D8FCE /* YapDatabaseSecondaryIndexConnection.m in Sources */,
 				DCDE78391A302A7E001D8FCE /* YapDatabaseCloudKitTransaction.m in Sources */,
 				DCDE783E1A302A7E001D8FCE /* YapDatabaseFilteredViewTypes.m in Sources */,

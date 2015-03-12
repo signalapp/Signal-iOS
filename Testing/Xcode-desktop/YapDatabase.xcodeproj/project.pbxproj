@@ -37,6 +37,7 @@
 		DC5BB352194BD9AE001A59A0 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BB34D194BD9AE001A59A0 /* DDMultiFormatter.m */; };
 		DC5BB356194BD9FC001A59A0 /* YapDatabaseSecondaryIndexOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BB355194BD9FC001A59A0 /* YapDatabaseSecondaryIndexOptions.m */; };
 		DC5BB359194BDA24001A59A0 /* YapDatabaseViewState.m in Sources */ = {isa = PBXBuildFile; fileRef = DC5BB358194BDA24001A59A0 /* YapDatabaseViewState.m */; };
+		DC61D6161AA8EE0E00BAA4AB /* YapMurmurHash.m in Sources */ = {isa = PBXBuildFile; fileRef = DC61D6151AA8EE0E00BAA4AB /* YapMurmurHash.m */; };
 		DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
 		DC84006617514255003BFBB2 /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005D17514255003BFBB2 /* TestObject.m */; };
 		DC84006817514255003BFBB2 /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84006117514255003BFBB2 /* TestYapDatabase.m */; };
@@ -174,6 +175,8 @@
 		DC5BB355194BD9FC001A59A0 /* YapDatabaseSecondaryIndexOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSecondaryIndexOptions.m; sourceTree = "<group>"; };
 		DC5BB357194BDA24001A59A0 /* YapDatabaseViewState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewState.h; sourceTree = "<group>"; };
 		DC5BB358194BDA24001A59A0 /* YapDatabaseViewState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewState.m; sourceTree = "<group>"; };
+		DC61D6141AA8EE0E00BAA4AB /* YapMurmurHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMurmurHash.h; sourceTree = "<group>"; };
+		DC61D6151AA8EE0E00BAA4AB /* YapMurmurHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMurmurHash.m; sourceTree = "<group>"; };
 		DC84005A175132E7003BFBB2 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		DC84005C17514255003BFBB2 /* TestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestObject.h; path = ../../UnitTesting/TestObject.h; sourceTree = "<group>"; };
 		DC84005D17514255003BFBB2 /* TestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestObject.m; path = ../../UnitTesting/TestObject.m; sourceTree = "<group>"; };
@@ -800,6 +803,8 @@
 				DC9B10D5184D124E00174B0F /* YapDatabaseQuery.m */,
 				DC36A6BA1A23F0E000DB95FB /* YapWhitelistBlacklist.h */,
 				DC36A6BB1A23F0E000DB95FB /* YapWhitelistBlacklist.m */,
+				DC61D6141AA8EE0E00BAA4AB /* YapMurmurHash.h */,
+				DC61D6151AA8EE0E00BAA4AB /* YapMurmurHash.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -984,6 +989,7 @@
 				DC36A6BD1A23F0E000DB95FB /* YapWhitelistBlacklist.m in Sources */,
 				DC9B10E6184D124E00174B0F /* YapDatabaseExtensionConnection.m in Sources */,
 				DC9B10F4184D124E00174B0F /* YapDatabaseViewTransaction.m in Sources */,
+				DC61D6161AA8EE0E00BAA4AB /* YapMurmurHash.m in Sources */,
 				DC9B10F9184D124E00174B0F /* YapDatabaseManager.m in Sources */,
 				DC9B10FB184D124E00174B0F /* YapMemoryTable.m in Sources */,
 				DC84FFDA1751312E003BFBB2 /* DDLog.m in Sources */,

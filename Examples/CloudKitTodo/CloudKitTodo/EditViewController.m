@@ -193,19 +193,41 @@
 		
 		MyTodo *todo = [transaction objectForKey:todoID inCollection:Collection_Todos];
 		
-		if (todo == nil) {
+		if (todo == nil)
+		{
 			todo = [[MyTodo alloc] initWithUUID:uuidLabel.text];
+			
+			todo.title = newTitle;
+			todo.isDone = newIsDone;
+			todo.priority = newPriority;
+			
+			[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
 		}
-		else {
+		else
+		{
 			todo = [todo copy]; // mutable copy
-			todo.lastModified = [NSDate date];
+			
+			// If the user didn't effectively make any changes,
+			// we're going to try to avoid updating the properties.
+			// Which, in turn, avoids uploading unchanged properties.
+			
+			if (![todo.title isEqualToString:newTitle]) {
+				todo.title = newTitle;
+			}
+			if (todo.isDone != newIsDone) {
+				todo.isDone = newIsDone;
+			}
+			if (todo.priority != newPriority) {
+				todo.priority = newPriority;
+			}
+			
+			if (todo.hasChangedProperties)
+			{
+				todo.lastModified = [NSDate date];
+				
+				[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
+			}
 		}
-		
-		todo.title = newTitle;
-		todo.isDone = newIsDone;
-		todo.priority = newPriority;
-		
-		[transaction setObject:todo forKey:todo.uuid inCollection:Collection_Todos];
 	}];
 	
 	[self.navigationController popViewControllerAnimated:YES];

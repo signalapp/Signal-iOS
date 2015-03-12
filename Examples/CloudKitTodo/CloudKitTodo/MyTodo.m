@@ -36,7 +36,10 @@ static NSString *const k_lastModified = @"lastModified";
 			uuid = [[NSUUID UUID] UUIDString];
 		
 		priority = TodoPriorityNormal;
-		creationDate = lastModified = [NSDate date];
+		
+		NSDate *now = [NSDate date];
+		creationDate = now;
+		lastModified = now;
 	}
 	return self;
 }
@@ -185,6 +188,9 @@ static NSString *const k_lastModified = @"lastModified";
 {
 	if ([key isEqualToString:@"priority"]) {
 		self.priority = TodoPriorityNormal;
+	}
+	if ([key isEqualToString:@"isDone"]) {
+		self.isDone = NO;
 	}
 	else {
 		[super setNilValueForKey:key];

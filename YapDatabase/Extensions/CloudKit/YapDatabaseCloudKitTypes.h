@@ -154,6 +154,6 @@ typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *data
  * 
  * You MUST check for this property within your recordHandler implementation.
 **/
-@property (nonatomic, strong, readonly) NSArray *changedKeysToRestore;
+@property (nonatomic, strong, readonly) NSArray *keysToRestore;
 
 @end

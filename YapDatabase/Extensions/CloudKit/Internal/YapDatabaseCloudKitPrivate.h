@@ -16,7 +16,9 @@
 
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
+#if DEBUG
 #import "YapDebugDictionary.h"
+#endif
 
 #import "sqlite3.h"
 
@@ -25,7 +27,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAP_DATABASE_CLOUD_KIT_CLASS_VERSION 1
+#define YAP_DATABASE_CLOUD_KIT_CLASS_VERSION 2
 
 static NSString *const changeset_key_deletedRowids    = @"deletedRowids";    // Array: rowid
 static NSString *const changeset_key_deletedHashes    = @"deletedHashes";    // Array: string
@@ -39,8 +41,8 @@ static NSString *const changeset_key_reset            = @"reset";
 
 @interface YDBCKRecordInfo ()
 
-@property (nonatomic, strong, readwrite) NSArray *changedKeysToRestore;
 @property (nonatomic, strong, readwrite) id versionInfo;
+@property (nonatomic, strong, readwrite) NSArray *keysToRestore;
 
 @end
 
@@ -68,6 +70,7 @@ static NSString *const changeset_key_reset            = @"reset";
 
 - (NSString *)mappingTableName;
 - (NSString *)recordTableName;
+- (NSString *)recordKeysTableName;
 - (NSString *)queueTableName;
 
 - (void)asyncMaybeDispatchNextOperation:(BOOL)forceNotification;
@@ -93,6 +96,9 @@ static NSString *const changeset_key_reset            = @"reset";
 	
 	NSMutableDictionary *dirtyMappingTableInfoDict;
 	NSMutableDictionary *dirtyRecordTableInfoDict;
+	
+	YapCache *recordKeysCache;
+	
 	BOOL reset;
 	BOOL isOperationCompletionTransaction;
 	BOOL isOperationPartialCompletionTransaction;
@@ -119,6 +125,7 @@ static NSString *const changeset_key_reset            = @"reset";
 
 - (sqlite3_stmt *)recordTable_insertStatement;
 - (sqlite3_stmt *)recordTable_updateOwnerCountStatement;
+- (sqlite3_stmt *)recordTable_updateMetadataStatement;
 - (sqlite3_stmt *)recordTable_updateRecordStatement;
 - (sqlite3_stmt *)recordTable_getInfoForHashStatement;
 - (sqlite3_stmt *)recordTable_getOwnerCountForHashStatement;
@@ -126,6 +133,9 @@ static NSString *const changeset_key_reset            = @"reset";
 - (sqlite3_stmt *)recordTable_enumerateStatement;
 - (sqlite3_stmt *)recordTable_removeForHashStatement;
 - (sqlite3_stmt *)recordTable_removeAllStatement;
+
+- (sqlite3_stmt *)recordKeysTable_insertStatement;
+- (sqlite3_stmt *)recordKeysTable_getKeysForHashStatement;
 
 - (sqlite3_stmt *)queueTable_insertStatement;
 - (sqlite3_stmt *)queueTable_updateDeletedRecordIDsStatement;
@@ -218,10 +228,15 @@ static NSString *const changeset_key_reset            = @"reset";
 @property (nonatomic, readwrite) BOOL hasChangesToDeletedRecordIDs;
 @property (nonatomic, readwrite) BOOL hasChangesToModifiedRecords;
 
-- (NSData *)serializeDeletedRecordIDs; // Blob to go in 'deletedRecordIDs' column of database row
-- (NSData *)serializeModifiedRecords;  // Blob to go in 'modifiedRecords' column of database row
+// Blob to go in 'deletedRecordIDs' column of database row.
+- (NSData *)serializeDeletedRecordIDs;
 
-- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block;
+// Blob to go in 'modifiedRecords' column of database row.
+// And needed entries for recordKeys table.
+- (NSData *)serializeModifiedRecords:(NSDictionary **)outRecordKeysRowDict;
+
+- (void)enumerateMissingRecordsWithBlock:
+                          (CKRecord* (^)(CKRecordID *recordID, NSString *recordKeys_hash, NSArray *changedKeys))block;
 
 @end
 

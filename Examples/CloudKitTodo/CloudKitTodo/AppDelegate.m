@@ -6,6 +6,7 @@
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
+#import "YapDatabaseLogging.h"
 
 #import <CloudKit/CloudKit.h>
 #import <Reachability/Reachability.h>
@@ -32,6 +33,33 @@ AppDelegate *MyAppDelegate;
 		
 		// Configure logging
 		[DDLog addLogger:[DDTTYLogger sharedInstance]];
+		
+		[[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+		
+	#if TARGET_OS_IPHONE
+		UIColor *redColor    = [UIColor redColor];
+		UIColor *orangeColor = [UIColor orangeColor];
+		UIColor *grayColor   = [UIColor grayColor];
+	#else
+		NSColor *redColor    = [NSColor redColor];
+		NSColor *orangeColor = [NSColor orangeColor];
+		NSColor *grayColor   = [NSColor grayColor];
+	#endif
+		
+		[[DDTTYLogger sharedInstance] setForegroundColor:redColor
+		                                 backgroundColor:nil
+		                                         forFlag:YDB_LOG_FLAG_ERROR   // errors
+		                                         context:YDBLogContext];      // from YapDatabase
+	
+		[[DDTTYLogger sharedInstance] setForegroundColor:orangeColor
+		                                 backgroundColor:nil
+		                                         forFlag:YDB_LOG_FLAG_WARN    // warnings
+		                                         context:YDBLogContext];      // from YapDatabase
+		
+		[[DDTTYLogger sharedInstance] setForegroundColor:grayColor
+		                                 backgroundColor:nil
+		                                         forFlag:YDB_LOG_FLAG_TRACE   // trace (method invocations)
+		                                         context:YDBLogContext];      // from YapDatabase
 	}
 	return self;
 }

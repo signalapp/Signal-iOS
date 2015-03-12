@@ -1,19 +1,22 @@
 #import "YDBCKChangeRecord.h"
 
 
-static NSString *const k_record      = @"record";
-static NSString *const k_recordID    = @"recordID";
-static NSString *const k_changedKeys = @"changedKeys";
+static NSString *const k_record          = @"record";
+static NSString *const k_recordID        = @"recordID";
+static NSString *const k_changedKeys     = @"changedKeys";
+static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 
 @implementation YDBCKChangeRecord
 {
 	CKRecordID *recordID;
+	
 	NSArray *changedKeys;
 	NSSet *changedKeysSet;
 }
 
 @synthesize record = record;
-@synthesize canStoreOnlyChangedKeys = canStoreOnlyChangedKeys;
+@synthesize recordKeys_hash = recordKeys_hash;
+@synthesize needsStoreFullRecord = needsStoreFullRecord;
 
 @dynamic recordID;
 @dynamic changedKeys;
@@ -33,7 +36,8 @@ static NSString *const k_changedKeys = @"changedKeys";
 	YDBCKChangeRecord *copy = [[YDBCKChangeRecord alloc] init];
 	
 	copy->record = record;
-	copy->canStoreOnlyChangedKeys = canStoreOnlyChangedKeys;
+	copy->recordKeys_hash = recordKeys_hash;
+	copy->needsStoreFullRecord = needsStoreFullRecord;
 	
 	copy->recordID = recordID;
 	copy->changedKeys = changedKeys;
@@ -46,33 +50,37 @@ static NSString *const k_changedKeys = @"changedKeys";
 	if ((self = [super init]))
 	{
 		record = [decoder decodeObjectForKey:k_record];
+		
 		recordID = [decoder decodeObjectForKey:k_recordID];
 		changedKeys = [decoder decodeObjectForKey:k_changedKeys];
+		recordKeys_hash = [decoder decodeObjectForKey:k_recordKeys_hash];
 		
-		if (recordID || changedKeys)
-			canStoreOnlyChangedKeys = YES;
+		if (record)
+			needsStoreFullRecord = YES;
 		else
-			canStoreOnlyChangedKeys = NO;
+			needsStoreFullRecord = NO;
 	}
 	return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-	if (canStoreOnlyChangedKeys)
+	if (needsStoreFullRecord)
 	{
-		[coder encodeObject:self.recordID forKey:k_recordID];
-		[coder encodeObject:self.changedKeys forKey:k_changedKeys];
+		[coder encodeObject:record forKey:k_record];
 	}
 	else
 	{
-		[coder encodeObject:record forKey:k_record];
+		[coder encodeObject:self.recordID forKey:k_recordID];
+		[coder encodeObject:self.changedKeys forKey:k_changedKeys];
+		[coder encodeObject:self.recordKeys_hash forKey:k_recordKeys_hash];
 	}
 }
 
 - (void)setRecord:(CKRecord *)inRecord
 {
 	recordID = nil;
+	recordKeys_hash = nil;
 	changedKeys = nil;
 	changedKeysSet = nil;
 	

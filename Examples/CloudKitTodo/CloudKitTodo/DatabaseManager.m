@@ -165,6 +165,7 @@ DatabaseManager *MyDatabaseManager;
 - (void)setupDatabase
 {
 	NSString *databasePath = [[self class] databasePath];
+	DDLogVerbose(@"databasePath: %@", databasePath);
 	
 	// Configure custom class mappings for NSCoding.
 	// In a previous version of the app, the "MyTodo" class was named "MyTodoItem".
@@ -289,9 +290,9 @@ DatabaseManager *MyDatabaseManager;
 		  NSString *collection, NSString *key, MyTodo *todo)
 	{
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
-		if (record                                    && // not a newly inserted object
-		    (todo.hasChangedCloudProperties == NO)    && // no sync'd properties changed in the todo
-		    (recordInfo.changedKeysToRestore == nil))    // and we don't need to restore "truth" values
+		if (record                          && // not a newly inserted object
+		    !todo.hasChangedCloudProperties && // no sync'd properties changed in the todo
+		    !recordInfo.keysToRestore        ) // and we don't need to restore "truth" values
 		{
 			// Thus we don't have any changes we need to push to the cloud
 			return;
@@ -320,13 +321,13 @@ DatabaseManager *MyDatabaseManager;
 		
 		id <NSFastEnumeration> cloudKeys = nil;
 		
-		if (recordInfo.changedKeysToRestore)
+		if (recordInfo.keysToRestore)
 		{
 			// We need to restore "truth" values for YapDatabaseCloudKit.
 			// This happens when the extension is restarted,
 			// and it needs to restore its change-set queue (to pick up where it left off).
 			
-			cloudKeys = recordInfo.changedKeysToRestore;
+			cloudKeys = recordInfo.keysToRestore;
 		}
 		else if (isNewRecord)
 		{
@@ -382,6 +383,7 @@ DatabaseManager *MyDatabaseManager;
 				[newLocalRecord setValue:localChangedValue forKey:localChangedKey];
 			}
 			
+			[todo clearChangedProperties];
 			[transaction setObject:todo forKey:key inCollection:collection];
 		}
 	};

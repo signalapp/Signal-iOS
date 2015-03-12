@@ -4,8 +4,9 @@
 
 @interface YDBCKAttachRequest : NSObject
 
-@property (nonatomic, strong, readwrite) CKRecord *record;
 @property (nonatomic, copy,   readwrite) NSString *databaseIdentifier;
+@property (nonatomic, strong, readwrite) CKRecord *record;
+
 @property (nonatomic, assign, readwrite) BOOL shouldUploadRecord;
 
 @end

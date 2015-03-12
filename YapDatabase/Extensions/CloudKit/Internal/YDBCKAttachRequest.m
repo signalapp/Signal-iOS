@@ -3,8 +3,9 @@
 
 @implementation YDBCKAttachRequest
 
-@synthesize record;
 @synthesize databaseIdentifier;
+@synthesize record;
+
 @synthesize shouldUploadRecord;
 
 @end

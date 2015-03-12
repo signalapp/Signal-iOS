@@ -51,26 +51,23 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 {
 	sqlite3 *db = transaction->connection->db;
 	
-	NSString *recordTableName = [self recordTableNameForRegisteredName:registeredName];
-	NSString *queueTableName  = [self recordTableNameForRegisteredName:registeredName];
+	NSArray *tableNames = @[
+	  [self mappingTableNameForRegisteredName:registeredName],
+	  [self recordTableNameForRegisteredName:registeredName],
+	  [self recordKeysTableNameForRegisteredName:registeredName],
+	  [self recordTableNameForRegisteredName:registeredName]
+	];
 	
-	NSString *dropRecordTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", recordTableName];
-	NSString *dropQueueTable  = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", queueTableName];
-	
-	int status;
-	
-	status = sqlite3_exec(db, [dropRecordTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
+	for (NSString *tableName in tableNames)
 	{
-		YDBLogError(@"%@ - Failed dropping table (%@): %d %s",
-		            THIS_METHOD, recordTableName, status, sqlite3_errmsg(db));
-	}
-	
-	status = sqlite3_exec(db, [dropQueueTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed dropping table (%@): %d %s",
-		            THIS_METHOD, queueTableName, status, sqlite3_errmsg(db));
+		NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", tableName];
+		
+		int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed dropping table (%@): %d %s",
+			            THIS_METHOD, tableName, status, sqlite3_errmsg(db));
+		}
 	}
 }
 
@@ -82,6 +79,11 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 + (NSString *)recordTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudKit_record_%@", registeredName];
+}
+
++ (NSString *)recordKeysTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"cloudKit_recordKeys_%@", registeredName];
 }
 
 + (NSString *)queueTableNameForRegisteredName:(NSString *)registeredName
@@ -464,6 +466,11 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	return [[self class] recordTableNameForRegisteredName:self.registeredName];
 }
 
+- (NSString *)recordKeysTableName
+{
+	return [[self class] recordKeysTableNameForRegisteredName:self.registeredName];
+}
+
 - (NSString *)queueTableName
 {
 	return [[self class] queueTableNameForRegisteredName:self.registeredName];
@@ -526,7 +533,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 			
 			NSString *changeSetUUID = nextChangeSet.uuid;
 			
-			[self queueOperationsForChangeSets:@[ nextChangeSet ]];
+			[self queueOperationForChangeSet:nextChangeSet];
 			[self postInFlightChangeSetChangedNotification:changeSetUUID];
 		}
 	}});
@@ -582,70 +589,77 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	}
 }
 
-- (void)queueOperationsForChangeSets:(NSArray *)changeSets
+- (void)queueOperationForChangeSet:(YDBCKChangeSet *)changeSet
 {
 	YDBLogAutoTrace();
 	
+	CKDatabase *database = [self databaseForIdentifier:changeSet.databaseIdentifier];
+	
+	NSArray *recordsToSave = changeSet.recordsToSave_noCopy;
+	NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
+	
+	YDBLogVerbose(@"CKModifyRecordsOperation UPLOADING: databaseIdentifier = %@:\n"
+				  @"  recordsToSave: %@\n"
+				  @"  recordIDsToDelete: %@",
+				  changeSet.databaseIdentifier, recordsToSave, recordIDsToDelete);
+	
+	CKModifyRecordsOperation *modifyRecordsOperation =
+	  [[CKModifyRecordsOperation alloc] initWithRecordsToSave:recordsToSave recordIDsToDelete:recordIDsToDelete];
+	modifyRecordsOperation.database = database;
+	modifyRecordsOperation.savePolicy = CKRecordSaveIfServerRecordUnchanged;
+	
+	modifyRecordsOperation.perRecordCompletionBlock = ^(CKRecord *record, NSError *error) {
+		YDBLogVerbose(@"record: %@\nerror: %@", record, error);
+	};
+	
 	__weak YapDatabaseCloudKit *weakSelf = self;
 	
-	for (YDBCKChangeSet *changeSet in changeSets)
+	modifyRecordsOperation.modifyRecordsCompletionBlock =
+	    ^(NSArray *savedRecords, NSArray *deletedRecordIDs, NSError *operationError)
 	{
-		CKDatabase *database = [self databaseForIdentifier:changeSet.databaseIdentifier];
+	#pragma clang diagnostic push
+	#pragma clang diagnostic warning "-Wimplicit-retain-self"
 		
-		NSArray *recordsToSave = changeSet.recordsToSave_noCopy;
-		NSArray *recordIDsToDelete = changeSet.recordIDsToDelete;
+		__strong YapDatabaseCloudKit *strongSelf = weakSelf;
+		if (strongSelf == nil) return;
 		
-		YDBLogVerbose(@"CKModifyRecordsOperation UPLOADING: databaseIdentifier = %@:\n"
-					  @"  recordsToSave: %@\n"
-					  @"  recordIDsToDelete: %@",
-					  changeSet.databaseIdentifier, recordsToSave, recordIDsToDelete);
-		
-		CKModifyRecordsOperation *modifyRecordsOperation =
-		  [[CKModifyRecordsOperation alloc] initWithRecordsToSave:recordsToSave recordIDsToDelete:recordIDsToDelete];
-		modifyRecordsOperation.database = database;
-		
-		modifyRecordsOperation.modifyRecordsCompletionBlock =
-		    ^(NSArray *savedRecords, NSArray *deletedRecordIDs, NSError *operationError)
+		if (operationError)
 		{
-			__strong YapDatabaseCloudKit *strongSelf = weakSelf;
-			if (strongSelf == nil) return;
-			
-			if (operationError)
+			if (operationError.code == CKErrorPartialFailure)
 			{
-				if (operationError.code == CKErrorPartialFailure)
-				{
-					YDBLogInfo(@"CKModifyRecordsOperation partial error: databaseIdentifier = %@\n"
-					           @"  error = %@", changeSet.databaseIdentifier, operationError);
-					
-					[strongSelf handlePartiallyFailedOperationWithChangeSet:changeSet
-					                                           savedRecords:savedRecords
-					                                       deletedRecordIDs:deletedRecordIDs
-					                                                  error:operationError];
-				}
-				else
-				{
-					YDBLogInfo(@"CKModifyRecordsOperation error: databaseIdentifier = %@\n"
-					           @"  error = %@", changeSet.databaseIdentifier, operationError);
-					
-					[strongSelf handleFailedOperationWithChangeSet:changeSet
-					                                         error:operationError];
-				}
+				YDBLogInfo(@"CKModifyRecordsOperation partial error: databaseIdentifier = %@\n"
+				           @"  error = %@", changeSet.databaseIdentifier, operationError);
+				
+				[strongSelf handlePartiallyFailedOperationWithChangeSet:changeSet
+				                                           savedRecords:savedRecords
+				                                       deletedRecordIDs:deletedRecordIDs
+				                                                  error:operationError];
 			}
 			else
 			{
-				YDBLogVerbose(@"CKModifyRecordsOperation COMPLETE: databaseIdentifier = %@:\n"
-				              @"  savedRecords: %@\n"
-				              @"  deletedRecordIDs: %@",
-				              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
+				YDBLogInfo(@"CKModifyRecordsOperation error: databaseIdentifier = %@\n"
+				           @"  error = %@", changeSet.databaseIdentifier, operationError);
 				
-				[strongSelf handleCompletedOperationWithChangeSet:changeSet
-				                                     savedRecords:savedRecords
-				                                 deletedRecordIDs:deletedRecordIDs];
+				[strongSelf handleFailedOperationWithChangeSet:changeSet
+				                                         error:operationError];
 			}
-		};
+		}
+		else
+		{
+			YDBLogVerbose(@"CKModifyRecordsOperation COMPLETE: databaseIdentifier = %@:\n"
+			              @"  savedRecords: %@\n"
+			              @"  deletedRecordIDs: %@",
+			              changeSet.databaseIdentifier, savedRecords, deletedRecordIDs);
+			
+			[strongSelf handleCompletedOperationWithChangeSet:changeSet
+			                                     savedRecords:savedRecords
+			                                 deletedRecordIDs:deletedRecordIDs];
+		}
 		
-		[masterOperationQueue addOperation:modifyRecordsOperation];
-	}
+	#pragma clang diagnostic pop
+	};
+		
+	[masterOperationQueue addOperation:modifyRecordsOperation];
 }
 
 - (void)handleFailedOperationWithChangeSet:(YDBCKChangeSet *)changeSet

@@ -23,6 +23,14 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 	}
 }
 
+#ifndef SQLITE_BIND_START
+#define SQLITE_BIND_START 1
+#endif
+
+#ifndef SQLITE_COL_START
+#define SQLITE_COL_START 0
+#endif
+
 extern NSString *const YapDatabaseRegisteredExtensionsKey;
 extern NSString *const YapDatabaseRegisteredMemoryTablesKey;
 extern NSString *const YapDatabaseExtensionsOrderKey;

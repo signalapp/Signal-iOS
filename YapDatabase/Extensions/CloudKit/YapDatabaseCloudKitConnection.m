@@ -26,6 +26,7 @@
 	
 	sqlite3_stmt *recordTable_insertStatement;
 	sqlite3_stmt *recordTable_updateOwnerCountStatement;
+	sqlite3_stmt *recordTable_updateMetadataStatement;
 	sqlite3_stmt *recordTable_updateRecordStatement;
 	sqlite3_stmt *recordTable_getInfoForHashStatement;
 	sqlite3_stmt *recordTable_getOwnerCountForHashStatement;
@@ -33,6 +34,9 @@
 	sqlite3_stmt *recordTable_enumerateStatement;
 	sqlite3_stmt *recordTable_removeForHashStatement;
 	sqlite3_stmt *recordTable_removeAllStatement;
+	
+	sqlite3_stmt *recordKeysTable_insertStatement;
+	sqlite3_stmt *recordKeysTable_getKeysForHashStatement;
 	
 	sqlite3_stmt *queueTable_insertStatement;
 	sqlite3_stmt *queueTable_updateDeletedRecordIDsStatement;
@@ -61,6 +65,10 @@
 		cleanRecordTableInfoCache.allowedObjectClasses =
 		  [NSSet setWithObjects:[YDBCKCleanRecordTableInfo class], [NSNull class], nil];
 		
+		recordKeysCache = [[YapCache alloc] initWithCountLimit:20];
+		recordKeysCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
+		recordKeysCache.allowedObjectClasses = [NSSet setWithObject:[NSArray class]];
+		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 	}
 	return self;
@@ -82,6 +90,7 @@
 	
 	sqlite_finalize_null(&recordTable_insertStatement);
 	sqlite_finalize_null(&recordTable_updateOwnerCountStatement);
+	sqlite_finalize_null(&recordTable_updateMetadataStatement);
 	sqlite_finalize_null(&recordTable_updateRecordStatement);
 	sqlite_finalize_null(&recordTable_getInfoForHashStatement);
 	sqlite_finalize_null(&recordTable_getOwnerCountForHashStatement);
@@ -89,6 +98,9 @@
 	sqlite_finalize_null(&recordTable_enumerateStatement);
 	sqlite_finalize_null(&recordTable_removeForHashStatement);
 	sqlite_finalize_null(&recordTable_removeAllStatement);
+	
+	sqlite_finalize_null(&recordKeysTable_insertStatement);
+	sqlite_finalize_null(&recordKeysTable_getKeysForHashStatement);
 	
 	sqlite_finalize_null(&queueTable_insertStatement);
 	sqlite_finalize_null(&queueTable_updateDeletedRecordIDsStatement);
@@ -552,6 +564,7 @@
  *   "hash" TEXT PRIMARY KEY,
  *   "databaseIdentifier" TEXT,
  *   "ownerCount" INTEGER,
+ *   "recordKeys_hash" TEXT,
  *   "record" BLOB
  * );
 **/
@@ -563,7 +576,8 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"INSERT OR REPLACE INTO \"%@\""
-		  @" (\"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\") VALUES (?, ?, ?, ?);",
+		  @" (\"hash\", \"databaseIdentifier\", \"ownerCount\", \"recordKeys_hash\", \"record\")"
+		  @" VALUES (?, ?, ?, ?, ?);",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -587,13 +601,28 @@
 	return *statement;
 }
 
+- (sqlite3_stmt *)recordTable_updateMetadataStatement
+{
+	sqlite3_stmt **statement = &recordTable_updateMetadataStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"UPDATE \"%@\" SET \"ownerCount\" = ?, \"recordKeys_hash\" = ? WHERE \"hash\" = ?;",
+		  [parent recordTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
 - (sqlite3_stmt *)recordTable_updateRecordStatement
 {
 	sqlite3_stmt **statement = &recordTable_updateRecordStatement;
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"UPDATE \"%@\" SET \"record\" = ? WHERE \"hash\" = ?;",
+		  @"UPDATE \"%@\" SET \"recordKeys_hash\" = ?, \"record\" = ? WHERE \"hash\" = ?;",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -608,7 +637,9 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"databaseIdentifier\", \"ownerCount\", \"record\" FROM \"%@\" WHERE \"hash\" = ?;",
+		  @"SELECT \"databaseIdentifier\", \"ownerCount\", \"recordKeys_hash\", \"record\""
+		  @" FROM \"%@\""
+		  @" WHERE \"hash\" = ?;",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -653,7 +684,7 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\" FROM \"%@\";",
+		  @"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"recordTable_hash\", \"record\" FROM \"%@\";",
 		  [parent recordTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
@@ -690,6 +721,52 @@
 	return *statement;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Statements - RecordKeysTable
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * CREATE TABLE IF NOT EXISTS "recordKeysTableName" (
+ *   "hash" TEXT PRIMARY KEY NOT NULL,
+ *   "keys" BLOB
+ * );
+**/
+
+- (sqlite3_stmt *)recordKeysTable_insertStatement
+{
+	sqlite3_stmt **statement = &recordKeysTable_insertStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"INSERT OR IGNORE INTO \"%@\""
+		  @" (\"hash\", \"keys\") VALUES (?, ?);", [parent recordKeysTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)recordKeysTable_getKeysForHashStatement
+{
+	sqlite3_stmt **statement = &recordKeysTable_getKeysForHashStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"keys\" FROM \"%@\" WHERE \"hash\" = ?;", [parent recordKeysTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+/**
+- (sqlite3_stmt *)recordKeysTable_garbageCollection
+{
+	DELETE FROM \"%@\" WHERE \"hash\" NOT IN (SELECT UNIQUE recordKeys_hash FROM \"%@\");
+}
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements - QueueTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

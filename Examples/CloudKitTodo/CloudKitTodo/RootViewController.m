@@ -333,6 +333,7 @@ static NSString *const TodoCellIdentifier = @"Todo";
 		todo = [todo copy]; // make mutable copy
 		
 		todo.isDone = newIsDone;
+		todo.lastModified = [NSDate date];
 		
 		[transaction setObject:todo forKey:todoID inCollection:Collection_Todos];
 	}];

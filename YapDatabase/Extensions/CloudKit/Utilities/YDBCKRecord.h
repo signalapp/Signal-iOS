@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
 
-@interface YapDatabaseCKRecord : NSObject <NSCoding>
+
+@interface YDBCKRecord : NSObject <NSCoding>
 
 /**
  * This method serializes just the "system fields" of the given record.
@@ -11,9 +12,9 @@
 + (NSData *)serializeRecord:(CKRecord *)record;
 
 /**
- * Deserialized the given record data.
+ * Deserialize the given record data.
  *
- * If the record data came from [YapDatabaseCKRecord serializeRecord:],
+ * If the record data came from [YDBCKRecord serializeRecord:],
  * then the returned record will only contain the "system fields".
 **/
 + (CKRecord *)deserializeRecord:(NSData *)data;
@@ -24,6 +25,12 @@
  * It will NOT contain any key/value pairs from the original record.
 **/
 + (CKRecord *)sanitizedRecord:(CKRecord *)record;
+
+/**
+ * Returns a copy of the given record, with the record.changedKeys property cleared (empty).
+ * The copy will contain all the key/value pairs from the original record.
+**/
++ (CKRecord *)recordWithClearedChangedKeys:(CKRecord *)record;
 
 #pragma mark Instance
 

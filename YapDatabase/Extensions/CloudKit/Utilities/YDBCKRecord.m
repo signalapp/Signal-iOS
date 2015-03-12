@@ -1,7 +1,10 @@
-#import "YapDatabaseCKRecord.h"
+#import "YDBCKRecord.h"
+
+@interface YDBCKRecord_KeyedUnarchiver : NSKeyedUnarchiver
+@end
 
 
-@implementation YapDatabaseCKRecord
+@implementation YDBCKRecord
 
 /**
  * This method serializes just the "system fields" of the given record.
@@ -12,14 +15,14 @@
 {
 	if (record == nil) return nil;
 	
-	YapDatabaseCKRecord *recordWrapper = [[YapDatabaseCKRecord alloc] initWithRecord:record];
+	YDBCKRecord *recordWrapper = [[YDBCKRecord alloc] initWithRecord:record];
 	return [NSKeyedArchiver archivedDataWithRootObject:recordWrapper];
 }
 
 /**
  * Deserialized the given record data.
  *
- * If the record data came from [YapDatabaseCKRecord serializeRecord:],
+ * If the record data came from [YDBCKRecord serializeRecord:],
  * then the returned record will only contain the "system fields".
 **/
 + (CKRecord *)deserializeRecord:(NSData *)data
@@ -45,8 +48,21 @@
 	return [self deserializeRecord:[self serializeRecord:record]];
 }
 
+/**
+ * Returns a copy of the given record, with the record.changedKeys property cleared (empty).
+ * The copy will contain all the key/value pairs from the original record.
+**/
++ (CKRecord *)recordWithClearedChangedKeys:(CKRecord *)record
+{
+	// I sure wish Apple didn't make the changedKeys property immutable.
+	// It looks like I'll have to try to convince them about this...
+	
+	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:record];
+	return [YDBCKRecord_KeyedUnarchiver unarchiveObjectWithData:data];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Instance
+#pragma mark YDBCKRecord Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @synthesize record = record;
@@ -62,7 +78,7 @@
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
-	return nil;
+	return nil; // This shouldn't happen, as obj will be decoded as a straight CKRecord object.
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
@@ -85,6 +101,42 @@
 - (Class)classForCoder
 {
 	return [CKRecord class];
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark YDBCKRecord_KeyedUnarchiver
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation YDBCKRecord_KeyedUnarchiver
+
++ (id)unarchiveObjectWithData:(NSData *)data
+{
+	YDBCKRecord_KeyedUnarchiver *unarchiver = [[YDBCKRecord_KeyedUnarchiver alloc] initForReadingWithData:data];
+	
+	id obj = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+	[unarchiver finishDecoding];
+	
+	return obj;
+}
+
+- (id)decodeObjectForKey:(NSString *)key
+{
+//	NSLog(@"decodeObjectForKey: %@", key);
+	
+	if ([key isEqualToString:@"ChangedKeys"])
+	{
+		// At the time of this writing,
+		// CKRecord.changedKeys is a NSMutableSet.
+		
+		id obj = [super decodeObjectForKey:key];
+		return [[[obj class] alloc] init];
+	}
+	else
+	{
+		return [super decodeObjectForKey:key];
+	}
 }
 
 @end

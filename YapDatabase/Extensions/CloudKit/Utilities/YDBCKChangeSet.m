@@ -1,6 +1,10 @@
 #import "YDBCKChangeSet.h"
 #import "YDBCKChangeRecord.h"
+#import "YDBCKRecordKeysRow.h"
 #import "YapDatabaseCloudKitPrivate.h"
+#if DEBUG
+#import "YapDebugDictionary.h"
+#endif
 
 
 @implementation YDBCKChangeSet
@@ -184,12 +188,26 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	}
 }
 
-- (NSData *)serializeModifiedRecords
+- (NSData *)serializeModifiedRecords:(NSDictionary **)outRecordKeysRowDict
 {
-	if ([modifiedRecords count] > 0)
-		return [NSKeyedArchiver archivedDataWithRootObject:[modifiedRecords allValues]];
-	else
+	if (modifiedRecords.count == 0) {
 		return nil;
+	}
+	
+	NSMutableDictionary *recordKeysRowDict = [NSMutableDictionary dictionaryWithCapacity:modifiedRecords.count];
+	
+	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
+	{
+		YDBCKRecordKeysRow *recordKeysRow = [YDBCKRecordKeysRow hashRecordKeys:changeRecord.record];
+		
+		changeRecord.recordKeys_hash = recordKeysRow.hash;
+		[recordKeysRowDict setObject:recordKeysRow forKey:recordKeysRow.hash];
+	}
+	
+	NSData *result = [NSKeyedArchiver archivedDataWithRootObject:[modifiedRecords allValues]];
+	
+	if (outRecordKeysRowDict) *outRecordKeysRowDict = recordKeysRowDict;
+	return result;
 }
 
 - (void)deserializeModifiedRecords:(NSData *)serializedModifiedRecords
@@ -221,13 +239,14 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	}
 }
 
-- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block
+- (void)enumerateMissingRecordsWithBlock:
+                            (CKRecord* (^)(CKRecordID *recordID, NSString *recordKeys_hash, NSArray *changedKeys))block
 {
 	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
 		if (changeRecord.record == nil)
 		{
-			CKRecord *record = block(changeRecord.recordID, changeRecord.changedKeys);
+			CKRecord *record = block(changeRecord.recordID, changeRecord.recordKeys_hash, changeRecord.changedKeys);
 			
 			changeRecord.record = record;
 		}
