@@ -2,7 +2,6 @@
 #import "YapDatabasePrivate.h"
 #import "YDBCKRecord.h"
 #import "YDBCKAttachRequest.h"
-#import "YDBCKRecordKeysRow.h"
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
@@ -148,7 +147,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	NSString *mappingTableName    = [self mappingTableName];
 	NSString *recordTableName     = [self recordTableName];
-	NSString *recordKeysTableName = [self recordKeysTableName];
 	NSString *queueTableName      = [self queueTableName];
 	
 	int status;
@@ -188,7 +186,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	// Record Table
 	//
-	// | hash | ownerCount | databaseIdentifier | recordKeys_hash | record |
+	// | hash | ownerCount | databaseIdentifier | record |
 	
 	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@", [self registeredName], recordTableName);
 		
@@ -197,7 +195,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	  @" (\"hash\" TEXT PRIMARY KEY NOT NULL," // custom hash of CKRecordID & databaseIdentifier (for lookups)
 	  @"  \"databaseIdentifier\" TEXT,"        // user specified databaseIdentifier (null for default)
 	  @"  \"ownerCount\" INTEGER,"             // used for mapped records
-	  @"  \"recordKeys_hash\" TEXT NOT NULL,"  // CKRecord.allKeys (optimzed storage in recordKeys table)
 	  @"  \"record\" BLOB"                     // CKRecord (system fields only for mapped records)
 	  @" );", recordTableName];
 	
@@ -207,27 +204,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	{
 		YDBLogError(@"%@ - Failed creating table (%@): %d %s",
 		            THIS_METHOD, recordTableName, status, sqlite3_errmsg(db));
-		return NO;
-	}
-	
-	// RecordKeys Table
-	//
-	// | hash | allKeys |
-	
-	YDBLogVerbose(@"Creating cloudKit table for registeredName(%@): %@",[self registeredName], recordKeysTableName);
-	
-	NSString *createRecordKeysTable = [NSString stringWithFormat:
-	  @"CREATE TABLE IF NOT EXISTS \"%@\""
-	  @" (\"hash\" TEXT PRIMARY KEY NOT NULL,"
-	  @"  \"keys\" BLOB"
-	  @" );", recordKeysTableName];
-	
-	YDBLogVerbose(@"%@", createRecordKeysTable);
-	status = sqlite3_exec(db, [createRecordKeysTable UTF8String], NULL, NULL, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@ - Failed creating table (%@): %d %s",
-		            THIS_METHOD, recordKeysTableName, status, sqlite3_errmsg(db));
 		return NO;
 	}
 	
@@ -534,7 +510,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 		recordInfo.databaseIdentifier = databaseIdentifier;
 		[changeSet enumerateMissingRecordsWithBlock:
-		    ^CKRecord *(CKRecordID *recordID, NSString *recordKeys_hash, NSArray *changedKeys)
+		    ^CKRecord *(CKRecordID *recordID, NSArray *changedKeys)
 		{
 			NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 			
@@ -542,25 +518,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 			
 			__block CKRecord *record = [cleanRecordTableInfo.record safeCopy];
-			
-			NSMutableSet *unchangedKeys = [NSMutableSet setWithArray:[self keysForRecordKeysHash:recordKeys_hash]];
-			for (NSString *key in changedKeys) {
-				[unchangedKeys removeObject:key];
-			}
-			
-			if (unchangedKeys.count > 0)
-			{
-				recordInfo.keysToRestore = [unchangedKeys allObjects];
-				for (NSNumber *rowidNumber in rowids)
-				{
-					int64_t rowid = [rowidNumber longLongValue];
-					RestoreRecordBlock(rowid, &record, recordInfo);
-				}
-			
-				// You suck Apple.
-				// Fix your friggin' CloudKit stack so we aren't forced to re-upload unchanged values!
-			//	record = [YDBCKRecord recordWithClearedChangedKeys:record];
-			}
 			
 			recordInfo.keysToRestore = changedKeys;
 			for (NSNumber *rowidNumber in rowids)
@@ -615,8 +572,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			dirtyRecordTableInfo =
 			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 			                                                       recordID:nil
-			                                                     ownerCount:0
-			                                                recordKeys_hash:nil];
+			                                                     ownerCount:0];
 			
 			dirtyRecordTableInfo.dirty_ownerCount = 1;
 			dirtyRecordTableInfo.dirty_record = record;
@@ -990,11 +946,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	return [parentConnection->parent recordTableName];
 }
 
-- (NSString *)recordKeysTableName
-{
-	return [parentConnection->parent recordKeysTableName];
-}
-
 - (NSString *)queueTableName
 {
 	return [parentConnection->parent queueTableName];
@@ -1116,108 +1067,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	}
 }
 
-- (CKRecord *)baseRecordForCleanRecordTableInfo:(YDBCKCleanRecordTableInfo *)cleanRecordTableInfo
-                                       withHash:(NSString *)hash
-                           excludingChangedKeys:(NSArray *)changedKeys
-{
-//	void (^RestoreRecordBlock)(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo);
-//	
-//	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
-//	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
-//	{
-//		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
-//		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
-//		
-//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-//			
-//			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-//			if (ck)
-//			{
-//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key);
-//			}
-//		};
-//	}
-//	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
-//	{
-//		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
-//		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
-//		
-//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-//			
-//			YapCollectionKey *ck = nil;
-//			id object = nil;
-//			
-//			if ([databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid])
-//			{
-//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object);
-//			}
-//		};
-//	}
-//	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
-//	{
-//		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
-//		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
-//		
-//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-//			
-//			YapCollectionKey *ck = nil;
-//			id metadata = nil;
-//			
-//			if ([databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid])
-//			{
-//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, metadata);
-//			}
-//		};
-//	}
-//	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
-//	{
-//		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
-//		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
-//		
-//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-//			
-//			YapCollectionKey *ck = nil;
-//			id object = nil;
-//			id metadata = nil;
-//			
-//			if ([databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid])
-//			{
-//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object, metadata);
-//			}
-//		};
-//	}
-//	
-//	NSArray *allKeys = [self keysForRecordKeysHash:cleanRecordTableInfo.recordKeys_hash];
-//	
-//	NSMutableSet *keysToRestore = [NSMutableSet setWithArray:allKeys];
-//	for (NSString *key in changedKeys) {
-//		[keysToRestore removeObject:key];
-//	}
-//	
-//	__block CKRecord *baseRecord = [cleanRecordTableInfo.record safeCopy];
-//	
-//	if (keysToRestore.count > 0)
-//	{
-//		YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
-//		recordInfo.keysToRestore = [keysToRestore allObjects];
-//		
-//		NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
-//		for (NSNumber *rowidNumber in rowids)
-//		{
-//			int64_t rowid = [rowidNumber longLongValue];
-//			RestoreRecordBlock(rowid, &baseRecord, recordInfo);
-//		}
-//		
-//		// You suck Apple.
-//		// Fix your friggin' CloudKit stack so we aren't forced to re-upload unchanged values!
-//	//	baseRecord = [YDBCKRecord recordWithClearedChangedKeys:baseRecord];
-//	}
-//	
-//	return baseRecord;
-	
-	return [cleanRecordTableInfo.record safeCopy];
-}
-
 - (void)processRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
                                           preCalculatedHash:(NSString *)preCalculatedRecordTableHash
                                                    forRowid:(int64_t)rowid
@@ -1273,100 +1122,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		recordTableHashChangedForRowid = YES;
 	}
 	
-	// ORDER MATTERS:
-	//
-	// If there is an existing cleanRecordTableInfo for this record,
-	// then we'll be forced to restore a baseRecord via baseRecordForCleanRecordTableInfo:::.
-	// And this method enumerates the mappings in order to restore the baseRecord.
-	//
-	// Thus:
-	//
-	// if (recordTableHashChangedForRowid && newRecordTableHash)
-	// {
-	//     // Rowid is associated with new record.
-	//     ...
-	//
-	// ->  Do this BEFORE updating the mappings
-	// }
-	//
-	// if (recordTableHashChangedForRowid && prevRecordTableInfo)
-	// {
-	//     // Rowid is no longer associated with record.
-	//     ...
-	//
-	// ->  Do this AFTER updating the mappings
-	// }
-	
-	if (recordTableHashChangedForRowid && newRecordTableHash)
-	{
-		// Rowid is associated with new record.
-		// Need to either create new entry in record table,
-		// or increment ownerCount of existing entry in record table (and merge any record changes).
-		
-		id newRecordTableInfo = [self recordTableInfoForHash:newRecordTableHash cacheResult:NO];
-		
-		BOOL recordHasChangedValues = ([record.changedKeys count] > 0);
-		
-		BOOL remoteMerge = (flags & YDBCK_remoteMerge) ? YES : NO;
-		BOOL skipUploadRecord = (flags & YDBCK_skipUploadRecord) ? YES : NO;
-		
-		if ([newRecordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
-		{
-			__unsafe_unretained YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
-			  (YDBCKDirtyRecordTableInfo *)newRecordTableInfo;
-			
-			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
-			[newDirtyRecordTableInfo incrementOwnerCount];
-			
-			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
-			
-			if (newDirtyRecordTableInfo.skipUploadRecord && recordHasChangedValues && !skipUploadRecord) {
-				newDirtyRecordTableInfo.skipUploadRecord = NO;
-			}
-		}
-		else if ([newRecordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
-		{
-			__unsafe_unretained YDBCKCleanRecordTableInfo *newCleanRecordTableInfo =
-			  (YDBCKCleanRecordTableInfo *)newRecordTableInfo;
-			
-			CKRecord *baseRecord = [self baseRecordForCleanRecordTableInfo:newCleanRecordTableInfo
-			                                                      withHash:newRecordTableHash
-			                                          excludingChangedKeys:record.changedKeys];
-			
-			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
-			  [newCleanRecordTableInfo dirtyCopyWithBaseRecord:baseRecord];
-			
-			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
-			[newDirtyRecordTableInfo incrementOwnerCount];
-			
-			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
-			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
-			
-			if (!recordHasChangedValues) { // association only
-				newDirtyRecordTableInfo.skipUploadRecord = YES;
-			}
-			
-			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
-			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
-		}
-		else
-		{
-			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
-			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
-			                                                       recordID:nil
-			                                                     ownerCount:0
-			                                                recordKeys_hash:nil];
-			
-			newDirtyRecordTableInfo.dirty_ownerCount = 1;
-			newDirtyRecordTableInfo.dirty_record = record;
-			
-			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
-			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
-			
-			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
-			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
-		}
-	}
 	
 	if (recordTableHashChangedForRowid)
 	{
@@ -1415,11 +1170,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 			  (YDBCKCleanRecordTableInfo *)prevRecordTableInfo;
 			
-			CKRecord *baseRecord = [self baseRecordForCleanRecordTableInfo:cleanRecordTableInfo
-			                                                      withHash:prevRecordTableHash
-			                                          excludingChangedKeys:nil];
-			
-			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopyWithBaseRecord:baseRecord];
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			[dirtyRecordTableInfo decrementOwnerCount];
 			
 			if (remoteDeletion)     dirtyRecordTableInfo.remoteDeletion = remoteDeletion;
@@ -1427,6 +1178,71 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			
 			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:prevRecordTableHash];
 			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:prevRecordTableHash];
+		}
+	}
+	
+	if (recordTableHashChangedForRowid && newRecordTableHash)
+	{
+		// Rowid is associated with new record.
+		// Need to either create new entry in record table,
+		// or increment ownerCount of existing entry in record table (and merge any record changes).
+		
+		id newRecordTableInfo = [self recordTableInfoForHash:newRecordTableHash cacheResult:NO];
+		
+		BOOL recordHasChangedValues = ([record.changedKeys count] > 0);
+		
+		BOOL remoteMerge = (flags & YDBCK_remoteMerge) ? YES : NO;
+		BOOL skipUploadRecord = (flags & YDBCK_skipUploadRecord) ? YES : NO;
+		
+		if ([newRecordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
+			  (YDBCKDirtyRecordTableInfo *)newRecordTableInfo;
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			
+			if (newDirtyRecordTableInfo.skipUploadRecord && recordHasChangedValues && !skipUploadRecord) {
+				newDirtyRecordTableInfo.skipUploadRecord = NO;
+			}
+		}
+		else if ([newRecordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
+		{
+			__unsafe_unretained YDBCKCleanRecordTableInfo *newCleanRecordTableInfo =
+			  (YDBCKCleanRecordTableInfo *)newRecordTableInfo;
+			
+			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo = [newCleanRecordTableInfo dirtyCopy];
+			
+			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
+			
+			if (!recordHasChangedValues) { // association only
+				newDirtyRecordTableInfo.skipUploadRecord = YES;
+			}
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
+		}
+		else
+		{
+			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
+			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			                                                       recordID:nil
+			                                                     ownerCount:0];
+			
+			newDirtyRecordTableInfo.dirty_ownerCount = 1;
+			newDirtyRecordTableInfo.dirty_record = record;
+			
+			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
+			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
+			
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
 		}
 	}
 	
@@ -1444,11 +1260,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 			  (YDBCKCleanRecordTableInfo *)prevRecordTableInfo;
 			
-			CKRecord *baseRecord = [self baseRecordForCleanRecordTableInfo:cleanRecordTableInfo
-			                                                      withHash:prevRecordTableHash
-			                                          excludingChangedKeys:record.changedKeys];
-			
-			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopyWithBaseRecord:baseRecord];
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
 			
@@ -1460,8 +1272,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
 			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 			                                                       recordID:nil
-			                                                     ownerCount:0
-			                                                recordKeys_hash:nil];
+			                                                     ownerCount:0];
 			
 			newDirtyRecordTableInfo.dirty_ownerCount = 1;
 			newDirtyRecordTableInfo.dirty_record = record;
@@ -1932,12 +1743,11 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return nil;
 	}
 	
-	// SELECT "databaseIdentifier", "ownerCount", "recordKeys_hash", "record" FROM "recordTableName" WHERE "hash" = ?;
+	// SELECT "databaseIdentifier", "ownerCount", "record" FROM "recordTableName" WHERE "hash" = ?;
 	
 	int col_databaseIdentifier = SQLITE_COL_START + 0;
 	int col_ownerCount         = SQLITE_COL_START + 1;
-	int col_recordKeys_hash    = SQLITE_COL_START + 2;
-	int col_record             = SQLITE_COL_START + 3;
+	int col_record             = SQLITE_COL_START + 2;
 	
 	int bind_hash = SQLITE_BIND_START + 0;
 	
@@ -1946,7 +1756,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	NSString *databaseIdentifier = nil;
 	int64_t ownerCount = 0;
-	NSString *recordKeys_hash = nil;
 	CKRecord *record = nil;
 	
 	int status = sqlite3_step(statement);
@@ -1962,13 +1771,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 		
 		ownerCount = sqlite3_column_int64(statement, col_ownerCount);
-		
-		textSize = sqlite3_column_bytes(statement, col_recordKeys_hash);
-		if (textSize > 0)
-		{
-			const unsigned char *text = sqlite3_column_text(statement, col_recordKeys_hash);
-			recordKeys_hash = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		}
 		
 		const void *blob = sqlite3_column_blob(statement, col_record);
 		int blobSize = sqlite3_column_bytes(statement, col_record);
@@ -1995,7 +1797,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		cleanRecordTableInfo =
 		  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 		                                                     ownerCount:ownerCount
-		                                                recordKeys_hash:recordKeys_hash
 		                                                         record:record];
 		
 		if (cacheResult){
@@ -2088,14 +1889,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 		
 		[query appendString:
-		  @"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"recordKeys_hash\", \"record\""];
+		  @"SELECT \"hash\", \"databaseIdentifier\", \"ownerCount\", \"record\""];
 		[query appendFormat:@" FROM \"%@\" WHERE \"hash\" IN (", [self recordTableName]];
 		
 		int col_hash               = SQLITE_COL_START + 0;
 		int col_databaseIdentifier = SQLITE_COL_START + 1;
 		int col_ownerCount         = SQLITE_COL_START + 2;
-		int col_recordKeys_hash    = SQLITE_COL_START + 3;
-		int col_record             = SQLITE_COL_START + 4;
+		int col_record             = SQLITE_COL_START + 3;
 		
 		for (NSUInteger i = 0; i < count; i++)
 		{
@@ -2133,7 +1933,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			NSString *hash = nil;
 			NSString *databaseIdentifier = nil;
 			int64_t ownerCount = 0;
-			NSString *recordKeys_hash = nil;
 			CKRecord *record = nil;
 			
 			int textLen;
@@ -2153,13 +1952,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			
 			ownerCount = sqlite3_column_int64(statement, col_ownerCount);
 			
-			textLen = sqlite3_column_bytes(statement, col_recordKeys_hash);
-			if (textLen > 0)
-			{
-				text = sqlite3_column_text(statement, col_recordKeys_hash);
-				recordKeys_hash = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
-			}
-			
 			const void *blob = sqlite3_column_blob(statement, col_record);
 			int blobSize = sqlite3_column_bytes(statement, col_record);
 			
@@ -2174,7 +1966,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 				                                                     ownerCount:ownerCount
-				                                                recordKeys_hash:recordKeys_hash
 				                                                         record:record];
 				
 				[foundHashes setObject:cleanRecordTableInfo forKey:hash];
@@ -2199,9 +1990,9 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
  * Returns a corresponding row that needs to be inserted into the recordKeysTable.
  * The caller is responsible for inserting the recordKeysRow.
 **/
-- (YDBCKRecordKeysRow *)insertRecordTableRowWithHash:(NSString *)hash
-                                                info:(YDBCKDirtyRecordTableInfo *)dirtyRecordTableInfo
-                                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
+- (void)insertRecordTableRowWithHash:(NSString *)hash
+                                info:(YDBCKDirtyRecordTableInfo *)dirtyRecordTableInfo
+                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
 {
 	YDBLogAutoTrace();
 	
@@ -2211,25 +2002,22 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	NSAssert(dirtyRecordTableInfo.dirty_record != nil, @"Logic error");
 	NSAssert(dirtyRecordTableInfo.dirty_ownerCount > 0, @"Logic error");
 	
-	YDBCKRecordKeysRow *recordKeysRow = [YDBCKRecordKeysRow hashRecordKeys:dirtyRecordTableInfo.dirty_record];
-	
 	// Update recordKeys table
 	
 	sqlite3_stmt *statement = [parentConnection recordTable_insertStatement];
 	if (statement == NULL)
 	{
 		if (outSanitizedRecord) *outSanitizedRecord = nil;
-		return recordKeysRow;
+		return;
 	}
 	
 	// INSERT OR REPLACE INTO "recordTableName"
-	//   ("hash", "databaseIdentifier", "ownerCount", "recordKeys_hash", "record") VALUES (?, ?, ?, ?, ?);
+	//   ("hash", "databaseIdentifier", "ownerCount", "record") VALUES (?, ?, ?, ?, ?);
 	
 	int bind_hash               = SQLITE_BIND_START + 0;
 	int bind_databaseIdentifier = SQLITE_BIND_START + 1;
 	int bind_ownerCount         = SQLITE_BIND_START + 2;
-	int bind_recordKeys_hash    = SQLITE_BIND_START + 3;
-	int bind_record             = SQLITE_BIND_START + 4;
+	int bind_record             = SQLITE_BIND_START + 3;
 	
 	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
 	sqlite3_bind_text(statement, bind_hash, _hash.str, _hash.length, SQLITE_STATIC);
@@ -2241,9 +2029,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		sqlite3_bind_null(statement, bind_databaseIdentifier);
 	
 	sqlite3_bind_int64(statement, bind_ownerCount, dirtyRecordTableInfo.dirty_ownerCount);
-	
-	YapDatabaseString _recordKeys_hash; MakeYapDatabaseString(&_recordKeys_hash, recordKeysRow.hash);
-	sqlite3_bind_text(statement, bind_recordKeys_hash, _recordKeys_hash.str, _recordKeys_hash.length, SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *recordBlob =
 	  [YDBCKRecord serializeRecord:dirtyRecordTableInfo.dirty_record];
@@ -2260,23 +2045,21 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_hash);
 	FreeYapDatabaseString(&_dbID);
-	FreeYapDatabaseString(&_recordKeys_hash);
 	
 	if (outSanitizedRecord) {
 		CKRecord *sanitizedRecord = [YDBCKRecord deserializeRecord:recordBlob];
 		*outSanitizedRecord = sanitizedRecord;
 	}
-	return recordKeysRow;
 }
 
 /**
- * Updates the metadata columns (ownerCount, recordKeys_hash) for the record IF NEEDED.
+ * Updates the metadata column(s) (ownerCount) for the record IF NEEDED.
  * 
  * Returns a corresponding row that needs to be inserted into the recordKeysTable.
  * The caller is responsible for inserting the recordKeysRow.
 **/
-- (YDBCKRecordKeysRow *)maybeUpdateRecordTableRowWithHash:(NSString *)hash
-                                                     info:(YDBCKDirtyRecordTableInfo *)dirtyRecordTableInfo
+- (void)maybeUpdateRecordTableRowWithHash:(NSString *)hash
+                                     info:(YDBCKDirtyRecordTableInfo *)dirtyRecordTableInfo
 {
 	YDBLogAutoTrace();
 	
@@ -2286,20 +2069,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	NSAssert(dirtyRecordTableInfo.dirty_record != nil, @"Logic error");
 	NSAssert(dirtyRecordTableInfo.dirty_ownerCount > 0, @"Logic error");
 	
-	YDBCKRecordKeysRow *recordKeysRow = [YDBCKRecordKeysRow hashRecordKeys:dirtyRecordTableInfo.dirty_record];
-	
 	BOOL ownerCountChanged = dirtyRecordTableInfo.ownerCountChanged;
-	BOOL recordKeysHashChanged = ![recordKeysRow.hash isEqualToString:dirtyRecordTableInfo.clean_recordKeys_hash];
 	
-	if (!recordKeysHashChanged) {
-		recordKeysRow.needsInsert = NO;
-	}
-	
-	if (ownerCountChanged && !recordKeysHashChanged)
+	if (ownerCountChanged)
 	{
 		sqlite3_stmt *statement = [parentConnection recordTable_updateOwnerCountStatement];
 		if (statement == NULL) {
-			return recordKeysRow;
+			return;
 		}
 		
 		// UPDATE "recordTableName" SET "ownerCount" = ? WHERE "hash" = ?;
@@ -2322,58 +2098,17 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		sqlite3_clear_bindings(statement);
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_hash);
-		
 	}
-	else if (recordKeysHashChanged)
-	{
-		// Update recordTable
-		
-		sqlite3_stmt *statement = [parentConnection recordTable_updateMetadataStatement];
-		if (statement == NULL) {
-			return recordKeysRow;
-		}
-		
-		// UPDATE "recordTableName" SET "ownerCount" = ?, "recordKeys_hash" = ? WHERE "hash" = ?;
-		
-		int bind_ownerCount      = SQLITE_BIND_START + 0;
-		int bind_recordKeys_hash = SQLITE_BIND_START + 1;
-		int bind_hash            = SQLITE_BIND_START + 2;
-		
-		sqlite3_bind_int64(statement, bind_ownerCount, dirtyRecordTableInfo.dirty_ownerCount);
-		
-		YapDatabaseString _recordKeys_hash; MakeYapDatabaseString(&_recordKeys_hash, recordKeysRow.hash);
-		sqlite3_bind_text(statement, bind_recordKeys_hash,
-		                  _recordKeys_hash.str, _recordKeys_hash.length, SQLITE_STATIC);
-		
-		YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
-		sqlite3_bind_text(statement, bind_hash, _hash.str, _hash.length, SQLITE_STATIC);
-		
-		int status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@ - Error executing statement (B): %d %s", THIS_METHOD,
-			            status, sqlite3_errmsg(databaseTransaction->connection->db));
-		}
-		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
-		FreeYapDatabaseString(&_recordKeys_hash);
-		FreeYapDatabaseString(&_hash);
-	}
-	
-	return recordKeysRow;
 }
 
-- (YDBCKRecordKeysRow *)updateRecordTableRowWithHash:(NSString *)hash
-                                              record:(CKRecord *)record
-                                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
+- (void)updateRecordTableRowWithHash:(NSString *)hash
+                              record:(CKRecord *)record
+                  outSanitizedRecord:(CKRecord **)outSanitizedRecord
 {
 	YDBLogAutoTrace();
 	
 	NSParameterAssert(hash != nil);
 	NSParameterAssert(record != nil);
-	
-	YDBCKRecordKeysRow *recordKeysRow = [YDBCKRecordKeysRow hashRecordKeys:record];
 	
 	// Update record table
 	
@@ -2381,17 +2116,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	if (statement == NULL)
 	{
 		if (outSanitizedRecord) *outSanitizedRecord = nil;
-		return recordKeysRow;
+		return;
 	}
 	
-	// UPDATE "recordTableName" SET "recordKeys_hash" = ?, "record" = ? WHERE "hash" = ?;
+	// UPDATE "recordTableName" SET "record" = ? WHERE "hash" = ?;
 	
-	int bind_recordKeys_hash = SQLITE_BIND_START + 0;
-	int bind_record          = SQLITE_BIND_START + 1;
-	int bind_hash            = SQLITE_BIND_START + 2;
-	
-	YapDatabaseString _recordKeys_hash; MakeYapDatabaseString(&_recordKeys_hash, recordKeysRow.hash);
-	sqlite3_bind_text(statement, bind_recordKeys_hash, _recordKeys_hash.str, _recordKeys_hash.length, SQLITE_STATIC);
+	int bind_record          = SQLITE_BIND_START + 0;
+	int bind_hash            = SQLITE_BIND_START + 1;
 	
 	__attribute__((objc_precise_lifetime)) NSData *recordBlob = [YDBCKRecord serializeRecord:record];
 	sqlite3_bind_blob(statement, bind_record, recordBlob.bytes, (int)recordBlob.length, SQLITE_STATIC);
@@ -2408,14 +2139,12 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_recordKeys_hash);
 	FreeYapDatabaseString(&_hash);
 	
 	if (outSanitizedRecord) {
 		CKRecord *sanitizedRecord = [YDBCKRecord deserializeRecord:recordBlob];
 		*outSanitizedRecord = sanitizedRecord;
 	}
-	return recordKeysRow;
 }
 
 - (void)removeRecordTableRowWithHash:(NSString *)hash
@@ -2606,132 +2335,20 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities - RecordKeysTable
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSData *)serializeKeys:(NSArray *)keys
-{
-	return [NSKeyedArchiver archivedDataWithRootObject:keys];
-}
-
-- (NSArray *)deserializeKeys:(NSData *)keysBlob
-{
-	NSArray *keys = [NSKeyedUnarchiver unarchiveObjectWithData:keysBlob];
-	
-	if (![keys isKindOfClass:[NSArray class]])
-	{
-		YDBLogWarn(@"%@ - Found non-array keys: %@", THIS_METHOD, keys);
-		return nil;
-	}
-	else
-	{
-		return keys;
-	}
-}
-
-- (void)insertRecordKeysRow:(YDBCKRecordKeysRow *)row
-{
-	YDBLogAutoTrace();
-	
-	NSParameterAssert(row.hash != nil);
-	NSParameterAssert(row.keys != nil);
-	
-	sqlite3_stmt *statement = [parentConnection recordKeysTable_insertStatement];
-	if (statement == NULL) {
-		return;
-	}
-	
-	// INSERT OR IGNORE INTO "recordKeysTable" ("hash", "keys") VALUES (?, ?);
-	
-	int bind_hash = SQLITE_BIND_START + 0;
-	int bind_keys = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, row.hash);
-	sqlite3_bind_text(statement, bind_hash, _hash.str, _hash.length, SQLITE_STATIC);
-	
-	__attribute__((objc_precise_lifetime)) NSData *keysBlob = [self serializeKeys:row.keys];
-	sqlite3_bind_blob(statement, bind_keys, keysBlob.bytes, (int)keysBlob.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status != SQLITE_DONE)
-	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_hash);
-}
-
-- (NSArray *)keysForRecordKeysHash:(NSString *)hash
-{
-	YDBLogAutoTrace();
-	
-	if (hash == nil) return nil;
-	
-	NSArray *keys = [parentConnection->recordKeysCache objectForKey:hash];
-	if (keys) {
-		return keys;
-	}
-	
-	sqlite3_stmt *statement = [parentConnection recordKeysTable_getKeysForHashStatement];
-	if (statement == NULL) {
-		return nil;
-	}
-	
-	// SELECT "keys" FROM "recordKeysTable" WHERE "hash" = ?;
-	
-	int col_keys = SQLITE_COL_START + 0;
-	int bind_hash = SQLITE_BIND_START + 0;
-	
-	YapDatabaseString _hash; MakeYapDatabaseString(&_hash, hash);
-	sqlite3_bind_text(statement, bind_hash, _hash.str, _hash.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		const void *blob = sqlite3_column_blob(statement, col_keys);
-		int blobLen = sqlite3_column_bytes(statement, col_keys);
-		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobLen freeWhenDone:NO];
-		
-		keys = [self deserializeKeys:data];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"%@: Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_hash);
-	
-	if (keys) {
-		[parentConnection->recordKeysCache setObject:keys forKey:hash];
-	}
-	
-	return keys;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Utilities - QueueTable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Invoke this method with the NEW changeSets from the pendingQueue (pendingQueue.newChangeSets).
 **/
-- (NSDictionary *)insertQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
+- (void)insertQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
 {
 	YDBLogAutoTrace();
 	
 	sqlite3_stmt *statement = [parentConnection queueTable_insertStatement];
 	if (statement == NULL) {
-		return nil;
+		return;
 	}
-	
-	NSDictionary *recordKeysRowDict = nil;
 	
 	// INSERT INTO "queueTableName"
 	//   ("uuid", "prev", "databaseIdentifier", "deletedRecordIDs", "modifiedRecords") VALUES (?, ?, ?, ?, ?);
@@ -2760,7 +2377,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	else
 		sqlite3_bind_null(statement, bind_deletedRecordIDs);
 	
-	__attribute__((objc_precise_lifetime)) NSData *blob2 = [changeSet serializeModifiedRecords:&recordKeysRowDict];
+	__attribute__((objc_precise_lifetime)) NSData *blob2 = [changeSet serializeModifiedRecords];
 	if (blob2)
 		sqlite3_bind_blob(statement, bind_modifiedRecords, blob2.bytes, (int)blob2.length, SQLITE_STATIC);
 	else
@@ -2778,21 +2395,17 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	FreeYapDatabaseString(&_uuid);
 	FreeYapDatabaseString(&_prev);
 	FreeYapDatabaseString(&_dbid);
-	
-	return recordKeysRowDict;
 }
 
 /**
  * Invoke this method with OLDER changeSets from the pendingQueue that have changes we need to write to the DB.
 **/
-- (NSDictionary *)updateQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
+- (void)updateQueueTableRowWithChangeSet:(YDBCKChangeSet *)changeSet
 {
 	YDBLogAutoTrace();
 	
 	NSAssert(changeSet.hasChangesToDeletedRecordIDs || changeSet.hasChangesToModifiedRecords,
 	         @"Method expected modified changeSet !");
-	
-	NSDictionary *recordKeysRowDict = nil;
 	
 	if (changeSet.hasChangesToDeletedRecordIDs && !changeSet.hasChangesToModifiedRecords)
 	{
@@ -2801,7 +2414,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateDeletedRecordIDsStatement];
 		if (statement == NULL) {
-			return nil;
+			return;
 		}
 		
 		// UPDATE "queueTableName" SET "deletedRecordIDs" = ? WHERE "uuid" = ?;
@@ -2836,7 +2449,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateModifiedRecordsStatement];
 		if (statement == NULL) {
-			return nil;
+			return;
 		}
 		
 		// UPDATE "queueTableName" SET "modifiedRecords" = ? WHERE "uuid" = ?;
@@ -2844,7 +2457,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		int bind_modifiedRecords = SQLITE_BIND_START + 0;
 		int bind_uuid            = SQLITE_BIND_START + 1;
 		
-		__attribute__((objc_precise_lifetime)) NSData *blob = [changeSet serializeModifiedRecords:&recordKeysRowDict];
+		__attribute__((objc_precise_lifetime)) NSData *blob = [changeSet serializeModifiedRecords];
 		if (blob)
 			sqlite3_bind_blob(statement, bind_modifiedRecords, blob.bytes, (int)blob.length, SQLITE_STATIC);
 		else
@@ -2872,7 +2485,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		
 		sqlite3_stmt *statement = [parentConnection queueTable_updateBothStatement];
 		if (statement == NULL) {
-			return nil;
+			return;
 		}
 		
 		// UPDATE "queueTableName" SET "deletedRecordIDs" = ?, "modifiedRecords" = ? WHERE "uuid" = ?;
@@ -2887,7 +2500,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		else
 			sqlite3_bind_null(statement, bind_deletedRecordIDs);
 		
-		__attribute__((objc_precise_lifetime)) NSData *mrBlob = [changeSet serializeModifiedRecords:&recordKeysRowDict];
+		__attribute__((objc_precise_lifetime)) NSData *mrBlob = [changeSet serializeModifiedRecords];
 		if (mrBlob)
 			sqlite3_bind_blob(statement, bind_modifiedRecods, mrBlob.bytes, (int)mrBlob.length, SQLITE_STATIC);
 		else
@@ -2907,8 +2520,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_uuid);
 	}
-	
-	return recordKeysRowDict;
 }
 
 /**
@@ -2961,40 +2572,26 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return;
 	}
 	
-	// Step 1 of 7:
+	// Step 1 of 6:
 	//
 	// Mark this transaction as an operationPartialCompletionTransaction.
 	// This is handled a little differently from a regular (user-initiated) transaction.
 	
 	parentConnection->isOperationPartialCompletionTransaction = YES;
 	
-	// Step 2 of 7:
+	// Step 2 of 6:
 	//
 	// Update recordsTable & recordsCache for any records that were saved.
 	// We need to store the new system fields of the CKRecord.
-	
-	NSMutableDictionary *recordKeysTableChanges = nil;
-	
-	NSUInteger capacity = savedRecords.count;
-	if (capacity > 0) {
-		recordKeysTableChanges = [NSMutableDictionary dictionaryWithCapacity:capacity];
-	}
 	
 	for (CKRecord *record in savedRecords)
 	{
 		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:changeSet.databaseIdentifier];
 		
-		YDBCKRecordKeysRow *recordKeysRow = nil;
 		CKRecord *sanitizedRecord = nil;
-		
-		recordKeysRow = [self updateRecordTableRowWithHash:hash
-		                                            record:record
-		                                outSanitizedRecord:&sanitizedRecord];
-		
-		if (recordKeysRow.needsInsert)
-		{
-			[recordKeysTableChanges setObject:recordKeysRow forKey:recordKeysRow.hash];
-		}
+		[self updateRecordTableRowWithHash:hash
+		                            record:record
+		                outSanitizedRecord:&sanitizedRecord];
 		
 		if (sanitizedRecord)
 		{
@@ -3003,8 +2600,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
 			if (cleanRecordTableInfo)
 			{
-				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithRecordKeys_hash:recordKeysRow.hash
-				                                                          sanitizedRecord:sanitizedRecord];
+				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
 				
 				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
 			}
@@ -3016,7 +2612,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				cleanRecordTableInfo =
 				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:changeSet.databaseIdentifier
 				                                                     ownerCount:ownerCount
-				                                                recordKeys_hash:recordKeysRow.hash
 				                                                         record:sanitizedRecord];
 			}
 			
@@ -3034,7 +2629,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 	}
 	
-	// Step 3 of 7:
+	// Step 3 of 6:
 	//
 	// Create a pendingQueue,
 	// and lock the masterQueue so we can make changes to it.
@@ -3044,7 +2639,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
-	// Step 4 of 7:
+	// Step 4 of 6:
 	//
 	// Update previous changeSets (if needed), including the inFlightChangeSet.
 	
@@ -3063,7 +2658,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		             databaseIdentifier:changeSet.databaseIdentifier];
 	}
 	
-	// Step 5 of 7:
+	// Step 5 of 6:
 	//
 	// Update queue table.
 	// This is the list of changes the pendingQueue gives us.
@@ -3072,29 +2667,16 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	{
 		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
 		{
-			NSDictionary *recordKeysRowDict = [self updateQueueTableRowWithChangeSet:oldChangeSet];
-			if (recordKeysRowDict)
-			{
-				[recordKeysTableChanges addEntriesFromDictionary:recordKeysRowDict];
-			}
+			[self updateQueueTableRowWithChangeSet:oldChangeSet];
 		}
 	}
 	
-	// Step 6 of 7:
+	// Step 6 of 6:
 	//
 	// Update the masterQueue,
 	// and unlock it so the next operation can be dispatched.
 	
 	[masterQueue mergePendingQueue:pendingQueue];
-	
-	// Step 7 of 7:
-	//
-	// Update recordKeys table.
-	
-	for (YDBCKRecordKeysRow *recordKeysRow in [recordKeysTableChanges objectEnumerator])
-	{
-		[self insertRecordKeysRow:recordKeysRow];
-	}
 }
 
 - (void)handleCompletedOperationWithChangeSet:(YDBCKChangeSet *)changeSet
@@ -3110,16 +2692,14 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return;
 	}
 	
-	NSMutableDictionary *recordKeysTableChanges = [NSMutableDictionary dictionary];
-	
-	// Step 1 of 7:
+	// Step 1 of 6:
 	//
 	// Mark this transaction as an operationCompletionTransaction.
 	// This is handled a little differently from a regular (user-initiated) transaction.
 	
 	parentConnection->isOperationCompletionTransaction = YES;
 	
-	// Step 2 of 7:
+	// Step 2 of 6:
 	//
 	// Update recordsTable & recordsCache for any records that were saved.
 	// We need to store the new system fields of the CKRecord.
@@ -3128,17 +2708,10 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	{
 		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:changeSet.databaseIdentifier];
 		
-		YDBCKRecordKeysRow *recordKeysRow = nil;
 		CKRecord *sanitizedRecord = nil;
-		
-		recordKeysRow = [self updateRecordTableRowWithHash:hash
-		                                            record:record
-		                                outSanitizedRecord:&sanitizedRecord];
-		
-		if (recordKeysRow.needsInsert)
-		{
-			[recordKeysTableChanges setObject:recordKeysRow forKey:recordKeysRow.hash];
-		}
+		[self updateRecordTableRowWithHash:hash
+		                            record:record
+		                outSanitizedRecord:&sanitizedRecord];
 		
 		if (sanitizedRecord)
 		{
@@ -3147,8 +2720,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			cleanRecordTableInfo = [parentConnection->cleanRecordTableInfoCache objectForKey:hash];
 			if (cleanRecordTableInfo)
 			{
-				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithRecordKeys_hash:recordKeysRow.hash
-				                                                          sanitizedRecord:sanitizedRecord];
+				cleanRecordTableInfo = [cleanRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
 				
 				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
 			}
@@ -3160,7 +2732,6 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				cleanRecordTableInfo =
 				  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:changeSet.databaseIdentifier
 				                                                     ownerCount:ownerCount
-				                                                recordKeys_hash:recordKeysRow.hash
 				                                                         record:sanitizedRecord];
 				
 				[parentConnection->cleanRecordTableInfoCache setObject:cleanRecordTableInfo forKey:hash];
@@ -3181,7 +2752,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 
 	}
 	
-	// Step 3 of 7:
+	// Step 3 of 6:
 	//
 	// Create a pendingQueue,
 	// and lock the masterQueue so we can make changes to it.
@@ -3191,7 +2762,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
-	// Step 4 of 7:
+	// Step 4 of 6:
 	//
 	// Update previous changeSets (if needed).
 	//
@@ -3206,7 +2777,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		          isOpPartialCompletion:NO];
 	}
 	
-	// Step 5 of 7:
+	// Step 5 of 6:
 	//
 	// Update queue table.
 	// This is the list of changes the pendingQueue gives us.
@@ -3217,31 +2788,18 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		{
 			NSAssert(![queuedChangeSet.uuid isEqualToString:changeSet.uuid], @"Logic error");
 			
-			NSDictionary *recordKeysRowDict = [self updateQueueTableRowWithChangeSet:queuedChangeSet];
-			if (recordKeysRowDict)
-			{
-				[recordKeysTableChanges addEntriesFromDictionary:recordKeysRowDict];
-			}
+			[self updateQueueTableRowWithChangeSet:queuedChangeSet];
 		}
 	}
 	
 	[self removeQueueTableRowWithUUID:changeSet.uuid];
 	
-	// Step 6 of 7:
+	// Step 6 of 6:
 	//
 	// Update the masterQueue,
 	// and unlock it so the next operation can be dispatched.
 	
 	[masterQueue mergePendingQueue:pendingQueue];
-	
-	// Step 7 of 7:
-	//
-	// Update recordKeys table.
-	
-	for (YDBCKRecordKeysRow *recordKeysRow in [recordKeysTableChanges objectEnumerator])
-	{
-		[self insertRecordKeysRow:recordKeysRow];
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3283,9 +2841,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return;
 	}
 	
-	NSMutableDictionary *recordKeysTableChanges = [NSMutableDictionary dictionary];
-	
-	// Step 1 of 7:
+	// Step 1 of 6:
 	//
 	// Update mapping table.
 	
@@ -3317,7 +2873,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 	}];
 	
-	// Step 2 of 7:
+	// Step 2 of 6:
 	//
 	// Update record table.
 	
@@ -3345,14 +2901,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 		else
 		{
-			YDBCKRecordKeysRow *recordKeysRow = nil;
 			CKRecord *sanitizedRecord = nil;
 			
 			if (dirtyRecordTableInfo.clean_ownerCount <= 0)
 			{
-				recordKeysRow = [self insertRecordTableRowWithHash:hash
-				                                              info:dirtyRecordTableInfo
-				                                outSanitizedRecord:&sanitizedRecord];
+				[self insertRecordTableRowWithHash:hash
+				                              info:dirtyRecordTableInfo
+				                outSanitizedRecord:&sanitizedRecord];
 			}
 			else
 			{
@@ -3364,19 +2919,13 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				sanitizedRecord = [dirtyRecordTableInfo.dirty_record sanitizedCopy];
 				
 				// We may, however, need to update the metadata about the record.
-				// That is, the ownerCount and/or recordKeys_hash value(s).
+				// That is, the ownerCount value.
 				
-				recordKeysRow = [self maybeUpdateRecordTableRowWithHash:hash info:dirtyRecordTableInfo];
-			}
-			
-			if (recordKeysRow.needsInsert)
-			{
-				[recordKeysTableChanges setObject:recordKeysRow forKey:recordKeysRow.hash];
+				[self maybeUpdateRecordTableRowWithHash:hash info:dirtyRecordTableInfo];
 			}
 			
 			YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
-			  [dirtyRecordTableInfo cleanCopyWithRecordKeys_hash:recordKeysRow.hash
-			                                     sanitizedRecord:sanitizedRecord];
+			  [dirtyRecordTableInfo cleanCopyWithSanitizedRecord:sanitizedRecord];
 			
 			if (parentConnection->changeset_recordTableInfo == nil)
 				parentConnection->changeset_recordTableInfo = [[NSMutableDictionary alloc] init];
@@ -3386,7 +2935,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 	}];
 	
-	// Step 3 of 7:
+	// Step 3 of 6:
 	//
 	// Create a pendingQueue,
 	// and lock the masterQueue so we can make changes to it.
@@ -3394,7 +2943,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	YDBCKChangeQueue *masterQueue = parentConnection->parent->masterQueue;
 	YDBCKChangeQueue *pendingQueue = [masterQueue newPendingQueue];
 	
-	// Step 4 of 7:
+	// Step 4 of 6:
 	//
 	// Use YDBCKChangeQueue tools to generate a list of updates for the queue table.
 	
@@ -3489,7 +3038,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 	}];
 	
-	// Step 5 of 7:
+	// Step 5 of 6:
 	//
 	// Update queue table.
 	// This is the list of changes the pendingQueue gives us.
@@ -3498,38 +3047,21 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	{
 		if (oldChangeSet.hasChangesToDeletedRecordIDs || oldChangeSet.hasChangesToModifiedRecords)
 		{
-			NSDictionary *recordKeysRowDict = [self updateQueueTableRowWithChangeSet:oldChangeSet];
-			if (recordKeysRowDict)
-			{
-				[recordKeysTableChanges addEntriesFromDictionary:recordKeysRowDict];
-			}
+			[self updateQueueTableRowWithChangeSet:oldChangeSet];
 		}
 	}
 	
 	for (YDBCKChangeSet *newChangeSet in pendingQueue.changeSetsFromCurrentCommit)
 	{
-		NSDictionary *recordKeysRowDict = [self insertQueueTableRowWithChangeSet:newChangeSet];
-		if (recordKeysRowDict)
-		{
-			[recordKeysTableChanges addEntriesFromDictionary:recordKeysRowDict];
-		}
+		[self insertQueueTableRowWithChangeSet:newChangeSet];
 	}
 	
-	// Step 6 of 7:
+	// Step 6 of 6:
 	//
 	// Update the masterQueue,
 	// and unlock it so the next operation can be dispatched.
 	
 	[masterQueue mergePendingQueue:pendingQueue];
-	
-	// Step 7 of 7:
-	//
-	// Update recordKeys table
-	
-	for (YDBCKRecordKeysRow *recordKeysRow in [recordKeysTableChanges objectEnumerator])
-	{
-		[self insertRecordKeysRow:recordKeysRow];
-	}
 }
 
 /**
@@ -4452,11 +3984,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 			  (YDBCKCleanRecordTableInfo *)recordTableInfo;
 			
-			CKRecord *baseRecord = [self baseRecordForCleanRecordTableInfo:cleanRecordTableInfo
-			                                                      withHash:hash
-			                                          excludingChangedKeys:newLocalRecord.changedKeys];
-			
-			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopyWithBaseRecord:baseRecord];
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			
 			[self mergeChangedValuesFromRecord:newLocalRecord intoRecord:dirtyRecordTableInfo.dirty_record];
 			
@@ -4480,8 +4008,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
 		  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 		                                                       recordID:recordID
-		                                                     ownerCount:0
-		                                                recordKeys_hash:nil];
+		                                                     ownerCount:0];
 		
 		dirtyRecordTableInfo.dirty_record = newLocalRecord;
 		dirtyRecordTableInfo.remoteMerge = YES;
@@ -4545,11 +4072,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 			  (YDBCKCleanRecordTableInfo *)recordTableInfo;
 			
-			CKRecord *baseRecord = [self baseRecordForCleanRecordTableInfo:cleanRecordTableInfo
-			                                                      withHash:hash
-			                                          excludingChangedKeys:record.changedKeys];
-			
-			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopyWithBaseRecord:baseRecord];
+			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
 			

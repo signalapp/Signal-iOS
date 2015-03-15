@@ -27,7 +27,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAP_DATABASE_CLOUD_KIT_CLASS_VERSION 2
+#define YAP_DATABASE_CLOUD_KIT_CLASS_VERSION 3
 
 static NSString *const changeset_key_deletedRowids    = @"deletedRowids";    // Array: rowid
 static NSString *const changeset_key_deletedHashes    = @"deletedHashes";    // Array: string
@@ -70,7 +70,6 @@ static NSString *const changeset_key_reset            = @"reset";
 
 - (NSString *)mappingTableName;
 - (NSString *)recordTableName;
-- (NSString *)recordKeysTableName;
 - (NSString *)queueTableName;
 
 - (void)asyncMaybeDispatchNextOperation:(BOOL)forceNotification;
@@ -133,9 +132,6 @@ static NSString *const changeset_key_reset            = @"reset";
 - (sqlite3_stmt *)recordTable_enumerateStatement;
 - (sqlite3_stmt *)recordTable_removeForHashStatement;
 - (sqlite3_stmt *)recordTable_removeAllStatement;
-
-- (sqlite3_stmt *)recordKeysTable_insertStatement;
-- (sqlite3_stmt *)recordKeysTable_getKeysForHashStatement;
 
 - (sqlite3_stmt *)queueTable_insertStatement;
 - (sqlite3_stmt *)queueTable_updateDeletedRecordIDsStatement;
@@ -232,11 +228,9 @@ static NSString *const changeset_key_reset            = @"reset";
 - (NSData *)serializeDeletedRecordIDs;
 
 // Blob to go in 'modifiedRecords' column of database row.
-// And needed entries for recordKeys table.
-- (NSData *)serializeModifiedRecords:(NSDictionary **)outRecordKeysRowDict;
+- (NSData *)serializeModifiedRecords;
 
-- (void)enumerateMissingRecordsWithBlock:
-                          (CKRecord* (^)(CKRecordID *recordID, NSString *recordKeys_hash, NSArray *changedKeys))block;
+- (void)enumerateMissingRecordsWithBlock:(CKRecord* (^)(CKRecordID *recordID, NSArray *changedKeys))block;
 
 @end
 

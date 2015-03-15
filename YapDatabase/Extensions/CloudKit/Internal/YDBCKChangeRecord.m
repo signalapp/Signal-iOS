@@ -1,10 +1,9 @@
 #import "YDBCKChangeRecord.h"
 #import "YDBCKRecord.h"
 
-static NSString *const k_record          = @"record";
-static NSString *const k_recordID        = @"recordID";
-static NSString *const k_changedKeys     = @"changedKeys";
-static NSString *const k_recordKeys_hash = @"recordKeys_hash";
+static NSString *const k_record      = @"record";
+static NSString *const k_recordID    = @"recordID";
+static NSString *const k_changedKeys = @"changedKeys";
 
 @implementation YDBCKChangeRecord
 {
@@ -15,7 +14,6 @@ static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 }
 
 @synthesize record = record;
-@synthesize recordKeys_hash = recordKeys_hash;
 @synthesize needsStoreFullRecord = needsStoreFullRecord;
 
 @dynamic recordID;
@@ -39,7 +37,6 @@ static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 	// This is to ensure that modifying changeRecords in the pendingQueue doesn't interfere with the masterQueue.
 	copy->record = [record safeCopy];
 	
-	copy->recordKeys_hash = recordKeys_hash;
 	copy->needsStoreFullRecord = needsStoreFullRecord;
 	
 	copy->recordID = recordID;
@@ -56,7 +53,6 @@ static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 		
 		recordID = [decoder decodeObjectForKey:k_recordID];
 		changedKeys = [decoder decodeObjectForKey:k_changedKeys];
-		recordKeys_hash = [decoder decodeObjectForKey:k_recordKeys_hash];
 		
 		if (record)
 			needsStoreFullRecord = YES;
@@ -76,14 +72,12 @@ static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 	{
 		[coder encodeObject:self.recordID forKey:k_recordID];
 		[coder encodeObject:self.changedKeys forKey:k_changedKeys];
-		[coder encodeObject:self.recordKeys_hash forKey:k_recordKeys_hash];
 	}
 }
 
 - (void)setRecord:(CKRecord *)inRecord
 {
 	recordID = nil;
-	recordKeys_hash = nil;
 	changedKeys = nil;
 	changedKeysSet = nil;
 	

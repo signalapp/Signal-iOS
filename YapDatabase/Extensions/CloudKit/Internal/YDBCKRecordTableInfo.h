@@ -27,18 +27,15 @@
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)databaseIdentifier
                                 ownerCount:(int64_t)ownerCount
-                           recordKeys_hash:(NSString *)recordKeys_hash
                                     record:(CKRecord *)record;
 
 @property (nonatomic, readonly) NSString * databaseIdentifier;
 @property (nonatomic, readonly) int64_t    ownerCount;
-@property (nonatomic, readonly) NSString * recordKeys_hash;
 @property (nonatomic, readonly) CKRecord * record;
 
-- (YDBCKDirtyRecordTableInfo *)dirtyCopyWithBaseRecord:(CKRecord *)record;
+- (YDBCKDirtyRecordTableInfo *)dirtyCopy;
 
-- (YDBCKCleanRecordTableInfo *)cleanCopyWithRecordKeys_hash:(NSString *)recordKeys_hash
-                                            sanitizedRecord:(CKRecord *)record;
+- (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)record;
 
 @end
 
@@ -58,14 +55,12 @@
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)databaseIdentifier
                                   recordID:(CKRecordID *)recordID
-                                ownerCount:(int64_t)clean_ownerCount
-                           recordKeys_hash:(NSString *)clean_recordKeys_hash;
+                                ownerCount:(int64_t)clean_ownerCount;
 
 @property (nonatomic, readonly) NSString *databaseIdentifier;
 @property (nonatomic, readonly) CKRecordID *recordID;
 
-@property (nonatomic, readonly) int64_t   clean_ownerCount;      // represents what's on disk
-@property (nonatomic, readonly) NSString *clean_recordKeys_hash; // represents what's on disk
+@property (nonatomic, readonly) int64_t clean_ownerCount;            // represents what's on disk
 
 @property (nonatomic, assign, readwrite) int64_t   dirty_ownerCount; // represents new value (this transaction)
 @property (nonatomic, strong, readwrite) CKRecord *dirty_record;     // represents new value (this transaction)
@@ -81,7 +76,6 @@
 - (BOOL)ownerCountChanged;
 - (BOOL)hasNilRecordOrZeroOwnerCount;
 
-- (YDBCKCleanRecordTableInfo *)cleanCopyWithRecordKeys_hash:(NSString *)recordKeys_hash
-                                            sanitizedRecord:(CKRecord *)record;
+- (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)record;
 
 @end

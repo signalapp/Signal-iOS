@@ -54,7 +54,6 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	NSArray *tableNames = @[
 	  [self mappingTableNameForRegisteredName:registeredName],
 	  [self recordTableNameForRegisteredName:registeredName],
-	  [self recordKeysTableNameForRegisteredName:registeredName],
 	  [self recordTableNameForRegisteredName:registeredName]
 	];
 	
@@ -79,11 +78,6 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 + (NSString *)recordTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudKit_record_%@", registeredName];
-}
-
-+ (NSString *)recordKeysTableNameForRegisteredName:(NSString *)registeredName
-{
-	return [NSString stringWithFormat:@"cloudKit_recordKeys_%@", registeredName];
 }
 
 + (NSString *)queueTableNameForRegisteredName:(NSString *)registeredName
@@ -464,11 +458,6 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 - (NSString *)recordTableName
 {
 	return [[self class] recordTableNameForRegisteredName:self.registeredName];
-}
-
-- (NSString *)recordKeysTableName
-{
-	return [[self class] recordKeysTableNameForRegisteredName:self.registeredName];
 }
 
 - (NSString *)queueTableName

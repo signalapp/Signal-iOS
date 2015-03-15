@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8CDE399427C371AE35373288 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 951E571D3B3D45328846F778 /* libPods.a */; };
-		DC16CA401AAD44D00013AB33 /* YDBCKRecordKeysRow.m in Sources */ = {isa = PBXBuildFile; fileRef = DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */; };
 		DC6071471A33F3FF00207DE9 /* TodoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6071461A33F3FF00207DE9 /* TodoCell.m */; };
 		DC60714A1A33FC3900207DE9 /* checkmark-off.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071481A33FC3900207DE9 /* checkmark-off.png */; };
 		DC60714B1A33FC3900207DE9 /* checkmark-on.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071491A33FC3900207DE9 /* checkmark-on.png */; };
@@ -114,8 +113,6 @@
 		6E0153BF132BA4F8966C9CD2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		951E571D3B3D45328846F778 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C845CFA8C6F6A2549AFE15A6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		DC16CA3E1AAD44D00013AB33 /* YDBCKRecordKeysRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecordKeysRow.h; sourceTree = "<group>"; };
-		DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecordKeysRow.m; sourceTree = "<group>"; };
 		DC6071451A33F3FF00207DE9 /* TodoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoCell.h; sourceTree = "<group>"; };
 		DC6071461A33F3FF00207DE9 /* TodoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoCell.m; sourceTree = "<group>"; };
 		DC6071481A33FC3900207DE9 /* checkmark-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-off.png"; sourceTree = "<group>"; };
@@ -517,8 +514,6 @@
 				DCDE77841A302A7E001D8FCE /* YDBCKMappingTableInfo.m */,
 				DCDE77851A302A7E001D8FCE /* YDBCKRecordTableInfo.h */,
 				DCDE77861A302A7E001D8FCE /* YDBCKRecordTableInfo.m */,
-				DC16CA3E1AAD44D00013AB33 /* YDBCKRecordKeysRow.h */,
-				DC16CA3F1AAD44D00013AB33 /* YDBCKRecordKeysRow.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -977,7 +972,6 @@
 				DCDE78691A302A7E001D8FCE /* YapMemoryTable.m in Sources */,
 				DCDE77761A302A66001D8FCE /* EditViewController.m in Sources */,
 				DCDE78501A302A7E001D8FCE /* YapDatabaseSearchResultsViewTransaction.m in Sources */,
-				DC16CA401AAD44D00013AB33 /* YDBCKRecordKeysRow.m in Sources */,
 				DCDE78361A302A7E001D8FCE /* YapDatabaseCloudKit.m in Sources */,
 				DCDE77641A3024A8001D8FCE /* DDContextFilterLogFormatter.m in Sources */,
 				DC927FFD1A344BA500FEEAEA /* TodoTextView.m in Sources */,

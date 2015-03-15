@@ -1,49 +1,44 @@
 #import "YDBCKRecordTableInfo.h"
+#import "YDBCKRecord.h"
 
 
 @implementation YDBCKCleanRecordTableInfo
 
 @synthesize databaseIdentifier = databaseIdentifier;
 @synthesize ownerCount = ownerCount;
-@synthesize recordKeys_hash = recordKeys_hash;
 @synthesize record = record;
 
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                 ownerCount:(int64_t)inOwnerCount
-                           recordKeys_hash:(NSString *)inRecordKeys_hash
                                     record:(CKRecord *)inRecord
 {
 	if ((self = [super init]))
 	{
 		databaseIdentifier = inDatabaseIdentifier;
 		ownerCount = inOwnerCount;
-		recordKeys_hash = inRecordKeys_hash;
 		record = inRecord;
 	}
 	return self;
 }
 
-- (YDBCKDirtyRecordTableInfo *)dirtyCopyWithBaseRecord:(CKRecord *)baseRecord
+- (YDBCKDirtyRecordTableInfo *)dirtyCopy
 {
 	YDBCKDirtyRecordTableInfo *dirtyCopy =
 	  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 	                                                       recordID:record.recordID
-	                                                     ownerCount:ownerCount
-	                                                recordKeys_hash:recordKeys_hash];
+	                                                     ownerCount:ownerCount];
 	
 	dirtyCopy.dirty_ownerCount = ownerCount;
-	dirtyCopy.dirty_record = baseRecord;
+	dirtyCopy.dirty_record = [record safeCopy];
 	
 	return dirtyCopy;
 }
 
-- (YDBCKCleanRecordTableInfo *)cleanCopyWithRecordKeys_hash:(NSString *)newRecordKeys_hash
-                                            sanitizedRecord:(CKRecord *)newRecord
+- (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)newRecord
 {
 	YDBCKCleanRecordTableInfo *copy = [[YDBCKCleanRecordTableInfo alloc] init];
 	copy->databaseIdentifier = databaseIdentifier;
 	copy->ownerCount = ownerCount;
-	copy->recordKeys_hash = newRecordKeys_hash;
 	copy->record = newRecord;
 	
 	return copy;
@@ -67,7 +62,6 @@
 @synthesize recordID = recordID;
 
 @synthesize clean_ownerCount = clean_ownerCount;
-@synthesize clean_recordKeys_hash = clean_recordKeys_hash;
 
 @synthesize dirty_record = dirty_record;
 @synthesize dirty_ownerCount = dirty_ownerCount;
@@ -80,7 +74,6 @@
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                   recordID:(CKRecordID *)inRecordID
                                 ownerCount:(int64_t)in_clean_ownerCount
-                           recordKeys_hash:(NSString *)in_clean_recordKeys_hash
 {
 	if ((self = [super init]))
 	{
@@ -88,7 +81,6 @@
 		recordID = inRecordID;
 		
 		clean_ownerCount = in_clean_ownerCount;
-		clean_recordKeys_hash = in_clean_recordKeys_hash;
 	}
 	return self;
 }
@@ -128,13 +120,11 @@
 	return NO;
 }
 
-- (YDBCKCleanRecordTableInfo *)cleanCopyWithRecordKeys_hash:(NSString *)newRecordKeys_hash
-                                            sanitizedRecord:(CKRecord *)newRecord
+- (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)newRecord
 {
 	YDBCKCleanRecordTableInfo *cleanCopy =
 	  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
 	                                                     ownerCount:dirty_ownerCount
-	                                                recordKeys_hash:newRecordKeys_hash
 	                                                         record:newRecord];
 	return cleanCopy;
 }
