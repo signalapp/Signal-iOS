@@ -130,10 +130,16 @@
 #pragma mark Merge Handling
 
 /**
- * Returns YES if there are any pending records in the pendingChangeSetsFromPreviousCommits.
+ * Returns YES if there is a pending delete for the given record in pendingChangeSetsFromPreviousCommits.
+ **/
+- (BOOL)hasPendingDeleteForRecordID:(CKRecordID *)recordID
+                 databaseIdentifier:(NSString *)databaseIdentifier;
+
+/**
+ * Returns YES if there is a pending modification for the given record in pendingChangeSetsFromPreviousCommits.
 **/
-- (BOOL)hasChangesForRecordID:(CKRecordID *)recordID
-           databaseIdentifier:(NSString *)databaseIdentifier;
+- (BOOL)hasPendingModificationForRecordID:(CKRecordID *)recordID
+                       databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
  * This method enumerates pendingChangeSetsFromPreviousCommits, from oldest commit to newest commit,

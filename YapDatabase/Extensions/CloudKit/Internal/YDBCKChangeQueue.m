@@ -403,12 +403,45 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 #pragma mark Merge Handling
 
 /**
- * Returns YES if there are any pending records in the pendingChangeSetsFromPreviousCommits.
+ * Returns YES if there is a pending delete for the given record in pendingChangeSetsFromPreviousCommits.
 **/
-- (BOOL)hasChangesForRecordID:(CKRecordID *)recordID
-           databaseIdentifier:(NSString *)databaseIdentifier
+- (BOOL)hasPendingDeleteForRecordID:(CKRecordID *)recordID
+                 databaseIdentifier:(NSString *)databaseIdentifier
 {
-	BOOL hasPendingChanges = NO;
+	BOOL hasPendingDelete = NO;
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	
+	@try {
+		
+		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
+		{
+			if (CompareDatabaseIdentifiers(databaseIdentifier, prevChangeSet.databaseIdentifier))
+			{
+				if ([prevChangeSet->deletedRecordIDs containsObject:recordID])
+				{
+					hasPendingDelete = YES;
+					break;
+				}
+			}
+		}
+		
+	} @finally {
+	
+		[masterQueueLock unlock];
+	}
+	
+	return hasPendingDelete;
+}
+
+/**
+ * Returns YES if there is a pending modification for the given record in pendingChangeSetsFromPreviousCommits.
+**/
+- (BOOL)hasPendingModificationForRecordID:(CKRecordID *)recordID
+                       databaseIdentifier:(NSString *)databaseIdentifier
+{
+	BOOL hasPendingModification = NO;
 	
 	// Get lock for access to 'oldChangeSets'
 	[masterQueueLock lock];
@@ -422,7 +455,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
 				if (prevRecord)
 				{
-					hasPendingChanges = YES;
+					hasPendingModification = YES;
 					break;
 				}
 			}
@@ -433,7 +466,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		[masterQueueLock unlock];
 	}
 	
-	return hasPendingChanges;
+	return hasPendingModification;
 }
 
 /**

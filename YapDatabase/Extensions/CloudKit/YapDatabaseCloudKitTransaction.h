@@ -285,10 +285,27 @@
 /**
  * High performance lookup method, if you only need to know if YapDatabaseCloudKit has a
  * record for the given recordID/databaseIdentifier.
- * 
+ *
  * This method is much faster than invoking recordForRecordID:databaseIdentifier:,
  * if you don't actually need the record.
+ * 
+ * @return
+ *   Whether or not YapDatabaseCloudKit is currently managing a record for the given recordID/databaseIdentifer.
+ *   That is, whether or not there is currently one or more rows in the database attached to the CKRecord.
+ * 
+ * @param outPendingDelete
+ *   This handles an edge case during merge handling.
+ *   Consider the following scenario:
+ *   - The client modifies a record.
+ *   - The client later deletes that same record.
+ *   - Neither of these changes have been uploaded to the server yet (due to lack of network access)
+ *   - The device then comes online and discovers another device has modified the record.
+ *   In this scenario, this method will return NO (since the record has been detached/deleted locally).
+ *   However, the outPendingDelete will be set to YES.
+ *   This is an indicator that you MUST invoke mergeRecord:databaseIdentifier: in order to properly handle the merge.
 **/
-- (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
+- (BOOL)containsRecordID:(CKRecordID *)recordID
+      databaseIdentifier:(NSString *)databaseIdentifier
+           pendingDelete:(BOOL *)outPendingDelete;
 
 @end

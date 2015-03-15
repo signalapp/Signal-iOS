@@ -403,10 +403,12 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 						continue;
 					}
 					
+					BOOL requiresMerge = NO;
 					BOOL exists = [[transaction ext:Ext_CloudKit] containsRecordID:record.recordID
-					                                            databaseIdentifier:nil];
+					                                            databaseIdentifier:nil
+					                                                 pendingDelete:&requiresMerge];
 					
-					if (exists)
+					if (exists || requiresMerge)
 					{
 						[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
 					}

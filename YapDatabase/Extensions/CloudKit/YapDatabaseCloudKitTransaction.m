@@ -32,6 +32,9 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 };
 
 @implementation YapDatabaseCloudKitTransaction
+{
+	NSSet *rowidsInMidMerge;
+}
 
 - (id)initWithParentConnection:(YapDatabaseCloudKitConnection *)inParentConnection
            databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
@@ -47,6 +50,21 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Extension Lifecycle
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
+{
+	if (oldClassVersion == 1 && newClassVersion == 3)
+	{
+		// In version 2, I added a bunch of stuff to try to combat an Apple bug that was plaguing the system.
+		// However, I eventually discovered the root cause of the bug, and came up with a better workaround.
+		// So in version 3, I reverted all the database architecture changes back to their original v1 form.
+		return YES;
+	}
+	else
+	{
+		return (oldClassVersion == newClassVersion);
+	}
+}
 
 /**
  * This method is called to create any necessary tables,
@@ -88,7 +106,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
 		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
 	}
-	else if (oldClassVersion != classVersion)
+	else if (!ClassVersionsAreCompatible(oldClassVersion, classVersion))
 	{
 		// Upgrading from older codebase
 		//
@@ -514,7 +532,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		{
 			NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 			
-			NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
+			NSSet *rowids = [self mappingTableRowidsForRecordTableHash:hash];
 			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 			
 			__block CKRecord *record = [cleanRecordTableInfo.record safeCopy];
@@ -1638,7 +1656,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
  * Uses the index on the 'recordTable_hash' column to find associated rowids.
  * And also takes into account pending changes to the mapping table via dirtyMappingTableInfoDict.
 **/
-- (NSArray *)mappingTableRowidsForRecordTableHash:(NSString *)hash
+- (NSSet *)mappingTableRowidsForRecordTableHash:(NSString *)hash
 {
 	sqlite3_stmt *statement = [parentConnection mappingTable_enumerateForHashStatement];
 	if (statement == NULL) {
@@ -1693,7 +1711,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		}
 	}];
 	
-	return [rowids allObjects];
+	return rowids;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3219,6 +3237,12 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return;
 	}
 	
+	if (rowidsInMidMerge && [rowidsInMidMerge containsObject:@(rowid)])
+	{
+		// Ignore - we're in the middle of a merge block
+		return;
+	}
+	
 	// Fetch current mappings & record information for the given rowid.
 	
 	id <YDBCKMappingTableInfo> mappingTableInfo = nil;
@@ -3309,6 +3333,12 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		return;
 	}
 	
+	if (rowidsInMidMerge && [rowidsInMidMerge containsObject:@(rowid)])
+	{
+		// Ignore - we're in the middle of a merge block
+		return;
+	}
+	
 	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
 	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey     ||
@@ -3393,6 +3423,12 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
+		return;
+	}
+	
+	if (rowidsInMidMerge && [rowidsInMidMerge containsObject:@(rowid)])
+	{
+		// Ignore - we're in the middle of a merge block
 		return;
 	}
 	
@@ -3486,6 +3522,9 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 {
 	// Nothing to do here.
 	// "Touch" is generally meant for local operations.
+	//
+	// We may add an explicit "remote" touch (declared in YapDatabaseCloudKitTransaction.h)
+	// in the future if there seems to be a need for it.
 }
 
 /**
@@ -3903,8 +3942,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		// or we'll be stuck on this changeSet forever.
 		
 		BOOL hasPendingChangesInQueue =
-		  [parentConnection->parent->masterQueue hasChangesForRecordID:recordID
-		                                            databaseIdentifier:databaseIdentifier];
+		  [parentConnection->parent->masterQueue hasPendingModificationForRecordID:recordID
+		                                                        databaseIdentifier:databaseIdentifier];
 		
 		if (!hasPendingChangesInQueue)
 		{
@@ -3958,8 +3997,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	if (isInRecordTable)
 	{
-		NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
-		for (NSNumber *rowidNumber in rowids)
+		rowidsInMidMerge = [self mappingTableRowidsForRecordTableHash:hash];
+		for (NSNumber *rowidNumber in rowidsInMidMerge)
 		{
 			int64_t rowid = [rowidNumber longLongValue];
 			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
@@ -3969,6 +4008,8 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			else
 				mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, nil, newLocalRecord);
 		}
+		
+		rowidsInMidMerge = nil;
 	}
 	else if (hasPendingChanges)
 	{
@@ -4134,12 +4175,12 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	}
 	
 	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
-	NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
+	NSSet *rowids = [self mappingTableRowidsForRecordTableHash:hash];
 	
 	YapCollectionKey *ck = nil;
 	if (rowids.count > 0)
 	{
-		int64_t rowid = [[rowids firstObject] longLongValue];
+		int64_t rowid = [[rowids anyObject] longLongValue];
 		ck = [databaseTransaction collectionKeyForRowid:rowid];
 	}
 	
@@ -4167,7 +4208,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	}
 	
 	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
-	NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
+	NSSet *rowids = [self mappingTableRowidsForRecordTableHash:hash];
 	
 	NSUInteger count = rowids.count;
 	if (count == 0) {
@@ -4306,12 +4347,36 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
  *
  * This method is much faster than invoking recordForRecordID:databaseIdentifier:,
  * if you don't actually need the record.
+ * 
+ * @return
+ *   Whether or not YapDatabaseCloudKit is currently managing a record for the given recordID/databaseIdentifer.
+ *   That is, whether or not there is currently one or more rows in the database attached to the CKRecord.
+ * 
+ * @param outPendingDelete
+ *   This handles an edge case during merge handling.
+ *   Consider the following scenario:
+ *   - The client modifies a record.
+ *   - The client later deletes that same record.
+ *   - Neither of these changes have been uploaded to the server yet (due to lack of network access)
+ *   - The device then comes online and discovers another device has modified the record.
+ *   In this scenario, this method will return NO (since the record has been detached/deleted locally).
+ *   However, the outPendingDelete will be set to YES.
+ *   This is an indicator that you MUST invoke mergeRecord:databaseIdentifier: in order to properly handle the merge.
 **/
-- (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
+- (BOOL)containsRecordID:(CKRecordID *)recordID
+      databaseIdentifier:(NSString *)databaseIdentifier
+           pendingDelete:(BOOL *)outPendingDelete
 {
 	YDBLogAutoTrace();
 	
-	if (recordID == nil) return NO;
+	if (recordID == nil)
+	{
+		if (outPendingDelete) *outPendingDelete = NO;
+		return NO;
+	}
+	
+	BOOL result = NO;
+	BOOL pendingDelete = NO;
 	
 	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 	
@@ -4323,10 +4388,15 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	dirtyRecordTableInfo = [parentConnection->dirtyRecordTableInfoDict objectForKey:hash];
 	if (dirtyRecordTableInfo)
 	{
-		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
-			return NO;
-		else
-			return YES;
+		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount]) {
+			result = NO;
+			pendingDelete = YES;
+		}
+		else {
+			result = YES;
+		}
+		
+		goto step2;
 	}
 	
 	// Check cleanRecordTableInfo (cache)
@@ -4335,16 +4405,18 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	if (cleanRecordTableInfo)
 	{
 		if (cleanRecordTableInfo == (id)[NSNull null])
-			return NO;
+			result = NO;
 		else
-			return YES;
+			result = YES;
+		
+		goto step2;
 	}
 	
 	// Fetch from disk
 	
 	sqlite3_stmt *statement = [parentConnection recordTable_getCountForHashStatement];
 	if (statement == NULL) {
-		return NO;
+		goto step2;
 	}
 	
 	// SELECT COUNT(*) AS NumberOfRows FROM "recordTableName" WHERE "hash" = ?;
@@ -4372,7 +4444,18 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_hash);
 	
-	return (count > 0);
+	result = (count > 0);
+	
+step2:
+	
+	if (!result && !pendingDelete)
+	{
+		pendingDelete = [parentConnection->parent->masterQueue hasPendingDeleteForRecordID:recordID
+		                                                                databaseIdentifier:databaseIdentifier];
+	}
+	
+	if (outPendingDelete) *outPendingDelete = pendingDelete;
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
