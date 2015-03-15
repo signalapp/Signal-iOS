@@ -608,10 +608,6 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	modifyRecordsOperation.database = database;
 	modifyRecordsOperation.savePolicy = CKRecordSaveIfServerRecordUnchanged;
 	
-	modifyRecordsOperation.perRecordCompletionBlock = ^(CKRecord *record, NSError *error) {
-		YDBLogVerbose(@"record: %@\nerror: %@", record, error);
-	};
-	
 	__weak YapDatabaseCloudKit *weakSelf = self;
 	
 	modifyRecordsOperation.modifyRecordsCompletionBlock =

@@ -349,7 +349,7 @@ DatabaseManager *MyDatabaseManager;
 		for (NSString *cloudKey in cloudKeys)
 		{
 			id cloudValue = [todo cloudValueForCloudKey:cloudKey];
-			[record setValue:cloudValue forKey:cloudKey];
+			[record setObject:cloudValue forKey:cloudKey];
 		}
 	}];
 	
@@ -380,7 +380,7 @@ DatabaseManager *MyDatabaseManager;
 			for (NSString *localChangedKey in localChangedKeys)
 			{
 				id localChangedValue = [pendingLocalRecord valueForKey:localChangedKey];
-				[newLocalRecord setValue:localChangedValue forKey:localChangedKey];
+				[newLocalRecord setObject:localChangedValue forKey:localChangedKey];
 			}
 			
 			[todo clearChangedProperties];

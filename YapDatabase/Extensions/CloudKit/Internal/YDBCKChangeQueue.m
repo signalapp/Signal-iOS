@@ -867,7 +867,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				// We need to get the system metadata from the mergedRecord,
 				// and inject the values from the localRecord.
-				CKRecord *newLocalRecord = [YDBCKRecord sanitizedRecord:mergedRecord];
+				CKRecord *newLocalRecord = [mergedRecord sanitizedCopy];
 				
 				for (NSString *key in localRecord.changedKeys)
 				{
@@ -926,7 +926,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		NSMutableSet *mergedRecordUnhandledKeys = [mergedRecordChangedKeysSet mutableCopy];
 		[mergedRecordUnhandledKeys minusSet:mergedRecordHandledKeys];
 		
-		CKRecord *newMergedRecord = [YDBCKRecord sanitizedRecord:mergedRecord];
+		CKRecord *newMergedRecord = [mergedRecord sanitizedCopy];
 		
 		for (NSString *key in mergedRecordUnhandledKeys)
 		{
@@ -1129,13 +1129,13 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				
 				if (sanitizedRecord == nil)
 				{
-					sanitizedRecord = [YDBCKRecord sanitizedRecord:record];
+					sanitizedRecord = [record sanitizedCopy];
 				}
 				
 				YDBCKChangeRecord *pqChangeRecord = [pqPrevChangeSet->modifiedRecords objectForKey:recordID];
 				
 				CKRecord *originalRecord = pqChangeRecord.record;
-				CKRecord *mergedRecord = [sanitizedRecord copy];
+				CKRecord *mergedRecord = [sanitizedRecord safeCopy];
 				
 				// The 'originalRecord' contains all the values we need to sync to the cloud.
 				// But the 'sanitizedRecord' contains the proper system fields within the CKRecord internals

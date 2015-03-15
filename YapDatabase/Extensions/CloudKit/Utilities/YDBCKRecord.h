@@ -2,6 +2,27 @@
 #import <CloudKit/CloudKit.h>
 
 
+@interface CKRecord (YapDatabaseCloudKit)
+
+/**
+ * Returns a "sanitized" copy of the given record.
+ * That is, a copy that ONLY includes the "system fields" of the record.
+ * It will NOT contain any key/value pairs from the original record.
+**/
+- (id)sanitizedCopy;
+
+/**
+ * Calling [ckRecord copy] is COMPLETELY BROKEN.
+ * This is a MAJOR BUG in Apple's CloudKit framework (as I see it).
+ * 
+ * Until this is fixed, we're forced to use this workaround.
+**/
+- (id)safeCopy;
+
+@end
+
+#pragma mark -
+
 @interface YDBCKRecord : NSObject <NSCoding>
 
 /**
@@ -18,19 +39,6 @@
  * then the returned record will only contain the "system fields".
 **/
 + (CKRecord *)deserializeRecord:(NSData *)data;
-
-/**
- * Returns a "sanitized" copy of the given record.
- * That is, a copy that ONLY includes the "system fields" of the record.
- * It will NOT contain any key/value pairs from the original record.
-**/
-+ (CKRecord *)sanitizedRecord:(CKRecord *)record;
-
-/**
- * Returns a copy of the given record, with the record.changedKeys property cleared (empty).
- * The copy will contain all the key/value pairs from the original record.
-**/
-+ (CKRecord *)recordWithClearedChangedKeys:(CKRecord *)record;
 
 #pragma mark Instance
 

@@ -1,8 +1,39 @@
 #import "YDBCKRecord.h"
 
-@interface YDBCKRecord_KeyedUnarchiver : NSKeyedUnarchiver
+@implementation CKRecord (YapDatabaseCloudKit)
+
+/**
+ * Returns a "sanitized" copy of the given record.
+ * That is, a copy that ONLY includes the "system fields" of the record.
+ * It will NOT contain any key/value pairs from the original record.
+**/
+- (id)sanitizedCopy
+{
+	// This is the ONLY way in which I know how to accomplish this task.
+	//
+	// Other techniques, such as making a copy and removing all the values,
+	// ends up giving us a record with a bunch of changedKeys. Not what we want.
+	
+	return [YDBCKRecord deserializeRecord:[YDBCKRecord serializeRecord:self]];
+}
+
+/**
+ * Calling [ckRecord copy] is COMPLETELY BROKEN.
+ * This is a MAJOR BUG in Apple's CloudKit framework (as I see it).
+ *
+ * Until this is fixed, we're forced to use this workaround.
+**/
+- (id)safeCopy
+{
+	NSData *archive = [NSKeyedArchiver archivedDataWithRootObject:self];
+	return [NSKeyedUnarchiver unarchiveObjectWithData:archive];
+}
+
 @end
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation YDBCKRecord
 
@@ -31,34 +62,6 @@
 		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
 	else
 		return nil;
-}
-
-/**
- * Returns a "sanitized" copy of the given record.
- * That is, a copy that ONLY includes the "system fields" of the record.
- * It will NOT contain any key/value pairs from the original record.
-**/
-+ (CKRecord *)sanitizedRecord:(CKRecord *)record
-{
-	// This is the ONLY way in which I know how to accomplish this task.
-	//
-	// Other techniques, such as making a copy and removing all the values,
-	// ends up giving us a record with a bunch of changedKeys. Not what we want.
-	
-	return [self deserializeRecord:[self serializeRecord:record]];
-}
-
-/**
- * Returns a copy of the given record, with the record.changedKeys property cleared (empty).
- * The copy will contain all the key/value pairs from the original record.
-**/
-+ (CKRecord *)recordWithClearedChangedKeys:(CKRecord *)record
-{
-	// I sure wish Apple didn't make the changedKeys property immutable.
-	// It looks like I'll have to try to convince them about this...
-	
-	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:record];
-	return [YDBCKRecord_KeyedUnarchiver unarchiveObjectWithData:data];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,8 +109,15 @@
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark YDBCKRecord_KeyedUnarchiver
+//#pragma mark YDBCKRecord_KeyedUnarchiver
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+// This technique can be used to clear the changedKeys property of a CKRecord.
+//
+/*
+@interface YDBCKRecord_KeyedUnarchiver : NSKeyedUnarchiver
+@end
 
 @implementation YDBCKRecord_KeyedUnarchiver
 
@@ -140,3 +150,4 @@
 }
 
 @end
+*/

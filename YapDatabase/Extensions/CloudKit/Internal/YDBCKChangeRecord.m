@@ -1,5 +1,5 @@
 #import "YDBCKChangeRecord.h"
-
+#import "YDBCKRecord.h"
 
 static NSString *const k_record          = @"record";
 static NSString *const k_recordID        = @"recordID";
@@ -35,7 +35,10 @@ static NSString *const k_recordKeys_hash = @"recordKeys_hash";
 {
 	YDBCKChangeRecord *copy = [[YDBCKChangeRecord alloc] init];
 	
-	copy->record = record;
+	// Important: We MUST make a copy of the record so each changeSet.record is unique !
+	// This is to ensure that modifying changeRecords in the pendingQueue doesn't interfere with the masterQueue.
+	copy->record = [record safeCopy];
+	
 	copy->recordKeys_hash = recordKeys_hash;
 	copy->needsStoreFullRecord = needsStoreFullRecord;
 	

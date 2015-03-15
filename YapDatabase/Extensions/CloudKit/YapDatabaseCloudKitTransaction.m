@@ -541,7 +541,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
 			YDBCKCleanRecordTableInfo *cleanRecordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 			
-			__block CKRecord *record = [cleanRecordTableInfo.record copy];
+			__block CKRecord *record = [cleanRecordTableInfo.record safeCopy];
 			
 			NSMutableSet *unchangedKeys = [NSMutableSet setWithArray:[self keysForRecordKeysHash:recordKeys_hash]];
 			for (NSString *key in changedKeys) {
@@ -797,7 +797,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 			  (YDBCKCleanRecordTableInfo *)recordInfo;
 			
-			record = [cleanRecordTableInfo.record copy];
+			record = [cleanRecordTableInfo.record safeCopy];
 		}
 		else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 		{
@@ -1120,100 +1120,102 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
                                        withHash:(NSString *)hash
                            excludingChangedKeys:(NSArray *)changedKeys
 {
-	void (^RestoreRecordBlock)(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo);
+//	void (^RestoreRecordBlock)(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo);
+//	
+//	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+//	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+//	{
+//		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
+//		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
+//		
+//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+//			
+//			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+//			if (ck)
+//			{
+//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key);
+//			}
+//		};
+//	}
+//	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+//	{
+//		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
+//		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
+//		
+//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+//			
+//			YapCollectionKey *ck = nil;
+//			id object = nil;
+//			
+//			if ([databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid])
+//			{
+//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object);
+//			}
+//		};
+//	}
+//	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+//	{
+//		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
+//		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
+//		
+//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+//			
+//			YapCollectionKey *ck = nil;
+//			id metadata = nil;
+//			
+//			if ([databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid])
+//			{
+//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, metadata);
+//			}
+//		};
+//	}
+//	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+//	{
+//		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
+//		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
+//		
+//		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
+//			
+//			YapCollectionKey *ck = nil;
+//			id object = nil;
+//			id metadata = nil;
+//			
+//			if ([databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid])
+//			{
+//				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object, metadata);
+//			}
+//		};
+//	}
+//	
+//	NSArray *allKeys = [self keysForRecordKeysHash:cleanRecordTableInfo.recordKeys_hash];
+//	
+//	NSMutableSet *keysToRestore = [NSMutableSet setWithArray:allKeys];
+//	for (NSString *key in changedKeys) {
+//		[keysToRestore removeObject:key];
+//	}
+//	
+//	__block CKRecord *baseRecord = [cleanRecordTableInfo.record safeCopy];
+//	
+//	if (keysToRestore.count > 0)
+//	{
+//		YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+//		recordInfo.keysToRestore = [keysToRestore allObjects];
+//		
+//		NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
+//		for (NSNumber *rowidNumber in rowids)
+//		{
+//			int64_t rowid = [rowidNumber longLongValue];
+//			RestoreRecordBlock(rowid, &baseRecord, recordInfo);
+//		}
+//		
+//		// You suck Apple.
+//		// Fix your friggin' CloudKit stack so we aren't forced to re-upload unchanged values!
+//	//	baseRecord = [YDBCKRecord recordWithClearedChangedKeys:baseRecord];
+//	}
+//	
+//	return baseRecord;
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
-	{
-		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
-		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
-		
-		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-			
-			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-			if (ck)
-			{
-				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key);
-			}
-		};
-	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
-	{
-		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
-		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
-		
-		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-			
-			YapCollectionKey *ck = nil;
-			id object = nil;
-			
-			if ([databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid])
-			{
-				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object);
-			}
-		};
-	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
-		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
-		
-		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-			
-			YapCollectionKey *ck = nil;
-			id metadata = nil;
-			
-			if ([databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid])
-			{
-				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, metadata);
-			}
-		};
-	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
-	{
-		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
-		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
-		
-		RestoreRecordBlock = ^(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo) {
-			
-			YapCollectionKey *ck = nil;
-			id object = nil;
-			id metadata = nil;
-			
-			if ([databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid])
-			{
-				recordBlock(inOutRecord, recordInfo, ck.collection, ck.key, object, metadata);
-			}
-		};
-	}
-	
-	NSArray *allKeys = [self keysForRecordKeysHash:cleanRecordTableInfo.recordKeys_hash];
-	
-	NSMutableSet *keysToRestore = [NSMutableSet setWithArray:allKeys];
-	for (NSString *key in changedKeys) {
-		[keysToRestore removeObject:key];
-	}
-	
-	__block CKRecord *baseRecord = [cleanRecordTableInfo.record copy];
-	
-	if (keysToRestore.count > 0)
-	{
-		YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
-		recordInfo.keysToRestore = [keysToRestore allObjects];
-		
-		NSArray *rowids = [self mappingTableRowidsForRecordTableHash:hash];
-		for (NSNumber *rowidNumber in rowids)
-		{
-			int64_t rowid = [rowidNumber longLongValue];
-			RestoreRecordBlock(rowid, &baseRecord, recordInfo);
-		}
-		
-		// You suck Apple.
-		// Fix your friggin' CloudKit stack so we aren't forced to re-upload unchanged values!
-	//	baseRecord = [YDBCKRecord recordWithClearedChangedKeys:baseRecord];
-	}
-	
-	return baseRecord;
+	return [cleanRecordTableInfo.record safeCopy];
 }
 
 - (void)processRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
@@ -3359,7 +3361,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 				// They won't be changed until the corresponding CKModifyRecordsOperation completes.
 				// And it's at that point that we'll write the updated record to the database.
 				
-				sanitizedRecord = [YDBCKRecord sanitizedRecord:dirtyRecordTableInfo.dirty_record];
+				sanitizedRecord = [dirtyRecordTableInfo.dirty_record sanitizedCopy];
 				
 				// We may, however, need to update the metadata about the record.
 				// That is, the ownerCount and/or recordKeys_hash value(s).
@@ -3701,7 +3703,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 		  (YDBCKCleanRecordTableInfo *)recordTableInfo;
 		
-		record = [cleanRecordTableInfo.record copy];
+		record = [cleanRecordTableInfo.record safeCopy];
 	}
 	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
@@ -3802,7 +3804,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 		(YDBCKCleanRecordTableInfo *)recordTableInfo;
 		
-		record = [cleanRecordTableInfo.record copy];
+		record = [cleanRecordTableInfo.record safeCopy];
 	}
 	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
@@ -3889,7 +3891,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 		__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
 		(YDBCKCleanRecordTableInfo *)recordTableInfo;
 		
-		record = [cleanRecordTableInfo.record copy];
+		record = [cleanRecordTableInfo.record safeCopy];
 	}
 	else if ([recordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 	{
@@ -4133,7 +4135,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	if (shouldUploadRecord)
 		record = inRecord;
 	else
-		record = [YDBCKRecord recordWithClearedChangedKeys:inRecord];
+		record = [inRecord sanitizedCopy];
 	
 	// Check for attachedRecord that hasn't been inserted into the database yet.
 	
@@ -4381,7 +4383,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	// Make sanitized copy of the remoteRecord.
 	// Sanitized == copy of the system fields only, without any values.
 	
-	CKRecord *pendingLocalRecord = [YDBCKRecord sanitizedRecord:remoteRecord];
+	CKRecord *pendingLocalRecord = [remoteRecord sanitizedCopy];
 	
 	// And then infuse the pendingLocalRecord with any key/value pairs that are pending upload.
 	//
@@ -4420,7 +4422,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	__unsafe_unretained YapDatabaseReadWriteTransaction *rwTransaction =
 	  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 	
-	CKRecord *newLocalRecord = [YDBCKRecord sanitizedRecord:remoteRecord];
+	CKRecord *newLocalRecord = [remoteRecord sanitizedCopy];
 	
 	if (isInRecordTable)
 	{
@@ -4747,7 +4749,7 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	
 	id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
 	
-	CKRecord *record = [recordTableInfo.current_record copy];
+	CKRecord *record = [recordTableInfo.current_record safeCopy];
 	return record;
 }
 

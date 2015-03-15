@@ -1,6 +1,7 @@
 #import "YDBCKChangeSet.h"
 #import "YDBCKChangeRecord.h"
 #import "YDBCKRecordKeysRow.h"
+#import "YDBCKRecord.h"
 #import "YapDatabaseCloudKitPrivate.h"
 #if DEBUG
 #import "YapDebugDictionary.h"
@@ -110,7 +111,7 @@ databaseIdentifier:(NSString *)inDatabaseIdentifier
 	
 	for (YDBCKChangeRecord *changeRecord in [modifiedRecords objectEnumerator])
 	{
-		[array addObject:[changeRecord.record copy]];
+		[array addObject:[changeRecord.record safeCopy]];
 	}
 	
 	return array;
