@@ -86,7 +86,7 @@ typedef enum {
     _settingsPrivacyTitle.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",@"");
     _settingsAdvancedTitle.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE",@"");
     _settingsAboutTitle.text  = NSLocalizedString(@"SETTINGS_ABOUT",@"");
-    [_destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DESTROY_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
+    [_destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
 }
 
 -(void)dealloc {
