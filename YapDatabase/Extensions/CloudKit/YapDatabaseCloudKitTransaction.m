@@ -1266,7 +1266,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	if (!recordTableHashChangedForRowid && ([record.changedKeys count] > 0))
 	{
-		if ([prevRecordTableInfo isKindOfClass:[YDBCKDirtyMappingTableInfo class]])
+		if ([prevRecordTableInfo isKindOfClass:[YDBCKDirtyRecordTableInfo class]])
 		{
 			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
 			  (YDBCKDirtyRecordTableInfo *)prevRecordTableInfo;
