@@ -62,7 +62,7 @@ static NSString *const CONTACT_BROWSE_TABLE_CELL_IDENTIFIER = @"ContactTableView
     //    } onThread:NSThread.mainThread untilCancelled:nil];
     _latestContacts = [DemoDataFactory makeFakeContacts];
     
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
     NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
     _latestSortedAlphabeticalContactKeys = [_latestContacts sortedArrayUsingDescriptors:sortDescriptors];
     
