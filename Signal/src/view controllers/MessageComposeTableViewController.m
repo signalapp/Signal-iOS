@@ -27,8 +27,10 @@
 {
     UIButton* sendTextButton;
     NSString* currentSearchTerm;
-    NSArray* contacts;
+    NSArray* contacts; // signal contacts
     NSArray* searchResults;
+    NSArray* allContacts; // signal + non signal contacts you can invite to signal
+    NSArray* allSearchResults;
 }
 
 @property (nonatomic, strong) UISearchController *searchController;
@@ -47,6 +49,8 @@
     
     contacts = [[Environment getCurrent] contactsManager].signalContacts;
     searchResults = contacts;
+    allContacts = [[Environment getCurrent] contactsManager].allContacts;
+    allSearchResults = allContacts;
     [self initializeSearch];
 
     self.searchController.searchBar.hidden = NO;
@@ -139,8 +143,8 @@
     UILabel *emptyLabel = [self createLabelWithFirstLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE1", @"") andSecondLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE2" , @"")];
 
     UIButton *inviteContactButton = [self createButtonWithTitle:NSLocalizedString(@"EMPTY_CONTACTS_INVITE_BUTTON", @"")];
+    [inviteContactButton addTarget:self action:@selector(sendTextToNumber) forControlEvents:UIControlEventTouchUpInside];
     
-    [inviteContactButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [inviteContactButton setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-inviteContactButton.frame.size.width/1.5f, self.tableView.frame.size.height - 200, 100, 66)];
     [inviteContactButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
 
@@ -215,14 +219,14 @@
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
     [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 44.0, self.searchController.searchBar.frame.size.width, 44.0);
-    [self.view addSubview:sendTextButton];
+    sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 110.0, self.searchController.searchBar.frame.size.width, 44.0);
+    [self.navigationController.view addSubview:sendTextButton];
     sendTextButton.hidden = YES;
+    [[UIApplication sharedApplication].keyWindow bringSubviewToFront:sendTextButton];
     
-    [sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
+    [sendTextButton addTarget:self action:@selector(sendTextToNumber) forControlEvents:UIControlEventTouchUpInside];
     [self initializeObservers];
     [self initializeRefreshControl];
-    
 }
 
 -(void)initializeObservers
@@ -270,13 +274,17 @@
     // search by contact name or number
     NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, searchText];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
+    allSearchResults = [allContacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) {
         searchResults = contacts;
+    }
+    if (!allSearchResults.count && _searchController.searchBar.text.length == 0) {
+        allSearchResults = allContacts;
     }
     NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
     
     // text to a non-signal number if we have no results and a valid phone #
-    if (searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
+    if (allSearchResults.count == 0 && formattedNumber.length > 8 && formattedNumber) {
         NSString *sendTextTo = NSLocalizedString(@"SEND_SMS_BUTTON", @"");
         sendTextTo = [sendTextTo stringByAppendingString:formattedNumber];
         [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
@@ -291,13 +299,7 @@
 
 #pragma mark - Send Normal Text to Unknown Contact
 
-- (void)sendText {
-    NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
-    if([currentSearchTerm length]>0) {
-        confirmMessage =  NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"");
-        confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
-        confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
-    }
+- (UIAlertController*)sendText:(NSString*)number withMessage:(NSString*)confirmMessage {
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
                                                            message:confirmMessage
@@ -322,8 +324,8 @@
                                                MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
                                                picker.messageComposeDelegate = self;
                                                
-                                               picker.recipients = [currentSearchTerm length]> 0 ? [NSArray arrayWithObject:currentSearchTerm] : nil;
-                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
+                                               picker.recipients = [NSArray arrayWithObject:number];
+                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" http://sgnl.link/zhrzvk6"];
                                                [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                                             } else {
                                                // TODO: better backup for iPods (just don't support on)
@@ -336,10 +338,32 @@
     [alertController addAction:okAction];
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
+    
+    return alertController;
+}
 
+- (void)sendTextToNumber {
+    NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
+    if([currentSearchTerm length]>0) {
+        confirmMessage =  NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"");
+        confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
+        confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
+    }
+    UIAlertController *alertController = [self sendText:currentSearchTerm withMessage:confirmMessage];
+    
+    // Dismiss the implicit UISearchController before presenting the UIAlertController
     [self.parentViewController dismissViewControllerAnimated:NO completion:^{
         [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
     }];
+}
+
+- (void)sendTextToContact:(Contact*)contact {
+    NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
+    confirmMessage =  NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"");
+    confirmMessage = [confirmMessage stringByAppendingString:[contact fullName]];
+    confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
+    UIAlertController *alertController = [self sendText:[contact allPhoneNumbers] withMessage:confirmMessage];
+    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 #pragma mark - SMS Composer Delegate
@@ -373,18 +397,29 @@
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    if (self.searchController.active) {
-        return (NSInteger)[searchResults count];
+    if (section == 0) {
+        if (self.searchController.active) {
+            return (NSInteger)[searchResults count];
+        } else {
+            return (NSInteger)[contacts count];
+        }
     } else {
-        return (NSInteger)[contacts count];
+        if (self.searchController.active) {
+            return (NSInteger)[allSearchResults count];
+        } else {
+            return (NSInteger)[allContacts count];
+        }
     }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 0) return @"Signal Contacts";
+    else return @"All Contacts";
+}
 
 - (ContactTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     ContactTableViewCell *cell = (ContactTableViewCell*)[tableView dequeueReusableCellWithIdentifier:@"ContactTableViewCell"];
@@ -408,21 +443,20 @@
 }
 
 #pragma mark - Table View delegate
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Contact *person = [self contactForIndexPath:indexPath];
-    return person.isTextSecureContact ? indexPath : nil;
-}
-
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
-    
-    [self dismissViewControllerAnimated:YES completion:^(){
-        [Environment messageIdentifier:identifier];
-    }];
+    Contact *person = [self contactForIndexPath:indexPath];
+    if (person.isTextSecureContact) {
+        NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
+        
+        [self dismissViewControllerAnimated:YES completion:^(){
+            [Environment messageIdentifier:identifier];
+        }];
+    } else {
+        [self sendTextToContact:person];
+    }
 }
-    
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -434,16 +468,24 @@
 {
     Contact *contact = nil;
     
-    if (self.searchController.active) {
-        contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+    if (indexPath.section == 0) {
+        if (self.searchController.active) {
+            contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+        } else {
+            contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
+        }
     } else {
-        contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
+        if (self.searchController.active) {
+            contact = [allSearchResults objectAtIndex:(NSUInteger)indexPath.row];
+        } else {
+            contact = [allContacts objectAtIndex:(NSUInteger)indexPath.row];
+        }
     }
 
     return contact;
 }
 
-#pragma mark Refresh controls
+#pragma mark - Refresh controls
 
 - (void)contactRefreshFailed {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT message:TIMEOUT_CONTACTS_DETAIL delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
