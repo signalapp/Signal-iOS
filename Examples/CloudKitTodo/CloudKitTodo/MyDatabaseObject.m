@@ -7,6 +7,7 @@
 	
 	BOOL isImmutable;
 	NSMutableSet *changedProperties;
+	NSMutableDictionary *originalCloudValues;
 }
 
 /**
@@ -22,6 +23,10 @@
 		// Don't worry, this doesn't create a retain cycle.
 		
 		[self addObserver:self forKeyPath:@"isImmutable" options:0 context:NULL];
+		
+		if ([[self class] storesOriginalCloudValues]) {
+			originalCloudValues = [[NSMutableDictionary alloc] init];
+		}
 	}
 	return self;
 }
@@ -267,6 +272,14 @@
 	return mappings_cloudKeyToLocalKey;
 }
 
++ (BOOL)storesOriginalCloudValues
+{
+	// Override me (and return YES), if you want to store originalCloudValues.
+	// These are cleared when clearChangedProperties is invoked.
+	
+	return NO;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Immutability
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,6 +335,7 @@
 - (void)clearChangedProperties
 {
 	changedProperties = nil;
+	[originalCloudValues removeAllObjects];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,6 +396,11 @@
 	}
 	
 	return NO;
+}
+
+- (NSDictionary *)originalCloudValues
+{
+	return [originalCloudValues copy];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,6 +530,22 @@
 	if (isImmutable)
 	{
 		@throw [self immutableExceptionForKey:key];
+	}
+	
+	if (originalCloudValues)
+	{
+		NSString *cloudKey = [self cloudKeyForLocalKey:key];
+		
+		if ([self.allCloudProperties containsObject:cloudKey])
+		{
+			if (!CFDictionaryContainsKey((CFDictionaryRef)originalCloudValues, (const void *)cloudKey))
+			{
+				id originalCloudValue = [self cloudValueForCloudKey:cloudKey];
+				if (originalCloudValue) {
+					[originalCloudValues setObject:originalCloudValue forKey:cloudKey];
+				}
+			}
+		}
 	}
 	
 	[super willChangeValueForKey:key];

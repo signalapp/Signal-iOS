@@ -1,9 +1,10 @@
 #import "YDBCKChangeRecord.h"
 #import "YDBCKRecord.h"
 
-static NSString *const k_record      = @"record";
-static NSString *const k_recordID    = @"recordID";
-static NSString *const k_changedKeys = @"changedKeys";
+static NSString *const k_record         = @"record";
+static NSString *const k_originalValues = @"originalValues";
+static NSString *const k_recordID       = @"recordID";
+static NSString *const k_changedKeys    = @"changedKeys";
 
 @implementation YDBCKChangeRecord
 {
@@ -15,6 +16,7 @@ static NSString *const k_changedKeys = @"changedKeys";
 
 @synthesize record = record;
 @synthesize needsStoreFullRecord = needsStoreFullRecord;
+@synthesize originalValues = originalValues;
 
 @dynamic recordID;
 @dynamic changedKeys;
@@ -38,6 +40,7 @@ static NSString *const k_changedKeys = @"changedKeys";
 	copy->record = [record safeCopy];
 	
 	copy->needsStoreFullRecord = needsStoreFullRecord;
+	copy->originalValues = originalValues;
 	
 	copy->recordID = recordID;
 	copy->changedKeys = changedKeys;
@@ -50,6 +53,8 @@ static NSString *const k_changedKeys = @"changedKeys";
 	if ((self = [super init]))
 	{
 		record = [decoder decodeObjectForKey:k_record];
+		
+		originalValues = [decoder decodeObjectForKey:k_originalValues];
 		
 		recordID = [decoder decodeObjectForKey:k_recordID];
 		changedKeys = [decoder decodeObjectForKey:k_changedKeys];
@@ -73,6 +78,8 @@ static NSString *const k_changedKeys = @"changedKeys";
 		[coder encodeObject:self.recordID forKey:k_recordID];
 		[coder encodeObject:self.changedKeys forKey:k_changedKeys];
 	}
+	
+	[coder encodeObject:originalValues forKey:k_originalValues];
 }
 
 - (void)setRecord:(CKRecord *)inRecord

@@ -344,6 +344,7 @@ DatabaseManager *MyDatabaseManager;
 			// That way YapDatabaseCloudKit can handle syncing it to the cloud.
 			
 			cloudKeys = todo.changedCloudProperties;
+			recordInfo.originalValues = todo.originalCloudValues;
 		}
 		
 		for (NSString *cloudKey in cloudKeys)
@@ -355,20 +356,36 @@ DatabaseManager *MyDatabaseManager;
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock =
 	^(YapDatabaseReadWriteTransaction *transaction, NSString *collection, NSString *key,
-	  CKRecord *remoteRecord, CKRecord *pendingLocalRecord, CKRecord *newLocalRecord)
+	  CKRecord *remoteRecord, YDBCKMergeInfo *mergeInfo)
 	{
 		if ([remoteRecord.recordType isEqualToString:@"todo"])
 		{
 			MyTodo *todo = [transaction objectForKey:key inCollection:collection];
 			todo = [todo copy]; // make mutable copy
 			
-			NSSet *remoteChangedKeys = nil;
-			if (remoteRecord.changedKeys.count > 0)
-				remoteChangedKeys = [NSSet setWithArray:remoteRecord.changedKeys];
-			else
-				remoteChangedKeys = [NSSet setWithArray:remoteRecord.allKeys];
+			// CloudKit doesn't tell us exactly what changed.
+			// We're just being given the latest version of the CKRecord.
+			// So it's up to us to figure out what changed.
 			
-			NSMutableSet *localChangedKeys = [NSMutableSet setWithArray:pendingLocalRecord.changedKeys];
+			NSArray *allKeys = remoteRecord.allKeys;
+			NSMutableArray *remoteChangedKeys = [NSMutableArray arrayWithCapacity:allKeys.count];
+			
+			for (NSString *key in allKeys)
+			{
+				id remoteValue = [remoteRecord objectForKey:key];
+				id localValue = [todo cloudValueForCloudKey:key];
+				
+				if (![remoteValue isEqual:localValue])
+				{
+					id originalLocalValue = [mergeInfo.originalValues objectForKey:key];
+					if (![remoteValue isEqual:originalLocalValue])
+					{
+						[remoteChangedKeys addObject:key];
+					}
+				}
+			}
+			
+			NSMutableSet *localChangedKeys = [NSMutableSet setWithArray:mergeInfo.pendingLocalRecord.changedKeys];
 			
 			for (NSString *remoteChangedKey in remoteChangedKeys)
 			{
@@ -379,11 +396,10 @@ DatabaseManager *MyDatabaseManager;
 			}
 			for (NSString *localChangedKey in localChangedKeys)
 			{
-				id localChangedValue = [pendingLocalRecord valueForKey:localChangedKey];
-				[newLocalRecord setObject:localChangedValue forKey:localChangedKey];
+				id localChangedValue = [mergeInfo.pendingLocalRecord valueForKey:localChangedKey];
+				[mergeInfo.updatedPendingLocalRecord setObject:localChangedValue forKey:localChangedKey];
 			}
 			
-			[todo clearChangedProperties];
 			[transaction setObject:todo forKey:key inCollection:collection];
 		}
 	};
@@ -515,6 +531,8 @@ DatabaseManager *MyDatabaseManager;
 
 - (void)cloudKit_fetchRecordChanges
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	[MyCloudKitManager fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
 		
 		if (result == UIBackgroundFetchResultFailed)
@@ -548,6 +566,8 @@ DatabaseManager *MyDatabaseManager;
 
 - (void)cloudKit_refetchMissedRecordIDs
 {
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
 	YDBCKChangeSet *failedChangeSet = [[cloudKitExtension pendingChangeSets] firstObject];
 	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
 	

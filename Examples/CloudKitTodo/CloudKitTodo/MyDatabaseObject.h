@@ -89,6 +89,8 @@
 + (NSMutableDictionary *)mappings_cloudKeyToLocalKey;
 @property (nonatomic, readonly) NSDictionary *mappings_cloudKeyToLocalKey;
 
++ (BOOL)storesOriginalCloudValues;
+
 
 #pragma mark Immutability
 
@@ -113,6 +115,8 @@
 
 @property (nonatomic, readonly) NSSet *changedCloudProperties;
 @property (nonatomic, readonly) BOOL hasChangedCloudProperties;
+
+@property (nonatomic, readonly) NSDictionary *originalCloudValues;
 
 
 #pragma mark Getters & Setters (cloud)

@@ -10,9 +10,11 @@
 #import "YapDatabaseCloudKitConnection.h"
 #import "YapDatabaseCloudKitTransaction.h"
 
-#import "YDBCKChangeQueue.h"
-#import "YDBCKMappingTableInfo.h"
+#import "YDBCKRecordInfo.h"
 #import "YDBCKRecordTableInfo.h"
+#import "YDBCKMappingTableInfo.h"
+#import "YDBCKChangeQueue.h"
+#import "YDBCKChangeRecord.h"
 
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
@@ -43,6 +45,19 @@ static NSString *const changeset_key_reset            = @"reset";
 
 @property (nonatomic, strong, readwrite) id versionInfo;
 @property (nonatomic, strong, readwrite) NSArray *keysToRestore;
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YDBCKMergeInfo ()
+
+@property (nonatomic, strong, readwrite) CKRecord *pendingLocalRecord;
+@property (nonatomic, strong, readwrite) CKRecord *updatedPendingLocalRecord;
+
+- (void)mergeNewerRecord:(CKRecord *)newerRecord newerOriginalValues:(NSDictionary *)newerOriginalValues;
 
 @end
 

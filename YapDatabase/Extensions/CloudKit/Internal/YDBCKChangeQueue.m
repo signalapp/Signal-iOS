@@ -481,7 +481,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 **/
 - (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID
              databaseIdentifier:(NSString *)databaseIdentifier
-                     intoRecord:(CKRecord *)record
+                           into:(YDBCKMergeInfo *)mergeInfo
 {
 	BOOL hasPendingChanges = NO;
 	
@@ -495,14 +495,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
 				if (prevRecord)
 				{
-					for (NSString *changedKey in prevRecord.record.changedKeys)
-					{
-						// Remember: nil is a valid value.
-						// It indicates removal of the value for the key, which is a valid action.
-						
-						id value = [prevRecord.record objectForKey:changedKey];
-						[record setObject:value forKey:changedKey];
-					}
+					[mergeInfo mergeNewerRecord:prevRecord.record newerOriginalValues:prevRecord.originalValues];
 					
 					hasPendingChanges = YES;
 				}
@@ -576,6 +569,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
         withModifiedRecord:(CKRecord *)record
         databaseIdentifier:(NSString *)databaseIdentifier
+            originalValues:(NSDictionary *)originalValues
 {
 	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
 	NSAssert(pendingQueue.isPendingQueue, @"Bad parameter: 'pendingQueue' is not a pendingQueue");
@@ -589,6 +583,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	
 	YDBCKChangeRecord *currentRecord = [[YDBCKChangeRecord alloc] initWithRecord:record];
 	currentRecord.needsStoreFullRecord = NO;
+	currentRecord.originalValues = originalValues;
 	
 	// Update previous changeSets (if needed)
 	

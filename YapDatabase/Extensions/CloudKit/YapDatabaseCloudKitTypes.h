@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
 
+#import "YDBCKRecordInfo.h"
+#import "YDBCKMergeInfo.h"
 #import "YapDatabaseTransaction.h"
 
-@class YDBCKRecordInfo;
 
 /**
  * Corresponds to the different type of blocks supported by the various extension subclasses.
@@ -51,11 +52,11 @@ typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * "Clean" merge.
+ * Merge Block.
 **/
 typedef void (^YapDatabaseCloudKitMergeBlock)
     (YapDatabaseReadWriteTransaction *transaction, NSString *collection, NSString *key,
-	 CKRecord *remoteRecord, CKRecord *pendingLocalRecord, CKRecord *newLocalRecord);
+	 CKRecord *remoteRecord, YDBCKMergeInfo *mergeInfo);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -97,63 +98,3 @@ typedef void (^YapDatabaseCloudKitOperationErrorBlock)
  * However, if you intend to use any other CKDatabase, the you MUST provide a DatabaseIdentifierBlock.
 **/
 typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *databaseIdentifier);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YDBCKRecordInfo : NSObject
-
-/**
- * This property allows you to specify the associated database for the record.
- * 
- * In order for YapDatabaseCloudKit to be able to upload the CKRecord to the cloud,
- * it must know which database the record is associated with.
- * 
- * If unspecified, the private database of the app’s default container is used.
- * 
- * Important:
- * If you specify a databaseIdentifier here,
- * you must also configure the YapDatabaseCloudKit instance with a databaseIdentifier block.
-**/
-@property (nonatomic, copy, readwrite) NSString *databaseIdentifier;
-
-/**
- * This property comes directly from the [YapDatabaseCloudKit init...] method.
- * 
- * As your application evolves, there may be times that you need to change the CKRecord format.
- * And there are a couple ways in which you can achieve this.
- * 
- * 1. Simply wait until the corresponding object(s) are naturally updated,
- *    and then push the new fields to the cloud at that time.
- * 2. Push all the updated fields for all the objects right away.
- * 
- * The versionInfo is useful in achieving option #2.
- * Here's how it works:
- * 
- * You initialize YapDatabaseCloudKit with an bumped/incremented/changed versionTag,
- * and you also supply versionInfo that relays information you can use within the recordHandler.
- * 
- * When YapDatabaseCloudKit is initialized for the first time (first launch, not subsequent launch),
- * or its versionTag is changed, it will enumerate the objects in the database and invoke the recordHandler.
- * During this enumeration (and only this enumeration) the recordHandler will be passed the versionInfo
- * from the init method. Thus the recordHandler can discern between the initial population/repopulation,
- * and a normal user-initiated readWriteTransaction that's modifying an object in the database.
- * And it can then use the versionInfo to create the proper CKRecord.
-**/
-@property (nonatomic, strong, readonly) id versionInfo;
-
-/**
- * When this property is non-nil, the recordHandler MUST restore the specified keys.
- * 
- * YapDatabaseCloudKit uses various storage optimization techniques to reduce disk IO,
- * and reduce the amount of duplicate data that gets stored in the database.
- * Essentially it skips storing any values that are already stored within the original database object(s).
- * And so, if the application quits before all uploads have made it to the CloudKit server,
- * then YapDatabaseCloudKit will need to restore some CKRecords, and may need to restore certain values.
- * 
- * You MUST check for this property within your recordHandler implementation.
-**/
-@property (nonatomic, strong, readonly) NSArray *keysToRestore;
-
-@end

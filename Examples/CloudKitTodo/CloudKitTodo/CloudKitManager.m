@@ -487,6 +487,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		}
 		else
 		{
+			DDLogVerbose(@"CKFetchRecordsOperation: recordsByRecordID: %@", recordsByRecordID);
+			
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				
 				for (CKRecord *record in [recordsByRecordID objectEnumerator])

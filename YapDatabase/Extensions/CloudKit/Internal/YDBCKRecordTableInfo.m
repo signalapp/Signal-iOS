@@ -28,7 +28,6 @@
 	                                                       recordID:record.recordID
 	                                                     ownerCount:ownerCount];
 	
-	dirtyCopy.dirty_ownerCount = ownerCount;
 	dirtyCopy.dirty_record = [record safeCopy];
 	
 	return dirtyCopy;
@@ -71,16 +70,19 @@
 @synthesize remoteDeletion;
 @synthesize remoteMerge;
 
+@synthesize originalValues = originalValues;
+
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                   recordID:(CKRecordID *)inRecordID
-                                ownerCount:(int64_t)in_clean_ownerCount
+                                ownerCount:(int64_t)in_ownerCount
 {
 	if ((self = [super init]))
 	{
 		databaseIdentifier = [inDatabaseIdentifier copy];
 		recordID = inRecordID;
 		
-		clean_ownerCount = in_clean_ownerCount;
+		clean_ownerCount = in_ownerCount;
+		dirty_ownerCount = in_ownerCount;
 	}
 	return self;
 }
@@ -91,6 +93,35 @@
 
 - (int64_t)current_ownerCount {
 	return dirty_ownerCount;
+}
+
+- (void)mergeOriginalValues:(NSDictionary *)inOriginalValues
+{
+	if (inOriginalValues == nil) return;
+	
+	if (originalValues == nil)
+	{
+		originalValues = [inOriginalValues copy];
+	}
+	else
+	{
+		__block NSMutableDictionary *newOriginalValues = nil;
+		
+		[inOriginalValues enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+			
+			if ([originalValues objectForKey:key] == nil)
+			{
+				if (newOriginalValues == nil)
+					newOriginalValues = [originalValues mutableCopy];
+				
+				[newOriginalValues setObject:obj forKey:key];
+			}
+		}];
+		
+		if (newOriginalValues) {
+			originalValues = [newOriginalValues copy];
+		}
+	}
 }
 
 - (void)incrementOwnerCount

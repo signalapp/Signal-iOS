@@ -9,6 +9,7 @@
 @property (nonatomic, strong, readwrite) CKRecord *record;
 
 @property (nonatomic, assign, readwrite) BOOL needsStoreFullRecord;
+@property (nonatomic, strong, readwrite) NSDictionary *originalValues;
 
 @property (nonatomic, readonly) CKRecordID *recordID;
 @property (nonatomic, readonly) NSArray *changedKeys;

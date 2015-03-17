@@ -62,13 +62,16 @@
 
 @property (nonatomic, readonly) int64_t clean_ownerCount;            // represents what's on disk
 
-@property (nonatomic, assign, readwrite) int64_t   dirty_ownerCount; // represents new value (this transaction)
+@property (nonatomic, assign, readonly)  int64_t   dirty_ownerCount; // represents new value (this transaction)
 @property (nonatomic, strong, readwrite) CKRecord *dirty_record;     // represents new value (this transaction)
 
 @property (nonatomic, assign, readwrite) BOOL skipUploadRecord;
 @property (nonatomic, assign, readwrite) BOOL skipUploadDeletion;
 @property (nonatomic, assign, readwrite) BOOL remoteDeletion;
 @property (nonatomic, assign, readwrite) BOOL remoteMerge;
+
+@property (nonatomic, copy, readonly) NSDictionary *originalValues;
+- (void)mergeOriginalValues:(NSDictionary *)inOriginalValues;
 
 - (void)incrementOwnerCount;
 - (void)decrementOwnerCount;

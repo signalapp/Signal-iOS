@@ -107,6 +107,8 @@
 		DCDE78801A302B29001D8FCE /* MyDatabaseObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE787D1A302B29001D8FCE /* MyDatabaseObject.m */; };
 		DCDE78811A302B29001D8FCE /* MyTodo.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE787F1A302B29001D8FCE /* MyTodo.m */; };
 		DCDE78831A302B46001D8FCE /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDE78821A302B46001D8FCE /* libsqlite3.dylib */; };
+		DCEF93B91AB633E3009D5604 /* YDBCKRecordInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEF93B81AB633E3009D5604 /* YDBCKRecordInfo.m */; };
+		DCEF93BE1AB79D27009D5604 /* YDBCKMergeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEF93BD1AB79D27009D5604 /* YDBCKMergeInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -323,6 +325,10 @@
 		DCDE787E1A302B29001D8FCE /* MyTodo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTodo.h; sourceTree = "<group>"; };
 		DCDE787F1A302B29001D8FCE /* MyTodo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTodo.m; sourceTree = "<group>"; };
 		DCDE78821A302B46001D8FCE /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		DCEF93B71AB633E3009D5604 /* YDBCKRecordInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKRecordInfo.h; sourceTree = "<group>"; };
+		DCEF93B81AB633E3009D5604 /* YDBCKRecordInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKRecordInfo.m; sourceTree = "<group>"; };
+		DCEF93BC1AB79D27009D5604 /* YDBCKMergeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YDBCKMergeInfo.h; sourceTree = "<group>"; };
+		DCEF93BD1AB79D27009D5604 /* YDBCKMergeInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBCKMergeInfo.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,6 +529,10 @@
 			children = (
 				DCDE77881A302A7E001D8FCE /* YDBCKRecord.h */,
 				DCDE77891A302A7E001D8FCE /* YDBCKRecord.m */,
+				DCEF93B71AB633E3009D5604 /* YDBCKRecordInfo.h */,
+				DCEF93B81AB633E3009D5604 /* YDBCKRecordInfo.m */,
+				DCEF93BC1AB79D27009D5604 /* YDBCKMergeInfo.h */,
+				DCEF93BD1AB79D27009D5604 /* YDBCKMergeInfo.m */,
 				DCDE778A1A302A7E001D8FCE /* YDBCKChangeSet.h */,
 				DCDE778B1A302A7E001D8FCE /* YDBCKChangeSet.m */,
 			);
@@ -966,6 +976,7 @@
 				DCDE786E1A302A7E001D8FCE /* YapCache.m in Sources */,
 				DCDE78431A302A7E001D8FCE /* YapDatabaseFullTextSearchTransaction.m in Sources */,
 				DCDE77611A3024A8001D8FCE /* DDFileLogger.m in Sources */,
+				DCEF93B91AB633E3009D5604 /* YDBCKRecordInfo.m in Sources */,
 				DCDE78461A302A7E001D8FCE /* YapDatabaseExtensionTransaction.m in Sources */,
 				DCDE78491A302A7E001D8FCE /* YapDatabaseRelationshipEdge.m in Sources */,
 				DCDE785C1A302A7E001D8FCE /* YapDatabaseViewRangeOptions.m in Sources */,
@@ -1002,6 +1013,7 @@
 				DCDE78741A302A7E001D8FCE /* YapDatabase.m in Sources */,
 				DCDE78721A302A7E001D8FCE /* YapSet.m in Sources */,
 				DCDE77211A3023E9001D8FCE /* main.m in Sources */,
+				DCEF93BE1AB79D27009D5604 /* YDBCKMergeInfo.m in Sources */,
 				DCDE78681A302A7E001D8FCE /* YapDebugDictionary.m in Sources */,
 				DCDE78751A302A7E001D8FCE /* YapDatabaseConnection.m in Sources */,
 				DCDE78761A302A7E001D8FCE /* YapDatabaseOptions.m in Sources */,

@@ -2,6 +2,7 @@
 #import <CloudKit/CloudKit.h>
 
 #import "YDBCKChangeSet.h"
+#import "YDBCKMergeInfo.h"
 
 
 @interface YDBCKChangeQueue : NSObject
@@ -153,7 +154,7 @@
 **/
 - (BOOL)mergeChangesForRecordID:(CKRecordID *)recordID
              databaseIdentifier:(NSString *)databaseIdentifier
-                     intoRecord:(CKRecord *)record;
+                           into:(YDBCKMergeInfo *)mergeInfo;
 
 #pragma mark Transaction Commit Handling
 
@@ -181,7 +182,8 @@
 **/
 - (void)updatePendingQueue:(YDBCKChangeQueue *)pendingQueue
         withModifiedRecord:(CKRecord *)record
-        databaseIdentifier:(NSString *)databaseIdentifier;
+        databaseIdentifier:(NSString *)databaseIdentifier
+            originalValues:(NSDictionary *)originalValues;
 
 /**
  * This method:

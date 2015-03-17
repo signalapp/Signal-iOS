@@ -565,9 +565,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 {
 	YDBLogAutoTrace();
 	
-	void (^InsertRecord)(NSString*, CKRecord*, int64_t rowid);
-	InsertRecord = ^(NSString *databaseIdentifier, CKRecord *record, int64_t rowid) {
+	void (^InsertRecord)(CKRecord*, YDBCKRecordInfo*, int64_t);
+	InsertRecord = ^(CKRecord *record, YDBCKRecordInfo *recordInfo, int64_t rowid) {
 		
+		NSString *databaseIdentifier = recordInfo.databaseIdentifier;
 		NSString *hash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
 		
 		// Add row for mapping table
@@ -592,17 +593,18 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			                                                       recordID:nil
 			                                                     ownerCount:0];
 			
-			dirtyRecordTableInfo.dirty_ownerCount = 1;
 			dirtyRecordTableInfo.dirty_record = record;
-		
+			[dirtyRecordTableInfo incrementOwnerCount];
+			[dirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
+			
 			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:@(rowid)];
 			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:@(rowid)];
 		}
 		else
 		{
 			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
-			
 			[dirtyRecordTableInfo incrementOwnerCount];
+			[dirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 		}
 	};
 	
@@ -622,11 +624,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			CKRecord *record = nil;
 			recordInfo.databaseIdentifier = nil;
+			recordInfo.originalValues = nil;
 			
 			recordBlock(&record, recordInfo, collection, key);
 			
 			if (record) {
-				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+				InsertRecord(record, recordInfo, rowid);
 			}
 		};
 		
@@ -655,11 +658,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			CKRecord *record = nil;
 			recordInfo.databaseIdentifier = nil;
+			recordInfo.originalValues = nil;
 			
 			recordBlock(&record, recordInfo, collection, key, object);
 			
 			if (record) {
-				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+				InsertRecord(record, recordInfo, rowid);
 			}
 		};
 		
@@ -688,11 +692,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			CKRecord *record = nil;
 			recordInfo.databaseIdentifier = nil;
+			recordInfo.originalValues = nil;
 			
 			recordBlock(&record, recordInfo, collection, key, metadata);
 			
 			if (record) {
-				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+				InsertRecord(record, recordInfo, rowid);
 			}
 		};
 		
@@ -721,11 +726,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			CKRecord *record = nil;
 			recordInfo.databaseIdentifier = nil;
+			recordInfo.originalValues = nil;
 			
 			recordBlock(&record, recordInfo, collection, key, object, metadata);
 			
 			if (record) {
-				InsertRecord(recordInfo.databaseIdentifier, record, rowid);
+				InsertRecord(record, recordInfo, rowid);
 			}
 		};
 		
@@ -765,6 +771,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
 		
 		recordInfo.databaseIdentifier = recordTableInfo.databaseIdentifier;
+		recordInfo.originalValues = nil;
 		
 		if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 		{
@@ -800,12 +807,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key);
 			
-			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-			                            preCalculatedHash:nil
-			                                     forRowid:rowid
-			                     withPrevMappingTableInfo:mappingTableInfo
-			                          prevRecordTableInfo:recordTableInfo
-			                                        flags:0];
+			[self processRecord:record recordInfo:recordInfo
+			                    preCalculatedHash:nil
+			                             forRowid:rowid
+			             withPrevMappingTableInfo:mappingTableInfo
+			                  prevRecordTableInfo:recordTableInfo
+			                                flags:0];
 		};
 		
 		if (allowedCollections)
@@ -834,12 +841,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, object);
 			
-			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-			                            preCalculatedHash:nil
-			                                     forRowid:rowid
-			                     withPrevMappingTableInfo:mappingTableInfo
-			                          prevRecordTableInfo:recordTableInfo
-			                                        flags:0];
+			[self processRecord:record recordInfo:recordInfo
+			                    preCalculatedHash:nil
+			                             forRowid:rowid
+			             withPrevMappingTableInfo:mappingTableInfo
+			                  prevRecordTableInfo:recordTableInfo
+			                                flags:0];
 		};
 		
 		if (allowedCollections)
@@ -868,12 +875,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, metadata);
 			
-			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-			                            preCalculatedHash:nil
-			                                     forRowid:rowid
-			                     withPrevMappingTableInfo:mappingTableInfo
-			                          prevRecordTableInfo:recordTableInfo
-			                                        flags:0];
+			[self processRecord:record recordInfo:recordInfo
+			                    preCalculatedHash:nil
+			                             forRowid:rowid
+			             withPrevMappingTableInfo:mappingTableInfo
+			                  prevRecordTableInfo:recordTableInfo
+			                                flags:0];
 		};
 		
 		if (allowedCollections)
@@ -902,12 +909,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			enumHelperBlock(rowid);
 			recordBlock(&record, recordInfo, collection, key, object, metadata);
 			
-			[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-			                            preCalculatedHash:nil
-			                                     forRowid:rowid
-			                     withPrevMappingTableInfo:mappingTableInfo
-			                          prevRecordTableInfo:recordTableInfo
-			                                        flags:0];
+			[self processRecord:record recordInfo:recordInfo
+			                    preCalculatedHash:nil
+			                             forRowid:rowid
+			             withPrevMappingTableInfo:mappingTableInfo
+			                  prevRecordTableInfo:recordTableInfo
+			                                flags:0];
 		};
 		
 		if (allowedCollections)
@@ -1085,12 +1092,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 }
 
-- (void)processRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
-                                          preCalculatedHash:(NSString *)preCalculatedRecordTableHash
-                                                   forRowid:(int64_t)rowid
-                                   withPrevMappingTableInfo:(id <YDBCKMappingTableInfo>)prevMappingTableInfo
-                                        prevRecordTableInfo:(id <YDBCKRecordTableInfo>)prevRecordTableInfo
-                                                      flags:(YDBCKProcessRecordBitMask)flags
+- (void)processRecord:(CKRecord *)record recordInfo:(YDBCKRecordInfo *)recordInfo
+                                  preCalculatedHash:(NSString *)preCalculatedRecordTableHash
+                                           forRowid:(int64_t)rowid
+                           withPrevMappingTableInfo:(id <YDBCKMappingTableInfo>)prevMappingTableInfo
+                                prevRecordTableInfo:(id <YDBCKRecordTableInfo>)prevRecordTableInfo
+                                              flags:(YDBCKProcessRecordBitMask)flags
 {
 	// Scenarios:
 	//
@@ -1114,7 +1121,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			if (preCalculatedRecordTableHash)
 				newRecordTableHash = preCalculatedRecordTableHash;
 			else
-				newRecordTableHash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
+				newRecordTableHash = [self hashRecordID:record.recordID
+				                     databaseIdentifier:recordInfo.databaseIdentifier];
 			
 			if (![newRecordTableHash isEqualToString:prevRecordTableHash])
 			{
@@ -1135,7 +1143,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		if (preCalculatedRecordTableHash)
 			newRecordTableHash = preCalculatedRecordTableHash;
 		else
-			newRecordTableHash = [self hashRecordID:record.recordID databaseIdentifier:databaseIdentifier];
+			newRecordTableHash = [self hashRecordID:record.recordID
+			                     databaseIdentifier:recordInfo.databaseIdentifier];
 		
 		recordTableHashChangedForRowid = YES;
 	}
@@ -1219,6 +1228,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
 			[newDirtyRecordTableInfo incrementOwnerCount];
+			[newDirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
 			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
 			
@@ -1235,6 +1245,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:newDirtyRecordTableInfo.dirty_record];
 			[newDirtyRecordTableInfo incrementOwnerCount];
+			[newDirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
 			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
 			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
@@ -1249,12 +1260,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		else
 		{
 			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
-			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:recordInfo.databaseIdentifier
 			                                                       recordID:nil
 			                                                     ownerCount:0];
 			
-			newDirtyRecordTableInfo.dirty_ownerCount = 1;
 			newDirtyRecordTableInfo.dirty_record = record;
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			[newDirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
 			if (remoteMerge) newDirtyRecordTableInfo.remoteMerge = YES;
 			if (skipUploadRecord) newDirtyRecordTableInfo.skipUploadRecord = YES;
@@ -1272,6 +1284,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			  (YDBCKDirtyRecordTableInfo *)prevRecordTableInfo;
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+			[dirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 		}
 		else if ([prevRecordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 		{
@@ -1281,6 +1294,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			
 			[self mergeChangedValuesFromRecord:record intoRecord:dirtyRecordTableInfo.dirty_record];
+			[dirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
 			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
 			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:newRecordTableHash];
@@ -1288,12 +1302,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		else
 		{
 			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
-			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:recordInfo.databaseIdentifier
 			                                                       recordID:nil
 			                                                     ownerCount:0];
 			
-			newDirtyRecordTableInfo.dirty_ownerCount = 1;
 			newDirtyRecordTableInfo.dirty_record = record;
+			[newDirtyRecordTableInfo incrementOwnerCount];
+			[newDirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
 			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:newRecordTableHash];
 			[parentConnection->dirtyRecordTableInfoDict setObject:newDirtyRecordTableInfo forKey:newRecordTableHash];
@@ -3050,7 +3065,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 				{
 					[masterQueue updatePendingQueue:pendingQueue
 					             withModifiedRecord:dirtyRecordTableInfo.dirty_record
-					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier];
+					             databaseIdentifier:dirtyRecordTableInfo.databaseIdentifier
+					                 originalValues:dirtyRecordTableInfo.originalValues];
 				}
 			}
 		}
@@ -3159,12 +3175,15 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		if (!attachRequest.shouldUploadRecord)
 			flags |= YDBCK_skipUploadRecord;
 		
-		[self processRecord:record databaseIdentifier:databaseIdentifier
-		                            preCalculatedHash:nil
-		                                     forRowid:rowid
-		                     withPrevMappingTableInfo:nil
-		                          prevRecordTableInfo:nil
-		                                        flags:flags];
+		YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+		recordInfo.databaseIdentifier = databaseIdentifier;
+		
+		[self processRecord:record recordInfo:recordInfo
+		                    preCalculatedHash:nil
+		                             forRowid:rowid
+		             withPrevMappingTableInfo:nil
+		                  prevRecordTableInfo:nil
+		                                flags:flags];
 		
 		[parentConnection->pendingAttachRequests removeObjectForKey:collectionKey];
 		return;
@@ -3208,12 +3227,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Figure if anything changed, and schedule updates to the table(s) accordingly
 	
-	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-	                            preCalculatedHash:nil
-	                                     forRowid:rowid
-	                     withPrevMappingTableInfo:nil
-	                          prevRecordTableInfo:nil
-	                                        flags:0];
+	[self processRecord:record recordInfo:recordInfo
+	                    preCalculatedHash:nil
+	                             forRowid:rowid
+	             withPrevMappingTableInfo:nil
+	                  prevRecordTableInfo:nil
+	                                flags:0];
 }
 
 /**
@@ -3307,12 +3326,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Figure if anything changed, and schedule updates to the table(s) accordingly
 	
-	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-	                            preCalculatedHash:nil
-	                                     forRowid:rowid
-	                     withPrevMappingTableInfo:mappingTableInfo
-	                          prevRecordTableInfo:recordTableInfo
-	                                        flags:0];
+	[self processRecord:record recordInfo:recordInfo
+	                    preCalculatedHash:nil
+	                             forRowid:rowid
+	             withPrevMappingTableInfo:mappingTableInfo
+	                  prevRecordTableInfo:recordTableInfo
+	                                flags:0];
 }
 
 /**
@@ -3400,12 +3419,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Figure if anything changed, and schedule updates to the table(s) accordingly
 	
-	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-	                            preCalculatedHash:nil
-	                                     forRowid:rowid
-	                     withPrevMappingTableInfo:mappingTableInfo
-	                          prevRecordTableInfo:recordTableInfo
-	                                        flags:0];
+	[self processRecord:record recordInfo:recordInfo
+	                    preCalculatedHash:nil
+	                             forRowid:rowid
+	             withPrevMappingTableInfo:mappingTableInfo
+	                  prevRecordTableInfo:recordTableInfo
+	                                flags:0];
 }
 
 /**
@@ -3493,12 +3512,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Figure if anything changed, and schedule updates to the table(s) accordingly
 	
-	[self processRecord:record databaseIdentifier:recordInfo.databaseIdentifier
-	                            preCalculatedHash:nil
-	                                     forRowid:rowid
-	                     withPrevMappingTableInfo:mappingTableInfo
-	                          prevRecordTableInfo:recordTableInfo
-	                                        flags:0];
+	[self processRecord:record recordInfo:recordInfo
+	                    preCalculatedHash:nil
+	                             forRowid:rowid
+	             withPrevMappingTableInfo:mappingTableInfo
+	                  prevRecordTableInfo:recordTableInfo
+	                                flags:0];
 }
 
 /**
@@ -3545,12 +3564,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		recordTableInfo = [self recordTableInfoForHash:mappingTableInfo.current_recordTable_hash cacheResult:YES];
 	}
 	
-	[self processRecord:nil databaseIdentifier:nil
-	                         preCalculatedHash:nil
-	                                  forRowid:rowid
-	                  withPrevMappingTableInfo:mappingTableInfo
-	                       prevRecordTableInfo:recordTableInfo
-	                                     flags:0];
+	[self processRecord:nil recordInfo:nil
+	                 preCalculatedHash:nil
+	                          forRowid:rowid
+	          withPrevMappingTableInfo:mappingTableInfo
+	               prevRecordTableInfo:recordTableInfo
+	                             flags:0];
 }
 
 /**
@@ -3586,12 +3605,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		id <YDBCKRecordTableInfo> recordTableInfo =
 		  [recordTableInfoDict objectForKey:mappingTableInfo.current_recordTable_hash];
 		
-		[self processRecord:nil databaseIdentifier:nil
-		                         preCalculatedHash:nil
-		                                  forRowid:rowid
-		                  withPrevMappingTableInfo:mappingTableInfo
-		                       prevRecordTableInfo:recordTableInfo
-		                                     flags:0];
+		[self processRecord:nil recordInfo:nil
+		                 preCalculatedHash:nil
+		                          forRowid:rowid
+		          withPrevMappingTableInfo:mappingTableInfo
+		               prevRecordTableInfo:recordTableInfo
+		                             flags:0];
 	}];
 }
 
@@ -3755,11 +3774,14 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	YDBCKProcessRecordBitMask flags = 0;
 	if (!shouldUploadRecord) flags |= YDBCK_skipUploadRecord;
 	
-	[self processRecord:record databaseIdentifier:databaseIdentifier
-	                            preCalculatedHash:hash
-	                                     forRowid:rowid
-	                     withPrevMappingTableInfo:mappingTableInfo
-	                          prevRecordTableInfo:recordTableInfo
+	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
+	recordInfo.databaseIdentifier = databaseIdentifier;
+	
+	[self processRecord:record recordInfo:recordInfo
+	                    preCalculatedHash:hash
+	                             forRowid:rowid
+	             withPrevMappingTableInfo:mappingTableInfo
+	                     prevRecordTableInfo:recordTableInfo
 	                                        flags:flags];
 	
 	return YES;
@@ -3855,12 +3877,12 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	if (wasRemoteDeletion) flags |= YDBCK_remoteDeletion;
 	if (!shouldUploadDeletion) flags |= YDBCK_skipUploadDeletion;
 	
-	[self processRecord:nil databaseIdentifier:nil
-	                         preCalculatedHash:nil
-	                                  forRowid:rowid
-	                  withPrevMappingTableInfo:mappingTableInfo
-	                       prevRecordTableInfo:recordTableInfo
-	                                     flags:flags];
+	[self processRecord:nil recordInfo:nil
+	                 preCalculatedHash:nil
+	                          forRowid:rowid
+	          withPrevMappingTableInfo:mappingTableInfo
+	               prevRecordTableInfo:recordTableInfo
+	                             flags:flags];
 }
 
 /**
@@ -3954,7 +3976,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	// Make sanitized copy of the remoteRecord.
 	// Sanitized == copy of the system fields only, without any values.
 	
-	CKRecord *pendingLocalRecord = [remoteRecord sanitizedCopy];
+	YDBCKMergeInfo *mergeInfo = [[YDBCKMergeInfo alloc] init];
+	mergeInfo.pendingLocalRecord = [remoteRecord sanitizedCopy];
 	
 	// And then infuse the pendingLocalRecord with any key/value pairs that are pending upload.
 	//
@@ -3963,7 +3986,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	BOOL hasPendingChanges =
 	  [parentConnection->parent->masterQueue mergeChangesForRecordID:recordID
 	                                              databaseIdentifier:databaseIdentifier
-	                                                      intoRecord:pendingLocalRecord];
+	                                                            into:mergeInfo];
 	
 	// And then we check changes from this readWriteTransaction, just in case.
 	
@@ -3974,14 +3997,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		
 		if (dirtyRecordTableInfo)
 		{
-			for (NSString *changedKey in dirtyRecordTableInfo.dirty_record.changedKeys)
-			{
-				// Remember: nil is a valid value.
-				// It indicates removal of the value for the key, which is a valid action.
-				
-				id value = [dirtyRecordTableInfo.dirty_record objectForKey:changedKey];
-				[pendingLocalRecord setObject:value forKey:changedKey];
-			}
+			[mergeInfo mergeNewerRecord:dirtyRecordTableInfo.dirty_record
+			        newerOriginalValues:dirtyRecordTableInfo.originalValues];
 			
 			hasPendingChanges = YES;
 		}
@@ -3993,7 +4010,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	__unsafe_unretained YapDatabaseReadWriteTransaction *rwTransaction =
 	  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 	
-	CKRecord *newLocalRecord = [remoteRecord sanitizedCopy];
+	mergeInfo.updatedPendingLocalRecord = [remoteRecord sanitizedCopy];
+	if (!hasPendingChanges) {
+		mergeInfo.pendingLocalRecord = nil;
+	}
 	
 	if (isInRecordTable)
 	{
@@ -4003,23 +4023,24 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			int64_t rowid = [rowidNumber longLongValue];
 			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 			
-			if (hasPendingChanges)
-				mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, pendingLocalRecord, newLocalRecord);
-			else
-				mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, nil, newLocalRecord);
+			mergeBlock(rwTransaction, ck.collection, ck.key, remoteRecord, mergeInfo);
 		}
 		
 		rowidsInMidMerge = nil;
 	}
 	else if (hasPendingChanges)
 	{
-		mergeBlock(rwTransaction, nil, nil, remoteRecord, pendingLocalRecord, newLocalRecord);
+		mergeBlock(rwTransaction, nil, nil, remoteRecord, mergeInfo);
 	}
 	
 	// Store the results
 	
 	if (recordTableInfo)
 	{
+		// Note: We need to use directly set dirty_record here.
+		// Because the updatedPendingLocalRecord has [baseRecord sanitizedRecord] as its base.
+		// And it also has any/all values from a previous dirty_record (that we want to keep).
+		
 		if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 		{
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
@@ -4027,8 +4048,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			
 			YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo = [cleanRecordTableInfo dirtyCopy];
 			
-			[self mergeChangedValuesFromRecord:newLocalRecord intoRecord:dirtyRecordTableInfo.dirty_record];
-			
+			dirtyRecordTableInfo.dirty_record = mergeInfo.updatedPendingLocalRecord; // see above note
 			dirtyRecordTableInfo.remoteMerge = YES;
 			
 			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:hash];
@@ -4039,8 +4059,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			__unsafe_unretained YDBCKDirtyRecordTableInfo *dirtyRecordTableInfo =
 			  (YDBCKDirtyRecordTableInfo *)recordTableInfo;
 			
-			[self mergeChangedValuesFromRecord:newLocalRecord intoRecord:dirtyRecordTableInfo.dirty_record];
-			
+			dirtyRecordTableInfo.dirty_record = mergeInfo.updatedPendingLocalRecord; // see above note
 			dirtyRecordTableInfo.remoteMerge = YES;
 		}
 	}
@@ -4051,7 +4070,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		                                                       recordID:recordID
 		                                                     ownerCount:0];
 		
-		dirtyRecordTableInfo.dirty_record = newLocalRecord;
+		dirtyRecordTableInfo.dirty_record = mergeInfo.updatedPendingLocalRecord;
 		dirtyRecordTableInfo.remoteMerge = YES;
 		
 		[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:hash];

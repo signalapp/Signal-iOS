@@ -132,6 +132,11 @@ static NSString *const k_lastModified = @"lastModified";
 
 #pragma mark MyDatabaseObject overrides
 
++ (BOOL)storesOriginalCloudValues
+{
+	return YES;
+}
+
 + (NSMutableDictionary *)mappings_localKeyToCloudKey
 {
 	NSMutableDictionary *mappings_localKeyToCloudKey = [super mappings_localKeyToCloudKey];
@@ -182,7 +187,7 @@ static NSString *const k_lastModified = @"lastModified";
 	return [super setLocalValueFromCloudValue:cloudValue forCloudKey:cloudKey];
 }
 
-#pragma mark MyDatabaseObject overrides
+#pragma mark KVO overrides
 
 - (void)setNilValueForKey:(NSString *)key
 {
