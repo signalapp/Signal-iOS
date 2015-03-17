@@ -434,15 +434,34 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 						continue;
 					}
 					
+					NSString *recordChangeTag = nil;
 					BOOL hasPendingModifications = NO;
 					BOOL hasPendingDelete = NO;
-					BOOL exists = [[transaction ext:Ext_CloudKit] containsRecordID:record.recordID
-					                                            databaseIdentifier:nil
-					                                       hasPendingModifications:&hasPendingModifications
-					                                              hasPendingDelete:&hasPendingDelete];
 					
-					if (exists || hasPendingModifications)
+					[[transaction ext:Ext_CloudKit] getRecordChangeTag:&recordChangeTag
+					                           hasPendingModifications:&hasPendingModifications
+					                                  hasPendingDelete:&hasPendingDelete
+					                                       forRecordID:record.recordID
+					                                databaseIdentifier:nil];
+					
+					if (recordChangeTag)
 					{
+						if ([recordChangeTag isEqualToString:record.recordChangeTag])
+						{
+							// We're the one who changes this record.
+							// So we can quietly ignore it.
+						}
+						else
+						{
+							[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
+						}
+					}
+					else if (hasPendingModifications)
+					{
+						// We're not actively managing this record anymore (we deleted/detached it).
+						// But there are still previous modifications that are pending upload to server.
+						// So this merge is required in order to keep everything running properly (no infinite loops).
+						
 						[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
 					}
 					else if (!hasPendingDelete)
@@ -492,14 +511,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 }
 
 /**
- * This method refetches records that have already been fetched via CKFetchRecordChangesOperation.
- * However, we somehow managed to screw up merging the information into our local CKRecord.
- * This is usually due to bugs in the implementation of your YapDatabaseCloudKitMergeBlock.
+ * This method forces a re-fetch & merge operation.
+ * This can be handly for records that have already been fetched via CKFetchRecordChangesOperation,
+ * however we somehow managed to screw up merging the information into our local object(s).
+ * 
+ * This is usually due to bugs in the data model implementation, or perhaps your YapDatabaseCloudKitMergeBlock.
  * But bugs are a normal and expected part of development.
- * So rather than fall into an infinite loop,
- * we provide this method as a way to bail ourselves out when we make a mistake.
+ * 
+ * For example:
+ *   A few new propertie were added to our local object.
+ *   We remembered to add these to the CKRecord(s) upon saving (so the new proerties got uploaded fine).
+ *   But we forgot to update init method that sets the localObject.property from the new CKRecord.propertly. Oops!
+ *   So now we have a few devices that have synced objects that are missing these properties.
+ *
+ * So rather than deleting & re-installing the app,
+ * we provide this method as a way to force another fetch & merge operation.
 **/
-- (void)_refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler
+- (void)refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler
 {
 	CKFetchRecordsOperation *operation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:recordIDs];
 	
@@ -597,12 +625,13 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	
 	if ([failedChangeSet.uuid isEqualToString:lastChangeSetUUID] && self.lastSuccessfulFetchResultWasNoData)
 	{
-		// We screwed up!
+		// We screwed up a merge somehow.
 		//
 		// Here's what happend:
 		// - We fetched all the record changes (via CKFetchRecordChangesOperation).
-		// - But we failed to merge the fetched changes into our local CKRecord(s)
-		//   because of a bug in your YapDatabaseCloudKitMergeBlock (don't worry, it happens)
+		// - But we failed to merge the fetched changes into our local CKRecord(s).
+		//   This could be a bug in YapDatabaseCloudKit.
+		//   Or maybe a bug in your CKFetchRecordChangesOperation.fetchRecordChangesCompletionBlock implementation.
 		// - So at this point we'd normally fall into an infinite loop:
 		//     - We do a CKFetchRecordChangesOperation
 		//     - Find there's no new data (since prevServerChangeToken)
@@ -611,14 +640,11 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		//     - We do a CKFetchRecordChangesOperation
 		//     - ... infinte loop
 		//
-		// This is a common problem one might run into during the normal development cycle.
-		// As you make changes to your objects & CKRecord format, you may sometimes forget something
-		// within the implementation of your YapDatabaseCloudKitMergeBlock. Oops.
+		// This is a common problem you might run into during the normal development cycle.
 		// So we print out a warning here to let you know about the problem.
-		
+		//
 		// And then we refetch the missed records.
-		// If you've fixed your YapDatabaseCloudKitMergeBlock,
-		// then refetching & re-merging should solve the infinite loop problem.
+		// Hopefully refetching & re-merging should solve the infinite loop problem.
 		
 		self.needsRefetchMissedRecordIDs = YES;
 		[self _refetchMissedRecordIDs];
@@ -689,7 +715,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		return;
 	}
 	
-	[self _refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
+	[self refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
 		
 		if (error)
 		{

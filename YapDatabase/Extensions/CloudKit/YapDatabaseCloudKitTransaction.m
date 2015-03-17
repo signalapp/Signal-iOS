@@ -1678,7 +1678,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		return nil;
 	}
 	
-	NSMutableSet *rowids = [NSMutableSet set];
+	__block NSMutableSet *rowids = nil;
 	
 	// SELECT "rowid" FROM "mappingTableName" WHERE "recordTable_hash" = ?;
 	
@@ -1693,6 +1693,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	{
 		int64_t rowid = sqlite3_column_int64(statement, col_rowid);
 		
+		if (rowids == nil) {
+			rowids = [NSMutableSet setWithCapacity:1];
+		}
 		[rowids addObject:@(rowid)];
 	}
 	
@@ -1722,6 +1725,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		else if ([hash isEqualToString:dirtyMappingTableInfo.dirty_recordTable_hash])
 		{
 			// Mapping is scheduled to be added
+			
+			if (rowids == nil) {
+				rowids = [NSMutableSet setWithCapacity:1];
+			}
 			[rowids addObject:rowidNumber];
 		}
 	}];
@@ -4372,29 +4379,15 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * @return
  *   Whether or not YapDatabaseCloudKit is currently managing a record for the given recordID/databaseIdentifer.
  *   That is, whether or not there is currently one or more rows in the database attached to the CKRecord.
- * 
- * @param outPendingModifications
- *   Whether or not there are pending modifications in the queue for the record.
- *   If this is YES, then you MUST invoke mergeRecord:databaseIdentifier: in order to properly handle a merge.
- *
- * @param outPendingDelete
- *   Whether or not there is a pending delete in the queue for the record.
- *   If this is YES, then you may consider not creating an object for the given record (during merge handling).
 **/
 - (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
-                                           hasPendingModifications:(BOOL *)outPendingModifications
-                                                  hasPendingDelete:(BOOL *)outPendingDelete
 {
 	YDBLogAutoTrace();
 	
 	if (recordID == nil)
 	{
-		if (outPendingModifications) *outPendingModifications = NO;
-		if (outPendingDelete) *outPendingDelete = NO;
 		return NO;
 	}
-	
-	BOOL result = NO;
 	
 	NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 	
@@ -4407,11 +4400,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	if (dirtyRecordTableInfo)
 	{
 		if ([dirtyRecordTableInfo hasNilRecordOrZeroOwnerCount])
-			result = NO;
+			return NO;
 		else
-			result = YES;
-		
-		goto step2;
+			return YES;
 	}
 	
 	// Check cleanRecordTableInfo (cache)
@@ -4420,18 +4411,16 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	if (cleanRecordTableInfo)
 	{
 		if (cleanRecordTableInfo == (id)[NSNull null])
-			result = NO;
+			return NO;
 		else
-			result = YES;
-		
-		goto step2;
+			return YES;
 	}
 	
 	// Fetch from disk
 	
 	sqlite3_stmt *statement = [parentConnection recordTable_getCountForHashStatement];
 	if (statement == NULL) {
-		goto step2;
+		return NO;
 	}
 	
 	// SELECT COUNT(*) AS NumberOfRows FROM "recordTableName" WHERE "hash" = ?;
@@ -4459,9 +4448,60 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_hash);
 	
-	result = (count > 0);
-	
-step2:
+	return (count > 0);
+}
+
+/**
+ * Use this method during CKFetchRecordChangesOperation.fetchRecordChangesCompletionBlock.
+ * The values returned by this method will help you determine how to process each reported changedRecord.
+ *
+ * @param outRecordChangeTag
+ *   If YapDatabaseRecord is managing a record for the given recordID/databaseIdentifier,
+ *   this this will be set to the local record.recordChangeTag value.
+ *   Remember that CloudKit tells us about changes that we made.
+ *   It doesn't do so via push notification, but it still does when we use a CKFetchRecordChangesOperation.
+ *   Thus its advantageous for us to ignore our own changes.
+ *   This can be done by comparing the changedRecord.recordChangeTag vs outRecordChangeTag.
+ *   If they're the same, then we already have this CKRecord (this change) in our system, and we can ignore it.
+ *   
+ *   Note: Sometimes during development, we may screw up some merge operations.
+ *   This may happen when we're changing our data model(s) and record.
+ *   If this happens, you can ignore the recordChangeTag,
+ *   and force another merge by invoking mergeRecord:databaseIdentifier: again.
+ * 
+ * @param outPendingModifications
+ *   Tells you if there are changes in the queue for the given recordID/databaseIdentifier.
+ *   That is, whether or not this record has been modified, and we have modifications that are still
+ *   pending upload to the CloudKit servers.
+ *   If this value is YES, then you MUST invoke mergeRecord:databaseIdentifier:.
+ *   
+ *   Note: It's possible for this value to be YES, and for outRecordChangeTag to be nil.
+ *   This may happen if the user modified a record, deleted it, and neither of these changes have hit the server yet.
+ *   Thus YDBCK no longer actively manages the record, but it does have changes for it sitting in the queue.
+ *   Failure to observe this value could result in an infinite loop:
+ *   attempt upload, partial error, fetch changes, failure to invoke merge properly, attempt upload, partial error...
+ *
+ * @param outPendingDelete
+ *   Tells you if there is a pending delete of the record in the queue.
+ *   That is, if we deleted the item locally, and the delete operation is pending upload to the cloudKit server.
+ *   If this value is YES, then you may not want to create a new database item for the record.
+**/
+- (void)getRecordChangeTag:(NSString **)outRecordChangeTag
+   hasPendingModifications:(BOOL *)outPendingModifications
+          hasPendingDelete:(BOOL *)outPendingDelete
+               forRecordID:(CKRecordID *)recordID
+        databaseIdentifier:(NSString *)databaseIdentifier
+{
+	if (outRecordChangeTag)
+	{
+		NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
+		id <YDBCKRecordTableInfo> recordTableInfo = [self recordTableInfoForHash:hash cacheResult:YES];
+		
+		// Note: Record is internal, must remain immutable here.
+		// But since we're just extracting the recordChangeTag, we don't have to make a copy.
+		CKRecord *record = recordTableInfo.current_record;
+		*outRecordChangeTag = record.recordChangeTag;
+	}
 	
 	if (outPendingModifications || outPendingDelete)
 	{
@@ -4476,8 +4516,6 @@ step2:
 		if (outPendingModifications) *outPendingModifications = pendingModifications;
 		if (outPendingDelete) *outPendingDelete = pendingDelete;
 	}
-	
-	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

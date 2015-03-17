@@ -43,4 +43,23 @@ extern CloudKitManager *MyCloudKitManager;
 - (void)fetchRecordChangesWithCompletionHandler:
                             (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler;
 
+/**
+ * This method forces a re-fetch & merge operation.
+ * This can be handly for records that have already been fetched via CKFetchRecordChangesOperation,
+ * however we somehow managed to screw up merging the information into our local object(s).
+ * 
+ * This is usually due to bugs in the data model implementation, or perhaps your YapDatabaseCloudKitMergeBlock.
+ * But bugs are a normal and expected part of development.
+ * 
+ * For example:
+ *   A few new propertie were added to our local object.
+ *   We remembered to add these to the CKRecord(s) upon saving (so the new proerties got uploaded fine).
+ *   But we forgot to update init method that sets the localObject.property from the new CKRecord.propertly. Oops!
+ *   So now we have a few devices that have synced objects that are missing these properties.
+ *
+ * So rather than deleting & re-installing the app,
+ * we provide this method as a way to force another fetch & merge operation.
+**/
+- (void)refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler;
+
 @end
