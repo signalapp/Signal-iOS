@@ -287,6 +287,11 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 {
 	dispatch_async(fetchQueue, ^{ @autoreleasepool {
 	
+		// Suspend the fetchQueue.
+		// We will resume it upon completion of the fetchRecordsOperation.
+		// This ensures that there is only one outstanding fetchRecordsOperation at a time.
+		dispatch_suspend(fetchQueue);
+		
 		[self _fetchRecordChangesWithCompletionHandler:completionHandler];
 	}});
 }
@@ -294,11 +299,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 - (void)_fetchRecordChangesWithCompletionHandler:
         (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
-	// Suspend the fetchQueue.
-	// We will resume it upon completion of the fetchRecordsOperation.
-	// This ensures that there is only one outstanding fetchRecordsOperation at a time.
-	dispatch_suspend(fetchQueue);
-	
 	__block CKServerChangeToken *prevServerChangeToken = nil;
 	[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -434,16 +434,18 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 						continue;
 					}
 					
-					BOOL requiresMerge = NO;
+					BOOL hasPendingModifications = NO;
+					BOOL hasPendingDelete = NO;
 					BOOL exists = [[transaction ext:Ext_CloudKit] containsRecordID:record.recordID
 					                                            databaseIdentifier:nil
-					                                                 pendingDelete:&requiresMerge];
+					                                       hasPendingModifications:&hasPendingModifications
+					                                              hasPendingDelete:&hasPendingDelete];
 					
-					if (exists || requiresMerge)
+					if (exists || hasPendingModifications)
 					{
 						[[transaction ext:Ext_CloudKit] mergeRecord:record databaseIdentifier:nil];
 					}
-					else
+					else if (!hasPendingDelete)
 					{
 						MyTodo *newTodo = [[MyTodo alloc] initWithRecord:record];
 						

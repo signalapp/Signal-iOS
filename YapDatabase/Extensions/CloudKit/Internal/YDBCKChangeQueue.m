@@ -403,11 +403,14 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 #pragma mark Merge Handling
 
 /**
- * Returns YES if there is a pending delete for the given record in pendingChangeSetsFromPreviousCommits.
+ * Check in pendingChangeSetsFromPreviousCommits to see what kind of changes are pending.
 **/
-- (BOOL)hasPendingDeleteForRecordID:(CKRecordID *)recordID
-                 databaseIdentifier:(NSString *)databaseIdentifier
+- (void)getHasPendingModification:(BOOL *)outHasPendingModification
+                 hasPendingDelete:(BOOL *)outHasPendingDelete
+                      forRecordID:(CKRecordID *)recordID
+               databaseIdentifier:(NSString *)databaseIdentifier
 {
+	BOOL hasPendingModification = NO;
 	BOOL hasPendingDelete = NO;
 	
 	// Get lock for access to 'oldChangeSets'
@@ -419,10 +422,14 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		{
 			if (CompareDatabaseIdentifiers(databaseIdentifier, prevChangeSet.databaseIdentifier))
 			{
+				if ([prevChangeSet->modifiedRecords objectForKey:recordID])
+				{
+					hasPendingModification = YES;
+				}
+				
 				if ([prevChangeSet->deletedRecordIDs containsObject:recordID])
 				{
 					hasPendingDelete = YES;
-					break;
 				}
 			}
 		}
@@ -432,41 +439,8 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 		[masterQueueLock unlock];
 	}
 	
-	return hasPendingDelete;
-}
-
-/**
- * Returns YES if there is a pending modification for the given record in pendingChangeSetsFromPreviousCommits.
-**/
-- (BOOL)hasPendingModificationForRecordID:(CKRecordID *)recordID
-                       databaseIdentifier:(NSString *)databaseIdentifier
-{
-	BOOL hasPendingModification = NO;
-	
-	// Get lock for access to 'oldChangeSets'
-	[masterQueueLock lock];
-	
-	@try {
-		
-		for (YDBCKChangeSet *prevChangeSet in oldChangeSets)
-		{
-			if (CompareDatabaseIdentifiers(databaseIdentifier, prevChangeSet.databaseIdentifier))
-			{
-				YDBCKChangeRecord *prevRecord = [prevChangeSet->modifiedRecords objectForKey:recordID];
-				if (prevRecord)
-				{
-					hasPendingModification = YES;
-					break;
-				}
-			}
-		}
-		
-	} @finally {
-	
-		[masterQueueLock unlock];
-	}
-	
-	return hasPendingModification;
+	if (outHasPendingModification) *outHasPendingModification = hasPendingModification;
+	if (outHasPendingDelete) *outHasPendingDelete = hasPendingDelete;
 }
 
 /**

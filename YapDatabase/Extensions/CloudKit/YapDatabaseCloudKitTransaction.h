@@ -293,19 +293,16 @@
  *   Whether or not YapDatabaseCloudKit is currently managing a record for the given recordID/databaseIdentifer.
  *   That is, whether or not there is currently one or more rows in the database attached to the CKRecord.
  * 
+ * @param outPendingModifications
+ *   Whether or not there are pending modifications in the queue for the record.
+ *   If this is YES, then you MUST invoke mergeRecord:databaseIdentifier: in order to properly handle a merge.
+ * 
  * @param outPendingDelete
- *   This handles an edge case during merge handling.
- *   Consider the following scenario:
- *   - The client modifies a record.
- *   - The client later deletes that same record.
- *   - Neither of these changes have been uploaded to the server yet (due to lack of network access)
- *   - The device then comes online and discovers another device has modified the record.
- *   In this scenario, this method will return NO (since the record has been detached/deleted locally).
- *   However, the outPendingDelete will be set to YES.
- *   This is an indicator that you MUST invoke mergeRecord:databaseIdentifier: in order to properly handle the merge.
+ *   Whether or not there is a pending delete in the queue for the record.
+ *   If this is YES, then you may consider not creating an object for the given record (during merge handling).
 **/
-- (BOOL)containsRecordID:(CKRecordID *)recordID
-      databaseIdentifier:(NSString *)databaseIdentifier
-           pendingDelete:(BOOL *)outPendingDelete;
+- (BOOL)containsRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier
+                                           hasPendingModifications:(BOOL *)outPendingModifications
+                                                  hasPendingDelete:(BOOL *)outPendingDelete;
 
 @end
