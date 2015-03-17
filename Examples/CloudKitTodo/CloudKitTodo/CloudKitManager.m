@@ -1,5 +1,6 @@
 #import "CloudKitManager.h"
 #import "DatabaseManager.h"
+#import "AppDelegate.h"
 #import "MyTodo.h"
 #import "DDLog.h"
 
@@ -22,15 +23,26 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 
 @interface CloudKitManager ()
 
+// Initial setup
 @property (atomic, readwrite) BOOL needsCreateZone;
 @property (atomic, readwrite) BOOL needsCreateZoneSubscription;
 @property (atomic, readwrite) BOOL needsFetchRecordChangesAfterAppLaunch;
+
+// Error handling
+@property (atomic, readwrite) BOOL needsResume;
+@property (atomic, readwrite) BOOL needsFetchRecordChanges;
+@property (atomic, readwrite) BOOL needsRefetchMissedRecordIDs;
+
+@property (atomic, readwrite) BOOL lastSuccessfulFetchResultWasNoData;
 
 @end
 
 @implementation CloudKitManager
 {
 	YapDatabaseConnection *databaseConnection;
+	dispatch_queue_t fetchQueue;
+	
+	NSString *lastChangeSetUUID;
 }
 
 + (void)initialize
@@ -51,10 +63,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize needsCreateZone;
-@synthesize needsCreateZoneSubscription;
-@synthesize needsFetchRecordChangesAfterAppLaunch;
-
 - (id)init
 {
 	NSAssert(MyCloudKitManager == nil, @"Must use sharedInstance singleton (global MyCloudKitManager)");
@@ -65,11 +73,28 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		// But our needs are pretty basic, so we're just going to use the generic background connection.
 		databaseConnection = MyDatabaseManager.bgDatabaseConnection;
 		
+		fetchQueue = dispatch_queue_create("CloudKitManager.fetchQueue", DISPATCH_QUEUE_SERIAL);
+		
 		self.needsCreateZone = YES;
 		self.needsCreateZoneSubscription = YES;
 		self.needsFetchRecordChangesAfterAppLaunch = YES;
 		
 		[self configureCloudKit];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+		                                         selector:@selector(applicationDidEnterBackground:)
+		                                             name:UIApplicationDidEnterBackgroundNotification
+		                                           object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+		                                         selector:@selector(applicationWillEnterForeground:)
+		                                             name:UIApplicationWillEnterForegroundNotification
+		                                           object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(cloudKitInFlightChangeSetChanged:)
+	                                             name:YapDatabaseCloudKitInFlightChangeSetChangedNotification
+	                                           object:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(reachabilityChanged:)
@@ -79,25 +104,9 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	return self;
 }
 
-- (void)reachabilityChanged:(NSNotification *)notification
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	Reachability *reachability = notification.object;
-	
-	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
-	if (reachability.isReachable)
-	{
-		if (self.needsCreateZone || self.needsCreateZoneSubscription)
-		{
-			[self configureCloudKit];
-		}
-		else if (self.needsFetchRecordChangesAfterAppLaunch)
-		{
-			[self fetchRecordChangesAfterAppLaunch];
-		}
-	}
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark App Launch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)configureCloudKit
 {
@@ -241,7 +250,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 }
 
 /**
- * This method is invoked after
+ * This method is invoked after the CKRecordZone & CKSubscription are setup.
 **/
 - (void)fetchRecordChangesAfterAppLaunch
 {
@@ -262,6 +271,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Fetching
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * This method uses CKFetchRecordChangesOperation to fetch changes.
  * It continues fetching until its reported that we're caught up.
@@ -272,19 +285,33 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 - (void)fetchRecordChangesWithCompletionHandler:
         (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
-	__block CKServerChangeToken *prevServerChangeToken = nil;
+	dispatch_async(fetchQueue, ^{ @autoreleasepool {
 	
+		[self _fetchRecordChangesWithCompletionHandler:completionHandler];
+	}});
+}
+
+- (void)_fetchRecordChangesWithCompletionHandler:
+        (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
+{
+	// Suspend the fetchQueue.
+	// We will resume it upon completion of the fetchRecordsOperation.
+	// This ensures that there is only one outstanding fetchRecordsOperation at a time.
+	dispatch_suspend(fetchQueue);
+	
+	__block CKServerChangeToken *prevServerChangeToken = nil;
 	[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		prevServerChangeToken = [transaction objectForKey:Key_ServerChangeToken inCollection:Collection_CloudKit];
 		
 	} completionBlock:^{
 		
-		[self fetchRecordChangesWithPrevServerChangeToken:prevServerChangeToken completionHandler:completionHandler];
+		[self _fetchRecordChangesWithPrevServerChangeToken:prevServerChangeToken
+		                                 completionHandler:completionHandler];
 	}];
 }
 
-- (void)fetchRecordChangesWithPrevServerChangeToken:(CKServerChangeToken *)prevServerChangeToken
+- (void)_fetchRecordChangesWithPrevServerChangeToken:(CKServerChangeToken *)prevServerChangeToken
 								  completionHandler:
         (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
@@ -330,6 +357,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				hasChanges = YES;
 			else if (changedRecords.count > 0)
 				hasChanges = YES;
+			
+			self.lastSuccessfulFetchResultWasNoData = (hasChanges == NO);
 		}
 		
 		if (operationError)
@@ -340,6 +369,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			
 			DDLogError(@"CKFetchRecordChangesOperation: operationError: %@", operationError);
 			
+			dispatch_resume(fetchQueue);
 			if (completionHandler) {
 				completionHandler(UIBackgroundFetchResultFailed, NO);
 			}
@@ -360,6 +390,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				          inCollection:Collection_CloudKit];
 			}];
 			
+			dispatch_resume(fetchQueue);
 			if (completionHandler) {
 				completionHandler(UIBackgroundFetchResultNoData, NO);
 			}
@@ -438,6 +469,11 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 			} completionBlock:^{
 				
+				if (moreComing)
+					[self _fetchRecordChangesWithCompletionHandler:completionHandler];
+				else
+					dispatch_resume(fetchQueue);
+				
 				if (completionHandler)
 				{
 					if (hasChanges)
@@ -446,11 +482,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 						completionHandler(UIBackgroundFetchResultNoData, moreComing);
 				}
 			}];
-			
-			if (moreComing)
-			{
-				[self fetchRecordChangesWithCompletionHandler:completionHandler];
-			}
 		
 		} // end if (hasChanges)
 	};
@@ -466,7 +497,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
  * So rather than fall into an infinite loop,
  * we provide this method as a way to bail ourselves out when we make a mistake.
 **/
-- (void)refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler
+- (void)_refetchMissedRecordIDs:(NSArray *)recordIDs withCompletionHandler:(void (^)(NSError *error))completionHandler
 {
 	CKFetchRecordsOperation *operation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:recordIDs];
 	
@@ -506,6 +537,266 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	};
 	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Error Handling
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
+ *
+ * - CKErrorNetworkUnavailable
+ * - CKErrorNetworkFailure
+**/
+- (void)handleNetworkError
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	// When the YapDatabaseCloudKitOperationErrorBlock is invoked,
+	// the extension has already automatically suspended itself.
+	// It is our job to properly handle the error, and resume the extension when ready.
+	self.needsResume = YES;
+	
+	if (MyAppDelegate.reachability.isReachable)
+	{
+		self.needsResume = NO;
+		[MyDatabaseManager.cloudKitExtension resume];
+	}
+	else
+	{
+		// Wait for reachability notification
+	}
+}
+
+/**
+ * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
+ *
+ * - CKErrorPartialFailure
+**/
+- (void)handlePartialFailure
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	// When the YapDatabaseCloudKitOperationErrorBlock is invoked,
+	// the extension has already automatically suspended itself.
+	// It is our job to properly handle the error, and resume the extension when ready.
+	self.needsResume = YES;
+	
+	// In the case of a partial failure, we have out-of-date CKRecords.
+	// To fix the problem, we need to:
+	// - fetch the latest changes from the server
+	// - merge these changes with our local/pending CKRecord(s)
+	// - retry uploading the CKRecord(s)
+	self.needsFetchRecordChanges = YES;
+	
+	
+	YDBCKChangeSet *failedChangeSet = [[MyDatabaseManager.cloudKitExtension pendingChangeSets] firstObject];
+	
+	if ([failedChangeSet.uuid isEqualToString:lastChangeSetUUID] && self.lastSuccessfulFetchResultWasNoData)
+	{
+		// We screwed up!
+		//
+		// Here's what happend:
+		// - We fetched all the record changes (via CKFetchRecordChangesOperation).
+		// - But we failed to merge the fetched changes into our local CKRecord(s)
+		//   because of a bug in your YapDatabaseCloudKitMergeBlock (don't worry, it happens)
+		// - So at this point we'd normally fall into an infinite loop:
+		//     - We do a CKFetchRecordChangesOperation
+		//     - Find there's no new data (since prevServerChangeToken)
+		//     - Attempt to upload our modified CKRecord(s)
+		//     - Get a partial failure
+		//     - We do a CKFetchRecordChangesOperation
+		//     - ... infinte loop
+		//
+		// This is a common problem one might run into during the normal development cycle.
+		// As you make changes to your objects & CKRecord format, you may sometimes forget something
+		// within the implementation of your YapDatabaseCloudKitMergeBlock. Oops.
+		// So we print out a warning here to let you know about the problem.
+		
+		// And then we refetch the missed records.
+		// If you've fixed your YapDatabaseCloudKitMergeBlock,
+		// then refetching & re-merging should solve the infinite loop problem.
+		
+		self.needsRefetchMissedRecordIDs = YES;
+		[self _refetchMissedRecordIDs];
+	}
+	else
+	{
+		[self _fetchRecordChanges];
+	}
+}
+
+- (void)_fetchRecordChanges
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	[self fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
+		
+		if (result == UIBackgroundFetchResultFailed)
+		{
+			if (MyAppDelegate.reachability.isReachable)
+			{
+				[self _fetchRecordChanges]; // try again
+			}
+			else
+			{
+				// Wait for reachability notification
+			}
+		}
+		else
+		{
+			if (!moreComing)
+			{
+				self.needsFetchRecordChanges = NO;
+				
+				if (self.needsResume)
+				{
+					self.needsResume = NO;
+					[MyDatabaseManager.cloudKitExtension resume];
+				}
+			}
+		}
+	}];
+}
+
+- (void)_refetchMissedRecordIDs
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	YDBCKChangeSet *failedChangeSet = [[MyDatabaseManager.cloudKitExtension pendingChangeSets] firstObject];
+	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
+	
+	if (recordIDs.count == 0)
+	{
+		// Oops, we don't have anything to refetch.
+		// Fallback to checking other scenarios.
+		
+		self.needsRefetchMissedRecordIDs = NO;
+		
+		if (self.needsFetchRecordChanges)
+		{
+			[self _fetchRecordChanges];
+		}
+		else if (self.needsResume)
+		{
+			self.needsResume = NO;
+			[MyDatabaseManager.cloudKitExtension resume];
+		}
+		
+		return;
+	}
+	
+	[self _refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
+		
+		if (error)
+		{
+			if (MyAppDelegate.reachability.isReachable)
+			{
+				[self _refetchMissedRecordIDs]; // try again
+			}
+			else
+			{
+				// Wait for reachability notification
+			}
+		}
+		else
+		{
+			self.needsRefetchMissedRecordIDs = NO;
+			self.needsFetchRecordChanges = NO;
+			
+			if (self.needsResume)
+			{
+				self.needsResume = NO;
+				[MyDatabaseManager.cloudKitExtension resume];
+			}
+		}
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Notifications
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	if (self.needsResume == NO)
+	{
+		self.needsResume = YES;
+		[MyDatabaseManager.cloudKitExtension suspend];
+	}
+	
+	self.needsFetchRecordChanges = YES;
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	[self _fetchRecordChanges];
+}
+
+- (void)cloudKitInFlightChangeSetChanged:(NSNotification *)notification
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	NSString *changeSetUUID = [notification.userInfo objectForKey:@"uuid"];
+	
+	lastChangeSetUUID = changeSetUUID;
+}
+
+- (void)reachabilityChanged:(NSNotification *)notification
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	Reachability *reachability = notification.object;
+	
+	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
+	if (reachability.isReachable)
+	{
+		if (self.needsCreateZone || self.needsCreateZoneSubscription)
+		{
+			[self configureCloudKit];
+		}
+		else if (self.needsFetchRecordChangesAfterAppLaunch)
+		{
+			[self fetchRecordChangesAfterAppLaunch];
+		}
+		else
+		{
+			// Order matters here.
+			// We may be in one of 3 states:
+			//
+			// 1. YDBCK is suspended because we need to refetch stuff we screwed up
+			// 2. YDBCK is suspended because we need to fetch record changes (and merge with our local CKRecords)
+			// 3. YDBCK is suspended because of a network failure
+			// 4. YDBCK is not suspended
+			//
+			// In the case of #1, it doesn't make sense to resume YDBCK until we've refetched the records we
+			// didn't properly merge last time (due to a bug in your YapDatabaseCloudKitMergeBlock).
+			// So case #3 needs to be checked before #2.
+			//
+			// In the case of #2, it doesn't make sense to resume YDBCK until we've handled
+			// fetching the latest changes from the server.
+			// So case #2 needs to be checked before #3.
+			
+			if (self.needsRefetchMissedRecordIDs)
+			{
+				[self _refetchMissedRecordIDs];
+			}
+			else if (self.needsFetchRecordChanges)
+			{
+				[self _fetchRecordChanges];
+			}
+			else if (self.needsResume)
+			{
+				self.needsResume = NO;
+				[MyDatabaseManager.cloudKitExtension resume];
+			}
+		}
+	}
 }
 
 @end

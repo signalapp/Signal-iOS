@@ -88,16 +88,6 @@ AppDelegate *MyAppDelegate;
 	return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-	DDLogVerbose(@"applicationWillResignActive:");
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-	DDLogVerbose(@"applicationDidEnterBackground:");
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
 	DDLogVerbose(@"applicationWillEnterForeground:");
@@ -106,6 +96,16 @@ AppDelegate *MyAppDelegate;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
 	DDLogVerbose(@"applicationDidBecomeActive:");
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+	DDLogVerbose(@"applicationWillResignActive:");
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+	DDLogVerbose(@"applicationDidEnterBackground:");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

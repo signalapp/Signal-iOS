@@ -33,14 +33,6 @@ DatabaseManager *MyDatabaseManager;
 
 
 @implementation DatabaseManager
-{
-	BOOL cloudKitExtensionNeedsResume;
-	BOOL cloudKitExtensionNeedsFetchRecordChanges;
-	BOOL cloudKitExtensionNeedsRefetchMissedRecordIDs;
-	
-	NSString *lastChangeSetUUID;
-	BOOL lastSuccessfulFetchResultWasNoData;
-}
 
 + (void)initialize
 {
@@ -88,11 +80,6 @@ DatabaseManager *MyDatabaseManager;
 	if ((self = [super init]))
 	{
 		[self setupDatabase];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-		                                         selector:@selector(reachabilityChanged:)
-		                                             name:kReachabilityChangedNotification
-		                                           object:nil];
 	}
 	return self;
 }
@@ -220,11 +207,6 @@ DatabaseManager *MyDatabaseManager;
 	                                         selector:@selector(yapDatabaseModified:)
 	                                             name:YapDatabaseModifiedNotification
 	                                           object:database];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-	                                         selector:@selector(cloudKitInFlightChangeSetChanged:)
-	                                             name:YapDatabaseCloudKitInFlightChangeSetChangedNotification
-	                                           object:nil];
 }
 
 - (void)setupOrderViewExtension
@@ -404,8 +386,6 @@ DatabaseManager *MyDatabaseManager;
 		}
 	};
 	
-	__weak typeof(self) weakSelf = self;
-	
 	YapDatabaseCloudKitOperationErrorBlock opErrorBlock =
 	  ^(NSString *databaseIdentifier, NSError *operationError)
 	{
@@ -414,11 +394,11 @@ DatabaseManager *MyDatabaseManager;
 		if (ckErrorCode == CKErrorNetworkUnavailable ||
 		    ckErrorCode == CKErrorNetworkFailure      )
 		{
-			[weakSelf cloudKit_handleNetworkError];
+			[MyCloudKitManager handleNetworkError];
 		}
 		else if (ckErrorCode == CKErrorPartialFailure)
 		{
-			[weakSelf cloudKit_handlePartialFailure];
+			[MyCloudKitManager handlePartialFailure];
 		}
 		else
 		{
@@ -453,172 +433,6 @@ DatabaseManager *MyDatabaseManager;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark CloudKit Utilities
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (void)cloudKit_handleNetworkError
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	// When the YapDatabaseCloudKitOperationErrorBlock is invoked,
-	// the extension has already automatically suspended itself.
-	// It is our job to properly handle the error, and resume the extension when ready.
-	cloudKitExtensionNeedsResume = YES;
-	
-	
-	if (MyAppDelegate.reachability.isReachable)
-	{
-		cloudKitExtensionNeedsResume = NO;
-		[cloudKitExtension resume];
-	}
-	else
-	{
-		// Wait for reachability notification
-	}
-}
-
-- (void)cloudKit_handlePartialFailure
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	// When the YapDatabaseCloudKitOperationErrorBlock is invoked,
-	// the extension has already automatically suspended itself.
-	// It is our job to properly handle the error, and resume the extension when ready.
-	cloudKitExtensionNeedsResume = YES;
-	
-	// In the case of a partial failure, we have out-of-date CKRecords.
-	// To fix the problem, we need to:
-	// - fetch the latest changes from the server
-	// - merge these changes with our local/pending CKRecord(s)
-	// - retry uploading the CKRecord(s)
-	cloudKitExtensionNeedsFetchRecordChanges = YES;
-	
-	
-	YDBCKChangeSet *failedChangeSet = [[cloudKitExtension pendingChangeSets] firstObject];
-	
-	if ([failedChangeSet.uuid isEqualToString:lastChangeSetUUID] && lastSuccessfulFetchResultWasNoData)
-	{
-		// We screwed up!
-		//
-		// Here's what happend:
-		// - We fetched all the record changes (via CKFetchRecordChangesOperation).
-		// - But we failed to merge the fetched changes into our local CKRecord(s)
-		//   because of a bug in your YapDatabaseCloudKitMergeBlock (don't worry, it happens)
-		// - So at this point we'd normally fall into an infinite loop:
-		//     - We do a CKFetchRecordChangesOperation
-		//     - Find there's no new data (since prevServerChangeToken)
-		//     - Attempt to upload our modified CKRecord(s)
-		//     - Get a partial failure
-		//     - We do a CKFetchRecordChangesOperation
-		//     - ... infinte loop
-		//
-		// This is a common problem one might run into during the normal development cycle.
-		// As you make changes to your objects & CKRecord format, you may sometimes forget something
-		// within the implementation of your YapDatabaseCloudKitMergeBlock. Oops.
-		// So we print out a warning here to let you know about the problem.
-		
-		// And then we refetch the missed records.
-		// If you've fixed your YapDatabaseCloudKitMergeBlock,
-		// then refetching & re-merging should solve the infinite loop problem.
-		
-		[self cloudKit_refetchMissedRecordIDs];
-	}
-	else
-	{
-		[self cloudKit_fetchRecordChanges];
-	}
-}
-
-- (void)cloudKit_fetchRecordChanges
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	[MyCloudKitManager fetchRecordChangesWithCompletionHandler:^(UIBackgroundFetchResult result, BOOL moreComing) {
-		
-		if (result == UIBackgroundFetchResultFailed)
-		{
-			if (MyAppDelegate.reachability.isReachable)
-			{
-				[self cloudKit_fetchRecordChanges]; // try again
-			}
-			else
-			{
-				// Wait for reachability notification
-			}
-		}
-		else
-		{
-			lastSuccessfulFetchResultWasNoData = (result == UIBackgroundFetchResultNoData);
-			
-			if (!moreComing)
-			{
-				cloudKitExtensionNeedsFetchRecordChanges = NO;
-				
-				if (cloudKitExtensionNeedsResume)
-				{
-					cloudKitExtensionNeedsResume = NO;
-					[cloudKitExtension resume];
-				}
-			}
-		}
-	}];
-}
-
-- (void)cloudKit_refetchMissedRecordIDs
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	YDBCKChangeSet *failedChangeSet = [[cloudKitExtension pendingChangeSets] firstObject];
-	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
-	
-	if (recordIDs.count == 0)
-	{
-		// Oops, we don't have anything to refetch.
-		// Fallback to checking other scenarios.
-		
-		cloudKitExtensionNeedsRefetchMissedRecordIDs = NO;
-		
-		if (cloudKitExtensionNeedsFetchRecordChanges)
-		{
-			[self cloudKit_fetchRecordChanges];
-		}
-		else if (cloudKitExtensionNeedsResume)
-		{
-			cloudKitExtensionNeedsResume = NO;
-			[cloudKitExtension resume];
-		}
-		
-		return;
-	}
-	
-	[MyCloudKitManager refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
-		
-		if (error)
-		{
-			if (MyAppDelegate.reachability.isReachable)
-			{
-				[self cloudKit_refetchMissedRecordIDs]; // try again
-			}
-			else
-			{
-				// Wait for reachability notification
-			}
-		}
-		else
-		{
-			cloudKitExtensionNeedsRefetchMissedRecordIDs = NO;
-			cloudKitExtensionNeedsFetchRecordChanges = NO;
-			
-			if (cloudKitExtensionNeedsResume)
-			{
-				cloudKitExtensionNeedsResume = NO;
-				[cloudKitExtension resume];
-			}
-		}
-	}];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Notifications
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -643,54 +457,6 @@ DatabaseManager *MyDatabaseManager;
 	[[NSNotificationCenter defaultCenter] postNotificationName:UIDatabaseConnectionDidUpdateNotification
 	                                                    object:self
 	                                                  userInfo:userInfo];
-}
-
-- (void)cloudKitInFlightChangeSetChanged:(NSNotification *)notification
-{
-	NSString *changeSetUUID = [notification.userInfo objectForKey:@"uuid"];
-	
-	lastChangeSetUUID = changeSetUUID;
-}
-
-- (void)reachabilityChanged:(NSNotification *)notification
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	Reachability *reachability = notification.object;
-	
-	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
-	if (reachability.isReachable)
-	{
-		// Order matters here.
-		// We may be in one of 3 states:
-		//
-		// 1. YDBCK is suspended because we need to refetch stuff we screwed up
-		// 2. YDBCK is suspended because we need to fetch record changes (and merge with our local CKRecords)
-		// 3. YDBCK is suspended because of a network failure
-		// 4. YDBCK is not suspended
-		//
-		// In the case of #1, it doesn't make sense to resume YDBCK until we've refetched the records we
-		// didn't properly merge last time (due to a bug in your YapDatabaseCloudKitMergeBlock).
-		// So case #3 needs to be checked before #2.
-		//
-		// In the case of #2, it doesn't make sense to resume YDBCK until we've handled
-		// fetching the latest changes from the server.
-		// So case #2 needs to be checked before #3.
-		
-		if (cloudKitExtensionNeedsRefetchMissedRecordIDs)
-		{
-			[self cloudKit_refetchMissedRecordIDs];
-		}
-		else if (cloudKitExtensionNeedsFetchRecordChanges)
-		{
-			[self cloudKit_fetchRecordChanges];
-		}
-		else if (cloudKitExtensionNeedsResume)
-		{
-			cloudKitExtensionNeedsResume = NO;
-			[cloudKitExtension resume];
-		}
-	}
 }
 
 @end

@@ -60,11 +60,11 @@ static NSString *const k_lastModified = @"lastModified";
 		//
 		// The CloudKey macro translates as follows:
 		//
-		// - CloudKey(title)     => @"title"
-		// - CKKey(priority)     => @"priority"
-		// - CKKey(isDone)       => @"isDone"
-		// - CKKey(creationDate) => @"created"       // <-- notice the difference here
-		// - CKKey(lastModified) => @"lastModified"
+		// - CloudKey(title)        => @"title"
+		// - CloudKey(priority)     => @"priority"
+		// - CloudKey(isDone)       => @"isDone"
+		// - CloudKey(creationDate) => @"created"       // <-- notice the difference here
+		// - CloudKey(lastModified) => @"lastModified"
 		
 		NSArray *cloudKeys = @[
 		  CloudKey(title),
