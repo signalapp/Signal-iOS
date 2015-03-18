@@ -448,7 +448,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					{
 						if ([recordChangeTag isEqualToString:record.recordChangeTag])
 						{
-							// We're the one who changes this record.
+							// We're the one who changed this record.
 							// So we can quietly ignore it.
 						}
 						else

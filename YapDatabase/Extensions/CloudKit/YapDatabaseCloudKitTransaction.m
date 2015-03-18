@@ -392,26 +392,26 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	NSMutableArray *orderedChangeSets = [NSMutableArray arrayWithCapacity:[changeSetsDict count]];
 	
-	YDBCKChangeSet *changeSet = lastChangeSetFromEnumeration;
+	YDBCKChangeSet *aChangeSet = lastChangeSetFromEnumeration;
 	NSUInteger offset = 0;
 	
-	while (changeSet != nil)
+	while (aChangeSet != nil)
 	{
 		// Add the changeSet to the end of the ordered array (and remove from dictionary)
-		[orderedChangeSets addObject:changeSet];
-		[changeSetsDict removeObjectForKey:changeSet.uuid];
+		[orderedChangeSets addObject:aChangeSet];
+		[changeSetsDict removeObjectForKey:aChangeSet.uuid];
 		
 		// Work backwards, filling in all previous changeSets
 		do
 		{
-			changeSet = [changeSetsDict objectForKey:changeSet.prev];
-			if (changeSet)
+			aChangeSet = [changeSetsDict objectForKey:aChangeSet.prev];
+			if (aChangeSet)
 			{
-				[orderedChangeSets insertObject:changeSet atIndex:offset];
-				[changeSetsDict removeObjectForKey:changeSet.uuid];
+				[orderedChangeSets insertObject:aChangeSet atIndex:offset];
+				[changeSetsDict removeObjectForKey:aChangeSet.uuid];
 			}
 			
-		} while (changeSet != nil);
+		} while (aChangeSet != nil);
 		
 		// Check to see if there are more in the dictionary,
 		// and keep going if needed.
@@ -423,7 +423,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			*stop = YES;
 		}];
 		
-		changeSet = remainingChangeSet;
+		aChangeSet = remainingChangeSet;
 		offset = [orderedChangeSets count];
 	}
 	
@@ -441,14 +441,14 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	for (NSUInteger i = 1; i < [orderedChangeSets count]; i++)
 	{
-		YDBCKChangeSet *changeSet = [orderedChangeSets objectAtIndex:i];
-		if (![changeSet.prev isEqualToString:prevUuid])
+		YDBCKChangeSet *orderedChangeSet = [orderedChangeSets objectAtIndex:i];
+		if (![orderedChangeSet.prev isEqualToString:prevUuid])
 		{
 			YDBLogError(@"Error restoring masterChangeQueue: Reverse-linked-list corruption ! (B)");
 			return NO;
 		}
 		
-		prevUuid = changeSet.uuid;
+		prevUuid = orderedChangeSet.uuid;
 	}
 	
 	// Restore CKRecords as needed
@@ -527,9 +527,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		NSString *databaseIdentifier = changeSet.databaseIdentifier;
 		
 		recordInfo.databaseIdentifier = databaseIdentifier;
-		[changeSet enumerateMissingRecordsWithBlock:
-		    ^CKRecord *(CKRecordID *recordID, NSArray *changedKeys)
-		{
+		[changeSet enumerateMissingRecordsWithBlock:^CKRecord *(CKRecordID *recordID, NSArray *changedKeys) {
+			
 			NSString *hash = [self hashRecordID:recordID databaseIdentifier:databaseIdentifier];
 			
 			NSSet *rowids = [self mappingTableRowidsForRecordTableHash:hash];
