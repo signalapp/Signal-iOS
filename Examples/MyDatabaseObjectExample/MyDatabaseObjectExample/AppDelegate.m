@@ -8,13 +8,22 @@
 @end
 
 @implementation AppDelegate
+{
+	Car *car;
+}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	Car *car = [[Car alloc] init];
+	car = [[Car alloc] init];
 	car.make = @"Tesla";
 	car.model = @"Model S";
 	
+	[self demoMakeImmutable];
+	[self demoChangedProperties];
+}
+
+- (void)demoMakeImmutable
+{
 	[car makeImmutable];
 	
 	// Try me
@@ -24,7 +33,18 @@
 	@catch (NSException *exception) {
 		NSLog(@"Threw exception: %@", exception);
 	}
+}
+
+- (void)demoChangedProperties
+{
+	if (car.isImmutable) {
+		car = [car copy]; // make immutable copy
+	}
 	
+	[car clearChangedProperties];
+	NSLog(@"car.changedProperties = %@", car.changedProperties);
+	
+	car.model = @"Model X";
 	NSLog(@"car.changedProperties = %@", car.changedProperties);
 	
 	[car clearChangedProperties];

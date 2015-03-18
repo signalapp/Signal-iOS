@@ -20,10 +20,10 @@
 @interface YDBCKRecordInfo : NSObject
 
 /**
- * This property allows you to specify the associated database for the record.
+ * This property allows you to specify the associated CKDatabase for the record.
  * 
  * In order for YapDatabaseCloudKit to be able to upload the CKRecord to the cloud,
- * it must know which database the record is associated with.
+ * it must know which CKDatabase the record is associated with.
  * 
  * If unspecified, the private database of the app’s default container is used.
  * That is: [[CKContainer defaultContainer] privateCloudDatabase]

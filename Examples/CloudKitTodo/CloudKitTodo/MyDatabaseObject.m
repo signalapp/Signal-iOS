@@ -87,8 +87,8 @@
 **/
 //- (instancetype)mutableCopyWithZone:(NSZone *)zone
 //{
-//	id copy = [self copy];
-//	((MyDatabaseObject *)copy)->isImmutable = NO;
+//	MyDatabaseObject *copy = [self copy];
+//	copy->isImmutable = NO;
 //	
 //	return copy;
 //}
@@ -99,14 +99,14 @@
 
 /**
  * This method returns a list of all properties that should be monitored.
- * hat is, they should show up in the changedProperties set if they are modified..
+ * That is, these properties should show up in the changedProperties set if they are modified.
  * And they should be considered immutable once the makeImmutable method has been invoked.
  * 
  * By default this method returns a list of all properties in each subclass in the
  * hierarchy leading to "[self class]".
  *
  * However, this is not always exactly what you want.
- * For example, if you have any properties which are simply used for caching.
+ * For example, you may have properties which are simply used for caching:
  * 
  * @property (nonatomic, strong, readwrite) UIImage *avatarImage;
  * @property (nonatomic, strong, readwrite) UIImage *cachedTransformedAvatarImage;
@@ -131,8 +131,8 @@
 	// Steps to override me (if needed):
 	//
 	// - Invoke [super monitoredProperties]
-	// - Modify resulting mutable dictionary
-	// - Return modified dictionary
+	// - Modify resulting mutable set
+	// - Return modified set
 	
 	NSMutableSet *properties = nil;
 	
@@ -165,6 +165,10 @@
 	return properties;
 }
 
+/**
+ * Generally you should NOT override this method.
+ * Just override the class version of this method (above).
+**/
 - (NSSet *)monitoredProperties
 {
 	NSSet *cached = objc_getAssociatedObject([self class], _cmd);
@@ -232,6 +236,10 @@
 	return syncablePropertyMappings;
 }
 
+/**
+ * Generally you should NOT override this method.
+ * Just override the class version of this method (above).
+**/
 - (NSDictionary *)mappings_localKeyToCloudKey
 {
 	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
@@ -262,6 +270,9 @@
 	return mappings_cloudKeyToLocalKey;
 }
 
+/**
+ * There is generally no need to override this method.
+**/
 - (NSDictionary *)mappings_cloudKeyToLocalKey
 {
 	NSDictionary *cached = objc_getAssociatedObject([self class], _cmd);
@@ -273,6 +284,13 @@
 	return mappings_cloudKeyToLocalKey;
 }
 
+/**
+ * If storesOriginalCloudValues is enabled, then in addition to monitoring which properties change,
+ * the object will also keep a dictionary of the original cloudValues that have changed.
+ * 
+ * This is disabled by default.
+ * So you'll need to "opt-in" for those classes where you want this feature.
+**/
 + (BOOL)storesOriginalCloudValues
 {
 	// Override me (and return YES), if you want to store originalCloudValues.

@@ -127,7 +127,7 @@ DatabaseManager *MyDatabaseManager;
 		
 		if ([object isKindOfClass:[MyDatabaseObject class]])
 		{
-			[(MyDatabaseObject *)object makeImmutable];
+			[object makeImmutable];
 		}
 		
 		return object;
@@ -326,6 +326,9 @@ DatabaseManager *MyDatabaseManager;
 			// That way YapDatabaseCloudKit can handle syncing it to the cloud.
 			
 			cloudKeys = todo.changedCloudProperties;
+			
+			// We can also instruct YapDatabaseCloudKit to store the originalValues for us.
+			// This is optional, but comes in handy if we run into conflicts.
 			recordInfo.originalValues = todo.originalCloudValues;
 		}
 		
