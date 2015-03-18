@@ -68,6 +68,7 @@
 	MyDatabaseObject *copy = [[[self class] alloc] init];
 	copy->isImmutable = NO;
 	copy->changedProperties = [self->changedProperties mutableCopy];
+	copy->originalCloudValues = [self->originalCloudValues mutableCopy];
 	
 	return copy;
 }
