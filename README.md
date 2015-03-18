@@ -20,6 +20,8 @@ It has the following features:
 
 * **Relationships**. You can setup relationships between objects and even configure cascading delete rules.
 
+* **Sync**. Support for syncing with Apple's CloudKit is available out of the box. There's even a fully functioning example project that demonstrates writing a syncing Todo app.
+
 * **Extensions**. More than just a key/value store, YapDatabase comes with an extensions architecture built-in. You can even create your own extensions.
  
 * **Performance**. Fetch thousands of objects on the main thread without dropping a frame.
