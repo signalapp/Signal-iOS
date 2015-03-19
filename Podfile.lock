@@ -106,13 +106,13 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   25519: 601ffb5d258aa33d642062d6fa4096db210e02e7
   AFNetworking: 8bee59492a6ff15d69130efa4d0dc67e0094a52a
-  APDropDownNavToolbar: 62131873890d3a30a2fdc98ffdda180a11e49aa4
+  APDropDownNavToolbar: 5d0c3f363208543d20e86ddb4630927c28cdfd4b
   AxolotlKit: c8d6fdd73754aa6432a106ae73f4c24385e253da
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
   FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
-  JSQMessagesViewController: 4cc4ff3b26599e8743166b7e8e908528c8f01a80
+  JSQMessagesViewController: 31b79ac9547e060ba96413eb2e1b2ee5260f5189
   JSQSystemSoundPlayer: 55528c699a283aae2220d3ae7b8b527d2ecef4b4
   libPhoneNumber-iOS: 2b5a6aeb7fd720ae856f133aea9937336bd47819
   Mantle: d5fbaf30fbc58031223af13812c060e15934a1fe
@@ -120,12 +120,12 @@ SPEC CHECKSUMS:
   PastelogKit: 8bab71b1d187617a83e7124cffe9eb1a600e6695
   ProtocolBuffers: 37fdd327d36856f965ea9029b5ec0c7120e3a452
   SCWaveformView: 55f0cd6e80df1a46ff70892bc4041f5b7d8ad43c
-  SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
+  SocketRocket: 70df1983148525857ced17c57207bfb939bc6b8e
   SQLCipher: 981110217eb93c2779c34fb59e646a1c1da918d8
   SSKeychain: cc48bd3ad24fcd9125adb9e0d23dd50b8bbd08b9
   TwistedOakCollapsingFutures: 07aab84fd3958dc94d55ef705b12857d9fbe61d1
-  UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
+  UICKeyChainStore: d4c0f4e313d67b2f23b6614adca55351accac15a
   UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
   YapDatabase: c1d6912df1b4a160f7373ee7657d360e29bb00fd
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.36.0

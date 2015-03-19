@@ -765,19 +765,12 @@ typedef enum : NSUInteger {
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-    if([self.thread isKindOfClass:[TSGroupThread class]]) {
-        if(msg.messageType == TSIncomingMessageAdapter) {
-            return 16.0f;
-        }
-    }
-    else if (msg.messageType == TSOutgoingMessageAdapter) {
+    if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
         return 16.0f;
     }
     
     return 0.0f;
 }
-
 
 #pragma mark - Actions
 
