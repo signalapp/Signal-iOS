@@ -171,7 +171,6 @@ typedef enum : NSUInteger {
     _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
     
-    
     [self markAllMessagesAsRead];
     
     [self initializeBubbles];

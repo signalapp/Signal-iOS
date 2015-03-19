@@ -67,6 +67,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     ContactsManager* contactsManager = (__bridge ContactsManager*)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [contactsManager pullLatestAddressBook];
+        [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
     });
 }
 
