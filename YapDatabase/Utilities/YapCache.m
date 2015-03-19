@@ -436,6 +436,7 @@
 	return description;
 }
 
+#ifndef NS_BLOCK_ASSERTIONS
 static void AssertAllowedKeyClass(id key, NSSet *allowedKeyClasses)
 {
 	if (allowedKeyClasses == nil) return;
@@ -444,7 +445,7 @@ static void AssertAllowedKeyClass(id key, NSSet *allowedKeyClasses)
 	// For example, @(number) gives us class '__NSCFNumber', which is not NSNumber.
 	// And there are also class clusters which break this technique too.
 	//
-//	return [allowedKeyClasses containsObject:keyClass];
+	// return [allowedKeyClasses containsObject:keyClass];
 	
 	// So we have to use the isKindOfClass method,
 	// which means we need to enumerate the allowedKeyClasses.
@@ -456,7 +457,9 @@ static void AssertAllowedKeyClass(id key, NSSet *allowedKeyClasses)
 	
 	NSCAssert(NO, @"Unexpected key class. Passed %@, expected: %@", [key class], allowedKeyClasses);
 }
+#endif
 
+#ifndef NS_BLOCK_ASSERTIONS
 static void AssertAllowedObjectClass(id obj, NSSet *allowedObjectClasses)
 {
 	if (allowedObjectClasses == nil) return;
@@ -465,7 +468,7 @@ static void AssertAllowedObjectClass(id obj, NSSet *allowedObjectClasses)
 	// For example, @(number) gives us class '__NSCFNumber', which is not NSNumber.
 	// And there are also class clusters which break this technique too.
 	//
-	//	return [allowedKeyClasses containsObject:keyClass];
+	// return [allowedKeyClasses containsObject:keyClass];
 	
 	// So we have to use the isKindOfClass method,
 	// which means we need to enumerate the allowedKeyClasses.
@@ -477,6 +480,7 @@ static void AssertAllowedObjectClass(id obj, NSSet *allowedObjectClasses)
 	
 	NSCAssert(NO, @"Unexpected object class. Passed %@, expected: %@", [obj class], allowedObjectClasses);
 }
+#endif
 
 /*
 - (void)debug
