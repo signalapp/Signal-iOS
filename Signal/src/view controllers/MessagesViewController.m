@@ -1134,8 +1134,9 @@ typedef enum : NSUInteger {
 
 -(void)chooseFromLibrary {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate                 = self;
+    picker.sourceType               = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.allowsEditing            = YES;
     
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         
