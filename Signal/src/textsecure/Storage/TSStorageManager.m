@@ -54,19 +54,16 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
-    options.passphraseBlock = ^{
+    options.cipherKeyBlock = ^{
         return [self databasePassword];
     };
     
     _database = [[YapDatabase alloc] initWithPath:[self dbPath]
-                                 objectSerializer:NULL
-                               objectDeserializer:NULL
-                               metadataSerializer:NULL
-                             metadataDeserializer:NULL
-                                  objectSanitizer:NULL
-                                metadataSanitizer:NULL
+                                       serializer:NULL
+                                     deserializer:NULL
                                           options:options];
     _dbConnection = self.newDatabaseConnection;
+    
     return self;
 }
 
@@ -141,7 +138,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     return databasePath;
 }
 
-- (NSString*)databasePassword {
+- (NSData*)databasePassword {
     [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount];
     
@@ -151,7 +148,7 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
         DDLogError(@"Set new password from keychain ...");
     }
     
-    return dbPassword;
+    return [dbPassword dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 #pragma mark convenience methods
