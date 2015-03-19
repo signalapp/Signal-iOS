@@ -8,6 +8,7 @@
 
 #import "TSMessagesManager.h"
 
+#import <AudioToolbox/AudioToolbox.h>
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 
@@ -45,6 +46,12 @@
 
 #define ddLogLevel LOG_LEVEL_VERBOSE
 
+@interface TSMessagesManager ()
+
+@property SystemSoundID newMessageSound;
+
+@end
+
 @implementation TSMessagesManager
 
 + (instancetype)sharedManager {
@@ -60,7 +67,9 @@
     self = [super init];
     
     if (self) {
-        _dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        _dbConnection          = [TSStorageManager sharedManager].newDatabaseConnection;
+        NSURL *newMessageSound = [NSURL URLWithString:[[NSBundle mainBundle] pathForResource:@"NewMessage" ofType:@"aifc"]];
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageSound, &_newMessageSound);;
     }
     
     return self;
@@ -390,8 +399,12 @@
     }];
 }
 
-- (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name{
-    //TODO: Warn user when message is received?
+- (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name {
+    AudioServicesPlayAlertSound(_newMessageSound);
+}
+
+- (void)dealloc {
+    AudioServicesDisposeSystemSoundID(_newMessageSound);
 }
 
 @end
