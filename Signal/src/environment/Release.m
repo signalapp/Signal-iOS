@@ -52,6 +52,10 @@ static unsigned char DH3K_PRIME[]={
     NSString *defaultRegion;
 #if TARGET_OS_IPHONE
     defaultRegion = [[PhoneNumberUtil sharedInstance].nbPhoneNumberUtil countryCodeByCarrier];
+    
+    if ([defaultRegion isEqualToString:@"ZZ"]) {
+        defaultRegion = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    }
 #else
     defaultRegion = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
 #endif
