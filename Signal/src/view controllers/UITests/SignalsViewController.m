@@ -134,6 +134,10 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [cell configureWithThread:thread];
     [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
     
+    if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0]-1) {
+        cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
+    }
+    
     return cell;
 }
 
