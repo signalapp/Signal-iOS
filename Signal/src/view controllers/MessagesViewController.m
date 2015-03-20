@@ -165,6 +165,7 @@ typedef enum : NSUInteger {
     
     _messageButton = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
     _messageButton.enabled = FALSE;
+    _messageButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
