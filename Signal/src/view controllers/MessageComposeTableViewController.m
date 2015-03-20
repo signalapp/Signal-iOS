@@ -95,7 +95,7 @@
     [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     label.attributedText = fullLabelString;
    //250, 66, 140
-    [label setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-250/2.0f, 100+140, 250, 66)];
+    [label setFrame:CGRectMake([self marginSize], 100+140, [self contentWidth], 66)];
     return label;
 }
 
@@ -133,7 +133,7 @@
     UIImageView *emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"uiEmptyContact"]];
     [emptyImageView setBackgroundColor:[UIColor whiteColor]];
     [emptyImageView setContentMode:UIViewContentModeCenter];
-    [emptyImageView  setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-115.0f/2.0f, 100, 115, 110)];
+    [emptyImageView setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-115.0f/2.0f, 100, 115, 110)];
     emptyImageView.contentMode = UIViewContentModeCenter;
     emptyImageView.contentMode = UIViewContentModeScaleAspectFit;
     UILabel *emptyLabel = [self createLabelWithFirstLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE1", @"") andSecondLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE2" , @"")];
@@ -141,7 +141,7 @@
     UIButton *inviteContactButton = [self createButtonWithTitle:NSLocalizedString(@"EMPTY_CONTACTS_INVITE_BUTTON", @"")];
     
     [inviteContactButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
-    [inviteContactButton setFrame:CGRectMake(self.tableView.frame.size.width/2.0f-inviteContactButton.frame.size.width/1.5f, self.tableView.frame.size.height - 200, 100, 66)];
+    [inviteContactButton setFrame:CGRectMake([self marginSize], self.tableView.frame.size.height - 200, [self contentWidth],60)];
     [inviteContactButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
 
     [_emptyBackgroundView addSubview:emptyImageView];
@@ -298,7 +298,8 @@
         confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
         confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
-    UIAlertController *alertController = [UIAlertController
+    
+    __block UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
                                                            message:confirmMessage
                                                     preferredStyle:UIAlertControllerStyleAlert];
@@ -336,10 +337,8 @@
     [alertController addAction:okAction];
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
-
-    [self.parentViewController dismissViewControllerAnimated:NO completion:^{
-        [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
-    }];
+    
+    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 #pragma mark - SMS Composer Delegate
@@ -486,9 +485,17 @@
     self.searchController.active = NO;
 }
 
--(IBAction)closeAction:(id)sender
+- (IBAction)closeAction:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (CGFloat)contentWidth {
+    return [UIScreen mainScreen].bounds.size.width - 2*[self marginSize];
+}
+
+- (CGFloat)marginSize {
+    return 20;
 }
 
 @end
