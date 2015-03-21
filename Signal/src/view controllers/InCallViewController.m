@@ -179,7 +179,7 @@ static NSInteger connectingFlashCounter = 0;
         
         _nameLabel.text = _potentiallyKnownContact.fullName;
     } else {
-        _nameLabel.text = UNKNOWN_CONTACT_NAME;
+        _nameLabel.text = _callState.remoteNumber.toE164;
     }
 }
 
