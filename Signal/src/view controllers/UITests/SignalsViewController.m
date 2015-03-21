@@ -78,7 +78,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     } onThread:[NSThread mainThread] untilCancelled:nil];
     self.title = NSLocalizedString(@"CONVERSATIONS_VIEW_TITLE", @"");
 
-
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -282,12 +281,14 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
                                                                      view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction){
         [self.threadMappings updateWithTransaction:transaction];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+            [self checkIfEmptyView];
+        });
     }];
-    [self.tableView reloadData];
-    [self checkIfEmptyView];
-    
 }
 
 #pragma mark Database delegates

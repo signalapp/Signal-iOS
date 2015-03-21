@@ -184,8 +184,9 @@ typedef enum : NSUInteger {
     [self updateRangeOptionsForPage:self.page];
     
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
+        [self.collectionView reloadData];
     }];
     
     [self initializeCollectionViewLayout];
@@ -1378,7 +1379,7 @@ typedef enum : NSUInteger {
             }
         }
     } completion:^(BOOL success) {
-        if (success) {
+        if (!success) {
             [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
             [self.collectionView reloadData];
         }
@@ -1513,7 +1514,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)markAllMessagesAsRead {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.thread markAllAsReadWithTransaction:transaction];
     }];
 }
@@ -1612,8 +1613,11 @@ typedef enum : NSUInteger {
 
 - (void)saveDraft {
     if (self.inputToolbar.hidden == NO) {
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [_thread setDraft:self.inputToolbar.contentView.textView.text transaction:transaction];
+        __block TSThread *thread       = _thread;
+        __block NSString *currentDraft = self.inputToolbar.contentView.textView.text;
+        
+        [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [thread setDraft:currentDraft transaction:transaction];
         }];
     }
 }
