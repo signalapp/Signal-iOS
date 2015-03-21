@@ -302,6 +302,7 @@ typedef enum : NSUInteger {
         [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
         [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
         [groupUpdateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        [groupUpdateButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         UIBarButtonItem *groupUpdateBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupUpdateBarButton.customView = groupUpdateButton;
@@ -316,6 +317,7 @@ typedef enum : NSUInteger {
         UIBarButtonItem *groupLeaveBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupLeaveBarButton.customView = groupLeaveButton;
         groupLeaveBarButton.customView.userInteractionEnabled = YES;
+        [groupLeaveButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         UIButton* groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
         NSMutableAttributedString *membersTitle = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MEMBERS_BUTTON_TITLE", @"")];
@@ -326,6 +328,7 @@ typedef enum : NSUInteger {
         UIBarButtonItem *groupMembersBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupMembersBarButton.customView = groupMembersButton;
         groupMembersBarButton.customView.userInteractionEnabled = YES;
+        [groupMembersButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateBarButton, spaceMiddleWords, groupLeaveBarButton, spaceMiddleWords, groupMembersBarButton, spaceEdge];
