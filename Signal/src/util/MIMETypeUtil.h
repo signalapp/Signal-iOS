@@ -2,8 +2,6 @@
 
 @interface MIMETypeUtil : NSObject
 
-+(void) initialize;
-
 +(BOOL)isSupportedMIMEType:(NSString*)contentType;
 +(BOOL)isSupportedVideoMIMEType:(NSString*)contentType;
 +(BOOL)isSupportedAudioMIMEType:(NSString*)contentType;

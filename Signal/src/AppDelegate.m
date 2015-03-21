@@ -20,9 +20,6 @@
 #import "VersionMigrations.h"
 #import "UIColor+OWS.h"
 #import "CodeVerificationViewController.h"
-#import "MIMETypeUtil.h"
-#import "TSDatabaseView.h"
-#import <PastelogKit/Pastelog.h>
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
@@ -138,7 +135,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         [self refreshContacts];
         [TSPreKeyManager refreshPreKeys];
     }
-    [MIMETypeUtil initialize];
+    
     return YES;
 }
 
@@ -284,7 +281,11 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
         window.windowLevel            = CGFLOAT_MAX;
         
         // There appears to be no more reliable way to get the launchscreen image from an asset bundle
-        NSDictionary *dict = @{@"320x480" : @"LaunchImage-700", @"320x568" : @"LaunchImage-700-568h", @"375x667" : @"LaunchImage-800-667h", @"414x736" : @"LaunchImage-800-Portrait-736h"};
+        NSDictionary *dict = @{@"320x480" : @"LaunchImage-700",
+                               @"320x568" : @"LaunchImage-700-568h",
+                               @"375x667" : @"LaunchImage-800-667h",
+                               @"414x736" : @"LaunchImage-800-Portrait-736h"};
+        
         NSString *key = [NSString stringWithFormat:@"%dx%d", (int)[UIScreen mainScreen].bounds.size.width, (int)[UIScreen mainScreen].bounds.size.height];
         UIImage *launchImage = [UIImage imageNamed:dict[key]];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:launchImage];
