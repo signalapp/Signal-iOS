@@ -34,7 +34,7 @@ PODS:
   - DJWActionSheet (1.0.4)
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (6.1.3):
+  - JSQMessagesViewController (7.0.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.8.4)
@@ -67,7 +67,7 @@ DEPENDENCIES:
   - AxolotlKit (~> 0.6.2)
   - DJWActionSheet
   - FFCircularProgressView (>= 0.1)
-  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, branch `JSignalQ`)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, commit `9be8f6ed65eb55368a5ff767f055158cf585065f`)
   - libPhoneNumber-iOS (~> 0.8.2)
   - Mantle (~> 1.5)
   - OpenSSL (~> 1.0.201)
@@ -84,7 +84,7 @@ EXTERNAL SOURCES:
     :branch: master
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :branch: JSignalQ
+    :commit: 9be8f6ed65eb55368a5ff767f055158cf585065f
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 73d8a19
@@ -97,7 +97,7 @@ CHECKOUT OPTIONS:
     :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: bfb0c58785b33fa30ac3c88ef38477e49a674912
+    :commit: 9be8f6ed65eb55368a5ff767f055158cf585065f
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
     :commit: 73d8a19
@@ -112,7 +112,7 @@ SPEC CHECKSUMS:
   DJWActionSheet: d88b302d7c29523e1e9fb9b62cfac46f59bb90d9
   FFCircularProgressView: 723b7a84c412b5d9d2a5531bc716b99965ad7192
   HKDFKit: 5998cf1bbb611e7ecc6bd3eaaef8c7a7da7be949
-  JSQMessagesViewController: 4cc4ff3b26599e8743166b7e8e908528c8f01a80
+  JSQMessagesViewController: 5e6beff1d5aeeea71c45cec4057b9c2c22c0aebd
   JSQSystemSoundPlayer: 55528c699a283aae2220d3ae7b8b527d2ecef4b4
   libPhoneNumber-iOS: dbfc7b4128510a4955df3e5a6f125393fc9ebc2f
   Mantle: d5fbaf30fbc58031223af13812c060e15934a1fe

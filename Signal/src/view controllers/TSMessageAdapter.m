@@ -62,11 +62,11 @@
 @implementation TSMessageAdapter
 
 + (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread{
-
+    
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.messageDate       = interaction.date;
     adapter.identifier        = (NSUInteger)interaction.uniqueId;
-
+    
     if ([thread isKindOfClass:[TSContactThread class]]) {
         adapter.thread = (TSContactThread*)thread;
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
@@ -100,7 +100,7 @@
             
             for (NSString *attachmentID in message.attachments) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
-    
+                
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
                     if ([stream isImage]) {
@@ -154,7 +154,7 @@
             else if(adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status];
+            JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status displayString:@""];
             call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
@@ -174,6 +174,8 @@
 
 + (JSQCall*)jsqCallForTSCall:(TSCall*)call thread:(TSContactThread*)thread{
     CallStatus status = 0;
+    NSString *name = thread.name;
+    NSString *detailString = @"";
     
     switch (call.callType) {
         case RPRecentCallTypeOutgoing:
@@ -187,7 +189,22 @@
             break;
     }
     
-    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier callerDisplayName:thread.name date:call.date status:status];
+    switch (status) {
+        case kCallMissed:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
+        case kCallIncoming:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
+        case kCallOutgoing:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_CALLED", nil), name];
+        default:
+            break;
+    }
+    
+    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier
+                                       callerDisplayName:thread.name
+                                                    date:call.date
+                                                  status:status
+                                           displayString:detailString];
     return jsqCall;
 }
 
@@ -223,7 +240,7 @@
     return self.messageBody;
 }
 
-- (NSUInteger)hash{
+- (NSUInteger)messageHash{
     return self.identifier;
 }
 
