@@ -39,11 +39,45 @@ MacrosSingletonImplemention
     if (searchTerm) {
         countryCodes = [countryCodes filter:^int(NSString *code) {
             NSString *countryName = [self countryNameFromCountryCode:code];
-            return [ContactsManager name:countryName matchesQuery:searchTerm];
+            NSString *callingCode = [self callingCodeFromCountryCode:code];
+            
+            if ([ContactsManager name:countryName matchesQuery:searchTerm]) {
+                return YES;
+            }
+            
+            // We rely on the already internationalized string; as that is what
+            // the user would see entered (i.e. with COUNTRY_CODE_PREFIX).
+
+            if ([callingCode containsString:searchTerm]) {
+                return YES;
+            }
+            return NO;
         }];
     }
     
     return [self sortedCountryCodesByName:countryCodes];
+}
+
++(NSArray *)validCountryCallingPrefixes:(NSString *)string {
+    NSArray *countryCodes = NSLocale.ISOCountryCodes;
+    NSArray *matches = [countryCodes filter:^int(NSString *code) {
+        NSString *callingCode = [self callingCodeFromCountryCode:code];
+        
+        return [string hasPrefix:callingCode];
+    }];
+    
+    return [matches sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSString * obj1, NSString * obj2) {
+        if (obj1 == nil) {
+            return obj2 ? NSOrderedAscending : NSOrderedSame;
+        }
+        
+        if (obj2 == nil) {
+            return NSOrderedDescending;
+        }
+        
+        NSInteger d = (NSInteger)[obj1 length] - (NSInteger)[obj2 length];
+        return d ? ( d < 0  ? NSOrderedAscending : NSOrderedDescending) : NSOrderedSame;
+    }];
 }
 
 + (NSArray*)sortedCountryCodesByName:(NSArray*)countryCodesByISOCode{

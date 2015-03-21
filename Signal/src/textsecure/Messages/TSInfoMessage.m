@@ -37,15 +37,15 @@
 - (NSString *)description{
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
-            return @"Secure session was reset.";
+            return NSLocalizedString(@"SECURE_SESSION_RESET", nil);
         case TSInfoMessageTypeUnsupportedMessage:
-            return @"Received unsupported attachment type.";
+            return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
-            return @"The user is not registered.";
+            return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
         case TSInfoMessageTypeGroupQuit:
-            return @"You have left the group.";
+            return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
-            return _customMessage != nil ? _customMessage : @"Updated the group";
+            return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
         default:
             break;
     }

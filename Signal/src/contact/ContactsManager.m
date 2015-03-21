@@ -67,6 +67,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     ContactsManager* contactsManager = (__bridge ContactsManager*)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [contactsManager pullLatestAddressBook];
+        [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
     });
 }
 
@@ -393,9 +394,9 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst?YES:NO;
         
         if (firstNameOrdering) {
-            return [contact1.firstName compare:contact2.firstName];
+            return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
         } else {
-            return [contact1.lastName compare:contact2.lastName];
+            return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
         };
     };
 }

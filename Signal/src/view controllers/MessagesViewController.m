@@ -113,7 +113,7 @@ typedef enum : NSUInteger {
 
 @implementation MessagesViewController
 
-- (void)setupWithTSIdentifier:(NSString *)identifier{
+- (void)setupWithTSIdentifier:(NSString *)identifier {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
     }];
@@ -135,7 +135,7 @@ typedef enum : NSUInteger {
     isGroupConversation = YES;
 }
 
-- (void)setupWithThread:(TSThread *)thread{
+- (void)setupWithThread:(TSThread *)thread {
     self.thread = thread;
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
@@ -165,12 +165,12 @@ typedef enum : NSUInteger {
     
     _messageButton = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
     _messageButton.enabled = FALSE;
+    _messageButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0, 0, JSQ_TOOLBAR_ICON_WIDTH+JSQ_IMAGE_INSET*2, JSQ_TOOLBAR_ICON_HEIGHT+JSQ_IMAGE_INSET*2)];
     _attachButton.imageEdgeInsets = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
-    
     
     [self markAllMessagesAsRead];
     
@@ -208,8 +208,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
 }
 
--(void)viewWillAppear:(BOOL)animated
-{
+-(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self initializeToolbars];
     
@@ -222,22 +221,22 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)startReadTimer{
+- (void)startReadTimer {
     self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
 }
 
-- (void)cancelReadTimer{
+- (void)cancelReadTimer {
     [self.readTimer invalidate];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
+- (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self startReadTimer];
     _isVisible = YES;
     [self initializeTitleLabelGestureRecognizer];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated {
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound) {
         // back button was pressed.
         [self.navController hideDropDown:self];
@@ -269,7 +268,7 @@ typedef enum : NSUInteger {
     [self saveDraft];
 }
 
-- (void)viewDidDisappear:(BOOL)animated{
+- (void)viewDidDisappear:(BOOL)animated {
     _isVisible = NO;
 }
 
@@ -303,6 +302,7 @@ typedef enum : NSUInteger {
         [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
         [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
         [groupUpdateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+        [groupUpdateButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         UIBarButtonItem *groupUpdateBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupUpdateBarButton.customView = groupUpdateButton;
@@ -317,6 +317,7 @@ typedef enum : NSUInteger {
         UIBarButtonItem *groupLeaveBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupLeaveBarButton.customView = groupLeaveButton;
         groupLeaveBarButton.customView.userInteractionEnabled = YES;
+        [groupLeaveButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         UIButton* groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0,0,65,24)];
         NSMutableAttributedString *membersTitle = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MEMBERS_BUTTON_TITLE", @"")];
@@ -327,6 +328,7 @@ typedef enum : NSUInteger {
         UIBarButtonItem *groupMembersBarButton =  [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
         groupMembersBarButton.customView = groupMembersButton;
         groupMembersBarButton.customView.userInteractionEnabled = YES;
+        [groupMembersButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
         
         
         self.navController.dropDownToolbar.items  =@[spaceEdge, groupUpdateBarButton, spaceMiddleWords, groupLeaveBarButton, spaceMiddleWords, groupMembersBarButton, spaceEdge];
@@ -765,19 +767,12 @@ typedef enum : NSUInteger {
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter * msg = [self messageAtIndexPath:indexPath];
-    if([self.thread isKindOfClass:[TSGroupThread class]]) {
-        if(msg.messageType == TSIncomingMessageAdapter) {
-            return 16.0f;
-        }
-    }
-    else if (msg.messageType == TSOutgoingMessageAdapter) {
+    if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
         return 16.0f;
     }
     
     return 0.0f;
 }
-
 
 #pragma mark - Actions
 
@@ -1117,8 +1112,7 @@ typedef enum : NSUInteger {
  *  Presenting UIImagePickerController
  */
 
-- (void)takePictureOrVideo
-{
+- (void)takePictureOrVideo {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.allowsEditing = NO;
@@ -1132,10 +1126,11 @@ typedef enum : NSUInteger {
     
 }
 
--(void)chooseFromLibrary {
+- (void)chooseFromLibrary {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate                 = self;
+    picker.sourceType               = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.allowsEditing            = YES;
     
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         
@@ -1155,7 +1150,7 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void) resetFrame {
+- (void)resetFrame {
     // fixes bug on frame being off after this selection
     CGRect frame = [UIScreen mainScreen].applicationFrame;
     self.view.frame = frame;
@@ -1164,8 +1159,7 @@ typedef enum : NSUInteger {
 /*
  *  Fetching data from UIImagePickerController
  */
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
     
@@ -1184,7 +1178,7 @@ typedef enum : NSUInteger {
     
 }
 
--(void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
+- (void) sendMessageAttachment:(NSData*)attachmentData ofType:(NSString*)attachmentType {
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:nil attachments:[NSMutableArray array]];
     
     [self dismissViewControllerAnimated:YES completion:^{
@@ -1213,17 +1207,15 @@ typedef enum : NSUInteger {
     
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        [self  sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
+        [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
     }];
 }
 
--(NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image
-{
+- (NSData*)qualityAdjustedAttachmentForImage:(UIImage*)image {
     return UIImageJPEGRepresentation([self adjustedImageSizedForSending:image], [self compressionRate]);
 }
 
--(UIImage*)adjustedImageSizedForSending:(UIImage*)image
-{
+- (UIImage*)adjustedImageSizedForSending:(UIImage*)image {
     CGFloat correctedWidth;
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
@@ -1245,8 +1237,7 @@ typedef enum : NSUInteger {
     return [self imageScaled:image toMaxSize:correctedWidth];
 }
 
-- (UIImage*)imageScaled:(UIImage *)image toMaxSize:(CGFloat)size
-{
+- (UIImage*)imageScaled:(UIImage *)image toMaxSize:(CGFloat)size {
     CGFloat scaleFactor;
     CGFloat aspectRatio = image.size.height / image.size.width;
     
@@ -1267,8 +1258,7 @@ typedef enum : NSUInteger {
     return updatedImage;
 }
 
--(CGFloat)compressionRate
-{
+- (CGFloat)compressionRate {
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
             return 1;
@@ -1306,8 +1296,7 @@ typedef enum : NSUInteger {
 }
 
 
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
+- (void)yapDatabaseModified:(NSNotification *)notification {
     if(isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupThread* gThread = (TSGroupThread*)self.thread;
@@ -1317,16 +1306,14 @@ typedef enum : NSUInteger {
     
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     
-    if ( ![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications])
-    {
+    if ( ![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
             [self.messageMappings updateWithTransaction:transaction];
         }];
         return;
     }
     
-    if (!_isVisible)
-    {
+    if (!_isVisible) {
         // Since we moved our databaseConnection to a new commit,
         // we need to update the mappings too.
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
@@ -1346,16 +1333,13 @@ typedef enum : NSUInteger {
     
     __block BOOL scrollToBottom = NO;
     
-    if ([sectionChanges count] == 0 & [messageRowChanges count] == 0)
-    {
+    if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
         return;
     }
     
     [self.collectionView performBatchUpdates:^{
-        for (YapDatabaseViewRowChange *rowChange in messageRowChanges)
-        {
-            switch (rowChange.type)
-            {
+        for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+            switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete :
                 {
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
@@ -1406,8 +1390,8 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - UICollectionView DataSource
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInSection:(NSUInteger)section];
     return numberOfMessages;
 }
@@ -1496,8 +1480,7 @@ typedef enum : NSUInteger {
 
 #pragma mark Accessory View
 
--(void)didPressAccessoryButton:(UIButton *)sender
-{
+- (void)didPressAccessoryButton:(UIButton *)sender {
     [self dismissKeyBoard];
     
     UIView *presenter = self.parentViewController.view;
@@ -1512,7 +1495,7 @@ typedef enum : NSUInteger {
                               DDLogVerbose(@"User Cancelled");
                           } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
                               DDLogVerbose(@"Destructive button tapped");
-                          }else {
+                          } else {
                               switch (tappedButtonIndex) {
                                   case 0:
                                       [self takePictureOrVideo];
@@ -1545,8 +1528,7 @@ typedef enum : NSUInteger {
     return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
 }
 
-- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
-{
+- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
     if (action == @selector(delete:)) {
         [self deleteMessageAtIndexPath:indexPath];
     }
@@ -1600,7 +1582,7 @@ typedef enum : NSUInteger {
     self.thread = groupThread;
 }
 
-- (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue{
+- (IBAction)unwindGroupUpdated:(UIStoryboardSegue *)segue {
     NewGroupViewController *ngc = [segue sourceViewController];
     TSGroupModel* newGroupModel = [ngc groupModel];
     NSMutableSet* groupMemberIds = [NSMutableSet setWithArray:newGroupModel.groupMemberIds];
@@ -1617,8 +1599,7 @@ typedef enum : NSUInteger {
 
 #pragma mark Drafts
 
-- (void)loadDraftInCompose
-{
+- (void)loadDraftInCompose {
     __block NSString *placeholder;
     [self.editingDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         placeholder = [_thread currentDraftWithTransaction:transaction];
@@ -1630,8 +1611,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)saveDraft
-{
+- (void)saveDraft {
     if (self.inputToolbar.hidden == NO) {
         [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [_thread setDraft:self.inputToolbar.contentView.textView.text transaction:transaction];
@@ -1639,7 +1619,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)dealloc{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
