@@ -20,7 +20,6 @@ extern CloudKitManager *MyCloudKitManager;
 
 /**
  * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
- * 
  * - CKErrorNetworkUnavailable
  * - CKErrorNetworkFailure
 **/
@@ -28,10 +27,15 @@ extern CloudKitManager *MyCloudKitManager;
 
 /**
  * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
- * 
  * - CKErrorPartialFailure
 **/
 - (void)handlePartialFailure;
+
+/**
+ * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
+ * - CKErrorNotAuthenticated
+**/
+- (void)handleNotAuthenticated;
 
 /**
  * This method uses CKFetchRecordChangesOperation to fetch changes.

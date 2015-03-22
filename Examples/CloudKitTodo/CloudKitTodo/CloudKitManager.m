@@ -37,9 +37,12 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 
 @end
 
+
 @implementation CloudKitManager
 {
 	YapDatabaseConnection *databaseConnection;
+	
+	dispatch_queue_t setupQueue;
 	dispatch_queue_t fetchQueue;
 	
 	NSString *lastChangeSetUUID;
@@ -73,7 +76,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		// But our needs are pretty basic, so we're just going to use the generic background connection.
 		databaseConnection = MyDatabaseManager.bgDatabaseConnection;
 		
-		fetchQueue = dispatch_queue_create("CloudKitManager.fetchQueue", DISPATCH_QUEUE_SERIAL);
+		setupQueue = dispatch_queue_create("CloudKitManager.setup", DISPATCH_QUEUE_SERIAL);
+		fetchQueue = dispatch_queue_create("CloudKitManager.fetch", DISPATCH_QUEUE_SERIAL);
 		
 		self.needsCreateZone = YES;
 		self.needsCreateZoneSubscription = YES;
@@ -92,9 +96,9 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		                                           object:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
-	                                         selector:@selector(cloudKitInFlightChangeSetChanged:)
-	                                             name:YapDatabaseCloudKitInFlightChangeSetChangedNotification
-	                                           object:nil];
+		                                         selector:@selector(cloudKitInFlightChangeSetChanged:)
+		                                             name:YapDatabaseCloudKitInFlightChangeSetChangedNotification
+		                                           object:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(reachabilityChanged:)
@@ -105,6 +109,100 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)continueCloudKitFlow
+{
+	if (self.needsCreateZone || self.needsCreateZoneSubscription)
+	{
+		[self configureCloudKit];
+	}
+	else if (self.needsFetchRecordChangesAfterAppLaunch)
+	{
+		[self fetchRecordChangesAfterAppLaunch];
+	}
+	else
+	{
+		// Order matters here.
+		// We may be in one of 3 states:
+		//
+		// 1. YDBCK is suspended because we need to refetch stuff we screwed up
+		// 2. YDBCK is suspended because we need to fetch record changes (and merge with our local CKRecords)
+		// 3. YDBCK is suspended because of a network failure
+		// 4. YDBCK is not suspended
+		//
+		// In the case of #1, it doesn't make sense to resume YDBCK until we've refetched the records we
+		// didn't properly merge last time (due to a bug in your YapDatabaseCloudKitMergeBlock).
+		// So case #3 needs to be checked before #2.
+		//
+		// In the case of #2, it doesn't make sense to resume YDBCK until we've handled
+		// fetching the latest changes from the server.
+		// So case #2 needs to be checked before #3.
+		
+		if (self.needsRefetchMissedRecordIDs)
+		{
+			[self _refetchMissedRecordIDs];
+		}
+		else if (self.needsFetchRecordChanges)
+		{
+			[self _fetchRecordChanges];
+		}
+		else if (self.needsResume)
+		{
+			self.needsResume = NO;
+			[MyDatabaseManager.cloudKitExtension resume];
+		}
+	}
+}
+
+- (void)warnAboutAccount
+{
+	dispatch_block_t block = ^{
+	
+		NSString *title = @"You're not signed into iCloud.";
+		NSString *message = @"You must be signed into iCloud for syncing to work.";
+		
+		UIAlertView *alertView =
+		  [[UIAlertView alloc] initWithTitle:title
+		                             message:message
+		                            delegate:nil
+		                   cancelButtonTitle:nil
+		                   otherButtonTitles:@"Oops", nil];
+		
+		[alertView show];
+	};
+	
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_async(dispatch_get_main_queue(), block);
+}
+
+- (void)warnAboutFeatures
+{
+	dispatch_block_t block = ^{
+		
+		NSString *title = @"This sample app doesn't support switching iCloud accounts.";
+		NSString *message = @"But, of course, your app will, right ???";
+		
+		UIAlertView *alertView =
+		  [[UIAlertView alloc] initWithTitle:title
+		                             message:message
+		                            delegate:nil
+		                   cancelButtonTitle:nil
+		                   otherButtonTitles:@"Of Course", nil];
+		
+		[alertView show];
+	};
+	
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_async(dispatch_get_main_queue(), block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark App Launch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,141 +210,184 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 {
 	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
 	
-	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	static BOOL isFirstTimeMethodRun = YES;
+	if (isFirstTimeMethodRun)
+	{
+		// Set initial values
+		// (by checking database to see if we've flagged them as complete from previous app run)
 		
-		if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit]) {
-			self.needsCreateZone = NO;
-		}
-		if ([transaction hasObjectForKey:Key_HasZoneSubscription inCollection:Collection_CloudKit]) {
-			self.needsCreateZoneSubscription = NO;
-		}
-	}];
+		[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit]) {
+				self.needsCreateZone = NO;
+			}
+			if ([transaction hasObjectForKey:Key_HasZoneSubscription inCollection:Collection_CloudKit]) {
+				self.needsCreateZoneSubscription = NO;
+			}
+		}];
+	}
 	
-	//
-	// Create CKRecordZone (if needed)
-	//
-	
-	CKModifyRecordZonesOperation *modifyRecordZonesOperation = nil;
-	
-	void (^ContinueAfterCreateZone)(BOOL updateDatabase) = ^(BOOL updateDatabase){
-		
-		// Create zone complete.
-		// Decrement suspend count.
+	if (self.needsCreateZone) {
+		[self createZone];
+	}
+	else if (isFirstTimeMethodRun) {
 		[MyDatabaseManager.cloudKitExtension resume];
+	}
+	
+	if (self.needsCreateZoneSubscription) {
+		[self createZoneSubscription];
+	}
+	else if (isFirstTimeMethodRun) {
+		[MyDatabaseManager.cloudKitExtension resume];
+	}
+	
+	isFirstTimeMethodRun = NO;
+}
+
+- (void)createZone
+{
+	dispatch_async(setupQueue, ^{ @autoreleasepool {
 		
-		// Unflag property
-		self.needsCreateZone = NO;
+		// Suspend the queue.
+		// We will resume it upon completion of the operation.
+		// This ensures that there is only one outstanding operation at a time.
+		dispatch_suspend(setupQueue);
 		
-		if (updateDatabase)
+		[self _createZone];
+	}});
+}
+
+- (void)_createZone
+{
+	if (self.needsCreateZone == NO)
+	{
+		dispatch_resume(setupQueue);
+		return;
+	}
+	
+	CKRecordZone *recordZone = [[CKRecordZone alloc] initWithZoneName:CloudKitZoneName];
+	
+	CKModifyRecordZonesOperation *modifyRecordZonesOperation =
+	  [[CKModifyRecordZonesOperation alloc] initWithRecordZonesToSave:@[ recordZone ]
+	                                            recordZoneIDsToDelete:nil];
+	
+	modifyRecordZonesOperation.modifyRecordZonesCompletionBlock =
+	^(NSArray *savedRecordZones, NSArray *deletedRecordZoneIDs, NSError *operationError)
+	{
+		if (operationError)
 		{
+			DDLogError(@"Error creating zone: %@", operationError);
+			
+			BOOL isNotAuthenticatedError = NO;
+			
+			NSInteger ckErrorCode = operationError.code;
+			if (ckErrorCode == CKErrorNotAuthenticated)
+			{
+				isNotAuthenticatedError = YES;
+			}
+			else if (ckErrorCode == CKErrorPartialFailure)
+			{
+				NSDictionary *partialErrorsByZone = [operationError.userInfo objectForKey:CKPartialErrorsByItemIDKey];
+				for (NSError *perZoneError in [partialErrorsByZone objectEnumerator])
+				{
+					ckErrorCode = perZoneError.code;
+					if (ckErrorCode == CKErrorNotAuthenticated)
+					{
+						isNotAuthenticatedError = YES;
+					}
+				}
+			}
+			
+			if (isNotAuthenticatedError)
+			{
+				[self warnAboutAccount];
+			}
+		}
+		else
+		{
+			DDLogInfo(@"Successfully created zones: %@", savedRecordZones);
+			
+			// Create zone complete.
+			self.needsCreateZone = NO;
+			
+			// Decrement suspend count.
+			[MyDatabaseManager.cloudKitExtension resume];
+			
 			// Put flag in database so we know we can skip this operation next time
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				
 				[transaction setObject:@(YES) forKey:Key_HasZone inCollection:Collection_CloudKit];
 			}];
 		}
+		
+		dispatch_resume(setupQueue);
 	};
-	
-	if (self.needsCreateZone)
+		
+	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifyRecordZonesOperation];
+}
+
+- (void)createZoneSubscription
+{
+	dispatch_async(setupQueue, ^{ @autoreleasepool {
+		
+		// Suspend the queue.
+		// We will resume it upon completion of the operation.
+		// This ensures that there is only one outstanding operation at a time.
+		dispatch_suspend(setupQueue);
+		
+		[self _createZoneSubscription];
+	}});
+}
+
+- (void)_createZoneSubscription
+{
+	if (self.needsCreateZoneSubscription == NO)
 	{
-		CKRecordZone *recordZone = [[CKRecordZone alloc] initWithZoneName:CloudKitZoneName];
-		
-		modifyRecordZonesOperation =
-		  [[CKModifyRecordZonesOperation alloc] initWithRecordZonesToSave:@[ recordZone ]
-		                                            recordZoneIDsToDelete:nil];
-		
-		modifyRecordZonesOperation.modifyRecordZonesCompletionBlock =
-		^(NSArray *savedRecordZones, NSArray *deletedRecordZoneIDs, NSError *operationError)
-		{
-			if (operationError)
-			{
-				DDLogError(@"Error creating zone: %@", operationError);
-			}
-			else
-			{
-				DDLogInfo(@"Successfully created zones: %@", savedRecordZones);
-				
-				self.needsCreateZone = NO;
-				
-				BOOL shouldUpdateDatabase = YES;
-				ContinueAfterCreateZone(shouldUpdateDatabase);
-			}
-		};
-		
-		[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifyRecordZonesOperation];
-	}
-	else
-	{
-		BOOL shouldUpdateDatabase = NO;
-		ContinueAfterCreateZone(shouldUpdateDatabase);
+		dispatch_resume(setupQueue);
+		return;
 	}
 	
-	//
-	// Create CKSubscription (if needed)
-	//
+	CKRecordZoneID *recordZoneID =
+	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
 	
-	CKModifySubscriptionsOperation *modifySubscriptionsOperation = nil;
+	CKSubscription *subscription =
+	  [[CKSubscription alloc] initWithZoneID:recordZoneID subscriptionID:CloudKitZoneName options:0];
 	
-	void (^ContinueAfterCreateZoneSubscription)(BOOL updateDatabase) = ^(BOOL updateDatabase) {
-		
-		// Create zone subscription complete.
-		// Decrement suspend count.
-		[MyDatabaseManager.cloudKitExtension resume];
-		
-		if (updateDatabase)
+	CKModifySubscriptionsOperation *modifySubscriptionsOperation =
+	  [[CKModifySubscriptionsOperation alloc] initWithSubscriptionsToSave:@[ subscription ]
+	                                              subscriptionIDsToDelete:nil];
+	
+	modifySubscriptionsOperation.modifySubscriptionsCompletionBlock =
+	^(NSArray *savedSubscriptions, NSArray *deletedSubscriptionIDs, NSError *operationError)
+	{
+		if (operationError)
 		{
+			DDLogError(@"Error creating subscription: %@", operationError);
+		}
+		else
+		{
+			DDLogInfo(@"Successfully created subscription: %@", savedSubscriptions);
+			
+			// Create zone subscription complete.
+			self.needsCreateZoneSubscription = NO;
+			
+			// Decrement suspend count.
+			[MyDatabaseManager.cloudKitExtension resume];
+			
 			// Put flag in database so we know we can skip this operation next time
 			[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 				
 				[transaction setObject:@(YES) forKey:Key_HasZoneSubscription inCollection:Collection_CloudKit];
 			}];
+			
+			// We're ready for the initial fetchRecordChanges post app-launch.
+			[self fetchRecordChangesAfterAppLaunch];
 		}
 		
-		// We're ready for the initial fetchRecordChanges post app-launch.
-		[self fetchRecordChangesAfterAppLaunch];
+		dispatch_resume(setupQueue);
 	};
 	
-	if (self.needsCreateZoneSubscription)
-	{
-		CKRecordZoneID *recordZoneID =
-		  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
-		
-		CKSubscription *subscription =
-		  [[CKSubscription alloc] initWithZoneID:recordZoneID subscriptionID:CloudKitZoneName options:0];
-		
-		modifySubscriptionsOperation =
-		  [[CKModifySubscriptionsOperation alloc] initWithSubscriptionsToSave:@[ subscription ]
-		                                              subscriptionIDsToDelete:nil];
-		
-		modifySubscriptionsOperation.modifySubscriptionsCompletionBlock =
-		^(NSArray *savedSubscriptions, NSArray *deletedSubscriptionIDs, NSError *operationError)
-		{
-			if (operationError)
-			{
-				DDLogError(@"Error creating subscription: %@", operationError);
-			}
-			else
-			{
-				DDLogInfo(@"Successfully created subscription: %@", savedSubscriptions);
-				
-				self.needsCreateZoneSubscription = NO;
-				
-				BOOL shouldUpdateDatabase = YES;
-				ContinueAfterCreateZoneSubscription(shouldUpdateDatabase);
-			}
-		};
-		
-		if (modifyRecordZonesOperation) {
-			[modifySubscriptionsOperation addDependency:modifyRecordZonesOperation];
-		}
-		
-		[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifySubscriptionsOperation];
-	}
-	else
-	{
-		BOOL shouldUpdateDatabase = NO;
-		ContinueAfterCreateZoneSubscription(shouldUpdateDatabase);
-	}
+	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifySubscriptionsOperation];
 }
 
 /**
@@ -262,11 +403,14 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		
 		if ((result != UIBackgroundFetchResultFailed) && !moreComing)
 		{
-			self.needsFetchRecordChangesAfterAppLaunch = NO;
-			
-			// Initial fetchRecordChanges operation complete.
-			// Decrement suspend count.
-			[MyDatabaseManager.cloudKitExtension resume];
+			if (self.needsFetchRecordChangesAfterAppLaunch)
+			{
+				// Initial fetchRecordChanges operation complete.
+				self.needsFetchRecordChangesAfterAppLaunch = NO;
+				
+				// Decrement suspend count.
+				[MyDatabaseManager.cloudKitExtension resume];
+			}
 		}
 	}];
 }
@@ -287,8 +431,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 {
 	dispatch_async(fetchQueue, ^{ @autoreleasepool {
 	
-		// Suspend the fetchQueue.
-		// We will resume it upon completion of the fetchRecordsOperation.
+		// Suspend the queue.
+		// We will resume it upon completion of the operation.
 		// This ensures that there is only one outstanding fetchRecordsOperation at a time.
 		dispatch_suspend(fetchQueue);
 		
@@ -369,10 +513,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			
 			DDLogError(@"CKFetchRecordChangesOperation: operationError: %@", operationError);
 			
-			dispatch_resume(fetchQueue);
+			NSInteger ckErrorCode = operationError.code;
+			
+			if (ckErrorCode == CKErrorChangeTokenExpired)
+			{
+				// CKErrorChangeTokenExpired:
+				//   The previousServerChangeToken value is too old and the client must re-sync from scratch.
+				
+				[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+					
+					[transaction removeObjectForKey:Key_ServerChangeToken inCollection:Collection_CloudKit];
+				}];
+			}
+			
 			if (completionHandler) {
 				completionHandler(UIBackgroundFetchResultFailed, NO);
 			}
+			dispatch_resume(fetchQueue);
 		}
 		else if (!hasChanges)
 		{
@@ -390,10 +547,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				          inCollection:Collection_CloudKit];
 			}];
 			
-			dispatch_resume(fetchQueue);
 			if (completionHandler) {
 				completionHandler(UIBackgroundFetchResultNoData, NO);
 			}
+			dispatch_resume(fetchQueue);
 		}
 		else // if (hasChanges)
 		{
@@ -490,10 +647,9 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 			} completionBlock:^{
 				
-				if (moreComing)
+				if (moreComing) {
 					[self _fetchRecordChangesWithCompletionHandler:completionHandler];
-				else
-					dispatch_resume(fetchQueue);
+				}
 				
 				if (completionHandler)
 				{
@@ -502,6 +658,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					else
 						completionHandler(UIBackgroundFetchResultNoData, moreComing);
 				}
+				dispatch_resume(fetchQueue);
 			}];
 		
 		} // end if (hasChanges)
@@ -655,6 +812,62 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	}
 }
 
+/**
+ * Invoke me if you get one of the following errors via YapDatabaseCloudKitOperationErrorBlock:
+ * - CKErrorNotAuthenticated
+**/
+- (void)handleNotAuthenticated
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	// When the YapDatabaseCloudKitOperationErrorBlock is invoked,
+	// the extension has already automatically suspended itself.
+	// It is our job to properly handle the error, and resume the extension when ready.
+	self.needsResume = YES;
+	
+	[self warnAboutAccount];
+}
+
+- (void)_refetchMissedRecordIDs
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	YDBCKChangeSet *failedChangeSet = [[MyDatabaseManager.cloudKitExtension pendingChangeSets] firstObject];
+	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
+	
+	if (recordIDs.count == 0)
+	{
+		// Oops, we don't have anything to refetch.
+		// Fallback to checking other scenarios.
+		
+		self.needsRefetchMissedRecordIDs = NO;
+		[self continueCloudKitFlow];
+		return;
+	}
+	
+	[self refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
+		
+		if (error)
+		{
+			if (MyAppDelegate.reachability.isReachable)
+			{
+				[self _refetchMissedRecordIDs]; // try again
+			}
+			else
+			{
+				// Wait for reachability notification
+			}
+		}
+		else
+		{
+			self.needsRefetchMissedRecordIDs = NO;
+			self.needsFetchRecordChanges = NO;
+			
+			[self continueCloudKitFlow];
+		}
+	}];
+}
+
 - (void)_fetchRecordChanges
 {
 	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
@@ -677,66 +890,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			if (!moreComing)
 			{
 				self.needsFetchRecordChanges = NO;
-				
-				if (self.needsResume)
-				{
-					self.needsResume = NO;
-					[MyDatabaseManager.cloudKitExtension resume];
-				}
-			}
-		}
-	}];
-}
-
-- (void)_refetchMissedRecordIDs
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	YDBCKChangeSet *failedChangeSet = [[MyDatabaseManager.cloudKitExtension pendingChangeSets] firstObject];
-	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
-	
-	if (recordIDs.count == 0)
-	{
-		// Oops, we don't have anything to refetch.
-		// Fallback to checking other scenarios.
-		
-		self.needsRefetchMissedRecordIDs = NO;
-		
-		if (self.needsFetchRecordChanges)
-		{
-			[self _fetchRecordChanges];
-		}
-		else if (self.needsResume)
-		{
-			self.needsResume = NO;
-			[MyDatabaseManager.cloudKitExtension resume];
-		}
-		
-		return;
-	}
-	
-	[self refetchMissedRecordIDs:recordIDs withCompletionHandler:^(NSError *error) {
-		
-		if (error)
-		{
-			if (MyAppDelegate.reachability.isReachable)
-			{
-				[self _refetchMissedRecordIDs]; // try again
-			}
-			else
-			{
-				// Wait for reachability notification
-			}
-		}
-		else
-		{
-			self.needsRefetchMissedRecordIDs = NO;
-			self.needsFetchRecordChanges = NO;
-			
-			if (self.needsResume)
-			{
-				self.needsResume = NO;
-				[MyDatabaseManager.cloudKitExtension resume];
+				[self continueCloudKitFlow];
 			}
 		}
 	}];
@@ -750,20 +904,30 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 {
 	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
 	
-	if (self.needsResume == NO)
+	if (self.needsCreateZone || self.needsCreateZoneSubscription || self.needsFetchRecordChangesAfterAppLaunch)
 	{
-		self.needsResume = YES;
-		[MyDatabaseManager.cloudKitExtension suspend];
+		// CloudKit isn't fully setup yet
 	}
-	
-	self.needsFetchRecordChanges = YES;
+	else
+	{
+		// CloudKit is setup.
+		// Perform normal suspend & flag operations.
+		
+		if (self.needsResume == NO)
+		{
+			self.needsResume = YES;
+			[MyDatabaseManager.cloudKitExtension suspend];
+		}
+		
+		self.needsFetchRecordChanges = YES;
+	}
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
 	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
 	
-	[self _fetchRecordChanges];
+	[self continueCloudKitFlow];
 }
 
 - (void)cloudKitInFlightChangeSetChanged:(NSNotification *)notification
@@ -784,46 +948,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	DDLogInfo(@"%@ - reachability.isReachable = %@", THIS_FILE, (reachability.isReachable ? @"YES" : @"NO"));
 	if (reachability.isReachable)
 	{
-		if (self.needsCreateZone || self.needsCreateZoneSubscription)
-		{
-			[self configureCloudKit];
-		}
-		else if (self.needsFetchRecordChangesAfterAppLaunch)
-		{
-			[self fetchRecordChangesAfterAppLaunch];
-		}
-		else
-		{
-			// Order matters here.
-			// We may be in one of 3 states:
-			//
-			// 1. YDBCK is suspended because we need to refetch stuff we screwed up
-			// 2. YDBCK is suspended because we need to fetch record changes (and merge with our local CKRecords)
-			// 3. YDBCK is suspended because of a network failure
-			// 4. YDBCK is not suspended
-			//
-			// In the case of #1, it doesn't make sense to resume YDBCK until we've refetched the records we
-			// didn't properly merge last time (due to a bug in your YapDatabaseCloudKitMergeBlock).
-			// So case #3 needs to be checked before #2.
-			//
-			// In the case of #2, it doesn't make sense to resume YDBCK until we've handled
-			// fetching the latest changes from the server.
-			// So case #2 needs to be checked before #3.
-			
-			if (self.needsRefetchMissedRecordIDs)
-			{
-				[self _refetchMissedRecordIDs];
-			}
-			else if (self.needsFetchRecordChanges)
-			{
-				[self _fetchRecordChanges];
-			}
-			else if (self.needsResume)
-			{
-				self.needsResume = NO;
-				[MyDatabaseManager.cloudKitExtension resume];
-			}
-		}
+		[self continueCloudKitFlow];
 	}
 }
 

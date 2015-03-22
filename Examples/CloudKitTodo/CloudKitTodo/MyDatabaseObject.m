@@ -226,14 +226,14 @@
 	
 	NSMutableSet *properties = [self monitoredProperties];
 	
-	NSMutableDictionary *syncablePropertyMappings = [NSMutableDictionary dictionaryWithCapacity:properties.count];
+	NSMutableDictionary *mappings_localKeyToCloudKey = [NSMutableDictionary dictionaryWithCapacity:properties.count];
 	
 	for (NSString *propertyName in properties)
 	{
-		[syncablePropertyMappings setObject:propertyName forKey:propertyName];
+		[mappings_localKeyToCloudKey setObject:propertyName forKey:propertyName];
 	}
 	
-	return syncablePropertyMappings;
+	return mappings_localKeyToCloudKey;
 }
 
 /**

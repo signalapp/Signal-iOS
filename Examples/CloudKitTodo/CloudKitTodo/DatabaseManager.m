@@ -403,6 +403,10 @@ DatabaseManager *MyDatabaseManager;
 		{
 			[MyCloudKitManager handlePartialFailure];
 		}
+		else if (ckErrorCode == CKErrorNotAuthenticated)
+		{
+			[MyCloudKitManager handleNotAuthenticated];
+		}
 		else
 		{
 			// You'll want to add more error handling here.
