@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+#import <AVFoundation/AVAudioSession.h>
 #import "CallProgress.h"
 #import "CallTermination.h"
 #import "SoundPlayer.h"
@@ -33,7 +34,7 @@ enum AudioProfile {
 -(BOOL) toggleSpeakerPhone;
 -(void) cancellAllAudio;
 
--(void) requestRequiredPermissionsIfNeeded;
+-(void) requestRequiredPermissionsIfNeededWithCompletion:(PermissionBlock)permissionBlock incoming:(BOOL)isIncoming;
 -(BOOL) requestRecordingPrivilege;
 -(BOOL) releaseRecordingPrivilege;
 

@@ -1,3 +1,4 @@
+#import "AppAudioManager.h"
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
 #import "ThreadManager.h"
@@ -52,22 +53,30 @@
 
 -(void) initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber withOptionallyKnownContact:(Contact*)contact {
     require(remoteNumber != nil);
-	
+    
+    [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeededWithCompletion:^(BOOL granted) {
+        if (granted) {
+            [self callToRemoteNumber:remoteNumber withOptionallyKnownContact:contact];
+        }
+    } incoming:NO];
+}
+
+- (void)callToRemoteNumber:(PhoneNumber*)remoteNumber withOptionallyKnownContact:(Contact*)contact {
     CallController* callController = [self cancelExistingCallAndInitNewCallWork:true
                                                                          remote:remoteNumber
                                                                 optionalContact:contact];
     [callController acceptCall]; // initiator implicitly accepts call
     TOCCancelToken* lifetime = [callController untilCancelledToken];
-        
+    
     TOCFuture* futureConnected = [CallConnectUtil asyncInitiateCallToRemoteNumber:remoteNumber
                                                                 andCallController:callController];
     
     TOCFuture* futureCalling = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
         [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
         CallAudioManager *cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:callController.errorHandler
-                                                  untilCancelled:lifetime];
-		[callController setCallAudioManager:cam];
+                                                                         andErrorHandler:callController.errorHandler
+                                                                          untilCancelled:lifetime];
+        [callController setCallAudioManager:cam];
         return nil;
     }];
     
@@ -96,28 +105,32 @@
         return;
     }
     
-    Contact* callingContact = [Environment.getCurrent.contactsManager latestContactForPhoneNumber:session.initiatorNumber];
-    CallController* callController = [self cancelExistingCallAndInitNewCallWork:false
-                                                                         remote:session.initiatorNumber
-                                                                optionalContact:callingContact];
-
-    TOCCancelToken* lifetime = [callController untilCancelledToken];
-    
-    TOCFuture* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
-                                                                        andCallController:callController];
-    
-    TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
-        [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
-        CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
-                                                 andErrorHandler:callController.errorHandler
-                                                  untilCancelled:lifetime];
-		[callController setCallAudioManager:cam];
-        return nil;
-    }];
-    
-    [futureStarted catchDo:^(id error) {
-        callController.errorHandler(error, nil, true);
-    }];
+    [[AppAudioManager sharedInstance] requestRequiredPermissionsIfNeededWithCompletion:^(BOOL granted) {
+        if (granted) {
+            Contact* callingContact = [Environment.getCurrent.contactsManager latestContactForPhoneNumber:session.initiatorNumber];
+            CallController* callController = [self cancelExistingCallAndInitNewCallWork:false
+                                                                                 remote:session.initiatorNumber
+                                                                        optionalContact:callingContact];
+            
+            TOCCancelToken* lifetime = [callController untilCancelledToken];
+            
+            TOCFuture* futureConnected = [CallConnectUtil asyncRespondToCallWithSessionDescriptor:session
+                                                                                andCallController:callController];
+            
+            TOCFuture* futureStarted = [futureConnected thenTry:^id(CallConnectResult* connectResult) {
+                [callController advanceCallProgressToConversingWithShortAuthenticationString:connectResult.shortAuthenticationString];
+                CallAudioManager* cam = [CallAudioManager callAudioManagerStartedWithAudioSocket:connectResult.audioSocket
+                                                                                 andErrorHandler:callController.errorHandler
+                                                                                  untilCancelled:lifetime];
+                [callController setCallAudioManager:cam];
+                return nil;
+            }];
+            
+            [futureStarted catchDo:^(id error) {
+                callController.errorHandler(error, nil, true);
+            }];
+        }
+    } incoming:YES];
 }
 -(CallController*) curCallController {
     return currentCallControllerObservable.currentValue;

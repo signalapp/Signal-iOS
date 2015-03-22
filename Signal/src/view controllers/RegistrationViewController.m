@@ -49,6 +49,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [_countryNameButton setTitle:NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"") forState:UIControlStateNormal];
     _phoneNumberTextField.placeholder  = NSLocalizedString(@"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"");
     [_phoneNumberButton setTitle:NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON",@"") forState:UIControlStateNormal];
+    [_phoneNumberButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
     [_sendCodeButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
 }
 

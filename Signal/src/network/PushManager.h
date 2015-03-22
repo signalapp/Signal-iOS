@@ -29,13 +29,6 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
 + (PushManager*)sharedManager;
 
 /**
- *  Push notification token is always registered during signup. User can however revoke notifications.
- *  Therefore, we check on startup if mandatory permissions are granted.
- */
-
-- (void)verifyPushPermissions;
-
-/**
  *  Push notification registration method
  *
  *  @param success Block to execute after succesful push notification registration

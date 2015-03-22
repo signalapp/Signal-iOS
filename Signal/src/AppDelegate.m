@@ -26,8 +26,6 @@
 #endif
 
 
-static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
-
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow            *blankWindow;
@@ -68,7 +66,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-   
     [self setupAppearance];
     
     if (getenv("runningTests_dontStartApp")) {
@@ -82,6 +79,7 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+    [Environment.getCurrent initCallListener];
     
     [[TSStorageManager sharedManager] setupDatabase];
     
@@ -119,16 +117,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
     }
     
     [self prepareScreenshotProtection];
-    
-    [Environment.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
-        if (latestCall == nil){
-            return;
-        }
-        SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
-        [vc dismissViewControllerAnimated:NO completion:nil];
-        vc.latestCall = latestCall;
-        [vc performSegueWithIdentifier:kCallSegue sender:self];
-    } onThread:NSThread.mainThread untilCancelled:nil];
     
     if ([TSAccountManager isRegistered]) {
         [TSSocketManager becomeActive];
@@ -236,9 +224,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 -(void) applicationDidBecomeActive:(UIApplication *)application {
     if ([TSAccountManager isRegistered]) {
         [TSSocketManager becomeActive];
-        [AppAudioManager.sharedInstance awake];
-        [PushManager.sharedManager verifyPushPermissions];
-        [AppAudioManager.sharedInstance requestRequiredPermissionsIfNeeded];
     }
     // Hacky way to clear notification center after processed push
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];

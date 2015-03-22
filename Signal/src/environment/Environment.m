@@ -13,6 +13,7 @@
 #import "SignalsViewController.h"
 #import "TSStorageManager.h"
 
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 #define isRegisteredUserDefaultString @"isRegistered"
 
 static Environment* environment = nil;
@@ -156,6 +157,19 @@ phoneDirectoryManager;
     NSString *serverAuth = SignalKeyingStorage.serverAuthPassword;
     
     return signalingKey && macKey && extra && serverAuth;
+}
+
+- (void)initCallListener {
+    [self.phoneManager.currentCallObservable watchLatestValue:^(CallState* latestCall) {
+        if (latestCall == nil){
+            return;
+        }
+        
+        SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
+        [vc dismissViewControllerAnimated:NO completion:nil];
+        vc.latestCall = latestCall;
+        [vc performSegueWithIdentifier:kCallSegue sender:self];
+    } onThread:NSThread.mainThread untilCancelled:nil];
 }
 
 +(PropertyListPreferences*)preferences{

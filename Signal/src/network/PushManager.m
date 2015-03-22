@@ -16,8 +16,7 @@
 @interface PushManager ()
 
 @property TOCFutureSource *registerWithServerFutureSource;
-@property UIAlertView *missingPermissionsAlertView;
-
+@property UIAlertView     *missingPermissionsAlertView;
 
 @end
 
@@ -44,18 +43,7 @@
     return self;
 }
 
-- (void)verifyPushPermissions{
-    if (self.isMissingMandatoryNotificationTypes || self.needToRegisterForRemoteNotifications){
-        [self registrationWithSuccess:^{
-            DDLogInfo(@"Re-enabled push succesfully");
-        } failure:^(NSError *error) {
-            DDLogError(@"Failed to re-register for push");
-        }];
-    }
-}
-
 - (void)registrationWithSuccess:(void (^)())success failure:(failedPushRegistrationBlock)failure{
-    
     if (!self.wantRemoteNotifications) {
         success();
         return;
@@ -68,7 +56,6 @@
         }];
     } failure:failure];
 }
-
 
 #pragma mark Private Methods
 
@@ -128,7 +115,6 @@
     }];
 }
 
-
 - (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure{
     [self registrationForPushWithSuccess:^(NSData *pushToken) {
         [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -165,11 +151,7 @@
     }];
     
     [registrerUserNotificationFuture thenDo:^(id types) {
-        if (self.isMissingMandatoryNotificationTypes) {
-            failure();
-        } else{
-            success();
-        }
+        success();
     }];
 }
 
@@ -188,20 +170,8 @@
     return YES;
 }
 
-
--(BOOL)isMissingMandatoryNotificationTypes {
-    int mandatoryTypes = self.mandatoryNotificationTypes;
-    int currentTypes = UIApplication.sharedApplication.currentUserNotificationSettings.types;
-    
-    return (mandatoryTypes & currentTypes) != mandatoryTypes;
-}
-
 -(int)allNotificationTypes{
     return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
-}
-
--(int)mandatoryNotificationTypes{
-    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound;
 }
 
 @end

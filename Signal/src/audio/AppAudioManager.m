@@ -1,7 +1,5 @@
 #import "AppAudioManager.h"
 
-#import <AVFoundation/AVAudioSession.h>
-
 #import "AudioRouter.h"
 #import "SoundBoard.h"
 #import "SoundPlayer.h"
@@ -13,7 +11,7 @@
 
 AppAudioManager*  sharedAppAudioManager;
 
-@interface AppAudioManager (){
+@interface AppAudioManager () <UIAlertViewDelegate>{
     enum AudioProfile _audioProfile;
     BOOL isSpeakerphoneActive;
 }
@@ -79,7 +77,6 @@ AppAudioManager*  sharedAppAudioManager;
     switch (progressType){
         case CallProgressType_Connecting:
             [sharedAppAudioManager setAudioEnabled:YES];
-            [_soundPlayer stopAllAudio];
         case CallProgressType_Ringing:
             (initiatedLocally) ? [self handleOutboundRing] : [self handleInboundRing];
             break;
@@ -160,13 +157,25 @@ AppAudioManager*  sharedAppAudioManager;
     return [self changeAudioSessionCategoryTo:DEFAULT_CATEGORY];
 }
 
--(void) requestRequiredPermissionsIfNeeded {
+-(void) requestRequiredPermissionsIfNeededWithCompletion:(PermissionBlock)permissionBlock incoming:(BOOL)isIncoming {
     [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
         if (!granted) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"") message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"") message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") otherButtonTitles:NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE",nil), nil];
+            
+            [alertView setDelegate:self];
+            
             [alertView show];
         }
+        
+        permissionBlock(granted);
     }];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) { // Tapped the Settings button
+        NSURL *appSettings = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+        [[UIApplication sharedApplication] openURL:appSettings];
+    }
 }
 
 -(BOOL) changeAudioSessionCategoryTo:(NSString*) category {

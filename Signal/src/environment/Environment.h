@@ -80,6 +80,8 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 
 +(BOOL)isRedPhoneRegistered;
 +(void)resetAppData;
+
+- (void)initCallListener;
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController;
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
