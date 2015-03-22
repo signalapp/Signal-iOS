@@ -239,13 +239,6 @@ typedef enum : NSUInteger {
     [_recordButton addGestureRecognizer:_recordRecognizer];
 }
 
-- (NSString *) applicationDocumentsDirectory
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
-}
-
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self initializeToolbars];
@@ -1463,6 +1456,32 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
+- (void)deleteAudioTempFile {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSError  *error;
+    [fm removeItemAtPath:[self audioFileTempPath] error:&error];
+    if (error) {
+        DDLogError(@"Failed to delete the file at temp path: %@", error.description);
+    }
+}
+
+- (NSString*)audioFileTempPath {
+    NSFileManager *fm         = [NSFileManager defaultManager];
+    NSArray  *cachesDirs      = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cachesPath      = [cachesDirs  objectAtIndex:0];
+    NSError  *error;
+    
+    if (![fm fileExistsAtPath:cachesPath]) {
+        [fm createDirectoryAtPath:cachesPath withIntermediateDirectories:YES attributes:@{} error:&error];
+    }
+    
+    if (error) {
+        DDLogError(@"Failed to create caches directory with error: %@", error.description);
+    }
+    
+    return [cachesPath stringByAppendingPathComponent:@"tempRecording.mp4"];
+}
+
 - (void)recording:(UILongPressGestureRecognizer*)recordRecognizer {
     if (recordRecognizer.state == UIGestureRecognizerStateBegan) {
         self.inputToolbar.contentView.textView.hidden = YES;
@@ -1501,8 +1520,7 @@ typedef enum : NSUInteger {
         [_recorderContainer addSubview:_audioRecorderPlot];
         [self.inputToolbar.contentView addSubview:_recorderContainer];
         
-        NSString *documentsDir = [self applicationDocumentsDirectory];
-        NSString *audioFile = [documentsDir stringByAppendingString:@"/audiofile.mp4"];
+        NSString *audioFile = [self audioFileTempPath];
         
         [EZMicrophone sharedMicrophone].microphoneDelegate = self;
         [_audioPlayer stop];
@@ -1567,12 +1585,9 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView addSubview:_recordCancelButton];
     [_recordButton removeFromSuperview];
     
-    NSString *documentsDir = [self applicationDocumentsDirectory];
-    _waveformAudioFile = [NSURL fileURLWithPath:[documentsDir stringByAppendingString:@"/audiofile.mp4"]];
-    NSLog(@"file: %@", _waveformAudioFile);
+    _waveformAudioFile = [NSURL fileURLWithPath:[self audioFileTempPath]];
     [self.recorder closeAudioFile];
     EZAudioFile *ezAudioFile = [EZAudioFile audioFileWithURL:_waveformAudioFile];
-    NSLog(@"audio file: %@", _waveformAudioFile);
     [ezAudioFile getWaveformDataWithCompletionBlock:^(float *waveformData, UInt32 length) {
         [_audioRecorderPlot generateWaveform:waveformData length:(int)length];
     }];
@@ -1591,7 +1606,11 @@ typedef enum : NSUInteger {
         _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:_waveformAudioFile error:&error];
         _audioPlayer.currentTime = _composeWaveformCurrentTime;
         [_audioPlayer play];
-        _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05 target:self selector:@selector(audioPlayerUpdated:) userInfo:@{@"compose": @YES} repeats:YES];
+        _audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05
+                                                              target:self
+                                                            selector:@selector(audioPlayerUpdated:)
+                                                            userInfo:@{@"compose": @YES}
+                                                             repeats:YES];
         //iterate through all media adapters and reset them to 0 and change the icon.
         
         
@@ -1632,7 +1651,6 @@ typedef enum : NSUInteger {
 
 - (void)updateWaveformLabel:(id)sender {
     NSTimeInterval interval = fabs([_recorderStartedTime timeIntervalSinceNow]);
-    NSLog(@"interval: %f", interval);
     _audioRecorderTimerLabel.text = [self formatDuration:interval];
 }
 
@@ -1644,6 +1662,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
     [self.inputToolbar.contentView addSubview:_recordButton];
     _waveformInComposeWindow = NO;
+    [self deleteAudioTempFile];
 }
 
 -(void) microphone:(EZMicrophone *)microphone
