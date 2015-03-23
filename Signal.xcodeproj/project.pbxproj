@@ -938,7 +938,6 @@
 		B640C4761A477B0F005C7C8A /* TSAttachementsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachementsTest.m; sourceTree = "<group>"; };
 		B646D10E1AA5461A004133BA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = translations/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D10F1AA54626004133BA /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = translations/fil.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B646D1121AA5465E004133BA /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1131AA54667004133BA /* hi_IN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi_IN; path = translations/hi_IN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1141AA54674004133BA /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = translations/hu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1151AA5467E004133BA /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = translations/it_IT.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -979,7 +978,6 @@
 		B68CB7E61AA548870065AC3F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = translations/zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDatabaseSecondaryIndexes.h; sourceTree = "<group>"; };
 		B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDatabaseSecondaryIndexes.m; sourceTree = "<group>"; };
-		B69C2D161AA5444000A640C2 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D171AA5445000A640C2 /* az_AZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az_AZ; path = translations/az_AZ.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D181AA5445F00A640C2 /* bg_BG */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg_BG; path = translations/bg_BG.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D191AA5446C00A640C2 /* bs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bs; path = translations/bs.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2746,7 +2744,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				ar,
 				az_AZ,
 				bg_BG,
 				bs,
@@ -2760,7 +2757,6 @@
 				fi,
 				fr,
 				fil,
-				he,
 				hi_IN,
 				hu,
 				it_IT,
@@ -3408,7 +3404,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				B6F509961AA53F760068F56A /* en */,
-				B69C2D161AA5444000A640C2 /* ar */,
 				B69C2D171AA5445000A640C2 /* az_AZ */,
 				B69C2D181AA5445F00A640C2 /* bg_BG */,
 				B69C2D191AA5446C00A640C2 /* bs */,
@@ -3422,7 +3417,6 @@
 				B63FBC9E1AA545CB00548746 /* fi */,
 				B646D10E1AA5461A004133BA /* fr */,
 				B646D10F1AA54626004133BA /* fil */,
-				B646D1121AA5465E004133BA /* he */,
 				B646D1131AA54667004133BA /* hi_IN */,
 				B646D1141AA54674004133BA /* hu */,
 				B646D1151AA5467E004133BA /* it_IT */,
