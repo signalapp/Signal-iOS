@@ -1662,6 +1662,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
     [self.inputToolbar.contentView addSubview:_recordButton];
     _waveformInComposeWindow = NO;
+    _composeWaveformCurrentTime = 0;
     [self deleteAudioTempFile];
 }
 
