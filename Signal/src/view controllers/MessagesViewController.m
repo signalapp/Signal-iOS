@@ -236,6 +236,8 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.leftBarButtonItem  = _attachButton;
     
     _recordRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(recording:)];
+    _recordRecognizer.minimumPressDuration = .25;
+    _recordRecognizer.allowableMovement = 60;
     [_recordButton addGestureRecognizer:_recordRecognizer];
 }
 
@@ -1662,6 +1664,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
     [self.inputToolbar.contentView addSubview:_recordButton];
     _waveformInComposeWindow = NO;
+    _composeWaveformCurrentTime = 0;
     [self deleteAudioTempFile];
 }
 
