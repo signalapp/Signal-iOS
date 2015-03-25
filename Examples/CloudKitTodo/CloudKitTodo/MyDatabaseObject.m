@@ -493,7 +493,10 @@
 	// }
 	
 	NSString *localKey = [self localKeyForCloudKey:cloudKey];
-	[self setValue:cloudValue forKey:localKey];
+	if (localKey)
+	{
+		[self setValue:cloudValue forKey:localKey];
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -56,27 +56,13 @@ static NSString *const k_lastModified = @"lastModified";
 	{
 		uuid = record.recordID.recordName;
 		
-		// Notes:
-		//
-		// The CloudKey macro translates as follows:
-		//
-		// - CloudKey(title)        => @"title"
-		// - CloudKey(priority)     => @"priority"
-		// - CloudKey(isDone)       => @"isDone"
-		// - CloudKey(creationDate) => @"created"       // <-- notice the difference here
-		// - CloudKey(lastModified) => @"lastModified"
-		
-		NSArray *cloudKeys = @[
-		  CloudKey(title),
-		  CloudKey(priority),
-		  CloudKey(isDone),
-		  CloudKey(creationDate),
-		  CloudKey(lastModified)
-		];
-		
+		NSSet *cloudKeys = self.allCloudProperties;
 		for (NSString *cloudKey in cloudKeys)
 		{
-			[self setLocalValueFromCloudValue:[record objectForKey:cloudKey] forCloudKey:cloudKey];
+			if (![cloudKey isEqualToString:@"uuid"])
+			{
+				[self setLocalValueFromCloudValue:[record objectForKey:cloudKey] forCloudKey:cloudKey];
+			}
 		}
 	}
 	return self;

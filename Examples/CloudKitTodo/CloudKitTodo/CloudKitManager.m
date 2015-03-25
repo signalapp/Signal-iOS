@@ -112,11 +112,45 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * This method should only be called once.
+ * Thereafter, call contineCloudKitFlow.
+**/
+- (void)configureCloudKit
+{
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	// Set initial values
+	// (by checking database to see if we've flagged them as complete from previous app run)
+	
+	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit])
+		{
+			self.needsCreateZone = NO;
+			[MyDatabaseManager.cloudKitExtension resume];
+		}
+		if ([transaction hasObjectForKey:Key_HasZoneSubscription inCollection:Collection_CloudKit])
+		{
+			self.needsCreateZoneSubscription = NO;
+			[MyDatabaseManager.cloudKitExtension resume];
+		}
+	}];
+	
+	[self continueCloudKitFlow];
+}
+
 - (void)continueCloudKitFlow
 {
-	if (self.needsCreateZone || self.needsCreateZoneSubscription)
+	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
+	
+	if (self.needsCreateZone)
 	{
-		[self configureCloudKit];
+		[self createZone];
+	}
+	else if (self.needsCreateZoneSubscription)
+	{
+		[self createZoneSubscription];
 	}
 	else if (self.needsFetchRecordChangesAfterAppLaunch)
 	{
@@ -206,44 +240,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 #pragma mark App Launch
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)configureCloudKit
-{
-	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
-	
-	static BOOL isFirstTimeMethodRun = YES;
-	if (isFirstTimeMethodRun)
-	{
-		// Set initial values
-		// (by checking database to see if we've flagged them as complete from previous app run)
-		
-		[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-			
-			if ([transaction hasObjectForKey:Key_HasZone inCollection:Collection_CloudKit]) {
-				self.needsCreateZone = NO;
-			}
-			if ([transaction hasObjectForKey:Key_HasZoneSubscription inCollection:Collection_CloudKit]) {
-				self.needsCreateZoneSubscription = NO;
-			}
-		}];
-	}
-	
-	if (self.needsCreateZone) {
-		[self createZone];
-	}
-	else if (isFirstTimeMethodRun) {
-		[MyDatabaseManager.cloudKitExtension resume];
-	}
-	
-	if (self.needsCreateZoneSubscription) {
-		[self createZoneSubscription];
-	}
-	else if (isFirstTimeMethodRun) {
-		[MyDatabaseManager.cloudKitExtension resume];
-	}
-	
-	isFirstTimeMethodRun = NO;
-}
-
 - (void)createZone
 {
 	dispatch_async(setupQueue, ^{ @autoreleasepool {
@@ -318,6 +314,9 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 				[transaction setObject:@(YES) forKey:Key_HasZone inCollection:Collection_CloudKit];
 			}];
+			
+			// Continue setup
+			[self continueCloudKitFlow];
 		}
 		
 		dispatch_resume(setupQueue);
@@ -380,8 +379,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				[transaction setObject:@(YES) forKey:Key_HasZoneSubscription inCollection:Collection_CloudKit];
 			}];
 			
-			// We're ready for the initial fetchRecordChanges post app-launch.
-			[self fetchRecordChangesAfterAppLaunch];
+			// Continue setup
+			[self continueCloudKitFlow];
 		}
 		
 		dispatch_resume(setupQueue);
