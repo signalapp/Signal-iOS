@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2979B2FA1AC70A5900F606FD /* YapMurmurHash.m in Sources */ = {isa = PBXBuildFile; fileRef = 2979B2F91AC70A5900F606FD /* YapMurmurHash.m */; };
 		D80C9C4C1AB208FB00AF7F29 /* NSDictionary+YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = D80C9C371AB208FB00AF7F29 /* NSDictionary+YapDatabase.m */; };
 		D80C9C4D1AB208FB00AF7F29 /* YapDatabaseConnectionDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = D80C9C391AB208FB00AF7F29 /* YapDatabaseConnectionDefaults.m */; };
 		D80C9C4E1AB208FB00AF7F29 /* YapDatabaseConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = D80C9C3B1AB208FB00AF7F29 /* YapDatabaseConnectionState.m */; };
@@ -89,6 +90,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2979B2F81AC70A5900F606FD /* YapMurmurHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMurmurHash.h; sourceTree = "<group>"; };
+		2979B2F91AC70A5900F606FD /* YapMurmurHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMurmurHash.m; sourceTree = "<group>"; };
 		D80C9C361AB208FB00AF7F29 /* NSDictionary+YapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+YapDatabase.h"; sourceTree = "<group>"; };
 		D80C9C371AB208FB00AF7F29 /* NSDictionary+YapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+YapDatabase.m"; sourceTree = "<group>"; };
 		D80C9C381AB208FB00AF7F29 /* YapDatabaseConnectionDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionDefaults.h; sourceTree = "<group>"; };
@@ -633,6 +636,8 @@
 		DC882C161926C4C3004C3166 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				2979B2F81AC70A5900F606FD /* YapMurmurHash.h */,
+				2979B2F91AC70A5900F606FD /* YapMurmurHash.m */,
 				D80C9C561AB2090A00AF7F29 /* YapCache.h */,
 				D80C9C571AB2090A00AF7F29 /* YapCache.m */,
 				D80C9C581AB2090A00AF7F29 /* YapCollectionKey.h */,
@@ -726,6 +731,7 @@
 			files = (
 				D80C9CC31AB209D000AF7F29 /* YapDatabaseViewTypes.m in Sources */,
 				D80C9C6D1AB2091A00AF7F29 /* YapDatabase.m in Sources */,
+				2979B2FA1AC70A5900F606FD /* YapMurmurHash.m in Sources */,
 				D80C9C6E1AB2091A00AF7F29 /* YapDatabaseConnection.m in Sources */,
 				DC882C351926C4C3004C3166 /* YapDatabaseSearchResultsView.m in Sources */,
 				D80C9CAB1AB209B000AF7F29 /* YapDatabaseViewState.m in Sources */,
