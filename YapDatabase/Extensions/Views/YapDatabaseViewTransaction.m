@@ -38,41 +38,7 @@
 **/
 #define YAP_DATABASE_VIEW_MAX_PAGE_SIZE 50
 
-/**
- * ARCHITECTURE OVERVIEW:
- *
- * A YapDatabaseView allows one to store a ordered array of collection/key tuples.
- * Furthermore, groups are supported, which means there may be multiple ordered arrays of tuples, one per group.
- *
- * Conceptually this is a very simple concept.
- * But obviously there are memory and performance requirements that add complexity.
- *
- * The view creates two database tables:
- *
- * view_name_key:
- * - collection (string) : from the database table
- * - key        (string) : from the database table
- * - pageKey    (string) : the primary key in the page table
- *
- * view_name_page:
- * - pageKey  (string, primary key) : a uuid
- * - data     (blob)                : an array of collection/key tuples (the page)
- * - metadata (blob)                : a YapDatabaseViewPageMetadata object
- *
- * For both tables "name" is replaced by the registered name of the view.
- *
- * Thus, given a key, we can quickly identify if the key exists in the view (via the key table).
- * And if so we can use the associated pageKey to figure out the group and index of the key.
- *
- * When we open the view, we read all the metadata objects from the page table into memory.
- * We use the metadata to create the two primary data structures:
- *
- * - group_pagesMetadata_dict (NSMutableDictionary) : key(group), value(array of YapDatabaseViewPageMetadata objects)
- * - pageKey_group_dict       (NSMutableDictionary) : key(pageKey), value(group)
- *
- * Given a group, we can use the group_pages_dict to find the associated array of pages (and metadata for each page).
- * Given a pageKey, we can use the pageKey_group_dict to quickly find the associated group.
-**/
+
 @implementation YapDatabaseViewTransaction
 
 - (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
