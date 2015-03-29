@@ -25,12 +25,6 @@
 **/
 @interface YapDatabaseView : YapDatabaseExtension
 
-/* Inherited from YapDatabaseExtension
- 
-@property (nonatomic, strong, readonly) NSString *registeredName;
-
-*/
-
 /**
  * See the wiki for an example of how to initialize a view:
  * https://github.com/yapstudios/YapDatabase/wiki/Views#wiki-initializing_a_view

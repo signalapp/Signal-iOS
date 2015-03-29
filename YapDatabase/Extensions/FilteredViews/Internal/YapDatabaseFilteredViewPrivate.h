@@ -4,6 +4,18 @@
 
 #import "YapDatabaseViewPrivate.h"
 
+
+/**
+ * Keys for yap2 extension configuration table.
+**/
+
+// Defined in YapDatabaseViewPrivate.h
+//
+//static NSString *const ext_key_classVersion = @"classVersion";
+//static NSString *const ext_key_versionTag   = @"versionTag";
+
+static NSString *const ext_key_parentViewName = @"parentViewName";
+
 /**
  * Changeset keys (for changeset notification dictionary)
 **/

@@ -29,10 +29,6 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-static NSString *const ExtKey_classVersion       = @"classVersion";
-static NSString *const ExtKey_versionTag         = @"versionTag";
-static NSString *const ExtKey_version_deprecated = @"version";
-
 /**
  * The view is tasked with storing ordered arrays of keys.
  * In doing so, it splits the array into "pages" of keys,
@@ -130,12 +126,12 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
 		
-		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:NO];
+		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:NO];
 		
 		// If there was a previously registered persistent view with this name,
 		// then we should drop those tables from the database.
 		
-		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ExtKey_classVersion persistent:YES];
+		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ext_key_classVersion persistent:YES];
 		if (dropPersistentTables)
 		{
 			[[viewConnection->view class]
@@ -163,7 +159,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		int oldClassVersion = 0;
 		BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion
-		                            forExtensionKey:ExtKey_classVersion persistent:YES];
+		                            forExtensionKey:ext_key_classVersion persistent:YES];
 		
 		if (!hasOldClassVersion)
 		{
@@ -203,13 +199,13 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			// Check user-supplied config version.
 			// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 			
-			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+			oldVersionTag = [self stringValueForExtensionKey:ext_key_versionTag persistent:YES];
 			
 			if (oldVersionTag == nil)
 			{
 				int oldVersion_deprecated = 0;
 				hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
-				                             forExtensionKey:ExtKey_version_deprecated persistent:YES];
+				                             forExtensionKey:ext_key_version_deprecated persistent:YES];
 				
 				if (hasOldVersion_deprecated)
 				{
@@ -233,17 +229,17 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		// Update yap2 table values (if needed)
 		
 		if (!hasOldClassVersion || (oldClassVersion != classVersion)) {
-			[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+			[self setIntValue:classVersion forExtensionKey:ext_key_classVersion persistent:YES];
 		}
 		
 		if (hasOldVersion_deprecated)
 		{
-			[self removeValueForExtensionKey:ExtKey_version_deprecated persistent:YES];
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self removeValueForExtensionKey:ext_key_version_deprecated persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 		}
 		else if (![oldVersionTag isEqualToString:versionTag])
 		{
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 		}
 		
 		return YES;
@@ -4308,7 +4304,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 **/
 - (NSString *)versionTag
 {
-	return [self stringValueForExtensionKey:ExtKey_versionTag persistent:[self isPersistentView]];
+	return [self stringValueForExtensionKey:ext_key_versionTag persistent:[self isPersistentView]];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5056,7 +5052,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 	[self repopulateView];
 	
 	[self setStringValue:newVersionTag
-	     forExtensionKey:ExtKey_versionTag
+	     forExtensionKey:ext_key_versionTag
 	          persistent:[self isPersistentView]];
 	
 	// Notify any extensions dependent upon this one that we repopulated.

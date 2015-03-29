@@ -19,9 +19,9 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-static NSString *const ExtKey_classVersion       = @"classVersion";
-static NSString *const ExtKey_versionTag         = @"versionTag";
-static NSString *const ExtKey_version_deprecated = @"version";
+static NSString *const ext_key__classVersion       = @"classVersion";
+static NSString *const ext_key__versionTag         = @"versionTag";
+static NSString *const ext_key__version_deprecated = @"version";
 
 
 @implementation YapDatabaseFullTextSearchTransaction
@@ -50,7 +50,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 - (BOOL)createIfNeeded
 {
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ext_key__classVersion persistent:YES];
 	int classVersion = YAP_DATABASE_FTS_CLASS_VERSION;
 	
 	if (oldClassVersion != classVersion)
@@ -64,10 +64,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		if (![self createTable]) return NO;
 		if (![self populate]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+		[self setIntValue:classVersion forExtensionKey:ext_key__classVersion persistent:YES];
 		
 		NSString *versionTag = ftsConnection->fts->versionTag;
-		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		[self setStringValue:versionTag forExtensionKey:ext_key__versionTag persistent:YES];
 	}
 	else
 	{
@@ -76,14 +76,14 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		NSString *versionTag = ftsConnection->fts->versionTag;
 		
-		NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+		NSString *oldVersionTag = [self stringValueForExtensionKey:ext_key__versionTag persistent:YES];
 		
 		BOOL hasOldVersion_deprecated = NO;
 		if (oldVersionTag == nil)
 		{
 			int oldVersion_deprecated = 0;
 			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
-			                             forExtensionKey:ExtKey_version_deprecated
+			                             forExtensionKey:ext_key__version_deprecated
 			                                  persistent:YES];
 			
 			if (hasOldVersion_deprecated)
@@ -98,15 +98,15 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			if (![self createTable]) return NO;
 			if (![self populate]) return NO;
 			
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key__versionTag persistent:YES];
 			
 			if (hasOldVersion_deprecated)
-				[self removeValueForExtensionKey:ExtKey_version_deprecated persistent:YES];
+				[self removeValueForExtensionKey:ext_key__version_deprecated persistent:YES];
 		}
 		else if (hasOldVersion_deprecated)
 		{
-			[self removeValueForExtensionKey:ExtKey_version_deprecated persistent:YES];
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self removeValueForExtensionKey:ext_key__version_deprecated persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key__versionTag persistent:YES];
 		}
 	}
 	

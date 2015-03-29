@@ -37,7 +37,6 @@
 static NSUInteger const UNLIMITED_CACHE_LIMIT = 0;
 static NSUInteger const MIN_KEY_CACHE_LIMIT   = 500;
 
-static NSString *const ExtKey_class = @"class";
 
 typedef BOOL (*IMP_NSThread_isMainThread)(id, SEL);
 static IMP_NSThread_isMainThread ydb_NSThread_isMainThread;
@@ -4256,7 +4255,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	BOOL wasPersistent;
 	
 	YapMemoryTableTransaction *memoryTableTransaction = [transaction yapMemoryTableTransaction];
-	YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
+	YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ext_key_class];
 	
 	className = [memoryTableTransaction objectForKey:classKey];
 	if (className)
@@ -4265,7 +4264,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	}
 	else
 	{
-		className = [transaction stringValueForKey:ExtKey_class extension:extensionName];
+		className = [transaction stringValueForKey:ext_key_class extension:extensionName];
 		wasPersistent = YES;
 	}
 	
@@ -4354,7 +4353,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	//
 	// Note: @"class" is a reserved key for all extensions.
 	
-	NSString *prevExtensionClassName = [transaction stringValueForKey:ExtKey_class extension:extensionName];
+	NSString *prevExtensionClassName = [transaction stringValueForKey:ext_key_class extension:extensionName];
 	if (prevExtensionClassName == nil)
 	{
 		// First time registration
@@ -4423,11 +4422,11 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		if ([extension isPersistent])
 		{
-			[transaction setStringValue:extensionClassName forKey:ExtKey_class extension:extensionName];
+			[transaction setStringValue:extensionClassName forKey:ext_key_class extension:extensionName];
 		}
 		else
 		{
-			YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ExtKey_class];
+			YapCollectionKey *classKey = [[YapCollectionKey alloc] initWithCollection:extensionName key:ext_key_class];
 			[[transaction yapMemoryTableTransaction] setObject:extensionClassName forKey:classKey];
 		}
 	}

@@ -21,9 +21,9 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-static NSString *const ExtKey_classVersion       = @"classVersion";
-static NSString *const ExtKey_versionTag         = @"versionTag";
-static NSString *const ExtKey_version_deprecated = @"version";
+static NSString *const ext_key_classVersion       = @"classVersion";
+static NSString *const ext_key_versionTag         = @"versionTag";
+static NSString *const ext_key_version_deprecated = @"version";
 
 
 @implementation YapDatabaseSecondaryIndexTransaction
@@ -52,7 +52,7 @@ static NSString *const ExtKey_version_deprecated = @"version";
 - (BOOL)createIfNeeded
 {
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ext_key_classVersion persistent:YES];
 	
 	int classVersion = YAP_DATABASE_SECONDARY_INDEX_CLASS_VERSION;
 	
@@ -67,10 +67,10 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		if (![self createTable]) return NO;
 		if (![self populate]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+		[self setIntValue:classVersion forExtensionKey:ext_key_classVersion persistent:YES];
 		
 		NSString *versionTag = secondaryIndexConnection->secondaryIndex->versionTag;
-		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 	}
 	else
 	{
@@ -79,14 +79,14 @@ static NSString *const ExtKey_version_deprecated = @"version";
 		
 		NSString *versionTag = secondaryIndexConnection->secondaryIndex->versionTag;
 		
-		NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+		NSString *oldVersionTag = [self stringValueForExtensionKey:ext_key_versionTag persistent:YES];
 		
 		BOOL hasOldVersion_deprecated = NO;
 		if (oldVersionTag == nil)
 		{
 			int oldVersion_deprecated = 0;
 			hasOldVersion_deprecated = [self getIntValue:&oldVersion_deprecated
-			                             forExtensionKey:ExtKey_version_deprecated persistent:YES];
+			                             forExtensionKey:ext_key_version_deprecated persistent:YES];
 			
 			if (hasOldVersion_deprecated)
 			{
@@ -100,15 +100,15 @@ static NSString *const ExtKey_version_deprecated = @"version";
 			if (![self createTable]) return NO;
 			if (![self populate]) return NO;
 			
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 			
 			if (hasOldVersion_deprecated)
-				[self removeValueForExtensionKey:ExtKey_version_deprecated persistent:YES];
+				[self removeValueForExtensionKey:ext_key_version_deprecated persistent:YES];
 		}
 		else if (hasOldVersion_deprecated)
 		{
-			[self removeValueForExtensionKey:ExtKey_version_deprecated persistent:YES];
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self removeValueForExtensionKey:ext_key_version_deprecated persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 		}
 		
 		// The following code is designed to assist developers in understanding extension changes.

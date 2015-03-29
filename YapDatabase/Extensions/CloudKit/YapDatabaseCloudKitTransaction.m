@@ -21,9 +21,16 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-static NSString *const ExtKey_classVersion = @"classVersion";
-static NSString *const ExtKey_versionTag   = @"versionTag";
+/**
+ * Keys for yap2 extension configuration table.
+**/
+static NSString *const ext_key_classVersion = @"classVersion";
+static NSString *const ext_key_versionTag   = @"versionTag";
 
+/**
+ * Flags for the processRecord: method,
+ * which handles the logic for processing records returned by the recordHandlerBlock.
+**/
 typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	YDBCK_skipUploadRecord   = 1 << 0,
 	YDBCK_skipUploadDeletion = 1 << 1,
@@ -31,8 +38,10 @@ typedef NS_OPTIONS(NSUInteger, YDBCKProcessRecordBitMask) {
 	YDBCK_remoteMerge        = 1 << 3,
 };
 
-@implementation YapDatabaseCloudKitTransaction
-{
+
+@implementation YapDatabaseCloudKitTransaction {
+@private
+	
 	NSSet *rowidsInMidMerge;
 }
 
@@ -91,9 +100,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	// - hasOldClassVersion - will be YES if the extension exists from a previous run of the app
 	
 	int oldClassVersion = 0;
-	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ExtKey_classVersion persistent:YES];
+	BOOL hasOldClassVersion = [self getIntValue:&oldClassVersion forExtensionKey:ext_key_classVersion persistent:YES];
 	
-	NSString *oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+	NSString *oldVersionTag = [self stringValueForExtensionKey:ext_key_versionTag persistent:YES];
 	
 	if (!hasOldClassVersion)
 	{
@@ -103,8 +112,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		if (![self createNewMasterChangeQueue]) return NO;
 		if (![self populateTables]) return NO;
 		
-		[self setIntValue:classVersion forExtensionKey:ExtKey_classVersion persistent:YES];
-		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		[self setIntValue:classVersion forExtensionKey:ext_key_classVersion persistent:YES];
+		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 	}
 	else if (!ClassVersionsAreCompatible(oldClassVersion, classVersion))
 	{
@@ -127,7 +136,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		if (![self restoreMasterChangeQueue]) return NO;
 		if (![self repopulateTables]) return NO;
 		
-		[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 	}
 	else
 	{

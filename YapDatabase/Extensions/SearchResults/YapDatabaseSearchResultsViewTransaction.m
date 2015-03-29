@@ -25,10 +25,9 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
-static NSString *const ExtKey_superclassVersion = @"viewClassVersion";
-static NSString *const ExtKey_subclassVersion   = @"searchResultViewClassVersion";
-static NSString *const ExtKey_versionTag        = @"versionTag";
-static NSString *const ExtKey_query             = @"query";
+static NSString *const ext_key_superclassVersion = @"viewClassVersion";
+static NSString *const ext_key_subclassVersion   = @"searchResultViewClassVersion";
+static NSString *const ext_key_query             = @"query";
 
 
 @implementation YapDatabaseSearchResultsViewTransaction
@@ -85,7 +84,7 @@ static NSString *const ExtKey_query             = @"query";
 		// If there was a previously registered persistent view with this name,
 		// then we should drop those tables from the database.
 		
-		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ExtKey_superclassVersion persistent:YES];
+		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ext_key_superclassVersion persistent:YES];
 		if (dropPersistentTables)
 		{
 			[[viewConnection->view class]
@@ -117,12 +116,12 @@ static NSString *const ExtKey_query             = @"query";
 		
 		int oldSuperclassVersion = 0;
 		BOOL hasOldSuperclassVersion = [self getIntValue:&oldSuperclassVersion
-		                                 forExtensionKey:ExtKey_superclassVersion
+		                                 forExtensionKey:ext_key_superclassVersion
 		                                      persistent:YES];
 		
 		int oldSubclassVersion = 0;
 		BOOL hasOldSubclassVersion = [self getIntValue:&oldSubclassVersion
-		                               forExtensionKey:ExtKey_subclassVersion
+		                               forExtensionKey:ext_key_subclassVersion
 		                                    persistent:YES];
 		
 		if (!hasOldSuperclassVersion || !hasOldSuperclassVersion)
@@ -165,7 +164,7 @@ static NSString *const ExtKey_query             = @"query";
 			// Check versionTag.
 			// We need to re-populate the database if it changed.
 			
-			oldVersionTag = [self stringValueForExtensionKey:ExtKey_versionTag persistent:YES];
+			oldVersionTag = [self stringValueForExtensionKey:ext_key_versionTag persistent:YES];
 			
 			if (![oldVersionTag isEqualToString:versionTag])
 			{
@@ -183,15 +182,15 @@ static NSString *const ExtKey_query             = @"query";
 		// Update yap2 table values (if needed)
 		
 		if (!hasOldSuperclassVersion || (oldSuperclassVersion != superclassVersion)) {
-			[self setIntValue:superclassVersion forExtensionKey:ExtKey_superclassVersion persistent:YES];
+			[self setIntValue:superclassVersion forExtensionKey:ext_key_superclassVersion persistent:YES];
 		}
 		
 		if (!hasOldSubclassVersion || (oldSubclassVersion != subclassVersion)) {
-			[self setIntValue:subclassVersion forExtensionKey:ExtKey_subclassVersion persistent:YES];
+			[self setIntValue:subclassVersion forExtensionKey:ext_key_subclassVersion persistent:YES];
 		}
 		
 		if (![oldVersionTag isEqualToString:versionTag]) {
-			[self setStringValue:versionTag forExtensionKey:ExtKey_versionTag persistent:YES];
+			[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 		}
 		
 		return YES;
@@ -218,7 +217,7 @@ static NSString *const ExtKey_query             = @"query";
 	
 	if ([searchResultsConnection query] == nil)
 	{
-		NSString *query = [self stringValueForExtensionKey:ExtKey_query persistent:[self isPersistentView]];
+		NSString *query = [self stringValueForExtensionKey:ext_key_query persistent:[self isPersistentView]];
 		[searchResultsConnection setQuery:query isChange:NO];
 	}
 	
@@ -971,7 +970,7 @@ static NSString *const ExtKey_query             = @"query";
 	
 	if (queryChanged)
 	{
-		[self setStringValue:query forExtensionKey:ExtKey_query persistent:[self isPersistentView]];
+		[self setStringValue:query forExtensionKey:ext_key_query persistent:[self isPersistentView]];
 	}
 	
 	// This must be done LAST.
