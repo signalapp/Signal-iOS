@@ -127,4 +127,26 @@ __attribute((deprecated("Use method initWithGrouping:sorting:versionTag:options:
 **/
 @property (nonatomic, copy, readonly) YapDatabaseViewOptions *options;
 
+/**
+ * Allows you to fetch the versionTag from a view that was registered during the last app launch.
+ * 
+ * For example, let's say you have a view that sorts contacts.
+ * And you support 2 different sort options:
+ * - First, Last
+ * - Last, First
+ * 
+ * To support this, you use 2 different versionTags:
+ * - "First,Last"
+ * - "Last,First"
+ * 
+ * And you want to ensure that when you first register the view (during app launch),
+ * you choose the same block & versionTag from a previous app launch (if possible).
+ * This prevents the view from enumerating the database & re-populating itself
+ * during registration if the versionTag is different from last time.
+ * 
+ * So you can use this method to fetch the previous versionTag.
+**/
++ (NSString *)previousVersionTagForRegisteredViewName:(NSString *)name
+                                      withTransaction:(YapDatabaseReadTransaction *)transaction;
+
 @end

@@ -85,6 +85,62 @@
 	return [NSString stringWithFormat:@"view_%@_pageMetadata", registeredName];
 }
 
+/**
+ * Allows you to fetch the versionTag from a view that was registered during the last app launch.
+ * 
+ * For example, let's say you have a view that sorts contacts.
+ * And you support 2 different sort options:
+ * - First, Last
+ * - Last, First
+ * 
+ * To support this, you use 2 different versionTags:
+ * - "First,Last"
+ * - "Last,First"
+ * 
+ * And you want to ensure that when you first register the view (during app launch),
+ * you choose the same block & versionTag from a previous app launch (if possible).
+ * This prevents the view from enumerating the database & re-populating itself
+ * during registration if the versionTag is different from last time.
+ * 
+ * So you can use this method to fetch the previous versionTag.
+**/
++ (NSString *)previousVersionTagForRegisteredViewName:(NSString *)registeredName
+                                      withTransaction:(YapDatabaseReadTransaction *)transaction
+{
+	NSString *prevVersionTag = [transaction stringValueForKey:ext_key_versionTag extension:registeredName];
+	
+	if (prevVersionTag == nil)
+	{
+		NSString *prevClassName = [transaction stringValueForKey:ext_key_class extension:registeredName];
+		
+		if ([prevClassName isEqualToString:@"YapDatabaseFilteredView"])
+		{
+			NSString *prevTag_deprecated =
+			  [transaction stringValueForKey:ext_key_tag_deprecated extension:registeredName];
+			
+			if (prevTag_deprecated)
+			{
+				prevVersionTag = prevTag_deprecated;
+			}
+		}
+		else
+		{
+			int prevVersion_deprecated = 0;
+			BOOL hasPrevVersion_deprecated = [transaction getIntValue:&prevVersion_deprecated
+			                                                   forKey:ext_key_version_deprecated
+			                                                extension:registeredName];
+			
+			if (hasPrevVersion_deprecated)
+			{
+				prevVersionTag = [NSString stringWithFormat:@"%d", prevVersion_deprecated];
+			}
+		}
+		
+	}
+	
+	return prevVersionTag;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
