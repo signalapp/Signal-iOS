@@ -889,7 +889,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock block =
 			  (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
 			
-			metadata = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
+			metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 			block(secondaryIndexConnection->blockDict, collection, key, object, metadata);
 		}
 		
