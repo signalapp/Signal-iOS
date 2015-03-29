@@ -118,7 +118,7 @@
 - (NSAttributedString *)dateAttributedString:(NSDate *)date {
     NSString *timeString;
     
-    if ([date timeIntervalSinceNow] > (- 60 * 60 * 24)) {
+    if ([DateUtil dateIsToday:date]) {
         timeString = [[DateUtil timeFormatter] stringFromDate:date];
     } else {
         
