@@ -56,7 +56,7 @@ AppDelegate *TheAppDelegate;
 - (NSString *)databasePath
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+	NSString *baseDir = ([paths count] > 0) ? paths[0] : NSTemporaryDirectory();
 	
 	NSString *databaseName = @"database.sqlite";
 	
@@ -83,44 +83,33 @@ AppDelegate *TheAppDelegate;
 	// https://github.com/yaptv/YapDatabase/wiki/Views
 	
 	DDLogVerbose(@"Creating view...");
-	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewGroupingWithKeyBlock groupingBlock;
-	
-	YapDatabaseViewBlockType sortingBlockType;
-	YapDatabaseViewSortingWithObjectBlock sortingBlock;
-	
-	groupingBlockType = YapDatabaseViewBlockTypeWithKey;
-	groupingBlock = ^NSString *(NSString *collection, NSString *key)
-	{
-		// The grouping block is used to:
-		// - filter items that we don't want in the view
-		// - place items into specific groups (which can be used as sections in a tableView, for example)
-		//
-		// In this examle, we're only storing one kind of object into the database: Person objects.
-		// And we want to display them all in the same section.
-		
-		return @"all";
-	};
-	
-	sortingBlockType = YapDatabaseViewBlockTypeWithObject;
-	sortingBlock = ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                                  NSString *collection2, NSString *key2, id obj2)
-	{
-		// The sorting block is used to sort items within their group/section.
-		
-		__unsafe_unretained Person *person1 = (Person *)obj1;
-		__unsafe_unretained Person *person2 = (Person *)obj2;
-		
-		return [person1.name compare:person2.name options:NSLiteralSearch];
-	};
-	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGroupingBlock:groupingBlock
-	                               groupingBlockType:groupingBlockType
-	                                    sortingBlock:sortingBlock
-	                                sortingBlockType:sortingBlockType
-	                                      versionTag:@"1"];
+
+    YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:^NSString *(NSString *collection, NSString *key) {
+        // The grouping block is used to:
+        // - filter items that we don't want in the view
+        // - place items into specific groups (which can be used as sections in a tableView, for example)
+        //
+        // In this example, we're only storing one kind of object into the database: Person objects.
+        // And we want to display them all in the same section.
+
+        return @"all";
+    }];
+
+    YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(NSString *group,
+            NSString *collection1, NSString *key1, id object1,
+            NSString *collection2, NSString *key2, id object2) {
+        // The sorting block is used to sort items within their group/section.
+
+        __unsafe_unretained Person *person1 = (Person *)object1;
+        __unsafe_unretained Person *person2 = (Person *)object2;
+
+        return [person1.name compare:person2.name options:NSLiteralSearch];
+    }];
+
+	YapDatabaseView *view = [[YapDatabaseView alloc] initWithGrouping:grouping
+                                                              sorting:sorting
+                                                           versionTag:@"1"
+                                                              options:nil];
 	
 	if (![database registerExtension:view withName:@"order"])
 	{
@@ -136,21 +125,14 @@ AppDelegate *TheAppDelegate;
 	// https://github.com/yaptv/YapDatabase/wiki/Full-Text-Search
 	
 	DDLogVerbose(@"Creating fts...");
-	
-	YapDatabaseFullTextSearchBlockType ftsBlockType = YapDatabaseFullTextSearchBlockTypeWithObject;
-	YapDatabaseFullTextSearchWithObjectBlock ftsBlock =
-	^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
-		
-		__unsafe_unretained Person *person = (Person *)object;
-		
-		[dict setObject:person.name forKey:@"name"];
-	};
-	
-	YapDatabaseFullTextSearch *fts =
-	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[ @"name" ]
-	                                                   block:ftsBlock
-	                                               blockType:ftsBlockType
-	                                              versionTag:@"1"];
+
+    YapDatabaseFullTextSearchHandler *handler = [YapDatabaseFullTextSearchHandler withObjectBlock:^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
+        __unsafe_unretained Person *person = (Person *)object;
+        dict[@"name"] = person.name;
+    }];
+
+	YapDatabaseFullTextSearch *fts = [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[ @"name" ] handler:handler versionTag:@"1"];
+
 	
 	if (![database registerExtension:fts withName:@"fts"])
 	{
@@ -171,8 +153,7 @@ AppDelegate *TheAppDelegate;
 	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
 	searchViewOptions.isPersistent = NO;
 	
-	YapDatabaseSearchResultsView *searchResultsView =
-	  [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
+	YapDatabaseSearchResultsView *searchResultsView = [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
 	                                                    parentViewName:@"order"
 	                                                        versionTag:@"1"
 	                                                      options:searchViewOptions];
@@ -212,8 +193,8 @@ AppDelegate *TheAppDelegate;
 		
 		[people enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
             
-			NSString *name = [info objectForKey:@"name"];
-			NSString *uuid = [info objectForKey:@"udid"];
+			NSString *name = info[@"name"];
+			NSString *uuid = info[@"udid"];
 			
 			Person *person = [[Person alloc] initWithName:name uuid:uuid];
 			
