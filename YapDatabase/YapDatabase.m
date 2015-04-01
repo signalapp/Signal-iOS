@@ -1180,6 +1180,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		[self writeSnapshot];
 	}
 	[self commitTransaction];
+	[self asyncCheckpoint:snapshot];
 }
 
 - (void)beginTransaction
