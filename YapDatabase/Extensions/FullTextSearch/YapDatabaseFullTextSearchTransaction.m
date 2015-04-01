@@ -1184,9 +1184,6 @@ static NSString *const ext_key__version_deprecated = @"version";
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
 	sqlite3_bind_text(statement, 7, _query.str, _query.length, SQLITE_STATIC);
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	
 	NSString *snippet = nil;
 	
 	int status = sqlite3_step(statement);
@@ -1205,6 +1202,8 @@ static NSString *const ext_key__version_deprecated = @"version";
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_startMatchText);
 	FreeYapDatabaseString(&_endMatchText);
 	FreeYapDatabaseString(&_ellipsesText);

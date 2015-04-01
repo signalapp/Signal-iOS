@@ -11,7 +11,8 @@ typedef NS_ENUM(NSInteger, YapDatabaseViewChangeType) {
 typedef NS_OPTIONS(NSUInteger, YapDatabaseViewChangesBitMask) {
 	YapDatabaseViewChangedObject     = 1 << 0, // 0001
 	YapDatabaseViewChangedMetadata   = 1 << 1, // 0010
-	YapDatabaseViewChangedDependency = 1 << 2, // 0100
+	YapDatabaseViewChangedDependency = 1 << 2, // 0100  (used by YapDatabaseViewMappings)
+	YapDatabaseViewChangedSnippets   = 1 << 3, // 1000  (used by YapDatabaseSearchResultsView)
 };
 
 

@@ -1,4 +1,5 @@
 #import "YapDatabaseSearchResultsViewOptions.h"
+#import "YapDatabaseSearchResultsViewPrivate.h"
 
 
 @implementation YapDatabaseSearchResultsViewOptions
@@ -20,6 +21,14 @@
 	// The internal snippetOptions ivar MUST remain immutable.
 	// So we MUST return a copy.
 	return [snippetOptions copy]; // <- Do NOT change
+}
+
+/**
+ * Private/Internal method (to avoid a copy)
+**/
+- (YapDatabaseFullTextSearchSnippetOptions *)snippetOptions_NoCopy
+{
+	return snippetOptions;
 }
 
 - (id)copyWithZone:(NSZone *)zone

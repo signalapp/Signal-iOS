@@ -251,7 +251,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *options =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
-	if (options.snippetOptions)
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions = options.snippetOptions_NoCopy;
+	
+	if (snippetOptions)
 	{
 		// Need to create the snippet table
 		
@@ -312,6 +314,7 @@ static NSString *const ext_key_query             = @"query";
 	
 	// Perform search
 	
+	snippets = [[NSMutableDictionary alloc] init];
 	[self repopulateFtsRowidsAndSnippets];
 	
 	// Update the view using search results
@@ -326,7 +329,11 @@ static NSString *const ext_key_query             = @"query";
 		else
 			[self updateViewUsingBlocks];
 	}
-
+	
+	// Clear temp variable(s)
+	
+	snippets = nil;
+	
 	return YES;
 }
 
@@ -347,6 +354,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
+	
 	__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 	  (YapDatabaseFullTextSearchTransaction *)[databaseTransaction ext:searchResultsView->fullTextSearchName];
 	
@@ -361,25 +371,21 @@ static NSString *const ext_key_query             = @"query";
 	
 	__block int processed = 0;
 	
-	if (searchResultsOptions.snippetOptions)
+	if (snippetOptions)
 	{
 		// Need to get matching rowids and related snippets.
 		
-		if (snippets == nil)
-			snippets = [[NSMutableDictionary alloc] init];
-		else
-			[snippets removeAllObjects];
+		NSAssert(snippets != nil, @"Forgot to initialize snippets variable !");
 		
 		[ftsTransaction enumerateRowidsMatching:[self query]
-		                     withSnippetOptions:searchResultsOptions.snippetOptions
+		                     withSnippetOptions:snippetOptions
 		                             usingBlock:^(NSString *snippet, int64_t rowid, BOOL *stop)
 		{
 			YapRowidSetAdd(ftsRowids, rowid);
 			
-			if (snippet)
+			if (snippet) {
 				[snippets setObject:snippet forKey:@(rowid)];
-			else
-				[snippets setObject:[NSNull null] forKey:@(rowid)];
+			}
 			
 			if (++processed == 2500)
 			{
@@ -516,6 +522,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
+	
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:searchResultsView->parentViewName];
 	
@@ -542,6 +551,7 @@ static NSString *const ext_key_query             = @"query";
 	
 	// Run the FTS search to get our list of valid rowids
 	
+	snippets = [[NSMutableDictionary alloc] init];
 	[self repopulateFtsRowidsAndSnippets];
 	
 	// Get the list of allowed groups
@@ -589,6 +599,20 @@ static NSString *const ext_key_query             = @"query";
 				// The row was previously in the view (allowed by previous parentFilter + our filter),
 				// and is still in the view (allowed by new parentFilter + our filter).
 				
+				if (snippetOptions)
+				{
+					NSString *snippet = [snippets objectForKey:@(rowid)];
+					[self updateSnippet:snippet forRowid:rowid];
+					
+					YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedSnippets;
+					
+					[viewConnection->changes addObject:
+					  [YapDatabaseViewRowChange updateCollectionKey:nil
+					                                        inGroup:group
+					                                        atIndex:index
+					                                    withChanges:flags]];
+				}
+				
 				index++;
 				existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
 				existingKnownValid = NO;
@@ -625,6 +649,20 @@ static NSString *const ext_key_query             = @"query";
 					//
 					// The row was previously in the view (allowed by previous parentFilter + our filter),
 					// and is still in the view (allowed by new parentFilter + our filter).
+					
+					if (snippetOptions)
+					{
+						NSString *snippet = [snippets objectForKey:@(rowid)];
+						[self updateSnippet:snippet forRowid:rowid];
+						
+						YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedSnippets;
+						
+						[viewConnection->changes addObject:
+						  [YapDatabaseViewRowChange updateCollectionKey:nil
+						                                        inGroup:group
+						                                        atIndex:index
+						                                    withChanges:flags]];
+					}
 					
 					index++;
 					existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
@@ -683,7 +721,8 @@ static NSString *const ext_key_query             = @"query";
 		{
 			[groupsInSelf removeObjectAtIndex:groupIndex];
 		}
-	}
+	
+	} // end for (NSString *group in groupsInParent)
 	
 	// Check to see if there are any groups that have been completely removed.
 	
@@ -691,6 +730,10 @@ static NSString *const ext_key_query             = @"query";
 	{
 		[self removeAllRowidsInGroup:group];
 	}
+	
+	// Clear temp variable(s)
+	
+	snippets = nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -706,23 +749,19 @@ static NSString *const ext_key_query             = @"query";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Subclass Hooks
+#pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * This method is invoked whenver a item is added to our view.
-**/
-- (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+- (void)updateSnippet:(NSString *)snippet forRowid:(int64_t)rowid
 {
-	id snippet = [snippets objectForKey:@(rowid)];
-	if (snippet == nil) return;
+	YDBLogAutoTrace();
 	
 	if ([self isPersistentView])
 	{
 		__unsafe_unretained YapDatabaseSearchResultsViewConnection *searchResultsConnection =
 		  (YapDatabaseSearchResultsViewConnection *)viewConnection;
 		
-		if (snippet == [NSNull null])
+		if (snippet == nil)
 		{
 			sqlite3_stmt *statement = [searchResultsConnection snippetTable_removeForRowidStatement];
 			if (statement == NULL) return;
@@ -734,8 +773,8 @@ static NSString *const ext_key_query             = @"query";
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
 			{
-				YDBLogError(@"Error executing 'snippetTable_removeForRowidStatement': %d %s, collectionKey(%@)",
-				            status, sqlite3_errmsg(databaseTransaction->connection->db), collectionKey);
+				YDBLogError(@"Error executing 'snippetTable_removeForRowidStatement': %d %s",
+				            status, sqlite3_errmsg(databaseTransaction->connection->db));
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -750,7 +789,7 @@ static NSString *const ext_key_query             = @"query";
 			
 			sqlite3_bind_int64(statement, 1, rowid);
 			
-			YapDatabaseString _snippet; MakeYapDatabaseString(&_snippet, snippet);
+			YapDatabaseString _snippet; MakeYapDatabaseString(&_snippet, (NSString *)snippet);
 			sqlite3_bind_text(statement, 2, _snippet.str, _snippet.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
@@ -768,7 +807,7 @@ static NSString *const ext_key_query             = @"query";
 	}
 	else // if (isNonPersistentView)
 	{
-		if (snippet == [NSNull null])
+		if (snippet == nil)
 		{
 			[snippetTableTransaction removeObjectForKey:@(rowid)];
 		}
@@ -776,6 +815,30 @@ static NSString *const ext_key_query             = @"query";
 		{
 			[snippetTableTransaction setObject:snippet forKey:@(rowid)];
 		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Subclass Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method is invoked whenver a item is added to our view.
+**/
+- (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+
+	if (searchResultsOptions.snippetOptions_NoCopy == nil) {
+		// Ignore - snippets not being used
+		return;
+	}
+	
+	if (snippets)
+	{
+		NSString *snippet = [snippets objectForKey:@(rowid)];
+		[self updateSnippet:snippet forRowid:rowid];
 	}
 }
 
@@ -787,7 +850,7 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
 	
-	if (searchResultsOptions.snippetOptions == nil) {
+	if (searchResultsOptions.snippetOptions_NoCopy == nil) {
 		// Ignore - snippets not being used
 		return;
 	}
@@ -828,7 +891,7 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
 	
-	if (searchResultsOptions.snippetOptions == nil) {
+	if (searchResultsOptions.snippetOptions_NoCopy == nil) {
 		// Ignore - snippets not being used
 		return;
 	}
@@ -913,7 +976,7 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
 	
-	if (searchResultsOptions.snippetOptions == nil) {
+	if (searchResultsOptions.snippetOptions_NoCopy == nil) {
 		// Ignore - snippets not being used
 		return;
 	}
@@ -1012,6 +1075,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
+	
 	NSString *group = nil;
 	
 	if (searchResultsView->parentViewName)
@@ -1081,6 +1147,7 @@ static NSString *const ext_key_query             = @"query";
 		}
 	}
 	
+	NSString *snippet = nil;
 	BOOL matchesQuery = NO;
 	
 	if (group)
@@ -1088,13 +1155,26 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 		  [databaseTransaction ext:searchResultsView->fullTextSearchName];
 		
-		matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		if (snippetOptions)
+		{
+			snippet = [ftsTransaction rowid:rowid matches:[self query] withSnippetOptions:snippetOptions];
+			matchesQuery = (snippet != nil);
+		}
+		else
+		{
+			matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		}
 	}
 	
 	if (matchesQuery)
 	{
 		// Add to view.
 		// This was an insert operation, so we know it wasn't already in the view.
+		
+		if (snippetOptions)
+		{
+			[self updateSnippet:snippet forRowid:rowid];
+		}
 		
 		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
@@ -1133,6 +1213,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
+	
 	NSString *group = nil;
 	
 	if (searchResultsView->parentViewName)
@@ -1202,6 +1285,7 @@ static NSString *const ext_key_query             = @"query";
 		}
 	}
 	
+	NSString *snippet = nil;
 	BOOL matchesQuery = NO;
 	
 	if (group)
@@ -1209,13 +1293,26 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearchTransaction *ftsTransaction =
 		  [databaseTransaction ext:searchResultsView->fullTextSearchName];
 		
-		matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		if (snippetOptions)
+		{
+			snippet = [ftsTransaction rowid:rowid matches:[self query] withSnippetOptions:snippetOptions];
+			matchesQuery = (snippet != nil);
+		}
+		else
+		{
+			matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		}
 	}
 	
 	if (matchesQuery)
 	{
 		// Add key to view (or update position).
 		// This was an update operation, so the key may have previously been in the view.
+		
+		if (snippetOptions)
+		{
+			[self updateSnippet:snippet forRowid:rowid];
+		}
 		
 		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
@@ -1254,6 +1351,9 @@ static NSString *const ext_key_query             = @"query";
 	
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
+	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
 	
 	YapDatabaseViewGroupingBlock groupingBlock_generic;
 	YapDatabaseViewBlockType     groupingBlockType;
@@ -1342,12 +1442,28 @@ static NSString *const ext_key_query             = @"query";
 			return;
 		}
 		
-		BOOL matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		NSString *snippet = nil;
+		BOOL matchesQuery = NO;
+		
+		if (snippetOptions)
+		{
+			snippet = [ftsTransaction rowid:rowid matches:[self query] withSnippetOptions:snippetOptions];
+			matchesQuery = (snippet != nil);
+		}
+		else
+		{
+			matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		}
 		
 		if (matchesQuery)
 		{
 			// Add to view (or update position).
 			// This was an update operation, so it may have previously been in the view.
+			
+			if (snippetOptions)
+			{
+				[self updateSnippet:snippet forRowid:rowid];
+			}
 			
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
@@ -1540,6 +1656,9 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)searchResultsView->options;
 	
+	__unsafe_unretained YapDatabaseFullTextSearchSnippetOptions *snippetOptions =
+	  searchResultsOptions.snippetOptions_NoCopy;
+	
 	YapDatabaseViewGroupingBlock groupingBlock_generic = NULL;
 	YapDatabaseViewBlockType groupingBlockType = 0;
 	YapDatabaseViewBlockType sortingBlockType  = 0;
@@ -1627,12 +1746,28 @@ static NSString *const ext_key_query             = @"query";
 			return;
 		}
 		
-		BOOL matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		NSString *snippet = nil;
+		BOOL matchesQuery = NO;
+		
+		if (snippetOptions)
+		{
+			snippet = [ftsTransaction rowid:rowid matches:[self query] withSnippetOptions:snippetOptions];
+			matchesQuery = (snippet != nil);
+		}
+		else
+		{
+			matchesQuery = [ftsTransaction rowid:rowid matches:[self query]];
+		}
 		
 		if (matchesQuery)
 		{
 			// Add key to view (or update position).
 			// This was an update operation, so the key may have previously been in the view.
+			
+			if (snippetOptions)
+			{
+				[self updateSnippet:snippet forRowid:rowid];
+			}
 			
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
@@ -1947,6 +2082,8 @@ static NSString *const ext_key_query             = @"query";
 	return [searchResultsViewConnection query];
 }
 
+//- (void)updateSnippet:(NSString *)snippet for
+
 /**
  * This method updates the view by using the updated ftsRowids set.
  * Only use this method if parentViewName is non-nil.
@@ -1974,6 +2111,7 @@ static NSString *const ext_key_query             = @"query";
 	  (YapDatabaseViewTransaction *)[databaseTransaction ext:searchResultsView->parentViewName];
 	
 	BOOL wasEmpty = [self isEmpty];
+	BOOL hasSnippetOptions = (searchResultsOptions.snippetOptions != nil);
 	
 	id <NSFastEnumeration> groupsToEnumerate = nil;
 	
@@ -2020,6 +2158,20 @@ static NSString *const ext_key_query             = @"query";
 				{
 					// The row was previously in the view (in old search results),
 					// and is still in the view (in new search results).
+					
+					if (hasSnippetOptions)
+					{
+						NSString *snippet = [snippets objectForKey:@(rowid)];
+						[self updateSnippet:snippet forRowid:rowid];
+						
+						YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedSnippets;
+						
+						[viewConnection->changes addObject:
+						  [YapDatabaseViewRowChange updateCollectionKey:nil
+						                                        inGroup:group
+						                                        atIndex:index
+						                                    withChanges:flags]];
+					}
 					
 					index++;
 					existing = [self getRowid:&existingRowid atIndex:index inGroup:group];
@@ -2094,13 +2246,20 @@ static NSString *const ext_key_query             = @"query";
 	if ([searchQueue shouldAbortSearchInProgressAndRollback:NULL]) {
 		return;
 	}
-	__block int processed = 0;
+	
+	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
+	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
+	
+	BOOL hasSnippetOptions = (searchResultsOptions.snippetOptions != nil);
 	
 	// Create a copy of the ftsRowids set.
 	// As we enumerate the existing rowids in our view, we're going to
 	YapRowidSet *ftsRowidsLeft = YapRowidSetCopy(ftsRowids);
 	
-	for (NSString *group in [self allGroups])
+	NSArray *allGroups = [self allGroups];
+	__block int processed = 0;
+	
+	for (NSString *group in allGroups)
 	{
 		__block NSUInteger groupCount = [self numberOfItemsInGroup:group];
 		__block NSRange range = NSMakeRange(0, groupCount);
@@ -2118,6 +2277,20 @@ static NSString *const ext_key_query             = @"query";
 				{
 					// The row was previously in the view (in old search results),
 					// and is still in the view (in new search results).
+					
+					if (hasSnippetOptions)
+					{
+						NSString *snippet = [snippets objectForKey:@(rowid)];
+						[self updateSnippet:snippet forRowid:rowid];
+						
+						YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedSnippets;
+						
+						[viewConnection->changes addObject:
+						  [YapDatabaseViewRowChange updateCollectionKey:nil
+						                                        inGroup:group
+						                                        atIndex:index
+						                                    withChanges:flags]];
+					}
 					
 					// Removes from ftsRowidsLeft set
 					YapRowidSetRemove(ftsRowidsLeft, rowid);
@@ -2300,6 +2473,7 @@ static NSString *const ext_key_query             = @"query";
 	
 	// Run the query against the FTS extension, and populate the ftsRowids & snippets ivars
 	
+	snippets = [[NSMutableDictionary alloc] init];
 	[self repopulateFtsRowidsAndSnippets];
 	
 	// Update the view (using FTS results stored in ftsRowids)
@@ -2311,6 +2485,10 @@ static NSString *const ext_key_query             = @"query";
 		[self updateViewFromParent];
 	else
 		[self updateViewUsingBlocks];
+	
+	// Clear temp variable(s)
+	
+	snippets = nil;
 }
 
 /**
