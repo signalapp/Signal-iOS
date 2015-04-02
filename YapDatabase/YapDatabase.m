@@ -8,6 +8,7 @@
 
 #import "sqlite3.h"
 
+#import <mach/mach_time.h>
 #import <libkern/OSAtomic.h>
 
 #if ! __has_feature(objc_arc)
@@ -2733,8 +2734,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 				
 				for (YapDatabaseConnectionState *state in strongSelf->connectionStates)
 				{
-					if (state->yapLevelSharedReadLock &&
-					    state->longLivedReadTransaction &&
+					if (state->longLivedReadTransaction &&
 					    state->lastKnownSnapshot == strongSelf->snapshot)
 					{
 						[state->connection maybeResetLongLivedReadTransaction];

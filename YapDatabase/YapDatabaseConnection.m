@@ -14,6 +14,7 @@
 #import "YapDatabaseLogging.h"
 
 #import <objc/runtime.h>
+#import <mach/mach_time.h>
 #import <libkern/OSAtomic.h>
 
 #if TARGET_OS_IPHONE
@@ -1857,9 +1858,9 @@ NS_INLINE BOOL YDBIsMainThread()
 			if (state->connection == self)
 			{
 				myState = state;
-				myState->yapLevelSharedReadLock = YES;
+				myState->activeReadTransaction = YES;
 			}
-			else if (state->yapLevelExclusiveWriteLock)
+			else if (state->activeWriteTransaction)
 			{
 				hasActiveWriteTransaction = YES;
 			}
@@ -1903,12 +1904,12 @@ NS_INLINE BOOL YDBIsMainThread()
 					[self noteCommittedChanges:changeset];
 				}
 				
+				// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == sqlSnapshot,
 				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != sqlSnapshot(%llu): %@",
 				         snapshot, sqlSnapshot, changesets);
 			}
 			
-			myState->lastKnownSnapshot = snapshot;
 			myState->longLivedReadTransaction = (longLivedReadTransaction != nil);
 			myState->sqlLevelSharedReadLock = YES;
 			needsMarkSqlLevelSharedReadLock = NO;
@@ -1939,15 +1940,18 @@ NS_INLINE BOOL YDBIsMainThread()
 					[self noteCommittedChanges:changeset];
 				}
 				
+				// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == globalSnapshot,
 				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != globalSnapshot(%llu): %@",
 				         snapshot, globalSnapshot, changesets);
 			}
 			
-			myState->lastKnownSnapshot = snapshot;
 			myState->sqlLevelSharedReadLock = NO;
 			needsMarkSqlLevelSharedReadLock = YES;
 		}
+		
+		myState->lastKnownSnapshot = snapshot;
+		myState->lastTransactionTime = mach_absolute_time();
 	}});
 }
 
@@ -2001,12 +2005,13 @@ NS_INLINE BOOL YDBIsMainThread()
 		{
 			if (state->connection == self)
 			{
-				wasMaybeBlockingWriteTransaction = state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock;
-				state->yapLevelSharedReadLock = NO;
-				state->sqlLevelSharedReadLock = NO;
+				state->activeReadTransaction = NO;
 				state->longLivedReadTransaction = NO;
+				
+				wasMaybeBlockingWriteTransaction = !state->sqlLevelSharedReadLock;
+				state->sqlLevelSharedReadLock = NO;
 			}
-			else if (state->yapLevelSharedReadLock)
+			else if (state->activeReadTransaction)
 			{
 				// Active sibling connection: read-only
 				
@@ -2015,7 +2020,7 @@ NS_INLINE BOOL YDBIsMainThread()
 				if (!state->sqlLevelSharedReadLock)
 					countOtherMaybeBlockingWriteTransaction++;
 			}
-			else if (state->yapLevelExclusiveWriteLock)
+			else if (state->activeWriteTransaction)
 			{
 				// Active sibling connection: read-write
 				
@@ -2083,7 +2088,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
 	// acquire any locks until it executes something.
-	// There are various alternatives to this, including a "immediate" and "exclusive" transactions.
+	// There are various alternatives to this, including "immediate" and "exclusive" transactions.
 	// However, these don't do what we want. Instead they block other read-only transactions.
 	// The deferred transaction allows other read-only transactions and even avoids
 	// sqlite operations if no modifications are made.
@@ -2111,7 +2116,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			if (state->connection == self)
 			{
 				myState = state;
-				myState->yapLevelExclusiveWriteLock = YES;
+				myState->activeWriteTransaction = YES;
 			}
 		}
 		
@@ -2133,12 +2138,14 @@ NS_INLINE BOOL YDBIsMainThread()
 				[self noteCommittedChanges:changeset];
 			}
 			
+			// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
 			NSAssert(snapshot == globalSnapshot,
 			         @"Invalid connection state in preReadWriteTransaction: snapshot(%llu) != globalSnapshot(%llu)",
 			         snapshot, globalSnapshot);
 		}
 		
 		myState->lastKnownSnapshot = snapshot;
+		myState->lastTransactionTime = mach_absolute_time();
 		needsMarkSqlLevelSharedReadLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
@@ -2198,7 +2205,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				if (state->connection == self)
 				{
-					state->yapLevelExclusiveWriteLock = NO;
+					state->activeWriteTransaction = NO;
 					break;
 				}
 			}
@@ -2336,7 +2343,7 @@ NS_INLINE BOOL YDBIsMainThread()
 				{
 					myState = state;
 				}
-				else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
+				else if (state->activeReadTransaction && !state->sqlLevelSharedReadLock)
 				{
 					waitForReadOnlyTransactions = YES;
 				}
@@ -2442,13 +2449,13 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		for (YapDatabaseConnectionState *state in database->connectionStates)
 		{
-			if (state->yapLevelSharedReadLock)
+			if (state->activeReadTransaction)
 			{
 				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
 			}
 		}
 		
-		myState->yapLevelExclusiveWriteLock = NO;
+		myState->activeWriteTransaction = NO;
 		myState->waitingForWriteLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
@@ -2537,13 +2544,14 @@ NS_INLINE BOOL YDBIsMainThread()
 			if (state->connection == self)
 			{
 				myState = state;
-				myState->yapLevelExclusiveWriteLock = YES;
+				myState->activeWriteTransaction = YES;
 			}
 		}
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
 		myState->lastKnownSnapshot = [database snapshot];
+		myState->lastTransactionTime = mach_absolute_time();
 		needsMarkSqlLevelSharedReadLock = YES;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting vacuum operation.", self);
@@ -2611,7 +2619,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				myState = state;
 			}
-			else if (state->yapLevelSharedReadLock)
+			else if (state->activeReadTransaction)
 			{
 				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
 			}
@@ -2619,7 +2627,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		myState->yapLevelExclusiveWriteLock = NO;
+		myState->activeWriteTransaction = NO;
 		myState->waitingForWriteLock = NO;
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
@@ -2752,7 +2760,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				state->sqlLevelSharedReadLock = YES;
 			}
-			else if (state->yapLevelSharedReadLock && !state->sqlLevelSharedReadLock)
+			else if (state->activeReadTransaction && !state->sqlLevelSharedReadLock)
 			{
 				countOtherMaybeBlockingWriteTransaction++;
 			}

@@ -9,14 +9,15 @@
 @public
 	__weak YapDatabaseConnection *connection;
 	
-	BOOL yapLevelSharedReadLock;
-	BOOL sqlLevelSharedReadLock;
+	BOOL activeReadTransaction;
 	BOOL longLivedReadTransaction;
+	BOOL sqlLevelSharedReadLock;
 	
-	BOOL yapLevelExclusiveWriteLock;
+	BOOL activeWriteTransaction;
 	BOOL waitingForWriteLock;
 	
 	uint64_t lastKnownSnapshot;
+	uint64_t lastTransactionTime;
 }
 
 - (id)initWithConnection:(YapDatabaseConnection *)connection;
