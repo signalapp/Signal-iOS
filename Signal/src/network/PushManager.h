@@ -29,15 +29,6 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
 + (PushManager*)sharedManager;
 
 /**
- *  Push notification registration method
- *
- *  @param success Block to execute after succesful push notification registration
- *  @param failure Block to executre if push notification registration fails
- */
-
-- (void)registrationWithSuccess:(void (^)())success failure:(failedPushRegistrationBlock)failure;
-
-/**
  *  Registers the push token with the RedPhone server, then returns the push token and a signup token to be used to register with TextSecure.
  *
  *  @param success Success completion block - registering with TextSecure server
@@ -47,11 +38,23 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
 - (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure;
 
 /**
- *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
+ *  Returns the Push Notification Token of this device
+ *
+ *  @param success Completion block that is passed the token as a parameter
+ *  @param failure Failure block, executed when failed to get push token
  */
 
--(TOCFuture*)registerPushNotificationFuture;
-- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(void(^)(NSError *))failure;
+- (void)requestPushTokenWithSuccess:(void (^)(NSData* pushToken))success failure:(void(^)(NSError *))failure;
+
+/**
+ *  Registers for Users Notifications. By doing this on launch, we are sure that the correct categories of user notifications is registered.
+ */
+
+- (void)validateUserNotificationSettings;
+
+/**
+ *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
+ */
 
 @property TOCFutureSource *pushNotificationFutureSource;
 @property TOCFutureSource *userNotificationFutureSource;

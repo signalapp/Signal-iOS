@@ -43,23 +43,103 @@
     return self;
 }
 
-- (void)registrationWithSuccess:(void (^)())success failure:(failedPushRegistrationBlock)failure{
+#pragma mark Register device for Push Notification locally
+
+-(TOCFuture*)registerPushNotificationFuture{
+    self.pushNotificationFutureSource = [TOCFutureSource new];
+    [UIApplication.sharedApplication registerForRemoteNotifications];
+    
+    return self.pushNotificationFutureSource.future;
+}
+
+- (void)requestPushTokenWithSuccess:(void (^)(NSData* pushToken))success failure:(failedPushRegistrationBlock)failure{
+    TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
+    
+    [requestPushTokenFuture catchDo:^(id failureObj) {
+        [self.missingPermissionsAlertView show];
+        failure(failureObj);
+        DDLogError(@"This should not happen on iOS8. No push token was provided");
+    }];
+    
+    [requestPushTokenFuture thenDo:^(NSData* pushToken) {
+        TOCFuture *registerPushTokenFuture = [self registerForPushFutureWithToken:pushToken];
+        
+        [registerPushTokenFuture catchDo:^(id failureObj) {
+            failure(failureObj);
+        }];
+        
+        [registerPushTokenFuture thenDo:^(id value) {
+            TOCFuture *userRegistration = [self registerForUserNotificationsFuture];
+            
+            [userRegistration thenDo:^(UIUserNotificationSettings *userNotificationSettings) {
+                success(pushToken);
+            }];
+        }];
+    }];
+}
+
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure{
     if (!self.wantRemoteNotifications) {
-        success();
+        success([@"Fake PushToken" dataUsingEncoding:NSUTF8StringEncoding], @"");
         return;
     }
     
-    [self registrationForPushWithSuccess:^(NSData* pushToken){
-        [self registrationForUserNotificationWithSuccess:success failure:^(NSError *error) {
-            [self.missingPermissionsAlertView show];
-            failure([NSError errorWithDomain:pushManagerDomain code:400 userInfo:@{}]);
+    [self requestPushTokenWithSuccess:^(NSData* pushToken){
+        [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSError *error;
+            
+            NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+            NSString* tsToken = [dictionary objectForKey:@"token"];
+            
+            if (!tsToken || !pushToken || error) {
+                failure(error);
+                return;
+            }
+            
+            success(pushToken, tsToken);
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            failure(error);
         }];
-    } failure:failure];
+    } failure:^(NSError *error) {
+        [self.missingPermissionsAlertView show];
+        failure([NSError errorWithDomain:pushManagerDomain code:400 userInfo:@{}]);
+    }];
 }
 
-#pragma mark Private Methods
+-(TOCFuture*)registerForUserNotificationsFuture{
+    self.userNotificationFutureSource = [TOCFutureSource new];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                                                             categories:nil];
+    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
+    return self.userNotificationFutureSource.future;
+}
 
-#pragma mark Register Push Notification Token with server
+-(BOOL) needToRegisterForRemoteNotifications {
+    return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
+}
+
+-(BOOL) wantRemoteNotifications {
+    BOOL isSimulator = [UIDevice.currentDevice.model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
+    
+    if (isSimulator) {
+        // Simulator is used for debugging but can't receive push notifications, so don't bother trying to get them
+        return NO;
+    }
+    
+    return YES;
+}
+
+-(int)allNotificationTypes{
+    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
+}
+
+- (void)validateUserNotificationSettings{
+    [[self registerForUserNotificationsFuture] thenDo:^(id value) {
+        //Nothing to do, just making sure we are registered for User Notifications.
+    }];
+}
+
+#pragma mark Register Push Notification Token with RedPhone server
 
 -(TOCFuture*)registerForPushFutureWithToken:(NSData*)token{
     self.registerWithServerFutureSource = [TOCFutureSource new];
@@ -82,96 +162,6 @@
     }];
     
     return self.registerWithServerFutureSource.future;
-}
-
-#pragma mark Register device for Push Notification locally
-
--(TOCFuture*)registerPushNotificationFuture{
-    self.pushNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerForRemoteNotifications];
-    
-    return self.pushNotificationFutureSource.future;
-}
-
-- (void)registrationForPushWithSuccess:(void (^)(NSData* pushToken))success failure:(failedPushRegistrationBlock)failure{
-    TOCFuture       *requestPushTokenFuture = [self registerPushNotificationFuture];
-    
-    [requestPushTokenFuture catchDo:^(id failureObj) {
-        [self.missingPermissionsAlertView show];
-        failure(failureObj);
-        DDLogError(@"This should not happen on iOS8. No push token was provided");
-    }];
-    
-    [requestPushTokenFuture thenDo:^(NSData* pushToken) {
-        TOCFuture *registerPushTokenFuture = [self registerForPushFutureWithToken:pushToken];
-        
-        [registerPushTokenFuture catchDo:^(id failureObj) {
-            failure(failureObj);
-        }];
-        
-        [registerPushTokenFuture thenDo:^(id value) {
-            success(pushToken);
-        }];
-    }];
-}
-
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure{
-    [self registrationForPushWithSuccess:^(NSData *pushToken) {
-        [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode] success:^(NSURLSessionDataTask *task, id responseObject) {
-            NSError *error;
-            
-            NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-            NSString* tsToken = [dictionary objectForKey:@"token"];
-            
-            if (!tsToken || !pushToken || error) {
-                failure(error);
-                return;
-            }
-            
-            success(pushToken, tsToken);
-        } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
-        }];
-    } failure:failure];
-}
-
--(TOCFuture*)registerForUserNotificationsFuture{
-    self.userNotificationFutureSource = [TOCFutureSource new];
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                                                             categories:nil];
-    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
-    return self.userNotificationFutureSource.future;
-}
-
-- (void)registrationForUserNotificationWithSuccess:(void (^)())success failure:(void (^)())failure{
-    TOCFuture *registrerUserNotificationFuture = [self registerForUserNotificationsFuture];
-    
-    [registrerUserNotificationFuture catchDo:^(id failureObj) {
-        failure();
-    }];
-    
-    [registrerUserNotificationFuture thenDo:^(id types) {
-        success();
-    }];
-}
-
--(BOOL) needToRegisterForRemoteNotifications {
-    return self.wantRemoteNotifications && (!UIApplication.sharedApplication.isRegisteredForRemoteNotifications);
-}
-
--(BOOL) wantRemoteNotifications {
-    BOOL isSimulator = [UIDevice.currentDevice.model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
-    
-    if (isSimulator) {
-        // Simulator is used for debugging but can't receive push notifications, so don't bother trying to get them
-        return NO;
-    }
-    
-    return YES;
-}
-
--(int)allNotificationTypes{
-    return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
 @end

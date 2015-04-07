@@ -120,6 +120,7 @@
     
     if ([TSAccountManager isRegistered]) {
         [TSSocketManager becomeActive];
+        [[PushManager sharedManager] validateUserNotificationSettings];
         [self refreshContacts];
         [TSPreKeyManager refreshPreKeys];
     }
