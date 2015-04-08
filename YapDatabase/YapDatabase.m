@@ -594,7 +594,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		// Sometimes the open function returns a db to allow us to query it for the error message.
 		// The openConfigCreate block will close it for us.
 		if (db) {
-			YDBLogWarn(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
+			YDBLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
 		}
 		else {
 			YDBLogError(@"Error opening database: %d", status);
