@@ -768,7 +768,9 @@ static NSString *const ext_key_query             = @"query";
 			
 			// DELETE FROM "snippetTable" WHERE "rowid" = ?;
 			
-			sqlite3_bind_int64(statement, 1, rowid);
+			int const bind_idx_rowid = SQLITE_BIND_START;
+			
+			sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 			
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -787,10 +789,13 @@ static NSString *const ext_key_query             = @"query";
 			
 			// INSERT OR REPLACE INTO "snippetTable" ("rowid", "snippet") VALUES (?, ?);
 			
-			sqlite3_bind_int64(statement, 1, rowid);
+			int const bind_idx_rowid   = SQLITE_BIND_START + 0;
+			int const bind_idx_snippet = SQLITE_BIND_START + 1;
+			
+			sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 			
 			YapDatabaseString _snippet; MakeYapDatabaseString(&_snippet, (NSString *)snippet);
-			sqlite3_bind_text(statement, 2, _snippet.str, _snippet.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, bind_idx_snippet, _snippet.str, _snippet.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -864,8 +869,10 @@ static NSString *const ext_key_query             = @"query";
 		if (statement == NULL) return;
 		
 		// DELETE FROM "snippetTable" WHERE "rowid" = ?;
-			
-		sqlite3_bind_int64(statement, 1, rowid);
+		
+		int const bind_idx_rowid = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
@@ -945,7 +952,7 @@ static NSString *const ext_key_query             = @"query";
 			for (NSUInteger i = 0; i < numParams; i++)
 			{
 				int64_t rowid = [[rowids objectAtIndex:(offset + i)] unsignedLongLongValue];
-				sqlite3_bind_int64(statement, (int)(i+1), rowid);
+				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
 			}
 			
 			status = sqlite3_step(statement);
@@ -2555,7 +2562,10 @@ static NSString *const ext_key_query             = @"query";
 		
 		// SELECT "snippet" FROM "snippetTable" WHERE "rowid" = ?;
 		
-		sqlite3_bind_int64(statement, 1, rowid);
+		int const bind_idx_rowid  = SQLITE_BIND_START;
+		int const col_idx_snippet = SQLITE_COL_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
@@ -2563,8 +2573,8 @@ static NSString *const ext_key_query             = @"query";
 			if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
 				[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
+			int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
 			
 			snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}

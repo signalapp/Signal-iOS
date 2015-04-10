@@ -347,7 +347,7 @@
 		// We do this outside of the if statement above
 		// just in case we accidentally call sqlite3_clear_bindings.
 		
-		sqlite3_bind_int64(*statement, 1, INT64_MAX);
+		sqlite3_bind_int64(*statement, SQLITE_BIND_START, INT64_MAX);
 	}
 	
 	return *statement;

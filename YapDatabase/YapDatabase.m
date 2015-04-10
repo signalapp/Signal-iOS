@@ -777,8 +777,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(statement, 0);
-		int textSize = sqlite3_column_bytes(statement, 0);
+		const unsigned char *text = sqlite3_column_text(statement, SQLITE_COL_START);
+		int textSize = sqlite3_column_bytes(statement, SQLITE_COL_START);
 		
 		version = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}
@@ -812,7 +812,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = sqlite3_column_int(statement, 0);
+		result = sqlite3_column_int(statement, SQLITE_COL_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -866,12 +866,12 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	BOOL result = NO;
 	
-	sqlite3_bind_text(statement, 1, [tableName UTF8String], -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(statement, SQLITE_BIND_START, [tableName UTF8String], -1, SQLITE_TRANSIENT);
 	
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		int count = sqlite3_column_int(statement, 0);
+		int count = sqlite3_column_int(statement, SQLITE_COL_START);
 		
 		result = (count > 0);
 	}
@@ -908,6 +908,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		// cid|name|type|notnull|dflt|value|pk
+		// 0  |1   |2   |3      |4   |5    |6
 		
 		const unsigned char *text = sqlite3_column_text(statement, 1);
 		int textSize = sqlite3_column_bytes(statement, 1);
@@ -955,6 +956,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
 		// cid|name|type|notnull|dflt|value|pk
+		// 0  |1   |2   |3      |4   |5    |6
 		
 		const unsigned char *_name = sqlite3_column_text(statement, 1);
 		int _nameSize = sqlite3_column_bytes(statement, 1);
@@ -1008,7 +1010,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(pragmaStatement);
 	if (status == SQLITE_ROW)
 	{
-		user_version = sqlite3_column_int(pragmaStatement, 0);
+		user_version = sqlite3_column_int(pragmaStatement, SQLITE_COL_START);
 	}
 	else
 	{
@@ -1209,6 +1211,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -1217,12 +1223,12 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	else
 	{
 		char *extension = "";
-		sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_extension, extension, (int)strlen(extension), SQLITE_STATIC);
 		
 		char *key = "snapshot";
-		sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_key, key, (int)strlen(key), SQLITE_STATIC);
 		
-		sqlite3_bind_int64(statement, 3, (sqlite3_int64)snapshot);
+		sqlite3_bind_int64(statement, bind_idx_data, (sqlite3_int64)snapshot);
 		
 		status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
@@ -1252,8 +1258,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	{
 		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, SQLITE_COL_START);
+			int textSize = sqlite3_column_bytes(statement, SQLITE_COL_START);
 			
 			NSString *extensionName =
 			    [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];

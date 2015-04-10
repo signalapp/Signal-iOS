@@ -203,7 +203,7 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		result = (NSUInteger)sqlite3_column_int64(statement, 0);
+		result = (NSUInteger)sqlite3_column_int64(statement, SQLITE_COL_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -225,8 +225,11 @@
 	
 	// SELECT COUNT(*) AS NumberOfRows FROM "database2" WHERE "collection" = ?;
 	
+	int const bind_idx_collection = SQLITE_BIND_START;
+	int const col_idx_result      = SQLITE_COL_START;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	NSUInteger result = 0;
 	
@@ -236,7 +239,7 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		result = (NSUInteger)sqlite3_column_int64(statement, 0);
+		result = (NSUInteger)sqlite3_column_int64(statement, col_idx_result);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -266,7 +269,7 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		result = (NSUInteger)sqlite3_column_int64(statement, 0);
+		result = (NSUInteger)sqlite3_column_int64(statement, SQLITE_COL_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -300,8 +303,8 @@
 		
 		do
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, SQLITE_COL_START);
+			int textSize = sqlite3_column_bytes(statement, SQLITE_COL_START);
 			
 			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -348,11 +351,15 @@
 	
 	// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
+	int const col_idx_result      = SQLITE_COL_START;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length,  SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length,  SQLITE_STATIC);
 	
 	int64_t rowid = 0;
 	BOOL result = NO;
@@ -363,7 +370,7 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		rowid = sqlite3_column_int64(statement, 0);
+		rowid = sqlite3_column_int64(statement, col_idx_result);
 		result = YES;
 	}
 	else if (status == SQLITE_ERROR)
@@ -397,7 +404,11 @@
 	
 	// SELECT "collection", "key" FROM "database2" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const col_idx_collection = SQLITE_COL_START + 0;
+	int const col_idx_key        = SQLITE_COL_START + 1;
+	int const bind_idx_rowid     = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -405,11 +416,11 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const unsigned char *text0 = sqlite3_column_text(statement, 0);
-		int textSize0 = sqlite3_column_bytes(statement, 0);
+		const unsigned char *text0 = sqlite3_column_text(statement, col_idx_collection);
+		int textSize0 = sqlite3_column_bytes(statement, col_idx_collection);
 		
-		const unsigned char *text1 = sqlite3_column_text(statement, 1);
-		int textSize1 = sqlite3_column_bytes(statement, 1);
+		const unsigned char *text1 = sqlite3_column_text(statement, col_idx_key);
+		int textSize1 = sqlite3_column_bytes(statement, col_idx_key);
 		
 		NSString *collection = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
 		NSString *key        = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
@@ -500,7 +511,10 @@
 	
 	// SELECT COUNT(*) AS NumberOfRows FROM "database2" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const col_idx_result = SQLITE_COL_START;
+	int const bind_idx_rowid = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	BOOL result = NO;
 	
@@ -510,7 +524,7 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		result = (sqlite3_column_int64(statement, 0) > 0);
+		result = (sqlite3_column_int64(statement, col_idx_result) > 0);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -543,7 +557,10 @@
 	
 	// SELECT "data" FROM "database2" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const col_idx_data   = SQLITE_COL_START;
+	int const bind_idx_rowid = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -551,8 +568,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_data);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		// Performance tuning:
 		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -594,7 +611,10 @@
 	
 	// SELECT "metadata" FROM "database2" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const col_idx_metadata = SQLITE_COL_START;
+	int const bind_idx_rowid   = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -602,8 +622,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_metadata);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 		
 		// Performance tuning:
 		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -658,7 +678,11 @@
 	
 	// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const col_idx_data     = SQLITE_COL_START + 0;
+	int const col_idx_metadata = SQLITE_COL_START + 1;
+	int const bind_idx_rowid   = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -666,8 +690,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_data);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		// Performance tuning:
 		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -678,8 +702,8 @@
 		if (object)
 			[connection->objectCache setObject:object forKey:collectionKey];
 		
-		const void *mBlob = sqlite3_column_blob(statement, 1);
-		int mBlobSize = sqlite3_column_bytes(statement, 1);
+		const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+		int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 		
 		if (mBlobSize > 0)
 		{
@@ -728,11 +752,15 @@
 	
 	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
+	int const col_idx_data        = SQLITE_COL_START;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -740,8 +768,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_data);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		// Performance tuning:
 		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
@@ -844,11 +872,16 @@
 		{
 			// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 			
+			int const col_idx_data        = SQLITE_COL_START + 0;
+			int const col_idx_metadata    = SQLITE_COL_START + 1;
+			int const bind_idx_collection = SQLITE_BIND_START + 0;
+			int const bind_idx_key        = SQLITE_BIND_START + 1;
+			
 			YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 			
 			YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-			sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
 			if (status == SQLITE_ROW)
@@ -856,11 +889,11 @@
 				if (connection->needsMarkSqlLevelSharedReadLock)
 					[connection markSqlLevelSharedReadLockAcquired];
 				
-				const void *oBlob = sqlite3_column_blob(statement, 0);
-				int oBlobSize = sqlite3_column_bytes(statement, 0);
+				const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+				int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
 				
-				const void *mBlob = sqlite3_column_blob(statement, 1);
-				int mBlobSize = sqlite3_column_bytes(statement, 1);
+				const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+				int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 				
 				if (objectPtr)
 				{
@@ -926,11 +959,15 @@
 	
 	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 	
+	int const col_idx_metadata    = SQLITE_COL_START;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	BOOL found = NO;
 	NSData *metadataData = nil;
@@ -943,8 +980,8 @@
 		
 		found = YES;
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_metadata);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 		
 		// Performance tuning:
 		//
@@ -1004,11 +1041,15 @@
 	
 	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 	
+	int const col_idx_data        = SQLITE_COL_START;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length,  SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length,  SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1016,8 +1057,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_data);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		result = [[NSData alloc] initWithBytes:blob length:blobSize];
 	}
@@ -1054,11 +1095,15 @@
 	
 	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
 	
+	int const col_idx_metadata    = SQLITE_COL_START;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	NSData *result = nil;
 	
@@ -1068,8 +1113,8 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_metadata);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 		
 		result = [[NSData alloc] initWithBytes:blob length:blobSize];
 	}
@@ -1121,12 +1166,17 @@
 	BOOL found = NO;
 	
 	// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
-		
+	
+	int const col_idx_data        = SQLITE_COL_START + 0;
+	int const col_idx_metadata    = SQLITE_COL_START + 1;
+	int const bind_idx_collection = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 		
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1134,11 +1184,11 @@
 		if (connection->needsMarkSqlLevelSharedReadLock)
 			[connection markSqlLevelSharedReadLockAcquired];
 		
-		const void *oBlob = sqlite3_column_blob(statement, 0);
-		int oBlobSize = sqlite3_column_bytes(statement, 0);
+		const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+		int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
-		const void *mBlob = sqlite3_column_blob(statement, 1);
-		int mBlobSize = sqlite3_column_bytes(statement, 1);
+		const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+		int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 		
 		if (serializedObjectPtr) {
 			serializedObject = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
@@ -1189,6 +1239,8 @@
 	
 	// SELECT DISTINCT "collection" FROM "database2";
 	
+	int const col_idx_collection = SQLITE_COL_START;
+	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
@@ -1197,8 +1249,8 @@
 		
 		do
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_collection);
+			int textSize = sqlite3_column_bytes(statement, col_idx_collection);
 			
 			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -1243,8 +1295,11 @@
 	
 	// SELECT "collection" FROM "database2" WHERE "key" = ?;
 	
+	int const col_idx_collection = SQLITE_COL_START;
+	int const bind_idx_key       = SQLITE_BIND_START;
+	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 1, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -1254,8 +1309,8 @@
 		
 		do
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_collection);
+			int textSize = sqlite3_column_bytes(statement, col_idx_collection);
 			
 			NSString *collection = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -1721,7 +1776,11 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
+		//
 		// SELECT "key", "metadata" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
+		
+		int const col_idx_key      = SQLITE_COL_START + 0;
+		int const col_idx_metadata = SQLITE_COL_START + 1;
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
@@ -1755,7 +1814,7 @@
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		for (i = 0; i < numKeyParams; i++)
 		{
@@ -1764,7 +1823,7 @@
 			
 			[keyIndexDict setObject:keyIndexNumber forKey:key];
 			
-			sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(statement, (int)(SQLITE_BIND_START + 1 + i), [key UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
@@ -1779,11 +1838,11 @@
 			
 			do
 			{
-				const unsigned char *text = sqlite3_column_text(statement, 0);
-				int textSize = sqlite3_column_bytes(statement, 0);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
-				const void *blob = sqlite3_column_blob(statement, 1);
-				int blobSize = sqlite3_column_bytes(statement, 1);
+				const void *blob = sqlite3_column_blob(statement, col_idx_metadata);
+				int blobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
@@ -1928,7 +1987,11 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
+		//
 		// SELECT "key", "data" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
+		
+		int const col_idx_key  = SQLITE_COL_START + 0;
+		int const col_idx_data = SQLITE_COL_START + 1;
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
@@ -1962,7 +2025,7 @@
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		for (i = 0; i < numKeyParams; i++)
 		{
@@ -1971,7 +2034,7 @@
 			
 			[keyIndexDict setObject:keyIndexNumber forKey:key];
 			
-			sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(statement, (int)(SQLITE_BIND_START + 1 + i), [key UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
@@ -1986,14 +2049,17 @@
 			
 			do
 			{
-				const unsigned char *text = sqlite3_column_text(statement, 0);
-				int textSize = sqlite3_column_bytes(statement, 0);
-				
-				const void *blob = sqlite3_column_blob(statement, 1);
-				int blobSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				// Note: We already checked the cache (above),
+				// so we already know this item is not in the cache.
+				
+				const void *blob = sqlite3_column_blob(statement, col_idx_data);
+				int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 				
 				NSData *objectData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 				id object = connection->database->objectDeserializer(collection, key, objectData);
@@ -2144,7 +2210,12 @@
 		NSUInteger numKeyParams = MIN([missingIndexes count], (maxHostParams-1)); // minus 1 for collection param
 		
 		// Create the SQL query:
+		//
 		// SELECT "key", "data", "metadata" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
+		
+		int const col_idx_key      = SQLITE_COL_START + 0;
+		int const col_idx_data     = SQLITE_COL_START + 1;
+		int const col_idx_metadata = SQLITE_COL_START + 2;
 		
 		NSUInteger capacity = 80 + (numKeyParams * 3);
 		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
@@ -2178,7 +2249,7 @@
 		
 		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		for (i = 0; i < numKeyParams; i++)
 		{
@@ -2187,7 +2258,7 @@
 			
 			[keyIndexDict setObject:keyIndexNumber forKey:key];
 			
-			sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(statement, (int)(SQLITE_BIND_START + 1 + i), [key UTF8String], -1, SQLITE_TRANSIENT);
 		}
 		
 		[missingIndexes removeObjectsInRange:NSMakeRange(0, numKeyParams)];
@@ -2202,19 +2273,23 @@
 			
 			do
 			{
-				const unsigned char *text = sqlite3_column_text(statement, 0);
-				int textSize = sqlite3_column_bytes(statement, 0);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				// Note: When we checked the caches (above),
+				// we could only process the item if the object & metadata were both cached.
+				// So it's worthwhile to check each individual cache here.
 				
 				YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
 				id object = [connection->objectCache objectForKey:cacheKey];
 				if (object == nil)
 				{
-					const void *oBlob = sqlite3_column_blob(statement, 1);
-					int oBlobSize = sqlite3_column_bytes(statement, 1);
+					const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
@@ -2231,8 +2306,8 @@
 				}
 				else
 				{
-					const void *mBlob = sqlite3_column_blob(statement, 2);
-					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 					
 					if (mBlobSize > 0)
 					{
@@ -2325,8 +2400,12 @@
 	
 	// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
 	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const bind_idx_collection = SQLITE_BIND_START;
+	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
@@ -2336,10 +2415,10 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+			int textSize = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -2385,10 +2464,14 @@
 	
 	// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
 	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const bind_idx_collection = SQLITE_BIND_START;
+	
 	for (NSString *collection in collections)
 	{
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
@@ -2398,10 +2481,10 @@
 			
 			do
 			{
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -2453,6 +2536,10 @@
 	
 	// SELECT "rowid", "collection", "key" FROM "database2";
 	
+	int const col_idx_rowid      = SQLITE_COL_START + 0;
+	int const col_idx_collection = SQLITE_COL_START + 1;
+	int const col_idx_key        = SQLITE_COL_START + 2;
+	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
@@ -2461,13 +2548,13 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text1 = sqlite3_column_text(statement, 1);
-			int textSize1 = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_collection);
+			int textSize1 = sqlite3_column_bytes(statement, col_idx_collection);
 			
-			const unsigned char *text2 = sqlite3_column_text(statement, 2);
-			int textSize2 = sqlite3_column_bytes(statement, 2);
+			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_key);
+			int textSize2 = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *collection, *key;
 			
@@ -2534,19 +2621,14 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "metadata" FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_metadata    = SQLITE_COL_START + 2;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
@@ -2558,10 +2640,10 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+			int textSize = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -2578,14 +2660,24 @@
 				}
 				else
 				{
-					const void *mBlob = sqlite3_column_blob(statement, 2);
-					int mBlobSize = sqlite3_column_bytes(statement, 2);
+					const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 					
 					if (mBlobSize > 0)
 					{
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+						
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
+					
+					// Cache considerations:
+					// Do we want to add the objects/metadata to the cache here?
+					// If the cache is unlimited then we should.
+					// Otherwise we should only add to the cache if it's not full.
+					// The cache should generally be reserved for items that are explicitly fetched,
+					// and we don't want to crowd them out during enumerations.
 					
 					if (unlimitedMetadataCacheLimit ||
 					    [connection->metadataCache count] < connection->metadataCacheLimit)
@@ -2662,21 +2754,16 @@
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	// SELECT "rowid", "key", "metadata" FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_metadata    = SQLITE_COL_START + 2;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	for (NSString *collection in collections)
 	{
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
@@ -2686,10 +2773,10 @@
 			
 			do
 			{
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -2706,14 +2793,24 @@
 					}
 					else
 					{
-						const void *mBlob = sqlite3_column_blob(statement, 2);
-						int mBlobSize = sqlite3_column_bytes(statement, 2);
+						const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+						int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 						
 						if (mBlobSize > 0)
 						{
+							// Performance tuning:
+							// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+							
 							NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 							metadata = connection->database->metadataDeserializer(collection, key, mData);
 						}
+						
+						// Cache considerations:
+						// Do we want to add the objects/metadata to the cache here?
+						// If the cache is unlimited then we should.
+						// Otherwise we should only add to the cache if it's not full.
+						// The cache should generally be reserved for items that are explicitly fetched,
+						// and we don't want to crowd them out during enumerations.
 						
 						if (unlimitedMetadataCacheLimit ||
 						    [connection->metadataCache count] < connection->metadataCacheLimit)
@@ -2796,16 +2893,11 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "metadata" FROM "database2" ORDER BY "collection" ASC;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid      = SQLITE_COL_START + 0;
+	int const col_idx_collection = SQLITE_COL_START + 1;
+	int const col_idx_key        = SQLITE_COL_START + 2;
+	int const col_idx_metadata   = SQLITE_COL_START + 3;
 	
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
@@ -2817,13 +2909,13 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text1 = sqlite3_column_text(statement, 1);
-			int textSize1 = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_collection);
+			int textSize1 = sqlite3_column_bytes(statement, col_idx_collection);
 			
-			const unsigned char *text2 = sqlite3_column_text(statement, 2);
-			int textSize2 = sqlite3_column_bytes(statement, 2);
+			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_key);
+			int textSize2 = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *collection, *key;
 			
@@ -2843,14 +2935,24 @@
 				}
 				else
 				{
-					const void *mBlob = sqlite3_column_blob(statement, 3);
-					int mBlobSize = sqlite3_column_bytes(statement, 3);
+					const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 					
 					if (mBlobSize > 0)
 					{
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+						
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
+					
+					// Cache considerations:
+					// Do we want to add the objects/metadata to the cache here?
+					// If the cache is unlimited then we should.
+					// Otherwise we should only add to the cache if it's not full.
+					// The cache should generally be reserved for items that are explicitly fetched,
+					// and we don't want to crowd them out during enumerations.
 					
 					if (unlimitedMetadataCacheLimit ||
 					    [connection->metadataCache count] < connection->metadataCacheLimit)
@@ -2921,19 +3023,14 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "data", FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_data        = SQLITE_COL_START + 2;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	
@@ -2945,10 +3042,10 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+			int textSize = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -2960,11 +3057,21 @@
 				id object = [connection->objectCache objectForKey:cacheKey];
 				if (object == nil)
 				{
-					const void *oBlob = sqlite3_column_blob(statement, 2);
-					int oBlobSize = sqlite3_column_bytes(statement, 2);
+					const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
+					
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
+					
+					// Cache considerations:
+					// Do we want to add the objects/metadata to the cache here?
+					// If the cache is unlimited then we should.
+					// Otherwise we should only add to the cache if it's not full.
+					// The cache should generally be reserved for items that are explicitly fetched,
+					// and we don't want to crowd them out during enumerations.
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -3036,21 +3143,16 @@
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	
 	// SELECT "rowid", "key", "data", FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_data        = SQLITE_COL_START + 2;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	for (NSString *collection in collections)
 	{
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
@@ -3060,10 +3162,10 @@
 			
 			do
 			{
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -3075,11 +3177,21 @@
 					id object = [connection->objectCache objectForKey:cacheKey];
 					if (object == nil)
 					{
-						const void *oBlob = sqlite3_column_blob(statement, 2);
-						int oBlobSize = sqlite3_column_bytes(statement, 2);
+						const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+						int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
+						
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 						
 						NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 						object = connection->database->objectDeserializer(collection, key, oData);
+						
+						// Cache considerations:
+						// Do we want to add the objects/metadata to the cache here?
+						// If the cache is unlimited then we should.
+						// Otherwise we should only add to the cache if it's not full.
+						// The cache should generally be reserved for items that are explicitly fetched,
+						// and we don't want to crowd them out during enumerations.
 						
 						if (unlimitedObjectCacheLimit ||
 						    [connection->objectCache count] < connection->objectCacheLimit)
@@ -3159,7 +3271,11 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "data" FROM "database2" ORDER BY \"collection\" ASC;";
-	//           0           1         2       3
+	
+	int const col_idx_rowid      = SQLITE_COL_START + 0;
+	int const col_idx_collection = SQLITE_COL_START + 1;
+	int const col_idx_key        = SQLITE_COL_START + 2;
+	int const col_idx_data       = SQLITE_COL_START + 3;
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	
@@ -3171,13 +3287,13 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text1 = sqlite3_column_text(statement, 1);
-			int textSize1 = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_collection);
+			int textSize1 = sqlite3_column_bytes(statement, col_idx_collection);
 			
-			const unsigned char *text2 = sqlite3_column_text(statement, 2);
-			int textSize2 = sqlite3_column_bytes(statement, 2);
+			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_key);
+			int textSize2 = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *collection, *key;
 			
@@ -3192,8 +3308,8 @@
 				id object = [connection->objectCache objectForKey:cacheKey];
 				if (object == nil)
 				{
-					const void *oBlob = sqlite3_column_blob(statement, 3);
-					int oBlobSize = sqlite3_column_bytes(statement, 3);
+					const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
@@ -3265,19 +3381,15 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "data", "metadata" FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_data        = SQLITE_COL_START + 2;
+	int const col_idx_metadata    = SQLITE_COL_START + 3;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
@@ -3290,10 +3402,10 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+			int textSize = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -3305,11 +3417,21 @@
 				id object = [connection->objectCache objectForKey:cacheKey];
 				if (object == nil)
 				{
-					const void *oBlob = sqlite3_column_blob(statement, 2);
-					int oBlobSize = sqlite3_column_bytes(statement, 2);
+					const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
+					
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
+					
+					// Cache considerations:
+					// Do we want to add the objects/metadata to the cache here?
+					// If the cache is unlimited then we should.
+					// Otherwise we should only add to the cache if it's not full.
+					// The cache should generally be reserved for items that are explicitly fetched,
+					// and we don't want to crowd them out during enumerations.
 					
 					if (unlimitedObjectCacheLimit || [connection->objectCache count] < connection->objectCacheLimit)
 					{
@@ -3326,14 +3448,24 @@
 				}
 				else
 				{
-					const void *mBlob = sqlite3_column_blob(statement, 3);
-					int mBlobSize = sqlite3_column_bytes(statement, 3);
+					const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 					
 					if (mBlobSize > 0)
 					{
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+						
 						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 						metadata = connection->database->metadataDeserializer(collection, key, mData);
 					}
+					
+					// Cache considerations:
+					// Do we want to add the objects/metadata to the cache here?
+					// If the cache is unlimited then we should.
+					// Otherwise we should only add to the cache if it's not full.
+					// The cache should generally be reserved for items that are explicitly fetched,
+					// and we don't want to crowd them out during enumerations.
 					
 					if (unlimitedMetadataCacheLimit ||
 					    [connection->metadataCache count] < connection->metadataCacheLimit)
@@ -3409,21 +3541,17 @@
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
 	
 	// SELECT "rowid", "key", "data", "metadata" FROM "database2" WHERE "collection" = ?;
-	//
-	// Performance tuning:
-	// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-	//
-	// Cache considerations:
-	// Do we want to add the objects/metadata to the cache here?
-	// If the cache is unlimited then we should.
-	// Otherwise we should only add to the cache if its not full.
-	// The cache should generally be reserved for items that are explicitly fetched,
-	// and we don't want to crowd them out during enumerations.
+	
+	int const col_idx_rowid       = SQLITE_COL_START + 0;
+	int const col_idx_key         = SQLITE_COL_START + 1;
+	int const col_idx_data        = SQLITE_COL_START + 2;
+	int const col_idx_metadata    = SQLITE_COL_START + 3;
+	int const bind_idx_collection = SQLITE_BIND_START;
 	
 	for (NSString *collection in collections)
 	{
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
@@ -3433,10 +3561,10 @@
 			
 			do
 			{
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -3448,11 +3576,21 @@
 					id object = [connection->objectCache objectForKey:cacheKey];
 					if (object == nil)
 					{
-						const void *oBlob = sqlite3_column_blob(statement, 2);
-						int oBlobSize = sqlite3_column_bytes(statement, 2);
+						const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+						int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
+						
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
 						
 						NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 						object = connection->database->objectDeserializer(collection, key, oData);
+						
+						// Cache considerations:
+						// Do we want to add the objects/metadata to the cache here?
+						// If the cache is unlimited then we should.
+						// Otherwise we should only add to the cache if it's not full.
+						// The cache should generally be reserved for items that are explicitly fetched,
+						// and we don't want to crowd them out during enumerations.
 						
 						if (unlimitedObjectCacheLimit ||
 						    [connection->objectCache count] < connection->objectCacheLimit)
@@ -3470,14 +3608,24 @@
 					}
 					else
 					{
-						const void *mBlob = sqlite3_column_blob(statement, 3);
-						int mBlobSize = sqlite3_column_bytes(statement, 3);
+						const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+						int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 						
 						if (mBlobSize > 0)
 						{
+							// Performance tuning:
+							// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+							
 							NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
 							metadata = connection->database->metadataDeserializer(collection, key, mData);
 						}
+						
+						// Cache considerations:
+						// Do we want to add the objects/metadata to the cache here?
+						// If the cache is unlimited then we should.
+						// Otherwise we should only add to the cache if it's not full.
+						// The cache should generally be reserved for items that are explicitly fetched,
+						// and we don't want to crowd them out during enumerations.
 						
 						if (unlimitedMetadataCacheLimit ||
 						    [connection->metadataCache count] < connection->metadataCacheLimit)
@@ -3559,7 +3707,12 @@
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "data", "metadata" FROM "database2" ORDER BY \"collection\" ASC;";
-	//           0           1         2       3         4
+	
+	int const col_idx_rowid      = SQLITE_COL_START + 0;
+	int const col_idx_collection = SQLITE_COL_START + 1;
+	int const col_idx_key        = SQLITE_COL_START + 2;
+	int const col_idx_data       = SQLITE_COL_START + 3;
+	int const col_idx_metadata   = SQLITE_COL_START + 4;
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
@@ -3572,13 +3725,13 @@
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text1 = sqlite3_column_text(statement, 1);
-			int textSize1 = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_collection);
+			int textSize1 = sqlite3_column_bytes(statement, col_idx_collection);
 			
-			const unsigned char *text2 = sqlite3_column_text(statement, 2);
-			int textSize2 = sqlite3_column_bytes(statement, 2);
+			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_key);
+			int textSize2 = sqlite3_column_bytes(statement, col_idx_key);
 			
 			NSString *collection, *key;
 			
@@ -3593,8 +3746,8 @@
 				id object = [connection->objectCache objectForKey:cacheKey];
 				if (object == nil)
 				{
-					const void *oBlob = sqlite3_column_blob(statement, 3);
-					int oBlobSize = sqlite3_column_bytes(statement, 3);
+					const void *oBlob = sqlite3_column_blob(statement, col_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, col_idx_data);
 					
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
@@ -3614,8 +3767,8 @@
 				}
 				else
 				{
-					const void *mBlob = sqlite3_column_blob(statement, 4);
-					int mBlobSize = sqlite3_column_bytes(statement, 4);
+					const void *mBlob = sqlite3_column_blob(statement, col_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, col_idx_metadata);
 					
 					if (mBlobSize > 0)
 					{
@@ -3855,19 +4008,23 @@
 	BOOL result = NO;
 	int value = 0;
 	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
+	// SELECT "data" FROM "yap2" WHERE "extension" = ? AND "key" = ? ;
+	
+	int const col_idx_data       = SQLITE_COL_START;
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
 	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
 		result = YES;
-		value = sqlite3_column_int(statement, 0);
+		value = sqlite3_column_int(statement, col_idx_data);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -3897,19 +4054,23 @@
 	BOOL result = NO;
 	double value = 0.0;
 	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
+	// SELECT "data" FROM "yap2" WHERE "extension" = ? AND "key" = ? ;
+	
+	int const col_idx_data       = SQLITE_COL_START;
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
 	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
 		result = YES;
-		value = sqlite3_column_double(statement, 0);
+		value = sqlite3_column_double(statement, col_idx_data);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -3935,19 +4096,23 @@
 	
 	NSString *value = nil;
 	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
+	// SELECT "data" FROM "yap2" WHERE "extension" = ? AND "key" = ? ;
+	
+	int const col_idx_data       = SQLITE_COL_START;
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
 	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(statement, 0);
-		int textSize = sqlite3_column_bytes(statement, 0);
+		const unsigned char *text = sqlite3_column_text(statement, col_idx_data);
+		int textSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		value = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}
@@ -3974,19 +4139,23 @@
 	
 	NSData *value = nil;
 	
-	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
+	// SELECT "data" FROM "yap2" WHERE "extension" = ? AND "key" = ? ;
+	
+	int const col_idx_data       = SQLITE_COL_START;
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
 	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const void *blob = sqlite3_column_blob(statement, 0);
-		int blobSize = sqlite3_column_bytes(statement, 0);
+		const void *blob = sqlite3_column_blob(statement, col_idx_data);
+		int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 		
 		value = [[NSData alloc] initWithBytes:(void *)blob length:blobSize];
 	}
@@ -4241,13 +4410,17 @@
 		
 		// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		int const col_idx_rowid       = SQLITE_COL_START;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			rowid = sqlite3_column_int64(statement, 0);
+			rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			found = YES;
 		}
 		else if (status == SQLITE_ERROR)
@@ -4289,10 +4462,17 @@
 		
 		// UPDATE "database2" SET "data" = ?, "metadata" = ? WHERE "rowid" = ?;
 		
-		sqlite3_bind_blob(statement, 1, serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 2, serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
+		int const bind_idx_data     = SQLITE_BIND_START + 0;
+		int const bind_idx_metadata = SQLITE_BIND_START + 1;
+		int const bind_idx_rowid    = SQLITE_BIND_START + 2;
 		
-		sqlite3_bind_int64(statement, 3, rowid);
+		sqlite3_bind_blob(statement, bind_idx_data,
+		                  serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
+		
+		sqlite3_bind_blob(statement, bind_idx_metadata,
+		                  serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
@@ -4315,11 +4495,19 @@
 		
 		// INSERT INTO "database2" ("collection", "key", "data", "metadata") VALUES (?, ?, ?, ?);
 		
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
-		sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		int const bind_idx_data       = SQLITE_BIND_START + 2;
+		int const bind_idx_metadata   = SQLITE_BIND_START + 3;
 		
-		sqlite3_bind_blob(statement, 3, serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
-		sqlite3_bind_blob(statement, 4, serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+		
+		sqlite3_bind_blob(statement, bind_idx_data,
+		                  serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
+		
+		sqlite3_bind_blob(statement, bind_idx_metadata,
+		                  serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_DONE)
@@ -4540,8 +4728,11 @@
 	
 	// UPDATE "database2" SET "data" = ? WHERE "rowid" = ?;
 	
-	sqlite3_bind_blob(statement, 1, serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
-	sqlite3_bind_int64(statement, 2, rowid);
+	int const bind_idx_data  = SQLITE_BIND_START + 0;
+	int const bind_idx_rowid = SQLITE_BIND_START + 1;
+	
+	sqlite3_bind_blob(statement, bind_idx_data, serializedObject.bytes, (int)serializedObject.length, SQLITE_STATIC);
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	BOOL updated = YES;
 	
@@ -4706,8 +4897,13 @@
 	
 	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
 	
-	sqlite3_bind_blob(statement, 1, serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
-	sqlite3_bind_int64(statement, 2, rowid);
+	int const bind_idx_metadata = SQLITE_BIND_START + 0;
+	int const bind_idx_rowid    = SQLITE_BIND_START + 1;
+	
+	sqlite3_bind_blob(statement, bind_idx_metadata,
+	                  serializedMetadata.bytes, (int)serializedMetadata.length, SQLITE_STATIC);
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	BOOL updated = YES;
 	
@@ -4825,9 +5021,11 @@
 	sqlite3_stmt *statement = [connection removeForRowidStatement];
 	if (statement == NULL) return;
 	
-	// DELETE FROM 'database' WHERE 'rowid' = ?;
+	// DELETE FROM "database" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const bind_idx_rowid = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	BOOL removed = YES;
 	
@@ -4926,13 +5124,16 @@
 		
 		if (YES)
 		{
-			// SELECT "key", "rowid" FROM "database2" WHERE "collection" = ? AND "key" IN (?, ?, ...);
-		
+			// SELECT "rowid", "key" FROM "database2" WHERE "collection" = ? AND "key" IN (?, ?, ...);
+			
+			int const col_idx_rowid = SQLITE_COL_START + 0;
+			int const col_idx_key   = SQLITE_COL_START + 1;
+			
 			NSUInteger capacity = 100 + (numKeyParams * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
 			[query appendString:
-			    @"SELECT \"key\", \"rowid\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" IN ("];
+			    @"SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" IN ("];
 			
 			NSUInteger i;
 			for (i = 0; i < numKeyParams; i++)
@@ -4956,20 +5157,20 @@
 				return;
 			}
 			
-			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 			
 			for (i = 0; i < numKeyParams; i++)
 			{
 				NSString *key = [keys objectAtIndex:(keysIndex + i)];
-				sqlite3_bind_text(statement, (int)(i + 2), [key UTF8String], -1, SQLITE_TRANSIENT);
+				sqlite3_bind_text(statement, (int)(SQLITE_BIND_START + 1 + i), [key UTF8String], -1, SQLITE_TRANSIENT);
 			}
 			
 			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 			{
-				const unsigned char *text = sqlite3_column_text(statement, 0);
-				int textSize = sqlite3_column_bytes(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				int64_t rowid = sqlite3_column_int64(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -5025,7 +5226,7 @@
 			{
 				int64_t rowid = [[foundRowids objectAtIndex:i] longLongValue];
 				
-				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
 			}
 			
             for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
@@ -5179,8 +5380,10 @@
 	
 		// DELETE FROM "database2" WHERE "collection" = ?;
 		
+		int const bind_idx_collection = SQLITE_BIND_START;
+		
 		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-		sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status != SQLITE_DONE)
@@ -5241,17 +5444,21 @@
 				return;
 			}
 			
-			// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
+			// SELECT "rowid", "key" FROM "database2" WHERE "collection" = ?;
 			
-			sqlite3_bind_text(statement, 1, _collection.str, _collection.length, SQLITE_STATIC);
+			int const col_idx_rowid       = SQLITE_COL_START + 0;
+			int const col_idx_key         = SQLITE_COL_START + 1;
+			int const bind_idx_collection = SQLITE_BIND_START;
+			
+			sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 			
 			int status;
 			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 			{
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_key);
+				int textSize = sqlite3_column_bytes(statement, col_idx_key);
 				
 				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 				
@@ -5311,7 +5518,7 @@
 			{
 				int64_t rowid = [[foundRowids objectAtIndex:i] longLongValue];
 				
-				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
 			}
             
             for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
@@ -5432,13 +5639,17 @@
 	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
-	sqlite3_bind_int(statement, 3, value);
+	sqlite3_bind_int(statement, bind_idx_data, value);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)
@@ -5466,13 +5677,17 @@
 	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
-	sqlite3_bind_double(statement, 3, value);
+	sqlite3_bind_double(statement, bind_idx_data, value);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)
@@ -5500,14 +5715,18 @@
 	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	YapDatabaseString _value; MakeYapDatabaseString(&_value, value);
-	sqlite3_bind_text(statement, 3, _value.str, _value.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_data, _value.str, _value.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)
@@ -5536,14 +5755,18 @@
 	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	__attribute__((objc_precise_lifetime)) NSData *data = value;
-	sqlite3_bind_blob(statement, 3, data.bytes, (int)data.length, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, bind_idx_data, data.bytes, (int)data.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)
@@ -5577,11 +5800,14 @@
 	
 	// DELETE FROM "yap2" WHERE "extension" = ? AND "key" = ?;
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, 2, _key.str, _key.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)
@@ -5615,8 +5841,10 @@
 	
 	// DELETE FROM "yap2" WHERE "extension" = ?;
 	
+	int const bind_idx_extension = SQLITE_BIND_START;
+	
 	YapDatabaseString _extension; MakeYapDatabaseString(&_extension, extensionName);
-	sqlite3_bind_text(statement, 1, _extension.str, _extension.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, _extension.str, _extension.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_DONE)

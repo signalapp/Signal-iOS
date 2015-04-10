@@ -278,6 +278,10 @@
 		NSString *string = [NSString stringWithFormat:
 			@"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\";", [self pageTableName]];
 		
+		int const col_idx_pageKey     = SQLITE_COL_START + 0;
+		int const col_idx_group       = SQLITE_COL_START + 1;
+		int const col_idx_prevPageKey = SQLITE_COL_START + 2;
+		int const col_idx_count       = SQLITE_COL_START + 3;
 		
 		sqlite3_stmt *statement = NULL;
 		
@@ -295,23 +299,24 @@
 		{
 			stepCount++;
 			
-			const unsigned char *text0 = sqlite3_column_text(statement, 0);
-			int textSize0 = sqlite3_column_bytes(statement, 0);
-			
-			const unsigned char *text1 = sqlite3_column_text(statement, 1);
-			int textSize1 = sqlite3_column_bytes(statement, 1);
-			
-			const unsigned char *text2 = sqlite3_column_text(statement, 2);
-			int textSize2 = sqlite3_column_bytes(statement, 2);
-			
-			int count = sqlite3_column_int(statement, 3);
+			const unsigned char *text0 = sqlite3_column_text(statement, col_idx_pageKey);
+			int textSize0 = sqlite3_column_bytes(statement, col_idx_pageKey);
 			
 			NSString *pageKey = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
+			
+			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_group);
+			int textSize1 = sqlite3_column_bytes(statement, col_idx_group);
+			
 			NSString *group   = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			
+			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_prevPageKey);
+			int textSize2 = sqlite3_column_bytes(statement, col_idx_prevPageKey);
 			
 			NSString *prevPageKey = nil;
 			if (textSize2 > 0)
 				prevPageKey = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
+			
+			int count = sqlite3_column_int(statement, col_idx_count);
 			
 			if (count >= 0)
 			{
@@ -1154,13 +1159,16 @@
 		
 		// SELECT "pageKey" FROM "mapTableName" WHERE "rowid" = ? ;
 		
-		sqlite3_bind_int64(statement, 1, rowid);
+		int const col_idx_pageKey = SQLITE_COL_START;
+		int const bind_idx_rowid  = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, 0);
-			int textSize = sqlite3_column_bytes(statement, 0);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_pageKey);
+			int textSize = sqlite3_column_bytes(statement, col_idx_pageKey);
 			
 			pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}
@@ -1293,6 +1301,9 @@
 			
 			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
 			
+			int const col_idx_rowid   = SQLITE_COL_START + 0;
+			int const col_idx_pageKey = SQLITE_COL_START + 1;
+			
 			NSUInteger capacity = 50 + (count * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
 			
@@ -1327,17 +1338,17 @@
 			{
 				int64_t rowid = [[inRowids objectAtIndex:i] longLongValue];
 				
-				sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
 			}
 			
 			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 			{
 				// Extract rowid & pageKey from row
 				
-				int64_t rowid = sqlite3_column_int64(statement, 0);
+				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, 1);
-				int textSize = sqlite3_column_bytes(statement, 1);
+				const unsigned char *text = sqlite3_column_text(statement, col_idx_pageKey);
+				int textSize = sqlite3_column_bytes(statement, col_idx_pageKey);
 				
 				NSNumber *rowidNumber = @(rowid);
 				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
@@ -1428,16 +1439,19 @@
 		if (statement == NULL)
 			return nil;
 		
-		// SELECT data FROM 'pageTableName' WHERE pageKey = ? ;
+		// SELECT "data" FROM 'pageTableName' WHERE pageKey = ? ;
+		
+		int const col_idx_data     = SQLITE_COL_START;
+		int const bind_idx_pageKey = SQLITE_BIND_START;
 		
 		YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-		sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+		sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			const void *blob = sqlite3_column_blob(statement, 0);
-			int blobSize = sqlite3_column_bytes(statement, 0);
+			const void *blob = sqlite3_column_blob(statement, col_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, col_idx_data);
 			
 			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			
@@ -2879,11 +2893,13 @@
 				
 				// DELETE FROM "pageTableName" WHERE "pageKey" = ?;
 				
+				int const bind_idx_pageKey = SQLITE_BIND_START;
+				
 				YDBLogVerbose(@"DELETE FROM '%@' WHERE 'pageKey' = ?;\n"
 				              @" - pageKey: %@", [self pageTableName], pageKey);
 				
 				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-				sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)
@@ -2909,6 +2925,12 @@
 				// INSERT INTO "pageTableName"
 				//   ("pageKey", "group", "prevPageKey", "count", "data") VALUES (?, ?, ?, ?, ?);
 				
+				int const bind_idx_pageKey     = SQLITE_BIND_START + 0;
+				int const bind_idx_group       = SQLITE_BIND_START + 1;
+				int const bind_idx_prevPageKey = SQLITE_BIND_START + 2;
+				int const bind_idx_count       = SQLITE_BIND_START + 3;
+				int const bind_idx_data        = SQLITE_BIND_START + 4;
+				
 				YDBLogVerbose(@"INSERT INTO '%@'"
 				              @" ('pageKey', 'group', 'prevPageKey', 'count', 'data') VALUES (?,?,?,?,?);\n"
 				              @" - pageKey   : %@\n"
@@ -2918,20 +2940,21 @@
 				              pageMetadata->group, pageMetadata->prevPageKey, (int)pageMetadata->count);
 				
 				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-				sqlite3_bind_text(statement, 1, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 				
 				YapDatabaseString _group; MakeYapDatabaseString(&_group, pageMetadata->group);
-				sqlite3_bind_text(statement, 2, _group.str, _group.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_group, _group.str, _group.length, SQLITE_STATIC);
 				
 				YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
 				if (pageMetadata->prevPageKey) {
-					sqlite3_bind_text(statement, 3, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
+					sqlite3_bind_text(statement, bind_idx_prevPageKey,
+					                  _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 				}
 				
-				sqlite3_bind_int(statement, 4, (int)(pageMetadata->count));
+				sqlite3_bind_int(statement, bind_idx_count, (int)(pageMetadata->count));
 				
 				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-				sqlite3_bind_blob(statement, 5, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				sqlite3_bind_blob(statement, bind_idx_data, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)
@@ -2958,6 +2981,11 @@
 				
 				// UPDATE "pageTableName" SET "prevPageKey" = ?, "count" = ?, "data" = ? WHERE "pageKey" = ?;
 				
+				int const bind_idx_prevPageKey = SQLITE_BIND_START + 0;
+				int const bind_idx_count       = SQLITE_BIND_START + 1;
+				int const bind_idx_data        = SQLITE_BIND_START + 2;
+				int const bind_idx_pageKey     = SQLITE_BIND_START + 3;
+				
 				YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ?, 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
 				              @" - pageKey    : %@\n"
 				              @" - prevPageKey: %@\n"
@@ -2966,16 +2994,17 @@
 				
 				YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
 				if (pageMetadata->prevPageKey) {
-					sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
+					sqlite3_bind_text(statement, bind_idx_prevPageKey,
+					                  _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 				}
 				
-				sqlite3_bind_int(statement, 2, (int)(pageMetadata->count));
+				sqlite3_bind_int(statement, bind_idx_count, (int)(pageMetadata->count));
 				
 				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-				sqlite3_bind_blob(statement, 3, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				sqlite3_bind_blob(statement, bind_idx_data, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 				
 				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-				sqlite3_bind_text(statement, 4, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)
@@ -3001,17 +3030,21 @@
 			
 				// UPDATE "pageTableName" SET "count" = ?, "data" = ? WHERE "pageKey" = ?;
 				
+				int const bind_idx_count   = SQLITE_BIND_START + 0;
+				int const bind_idx_data    = SQLITE_BIND_START + 1;
+				int const bind_idx_pageKey = SQLITE_BIND_START + 2;
+				
 				YDBLogVerbose(@"UPDATE '%@' SET 'count' = ?, 'data' = ? WHERE 'pageKey' = ?;\n"
 				              @" - pageKey: %@\n"
 				              @" - count  : %d", [self pageTableName], pageKey, (int)(pageMetadata->count));
 				
-				sqlite3_bind_int(statement, 1, (int)[page count]);
+				sqlite3_bind_int(statement, bind_idx_count, (int)[page count]);
 				
 				__attribute__((objc_precise_lifetime)) NSData *rawData = [self serializePage:page];
-				sqlite3_bind_blob(statement, 2, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
+				sqlite3_bind_blob(statement, bind_idx_data, rawData.bytes, (int)rawData.length, SQLITE_STATIC);
 				
 				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-				sqlite3_bind_text(statement, 3, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)
@@ -3053,17 +3086,21 @@
 				
 			// UPDATE "pageTableName" SET "prevPageKey" = ? WHERE "pageKey" = ?;
 			
+			int const bind_idx_prevPageKey = SQLITE_BIND_START + 0;
+			int const bind_idx_pageKey     = SQLITE_BIND_START + 1;
+			
 			YDBLogVerbose(@"UPDATE '%@' SET 'prevPageKey' = ? WHERE 'pageKey' = ?;\n"
 			              @" - pageKey    : %@\n"
 			              @" - prevPageKey: %@", [self pageTableName], pageKey, pageMetadata->prevPageKey);
 			
 			YapDatabaseString _prevPageKey; MakeYapDatabaseString(&_prevPageKey, pageMetadata->prevPageKey);
 			if (pageMetadata->prevPageKey) {
-				sqlite3_bind_text(statement, 1, _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_prevPageKey,
+				                  _prevPageKey.str, _prevPageKey.length, SQLITE_STATIC);
 			}
 			
 			YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-			sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+			sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 			
 			int status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
@@ -3099,10 +3136,12 @@
 				
 				// DELETE FROM "mapTableName" WHERE "rowid" = ?;
 				
+				int const bind_idx_rowid = SQLITE_BIND_START;
+				
 				YDBLogVerbose(@"DELETE FROM '%@' WHERE 'rowid' = ?;\n"
 				              @" - rowid : %lld\n", [self mapTableName], rowid);
 				
-				sqlite3_bind_int64(statement, 1, rowid);
+				sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)
@@ -3126,14 +3165,17 @@
 				
 				// INSERT OR REPLACE INTO "mapTableName" ("rowid", "pageKey") VALUES (?, ?);
 				
+				int const bind_idx_rowid   = SQLITE_BIND_START + 0;
+				int const bind_idx_pageKey = SQLITE_BIND_START + 1;
+				
 				YDBLogVerbose(@"INSERT OR REPLACE INTO '%@' ('rowid', 'pageKey') VALUES (?, ?);\n"
 				              @" - rowid  : %lld\n"
 				              @" - pageKey: %@", [self mapTableName], rowid, pageKey);
 				
-				sqlite3_bind_int64(statement, 1, rowid);
+				sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 				
 				YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
-				sqlite3_bind_text(statement, 2, _pageKey.str, _pageKey.length, SQLITE_STATIC);
+				sqlite3_bind_text(statement, bind_idx_pageKey, _pageKey.str, _pageKey.length, SQLITE_STATIC);
 				
 				int status = sqlite3_step(statement);
 				if (status != SQLITE_DONE)

@@ -354,9 +354,9 @@ static NSString *const ext_key__version_deprecated = @"version";
 	//  isNew : INSERT INTO "tableName" ("rowid", "column1", "column2", ...) VALUES (?, ?, ? ...)
 	// !isNew : INSERT OR REPLACE INTO "tableName" ("rowid", "column1", "column2", ...) VALUES (?, ?, ? ...)
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	sqlite3_bind_int64(statement, SQLITE_BIND_START, rowid);
 	
-	int i = 2;
+	int i = SQLITE_BIND_START + 1;
 	for (NSString *columnName in ftsConnection->fts->columnNames)
 	{
 		NSString *columnValue = [ftsConnection->blockDict objectForKey:columnName];
@@ -391,7 +391,9 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// DELETE FROM "tableName" WHERE "rowid" = ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const bind_idx_rowid = SQLITE_BIND_START;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
@@ -456,7 +458,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	{
 		int64_t rowid = [[rowids objectAtIndex:i] longLongValue];
 		
-		sqlite3_bind_int64(statement, (int)(i + 1), rowid);
+		sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
 	}
 	
 	status = sqlite3_step(statement);
@@ -856,15 +858,18 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid" FROM "tableName" WHERE "tableName" MATCH ?;
 	
+	int const bind_idx_query = SQLITE_BIND_START;
+	int const col_idx_rowid  = SQLITE_COL_START;
+	
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
-	sqlite3_bind_text(statement, 1, _query.str, _query.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
 			block(rowid, &stop);
 			
@@ -966,14 +971,24 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "tableName" MATCH ?;
 	
+	int const col_idx_rowid           = SQLITE_COL_START + 0;
+	int const col_idx_snippet         = SQLITE_COL_START + 1;
+	
+	int const bind_idx_startMatchText = SQLITE_BIND_START + 0;
+	int const bind_idx_endMatchText   = SQLITE_BIND_START + 1;
+	int const bind_idx_ellipsesText   = SQLITE_BIND_START + 2;
+	int const bind_idx_columnIndex    = SQLITE_BIND_START + 3;
+	int const bind_idx_numTokens      = SQLITE_BIND_START + 4;
+	int const bind_idx_query          = SQLITE_BIND_START + 5;
+	
 	YapDatabaseString _startMatchText; MakeYapDatabaseString(&_startMatchText, options.startMatchText);
-	sqlite3_bind_text(statement, 1, _startMatchText.str, _startMatchText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_startMatchText, _startMatchText.str, _startMatchText.length, SQLITE_STATIC);
 	
 	YapDatabaseString _endMatchText; MakeYapDatabaseString(&_endMatchText, options.endMatchText);
-	sqlite3_bind_text(statement, 2, _endMatchText.str, _endMatchText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_endMatchText, _endMatchText.str, _endMatchText.length, SQLITE_STATIC);
 	
 	YapDatabaseString _ellipsesText; MakeYapDatabaseString(&_ellipsesText, options.ellipsesText);
-	sqlite3_bind_text(statement, 3, _ellipsesText.str, _ellipsesText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_ellipsesText, _ellipsesText.str, _ellipsesText.length, SQLITE_STATIC);
 
 	int columnIndex = -1;
 	if (options.columnName)
@@ -988,21 +1003,21 @@ static NSString *const ext_key__version_deprecated = @"version";
 			columnIndex = (int)index;
 		}
 	}
-	sqlite3_bind_int(statement, 4, columnIndex);
-	sqlite3_bind_int(statement, 5, options.numberOfTokens);
+	sqlite3_bind_int(statement, bind_idx_columnIndex, columnIndex);
+	sqlite3_bind_int(statement, bind_idx_numTokens, options.numberOfTokens);
 	
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
-	sqlite3_bind_text(statement, 6, _query.str, _query.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, 0);
+			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, 1);
-			int textSize = sqlite3_column_bytes(statement, 1);
+			const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
+			int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
 			
 			NSString *snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -1113,10 +1128,13 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid" FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
 	
-	sqlite3_bind_int64(statement, 1, rowid);
+	int const bind_idx_rowid = SQLITE_BIND_START + 0;
+	int const bind_idx_query = SQLITE_BIND_START + 1;
+	
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
-	sqlite3_bind_text(statement, 2, _query.str, _query.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
 	BOOL result = NO;
 	
@@ -1154,14 +1172,25 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
 	
+//	int const col_idx_rowid           = SQLITE_COL_START + 0;
+	int const col_idx_snippet         = SQLITE_COL_START + 1;
+	
+	int const bind_idx_startMatchText = SQLITE_BIND_START + 0;
+	int const bind_idx_endMatchText   = SQLITE_BIND_START + 1;
+	int const bind_idx_ellipsesText   = SQLITE_BIND_START + 2;
+	int const bind_idx_columnIndex    = SQLITE_BIND_START + 3;
+	int const bind_idx_numTokens      = SQLITE_BIND_START + 4;
+	int const bind_idx_rowid          = SQLITE_BIND_START + 5;
+	int const bind_idx_query          = SQLITE_BIND_START + 6;
+	
 	YapDatabaseString _startMatchText; MakeYapDatabaseString(&_startMatchText, options.startMatchText);
-	sqlite3_bind_text(statement, 1, _startMatchText.str, _startMatchText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_startMatchText, _startMatchText.str, _startMatchText.length, SQLITE_STATIC);
 	
 	YapDatabaseString _endMatchText; MakeYapDatabaseString(&_endMatchText, options.endMatchText);
-	sqlite3_bind_text(statement, 2, _endMatchText.str, _endMatchText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_endMatchText, _endMatchText.str, _endMatchText.length, SQLITE_STATIC);
 	
 	YapDatabaseString _ellipsesText; MakeYapDatabaseString(&_ellipsesText, options.ellipsesText);
-	sqlite3_bind_text(statement, 3, _ellipsesText.str, _ellipsesText.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_ellipsesText, _ellipsesText.str, _ellipsesText.length, SQLITE_STATIC);
 
 	int columnIndex = -1;
 	if (options.columnName)
@@ -1176,23 +1205,23 @@ static NSString *const ext_key__version_deprecated = @"version";
 			columnIndex = (int)index;
 		}
 	}
-	sqlite3_bind_int(statement, 4, columnIndex);
-	sqlite3_bind_int(statement, 5, options.numberOfTokens);
+	sqlite3_bind_int(statement, bind_idx_columnIndex, columnIndex);
+	sqlite3_bind_int(statement, bind_idx_numTokens, options.numberOfTokens);
 	
-	sqlite3_bind_int64(statement, 6, rowid);
+	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
-	sqlite3_bind_text(statement, 7, _query.str, _query.length, SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
 	NSString *snippet = nil;
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-	//	int64_t rowid = sqlite3_column_int64(statement, 0);
+	//	int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
 			
-		const unsigned char *text = sqlite3_column_text(statement, 1);
-		int textSize = sqlite3_column_bytes(statement, 1);
+		const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
+		int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
 		
 		snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}

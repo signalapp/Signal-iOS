@@ -1290,7 +1290,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	sqlite3_stmt **statement = &enumerateKeysInCollectionStatement;
 	if (*statement == NULL)
 	{
-		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE collection = ?;";
+		char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
@@ -2669,16 +2669,19 @@ NS_INLINE BOOL YDBIsMainThread()
 	
 	// SELECT data FROM 'yap2' WHERE extension = ? AND key = ? ;
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	
 	char *extension = "";
-	sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, extension, (int)strlen(extension), SQLITE_STATIC);
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, key, (int)strlen(key), SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = (uint64_t)sqlite3_column_int64(statement, 0);
+		result = (uint64_t)sqlite3_column_int64(statement, SQLITE_COL_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -2704,13 +2707,17 @@ NS_INLINE BOOL YDBIsMainThread()
 	
 	// INSERT OR REPLACE INTO "yap2" ("extension", "key", "data") VALUES (?, ?, ?);
 	
+	int const bind_idx_extension = SQLITE_BIND_START + 0;
+	int const bind_idx_key       = SQLITE_BIND_START + 1;
+	int const bind_idx_data      = SQLITE_BIND_START + 2;
+	
 	char *extension = "";
-	sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_extension, extension, (int)strlen(extension), SQLITE_STATIC);
 	
 	char *key = "snapshot";
-	sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+	sqlite3_bind_text(statement, bind_idx_key, key, (int)strlen(key), SQLITE_STATIC);
 	
-	sqlite3_bind_int64(statement, 3, (sqlite3_int64)newSnapshot);
+	sqlite3_bind_int64(statement, bind_idx_data, (sqlite3_int64)newSnapshot);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
