@@ -16,6 +16,7 @@ pod 'SCWaveformView',             '~> 1.0'
 pod 'YapDatabase/SQLCipher'
 pod 'SSKeychain'     
 pod 'DJWActionSheet'
+pod 'SwipeView', '~> 1.3'
 
 pod 'SocketRocket',               :git => 'https://github.com/FredericJacobs/SocketRocket.git', :commit => '73d8a19'
 pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :commit => '9be8f6ed65eb55368a5ff767f055158cf585065f'

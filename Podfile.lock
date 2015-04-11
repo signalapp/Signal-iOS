@@ -51,6 +51,7 @@ PODS:
   - SQLCipher/fts (3.1.0):
     - SQLCipher/common
   - SSKeychain (1.2.3)
+  - SwipeView (1.3.2)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UICKeyChainStore (1.0.7)
@@ -78,6 +79,7 @@ DEPENDENCIES:
   - SocketRocket (from `https://github.com/FredericJacobs/SocketRocket.git`, commit
     `73d8a19`)
   - SSKeychain
+  - SwipeView (~> 1.3)
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
   - YapDatabase/SQLCipher
@@ -126,6 +128,7 @@ SPEC CHECKSUMS:
   SocketRocket: 70df1983148525857ced17c57207bfb939bc6b8e
   SQLCipher: c44fcca49c31483c2489cfb79aa7a69407f3794a
   SSKeychain: 3f42991739c6c60a9cf1bbd4dff6c0d3694bcf3d
+  SwipeView: bd67cfaf7760c036438446b3ccb28a3b84fce009
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UICKeyChainStore: d4c0f4e313d67b2f23b6614adca55351accac15a
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
