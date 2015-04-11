@@ -9,12 +9,14 @@
 #import "TSDatabaseView.h"
 
 #import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseFilteredView.h>
 
 #import "TSThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSStorageManager.h"
 #import "TSRecipient.h"
+#import "TSMessageAdapter.h"
 
 NSString *TSInboxGroup                       = @"TSInboxGroup";
 NSString *TSArchiveGroup                     = @"TSArchiveGroup";
@@ -24,6 +26,7 @@ NSString *TSUnreadIncomingMessagesGroup      = @"TSUnreadIncomingMessagesGroup";
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
+NSString *TSImageAttachmentDatabaseViewExtensionName = @"TSImageAttachmentDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
@@ -119,6 +122,38 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
     return [[TSStorageManager sharedManager].database registerExtension:view withName:TSMessageDatabaseViewExtensionName];
 }
 
++ (BOOL)registerImageAttachmentDatabaseView {
+    YapDatabaseView *imageAttachmentView = [[TSStorageManager sharedManager].database registeredExtension:TSImageAttachmentDatabaseViewExtensionName];
+    if (imageAttachmentView) {
+        return YES;
+    }
+    
+    YapDatabaseViewFiltering *viewFiltering = [YapDatabaseViewFiltering withRowBlock:^BOOL(NSString *group, NSString *collection, NSString *key, id object, id metadata) {
+        if ([object isKindOfClass:[TSInteraction class]]) {
+            TSInteraction *interaction = (TSInteraction*)object;
+            TSThread *thread = [[TSThread alloc] initWithUniqueId:interaction.uniqueThreadId];
+            TSMessageAdapter *message = [TSMessageAdapter messageViewDataWithInteraction:interaction
+                                                                                inThread:thread];
+            
+            if (message.isMediaMessage) {
+                if([[message media] isKindOfClass:[TSAttachmentAdapter class]]) {
+                    TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[message media];
+                    return [messageMedia isImage];
+                }
+            }
+        }
+        
+        return NO;
+    }];
+    
+    YapDatabaseView *view = [[YapDatabaseFilteredView alloc]
+                             initWithParentViewName:TSMessageDatabaseViewExtensionName
+                             filtering:viewFiltering
+                             versionTag:@"1"];
+    
+    return [[TSStorageManager sharedManager].database registerExtension:view withName:TSImageAttachmentDatabaseViewExtensionName];
+
+}
 
 /**
  *  Determines whether a thread belongs to the archive or inbox

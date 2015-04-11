@@ -22,6 +22,6 @@ extern NSString *TSUnreadDatabaseViewExtensionName;
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
 + (BOOL)registerUnreadDatabaseView;
-
++ (BOOL)registerImageAttachmentDatabaseView;
 
 @end
