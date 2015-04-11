@@ -12,7 +12,7 @@
 
 @interface FullImageViewController : UIViewController
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment fromRect:(CGRect)rect forInteraction:(TSInteraction*)interaction;
+- (instancetype)initWithInteraction:(TSInteraction*)interaction;
 
 - (void)presentFromViewController:(UIViewController*)viewController;
 

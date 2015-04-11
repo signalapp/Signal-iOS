@@ -805,7 +805,7 @@ typedef enum : NSUInteger {
                         
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
-                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
+                            FullImageViewController * vc = [[FullImageViewController alloc] initWithInteraction:[self interactionAtIndexPath:indexPath]];
                             
                             [vc presentFromViewController:self.navigationController];
                         }
