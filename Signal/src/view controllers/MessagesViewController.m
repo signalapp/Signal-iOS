@@ -593,6 +593,8 @@ typedef enum : NSUInteger {
         
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
         [self finishSendingMessage];
+        self.inputToolbar.contentView.rightBarButtonItem.hidden = YES;
+        _recordButton.hidden = NO;
     }
 }
 
