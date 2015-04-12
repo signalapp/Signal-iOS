@@ -186,6 +186,7 @@
         
         if (_incoming) {
             _audioBubble.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
+            _audioWaveform.backgroundColor = [UIColor colorWithRed:229/255.0f green:228/255.0f blue:234/255.0f alpha:1.0f];
             _audioWaveform.color  = [UIColor whiteColor];
             _audioWaveform.progressColor = [UIColor colorWithRed:107/255.0f green:185/255.0f blue:254/255.0f alpha:1.0f];
             _audioPlayPauseButton.image = [UIImage imageNamed:@"audio_play_button_blue"];
