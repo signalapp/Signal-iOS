@@ -10,7 +10,7 @@
 #import "DJWActionSheet+OWS.h"
 #import "TSAttachmentStream.h"
 #import "UIUtil.h"
-#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseView.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>
 #import <SwipeView/SwipeView.h>
 #import "TSStorageManager.h"
@@ -110,7 +110,16 @@
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    DDLogInfo(@"Database changed and i haven't done a thing");
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    
+    if ( [[self.uiDatabaseConnection ext:TSImageAttachmentDatabaseViewExtensionName] hasChangesForNotifications:notifications]) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+            DDLogInfo(@"Database changed and i got some new stuff");
+            [self.imageMappings updateWithTransaction:transaction];
+            [self.swipeView reloadData];
+        }];
+        return;
+    }
 }
 
 
