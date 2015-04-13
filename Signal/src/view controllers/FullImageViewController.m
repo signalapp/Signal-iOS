@@ -40,7 +40,8 @@
 
 @property BOOL isPresenting;
 
-@property TSInteraction      *interaction;
+@property TSInteraction *requestedInteraction;
+@property TSInteraction *currentInteraction;
 @property TSThread *thread;
 
 @end
@@ -52,8 +53,8 @@
     self = [super initWithNibName:nil bundle:nil];
     
     if  (self) {
-        self.interaction     = interaction;
-        self.thread          = [[TSThread alloc] initWithUniqueId:interaction.uniqueThreadId];
+        self.requestedInteraction     = interaction;
+        self.thread                   = [[TSThread alloc] initWithUniqueId:interaction.uniqueThreadId];
     }
     
     return self;
@@ -74,7 +75,7 @@
         
         __block NSInteger gotoItem;
         [[transaction extension:TSImageAttachmentDatabaseViewExtensionName] enumerateRowsInGroup:[self threadGrouping] usingBlock:^(NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-            if ([key isEqualToString:self.interaction.uniqueId]) {
+            if ([key isEqualToString:self.requestedInteraction.uniqueId]) {
                 gotoItem = (NSInteger)index;
                 *stop = YES;
             }
@@ -371,7 +372,7 @@
         scrollViewWithImage = [self makeScrollView];
     }
     
-    UIImage *image = [self imageAtIndex:index];
+    UIImage *image = [self setCurrentInteractionAndGetImageAtIndex:index];
     UIImageView *imageView = [self imageViewFromScrollView:scrollViewWithImage];
     [self populateImageView:imageView withImage:image];
 
@@ -452,10 +453,11 @@
         interaction = [[transaction extension:TSImageAttachmentDatabaseViewExtensionName] objectAtRow:(NSUInteger)index inSection:0 withMappings:self.imageMappings];
     }];
     
+    self.currentInteraction = interaction;
     return interaction;
 }
 
-- (UIImage*)imageAtIndex:(NSInteger)index {
+- (UIImage*)setCurrentInteractionAndGetImageAtIndex:(NSInteger)index {
     TSInteraction *interaction = [self interactionAtIndex:index];
     TSAdapterCacheManager *manager = [TSAdapterCacheManager sharedManager];
     
@@ -482,23 +484,24 @@
 
 -(void)shareButtonTapped:(UIButton*)sender
 {
-    /*
     [DJWActionSheet showInView:self.view withTitle:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:@[NSLocalizedString(@"CAMERA_ROLL_SAVE_BUTTON", @""), NSLocalizedString(@"CAMERA_ROLL_COPY_BUTTON", @"")] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
 
-        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
-            __block TSInteraction *interaction = [self interaction];
+        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+            __block TSInteraction *interaction = self.currentInteraction;
             [self dismissViewControllerAnimated:YES completion:^{
                 [interaction remove];
             }];
             
         } else {
+            UIScrollView *currentScrollView = [self currentlyDisplayedScrollView];
+            UIImage *currentImage = ((UIImageView*)[self imageViewFromScrollView:currentScrollView]).image;
             switch (tappedButtonIndex) {
                 case 0:
-                    UIImageWriteToSavedPhotosAlbum(self.image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+                    UIImageWriteToSavedPhotosAlbum(currentImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
                     break;
                 case 1:
-                    [[UIPasteboard generalPasteboard] setImage:self.image];
+                    [[UIPasteboard generalPasteboard] setImage:currentImage];
                     break;
                 default:
                     DDLogWarn(@"Illegal Action sheet field #%ld <%s>",(long)tappedButtonIndex, __PRETTY_FUNCTION__);
@@ -506,7 +509,6 @@
             }
         }
     }];
-     */
 }
 
 #pragma mark - Saving images to Camera Roll
