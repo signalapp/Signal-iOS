@@ -32,7 +32,7 @@
 	return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseOptions *copy = [[[self class] alloc] init];
 	copy->corruptAction = corruptAction;

@@ -232,10 +232,10 @@
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)handleInsertObject:(id __unused)object
+          forCollectionKey:(YapCollectionKey __unused *)collectionKey
+              withMetadata:(id __unused)metadata
+                     rowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -251,10 +251,10 @@
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)handleUpdateObject:(id __unused)object
+          forCollectionKey:(YapCollectionKey __unused *)collectionKey
+              withMetadata:(id __unused)metadata
+                     rowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -269,9 +269,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleReplaceObject:(id)object
-           forCollectionKey:(YapCollectionKey *)collectionKey
-                  withRowid:(int64_t)rowid
+- (void)handleReplaceObject:(id __unused)object
+           forCollectionKey:(YapCollectionKey __unused *)collectionKey
+                  withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -286,9 +286,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleReplaceMetadata:(id)metadata
-             forCollectionKey:(YapCollectionKey *)collectionKey
-                    withRowid:(int64_t)rowid
+- (void)handleReplaceMetadata:(id __unused)metadata
+             forCollectionKey:(YapCollectionKey __unused *)collectionKey
+                    withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -300,7 +300,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchObjectForKey:inCollection:collection:
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -312,7 +312,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchMetadataForKey:inCollection:
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -324,7 +324,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction
  * - removeObjectForKey:inCollection:
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -344,7 +344,7 @@
  * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
  * and then loop over them in "chunks" which are readily processable for extensions.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)handleRemoveObjectsForKeys:(NSArray __unused *)keys inCollection:(NSString __unused *)collection withRowids:(NSArray __unused *)rowids
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }

@@ -28,10 +28,10 @@
 
 #pragma mark Invalid
 
-- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
-                         sorting:(YapDatabaseViewSorting *)sorting
-                      versionTag:(NSString *)inVersionTag
-                         options:(YapDatabaseViewOptions *)inOptions
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)grouping
+                         sorting:(YapDatabaseViewSorting __unused *)sorting
+                      versionTag:(NSString __unused *)inVersionTag
+                         options:(YapDatabaseViewOptions __unused *)inOptions
 {
 	NSString *reason = @"You must use the init method(s) specific to YapDatabaseFilteredView.";
 	

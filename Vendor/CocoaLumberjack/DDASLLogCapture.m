@@ -136,7 +136,7 @@ static int _captureLogLevel = LOG_LEVEL_VERBOSE;
          for the messages.
          */
         int notifyToken = 0;  // Can be used to unregister with notify_cancel().
-        notify_register_dispatch(kNotifyASLDBUpdate, &notifyToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(int token)
+        notify_register_dispatch(kNotifyASLDBUpdate, &notifyToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(int __unused token)
                                  {
                                      // At least one message has been posted; build a search query.
                                      @autoreleasepool

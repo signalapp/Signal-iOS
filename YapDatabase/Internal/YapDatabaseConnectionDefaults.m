@@ -39,7 +39,7 @@ static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 500;
 	return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseConnectionDefaults *copy = [[[self class] alloc] init];
 	

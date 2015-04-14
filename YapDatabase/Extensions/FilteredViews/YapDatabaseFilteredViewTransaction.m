@@ -231,7 +231,7 @@
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
-		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
+		InvokeFilterBlock = ^(NSString *group, int64_t __unused rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
@@ -282,7 +282,7 @@
 		__block NSUInteger filteredIndex = 0;
 		
 		[parentViewTransaction enumerateRowidsInGroup:group
-		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+		                                   usingBlock:^(int64_t rowid, NSUInteger __unused parentIndex, BOOL __unused *stop)
 		{
 			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 			
@@ -366,7 +366,7 @@
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *outerStop) {
 		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
@@ -374,7 +374,7 @@
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL __unused *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			 
@@ -433,7 +433,7 @@
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
-		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
+		InvokeFilterBlock = ^(NSString *group, int64_t __unused rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
@@ -493,7 +493,7 @@
 		__block NSUInteger index = 0;
 		
 		[parentViewTransaction enumerateRowidsInGroup:group
-		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+		                                   usingBlock:^(int64_t rowid, NSUInteger __unused parentIndex, BOOL __unused *stop)
 		{
 			if (existing && ((existingRowid == rowid)))
 			{
@@ -642,7 +642,7 @@
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
-		InvokeFilterBlock = ^(NSString *group, int64_t rowid, YapCollectionKey *ck){
+		InvokeFilterBlock = ^(NSString *group, int64_t __unused rowid, YapCollectionKey *ck){
 			
 			return filterBlock(group, ck.collection, ck.key);
 		};
@@ -698,7 +698,7 @@
 		__block NSUInteger index = 0;
 		
 		[parentViewTransaction enumerateRowidsInGroup:group
-		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+		                                   usingBlock:^(int64_t rowid, NSUInteger __unused parentIndex, BOOL __unused *stop)
 		{
 			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 			
@@ -1337,7 +1337,7 @@
 	__unsafe_unretained NSString *registeredName = [self registeredName];
 	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
 	
-	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
 		
 		__unsafe_unretained NSString *extName = (NSString *)key;
 		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
@@ -1362,9 +1362,9 @@
 
 @implementation YapDatabaseFilteredViewTransaction (ReadWrite)
 
-- (void)setGrouping:(YapDatabaseViewGrouping *)grouping
-            sorting:(YapDatabaseViewSorting *)sorting
-         versionTag:(NSString *)versionTag
+- (void)setGrouping:(YapDatabaseViewGrouping __unused *)grouping
+            sorting:(YapDatabaseViewSorting __unused *)sorting
+         versionTag:(NSString __unused *)versionTag
 {
 	NSString *reason = @"This method is not available for YapDatabaseFilteredView.";
 	
@@ -1415,7 +1415,7 @@
 	NSString *registeredName = [self registeredName];
 	NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
 	
-	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
 		
 		__unsafe_unretained NSString *extName = (NSString *)key;
 		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;

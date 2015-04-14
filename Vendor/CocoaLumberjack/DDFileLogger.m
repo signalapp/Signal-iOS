@@ -117,9 +117,9 @@ BOOL doesAppRunInBackground(void);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
+                      ofObject:(id __unused)object
                         change:(NSDictionary *)change
-                       context:(void *)context
+                       context:(void __unused *)context
 {
     NSNumber *old = [change objectForKey:NSKeyValueChangeOldKey];
     NSNumber *new = [change objectForKey:NSKeyValueChangeNewKey];

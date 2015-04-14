@@ -248,7 +248,7 @@
 
 #pragma mark NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseRelationshipEdge *copy = [[YapDatabaseRelationshipEdge alloc] init];
 	

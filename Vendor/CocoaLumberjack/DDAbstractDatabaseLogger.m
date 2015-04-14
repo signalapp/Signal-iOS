@@ -47,7 +47,7 @@
 #pragma mark Override Me
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)db_log:(DDLogMessage *)logMessage
+- (BOOL)db_log:(DDLogMessage __unused *)logMessage
 {
     // Override me and add your implementation.
     // 

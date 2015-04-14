@@ -15,7 +15,7 @@
 	YapDatabaseConnection *databaseConnection;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (BOOL)application:(UIApplication __unused *)application didFinishLaunchingWithOptions:(NSDictionary __unused *)launchOptions
 {
 	[DDLog addLogger:[DDTTYLogger sharedInstance]];
 	
@@ -319,14 +319,14 @@ static const NSUInteger STR_LENGTH = 2000;
 	NSLog(@"Registering mainView....");
 
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id object){
+	    ^NSString *(NSString __unused *collection, NSString __unused *key, id __unused object){
 		
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2){
+	    ^(NSString __unused *group, NSString __unused *collection1, NSString __unused *key1, id obj1,
+	                       NSString __unused *collection2, NSString __unused *key2, id obj2){
 		
 		return [obj1 compare:obj2];
 	}];
@@ -346,14 +346,14 @@ static const NSUInteger STR_LENGTH = 2000;
 	NSLog(@"Registering onTheFlyView....");
 
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id object){
+	    ^NSString *(NSString __unused *collection, NSString __unused *key, id __unused object){
 		
 		return @"";
 	}];
 
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2){
+	    ^(NSString __unused *group, NSString __unused *collection, NSString __unused *key1, id obj1,
+	                       NSString __unused *collection2, NSString __unused *key2, id obj2){
 		
 		return [obj1 compare:obj2];
 	}];

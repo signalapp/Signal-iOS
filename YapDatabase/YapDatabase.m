@@ -99,7 +99,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseSerializer)defaultSerializer
 {
-	return ^ NSData* (NSString *collection, NSString *key, id object){
+	return ^ NSData* (NSString __unused *collection, NSString __unused *key, id object){
 		return [NSKeyedArchiver archivedDataWithRootObject:object];
 	};
 }
@@ -110,7 +110,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseDeserializer)defaultDeserializer
 {
-	return ^ id (NSString *collection, NSString *key, NSData *data){
+	return ^ id (NSString __unused *collection, NSString __unused *key, NSData *data){
 		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
 	};
 }
@@ -124,7 +124,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseSerializer)propertyListSerializer
 {
-	return ^ NSData* (NSString *collection, NSString *key, id object){
+	return ^ NSData* (NSString __unused *collection, NSString __unused *key, id object){
 		return [NSPropertyListSerialization dataWithPropertyList:object
 		                                                  format:NSPropertyListBinaryFormat_v1_0
 		                                                 options:NSPropertyListImmutable
@@ -141,7 +141,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseDeserializer)propertyListDeserializer
 {
-	return ^ id (NSString *collection, NSString *key, NSData *data){
+	return ^ id (NSString __unused *collection, NSString __unused *key, NSData *data){
 		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
 	};
 }
@@ -152,7 +152,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseSerializer)timestampSerializer
 {
-	return ^ NSData* (NSString *collection, NSString *key, id object) {
+	return ^ NSData* (NSString __unused *collection, NSString __unused *key, id object) {
 		
 		if ([object isKindOfClass:[NSDate class]])
 		{
@@ -173,7 +173,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 + (YapDatabaseDeserializer)timestampDeserializer
 {
-	return ^ id (NSString *collection, NSString *key, NSData *data) {
+	return ^ id (NSString __unused *collection, NSString __unused *key, NSData *data) {
 		
 		if ([data length] == sizeof(NSTimeInterval))
 		{
@@ -2372,7 +2372,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	NSDate *date = [connectionPoolDates objectAtIndex:0];
 	NSTimeInterval interval = [date timeIntervalSinceNow] + connectionPoolLifetime;
 	
-	dispatch_time_t tt = dispatch_time(DISPATCH_TIME_NOW, (interval * NSEC_PER_SEC));
+	dispatch_time_t tt = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * NSEC_PER_SEC));
 	dispatch_source_set_timer(connectionPoolTimer, tt, DISPATCH_TIME_FOREVER, 0);
 	
 	if (isNewTimer) {
@@ -2491,7 +2491,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *
  * - snapshot : NSNumber with the changeset's snapshot
 **/
-- (void)notePendingChanges:(NSDictionary *)pendingChangeset fromConnection:(YapDatabaseConnection *)sender
+- (void)notePendingChanges:(NSDictionary *)pendingChangeset fromConnection:(YapDatabaseConnection __unused *)sender
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	NSAssert([pendingChangeset objectForKey:YapDatabaseSnapshotKey], @"Missing required change key: snapshot");
@@ -2576,7 +2576,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
 	if (changeset_extensions)
 	{
-		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extObj, BOOL *stop) {
+		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extObj, BOOL __unused *stop) {
 			
 			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
 			if (changeset_extensions_extName)

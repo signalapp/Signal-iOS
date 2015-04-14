@@ -36,7 +36,7 @@
 {
 	NSMutableDictionary *deepCopy = [NSMutableDictionary dictionaryWithCapacity:[group_pagesMetadata_dict count]];
 	
-	[group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[group_pagesMetadata_dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 		
 		__unsafe_unretained NSString *group = (NSString *)key;
 		__unsafe_unretained NSMutableArray *pagesMetadata = (NSMutableArray *)obj;
@@ -52,7 +52,7 @@
 	return deepCopy;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	if (isImmutable)
 	{
@@ -69,7 +69,7 @@
 	}
 }
 
-- (id)mutableCopyWithZone:(NSZone *)zone
+- (id)mutableCopyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewState *copy = [[YapDatabaseViewState alloc] initForCopy];
 	copy->isImmutable = NO;

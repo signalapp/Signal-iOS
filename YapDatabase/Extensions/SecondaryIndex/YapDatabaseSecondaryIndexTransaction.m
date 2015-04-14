@@ -286,7 +286,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		    (YapDatabaseSecondaryIndexWithKeyBlock)secondaryIndex->block;
 		
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
-		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop) {
 			
 			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key);
 			
@@ -299,7 +299,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		if (allowedCollections)
 		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 				
 				if ([allowedCollections isAllowed:collection])
 				{
@@ -318,7 +318,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		    (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
 		
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop) {
 			
 			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, object);
 			
@@ -331,7 +331,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		if (allowedCollections)
 		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 				
 				if ([allowedCollections isAllowed:collection])
 				{
@@ -351,7 +351,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;
 		
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop) {
 			
 			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, metadata);
 			
@@ -364,7 +364,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		if (allowedCollections)
 		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 				
 				if ([allowedCollections isAllowed:collection])
 				{
@@ -384,7 +384,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		    (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
 		
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop) {
 			
 			secondaryIndexBlock(secondaryIndexConnection->blockDict, collection, key, object, metadata);
 			
@@ -397,7 +397,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		if (allowedCollections)
 		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 				
 				if ([allowedCollections isAllowed:collection])
 				{
@@ -985,7 +985,7 @@ static NSString *const ext_key_version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	// Nothing to do for this extension
 }
@@ -994,7 +994,7 @@ static NSString *const ext_key_version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	// Nothing to do for this extension
 }
@@ -1022,7 +1022,7 @@ static NSString *const ext_key_version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)handleRemoveObjectsForKeys:(NSArray __unused *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
 	

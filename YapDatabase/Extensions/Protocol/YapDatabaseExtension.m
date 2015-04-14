@@ -20,9 +20,9 @@
  *   If YES, then the extension should drop tables from sqlite.
  *   If NO, then the extension should unregister the proper YapMemoryTable(s).
 **/
-+ (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                      wasPersistent:(BOOL)wasPersistent
++ (void)dropTablesForRegisteredName:(NSString __unused *)registeredName
+                    withTransaction:(YapDatabaseReadWriteTransaction __unused *)transaction
+                      wasPersistent:(BOOL __unused)wasPersistent
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -74,7 +74,7 @@
  * 
  * Return YES if the class/instance supports the database configuration.
 **/
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabase:(YapDatabase __unused *)database withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 {
 	return YES;
 }
@@ -108,7 +108,7 @@
  * Subclasses MUST implement this method.
  * Returns a proper instance of the YapDatabaseExtensionConnection subclass.
 **/
-- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection __unused *)databaseConnection
 {
 	NSAssert(NO, @"Missing required method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
@@ -125,7 +125,7 @@
  * This allows new view connections to be able to (sometimes) fetch the view state from their extension,
  * rather than read it from the database and piece it together manually.
 **/
-- (void)processChangeset:(NSDictionary *)changeset
+- (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	// Override me if needed (for optimizations)
 }

@@ -207,9 +207,9 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 /**
  * Required override method from YapDatabaseExtension
 **/
-- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
-           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
-              hasDiskChanges:(BOOL *)hasDiskChangesPtr
+- (void)getInternalChangeset:(NSMutableDictionary __unused **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary __unused **)externalChangesetPtr
+              hasDiskChanges:(BOOL __unused *)hasDiskChangesPtr
 {
 	// Nothing to do for this particular extension.
 	//
@@ -220,7 +220,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 /**
  * Required override method from YapDatabaseExtension
 **/
-- (void)processChangeset:(NSDictionary *)changeset
+- (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	// Nothing to do for this particular extension.
 	//

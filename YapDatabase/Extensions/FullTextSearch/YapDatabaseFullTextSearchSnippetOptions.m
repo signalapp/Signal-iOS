@@ -47,7 +47,7 @@
 	return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseFullTextSearchSnippetOptions *copy = [[YapDatabaseFullTextSearchSnippetOptions alloc] initForCopy];
 	

@@ -148,7 +148,7 @@
 	return [columnNames copy];
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseSecondaryIndexSetup *copy = [[YapDatabaseSecondaryIndexSetup alloc] initForCopy];
 	copy->setup = [setup mutableCopy];

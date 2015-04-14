@@ -227,7 +227,7 @@ static NSString *const ext_key_query             = @"query";
 /**
  * Standard upgrade hook
 **/
-- (void)dropTablesForOldSubclassVersion:(int)oldSubclassVersion
+- (void)dropTablesForOldSubclassVersion:(int __unused)oldSubclassVersion
 {
 	// Placeholder method.
 	// To be used if we have a major upgrade to this class.
@@ -477,7 +477,7 @@ static NSString *const ext_key_query             = @"query";
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *outerStop) {
 		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
@@ -485,7 +485,7 @@ static NSString *const ext_key_query             = @"query";
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse // <- required
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL __unused *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			 
@@ -590,7 +590,7 @@ static NSString *const ext_key_query             = @"query";
 		__block NSUInteger index = 0;
 		
 		[parentViewTransaction enumerateRowidsInGroup:group
-		                                   usingBlock:^(int64_t rowid, NSUInteger parentIndex, BOOL *stop)
+		                                   usingBlock:^(int64_t rowid, NSUInteger __unused parentIndex, BOOL __unused *stop)
 		{
 			if (existing && ((existingRowid == rowid)))
 			{
@@ -893,7 +893,7 @@ static NSString *const ext_key_query             = @"query";
 /**
  * This method is invoked whenever a batch of items are removed from our view.
 **/
-- (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray *)collectionKeys
+- (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray __unused *)collectionKeys
 {
 	__unsafe_unretained YapDatabaseSearchResultsViewOptions *searchResultsOptions =
 	  (YapDatabaseSearchResultsViewOptions *)viewConnection->view->options;
@@ -2011,7 +2011,7 @@ static NSString *const ext_key_query             = @"query";
 	__unsafe_unretained NSString *registeredName = [self registeredName];
 	__unsafe_unretained NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
 	
-	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
 		
 		__unsafe_unretained NSString *extName = (NSString *)key;
 		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
