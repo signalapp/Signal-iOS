@@ -20,10 +20,10 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 @interface PropertyListPreferences (PropertyUtil)
 
--(PhoneNumberDirectoryFilter*) tryGetSavedPhoneNumberDirectory;
--(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter;
--(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
--(void) setCachedDesiredBufferDepth:(double)value;
+- (PhoneNumberDirectoryFilter*) tryGetSavedPhoneNumberDirectory;
+- (void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter;
+- (NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
+- (void) setCachedDesiredBufferDepth:(double)value;
 
 - (BOOL) getHasSentAMessage;
 - (void) setHasSentAMessage:(BOOL)enabled;
@@ -31,20 +31,24 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (BOOL) getHasArchivedAMessage;
 - (void) setHasArchivedAMessage:(BOOL)enabled;
 
--(BOOL)loggingIsEnabled;
--(void)setLoggingEnabled:(BOOL)flag;
+- (BOOL)loggingIsEnabled;
+- (void)setLoggingEnabled:(BOOL)flag;
 
--(BOOL)screenSecurityIsEnabled;
--(void)setScreenSecurity:(BOOL)flag;
+- (BOOL)screenSecurityIsEnabled;
+- (void)setScreenSecurity:(BOOL)flag;
 
--(NotificationType)notificationPreviewType;
--(void)setNotificationPreviewType:(NotificationType)type;
+- (NotificationType)notificationPreviewType;
+- (void)setNotificationPreviewType:(NotificationType)type;
+- (NSString*)nameForNotificationPreviewType:(NotificationType)notificationType;
 
--(TSImageQuality)imageUploadQuality;
--(void)setImageUploadQuality:(TSImageQuality)quality;
+- (BOOL)soundInForeground;
+- (void)setSoundInForeground:(BOOL)enabled;
 
--(NSString*)lastRanVersion;
--(NSString*)setAndGetCurrentVersion;
+- (TSImageQuality)imageUploadQuality;
+- (void)setImageUploadQuality:(TSImageQuality)quality;
+
+- (NSString*)lastRanVersion;
+- (NSString*)setAndGetCurrentVersion;
 
 
 @end

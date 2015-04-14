@@ -418,7 +418,7 @@
     NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
     
     [self dismissViewControllerAnimated:YES completion:^(){
-        [Environment messageIdentifier:identifier];
+        [Environment messageIdentifier:identifier withCompose:YES];
     }];
 }
     

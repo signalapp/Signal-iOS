@@ -27,6 +27,7 @@
 #define HAS_SENT_A_MESSAGE_KEY @"User has sent a message"
 #define HAS_ARCHIVED_A_MESSAGE_KEY @"User archived a message"
 #define kSignalVersionKey @"SignalUpdateVersionKey"
+#define PLAY_SOUND_IN_FOREGROUND_KEY @"NotificationSoundInForeground"
 
 #define BloomFilterCacheName     @"bloomfilter"
 
@@ -141,17 +142,6 @@
 
 }
 
-
--(NotificationType)notificationPreviewType {
-    NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
-    
-    if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return NotificationNamePreview;
-    }
-}
-
 -(TSImageQuality)imageUploadQuality {
     // always return average image quality
     return TSImageQualityMedium;
@@ -159,11 +149,6 @@
 
 -(void)setImageUploadQuality:(TSImageQuality)quality {
     [self setValueForKey:IMAGE_UPLOAD_QUALITY_KEY toValue:@(quality)];
-}
-
--(void)setNotificationPreviewType:(NotificationType)type
-{
-    [self setValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY toValue:@(type)];
 }
 
 -(void)setScreenSecurity:(BOOL)flag{
@@ -212,6 +197,51 @@
     [NSUserDefaults.standardUserDefaults setObject:currentVersion forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+
+#pragma mark Notification Preferences
+
+- (BOOL)soundInForeground {
+    NSNumber *preference = [self tryGetValueForKey:PLAY_SOUND_IN_FOREGROUND_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return YES;
+    }
+}
+
+- (void)setSoundInForeground:(BOOL)enabled {
+    [self setValueForKey:PLAY_SOUND_IN_FOREGROUND_KEY toValue:@(enabled)];
+}
+
+-(void)setNotificationPreviewType:(NotificationType)type
+{
+    [self setValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY toValue:@(type)];
+}
+
+-(NotificationType)notificationPreviewType {
+    NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
+    
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        return NotificationNamePreview;
+    }
+}
+
+- (NSString*)nameForNotificationPreviewType:(NotificationType)notificationType {
+    switch (notificationType) {
+        case NotificationNamePreview:
+            return NSLocalizedString(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
+        case NotificationNameNoPreview:
+            return NSLocalizedString(@"NOTIFICATIONS_SENDER_ONLY", nil);
+        case NotificationNoNameNoPreview:
+            return NSLocalizedString(@"NOTIFICATIONS_NONE", nil);
+        default:
+            DDLogWarn(@"Undefined NotificationType in Settings");
+            return @"";
+    }
 }
 
 #pragma mark Bloom filter

@@ -59,8 +59,8 @@
     
     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController animated:YES completion:nil];
     
-    [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSString *signupToken) {
-        [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken success:^{
+    [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
+            [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken voipToken:voipToken success:^{
             [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
             [self clearMigrationFlag];
             Environment *env = [Environment getCurrent];

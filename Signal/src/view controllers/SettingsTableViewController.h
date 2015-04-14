@@ -16,6 +16,7 @@
 
 @property IBOutlet UILabel *networkStatusHeader;
 @property IBOutlet UILabel *settingsPrivacyTitle;
+@property IBOutlet UILabel *settingsNotifications;
 @property IBOutlet UILabel *settingsAdvancedTitle;
 @property IBOutlet UILabel *settingsAboutTitle;
 @property IBOutlet UIButton *destroyAccountButton;

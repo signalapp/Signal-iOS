@@ -27,4 +27,6 @@
 
 - (void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage;
 
+- (NSUInteger)unreadMessagesCount;
+
 @end

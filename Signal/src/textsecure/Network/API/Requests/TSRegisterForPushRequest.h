@@ -9,5 +9,7 @@
 #import "TSRequest.h"
 
 @interface TSRegisterForPushRequest : TSRequest
-- (id) initWithPushIdentifier:(NSString*)identifier;
+
+- (id) initWithPushIdentifier:(NSString*)identifier voipIdentifier:(NSString*)voipId;
+
 @end

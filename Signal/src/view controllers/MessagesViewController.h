@@ -28,4 +28,6 @@
 - (void)setupWithTSIdentifier:(NSString*)identifier;
 - (void)setupWithTSGroup:(TSGroupModel*)model;
 
+- (void)setComposeOnOpen:(BOOL)compose;
+
 @end

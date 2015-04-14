@@ -85,7 +85,7 @@ andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController;
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
-+ (void)messageIdentifier:(NSString*)identifier;
-+ (void)messageGroupModel:(TSGroupModel*)model;
-
++ (void)messageThreadId:(NSString*)threadId;
++ (void)messageIdentifier:(NSString*)identifier withCompose:(BOOL)compose;
++ (void)messageGroupModel:(TSGroupModel*)model withCompose:(BOOL)compose;
 @end

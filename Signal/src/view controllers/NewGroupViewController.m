@@ -119,7 +119,7 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 #pragma mark - Actions
 -(void)createGroup {
     TSGroupModel* model = [self makeGroup];
-    [Environment messageGroupModel:model];
+    [Environment messageGroupModel:model withCompose:YES];
 }
 
 

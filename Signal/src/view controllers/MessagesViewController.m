@@ -108,6 +108,7 @@ typedef enum : NSUInteger {
 @property NSUInteger page;
 
 @property BOOL isVisible;
+@property (nonatomic)  BOOL composeOnOpen;
 
 @end
 
@@ -133,6 +134,10 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
     }
     isGroupConversation = YES;
+}
+
+- (void)setComposeOnOpen:(BOOL)compose {
+    _composeOnOpen = compose;
 }
 
 - (void)setupWithThread:(TSThread *)thread {
@@ -232,9 +237,14 @@ typedef enum : NSUInteger {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [self markAllMessagesAsRead];
     [self startReadTimer];
     _isVisible = YES;
     [self initializeTitleLabelGestureRecognizer];
+    
+    if (_composeOnOpen) {
+        [self popKeyBoard];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1591,6 +1601,10 @@ typedef enum : NSUInteger {
     [self updateGroupModelTo:newGroupModel];
     [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     [self.collectionView reloadData];
+}
+
+- (void)popKeyBoard {
+    [self.inputToolbar.contentView.textView becomeFirstResponder];
 }
 
 - (void)dismissKeyBoard {
