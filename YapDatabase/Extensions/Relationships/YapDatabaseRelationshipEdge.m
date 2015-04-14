@@ -191,7 +191,7 @@
 	{
 		name = [inName copy];
 		destinationFilePath = [dstFilePath copy];
-		nodeDeleteRules = rules;
+		nodeDeleteRules = (unsigned short)rules;
 		isManualEdge = manual;
 		
 		edgeRowid = rowid;
@@ -219,7 +219,7 @@
 		
 		destinationFilePath = [decoder decodeObjectForKey:@"destinationFilePath"];
 		
-		nodeDeleteRules = [decoder decodeIntForKey:@"nodeDeleteRules"];
+		nodeDeleteRules = (unsigned short)[decoder decodeIntForKey:@"nodeDeleteRules"];
 		isManualEdge = [decoder decodeBoolForKey:@"isManualEdge"];
 		
 		if (destinationFilePath)
@@ -248,7 +248,7 @@
 
 #pragma mark NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseRelationshipEdge *copy = [[YapDatabaseRelationshipEdge alloc] init];
 	

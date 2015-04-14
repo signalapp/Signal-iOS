@@ -16,7 +16,7 @@
 
 @synthesize allowedCollections = allowedCollections;
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseSecondaryIndexOptions *copy = [[YapDatabaseSecondaryIndexOptions alloc] init];
 	copy->allowedCollections = allowedCollections;

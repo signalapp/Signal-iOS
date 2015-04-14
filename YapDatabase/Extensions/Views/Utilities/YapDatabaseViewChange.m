@@ -75,7 +75,7 @@
 	return op;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewSectionChange *op = [[YapDatabaseViewSectionChange alloc] init];
 	op->type = type;
@@ -207,7 +207,7 @@
 	return collectionKey;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewRowChange *op = [[YapDatabaseViewRowChange alloc] init];
 	op->collectionKey = collectionKey;
@@ -551,7 +551,7 @@
 					if (wasDelete)
 						dependencyIndex--;
 				}
-				else if ((offset < 0) && (-1*offset <= groupIndex))
+				else if ((offset < 0) && (-1*offset <= (NSInteger)groupIndex))
 				{
 					dependencyIndex = groupIndex + offset;
 				}

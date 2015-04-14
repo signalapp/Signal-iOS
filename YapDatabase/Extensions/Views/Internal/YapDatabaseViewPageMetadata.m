@@ -3,7 +3,7 @@
 
 @implementation YapDatabaseViewPageMetadata
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewPageMetadata *copy = [[YapDatabaseViewPageMetadata alloc] init];
 	

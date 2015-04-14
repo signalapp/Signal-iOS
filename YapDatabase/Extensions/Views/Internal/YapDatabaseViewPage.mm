@@ -24,7 +24,7 @@
 	return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewPage *copy = [[YapDatabaseViewPage alloc] initWithCapacity:[self count]];
 	

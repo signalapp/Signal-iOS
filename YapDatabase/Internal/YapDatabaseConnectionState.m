@@ -24,7 +24,7 @@
 #endif
 }
 
-- (void)prepareWriteLock;
+- (void)prepareWriteLock
 {
 	if (writeSemaphore == NULL) {
 		writeSemaphore = dispatch_semaphore_create(0);

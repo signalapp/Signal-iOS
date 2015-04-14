@@ -193,7 +193,7 @@ static unsigned int numProcessors;
 #pragma mark Notifications
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)applicationWillTerminate:(NSNotification *)notification
++ (void)applicationWillTerminate:(NSNotification __unused *)notification
 {
     [self flushLog];
 }
@@ -1071,7 +1071,7 @@ static char *dd_str_copy(const char *str)
 }
 
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone __unused *)zone {
     DDLogMessage *newMessage = [[DDLogMessage alloc] init];
     
     newMessage->logLevel = self->logLevel;
@@ -1148,7 +1148,7 @@ static char *dd_str_copy(const char *str)
     #endif
 }
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(DDLogMessage __unused *)logMessage
 {
     // Override me
 }

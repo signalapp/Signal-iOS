@@ -124,7 +124,7 @@
 		countLimit = newCountLimit;
 		
 		if (countLimit != 0) {
-			while (CFDictionaryGetCount(cfdict) > countLimit)
+			while (CFDictionaryGetCount(cfdict) > (CFIndex)countLimit)
 			{
 				leastRecentCacheItem->prev->next = nil;
 				
@@ -278,7 +278,7 @@
 		
 		// Evict leastRecentCacheItem if needed
 		
-		if ((countLimit != 0) && (CFDictionaryGetCount(cfdict) > countLimit))
+		if ((countLimit != 0) && (CFDictionaryGetCount(cfdict) > (CFIndex)countLimit))
 		{
 			YDBLogVerbose(@"key(%@), out(%@)", key, leastRecentCacheItem->key);
 			

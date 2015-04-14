@@ -81,7 +81,7 @@ static NSMutableArray *keys;
 	
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+		[transaction enumerateKeysInAllCollectionsUsingBlock:^(NSString __unused *collection, NSString __unused *key, BOOL __unused *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -95,7 +95,7 @@ static NSMutableArray *keys;
 	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		[transaction enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-		    ^(NSString *collection, NSString *key, id object, BOOL *stop) {
+		    ^(NSString __unused *collection, NSString __unused *key, id __unused object, BOOL __unused *stop) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -185,7 +185,7 @@ static NSMutableArray *keys;
 	
 	for (NSUInteger i = 0; i < loopCount; i++)
 	{
-		[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		[connection readWithBlock:^(YapDatabaseReadTransaction __unused *transaction) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -208,7 +208,7 @@ static NSMutableArray *keys;
 	
 	for (NSUInteger i = 0; i < loopCount; i++)
 	{
-		[connection readWriteWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		[connection readWriteWithBlock:^(YapDatabaseReadTransaction __unused *transaction) {
 			
 			// Nothing to do, just testing overhead
 		}];
@@ -280,11 +280,11 @@ static NSMutableArray *keys;
 		
 		NSLog(@"FETCH DATABASE");
 		
-		[self fetchValuesInLoop:500 withCacheHitPercentage:0.05];
-		[self fetchValuesInLoop:500 withCacheHitPercentage:0.25];
-		[self fetchValuesInLoop:500 withCacheHitPercentage:0.50];
-		[self fetchValuesInLoop:500 withCacheHitPercentage:0.75];
-		[self fetchValuesInLoop:500 withCacheHitPercentage:0.95];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.05f];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.25f];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.50f];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.75f];
+		[self fetchValuesInLoop:500 withCacheHitPercentage:0.95f];
 		
 		NSLog(@"====================================================");
 	});

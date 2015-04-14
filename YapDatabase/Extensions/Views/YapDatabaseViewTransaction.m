@@ -369,7 +369,7 @@
 	}
 	else // if (isNonPersistentView)
 	{
-		[pageMetadataTableTransaction enumerateKeysAndObjectsWithBlock:^(id key, id obj, BOOL *stop) {
+		[pageMetadataTableTransaction enumerateKeysAndObjectsWithBlock:^(id __unused key, id obj, BOOL __unused *stop) {
 			
 			YapDatabaseViewPageMetadata *pageMetadata = [(YapDatabaseViewPageMetadata *)obj copy];
 			
@@ -408,7 +408,7 @@
 		
 		// Enumerate over each group
 		
-		[groupOrderDict enumerateKeysAndObjectsUsingBlock:^(id _group, id _orderDict, BOOL *stop) {
+		[groupOrderDict enumerateKeysAndObjectsUsingBlock:^(id _group, id _orderDict, BOOL __unused *stop) {
 			
 			__unsafe_unretained NSString *group = (NSString *)_group;
 			__unsafe_unretained NSMutableDictionary *orderDict = (NSMutableDictionary *)_orderDict;
@@ -665,7 +665,7 @@
 	
 	if (groupingBlockType == YapDatabaseViewBlockTypeWithKey)
 	{
-		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+		getGroup = ^(NSString *collection, NSString *key, id __unused object, id __unused metadata){
 			
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
@@ -675,7 +675,7 @@
 	}
 	else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 	{
-		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+		getGroup = ^(NSString *collection, NSString *key, id object, id __unused metadata){
 			
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
@@ -685,7 +685,7 @@
 	}
 	else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 	{
-		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
+		getGroup = ^(NSString *collection, NSString *key, id __unused object, id metadata){
 			
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
@@ -711,7 +711,7 @@
 		if (groupingNeedsObject || groupingNeedsMetadata)
 		{
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop){
 				
 				NSString *group = getGroup(collection, key, object, metadata);
 				if (group)
@@ -729,7 +729,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *outerStop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *__unused outerStop) {
 					
 					if ([allowedCollections isAllowed:collection]) {
 						[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:block];
@@ -749,14 +749,14 @@
 			__block NSString *group = nil;
 			
 			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key) {
+			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key) {
 				
 				group = getGroup(collection, key, nil, nil);
 				return (group != nil);
 			};
 			
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 					
@@ -770,7 +770,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 					
 					if ([allowedCollections isAllowed:collection])
 					{
@@ -791,7 +791,7 @@
 		if (groupingNeedsObject)
 		{
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop){
 				
 				NSString *group = getGroup(collection, key, object, nil);
 				if (group)
@@ -809,7 +809,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 					
 					if ([allowedCollections isAllowed:collection])
 					{
@@ -831,14 +831,14 @@
 			__block NSString *group = nil;
 			
 			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key) {
+			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key) {
 				
 				group = getGroup(collection, key, nil, nil);
 				return (group != nil);
 			};
 			
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
@@ -852,7 +852,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 					
 					if ([allowedCollections isAllowed:collection])
 					{
@@ -873,7 +873,7 @@
 		if (groupingNeedsMetadata)
 		{
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop){
 				
 				NSString *group = getGroup(collection, key, nil, metadata);
 				if (group)
@@ -892,7 +892,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 					
 					if ([allowedCollections isAllowed:collection])
 					{
@@ -914,14 +914,14 @@
 			__block NSString *group = nil;
 			
 			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t rowid, NSString *collection, NSString *key){
+			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key){
 				
 				group = getGroup(collection, key, nil, nil);
 				return (group != nil);
 			};
 			
 			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop){
+			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop){
 				
 				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 				
@@ -935,7 +935,7 @@
 			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 			if (allowedCollections)
 			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 					
 					if ([allowedCollections isAllowed:collection])
 					{
@@ -954,7 +954,7 @@
 	else // if (!needsObject && !needsMetadata)
 	{
 		void (^block)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
-		block = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop){
+		block = ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop){
 			
 			NSString *group = getGroup(collection, key, nil, nil);
 			if (group)
@@ -972,7 +972,7 @@
 		YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
 		if (allowedCollections)
 		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
+			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
 				
 				if ([allowedCollections isAllowed:collection])
 				{
@@ -1014,7 +1014,7 @@
 	//
 	// The changeset mechanism will automatically consolidate all changes to the minimum.
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *outerStop) {
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *outerStop) {
 		
 		// We must add the changes in reverse order.
 		// Either that, or the change index of each item would have to be zero,
@@ -1022,7 +1022,7 @@
 		
 		[self enumerateRowidsInGroup:group
 		                 withOptions:NSEnumerationReverse
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL *innerStop)
+		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL __unused *innerStop)
 		{
 			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
 			
@@ -1556,7 +1556,7 @@
 	__block BOOL found = NO;
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:NSEnumerationReverse
-	                                        usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+	                                        usingBlock:^(id obj, NSUInteger __unused idx, BOOL *stop) {
 												
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
 		
@@ -2400,7 +2400,7 @@
 		
 		// Mark all rowids for deletion
 		
-		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *stop) {
+		[page enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger __unused idx, BOOL __unused *stop) {
 			
 			[removedRowids addObject:@(rowid)];
 			
@@ -2480,7 +2480,7 @@
 		[pageMetadataTableTransaction removeAllObjects];
 	}
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *stop) {
+	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *stop) {
 		
 		if (!isRepopulate) {
 			[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
@@ -2574,7 +2574,7 @@
 				
 				[prevPage enumerateRowidsWithOptions:0
 				                               range:prevPageRange
-				                          usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
+				                          usingBlock:^(int64_t rowid, NSUInteger __unused index, BOOL __unused *stop) {
 					
 					NSNumber *number = @(rowid);
 					
@@ -2624,7 +2624,7 @@
 				
 				[nextPage enumerateRowidsWithOptions:0
 				                               range:nextPageRange
-				                          usingBlock:^(int64_t rowid, NSUInteger index, BOOL *stop) {
+				                          usingBlock:^(int64_t rowid, NSUInteger __unused index, BOOL __unused *stop) {
 					
 					NSNumber *number = @(rowid);
 					
@@ -2689,7 +2689,7 @@
 		
 		// Mark rowid mappings as dirty
 		
-		[newPage enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger idx, BOOL *stop) {
+		[newPage enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger __unused idx, BOOL __unused *stop) {
 			
 			NSNumber *number = @(rowid);
 			
@@ -2700,7 +2700,7 @@
 	} // end while (pageMetadata->count > maxPageSize)
 }
 
-- (void)dropEmptyPage:(YapDatabaseViewPage *)page withPageKey:(NSString *)pageKey
+- (void)dropEmptyPage:(YapDatabaseViewPage __unused *)page withPageKey:(NSString *)pageKey
 {
 	YDBLogAutoTrace();
 	
@@ -2846,7 +2846,7 @@
 		//
 		// Write dirty pages to table (along with associated dirty metadata)
 	
-		[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 			
 			__unsafe_unretained NSString *pageKey = (NSString *)key;
 			__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -3205,7 +3205,7 @@
 		{
 			[pageTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -3230,7 +3230,7 @@
 		{
 			[pageMetadataTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -3269,7 +3269,7 @@
 					}
 				}];
 				
-				[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+				[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
@@ -3295,7 +3295,7 @@
 		{
 			[mapTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+				[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
 					__unsafe_unretained NSString *pageKey = (NSString *)obj;
@@ -3955,7 +3955,7 @@
 	// output.key = pageKey
 	// output.value = NSDictionary with keyMappings for page
 	
-	[output enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id dictObj, BOOL *stop) {
+	[output enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id dictObj, BOOL __unused *stop) {
 		
 		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
 		__unsafe_unretained NSDictionary *keyMappingsForPage = (NSDictionary *)dictObj;
@@ -3999,7 +3999,7 @@
 	
 	__block NSUInteger count = 0;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4021,7 +4021,7 @@
 	
 	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->state numberOfGroups]];
 	
-	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4077,7 +4077,7 @@
 {
 	__block NSUInteger count = 0;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4114,7 +4114,7 @@
 {
 	__block BOOL result = YES;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4622,14 +4622,14 @@
 	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
-	                                        usingBlock:^(id pageMetadataObj, NSUInteger outerIdx, BOOL *outerStop)
+	                                        usingBlock:^(id pageMetadataObj, NSUInteger __unused outerIdx, BOOL *outerStop)
 	{
 		__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 		    (YapDatabaseViewPageMetadata *)pageMetadataObj;
 		
 		YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 		
-		[page enumerateRowidsWithOptions:options usingBlock:^(int64_t rowid, NSUInteger innerIdx, BOOL *innerStop) {
+		[page enumerateRowidsWithOptions:options usingBlock:^(int64_t rowid, NSUInteger __unused innerIdx, BOOL *innerStop) {
 			
 			block(rowid, index, &stop);
 			
@@ -4719,7 +4719,7 @@
 		__block BOOL startedRange = NO;
 		
 		[pagesMetadataForGroup enumerateObjectsWithOptions:options
-		                                        usingBlock:^(id pageMetadataObj, NSUInteger pageIndex, BOOL *outerStop)
+		                                        usingBlock:^(id pageMetadataObj, NSUInteger __unused pageIndex, BOOL *outerStop)
 		{
 			__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata =
 			    (YapDatabaseViewPageMetadata *)pageMetadataObj;
@@ -4795,7 +4795,7 @@
 /**
  * Invoked when an item is added to the view.
 **/
-- (void)didInsertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+- (void)didInsertRowid:(int64_t __unused)rowid collectionKey:(YapCollectionKey __unused *)collectionKey
 {
 	// Subclasses may override me.
 	// Default implementation does nothing.
@@ -4808,7 +4808,7 @@
  * That is, when an individual item is removed from the view as a single operation.
  * For larger (non-single) remove operations, the other hook methods are used.
 **/
-- (void)didRemoveRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+- (void)didRemoveRowid:(int64_t __unused)rowid collectionKey:(YapCollectionKey __unused *)collectionKey
 {
 	// Subclasses may override me.
 	// Default implementation does nothing.
@@ -4829,7 +4829,7 @@
  *   But that is ** NOT ** the case here.
  *   So you'll be required to check for this, and split your queries accordingly.
 **/
-- (void)didRemoveRowids:(NSArray *)rowids collectionKeys:(NSArray *)collectionKeys
+- (void)didRemoveRowids:(NSArray __unused *)rowids collectionKeys:(NSArray __unused *)collectionKeys
 {
 	// Subclasses may override me.
 	// Default implementation does nothing.
@@ -5068,7 +5068,7 @@
 	NSString *registeredName = [self registeredName];
 	NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
 	
-	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
 		
 		__unsafe_unretained NSString *extName = (NSString *)key;
 		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;

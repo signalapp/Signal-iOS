@@ -88,7 +88,7 @@
 
 #pragma mark Copy
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	YapDatabaseViewRangeOptions *copy = [[YapDatabaseViewRangeOptions alloc] init];
 	copy->length = length;

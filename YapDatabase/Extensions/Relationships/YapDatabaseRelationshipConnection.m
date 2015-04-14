@@ -220,7 +220,7 @@
 	*hasDiskChangesPtr = hasDiskChanges;
 }
 
-- (void)processChangeset:(NSDictionary *)changeset
+- (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	// Nothing to do here.
 	// This method is required to be overriden by YapDatabaseExtensionConnection.

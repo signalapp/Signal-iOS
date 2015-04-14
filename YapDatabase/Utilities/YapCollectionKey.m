@@ -59,7 +59,7 @@ YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key)
 	[coder encodeObject:key        forKey:@"key"];
 }
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone __unused *)zone
 {
 	return self; // Immutable
 }

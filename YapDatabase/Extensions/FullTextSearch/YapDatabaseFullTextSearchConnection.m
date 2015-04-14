@@ -126,9 +126,9 @@
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)getInternalChangeset:(NSMutableDictionary **)internalChangesetPtr
-           externalChangeset:(NSMutableDictionary **)externalChangesetPtr
-              hasDiskChanges:(BOOL *)hasDiskChangesPtr
+- (void)getInternalChangeset:(NSMutableDictionary __unused **)internalChangesetPtr
+           externalChangeset:(NSMutableDictionary __unused **)externalChangesetPtr
+              hasDiskChanges:(BOOL __unused *)hasDiskChangesPtr
 {
 	// Nothing to do for this particular extension.
 	//
@@ -139,7 +139,7 @@
 /**
  * Required override method from YapDatabaseExtensionConnection
 **/
-- (void)processChangeset:(NSDictionary *)changeset
+- (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	// Nothing to do for this particular extension.
 	//

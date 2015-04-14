@@ -184,7 +184,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	}
 	
 	NSDictionary *options = ftsConnection->fts->options;
-	[options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 		
 		NSString *option = (NSString *)key;
 		NSString *value = (NSString *)obj;
@@ -238,7 +238,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		    (YapDatabaseFullTextSearchWithRowBlock)fts->block;
 		
 		[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
+		    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop) {
 			
 			block(ftsConnection->blockDict, collection, key, object, metadata);
 			
@@ -255,7 +255,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		    (YapDatabaseFullTextSearchWithObjectBlock)fts->block;
 		
 		[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
+		    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop) {
 			
 			block(ftsConnection->blockDict, collection, key, object);
 			
@@ -272,7 +272,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		    (YapDatabaseFullTextSearchWithMetadataBlock)fts->block;
 		
 		[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
+		    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop) {
 			
 			block(ftsConnection->blockDict, collection, key, metadata);
 			
@@ -289,7 +289,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		    (YapDatabaseFullTextSearchWithKeyBlock)fts->block;
 		
 		[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:
-		    ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
+		    ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop) {
 			
 			block(ftsConnection->blockDict, collection, key);
 			
@@ -793,7 +793,7 @@ static NSString *const ext_key__version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	// Nothing to do for this extension
 }
@@ -802,7 +802,7 @@ static NSString *const ext_key__version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	// Nothing to do for this extension
 }
@@ -811,7 +811,7 @@ static NSString *const ext_key__version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -822,7 +822,7 @@ static NSString *const ext_key__version_deprecated = @"version";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)handleRemoveObjectsForKeys:(NSArray __unused *)keys inCollection:(NSString __unused *)collection withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
 	

@@ -317,12 +317,12 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	if (allowedCollections)
 	{
-		[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *outerStop) {
+		[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *outerStop) {
 			
 			if ([allowedCollections isAllowed:collection])
 			{
 				[databaseTransaction _enumerateKeysAndObjectsInCollection:collection usingBlock:
-				    ^(int64_t rowid, NSString *key, id object, BOOL *innerStop)
+				    ^(int64_t rowid, NSString *key, id object, BOOL __unused *innerStop)
 				{
 					ProcessRow(rowid, collection, key, object);
 				}];
@@ -332,7 +332,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	else
 	{
 		[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-		   	^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop)
+		   	^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop)
 		{
 			ProcessRow(rowid, collection, key, object);
 		}];
@@ -392,7 +392,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id __unused dictKey, id dictObj, BOOL __unused *stop){
 		
 	//	__unsafe_unretained NSString *srcRowidNumber = (NSNumber *)dictKey;
 		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
@@ -534,7 +534,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop) {
 			
 		//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 			__unsafe_unretained NSArray *manualChangesMatchingName = (NSArray *)obj;
@@ -600,7 +600,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id __unused dictKey, id dictObj, BOOL __unused *stop){
 		
 	//	__unsafe_unretained NSString *srcRowidNumber = (NSNumber *)dictKey;
 		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
@@ -679,7 +679,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop){
 			
 		//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 			__unsafe_unretained NSArray *manualChangesMatchingName = (NSArray *)obj;
@@ -740,7 +740,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id dictKey, id dictObj, BOOL *stop){
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id __unused dictKey, id dictObj, BOOL __unused *stop){
 		
 	//	__unsafe_unretained NSString *srcRowidNumber = (NSNumber *)dictKey;
 		__unsafe_unretained NSArray *changedEdgesForSrc = (NSArray *)dictObj;
@@ -789,7 +789,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop){
 			
 		//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 			__unsafe_unretained NSArray *manualChangesMatchingName = (NSArray *)obj;
@@ -953,7 +953,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop) {
 			
 		//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 			__unsafe_unretained NSArray *manualChangesMatchingName = (NSArray *)obj;
@@ -1084,7 +1084,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop) {
 			
 		//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 			__unsafe_unretained NSArray *manualChangesMatchingName = (NSArray *)obj;
@@ -1546,7 +1546,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		matchingEdge = [edge copy];
 		matchingEdge->edgeRowid = edgeRowid;
-		matchingEdge->nodeDeleteRules = rules;
+		matchingEdge->nodeDeleteRules = (unsigned short)rules;
 		
 		matchingEdge->flags |= YDB_FlagsHasEdgeRowid;
 	}
@@ -2526,7 +2526,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	// - writing modified edges to the database (changed nodeDeleteRules)
 	// - deleting edges that were manually removed from the list
 	
-	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+	[relationshipConnection->protocolChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
 		
 		__unsafe_unretained NSNumber *srcRowidNumber = (NSNumber *)key;
 		__unsafe_unretained NSMutableArray *protocolEdges = (NSMutableArray *)obj;
@@ -2564,7 +2564,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	//
 	// Process all manual edges that have been set during the transaction.
 	
-	[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+	[relationshipConnection->manualChanges enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop) {
 		
 	//	__unsafe_unretained NSString *edgeName = (NSString *)key;
 		__unsafe_unretained NSMutableArray *manualEdges = (NSMutableArray *)obj;
@@ -2691,7 +2691,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		// Enumerate all edges where source node is this deleted node.
 		[self enumerateExistingEdgesWithSource:rowid usingBlock:
-		^(int64_t edgeRowid, NSString *name, int64_t dstRowid, NSString *dstFilePath, int nodeDeleteRules, BOOL manual)
+		^(int64_t __unused edgeRowid, NSString *name, int64_t dstRowid, NSString *dstFilePath, int nodeDeleteRules, BOOL __unused manual)
 		{
 			if (dstFilePath)
 			{
@@ -2779,7 +2779,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 							edge->destinationKey = dst.key;
 							edge->destinationCollection = dst.collection;
 							edge->destinationRowid = dstRowid;
-							edge->nodeDeleteRules = nodeDeleteRules;
+							edge->nodeDeleteRules = (unsigned short)nodeDeleteRules;
 							
 							id updatedDstNode =
 							  [dstNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_SourceNodeDeleted];
@@ -2804,7 +2804,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		// Enumerate all edges where destination node is this deleted node.
 		[self enumerateExistingEdgesWithDestination:rowid usingBlock:
-		    ^(int64_t edgeRowid, NSString *name, int64_t srcRowid, int nodeDeleteRules, BOOL manual)
+		    ^(int64_t __unused edgeRowid, NSString *name, int64_t srcRowid, int nodeDeleteRules, BOOL __unused manual)
 		{
 			if ([relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)])
 			{
@@ -2866,7 +2866,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 						edge->destinationKey = collectionKey.key;
 						edge->destinationCollection = collectionKey.collection;
 						edge->destinationRowid = rowid;
-						edge->nodeDeleteRules = nodeDeleteRules;
+						edge->nodeDeleteRules = (unsigned short)nodeDeleteRules;
 						
 						id updatedSrcNode =
 						  [srcNode yapDatabaseRelationshipEdgeDeleted:edge withReason:YDB_DestinationNodeDeleted];
@@ -3013,7 +3013,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 **/
 - (void)handleInsertObject:(id)object
           forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
+              withMetadata:(id __unused)metadata
                      rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
@@ -3116,7 +3116,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 **/
 - (void)handleUpdateObject:(id)object
           forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
+              withMetadata:(id __unused)metadata
                      rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
@@ -3230,7 +3230,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleReplaceMetadata:(id __unused)metadata forCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3241,7 +3241,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3252,7 +3252,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -4929,7 +4929,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (databaseTransaction->isReadWriteTransaction)
 	{
 		__block NSUInteger count = 0;
-		[self enumerateEdgesWithName:name usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		[self enumerateEdgesWithName:name usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];
@@ -5002,7 +5002,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		[self enumerateEdgesWithName:name
 		                   sourceKey:srcKey
 		                  collection:srcCollection
-		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		                  usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];
@@ -5108,7 +5108,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		[self enumerateEdgesWithName:name
 		              destinationKey:dstKey
 		                  collection:dstCollection
-		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		                  usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];
@@ -5205,7 +5205,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		__block NSUInteger count = 0;
 		[self enumerateEdgesWithName:name
 		         destinationFilePath:dstFilePath
-		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		                  usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];
@@ -5355,7 +5355,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		                  collection:srcCollection
 		              destinationKey:dstKey
 		                  collection:dstCollection
-		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		                  usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];
@@ -5494,7 +5494,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		                   sourceKey:srcKey
 		                  collection:srcCollection
 		         destinationFilePath:dstFilePath
-		                  usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop) {
+		                  usingBlock:^(YapDatabaseRelationshipEdge __unused *edge, BOOL __unused *stop) {
 			
 			count++;
 		}];

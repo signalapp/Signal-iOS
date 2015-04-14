@@ -418,7 +418,7 @@
 		NSMutableArray *keysToRemove = changeset_reset ? [NSMutableArray arrayWithCapacity:removeCapacity] : nil;
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
-		[mapCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+		[mapCache enumerateKeysWithBlock:^(id key, BOOL __unused *stop) {
 			
 			// Order matters.
 			// Consider the following database change:
@@ -461,7 +461,7 @@
 		NSMutableArray *keysToRemove = changeset_reset ? [NSMutableArray arrayWithCapacity:removeCapacity] : nil;
 		NSMutableArray *keysToUpdate = [NSMutableArray arrayWithCapacity:updateCapacity];
 		
-		[pageCache enumerateKeysWithBlock:^(id key, BOOL *stop) {
+		[pageCache enumerateKeysWithBlock:^(id key, BOOL __unused *stop) {
 			
 			// Order matters.
 			// Consider the following database change:

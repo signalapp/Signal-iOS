@@ -30,7 +30,7 @@
  * You may optionally use different subclasses for read-only vs read-write transactions.
  * Alternatively you can just store an ivar to determine the type of the transaction in order to protect as needed.
 **/
-- (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
+- (id)newReadTransaction:(YapDatabaseReadTransaction __unused *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
@@ -43,7 +43,7 @@
  * You may optionally use different subclasses for read-only vs read-write transactions.
  * Alternatively you can just store an ivar to determine the type of the transaction in order to protect as needed.
 **/
-- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
+- (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction __unused *)databaseTransaction
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	return nil;
@@ -67,7 +67,7 @@
  *     sqlite_finalize_null(&myStatement);
  * }
 **/
-- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
+- (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags __unused)flags
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -129,7 +129,7 @@
  * as they move from one snapshot to the next. It is the responsibility of this method to process
  * the changeset to ensure the connection's state is properly updated.
 **/
-- (void)processChangeset:(NSDictionary *)changeset
+- (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }

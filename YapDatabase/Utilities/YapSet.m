@@ -62,7 +62,7 @@
 	else
 	{
 		if (block == NULL) return;
-		[dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id __unused obj, BOOL *stop) {
 			
 			block(key, stop);
 		}];
