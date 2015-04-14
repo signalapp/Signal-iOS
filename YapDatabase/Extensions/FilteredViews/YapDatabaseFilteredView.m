@@ -26,6 +26,8 @@
 @synthesize filteringBlock = filteringBlock;
 @synthesize filteringBlockType = filteringBlockType;
 
+@dynamic options;
+
 #pragma mark Invalid
 
 - (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)grouping
