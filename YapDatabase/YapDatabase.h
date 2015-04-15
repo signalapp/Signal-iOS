@@ -5,6 +5,8 @@
 #import "YapDatabaseTransaction.h"
 #import "YapDatabaseExtension.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -56,8 +58,8 @@
  * Thus to store objects in the database, the objects need only support the NSCoding protocol.
  * You may optionally use a custom serializer/deserializer for the objects and/or metadata.
 **/
-typedef NSData* (^YapDatabaseSerializer)(NSString *collection, NSString *key, id object);
-typedef id (^YapDatabaseDeserializer)(NSString *collection, NSString *key, NSData *data);
+typedef NSData * __nonnull (^YapDatabaseSerializer)(NSString *collection, NSString *key, id object);
+typedef id __nonnull (^YapDatabaseDeserializer)(NSString *collection, NSString *key, NSData *data);
 
 /**
  * The sanitizer block allows you to enforce desired behavior of the objects you put into the database.
@@ -92,7 +94,7 @@ typedef id (^YapDatabaseDeserializer)(NSString *collection, NSString *key, NSDat
  * An example of such a use for the PostSanitizer is discussed in the YapDatabaseCloudKit wiki article:
  * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit
 **/
-typedef id (^YapDatabasePreSanitizer)(NSString *collection, NSString *key, id obj);
+typedef id __nonnull (^YapDatabasePreSanitizer)(NSString *collection, NSString *key, id obj);
 typedef void (^YapDatabasePostSanitizer)(NSString *collection, NSString *key, id obj);
 
 /**
@@ -240,15 +242,15 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * The given serializers and deserializers are used.
  * The given sanitizers are used.
 **/
-- (id)initWithPath:(NSString *)path objectSerializer:(YapDatabaseSerializer)objectSerializer
-                                  objectDeserializer:(YapDatabaseDeserializer)objectDeserializer
-                                  metadataSerializer:(YapDatabaseSerializer)metadataSerializer
-                                metadataDeserializer:(YapDatabaseDeserializer)metadataDeserializer
-                                  objectPreSanitizer:(YapDatabasePreSanitizer)objectPreSanitizer
-                                 objectPostSanitizer:(YapDatabasePostSanitizer)objectPostSanitizer
-                                metadataPreSanitizer:(YapDatabasePreSanitizer)metadataPreSanitizer
-                               metadataPostSanitizer:(YapDatabasePostSanitizer)metadataPostSanitizer
-                                             options:(YapDatabaseOptions *)options;
+- (id)initWithPath:(NSString *)path objectSerializer:(nullable YapDatabaseSerializer)objectSerializer
+                                  objectDeserializer:(nullable YapDatabaseDeserializer)objectDeserializer
+                                  metadataSerializer:(nullable YapDatabaseSerializer)metadataSerializer
+                                metadataDeserializer:(nullable YapDatabaseDeserializer)metadataDeserializer
+                                  objectPreSanitizer:(nullable YapDatabasePreSanitizer)objectPreSanitizer
+                                 objectPostSanitizer:(nullable YapDatabasePostSanitizer)objectPostSanitizer
+                                metadataPreSanitizer:(nullable YapDatabasePreSanitizer)metadataPreSanitizer
+                               metadataPostSanitizer:(nullable YapDatabasePostSanitizer)metadataPostSanitizer
+                                             options:(nullable YapDatabaseOptions *)options;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Properties
@@ -262,11 +264,11 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 @property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
 @property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
 
-@property (nonatomic, strong, readonly) YapDatabasePreSanitizer objectPreSanitizer;
-@property (nonatomic, strong, readonly) YapDatabasePostSanitizer objectPostSanitizer;
+@property (nullable, nonatomic, strong, readonly) YapDatabasePreSanitizer objectPreSanitizer;
+@property (nullable, nonatomic, strong, readonly) YapDatabasePostSanitizer objectPostSanitizer;
 
-@property (nonatomic, strong, readonly) YapDatabasePreSanitizer metadataPreSanitizer;
-@property (nonatomic, strong, readonly) YapDatabasePostSanitizer metadataPostSanitizer;
+@property (nullable, nonatomic, strong, readonly) YapDatabasePreSanitizer metadataPreSanitizer;
+@property (nullable, nonatomic, strong, readonly) YapDatabasePostSanitizer metadataPostSanitizer;
 
 @property (nonatomic, copy, readonly) YapDatabaseOptions *options;
 
@@ -504,7 +506,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension
                  withName:(NSString *)extensionName
-               connection:(YapDatabaseConnection *)connection;
+               connection:(nullable YapDatabaseConnection *)connection;
 
 /**
  * Asynchronoulsy starts the extension registration process.
@@ -530,7 +532,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
 					  withName:(NSString *)extensionName
-			   completionBlock:(void(^)(BOOL ready))completionBlock;
+			   completionBlock:(nullable void(^)(BOOL ready))completionBlock;
 
 /**
  * Asynchronoulsy starts the extension registration process.
@@ -559,8 +561,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-               completionQueue:(dispatch_queue_t)completionQueue
-               completionBlock:(void(^)(BOOL ready))completionBlock;
+               completionQueue:(nullable dispatch_queue_t)completionQueue
+               completionBlock:(nullable void(^)(BOOL ready))completionBlock;
 
 /**
  * Asynchronoulsy starts the extension registration process.
@@ -595,9 +597,9 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-                    connection:(YapDatabaseConnection *)connection
-               completionQueue:(dispatch_queue_t)completionQueue
-               completionBlock:(void(^)(BOOL ready))completionBlock;
+                    connection:(nullable YapDatabaseConnection *)connection
+               completionQueue:(nullable dispatch_queue_t)completionQueue
+               completionBlock:(nullable void(^)(BOOL ready))completionBlock;
 
 /**
  * DEPRECATED in v2.5
@@ -680,7 +682,7 @@ __attribute((deprecated("Use method asyncRegisterExtension:withName:completionQu
  *     You may optionally pass your own databaseConnection for this method to use.
  *     If you pass nil, an internal databaseConnection will automatically be used.
 **/
-- (void)unregisterExtensionWithName:(NSString *)extensionName connection:(YapDatabaseConnection *)connection;
+- (void)unregisterExtensionWithName:(NSString *)extensionName connection:(nullable YapDatabaseConnection *)connection;
 
 /**
  * Asynchronoulsy starts the extension unregistration process.
@@ -697,7 +699,7 @@ __attribute((deprecated("Use method asyncRegisterExtension:withName:completionQu
  *     The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                         completionBlock:(dispatch_block_t)completionBlock;
+                         completionBlock:(nullable dispatch_block_t)completionBlock;
 
 /**
  * Asynchronoulsy starts the extension unregistration process.
@@ -718,8 +720,8 @@ __attribute((deprecated("Use method asyncRegisterExtension:withName:completionQu
  *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                         completionQueue:(dispatch_queue_t)completionQueue
-                         completionBlock:(dispatch_block_t)completionBlock;
+                         completionQueue:(nullable dispatch_queue_t)completionQueue
+                         completionBlock:(nullable dispatch_block_t)completionBlock;
 
 /**
  * Asynchronoulsy starts the extension unregistration process.
@@ -744,9 +746,9 @@ __attribute((deprecated("Use method asyncRegisterExtension:withName:completionQu
  *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                              connection:(YapDatabaseConnection *)connection
-                         completionQueue:(dispatch_queue_t)completionQueue
-                         completionBlock:(dispatch_block_t)completionBlock;
+                              connection:(nullable YapDatabaseConnection *)connection
+                         completionQueue:(nullable dispatch_queue_t)completionQueue
+                         completionBlock:(nullable dispatch_block_t)completionBlock;
 
 /**
  * DEPRECATED in v2.5
@@ -797,13 +799,13 @@ __attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQ
  * Returns the registered extension with the given name.
  * The returned object will be a subclass of YapDatabaseExtension.
 **/
-- (id)registeredExtension:(NSString *)extensionName;
+- (nullable id)registeredExtension:(NSString *)extensionName;
 
 /**
  * Returns all currently registered extensions as a dictionary.
  * The key is the registed name (NSString), and the value is the extension (YapDatabaseExtension subclass).
 **/
-- (NSDictionary *)registeredExtensions;
+- (nullable NSDictionary *)registeredExtensions;
 
 /**
  * Allows you to fetch the registered extension names from the last time the database was run.
@@ -819,7 +821,7 @@ __attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQ
  * but which are no longer registered. YapDatabase will automatically cleanup these orphaned extensions,
  * and also clear the previouslyRegisteredExtensionNames information at this point.
 **/
-- (NSArray *)previouslyRegisteredExtensionNames;
+- (nullable NSArray *)previouslyRegisteredExtensionNames;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connection Pooling
@@ -872,3 +874,5 @@ __attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQ
 @property (atomic, assign, readwrite) NSTimeInterval connectionPoolLifetime;
 
 @end
+
+NS_ASSUME_NONNULL_END
