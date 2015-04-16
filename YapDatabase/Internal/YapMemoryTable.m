@@ -280,9 +280,9 @@
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[table->dict enumerateKeysAndObjectsUsingBlock:^(id key, id __unused obj, BOOL *stop) {
+		[table->dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
-			__unsafe_unretained YapMemoryTableValue *value = [table->dict objectForKey:key];
+			__unsafe_unretained YapMemoryTableValue *value = (YapMemoryTableValue *)obj;
 			while (value)
 			{
 				if (value->snapshot <= snapshot)
@@ -311,9 +311,9 @@
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[table->dict enumerateKeysAndObjectsUsingBlock:^(id key, id __unused obj, BOOL *stop) {
+		[table->dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
-			__unsafe_unretained YapMemoryTableValue *value = [table->dict objectForKey:key];
+			__unsafe_unretained YapMemoryTableValue *value = (YapMemoryTableValue *)obj;
 			while (value)
 			{
 				if (value->snapshot <= snapshot)

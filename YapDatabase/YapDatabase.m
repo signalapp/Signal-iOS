@@ -2516,7 +2516,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	
-	NSMutableArray *relevantChangesets = [NSMutableArray arrayWithCapacity:[changesets count]];
+	NSUInteger capacity = (NSUInteger)(maxSnapshot - connectionSnapshot);
+	NSMutableArray *relevantChangesets = [NSMutableArray arrayWithCapacity:capacity];
 	
 	for (NSDictionary *changeset in changesets)
 	{
