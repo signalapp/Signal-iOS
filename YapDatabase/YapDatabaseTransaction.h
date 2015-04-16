@@ -572,7 +572,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The preSerializedMetadata is only used if metadata is non-nil.
 **/
 - (void)setObject:(nullable id)object forKey:(NSString *)key inCollection:(nullable NSString *)collection
-                                                    withMetadata:(id)metadata
+                                                    withMetadata:(nullable id)metadata
                                                 serializedObject:(nullable NSData *)preSerializedObject
                                               serializedMetadata:(nullable NSData *)preSerializedMetadata;
 
