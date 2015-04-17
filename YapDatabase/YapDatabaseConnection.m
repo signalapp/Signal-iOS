@@ -4822,7 +4822,14 @@ NS_INLINE BOOL YDBIsMainThread()
 			
 			// If possible, silently reset the longLivedReadTransaction (same snapshot, no longer locking the WAL)
 			
-			if (longLivedReadTransaction && (snapshot == [database snapshot]))
+			BOOL writeQueueStillSuspended = NO;
+			OSSpinLockLock(&lock);
+			{
+				writeQueueStillSuspended = writeQueueSuspended;
+			}
+			OSSpinLockUnlock(&lock);
+			
+			if (writeQueueStillSuspended && longLivedReadTransaction && (snapshot == [database snapshot]))
 			{
 				NSArray *empty = [self beginLongLivedReadTransaction];
 				
