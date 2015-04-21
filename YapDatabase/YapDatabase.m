@@ -5,6 +5,7 @@
 #import "YapDatabaseManager.h"
 #import "YapDatabaseConnectionState.h"
 #import "YapDatabaseLogging.h"
+#import "YapDatabaseString.h"
 
 #import "sqlite3.h"
 
@@ -19,7 +20,9 @@
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
-#if DEBUG
+#if robbie_hanson
+  static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
+#elif DEBUG
   static const int ydbLogLevel = YDB_LOG_LEVEL_INFO;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
@@ -91,6 +94,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	NSMutableArray *connectionPoolDates;
 	
 	NSString *sqliteVersion;
+	uint64_t pageSize;
 }
 
 /**
@@ -1176,6 +1180,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	{
 		sqliteVersion = [YapDatabase sqliteVersionUsing:db];
 		YDBLogVerbose(@"sqlite version = %@", sqliteVersion);
+		
+		pageSize = (uint64_t)[YapDatabase pragma:@"page_size" using:db];
 		
 		[self fetchPreviouslyRegisteredExtensionNames];
 		[self writeSnapshot];
@@ -2645,6 +2651,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Manual Checkpointing
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static BOOL const YDB_PRINT_WAL_SIZE = YES;
+
 /**
  * This method should be called whenever the maximum checkpointable snapshot is incremented.
  * That is, the state of every connection is known to the system.
@@ -2655,8 +2663,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
-	static BOOL const PRINT_WAL_SIZE = NO;
-	
 	__weak YapDatabase *weakSelf = self;
 	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
@@ -2668,14 +2674,14 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
 		
-		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
 		{
 			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
 			
 			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
 			unsigned long long walFileSize = [walAttr fileSize];
 			
-			YDBLogVerbose(@"Pre-checkpoint file size: %@",
+			YDBLogVerbose(@"Pre-checkpoint (mode=passive) file size: %@",
 			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
 			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
@@ -2687,11 +2693,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
 		// Thus, this method is only called by a connection that moves the min snapshot forward.
 		
-		int frameCount = 0;
-		int checkpointCount = 0;
+		int toalFrameCount = 0;
+		int checkpointedFrameCount = 0;
 		
-		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main",
-		                                       SQLITE_CHECKPOINT_PASSIVE, &frameCount, &checkpointCount);
+		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", SQLITE_CHECKPOINT_PASSIVE,
+		                                       &toalFrameCount, &checkpointedFrameCount);
 		
 		// frameCount      = total number of frames in the log file
 		// checkpointCount = total number of checkpointed frames
@@ -2709,23 +2715,35 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			return;// from_block
 		}
 		
-		YDBLogVerbose(@"Post-checkpoint (%llu): frames(%d) checkpointed(%d)",
-		              maxCheckpointableSnapshot, frameCount, checkpointCount);
+		YDBLogVerbose(@"Post-checkpoint (mode=passive) (snapshot=%llu): frames(%d) checkpointed(%d)",
+		              maxCheckpointableSnapshot, toalFrameCount, checkpointedFrameCount);
+		
+		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
+		{
+			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+			
+			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+			unsigned long long walFileSize = [walAttr fileSize];
+			
+			YDBLogVerbose(@"Post-checkpoint (mode=passive) file size: %@",
+			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+			                                 countStyle:NSByteCountFormatterCountStyleFile]);
+		}
 		
 		// Have we checkpointed the entire WAL yet?
 		
-		if (frameCount == checkpointCount)
+		if (toalFrameCount == checkpointedFrameCount)
 		{
-			// We've checkpointed every single frame.
-			// This means the next read-write transaction will reset the WAL (instead of appending to it).
+			// We've checkpointed every single frame in the WAL.
+			// This means the next read-write transaction may be able to reset the WAL (instead of appending to it).
 			//
-			// However, this will get spoiled if there are active read-only transactions that
+			// However, the WAL reset will get spoiled if there are active read-only transactions that
 			// were started before our checkpoint finished, and continue to exist during the next read-write.
 			// It's not a big deal if the occasional read-only transaction happens to spoil the WAL reset.
-			// In those cases, the WAL generally gets reset shortly thereafter.
+			// In those cases, the WAL generally gets reset shortly thereafter (on a subsequent write).
 			// Long-lived read transactions are a different case entirely.
 			// These transactions spoil it every single time, and could potentially cause the WAL to grow indefinitely.
-			// 
+			//
 			// The solution is to notify active long-lived connections, and tell them to re-begin their transaction
 			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
 			// and thus unlock the WAL so it can be reset.
@@ -2735,7 +2753,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 				for (YapDatabaseConnectionState *state in strongSelf->connectionStates)
 				{
 					if (state->longLivedReadTransaction &&
-					    state->lastKnownSnapshot == strongSelf->snapshot)
+						state->lastTransactionSnapshot == strongSelf->snapshot)
 					{
 						[state->connection maybeResetLongLivedReadTransaction];
 					}
@@ -2743,20 +2761,143 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			});
 		}
 		
-		if (YDB_LOG_VERBOSE && PRINT_WAL_SIZE)
+		// Take steps to ensure the WAL gets reset/truncated (if needed).
+		
+		uint64_t walApproximateFileSize = toalFrameCount * strongSelf->pageSize;
+		
+		if (walApproximateFileSize >= strongSelf->options.aggressiveWALTruncationSize)
 		{
-			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
-			
-			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
-			unsigned long long walFileSize = [walAttr fileSize];
-			
-			YDBLogVerbose(@"Post-checkpoint file size: %@",
-			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
-			                                 countStyle:NSByteCountFormatterCountStyleFile]);
+			int64_t lastCheckpointTime = mach_absolute_time();
+			[self aggressiveTryTruncateLargeWAL:lastCheckpointTime];
 		}
 		
 	#pragma clang diagnostic pop
 	}});
+}
+
+- (void)aggressiveTryTruncateLargeWAL:(int64_t)lastCheckpointTime
+{
+	__weak YapDatabase *weakSelf = self;
+	
+	dispatch_async(writeQueue, ^{
+		
+		dispatch_sync(checkpointQueue, ^{ @autoreleasepool {
+		#pragma clang diagnostic push
+		#pragma clang diagnostic warning "-Wimplicit-retain-self"
+			
+			__strong YapDatabase *strongSelf = weakSelf;
+			if (strongSelf == nil) return;
+			
+			// First we set an adequate busy timeout on our database connection.
+			// We're going to run a non-passive checkpoint.
+			// Which may cause it to busy-wait while waiting on read transactions to complete.
+			
+			sqlite3_busy_timeout(strongSelf->db, 2000); // milliseconds
+			
+			// Can we use SQLITE_CHECKPOINT_TRUNCATE ?
+			//
+			// This feature was added in sqlite v3.8.8.
+			// But it was buggy until v3.8.8.2 when the following fix was added:
+			//
+			//   "Enhance sqlite3_wal_checkpoint_v2(TRUNCATE) interface so that it truncates the
+			//    WAL file even if there is no checkpoint work to be done."
+			//
+			//   http://www.sqlite.org/changes.html
+			//
+			// It is often the case, when we call checkpoint here, that there is no checkpoint work to be done.
+			// So we really can't depend on it until 3.8.8.2
+			
+			int checkpointMode = SQLITE_CHECKPOINT_RESTART;
+			
+			// Remember: The compiler defines (SQLITE_VERSION, SQLITE_VERSION_NUMBER) only tell us
+			// what version we're compiling against. But we may encounter an earlier sqlite version at runtime.
+			
+		#if SQLITE_VERSION_NUMBER > 3008008
+			
+			checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
+			
+		#elif SQLITE_VERSION_NUMBER == 3008008
+			
+			NSComparisonResult cmp = [strongSelf->sqliteVersion compare:@"3.8.8.2" options:NSNumericSearch];
+			if (cmp != NSOrderedAscending)
+			{
+				checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
+			}
+			
+		#endif
+			
+			int toalFrameCount = 0;
+			int checkpointedFrameCount = 0;
+			
+			int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", checkpointMode,
+			                                       &toalFrameCount, &checkpointedFrameCount);
+			
+			YDBLogInfo(@"Post-checkpoint (mode=%@): result(%d): frames(%d) checkpointed(%d)",
+			             (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
+			             result, toalFrameCount, checkpointedFrameCount);
+			
+			if ((checkpointMode == SQLITE_CHECKPOINT_RESTART) && (result == SQLITE_OK))
+			{
+				// Write something to the database to force restart the WAL.
+				// We're just going to set a random value in the yap2 table.
+				
+				NSString *uuid = [[NSUUID UUID] UUIDString];
+				
+				[strongSelf beginTransaction];
+				
+				int status;
+				sqlite3_stmt *statement;
+				
+				char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
+				
+				status = sqlite3_prepare_v2(strongSelf->db, stmt, (int)strlen(stmt)+1, &statement, NULL);
+				if (status != SQLITE_OK)
+				{
+					YDBLogError(@"%@: Error creating statement: %d %s",
+					            THIS_METHOD, status, sqlite3_errmsg(strongSelf->db));
+				}
+				else
+				{
+					char *extension = "";
+					sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+					
+					char *key = "random";
+					sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+					
+					YapDatabaseString _uuid; MakeYapDatabaseString(&_uuid, uuid);
+					sqlite3_bind_text(statement, 3, _uuid.str, _uuid.length, SQLITE_STATIC);
+					
+					status = sqlite3_step(statement);
+					if (status != SQLITE_DONE)
+					{
+						YDBLogError(@"%@: Error in statement: %d %s",
+						            THIS_METHOD, status, sqlite3_errmsg(strongSelf->db));
+					}
+					
+					sqlite3_finalize(statement);
+					FreeYapDatabaseString(&_uuid);
+				}
+				
+				[strongSelf commitTransaction];
+			}
+			
+			if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
+			{
+				NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
+				
+				NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
+				unsigned long long walFileSize = [walAttr fileSize];
+				
+				YDBLogVerbose(@"Post-checkpoint (mode=%@) file size: %@",
+				    (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
+				    [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
+				                                   countStyle:NSByteCountFormatterCountStyleFile]);
+			}
+
+			
+		#pragma clang diagnostic pop
+		}});
+	});
 }
 
 @end

@@ -16,7 +16,7 @@
 	BOOL activeWriteTransaction;
 	BOOL waitingForWriteLock;
 	
-	uint64_t lastKnownSnapshot;
+	uint64_t lastTransactionSnapshot;
 	uint64_t lastTransactionTime;
 }
 
