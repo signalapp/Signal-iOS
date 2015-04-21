@@ -9,6 +9,10 @@
 #import "YapDatabaseLogging.h"
 
 
+static int ddLogLevel = LOG_LEVEL_VERBOSE;
+#pragma unused(ddLogLevel)
+
+
 @implementation AppDelegate
 {
 	YapDatabase *database;
@@ -28,13 +32,44 @@
 	                                         context:YDBLogContext];
 #endif
 	
-	double delayInSeconds = 2.0;
-	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	double delayInSeconds;
+	dispatch_time_t popTime;
+	
+	delayInSeconds = 2.0;
+	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
 	//	[self debug];
 	//	[self debugOnTheFlyViews];
+		
+	//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	//	database = [[YapDatabase alloc] initWithPath:databasePath];
+	//
+	//	[[database newConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	//
+	//		for (int i = 0; i < 10; i++)
+	//		{
+	//			NSString *key = [NSString stringWithFormat:@"%d", i];
+	//
+	//			[transaction setObject:[self randomLetters:50] forKey:key inCollection:nil];
+	//		}
+	//	}];
 	});
+	
+//	delayInSeconds = 6.0;
+//	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+//		
+//		[[database newConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//			
+//			for (int i = 0; i < 10; i++)
+//			{
+//				NSString *key = [NSString stringWithFormat:@"%d", i];
+//				
+//				[transaction setObject:[self randomLetters:50] forKey:key inCollection:nil];
+//			}
+//		}];
+//	});
 	
 	// Normal UI stuff
 	

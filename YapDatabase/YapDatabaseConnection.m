@@ -1950,7 +1950,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			needsMarkSqlLevelSharedReadLock = YES;
 		}
 		
-		myState->lastKnownSnapshot = snapshot;
+		myState->lastTransactionSnapshot = snapshot;
 		myState->lastTransactionTime = mach_absolute_time();
 	}});
 }
@@ -2015,7 +2015,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				// Active sibling connection: read-only
 				
-				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
 				
 				if (!state->sqlLevelSharedReadLock)
 					countOtherMaybeBlockingWriteTransaction++;
@@ -2024,7 +2024,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				// Active sibling connection: read-write
 				
-				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
 				
 				if (state->waitingForWriteLock)
 					blockedWriteState = state;
@@ -2144,7 +2144,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			         snapshot, globalSnapshot);
 		}
 		
-		myState->lastKnownSnapshot = snapshot;
+		myState->lastTransactionSnapshot = snapshot;
 		myState->lastTransactionTime = mach_absolute_time();
 		needsMarkSqlLevelSharedReadLock = NO;
 		
@@ -2451,7 +2451,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		{
 			if (state->activeReadTransaction)
 			{
-				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
 			}
 		}
 		
@@ -2550,7 +2550,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		myState->lastKnownSnapshot = [database snapshot];
+		myState->lastTransactionSnapshot = [database snapshot];
 		myState->lastTransactionTime = mach_absolute_time();
 		needsMarkSqlLevelSharedReadLock = YES;
 		
@@ -2621,7 +2621,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			}
 			else if (state->activeReadTransaction)
 			{
-				minSnapshot = MIN(state->lastKnownSnapshot, minSnapshot);
+				minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
 			}
 		}
 		

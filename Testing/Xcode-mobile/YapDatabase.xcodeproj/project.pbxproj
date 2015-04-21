@@ -289,6 +289,7 @@
 		DC5BB365194BDAC0001A59A0 /* DDDispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDDispatchQueueLogFormatter.m; sourceTree = "<group>"; };
 		DC5BB366194BDAC0001A59A0 /* DDMultiFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDMultiFormatter.h; sourceTree = "<group>"; };
 		DC5BB367194BDAC0001A59A0 /* DDMultiFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDMultiFormatter.m; sourceTree = "<group>"; };
+		DC5BE2691AE61817007E77FD /* LumberjackUser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LumberjackUser.h; path = Logging/LumberjackUser.h; sourceTree = SOURCE_ROOT; };
 		DC60889B18CFE699009AA946 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		DC7179F318144F0400D6E6C8 /* YapDatabaseQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YapDatabaseQuery.h; path = Utilities/YapDatabaseQuery.h; sourceTree = "<group>"; };
 		DC7179F418144F0400D6E6C8 /* YapDatabaseQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YapDatabaseQuery.m; path = Utilities/YapDatabaseQuery.m; sourceTree = "<group>"; };
@@ -626,21 +627,8 @@
 		DC3D2EA91673FF6800DFAFAA /* Logging */ = {
 			isa = PBXGroup;
 			children = (
-				DC5BB35E194BDAC0001A59A0 /* CLI */,
-				DC5BB361194BDAC0001A59A0 /* Extensions */,
-				DC3D2EB01673FF6800DFAFAA /* DDLog.h */,
-				DC3D2EB11673FF6800DFAFAA /* DDLog.m */,
-				DC5BB35C194BDAAE001A59A0 /* DDLog+LOGV.h */,
-				DC3D2EAC1673FF6800DFAFAA /* DDASLLogger.h */,
-				DC3D2EAD1673FF6800DFAFAA /* DDASLLogger.m */,
-				DC3D2EB21673FF6800DFAFAA /* DDTTYLogger.h */,
-				DC3D2EB31673FF6800DFAFAA /* DDTTYLogger.m */,
-				DC3D2EAE1673FF6800DFAFAA /* DDFileLogger.h */,
-				DC3D2EAF1673FF6800DFAFAA /* DDFileLogger.m */,
-				DC3D2EAA1673FF6800DFAFAA /* DDAbstractDatabaseLogger.h */,
-				DC3D2EAB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m */,
-				DC5BB35A194BDAAE001A59A0 /* DDASLLogCapture.h */,
-				DC5BB35B194BDAAE001A59A0 /* DDASLLogCapture.m */,
+				DC5BE2671AE617D9007E77FD /* Lumberjack */,
+				DC5BE2681AE617EE007E77FD /* PerUserLogLevels */,
 			);
 			name = Logging;
 			path = ../../Vendor/CocoaLumberjack;
@@ -753,6 +741,36 @@
 				DC5BB367194BDAC0001A59A0 /* DDMultiFormatter.m */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		DC5BE2671AE617D9007E77FD /* Lumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				DC5BB35E194BDAC0001A59A0 /* CLI */,
+				DC5BB361194BDAC0001A59A0 /* Extensions */,
+				DC3D2EB01673FF6800DFAFAA /* DDLog.h */,
+				DC3D2EB11673FF6800DFAFAA /* DDLog.m */,
+				DC5BB35C194BDAAE001A59A0 /* DDLog+LOGV.h */,
+				DC3D2EAC1673FF6800DFAFAA /* DDASLLogger.h */,
+				DC3D2EAD1673FF6800DFAFAA /* DDASLLogger.m */,
+				DC3D2EB21673FF6800DFAFAA /* DDTTYLogger.h */,
+				DC3D2EB31673FF6800DFAFAA /* DDTTYLogger.m */,
+				DC3D2EAE1673FF6800DFAFAA /* DDFileLogger.h */,
+				DC3D2EAF1673FF6800DFAFAA /* DDFileLogger.m */,
+				DC3D2EAA1673FF6800DFAFAA /* DDAbstractDatabaseLogger.h */,
+				DC3D2EAB1673FF6800DFAFAA /* DDAbstractDatabaseLogger.m */,
+				DC5BB35A194BDAAE001A59A0 /* DDASLLogCapture.h */,
+				DC5BB35B194BDAAE001A59A0 /* DDASLLogCapture.m */,
+			);
+			name = Lumberjack;
+			sourceTree = "<group>";
+		};
+		DC5BE2681AE617EE007E77FD /* PerUserLogLevels */ = {
+			isa = PBXGroup;
+			children = (
+				DC5BE2691AE61817007E77FD /* LumberjackUser.h */,
+			);
+			name = PerUserLogLevels;
 			sourceTree = "<group>";
 		};
 		DC7179E3181207D300D6E6C8 /* SecondaryIndexes */ = {
@@ -1074,6 +1092,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DCAE52221673FE2600395076 /* Build configuration list for PBXNativeTarget "YapDatabase" */;
 			buildPhases = (
+				DC5BE2611AE61607007E77FD /* ShellScript */,
 				DCAE51E31673FE2600395076 /* Sources */,
 				DCAE51E41673FE2600395076 /* Frameworks */,
 				DCAE51E51673FE2600395076 /* Resources */,
@@ -1175,6 +1194,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		DC5BE2611AE61607007E77FD /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "${PROJECT_DIR}/Logging/LumberjackUser.bash";
+		};
 		DCAE520E1673FE2600395076 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

@@ -89,7 +89,48 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
  * You must use the 'YapDatabase/SQLCipher' subspec
  * in your Podfile for this option to take effect.
  **/
-@property (nonatomic, copy) YapDatabaseCipherKeyBlock cipherKeyBlock;
+@property (nonatomic, copy, readwrite) YapDatabaseCipherKeyBlock cipherKeyBlock;
 #endif
+
+/**
+ * There are a few edge-case scenarios where the sqlite WAL (write-ahead log) file
+ * could grow without bound, because the normal checkpoint mechanisms are getting spoiled.
+ * 
+ * 1. The application only does a single large write at app launch.
+ *    And afterwards, it only uses the database for reads.
+ *    This may be due to a bug in sqlite. Generally, once the WAL has been fully checkpointed,
+ *    the next write transaction will automatically reset the WAL. But we've noticed
+ *    that if the next write occurs after restarting the process, then the WAL doesn't get reset.
+ * 
+ * 2. The application continually writes to the database without pause.
+ *    The checkpoint operation can run in parallel with reads & writes.
+ *    Normally this is optimal, as the last write (in a sequence) will conclude, followed by a checkpoint.
+ *    And then the next write will reset the WAL.
+ *    But if the application never ceases executing write operations,
+ *    then we have no choice but to occasionally interrupt the writes in order to
+ *    allow the checkpoint operation to catch up.
+ * 
+ * If the WAL file ever reaches the configured aggressiveWALTruncationSize,
+ * then YapDatabase will effectively insert a checkpoint operation as a readWriteTransction.
+ *
+ * (This is in contrast to its normal optimized checkpoint operations, which can run in parallel with db writes.)
+ * 
+ * Note: The internals approximate the file size based on the number of reported frames in the WAL.
+ * The approximation is generally a bit smaller than the actual file size (as reported by the file system).
+ *
+ * It's unlikely you'd even notice this "aggressive" checkpoint operation,
+ * unless you were benchmarking or stress testing your database system.
+ * In which case you may notice this aggressive checkpoint as something of a "stutter" in the system.
+ *
+ * The default value is (1024 * 1024) (i.e. 1 MB)
+ * 
+ * Remember: This value is specified as a number of bytes. For example:
+ * -   1 KB == 1024 * 1
+ * - 512 KB == 1024 * 512
+ * -   1 MB == 1024 * 1024
+ * -  10 MB == 1024 * 1024 * 10
+ *
+**/
+@property (nonatomic, assign, readwrite) unsigned long long aggressiveWALTruncationSize;
 
 @end
