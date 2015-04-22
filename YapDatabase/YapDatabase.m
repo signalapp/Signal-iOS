@@ -2861,6 +2861,10 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 				
 				char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
 				
+				int const bind_extension = SQLITE_BIND_START + 0;
+				int const bind_key       = SQLITE_BIND_START + 1;
+				int const bind_data      = SQLITE_BIND_START + 2;
+				
 				status = sqlite3_prepare_v2(strongSelf->db, stmt, (int)strlen(stmt)+1, &statement, NULL);
 				if (status != SQLITE_OK)
 				{
@@ -2870,13 +2874,13 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 				else
 				{
 					char *extension = "";
-					sqlite3_bind_text(statement, 1, extension, (int)strlen(extension), SQLITE_STATIC);
+					sqlite3_bind_text(statement, bind_extension, extension, (int)strlen(extension), SQLITE_STATIC);
 					
 					char *key = "random";
-					sqlite3_bind_text(statement, 2, key, (int)strlen(key), SQLITE_STATIC);
+					sqlite3_bind_text(statement, bind_key, key, (int)strlen(key), SQLITE_STATIC);
 					
 					YapDatabaseString _uuid; MakeYapDatabaseString(&_uuid, uuid);
-					sqlite3_bind_text(statement, 3, _uuid.str, _uuid.length, SQLITE_STATIC);
+					sqlite3_bind_text(statement, bind_data, _uuid.str, _uuid.length, SQLITE_STATIC);
 					
 					status = sqlite3_step(statement);
 					if (status != SQLITE_DONE)
