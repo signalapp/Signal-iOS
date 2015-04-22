@@ -2819,11 +2819,15 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			// Remember: The compiler defines (SQLITE_VERSION, SQLITE_VERSION_NUMBER) only tell us
 			// what version we're compiling against. But we may encounter an earlier sqlite version at runtime.
 			
-		#if SQLITE_VERSION_NUMBER > 3008008
+		#ifndef SQLITE_VERSION_NUMBER_3_8_8
+		#define SQLITE_VERSION_NUMBER_3_8_8 3008008
+		#endif
+			
+		#if SQLITE_VERSION_NUMBER > SQLITE_VERSION_NUMBER_3_8_8
 			
 			checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
 			
-		#elif SQLITE_VERSION_NUMBER == 3008008
+		#elif SQLITE_VERSION_NUMBER == SQLITE_VERSION_NUMBER_3_8_8
 			
 			NSComparisonResult cmp = [strongSelf->sqliteVersion compare:@"3.8.8.2" options:NSNumericSearch];
 			if (cmp != NSOrderedAscending)
