@@ -1150,7 +1150,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, SQLITE_COL_START);
+			int64_t rowid = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 			
 			block(rowid, &stop);
 			
@@ -1350,7 +1350,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
 			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
 		
-		count = (NSUInteger)sqlite3_column_int64(statement, SQLITE_COL_START);
+		count = (NSUInteger)sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{

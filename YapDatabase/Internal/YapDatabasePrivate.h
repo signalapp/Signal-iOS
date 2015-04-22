@@ -27,8 +27,8 @@ NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 #define SQLITE_BIND_START 1
 #endif
 
-#ifndef SQLITE_COL_START
-#define SQLITE_COL_START 0
+#ifndef SQLITE_COLUMN_START
+#define SQLITE_COLUMN_START 0
 #endif
 
 /**

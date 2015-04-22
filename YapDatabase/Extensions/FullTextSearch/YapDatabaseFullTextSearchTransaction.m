@@ -858,8 +858,8 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid" FROM "tableName" WHERE "tableName" MATCH ?;
 	
-	int const bind_idx_query = SQLITE_BIND_START;
-	int const col_idx_rowid  = SQLITE_COL_START;
+	int const column_idx_rowid = SQLITE_COLUMN_START;
+	int const bind_idx_query   = SQLITE_BIND_START;
 	
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
 	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
@@ -869,7 +869,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	{
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
 			
 			block(rowid, &stop);
 			
@@ -971,8 +971,8 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "tableName" MATCH ?;
 	
-	int const col_idx_rowid           = SQLITE_COL_START + 0;
-	int const col_idx_snippet         = SQLITE_COL_START + 1;
+	int const column_idx_rowid        = SQLITE_COLUMN_START + 0;
+	int const column_idx_snippet      = SQLITE_COLUMN_START + 1;
 	
 	int const bind_idx_startMatchText = SQLITE_BIND_START + 0;
 	int const bind_idx_endMatchText   = SQLITE_BIND_START + 1;
@@ -1014,10 +1014,10 @@ static NSString *const ext_key__version_deprecated = @"version";
 	{
 		do
 		{
-			int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
-			int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
+			const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
+			int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
 			
 			NSString *snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			
@@ -1172,8 +1172,8 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
 	
-//	int const col_idx_rowid           = SQLITE_COL_START + 0;
-	int const col_idx_snippet         = SQLITE_COL_START + 1;
+//	int const column_idx_rowid        = SQLITE_COLUMN_START + 0;
+	int const column_idx_snippet      = SQLITE_COLUMN_START + 1;
 	
 	int const bind_idx_startMatchText = SQLITE_BIND_START + 0;
 	int const bind_idx_endMatchText   = SQLITE_BIND_START + 1;
@@ -1218,10 +1218,10 @@ static NSString *const ext_key__version_deprecated = @"version";
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-	//	int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
+	//	int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
 			
-		const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
-		int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
+		const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
+		int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
 		
 		snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}

@@ -781,8 +781,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		const unsigned char *text = sqlite3_column_text(statement, SQLITE_COL_START);
-		int textSize = sqlite3_column_bytes(statement, SQLITE_COL_START);
+		const unsigned char *text = sqlite3_column_text(statement, SQLITE_COLUMN_START);
+		int textSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
 		
 		version = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 	}
@@ -816,7 +816,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = sqlite3_column_int(statement, SQLITE_COL_START);
+		result = sqlite3_column_int(statement, SQLITE_COLUMN_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -875,7 +875,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		int count = sqlite3_column_int(statement, SQLITE_COL_START);
+		int count = sqlite3_column_int(statement, SQLITE_COLUMN_START);
 		
 		result = (count > 0);
 	}
@@ -1014,7 +1014,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	status = sqlite3_step(pragmaStatement);
 	if (status == SQLITE_ROW)
 	{
-		user_version = sqlite3_column_int(pragmaStatement, SQLITE_COL_START);
+		user_version = sqlite3_column_int(pragmaStatement, SQLITE_COLUMN_START);
 	}
 	else
 	{
@@ -1264,8 +1264,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	{
 		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, SQLITE_COL_START);
-			int textSize = sqlite3_column_bytes(statement, SQLITE_COL_START);
+			const unsigned char *text = sqlite3_column_text(statement, SQLITE_COLUMN_START);
+			int textSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
 			
 			NSString *extensionName =
 			    [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];

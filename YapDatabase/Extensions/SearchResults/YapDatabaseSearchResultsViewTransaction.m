@@ -2562,8 +2562,8 @@ static NSString *const ext_key_query             = @"query";
 		
 		// SELECT "snippet" FROM "snippetTable" WHERE "rowid" = ?;
 		
-		int const bind_idx_rowid  = SQLITE_BIND_START;
-		int const col_idx_snippet = SQLITE_COL_START;
+		int const column_idx_snippet = SQLITE_COLUMN_START;
+		int const bind_idx_rowid     = SQLITE_BIND_START;
 		
 		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
@@ -2573,8 +2573,8 @@ static NSString *const ext_key_query             = @"query";
 			if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
 				[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
 			
-			const unsigned char *text = sqlite3_column_text(statement, col_idx_snippet);
-			int textSize = sqlite3_column_bytes(statement, col_idx_snippet);
+			const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
+			int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
 			
 			snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}

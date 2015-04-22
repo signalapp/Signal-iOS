@@ -2681,7 +2681,7 @@ NS_INLINE BOOL YDBIsMainThread()
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = (uint64_t)sqlite3_column_int64(statement, SQLITE_COL_START);
+		result = (uint64_t)sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{

@@ -278,10 +278,10 @@
 		NSString *string = [NSString stringWithFormat:
 			@"SELECT \"pageKey\", \"group\", \"prevPageKey\", \"count\" FROM \"%@\";", [self pageTableName]];
 		
-		int const col_idx_pageKey     = SQLITE_COL_START + 0;
-		int const col_idx_group       = SQLITE_COL_START + 1;
-		int const col_idx_prevPageKey = SQLITE_COL_START + 2;
-		int const col_idx_count       = SQLITE_COL_START + 3;
+		int const column_idx_pageKey     = SQLITE_COLUMN_START + 0;
+		int const column_idx_group       = SQLITE_COLUMN_START + 1;
+		int const column_idx_prevPageKey = SQLITE_COLUMN_START + 2;
+		int const column_idx_count       = SQLITE_COLUMN_START + 3;
 		
 		sqlite3_stmt *statement = NULL;
 		
@@ -299,24 +299,24 @@
 		{
 			stepCount++;
 			
-			const unsigned char *text0 = sqlite3_column_text(statement, col_idx_pageKey);
-			int textSize0 = sqlite3_column_bytes(statement, col_idx_pageKey);
+			const unsigned char *text0 = sqlite3_column_text(statement, column_idx_pageKey);
+			int textSize0 = sqlite3_column_bytes(statement, column_idx_pageKey);
 			
 			NSString *pageKey = [[NSString alloc] initWithBytes:text0 length:textSize0 encoding:NSUTF8StringEncoding];
 			
-			const unsigned char *text1 = sqlite3_column_text(statement, col_idx_group);
-			int textSize1 = sqlite3_column_bytes(statement, col_idx_group);
+			const unsigned char *text1 = sqlite3_column_text(statement, column_idx_group);
+			int textSize1 = sqlite3_column_bytes(statement, column_idx_group);
 			
 			NSString *group   = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
 			
-			const unsigned char *text2 = sqlite3_column_text(statement, col_idx_prevPageKey);
-			int textSize2 = sqlite3_column_bytes(statement, col_idx_prevPageKey);
+			const unsigned char *text2 = sqlite3_column_text(statement, column_idx_prevPageKey);
+			int textSize2 = sqlite3_column_bytes(statement, column_idx_prevPageKey);
 			
 			NSString *prevPageKey = nil;
 			if (textSize2 > 0)
 				prevPageKey = [[NSString alloc] initWithBytes:text2 length:textSize2 encoding:NSUTF8StringEncoding];
 			
-			int count = sqlite3_column_int(statement, col_idx_count);
+			int count = sqlite3_column_int(statement, column_idx_count);
 			
 			if (count >= 0)
 			{
@@ -1159,16 +1159,16 @@
 		
 		// SELECT "pageKey" FROM "mapTableName" WHERE "rowid" = ? ;
 		
-		int const col_idx_pageKey = SQLITE_COL_START;
-		int const bind_idx_rowid  = SQLITE_BIND_START;
+		int const column_idx_pageKey = SQLITE_COLUMN_START;
+		int const bind_idx_rowid     = SQLITE_BIND_START;
 		
 		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			const unsigned char *text = sqlite3_column_text(statement, col_idx_pageKey);
-			int textSize = sqlite3_column_bytes(statement, col_idx_pageKey);
+			const unsigned char *text = sqlite3_column_text(statement, column_idx_pageKey);
+			int textSize = sqlite3_column_bytes(statement, column_idx_pageKey);
 			
 			pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 		}
@@ -1301,8 +1301,8 @@
 			
 			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
 			
-			int const col_idx_rowid   = SQLITE_COL_START + 0;
-			int const col_idx_pageKey = SQLITE_COL_START + 1;
+			int const column_idx_rowid   = SQLITE_COLUMN_START + 0;
+			int const column_idx_pageKey = SQLITE_COLUMN_START + 1;
 			
 			NSUInteger capacity = 50 + (count * 3);
 			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
@@ -1345,10 +1345,10 @@
 			{
 				// Extract rowid & pageKey from row
 				
-				int64_t rowid = sqlite3_column_int64(statement, col_idx_rowid);
+				int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
 				
-				const unsigned char *text = sqlite3_column_text(statement, col_idx_pageKey);
-				int textSize = sqlite3_column_bytes(statement, col_idx_pageKey);
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_pageKey);
+				int textSize = sqlite3_column_bytes(statement, column_idx_pageKey);
 				
 				NSNumber *rowidNumber = @(rowid);
 				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
@@ -1441,7 +1441,7 @@
 		
 		// SELECT "data" FROM 'pageTableName' WHERE pageKey = ? ;
 		
-		int const col_idx_data     = SQLITE_COL_START;
+		int const column_idx_data  = SQLITE_COLUMN_START;
 		int const bind_idx_pageKey = SQLITE_BIND_START;
 		
 		YapDatabaseString _pageKey; MakeYapDatabaseString(&_pageKey, pageKey);
@@ -1450,8 +1450,8 @@
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			const void *blob = sqlite3_column_blob(statement, col_idx_data);
-			int blobSize = sqlite3_column_bytes(statement, col_idx_data);
+			const void *blob = sqlite3_column_blob(statement, column_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_data);
 			
 			NSData *data = [[NSData alloc] initWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
 			
