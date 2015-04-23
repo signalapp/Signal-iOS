@@ -51,4 +51,13 @@ v1.0 development by Twisted Oak Studios:
 - Petar Markovich (@Waxford)
 - Jazz Turner Baggs (@jazzz)
 
-Since the initial release, Signal is being managed by [Christine Corbett](https://twitter.com/corbett) and [Frederic Jacobs](https://twitter.com/FredericJacobs).
+The development from 1.0 to 2.0 of Signal was managed by [Christine Corbett](https://twitter.com/corbett) and [Frederic Jacobs](https://twitter.com/FredericJacobs). After the release of Signal 2.0,  Christine moved on to other projects.
+
+We would like to particularly thank the following people for contributing to Signal 2.0: 
+
+- Tyler Reinhard for his work on Signal 2.0 design
+- Cade (@helveticade) for his numerous UX and UI contributions
+- Dylan Bourgeois for his work on helping to integrate TextSecure UI into the existing Signal project
+- Joshua Lund for the amazing QA work and immensely helpful feedback provided over the months of testing
+- Joyce Yan and Jack Rogers for their contributions at the Winter Break of Code
+- [Abelard](http://abelard.bandcamp.com/) for the Signal ringtones and notification sounds
