@@ -265,13 +265,10 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 - (NSUInteger)suspendWithCount:(NSUInteger)suspendCountIncrement
 {
 	BOOL overflow = NO;
-	NSUInteger oldSuspendCount = 0;
 	NSUInteger newSuspendCount = 0;
 	
 	OSSpinLockLock(&suspendCountLock);
 	{
-		oldSuspendCount = suspendCount;
-		
 		if (suspendCount <= (NSUIntegerMax - suspendCountIncrement))
 			suspendCount += suspendCountIncrement;
 		else {
