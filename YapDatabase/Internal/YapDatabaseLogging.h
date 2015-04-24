@@ -36,10 +36,10 @@
 #define YDB_LOG_LEVEL_INFO    (YDB_LOG_LEVEL_WARN  | YDB_LOG_FLAG_INFO)    // 0...00111
 #define YDB_LOG_LEVEL_VERBOSE (YDB_LOG_LEVEL_INFO  | YDB_LOG_FLAG_VERBOSE) // 0...01111
 
-#define YDB_LOG_ERROR   (ydbLogLevel & YDB_LOG_LEVEL_ERROR)
-#define YDB_LOG_WARN    (ydbLogLevel & YDB_LOG_LEVEL_WARN)
-#define YDB_LOG_INFO    (ydbLogLevel & YDB_LOG_LEVEL_INFO)
-#define YDB_LOG_VERBOSE (ydbLogLevel & YDB_LOG_LEVEL_VERBOSE)
+#define YDB_LOG_ERROR   (ydbLogLevel & YDB_LOG_FLAG_ERROR)
+#define YDB_LOG_WARN    (ydbLogLevel & YDB_LOG_FLAG_WARN)
+#define YDB_LOG_INFO    (ydbLogLevel & YDB_LOG_FLAG_INFO)
+#define YDB_LOG_VERBOSE (ydbLogLevel & YDB_LOG_FLAG_VERBOSE)
 
 /**
  * Define trace, which is in addition to log levels.
