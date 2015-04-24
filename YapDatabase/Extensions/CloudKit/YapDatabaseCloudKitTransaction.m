@@ -1181,7 +1181,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		}
 	}
 	
-	if (recordTableHashChangedForRowid && prevRecordTableInfo)
+	if (recordTableHashChangedForRowid && prevRecordTableHash)
 	{
 		// Rowid is no longer associated with record.
 		// Need to decrement ownerCount.
