@@ -21,6 +21,7 @@
 #import "TSDatabaseView.h"
 
 #define IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY @"Migrating from 1.0 to Larger"
+#define NEEDS_TO_REGISTER_PUSH_KEY            @"Register For Push"
 
 
 
@@ -32,12 +33,69 @@
 
 @implementation VersionMigrations
 
+#pragma mark Utility methods
+
++ (void)performUpdateCheck{
+    NSString *previousVersion     = Environment.preferences.lastRanVersion;
+    NSString *currentVersion      = [Environment.preferences setAndGetCurrentVersion];
+    BOOL     isCurrentlyMigrating = [VersionMigrations isMigratingTo2Dot0];
+    BOOL     needsToRegisterPush  = [VersionMigrations needsRegisterPush];
+    
+    if (!previousVersion) {
+        DDLogError(@"No previous version found. Possibly first launch since install.");
+        return;
+    }
+    
+    if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || isCurrentlyMigrating) {
+        [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
+    }
+    
+    if(([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.18"])) {
+        [VersionMigrations migrateBloomFilter];
+    }
+    
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.21"] || needsToRegisterPush) {
+        [self clearVideoCache];
+        [self blockingPushRegistration];
+        
+    }
+}
+
++ (BOOL)isMigrating{
+    return [self isMigratingTo2Dot0];
+}
+
++ (BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)openLowerBoundVersionString andLessThan:(NSString *)closedUpperBoundVersionString {
+    return [self isVersion:thisVersionString atLeast:openLowerBoundVersionString] && [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
+}
+
++ (BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString {
+    return [thisVersionString compare:thatVersionString options:NSNumericSearch] != NSOrderedAscending;
+}
+
++ (BOOL) isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString {
+    return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
+}
+
++ (void)clearUserDefaults{
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    
+    [Environment.preferences setAndGetCurrentVersion];
+    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+#pragma mark 2.0.1
+
 + (void)migrateBloomFilter {
     // The bloom filter had to be moved to the cache folder after rejection of the 2.0.1
     NSString *oldBloomKey = @"Directory Bloom Data";
     [[Environment preferences] setValueForKey:oldBloomKey toValue:nil];
     return;
 }
+
+#pragma mark 2.0
 
 + (void)migrateFrom1Dot0Dot2ToVersion2Dot0 {
     
@@ -60,7 +118,7 @@
     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController animated:YES completion:nil];
     
     [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
-            [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken voipToken:voipToken success:^{
+        [TSAccountManager registerWithRedPhoneToken:signupToken pushToken:pushToken voipToken:voipToken success:^{
             [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
             [self clearMigrationFlag];
             Environment *env = [Environment getCurrent];
@@ -94,7 +152,6 @@
     }];
 }
 
-#pragma mark helper methods
 + (void) migrateRecentCallsToVersion2Dot0 {
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
     NSData *encodedData = [defaults objectForKey:RECENT_CALLS_DEFAULT_KEY];
@@ -158,27 +215,82 @@
     [UICKeyChainStore removeItemForKey:SIGNALING_EXTRA_KEY];
 }
 
-+ (void)clearUserDefaults{
-    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
-    
-    [Environment.preferences setAndGetCurrentVersion];
-    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
++ (BOOL)isMigratingTo2Dot0{
+    return [self userDefaultsBoolForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
 }
 
-+ (BOOL)isMigratingTo2Dot0{
-    NSNumber *num = [[NSUserDefaults standardUserDefaults] objectForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
++ (void)clearMigrationFlag{
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
+}
+
+#pragma mark Upgrading to 2.1 - Needs to register VOIP token + Removing video cache folder
+
++ (void)blockingPushRegistration{
+    [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:YES];
+    
+    UIAlertController *waitingController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Upgrading Signal ...", nil)
+                                                                               message:nil
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+    
+    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:waitingController
+                                                                                 animated:YES
+                                                                               completion:nil];
+    
+    failedPushRegistrationBlock failure = ^(NSError *error) {
+        [self refreshPushLock:waitingController];
+    };
+    
+    [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSData *pushToken, NSData *voipToken) {
+        [TSAccountManager registerForPushNotifications:pushToken voipToken:voipToken success:^{
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_PUSH_KEY];
+        } failure:failure];
+    } failure:failure];
+}
+
++ (void)refreshPushLock:(UIAlertController*)waitingController {
+    [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
+    [waitingController dismissViewControllerAnimated:NO completion:^{
+        UIAlertController *retryController = [UIAlertController alertControllerWithTitle:@"Upgrading Signal failed"
+                                                                                 message:@"An error occured while upgrading, please try again."
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        [retryController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action) {
+                                                              [self blockingPushRegistration];
+                                                          }]];
+        
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:retryController
+                                                                                     animated:YES
+                                                                                   completion:nil];
+    }];
+}
+
++ (BOOL)needsRegisterPush {
+    return [self userDefaultsBoolForKey:NEEDS_TO_REGISTER_PUSH_KEY];
+}
+
++ (void)clearVideoCache {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    basePath = [basePath stringByAppendingPathComponent:@"videos"];
+    
+    NSError *error;
+    if([[NSFileManager defaultManager] fileExistsAtPath:basePath]){
+        [NSFileManager.defaultManager removeItemAtPath:basePath error:&error];
+    }
+    DDLogError(@"An error occured while removing the videos cache folder from old location: %@",
+               error.debugDescription);
+}
+
++ (BOOL)userDefaultsBoolForKey:(NSString*)key {
+    NSNumber *num = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     
     if (!num) {
         return NO;
     } else {
         return [num boolValue];
     }
-}
-
-+ (void)clearMigrationFlag{
-    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:IS_MIGRATING_FROM_1DOT0_TO_LARGER_KEY];
 }
 
 @end

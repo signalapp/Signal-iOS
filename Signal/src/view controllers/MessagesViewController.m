@@ -1196,28 +1196,34 @@ typedef enum : NSUInteger {
     }];
 }
 
--(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
-    // TODO: should support anything that is in the videos directory
-    AVAsset *video = [AVAsset assetWithURL:movieURL];
-    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
-    exportSession.shouldOptimizeForNetworkUse = YES;
-    exportSession.outputFileType = AVFileTypeMPEG4;
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+- (NSURL*)videoTempFolder {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     basePath = [basePath stringByAppendingPathComponent:@"videos"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
     }
+    return [NSURL fileURLWithPath:basePath];
+}
+
+-(void)sendQualityAdjustedAttachment:(NSURL*)movieURL {
+    AVAsset *video = [AVAsset assetWithURL:movieURL];
+    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
+    exportSession.shouldOptimizeForNetworkUse = YES;
+    exportSession.outputFileType = AVFileTypeMPEG4;
     
-    NSURL *compressedVideoUrl = [NSURL fileURLWithPath:basePath];
     double currentTime = [[NSDate date] timeIntervalSince1970];
     NSString *strImageName = [NSString stringWithFormat:@"%f",currentTime];
-    compressedVideoUrl = [compressedVideoUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
+    NSURL *compressedVideoUrl = [[self videoTempFolder] URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.mp4",strImageName]];
     
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
+        NSError *error;
         [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
+        [[NSFileManager defaultManager] removeItemAtURL:compressedVideoUrl error:&error];
+        if (error) {
+            DDLogWarn(@"Failed to remove cached video file: %@", error.debugDescription);
+        }
     }];
 }
 

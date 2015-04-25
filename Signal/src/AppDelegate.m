@@ -25,7 +25,6 @@
 #include "TargetConditionals.h"
 #endif
 
-
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow *blankWindow;
@@ -35,32 +34,6 @@
 @implementation AppDelegate
 
 #pragma mark Detect updates - perform migrations
-
-- (void)performUpdateCheck{
-    NSString *previousVersion     = Environment.preferences.lastRanVersion;
-    NSString *currentVersion      = [Environment.preferences setAndGetCurrentVersion];
-    BOOL     isCurrentlyMigrating = [VersionMigrations isMigratingTo2Dot0];
-    
-    if (!previousVersion) {
-        DDLogError(@"No previous version found. Possibly first launch since install.");
-    } else if(([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) || isCurrentlyMigrating) {
-        [VersionMigrations migrateFrom1Dot0Dot2ToVersion2Dot0];
-    } else if(([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.18"])) {
-        [VersionMigrations migrateBloomFilter];
-    }
-}
-
--(BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)openLowerBoundVersionString andLessThan:(NSString *)closedUpperBoundVersionString {
-    return [self isVersion:thisVersionString atLeast:openLowerBoundVersionString] && [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
-}
-
-- (BOOL) isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString {
-    return [thisVersionString compare:thatVersionString options:NSNumericSearch] != NSOrderedAscending;
-}
-
-- (BOOL) isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString {
-    return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
-}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self setupAppearance];
@@ -104,7 +77,7 @@
     
     [self.window makeKeyAndVisible];
     
-    [self performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
+    [VersionMigrations performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
     
     //Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];

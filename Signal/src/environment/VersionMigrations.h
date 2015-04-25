@@ -12,11 +12,7 @@
 
 @interface VersionMigrations : NSObject
 
-+ (void)migrateBloomFilter;
-
-+ (void)migrateFrom1Dot0Dot2ToVersion2Dot0;
-
-+ (BOOL)isMigratingTo2Dot0;
-
++ (void)performUpdateCheck;
++ (BOOL)isMigrating;
 
 @end

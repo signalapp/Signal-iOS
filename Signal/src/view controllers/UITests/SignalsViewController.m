@@ -85,7 +85,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [super viewWillAppear:animated];
     [self  checkIfEmptyView];
     
-    if (![TSAccountManager isRegistered] && ![VersionMigrations isMigratingTo2Dot0]){
+    if (![TSAccountManager isRegistered] && ![VersionMigrations isMigrating]){
         [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
         return;
     }

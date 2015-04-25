@@ -81,16 +81,24 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 - (void)protectSignalFiles{
     [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
     [self protectFolderAtPath:[self dbPath]];
+    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
+    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
     [self protectFolderAtPath:[[DebugLogger sharedInstance] logsDirectory]];
 }
 
 - (void)protectFolderAtPath:(NSString*)path {
+    if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
+        return;
+    }
+
     NSError *error;
-    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication,
-                   NSURLIsExcludedFromBackupKey:@YES};
+    NSDictionary *fileProtection = @{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication};
+    [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
     
+    NSDictionary *resourcesAttrs = @{NSURLIsExcludedFromBackupKey: @YES};
     
-    BOOL success = [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:path error:&error];
+    NSURL *ressourceURL = [NSURL fileURLWithPath:path];
+    BOOL success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
     
     if (error || !success) {
         DDLogError(@"Error while removing files from backup: %@", error.description);
