@@ -57,7 +57,6 @@
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.21"] || needsToRegisterPush) {
         [self clearVideoCache];
         [self blockingPushRegistration];
-        
     }
 }
 
@@ -227,6 +226,7 @@
 
 + (void)blockingPushRegistration{
     [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:YES];
+    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_PUSH_KEY];
     
     UIAlertController *waitingController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Upgrading Signal ...", nil)
                                                                                message:nil
@@ -236,7 +236,7 @@
                                                                                  animated:YES
                                                                                completion:nil];
     
-    failedPushRegistrationBlock failure = ^(NSError *error) {
+    __block failedPushRegistrationBlock failure = ^(NSError *error) {
         [self refreshPushLock:waitingController];
     };
     

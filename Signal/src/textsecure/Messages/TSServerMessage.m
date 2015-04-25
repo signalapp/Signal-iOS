@@ -10,6 +10,7 @@
 #import "TSServerMessage.h"
 
 #import "NSData+Base64.h"
+#import <Mantle/NSDictionary+MTLMappingAdditions.h>
 
 @interface TSServerMessage ()
 
@@ -24,7 +25,7 @@
 @implementation TSServerMessage
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey{
-    return @{};
+    return [NSDictionary mtl_identityPropertyMapWithModel:[TSServerMessage class]];
 }
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
