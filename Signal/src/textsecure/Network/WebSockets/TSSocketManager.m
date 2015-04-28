@@ -37,6 +37,8 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 @property (nonatomic, retain) NSTimer *backgroundConnectTimer;
 @property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
 
+@property BOOL didFetchInBackground;
+
 @end
 
 @implementation TSSocketManager
@@ -131,6 +133,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void) webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData*)data {
     WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
+    self.didFetchInBackground   = YES;
     
     if (wsMessage.type == WebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
@@ -232,21 +235,14 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     TSSocketManager *sharedInstance = [TSSocketManager sharedManager];
     
     if (sharedInstance.fetchingTaskIdentifier == 0) {
+        sharedInstance.didFetchInBackground = NO;
         sharedInstance.fetchingTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            if (!sharedInstance.didFetchInBackground) {
+                [sharedInstance backgroundConnectTimedOut];
+            }
             sharedInstance.fetchingTaskIdentifier = 0;
             [TSSocketManager resignActivity];
         }];
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSTimer * timer = [NSTimer timerWithTimeInterval:kBackgroundConnectTimer
-                                                      target:sharedInstance
-                                                    selector:@selector(closeBackgroundTask)
-                                                    userInfo:nil
-                                                     repeats:NO];
-            
-            [[NSRunLoop mainRunLoop] addTimer:timer
-                                      forMode:NSDefaultRunLoopMode];
-        });
         
         [self becomeActive];
     }
@@ -254,20 +250,15 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)closeBackgroundTask {
     UIBackgroundTaskIdentifier identifier = self.fetchingTaskIdentifier;
-    self.fetchingTaskIdentifier = 0;
-    
-    if ([_websocket readyState] != SR_OPEN) {
-        [self backgroundConnectTimedOut];
-    }
+    self.fetchingTaskIdentifier           = 0;
     
     [TSSocketManager resignActivity];
-    
     [[UIApplication sharedApplication] endBackgroundTask:identifier];
 }
 
 - (void)backgroundConnectTimedOut {
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.alertBody = NSLocalizedString(@"APN_FETCHED_FAILED", nil);
+    notification.alertBody            = NSLocalizedString(@"APN_FETCHED_FAILED", nil);
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 }
 

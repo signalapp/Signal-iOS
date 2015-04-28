@@ -28,6 +28,7 @@
 #define HAS_ARCHIVED_A_MESSAGE_KEY @"User archived a message"
 #define kSignalVersionKey @"SignalUpdateVersionKey"
 #define PLAY_SOUND_IN_FOREGROUND_KEY @"NotificationSoundInForeground"
+#define HAS_REGISTERED_VOIP_PUSH @"VOIPPushEnabled"
 
 #define BloomFilterCacheName     @"bloomfilter"
 
@@ -142,6 +143,16 @@
 
 }
 
+- (BOOL)hasRegisteredVOIPPush {
+    NSNumber *preference = [self tryGetValueForKey:HAS_REGISTERED_VOIP_PUSH];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return YES;
+    }
+    
+}
+
 -(TSImageQuality)imageUploadQuality {
     // always return average image quality
     return TSImageQualityMedium;
@@ -157,6 +168,10 @@
 
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:@(enabled)];
+}
+
+-(void)setHasRegisteredVOIPPush:(BOOL)enabled {
+    [self setValueForKey:HAS_REGISTERED_VOIP_PUSH toValue:@(enabled)];
 }
 
 -(void) setContactImagesEnabled:(BOOL)enabled {

@@ -40,7 +40,8 @@
     NSString *currentVersion      = [Environment.preferences setAndGetCurrentVersion];
     BOOL     isCurrentlyMigrating = [VersionMigrations isMigratingTo2Dot0];
     BOOL     needsToRegisterPush  = [VersionMigrations needsRegisterPush];
-    
+    BOOL     VOIPRegistration     = [[PushManager sharedManager] supportsVOIPPush]
+                                    && ![Environment.preferences hasRegisteredVOIPPush];
     if (!previousVersion) {
         DDLogError(@"No previous version found. Possibly first launch since install.");
         return;
@@ -57,6 +58,20 @@
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.0.21"] || needsToRegisterPush) {
         [self clearVideoCache];
         [self blockingPushRegistration];
+    }
+    
+    if (VOIPRegistration) {
+        [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
+            [TSAccountManager registerWithRedPhoneToken:signupToken
+                                              pushToken:pushToken
+                                              voipToken:voipToken
+                                                success:^{[Environment.preferences setHasRegisteredVOIPPush:YES];}
+                                                failure:^(NSError *error) {
+                DDLogError(@"Couldn't register with TextSecure server: %@", error.debugDescription);
+            }];
+        } failure:^(NSError *error) {
+            DDLogError(@"Couldn't register with RedPhone server.");
+        }];
     }
 }
 
@@ -243,6 +258,7 @@
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSData *pushToken, NSData *voipToken) {
         [TSAccountManager registerForPushNotifications:pushToken voipToken:voipToken success:^{
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_PUSH_KEY];
+            [waitingController dismissViewControllerAnimated:YES completion:nil];
         } failure:failure];
     } failure:failure];
 }

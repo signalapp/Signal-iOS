@@ -146,6 +146,22 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
     return databasePath;
 }
 
+- (BOOL)databasePasswordAccessible {
+    [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    NSError *error;
+    NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount error:&error];
+    
+    if (dbPassword && !error) {
+        return YES;
+    }
+    
+    if (error) {
+        DDLogWarn(@"Database password couldn't be accessed: %@", error.localizedDescription);
+    }
+    
+    return NO;
+}
+
 - (NSData*)databasePassword {
     [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount];

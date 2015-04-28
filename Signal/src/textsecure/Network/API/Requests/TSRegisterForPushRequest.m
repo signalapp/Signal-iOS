@@ -18,7 +18,11 @@
     
     self.HTTPMethod = @"PUT";
     
-    self.parameters = [NSMutableDictionary dictionaryWithObjects:@[identifier, voipId] forKeys:@[@"apnRegistrationId", @"voipRegistrationId"]];
+    self.parameters = [@{@"apnRegistrationId":identifier} mutableCopy];
+    
+    if (voipId) {
+        [self.parameters setObject:voipId forKeyedSubscript:@"voipRegistrationId"];
+    }
     
     return self;
 }

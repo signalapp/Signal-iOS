@@ -168,7 +168,7 @@
 
 #pragma mark PushKit
 
--(void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type
 {
     [[PushManager sharedManager].pushKitNotificationFutureSource trySetResult:credentials.token];
 }
@@ -178,12 +178,27 @@
      [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
 }
 
--(TOCFuture*)registerPushKitNotificationFuture{
-    self.pushKitNotificationFutureSource = [TOCFutureSource new];
-    PKPushRegistry* voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    voipRegistry.delegate = self;
-    voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-    return self.pushKitNotificationFutureSource.future;
+- (TOCFuture*)registerPushKitNotificationFuture{
+    if ([self supportsVOIPPush]) {
+        self.pushKitNotificationFutureSource = [TOCFutureSource new];
+        PKPushRegistry* voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+        voipRegistry.delegate = self;
+        voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+        return self.pushKitNotificationFutureSource.future;
+    } else {
+        TOCFutureSource *futureSource = [TOCFutureSource new];
+        [futureSource trySetResult:nil];
+        [Environment.preferences setHasRegisteredVOIPPush:FALSE];
+        return futureSource.future;
+    }
+}
+
+- (BOOL)supportsVOIPPush {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_8_2_0)) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark Register device for Push Notification locally
@@ -287,24 +302,17 @@
 }
 
 - (UIUserNotificationCategory*)userNotificationsMessageCategory{
-    UIMutableUserNotificationAction *action_accept  = [UIMutableUserNotificationAction new];
-    action_accept.identifier                        = Signal_Message_View_Identifier;
-    action_accept.title                             = NSLocalizedString(@"View", @"");
-    action_accept.activationMode                    = UIUserNotificationActivationModeForeground;
-    action_accept.destructive                       = NO;
-    action_accept.authenticationRequired            = YES;
-    
-    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier                       = Signal_Message_MarkAsRead_Identifier;
-    action_decline.title                            = NSLocalizedString(@"Mark as read", @"");
-    action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
-    action_decline.destructive                      = NO;
-    action_decline.authenticationRequired           = NO;
+    UIMutableUserNotificationAction *action_view  = [UIMutableUserNotificationAction new];
+    action_view.identifier                        = Signal_Message_View_Identifier;
+    action_view.title                             = NSLocalizedString(@"View", @"");
+    action_view.activationMode                    = UIUserNotificationActivationModeForeground;
+    action_view.destructive                       = NO;
+    action_view.authenticationRequired            = YES;
     
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
     messageCategory.identifier = Signal_Message_Category;
-    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
-    [messageCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
+    [messageCategory setActions:@[action_view] forContext:UIUserNotificationActionContextMinimal];
+    [messageCategory setActions:@[action_view] forContext:UIUserNotificationActionContextDefault];
     
     return messageCategory;
 }

@@ -410,7 +410,9 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name inThread:(TSThread*)thread {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+    NSString *messageDescription = message.description;
+    
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
          UILocalNotification *notification = [[UILocalNotification alloc] init];
          notification.category  = Signal_Message_Category;
          notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
@@ -423,9 +425,9 @@
                          sender = message.authorId;
                      }
                      
-                     notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, message.description];
+                     notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
                  } else {
-                     notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, message.description];
+                     notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
                  }
                  break;
              case NotificationNameNoPreview:{

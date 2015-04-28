@@ -60,10 +60,10 @@
     // the phone directory being looked up during tests.
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedInstance enableTTYLogging];
-    
 #elif RELEASE
     loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
+    [self verifyBackgroundBeforeKeysAvailableLaunch];
     
     if (loggingIsEnabled) {
         [DebugLogger.sharedInstance enableFileLogging];
@@ -258,6 +258,22 @@
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
     [[PushManager sharedManager] application:application handleActionWithIdentifier:identifier forLocalNotification:notification completionHandler:completionHandler];
+}
+
+/**
+ *  Signal requires an iPhone to be unlocked after reboot to be able to access keying material.
+ */
+- (void)verifyBackgroundBeforeKeysAvailableLaunch {
+    if ([self applicationIsActive]) {
+        return;
+    }
+    
+    if (![[TSStorageManager sharedManager] databasePasswordAccessible]) {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.alertBody = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        exit(0);
+    }
 }
 
 - (BOOL)applicationIsActive {

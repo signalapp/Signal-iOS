@@ -65,6 +65,7 @@ typedef void (^registrationTokensSuccessBlock)(NSData *pushToken, NSData *voipTo
 @property TOCFutureSource *pushKitNotificationFutureSource;
 
 -(TOCFuture*)registerPushKitNotificationFuture;
+- (BOOL)supportsVOIPPush;
 
 #pragma mark Push Notifications Delegate Methods
 
