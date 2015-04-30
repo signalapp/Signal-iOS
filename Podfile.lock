@@ -34,7 +34,7 @@ PODS:
   - DJWActionSheet (1.0.4)
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (7.0.0):
+  - JSQMessagesViewController (6.1.3):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.8.4)
@@ -109,13 +109,13 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   '25519': f4e131763c4e3551951d27ff1af258a93cd94f3e
   AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
-  APDropDownNavToolbar: 5d0c3f363208543d20e86ddb4630927c28cdfd4b
+  APDropDownNavToolbar: 62131873890d3a30a2fdc98ffdda180a11e49aa4
   AxolotlKit: 630fd578a69223b29579b300bdfd88f90d83218a
   CocoaLumberjack: 628fca2e88ef06f7cf6817309aa405f325d9a6fa
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
-  JSQMessagesViewController: 9fd7e9ac96e9fc91f2deca86928e2cc916aeebaa
+  JSQMessagesViewController: 4cc4ff3b26599e8743166b7e8e908528c8f01a80
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: dbfc7b4128510a4955df3e5a6f125393fc9ebc2f
   Mantle: 60acd0cd363e27d945bda0a6b8e90577112d28f3
@@ -123,12 +123,12 @@ SPEC CHECKSUMS:
   PastelogKit: c73795b8c0bbf33ea45d3b6a5eabb373be3d5955
   ProtocolBuffers: 9a4a171c0c7cc8f21dd29aeca4f9ac775d84a880
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SocketRocket: 70df1983148525857ced17c57207bfb939bc6b8e
+  SocketRocket: 9cbe08469513356cddc0afcab1ff160bd190296a
   SQLCipher: c44fcca49c31483c2489cfb79aa7a69407f3794a
   SSKeychain: 3f42991739c6c60a9cf1bbd4dff6c0d3694bcf3d
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
-  UICKeyChainStore: d4c0f4e313d67b2f23b6614adca55351accac15a
+  UICKeyChainStore: eef407137f0397e95a3df32cdf05f7e2ddd99647
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 13566c87dc9226a0f15d755edba08e8ad94cac9f
 
-COCOAPODS: 0.36.3
+COCOAPODS: 0.36.4
