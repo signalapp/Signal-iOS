@@ -1,6 +1,6 @@
 //
 //  MessageComposeTableViewController.m
-//  
+//
 //
 //  Created by Dylan Bourgeois on 02/11/14.
 //
@@ -43,12 +43,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];    
+    [self.navigationController.navigationBar setTranslucent:NO];
     
     contacts = [[Environment getCurrent] contactsManager].signalContacts;
     searchResults = contacts;
     [self initializeSearch];
-
+    
     self.searchController.searchBar.hidden = NO;
     self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
     
@@ -94,7 +94,7 @@
     [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0,firstLine.length)];
     [fullLabelString addAttribute:NSForegroundColorAttributeName value:[UIColor ows_darkGrayColor] range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     label.attributedText = fullLabelString;
-   //250, 66, 140
+    //250, 66, 140
     [label setFrame:CGRectMake([self marginSize], 100+140, [self contentWidth], 66)];
     return label;
 }
@@ -137,17 +137,17 @@
     emptyImageView.contentMode = UIViewContentModeCenter;
     emptyImageView.contentMode = UIViewContentModeScaleAspectFit;
     UILabel *emptyLabel = [self createLabelWithFirstLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE1", @"") andSecondLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE2" , @"")];
-
+    
     UIButton *inviteContactButton = [self createButtonWithTitle:NSLocalizedString(@"EMPTY_CONTACTS_INVITE_BUTTON", @"")];
     
     [inviteContactButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [inviteContactButton setFrame:CGRectMake([self marginSize], self.tableView.frame.size.height - 200, [self contentWidth],60)];
     [inviteContactButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-
+    
     [_emptyBackgroundView addSubview:emptyImageView];
     [_emptyBackgroundView addSubview:emptyLabel];
     [_emptyBackgroundView addSubview:inviteContactButton];
-
+    
 }
 
 
@@ -170,14 +170,14 @@
 
 
 -(void) showEmptyBackgroundView:(BOOL)show {
-
+    
     if(show) {
         self.refreshControl = nil;
         _addGroup =  self.navigationItem.rightBarButtonItem!=nil ? _addGroup : self.navigationItem.rightBarButtonItem;
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnRefresh--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(refreshContacts)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8,8,8,8);
         
-   
+        
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = _emptyBackgroundView;
         self.tableView.backgroundView.opaque = YES;
@@ -211,7 +211,7 @@
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchController.searchBar.delegate = self;
     self.searchController.searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-
+    
     sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
     [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -255,7 +255,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     [self updateSearchResultsForSearchController:self.searchController];
-
+    
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -285,7 +285,7 @@
     } else {
         sendTextButton.hidden = YES;
     }
-
+    
 }
 
 
@@ -299,10 +299,10 @@
         confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
     
-    __block UIAlertController *alertController = [UIAlertController
+    UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
-                                                           message:confirmMessage
-                                                    preferredStyle:UIAlertControllerStyleAlert];
+                                          message:confirmMessage
+                                          preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:NSLocalizedString(@"Cancel", @"")
@@ -314,31 +314,36 @@
     
     UIAlertAction *okAction = [UIAlertAction
                                actionWithTitle:NSLocalizedString(@"OK", @"")
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction *action) {
-                                           [self.searchController setActive:NO];
-                                           
-                                           UIDevice *device = [UIDevice currentDevice];
-                                           if ([[device model] isEqualToString:@"iPhone"]) {
-                                               MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-                                               picker.messageComposeDelegate = self;
-                                               
-                                               picker.recipients = [currentSearchTerm length]> 0 ? [NSArray arrayWithObject:currentSearchTerm] : nil;
-                                               picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
-                                               [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
-                                            } else {
-                                               // TODO: better backup for iPods (just don't support on)
-                                               UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
-                                               [notPermitted show];
-                                           }
-                                       }];
+                               style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self.searchController setActive:NO];
+                                   
+                                   UIDevice *device = [UIDevice currentDevice];
+                                   if ([[device model] isEqualToString:@"iPhone"]) {
+                                       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
+                                       picker.messageComposeDelegate = self;
+                                       
+                                       picker.recipients = [currentSearchTerm length]> 0 ? [NSArray arrayWithObject:currentSearchTerm] : nil;
+                                       picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"") stringByAppendingString:@" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
+                                       [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+                                   } else {
+                                       // TODO: better backup for iPods (just don't support on)
+                                       UIAlertView *notPermitted=[[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
+                                       [notPermitted show];
+                                   }
+                               }];
     
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
     
-    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
+    
+    [self presentViewController:alertController
+                       animated:YES
+                     completion:[UIUtil modalCompletionBlock]];
 }
 
 #pragma mark - SMS Composer Delegate
@@ -376,7 +381,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
+    
     if (self.searchController.active) {
         return (NSInteger)[searchResults count];
     } else {
@@ -391,13 +396,13 @@
     if (cell == nil) {
         cell = [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ContactTableViewCell"];
     }
-
+    
     cell.shouldShowContactButtons = NO;
-
+    
     [cell configureWithContact:[self contactForIndexPath:indexPath]];
     
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
+    
     return cell;
 }
 
@@ -421,7 +426,7 @@
         [Environment messageIdentifier:identifier];
     }];
 }
-    
+
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -438,7 +443,7 @@
     } else {
         contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
     }
-
+    
     return contact;
 }
 
