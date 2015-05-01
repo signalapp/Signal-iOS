@@ -626,7 +626,6 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor ows_blackColor];
-        cell.textView.selectable         = NO;
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
@@ -640,7 +639,6 @@ typedef enum : NSUInteger {
     if (!message.isMediaMessage)
     {
         cell.textView.textColor          = [UIColor whiteColor];
-        cell.textView.selectable         = NO;
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
