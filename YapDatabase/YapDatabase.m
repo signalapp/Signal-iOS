@@ -115,7 +115,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 + (YapDatabaseDeserializer)defaultDeserializer
 {
 	return ^ id (NSString __unused *collection, NSString __unused *key, NSData *data){
-		return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+		return data && data.length > 0 ? [NSKeyedUnarchiver unarchiveObjectWithData:data] : nil;
 	};
 }
 
