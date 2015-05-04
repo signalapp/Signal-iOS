@@ -286,7 +286,7 @@ NS_INLINE BOOL YDBIsMainThread()
 				sqlite3_busy_timeout(db, 50); // milliseconds
                 
 #ifdef SQLITE_HAS_CODEC
-                // Configure SQLCipher encryption for the new database connection.
+                // Configure SQLCipher encryption (if needed)
                 [database configureEncryptionForDatabase:db];
 #endif
 			}
