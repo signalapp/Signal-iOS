@@ -1,5 +1,5 @@
 PODS:
-  - 25519 (1.8)
+  - 25519 (1.9)
   - AFNetworking (2.5.3):
     - AFNetworking/NSURLConnection (= 2.5.3)
     - AFNetworking/NSURLSession (= 2.5.3)
@@ -22,8 +22,8 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - APDropDownNavToolbar (1.1)
-  - AxolotlKit (0.6.2):
-    - 25519 (~> 1.8)
+  - AxolotlKit (0.6.3):
+    - 25519 (~> 1.9)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.7)
   - CocoaLumberjack (1.9.2):
@@ -65,7 +65,7 @@ DEPENDENCIES:
   - AFNetworking (~> 2.5.3)
   - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`,
     branch `master`)
-  - AxolotlKit (~> 0.6.2)
+  - AxolotlKit (~> 0.6.3)
   - DJWActionSheet
   - FFCircularProgressView (>= 0.1)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`,
@@ -80,7 +80,7 @@ DEPENDENCIES:
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
-  - YapDatabase/SQLCipher
+  - YapDatabase/SQLCipher (= 2.6.1)
 
 EXTERNAL SOURCES:
   APDropDownNavToolbar:
@@ -107,10 +107,10 @@ CHECKOUT OPTIONS:
     :git: https://github.com/FredericJacobs/SocketRocket.git
 
 SPEC CHECKSUMS:
-  '25519': f4e131763c4e3551951d27ff1af258a93cd94f3e
+  '25519': 64b9ee595df81056693072b0a84246483988afac
   AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
   APDropDownNavToolbar: 5d0c3f363208543d20e86ddb4630927c28cdfd4b
-  AxolotlKit: 630fd578a69223b29579b300bdfd88f90d83218a
+  AxolotlKit: 1e4afc7ed1d0c724888f1d986c032976436f8bef
   CocoaLumberjack: 628fca2e88ef06f7cf6817309aa405f325d9a6fa
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
@@ -118,7 +118,7 @@ SPEC CHECKSUMS:
   JSQMessagesViewController: 9fd7e9ac96e9fc91f2deca86928e2cc916aeebaa
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: dbfc7b4128510a4955df3e5a6f125393fc9ebc2f
-  Mantle: 17de73ef929db2234d76fde2aacfb89ab11c61e8
+  Mantle: d7c75b6fb789b20f7ae30cd0d09435fe545896ff
   OpenSSL: 4e990d04b14015c49c800c400b86ae44a4818a5c
   PastelogKit: c73795b8c0bbf33ea45d3b6a5eabb373be3d5955
   ProtocolBuffers: 9a4a171c0c7cc8f21dd29aeca4f9ac775d84a880
