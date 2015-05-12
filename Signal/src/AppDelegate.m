@@ -145,11 +145,11 @@
 }
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
-    if ([TSAccountManager isRegistered] && [self applicationIsActive]) {
+    if ([TSAccountManager isRegistered]) {
         // We're double checking that the app is active, to be sure since we can't verify in production env due to code signing.
         [TSSocketManager becomeActiveFromForeground];
     }
-    
+
     [self removeScreenProtection];
 }
 
@@ -159,6 +159,7 @@
     if ([TSAccountManager isRegistered]) {
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
         [self updateBadge];
+        [TSSocketManager resignActivity];
     }
 }
 
@@ -166,10 +167,6 @@
     if ([TSAccountManager isRegistered]) {
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:(NSInteger)[[TSMessagesManager sharedManager] unreadMessagesCount]];
     }
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application{
-    [TSSocketManager resignActivity];
 }
 
 - (void)prepareScreenshotProtection{

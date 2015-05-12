@@ -413,46 +413,46 @@
     NSString *messageDescription = message.description;
     
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
-         UILocalNotification *notification = [[UILocalNotification alloc] init];
-         notification.category  = Signal_Message_Category;
-         notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
-         
-         switch ([[Environment preferences] notificationPreviewType]) {
-             case NotificationNamePreview:
-                 if ([thread isGroupThread]) {
-                     NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
-                     if (!sender) {
-                         sender = message.authorId;
-                     }
-                     
-                     notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
-                 } else {
-                     notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
-                 }
-                 break;
-             case NotificationNameNoPreview:{
-                 if ([thread isGroupThread]) {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.category  = Signal_Message_Category;
+        notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
+        notification.soundName = @"NewMessage.aifc";
+        
+        switch ([[Environment preferences] notificationPreviewType]) {
+            case NotificationNamePreview:
+                if ([thread isGroupThread]) {
+                    NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
+                    if (!sender) {
+                        sender = message.authorId;
+                    }
+                    
+                    notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
+                } else {
+                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                }
+                break;
+            case NotificationNameNoPreview:{
+                if ([thread isGroupThread]) {
                     notification.alertBody = [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name];
-                 } else {
+                } else {
                     notification.alertBody = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
-                 }
-                 break;
-             }
-             case NotificationNoNameNoPreview:
-                 notification.alertBody = NSLocalizedString(@"APN_Message", nil);
-                 break;
-             default:
-                 notification.alertBody = NSLocalizedString(@"APN_Message", nil);
-                 break;
-         }
-         
-         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-         AudioServicesPlayAlertSound(_newMessageSound);
-     } else {
-         if ([Environment.preferences soundInForeground]) {
-             AudioServicesPlayAlertSound(_newMessageSound);
-         }
-     }
+                }
+                break;
+            }
+            case NotificationNoNameNoPreview:
+                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                break;
+            default:
+                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                break;
+        }
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    } else {
+        if ([Environment.preferences soundInForeground]) {
+            AudioServicesPlayAlertSound(_newMessageSound);
+        }
+    }
 }
 
 - (void)dealloc {

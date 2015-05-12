@@ -174,8 +174,8 @@
 }
 
 -(void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type
-{
-     [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
+{  
+    [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
 }
 
 - (TOCFuture*)registerPushKitNotificationFuture{
@@ -374,7 +374,7 @@
 - (TOCFuture *)registerForPushFutureWithToken:(NSData *)pushToken voipToken:(NSData*)voipToken
 {
     self.registerWithServerFutureSource = [TOCFutureSource new];
-
+    
     [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall registerPushNotificationWithPushToken:pushToken voipToken:voipToken]
         success:^(NSURLSessionDataTask *task, id responseObject) {
           if ([task.response isKindOfClass:NSHTTPURLResponse.class]) {
