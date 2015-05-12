@@ -332,7 +332,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	      objectPostSanitizer:NULL
 	     metadataPreSanitizer:NULL
 	    metadataPostSanitizer:NULL
-	                  options:nil];
+	                  options:inOptions];
 }
 
 - (id)initWithPath:(NSString *)inPath objectSerializer:(YapDatabaseSerializer)inObjectSerializer
