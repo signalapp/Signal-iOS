@@ -197,7 +197,9 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Properties
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize databasePath;
+@synthesize databasePath = databasePath;
+@dynamic databasePath_wal;
+@dynamic databasePath_shm;
 
 @synthesize objectSerializer = objectSerializer;
 @synthesize objectDeserializer = objectDeserializer;
@@ -213,6 +215,16 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 
 @dynamic options;
 @dynamic sqliteVersion;
+
+- (NSString *)databasePath_wal
+{
+	return [databasePath stringByAppendingString:@"-wal"];
+}
+
+- (NSString *)databasePath_shm
+{
+	return [databasePath stringByAppendingString:@"-shm"];
+}
 
 - (YapDatabaseOptions *)options
 {

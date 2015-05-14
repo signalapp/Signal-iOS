@@ -257,6 +257,8 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @property (nonatomic, strong, readonly) NSString *databasePath;
+@property (nonatomic, strong, readonly) NSString *databasePath_wal;
+@property (nonatomic, strong, readonly) NSString *databasePath_shm;
 
 @property (nonatomic, strong, readonly) YapDatabaseSerializer objectSerializer;
 @property (nonatomic, strong, readonly) YapDatabaseDeserializer objectDeserializer;
