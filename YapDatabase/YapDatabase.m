@@ -221,6 +221,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 
 @dynamic options;
 @dynamic sqliteVersion;
+@dynamic sqlitePageSize;
 
 - (NSString *)databasePath_wal
 {
@@ -243,6 +244,17 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	dispatch_sync(snapshotQueue, ^{
 		result = sqliteVersion;
+	});
+	
+	return result;
+}
+
+- (NSInteger)sqlitePageSize
+{
+	__block NSInteger result = 0;
+	
+	dispatch_sync(snapshotQueue, ^{
+		result = pageSize;
 	});
 	
 	return result;
@@ -653,6 +665,18 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	// Set mandatory pragmas
 	
+	if (isNewDatabaseFile && (options.pragmaPageSize > 0))
+	{
+		NSString *pragma_page_size =
+		  [NSString stringWithFormat:@"PRAGMA page_size = %ld;", (long)options.pragmaPageSize];
+		
+		status = sqlite3_exec(db, [pragma_page_size UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error setting PRAGMA page_size: %d %s", status, sqlite3_errmsg(db));
+		}
+	}
+	
 	status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -695,10 +719,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	// We only need to do set this pragma for THIS connection,
 	// because it is the only connection that performs checkpoints.
 	
-	NSString *stmt =
+	NSString *pragma_journal_size_limit =
 	  [NSString stringWithFormat:@"PRAGMA journal_size_limit = %ld;", (long)options.pragmaJournalSizeLimit];
 	
-	status = sqlite3_exec(db, [stmt UTF8String], NULL, NULL, NULL);
+	status = sqlite3_exec(db, [pragma_journal_size_limit UTF8String], NULL, NULL, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));

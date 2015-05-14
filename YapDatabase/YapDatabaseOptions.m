@@ -17,6 +17,7 @@
 @synthesize corruptAction = corruptAction;
 @synthesize pragmaSynchronous = pragmaSynchronous;
 @synthesize pragmaJournalSizeLimit = pragmaJournalSizeLimit;
+@synthesize pragmaPageSize = pragmaPageSize;
 #ifdef SQLITE_HAS_CODEC
 @synthesize cipherKeyBlock = cipherKeyBlock;
 #endif
@@ -29,6 +30,7 @@
 		corruptAction = YapDatabaseCorruptAction_Rename;
 		pragmaSynchronous = YapDatabasePragmaSynchronous_Full;
 		pragmaJournalSizeLimit = 0;
+		pragmaPageSize = 0;
 		aggressiveWALTruncationSize = (1024 * 1024); // 1 MB
 	}
 	return self;
@@ -40,6 +42,7 @@
 	copy->corruptAction = corruptAction;
 	copy->pragmaSynchronous = pragmaSynchronous;
 	copy->pragmaJournalSizeLimit = pragmaJournalSizeLimit;
+	copy->pragmaPageSize = pragmaPageSize;
 #ifdef SQLITE_HAS_CODEC
     copy->cipherKeyBlock = cipherKeyBlock;
 #endif

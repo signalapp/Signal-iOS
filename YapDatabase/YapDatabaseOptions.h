@@ -76,6 +76,38 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
 **/
 @property (nonatomic, assign, readwrite) NSInteger pragmaJournalSizeLimit;
 
+/**
+ * Allows you to configure the sqlite "PRAGMA page_size" option.
+ * 
+ * For more information, see the sqlite docs:
+ * https://www.sqlite.org/pragma.html#pragma_page_size
+ * 
+ * The default page_size is traditionally 4096 on Apple systems.
+ * 
+ * Important: "It is not possible to change the database page size after entering WAL mode".
+ * https://www.sqlite.org/wal.html
+ *
+ * And YapDatabase uses sqlite in WAL mode.
+ * This means that if you intend to use a non-default page_size, you MUST configure the pragmaPageSize
+ * before you first create the sqlite database file.
+ * 
+ * Example 1:
+ * - sqlite database file does not exist
+ * - configure pragmaPageSize
+ * - initialize YapDatabase with corresponding YapDatabaseOptions
+ * - page_size will be set according to configuration
+ * 
+ * Example 2:
+ * - sqlite database file already exists
+ * - configure pragmaPageSize
+ * - initialize YapDatabase with corresponding YapDatabaseOptions
+ * - page_size cannot be changed - it remains as it was before
+ * 
+ * The default value is zero, meaning the default page size will be used.
+ * E.g. YapDatabase will not attempt to set an explicit page_size.
+**/
+@property (nonatomic, assign, readwrite) NSInteger pragmaPageSize;
+
 #ifdef SQLITE_HAS_CODEC
 /**
  * Set a block here that returns the key for the SQLCipher database.

@@ -39,37 +39,11 @@ static int ddLogLevel = LOG_LEVEL_VERBOSE;
 	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
+	//	[self testPragmaPageSize];
 	//	[self debug];
 	//	[self debugOnTheFlyViews];
 		
-	//	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
-	//	database = [[YapDatabase alloc] initWithPath:databasePath];
-	//
-	//	[[database newConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-	//
-	//		for (int i = 0; i < 10; i++)
-	//		{
-	//			NSString *key = [NSString stringWithFormat:@"%d", i];
-	//
-	//			[transaction setObject:[self randomLetters:50] forKey:key inCollection:nil];
-	//		}
-	//	}];
 	});
-	
-//	delayInSeconds = 6.0;
-//	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-//	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-//		
-//		[[database newConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-//			
-//			for (int i = 0; i < 10; i++)
-//			{
-//				NSString *key = [NSString stringWithFormat:@"%d", i];
-//				
-//				[transaction setObject:[self randomLetters:50] forKey:key inCollection:nil];
-//			}
-//		}];
-//	});
 	
 	// Normal UI stuff
 	
@@ -99,15 +73,6 @@ static int ddLogLevel = LOG_LEVEL_VERBOSE;
 	return [baseDir stringByAppendingPathComponent:databaseName];
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-	NSLog(@"YapDatabaseModified: %@", notification);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark General Debugging
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 - (NSString *)randomLetters:(NSUInteger)length
 {
 	NSString *alphabet = @"abcdefghijklmnopqrstuvwxyz";
@@ -126,6 +91,32 @@ static int ddLogLevel = LOG_LEVEL_VERBOSE;
 	
 	return result;
 }
+
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+	NSLog(@"YapDatabaseModified: %@", notification);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Test PRAGMA page_size
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testPragmaPageSize
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
+	options.pragmaPageSize = 8192;
+	
+	database = [[YapDatabase alloc] initWithPath:databasePath serializer:NULL deserializer:NULL options:options];
+	
+	NSLog(@"database.sqliteVersion = %@", database.sqliteVersion);
+	NSLog(@"database.sqlitePageSize = %ld", (long)database.sqlitePageSize);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Test VACUUM
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const NSUInteger COUNT = 2500;
 static const NSUInteger STR_LENGTH = 2000;
