@@ -14,11 +14,6 @@
 	NSUInteger hash;
 }
 
-YapCollectionKey* YapCollectionKeyCreate(NSString *collection, NSString *key)
-{
-	return [[YapCollectionKey alloc] initWithCollection:collection key:key];
-}
-
 @synthesize collection = collection;
 @synthesize key = key;
 

@@ -4,6 +4,7 @@
 #import "YapDatabaseView.h"
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabaseSearchResultsView.h"
+#import "YapCollectionKey.h"
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
