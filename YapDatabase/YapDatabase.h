@@ -602,39 +602,6 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
                completionBlock:(nullable void(^)(BOOL ready))completionBlock;
 
 /**
- * DEPRECATED in v2.5
- *
- * The syntax has been changed in order to make the code easier to read.
- * In the past the code would end up looking like this:
- *
- * [database asyncRegisterExtension:ext
- *                         withName:@"name"
- *                  completionBlock:^
- * {
- *     // A bunch of code here
- *     // code...
- *     // code...
- * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
- *
- * The new syntax puts the completionQueue declaration before the completionBlock declaration.
- * Since the two are intricately linked, they should be next to each other in code.
- * Then end result is easier to read:
- *
- * [database asyncRegisterExtension:ext
- *                         withName:@"name"
- *                  completionQueue:importantQueue <-- Easier to see
- *                  completionBlock:^
- * {
- *     // 100 lines of code here
- * }];
-**/
-- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
-                      withName:(NSString *)extensionName
-               completionBlock:(void(^)(BOOL ready))completionBlock
-               completionQueue:(dispatch_queue_t)completionQueue
-__attribute((deprecated("Use method asyncRegisterExtension:withName:completionQueue:completionBlock: instead")));
-
-/**
  * This method unregisters an extension with the given name.
  * The associated underlying tables will be dropped from the database.
  * 
@@ -749,51 +716,6 @@ __attribute((deprecated("Use method asyncRegisterExtension:withName:completionQu
                               connection:(nullable YapDatabaseConnection *)connection
                          completionQueue:(nullable dispatch_queue_t)completionQueue
                          completionBlock:(nullable dispatch_block_t)completionBlock;
-
-/**
- * DEPRECATED in v2.5
- *
- * The syntax has been changed in order to make the code easier to read.
- * In the past the code would end up looking like this:
- *
- * [database asyncUnregisterExtensionWithName:@"name"
- *                            completionBlock:^
- * {
- *     // A bunch of code here
- *     // code...
- *     // code...
- * } completionQueue:importantQueue]; <-- Hidden in code. Often overlooked.
- *
- * The new syntax puts the completionQueue declaration before the completionBlock declaration.
- * Since the two are intricately linked, they should be next to each other in code.
- * Then end result is easier to read:
- *
- * [database asyncUnregisterExtensionWithName:@"name"
- *                            completionQueue:importantQueue <-- Easier to see
- *                            completionBlock:^
- * {
- *     // 100 lines of code here
- * }];
-**/
-- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                         completionBlock:(dispatch_block_t)completionBlock
-                         completionQueue:(dispatch_queue_t)completionQueue
-__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead")));
-
-/**
- * DEPRECATED in v2.5
-**/
-- (void)unregisterExtension:(NSString *)extensionName
-__attribute((deprecated("Use method unregisterExtensionWithName: instead")));
-
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
-__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionBlock: instead")));
-
-- (void)asyncUnregisterExtension:(NSString *)extensionName
-                 completionBlock:(dispatch_block_t)completionBlock
-                 completionQueue:(dispatch_queue_t)completionQueue
-__attribute((deprecated("Use method asyncUnregisterExtensionWithName:completionQueue:completionBlock: instead")));
 
 /**
  * Returns the registered extension with the given name.

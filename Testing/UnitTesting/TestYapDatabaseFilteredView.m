@@ -1503,20 +1503,16 @@
 	
 	// --- Try setting an empty filter
 	
-	YapDatabaseViewBlockType filteringBlockType2;
-	YapDatabaseViewFilteringBlock filteringBlock2;
-
-	filteringBlockType2 = YapDatabaseViewBlockTypeWithObject;
-	filteringBlock2 = ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+	YapDatabaseViewFiltering *filtering2 = [YapDatabaseViewFiltering withObjectBlock:
+	    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
 	{
         return NO;
-	};
+	}];
 
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction extension:@"filter"] setFilteringBlock:filteringBlock2
-		                                  filteringBlockType:filteringBlockType2
-		                                          versionTag:@"2"];
+		[[transaction extension:@"filter"] setFiltering:filtering2
+		                                     versionTag:@"2"];
 	}];
 
 	notificationCount = 0;
@@ -1554,9 +1550,8 @@
 
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
-		[[transaction extension:@"filter"] setFilteringBlock:filteringBlock2
-		                                  filteringBlockType:filteringBlockType2
-		                                          versionTag:@"emptytag"];
+		[[transaction extension:@"filter"] setFiltering:filtering2
+		                                     versionTag:@"emptytag"];
 	}];
 	
 	notificationCount = 0;

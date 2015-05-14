@@ -62,34 +62,6 @@
 	return grouping;
 }
 
-// Helper method for supporting deprecated methods.
-// This method will disappear in the future.
-+ (instancetype)withBlock:(YapDatabaseViewGroupingBlock)block blockType:(YapDatabaseViewBlockType)blockType
-{
-	YapDatabaseViewGrouping *grouping = nil;
-	switch (blockType)
-	{
-		case YapDatabaseViewBlockTypeWithKey      : {
-			grouping = [YapDatabaseViewGrouping withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithObject   : {
-			grouping = [YapDatabaseViewGrouping withObjectBlock:(YapDatabaseViewGroupingWithObjectBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithMetadata : {
-			grouping = [YapDatabaseViewGrouping withMetadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithRow      : {
-			grouping = [YapDatabaseViewGrouping withRowBlock:(YapDatabaseViewGroupingWithRowBlock)block];
-			break;
-		}
-	}
-	
-	return grouping;
-}
-
 @end
 
 #pragma mark -
@@ -185,34 +157,6 @@
 	YapDatabaseViewSorting *sorting = [[YapDatabaseViewSorting alloc] init];
 	sorting->sortingBlock = sortingBlock;
 	sorting->sortingBlockType = YapDatabaseViewBlockTypeWithRow;
-	
-	return sorting;
-}
-
-// Helper method for supporting deprecated methods.
-// This method will disappear in the future.
-+ (instancetype)withBlock:(YapDatabaseViewSortingBlock)block blockType:(YapDatabaseViewBlockType)blockType
-{
-	YapDatabaseViewSorting *sorting = nil;
-	switch (blockType)
-	{
-		case YapDatabaseViewBlockTypeWithKey      : {
-			sorting = [YapDatabaseViewSorting withKeyBlock:(YapDatabaseViewSortingWithKeyBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithObject   : {
-			sorting = [YapDatabaseViewSorting withObjectBlock:(YapDatabaseViewSortingWithObjectBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithMetadata : {
-			sorting = [YapDatabaseViewSorting withMetadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block];
-			break;
-		}
-		case YapDatabaseViewBlockTypeWithRow      : {
-			sorting = [YapDatabaseViewSorting withRowBlock:(YapDatabaseViewSortingWithRowBlock)block];
-			break;
-		}
-	}
 	
 	return sorting;
 }

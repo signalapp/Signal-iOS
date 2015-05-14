@@ -81,18 +81,6 @@
 **/
 - (BOOL)isEmpty;
 
-/**
- * DEPRECATED: Use numberOfItemsInGroup: instead.
-**/
-- (NSUInteger)numberOfKeysInGroup:(NSString *)group
-__attribute((deprecated("Use method numberOfItemsInGroup: instead")));
-
-/**
- * DEPRECATED: Use numberOfItemsInAllGroups instead.
-**/
-- (NSUInteger)numberOfKeysInAllGroups
-__attribute((deprecated("Use method numberOfItemsInAllGroups instead")));
-
 #pragma mark Fetching
 
 /**
@@ -360,13 +348,6 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 - (void)setGrouping:(YapDatabaseViewGrouping *)grouping
             sorting:(YapDatabaseViewSorting *)sorting
          versionTag:(NSString *)versionTag;
-
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-              versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method setGrouping:sorting:versionTag: instead")));
 
 @end
 

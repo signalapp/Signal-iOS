@@ -49,19 +49,4 @@
 	return filtering;
 }
 
-/**
- * Helper method for supporting deprecated methods.
- * This method will disappear in the future.
-**/
-+ (instancetype)withBlock:(YapDatabaseViewFilteringBlock)block blockType:(YapDatabaseViewBlockType)blockType
-{
-	if (block == NULL) return nil;
-	
-	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
-	filtering->filteringBlock = block;
-	filtering->filteringBlockType = blockType;
-	
-	return filtering;
-}
-
 @end

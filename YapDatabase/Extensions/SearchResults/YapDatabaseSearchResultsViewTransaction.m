@@ -2061,22 +2061,6 @@ static NSString *const ext_key_query             = @"query";
 	}
 }
 
-/**
- * DEPRECATED
- * Use method setGrouping:sorting:versionTag: instead.
-**/
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-       groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-        sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-              versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	[self setGrouping:grouping sorting:sorting versionTag:inVersionTag];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Searching
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

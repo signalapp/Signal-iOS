@@ -50,24 +50,6 @@
                      options:(YapDatabaseViewOptions *)options;
 
 
-- (id)initWithParentViewName:(NSString *)viewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-__attribute((deprecated("Use method initWithParentViewName:filtering: instead")));
-
-- (id)initWithParentViewName:(NSString *)viewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-                  versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method initWithParentViewName:filtering:versionTag: instead")));
-
-- (id)initWithParentViewName:(NSString *)viewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
-          filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-                  versionTag:(NSString *)versionTag
-                     options:(YapDatabaseViewOptions *)options
-__attribute((deprecated("Use method initWithParentViewName:filtering:versionTag:options: instead")));
-
 @property (nonatomic, strong, readonly) NSString *parentViewName;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;

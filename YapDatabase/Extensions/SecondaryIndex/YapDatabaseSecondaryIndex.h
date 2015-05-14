@@ -115,26 +115,6 @@
          versionTag:(NSString *)versionTag
             options:(YapDatabaseSecondaryIndexOptions *)options;
 
-//
-// Deprecated init methods :
-
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
-              block:(YapDatabaseSecondaryIndexBlock)block
-          blockType:(YapDatabaseSecondaryIndexBlockType)blockType
-__attribute((deprecated("Use method initWithSetup:handler: instead")));
-
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
-              block:(YapDatabaseSecondaryIndexBlock)block
-          blockType:(YapDatabaseSecondaryIndexBlockType)blockType
-         versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method initWithSetup:handler:versionTag: instead")));
-
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)setup
-              block:(YapDatabaseSecondaryIndexBlock)block
-          blockType:(YapDatabaseSecondaryIndexBlockType)blockType
-         versionTag:(NSString *)versionTag
-            options:(YapDatabaseSecondaryIndexOptions *)options
-__attribute((deprecated("Use method initWithSetup:handler:versionTag:options: instead")));
 
 /* Inherited from YapDatabaseExtension
  

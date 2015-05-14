@@ -66,26 +66,6 @@
                       versionTag:(NSString *)versionTag
                          options:(YapDatabaseViewOptions *)options;
 
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-__attribute((deprecated("Use method initWithGrouping:sorting: instead")));
-
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                 versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method initWithGrouping:sorting:versionTag: instead")));
-
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-          groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-           sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                 versionTag:(NSString *)versionTag
-                    options:(YapDatabaseViewOptions *)options
-__attribute((deprecated("Use method initWithGrouping:sorting:versionTag:options: instead")));
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;

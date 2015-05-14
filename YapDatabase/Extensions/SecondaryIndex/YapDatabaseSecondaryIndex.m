@@ -124,51 +124,6 @@
 	return self;
 }
 
-/**
- * DEPRECATED
- * Use method initWithSetup:handler: instead.
-**/
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
-{
-	YapDatabaseSecondaryIndexHandler *handler =
-	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithSetup:inSetup handler:handler];
-}
-
-/**
- * DEPRECATED
- * Use method initWithSetup:handler:versionTag: instead.
-**/
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
-         versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseSecondaryIndexHandler *handler =
-	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithSetup:inSetup handler:handler versionTag:inVersionTag];
-}
-
-/**
- * DEPRECATED
- * Use method initWithSetup:handler:versionTag:options: instead.
-**/
-- (id)initWithSetup:(YapDatabaseSecondaryIndexSetup *)inSetup
-              block:(YapDatabaseSecondaryIndexBlock)inBlock
-          blockType:(YapDatabaseSecondaryIndexBlockType)inBlockType
-         versionTag:(NSString *)inVersionTag
-            options:(YapDatabaseSecondaryIndexOptions *)inOptions
-{
-	YapDatabaseSecondaryIndexHandler *handler =
-	  [YapDatabaseSecondaryIndexHandler withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithSetup:inSetup handler:handler versionTag:inVersionTag options:inOptions];
-}
-
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
 	return [[YapDatabaseSecondaryIndexConnection alloc]

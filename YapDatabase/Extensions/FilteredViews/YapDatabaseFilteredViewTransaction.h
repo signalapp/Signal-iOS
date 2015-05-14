@@ -35,9 +35,4 @@
 - (void)setFiltering:(YapDatabaseViewFiltering *)filtering
           versionTag:(NSString *)tag;
 
-- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)filteringBlock
-       filteringBlockType:(YapDatabaseViewBlockType)filteringBlockType
-               versionTag:(NSString *)tag
-__attribute((deprecated("Use method setFiltering:versionTag: instead")));
-
 @end

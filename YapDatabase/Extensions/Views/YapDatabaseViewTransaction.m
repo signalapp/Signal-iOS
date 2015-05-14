@@ -4131,22 +4131,6 @@
 	return result;
 }
 
-/**
- * DEPRECATED: Use numberOfItemsInGroup: instead.
-**/
-- (NSUInteger)numberOfKeysInGroup:(NSString *)group
-{
-	return [self numberOfItemsInGroup:group];
-}
-
-/**
- * DEPRECATED: Use numberOfItemsInAllGroups instead.
-**/
-- (NSUInteger)numberOfKeysInAllGroups
-{
-	return [self numberOfItemsInAllGroups];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Public API - Fetching
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5084,22 +5068,6 @@
 			}
 		}
 	}];
-}
-
-/**
- * DEPRECATED
- * Use method setGrouping:sorting:versionTag: instead.
-**/
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-       groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-        sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-              versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	[self setGrouping:grouping sorting:sorting versionTag:inVersionTag];
 }
 
 @end

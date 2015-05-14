@@ -86,57 +86,6 @@
 	return self;
 }
 
-/**
- * DEPRECATED
- * Use method initWithParentViewName:filtering: instead.
-**/
-- (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
-{
-	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithParentViewName:inParentViewName
-	                          filtering:filtering
-	                         versionTag:nil
-	                            options:nil];
-}
-
-/**
- * DEPRECATED
- * Use method initWithParentViewName:filtering:versionTag: instead.
-**/
-- (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
-                  versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithParentViewName:inParentViewName
-	                          filtering:filtering
-	                         versionTag:inVersionTag
-	                            options:nil];
-}
-
-/**
- * DEPRECATED
- * Use method initWithParentViewName:filtering:versionTag:options: instead.
-**/
-- (id)initWithParentViewName:(NSString *)inParentViewName
-              filteringBlock:(YapDatabaseViewFilteringBlock)inBlock
-          filteringBlockType:(YapDatabaseViewBlockType)inBlockType
-                  versionTag:(NSString *)inVersionTag
-                     options:(YapDatabaseViewOptions *)inOptions
-{
-	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
-	
-	return [self initWithParentViewName:inParentViewName
-	                          filtering:filtering
-	                         versionTag:inVersionTag
-	                            options:inOptions];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Custom Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

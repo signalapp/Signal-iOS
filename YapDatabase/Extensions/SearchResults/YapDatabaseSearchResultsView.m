@@ -133,28 +133,6 @@
 	return self;
 }
 
-/**
- * DEPRECATED
- * Use method initWithFullTextSearchName:grouping:sorting:versionTag:options: instead.
-**/
-- (id)initWithFullTextSearchName:(NSString *)inFullTextSearchName
-                   groupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-               groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-                    sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-                sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-                      versionTag:(NSString *)inVersionTag
-                         options:(YapDatabaseSearchResultsViewOptions *)inOptions
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	return [self initWithFullTextSearchName:inFullTextSearchName
-	                               grouping:grouping
-	                                sorting:sorting
-	                             versionTag:inVersionTag
-	                                options:inOptions];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Registration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

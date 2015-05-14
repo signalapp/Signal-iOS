@@ -1433,17 +1433,4 @@
 	}];
 }
 
-/**
- * DEPRECATED
- * Use method setFiltering:versionTag: instead.
-**/
-- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)inBlock
-       filteringBlockType:(YapDatabaseViewBlockType)inBlockType
-               versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withBlock:inBlock blockType:inBlockType];
-	
-	[self setFiltering:filtering versionTag:inVersionTag];
-}
-
 @end

@@ -50,19 +50,4 @@
 	return handler;
 }
 
-/**
- * Helper method for supporting deprecated methods.
- * This method will disappear in the future.
-**/
-+ (instancetype)withBlock:(YapDatabaseSecondaryIndexBlock)block blockType:(YapDatabaseSecondaryIndexBlockType)blockType
-{
-	if (block == NULL) return nil;
-	
-	YapDatabaseSecondaryIndexHandler *handler = [[YapDatabaseSecondaryIndexHandler alloc] init];
-	handler->block = block;
-	handler->blockType = blockType;
-	
-	return handler;
-}
-
 @end

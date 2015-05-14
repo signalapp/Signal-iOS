@@ -92,16 +92,6 @@
                          options:(YapDatabaseSearchResultsViewOptions *)options;
 
 
-- (id)initWithFullTextSearchName:(NSString *)fullTextSearchName
-                   groupingBlock:(YapDatabaseViewGroupingBlock)groupingBlock
-               groupingBlockType:(YapDatabaseViewBlockType)groupingBlockType
-                    sortingBlock:(YapDatabaseViewSortingBlock)sortingBlock
-                sortingBlockType:(YapDatabaseViewBlockType)sortingBlockType
-                      versionTag:(NSString *)versionTag
-                         options:(YapDatabaseSearchResultsViewOptions *)options
-__attribute((deprecated("Use method initWithFullTextSearchName:grouping:sorting:versionTag:options: instead")));
-
-
 @property (nonatomic, strong, readonly) NSString *fullTextSearchName;
 
 @property (nonatomic, strong, readonly) NSString *parentViewName;

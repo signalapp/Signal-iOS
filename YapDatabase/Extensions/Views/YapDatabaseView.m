@@ -198,63 +198,6 @@
 	return self;
 }
 
-/**
- * DEPRECATED
- * Replaced by [YapDatabaseView initWithGrouping:sorting:]
-**/
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-          groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-           sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	return [self initWithGrouping:grouping
-	                      sorting:sorting
-	                   versionTag:nil
-	                      options:nil];
-}
-
-/**
- * DEPRECATED
- * Replaced by [YapDatabaseView initWithGrouping:sorting:versionTag:]
-**/
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-          groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-           sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-                 versionTag:(NSString *)inVersionTag
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	return [self initWithGrouping:grouping
-	                      sorting:sorting
-	                   versionTag:inVersionTag
-	                      options:nil];
-}
-
-/**
- * DEPRECATED
- * Replaced by [YapDatabaseView initWithGrouping:sorting:versionTag:options:]
-**/
-- (id)initWithGroupingBlock:(YapDatabaseViewGroupingBlock)grpBlock
-          groupingBlockType:(YapDatabaseViewBlockType)grpBlockType
-               sortingBlock:(YapDatabaseViewSortingBlock)srtBlock
-           sortingBlockType:(YapDatabaseViewBlockType)srtBlockType
-                 versionTag:(NSString *)inVersionTag
-                    options:(YapDatabaseViewOptions *)inOptions
-{
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withBlock:grpBlock blockType:grpBlockType];
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withBlock:srtBlock blockType:srtBlockType];
-	
-	return [self initWithGrouping:grouping
-	                      sorting:sorting
-	                   versionTag:inVersionTag
-	                      options:inOptions];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Custom Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

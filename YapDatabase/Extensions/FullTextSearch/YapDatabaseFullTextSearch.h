@@ -31,25 +31,6 @@
                versionTag:(NSString *)versionTag;
 
 
-- (id)initWithColumnNames:(NSArray *)columnNames
-                    block:(YapDatabaseFullTextSearchBlock)block
-                blockType:(YapDatabaseFullTextSearchBlockType)blockType
-__attribute((deprecated("Use method initWithColumnNames:handler: instead")));
- 
-- (id)initWithColumnNames:(NSArray *)columnNames
-                    block:(YapDatabaseFullTextSearchBlock)block
-                blockType:(YapDatabaseFullTextSearchBlockType)blockType
-                versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method initWithColumnNames:handler:versionTag: instead")));
- 
-- (id)initWithColumnNames:(NSArray *)columnNames
-                  options:(NSDictionary *)options
-                    block:(YapDatabaseFullTextSearchBlock)block
-                blockType:(YapDatabaseFullTextSearchBlockType)blockType
-                versionTag:(NSString *)versionTag
-__attribute((deprecated("Use method initWithColumnNames:options:handler:versionTag: instead")));
-
-
 /* Inherited from YapDatabaseExtension
  
 @property (nonatomic, strong, readonly) NSString *registeredName;
