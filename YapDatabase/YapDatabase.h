@@ -98,6 +98,44 @@ typedef id __nonnull (^YapDatabasePreSanitizer)(NSString *collection, NSString *
 typedef void (^YapDatabasePostSanitizer)(NSString *collection, NSString *key, id obj);
 
 /**
+ * This notification is posted when a YapDatabase instance is deallocated,
+ * and has thus closed all references to the underlying sqlite files.
+ * 
+ * If you intend to delete the sqlite file(s) from disk,
+ * it's recommended you use this notification as a hook to do so.
+ * 
+ * More info:
+ * The YapDatabase class itself is just a retainer for the filepath, blocks, config, etc.
+ * And YapDatabaseConnection(s) open a sqlite connection to the database file,
+ * and rely on the blocks & config in the parent YapDatabase class.
+ * Thus a YapDatabaseConnection instance purposely retains the YapDatabase instance.
+ * This means that in order to fully close all references to the underlying sqlite file(s),
+ * you need to deallocate YapDatabase and all associated YapDatabaseConnections.
+ * While this may be simple in concept, it's generally difficult to know exactly when all
+ * the instances have been deallocated. Especially when there may be a bunch of asynchronous operations going.
+ * 
+ * Therefore the best approach is to do the following:
+ * - destroy your YapDatabase instance (set it to nil)
+ * - destroy all YapDatabaseConnection instances
+ * - wait for YapDatabaseClosedNotification
+ * - use notification as hook to delete all associated sqlite files from disk
+ *
+ * The userInfo dictionary will look like this:
+ * @{
+ *     YapDatabasePathKey    : <NSString of full filePath to db.sqlite file>,
+ *     YapDatabasePathWalKey : <NSString of full filePath to db.sqlite-wal file>,
+ *     YapDatabasePathShmKey : <NSString of full filePath to db.sqlite-shm file>,
+ * }
+ *
+ * This notification is always posted to the main thread.
+**/
+extern NSString *const YapDatabaseClosedNotification;
+
+extern NSString *const YapDatabasePathKey;
+extern NSString *const YapDatabasePathWalKey;
+extern NSString *const YapDatabasePathShmKey;
+
+/**
  * This notification is posted following a readwrite transaction where the database was modified.
  * 
  * It is documented in more detail in the wiki article "YapDatabaseModifiedNotification":
@@ -108,10 +146,10 @@ typedef void (^YapDatabasePostSanitizer)(NSString *collection, NSString *key, id
  *
  * The userInfo dictionary will look something like this:
  * @{
- *     YapDatabaseSnapshotKey = <NSNumber of snapshot, incremented per read-write transaction w/modification>,
- *     YapDatabaseConnectionKey = <YapDatabaseConnection instance that made the modification(s)>,
- *     YapDatabaseExtensionsKey = <NSDictionary with individual changeset info per extension>,
- *     YapDatabaseCustomKey = <Optional object associated with this change, set by you>,
+ *     YapDatabaseSnapshotKey   : <NSNumber of snapshot, incremented per read-write transaction w/modification>,
+ *     YapDatabaseConnectionKey : <YapDatabaseConnection instance that made the modification(s)>,
+ *     YapDatabaseExtensionsKey : <NSDictionary with individual changeset info per extension>,
+ *     YapDatabaseCustomKey     : <Optional object associated with this change, set by you>,
  * }
  *
  * This notification is always posted to the main thread.

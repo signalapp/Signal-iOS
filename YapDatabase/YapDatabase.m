@@ -28,6 +28,12 @@
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
 
+NSString *const YapDatabaseClosedNotification = @"YapDatabaseClosedNotification";
+
+NSString *const YapDatabasePathKey    = @"databasePath";
+NSString *const YapDatabasePathWalKey = @"databasePath_wal";
+NSString *const YapDatabasePathShmKey = @"databasePath_shm";
+
 NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
 
 NSString *const YapDatabaseSnapshotKey   = @"snapshot";
@@ -549,6 +555,16 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 {
 	YDBLogVerbose(@"Dealloc <%@ %p: databaseName=%@>", [self class], self, [databasePath lastPathComponent]);
 	
+	NSDictionary *userInfo = @{
+		YapDatabasePathKey    : self.databasePath     ?: @"",
+		YapDatabasePathWalKey : self.databasePath_wal ?: @"",
+		YapDatabasePathShmKey : self.databasePath_shm ?: @""
+	};
+	NSNotification *notification =
+	  [NSNotification notificationWithName:YapDatabaseClosedNotification
+	                                object:nil // Cannot retain self within dealloc method
+	                              userInfo:userInfo];
+	
 	while ([connectionPoolValues count] > 0)
 	{
 		sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
@@ -583,6 +599,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	if (checkpointQueue)
 		dispatch_release(checkpointQueue);
 #endif
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[[NSNotificationCenter defaultCenter] postNotification:notification];
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
