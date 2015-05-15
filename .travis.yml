@@ -1,0 +1,4 @@
+language: objective-c
+
+script:
+  - xctool -project ./Testing/Xcode-desktop/YapDatabase.xcodeproj -scheme YapDatabase -sdk macosx -arch x86_64 test
