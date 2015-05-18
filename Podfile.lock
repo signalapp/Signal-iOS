@@ -1,24 +1,24 @@
 PODS:
   - 25519 (1.9)
-  - AFNetworking (2.5.3):
-    - AFNetworking/NSURLConnection (= 2.5.3)
-    - AFNetworking/NSURLSession (= 2.5.3)
-    - AFNetworking/Reachability (= 2.5.3)
-    - AFNetworking/Security (= 2.5.3)
-    - AFNetworking/Serialization (= 2.5.3)
-    - AFNetworking/UIKit (= 2.5.3)
-  - AFNetworking/NSURLConnection (2.5.3):
+  - AFNetworking (2.5.4):
+    - AFNetworking/NSURLConnection (= 2.5.4)
+    - AFNetworking/NSURLSession (= 2.5.4)
+    - AFNetworking/Reachability (= 2.5.4)
+    - AFNetworking/Security (= 2.5.4)
+    - AFNetworking/Serialization (= 2.5.4)
+    - AFNetworking/UIKit (= 2.5.4)
+  - AFNetworking/NSURLConnection (2.5.4):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.5.3):
+  - AFNetworking/NSURLSession (2.5.4):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.5.3)
-  - AFNetworking/Security (2.5.3)
-  - AFNetworking/Serialization (2.5.3)
-  - AFNetworking/UIKit (2.5.3):
+  - AFNetworking/Reachability (2.5.4)
+  - AFNetworking/Security (2.5.4)
+  - AFNetworking/Serialization (2.5.4)
+  - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - APDropDownNavToolbar (1.1)
@@ -34,7 +34,7 @@ PODS:
   - DJWActionSheet (1.0.4)
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (7.0.0):
+  - JSQMessagesViewController (7.0.2):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.8.4)
@@ -55,11 +55,9 @@ PODS:
     - UnionFind (~> 1.0)
   - UICKeyChainStore (1.0.7)
   - UnionFind (1.0.1)
-  - YapDatabase/common (2.6.1):
+  - YapDatabase/SQLCipher (2.6.4):
     - CocoaLumberjack (~> 1)
-  - YapDatabase/SQLCipher (2.6.1):
     - SQLCipher/fts
-    - YapDatabase/common
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5.3)
@@ -69,28 +67,28 @@ DEPENDENCIES:
   - DJWActionSheet
   - FFCircularProgressView (>= 0.1)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`,
-    commit `9be8f6ed65eb55368a5ff767f055158cf585065f`)
+    commit `5ac93a25e313eb3c84e396b2e704ff312410dc4e`)
   - libPhoneNumber-iOS (~> 0.8.2)
   - Mantle (~> 2.0)
   - OpenSSL (~> 1.0.201)
   - PastelogKit (~> 1.2)
   - SCWaveformView (~> 1.0)
   - SocketRocket (from `https://github.com/FredericJacobs/SocketRocket.git`, commit
-    `73d8a19`)
+    `f1567f1be7ce49ecf2c9d284ead8ea7c422ee99b`)
   - SSKeychain
   - TwistedOakCollapsingFutures (~> 1.0)
   - UICKeyChainStore (from `Podspecs/UICKeyChainStore.podspec`)
-  - YapDatabase/SQLCipher (= 2.6.1)
+  - YapDatabase/SQLCipher (~> 2.6.4)
 
 EXTERNAL SOURCES:
   APDropDownNavToolbar:
     :branch: master
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: 9be8f6ed65eb55368a5ff767f055158cf585065f
+    :commit: 5ac93a25e313eb3c84e396b2e704ff312410dc4e
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
-    :commit: 73d8a19
+    :commit: f1567f1be7ce49ecf2c9d284ead8ea7c422ee99b
     :git: https://github.com/FredericJacobs/SocketRocket.git
   UICKeyChainStore:
     :podspec: Podspecs/UICKeyChainStore.podspec
@@ -100,22 +98,22 @@ CHECKOUT OPTIONS:
     :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
     :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
-    :commit: 9be8f6ed65eb55368a5ff767f055158cf585065f
+    :commit: 5ac93a25e313eb3c84e396b2e704ff312410dc4e
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SocketRocket:
-    :commit: 73d8a19
+    :commit: f1567f1be7ce49ecf2c9d284ead8ea7c422ee99b
     :git: https://github.com/FredericJacobs/SocketRocket.git
 
 SPEC CHECKSUMS:
   '25519': 64b9ee595df81056693072b0a84246483988afac
-  AFNetworking: e1d86c2a96bb5d2e7408da36149806706ee122fe
+  AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   APDropDownNavToolbar: 5d0c3f363208543d20e86ddb4630927c28cdfd4b
   AxolotlKit: 1e4afc7ed1d0c724888f1d986c032976436f8bef
   CocoaLumberjack: 628fca2e88ef06f7cf6817309aa405f325d9a6fa
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
-  JSQMessagesViewController: 9fd7e9ac96e9fc91f2deca86928e2cc916aeebaa
+  JSQMessagesViewController: bb6649691182b1899dc52b42266ad69efc473510
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: dbfc7b4128510a4955df3e5a6f125393fc9ebc2f
   Mantle: d7c75b6fb789b20f7ae30cd0d09435fe545896ff
@@ -129,6 +127,6 @@ SPEC CHECKSUMS:
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UICKeyChainStore: d4c0f4e313d67b2f23b6614adca55351accac15a
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
-  YapDatabase: 13566c87dc9226a0f15d755edba08e8ad94cac9f
+  YapDatabase: f9051e178a38f48d0f3a78562423a5bc969f1ca3
 
-COCOAPODS: 0.36.3
+COCOAPODS: 0.37.1
