@@ -37,7 +37,7 @@
     static PushManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedManager = [self new];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
@@ -48,11 +48,11 @@
     if (self) {
         self.notificationTracker = [NotificationTracker notificationTracker];
         self.missingPermissionsAlertView =
-            [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                       message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
-                                      delegate:nil
-                             cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                             otherButtonTitles:nil, nil];
+        [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                   message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
+                                  delegate:nil
+                         cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                         otherButtonTitles:nil, nil];
     }
     return self;
 }
@@ -60,7 +60,7 @@
 #pragma mark Manage Incoming Push
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-
+    
     if ([self isRedPhonePush:userInfo]) {
         ResponderSessionDescriptor* call;
         if (![self.notificationTracker shouldProcessNotification:userInfo]){
@@ -150,7 +150,6 @@
     } else{
         NSString *threadId = [notification.userInfo objectForKey:Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
-        
         completionHandler();
     }
 }
@@ -174,7 +173,7 @@
 }
 
 -(void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type
-{  
+{
     [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
 }
 
@@ -207,7 +206,7 @@
 {
     self.pushNotificationFutureSource = [TOCFutureSource new];
     [UIApplication.sharedApplication registerForRemoteNotifications];
-
+    
     return self.pushNotificationFutureSource.future;
 }
 
@@ -217,10 +216,10 @@
     
     [requestPushTokenFuture catchDo:^(id failureObj) {
         [self.missingPermissionsAlertView show];
-      failure(failureObj);
-      DDLogError(@"This should not happen on iOS8. No push token was provided");
+        failure(failureObj);
+        DDLogError(@"This should not happen on iOS8. No push token was provided");
     }];
-
+    
     [requestPushTokenFuture thenDo:^(NSData *pushToken) {
         TOCFuture *voipPushTokenFuture = [self registerPushKitNotificationFuture];
         
@@ -253,15 +252,15 @@
                                     voipToken:fakeToken
                                   withSuccess:success
                                       failure:failure];
-
+        
         return;
     }
-
+    
     [self requestPushTokenWithSuccess:^(NSData *pushToken, NSData *voipToken) {
         [self registerTokenWithRedPhoneServer:pushToken voipToken:voipToken withSuccess:success failure:failure];
     } failure:^(NSError *error) {
-      [self.missingPermissionsAlertView show];
-      failure([NSError errorWithDomain:pushManagerDomain code:400 userInfo:@{}]);
+        [self.missingPermissionsAlertView show];
+        failure([NSError errorWithDomain:pushManagerDomain code:400 userInfo:@{}]);
     }];
 }
 
@@ -271,22 +270,22 @@
                                 failure:(failedPushRegistrationBlock)failure
 {
     [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall requestTextSecureVerificationCode]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-          NSError *error;
-
-          NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-          NSString *tsToken = [dictionary objectForKey:@"token"];
-
-          if (!tsToken || !pushToken || error) {
-              failure(error);
-              return;
-          }
-
-          success(pushToken, voipToken, tsToken);
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failure(error);
-        }];
+                                                   success:^(NSURLSessionDataTask *task, id responseObject) {
+                                                       NSError *error;
+                                                       
+                                                       NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+                                                       NSString *tsToken = [dictionary objectForKey:@"token"];
+                                                       
+                                                       if (!tsToken || !pushToken || error) {
+                                                           failure(error);
+                                                           return;
+                                                       }
+                                                       
+                                                       success(pushToken, voipToken, tsToken);
+                                                   }
+                                                   failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                       failure(error);
+                                                   }];
 }
 
 - (TOCFuture *)registerForUserNotificationsFuture
@@ -294,8 +293,8 @@
     self.userNotificationFutureSource = [TOCFutureSource new];
     
     UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                          categories:[NSSet setWithObjects:[self userNotificationsCallCategory], [self userNotificationsMessageCategory], nil]];
+    [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                      categories:[NSSet setWithObjects:[self userNotificationsCallCategory], [self userNotificationsMessageCategory], nil]];
     
     [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     return self.userNotificationFutureSource.future;
@@ -348,12 +347,12 @@
 - (BOOL)wantRemoteNotifications
 {
     BOOL isSimulator = [UIDevice.currentDevice.model.lowercaseString rangeOfString:@"simulator"].location != NSNotFound;
-
+    
     if (isSimulator) {
         // Simulator is used for debugging but can't receive push notifications, so don't bother trying to get them
         return NO;
     }
-
+    
     return YES;
 }
 
@@ -376,25 +375,25 @@
     self.registerWithServerFutureSource = [TOCFutureSource new];
     
     [RPServerRequestsManager.sharedInstance performRequest:[RPAPICall registerPushNotificationWithPushToken:pushToken voipToken:voipToken]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-          if ([task.response isKindOfClass:NSHTTPURLResponse.class]) {
-              NSInteger statusCode = [(NSHTTPURLResponse *)task.response statusCode];
-              if (statusCode == 200) {
-                  [self.registerWithServerFutureSource trySetResult:@YES];
-              } else {
-                  DDLogError(@"The server returned %@ instead of a 200 status code", task.response);
-                  [self.registerWithServerFutureSource
-                      trySetFailure:[NSError errorWithDomain:pushManagerDomain code:500 userInfo:nil]];
-              }
-          } else {
-              [self.registerWithServerFutureSource trySetFailure:task.response];
-          }
-
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-          [self.registerWithServerFutureSource trySetFailure:error];
-        }];
-
+                                                   success:^(NSURLSessionDataTask *task, id responseObject) {
+                                                       if ([task.response isKindOfClass:NSHTTPURLResponse.class]) {
+                                                           NSInteger statusCode = [(NSHTTPURLResponse *)task.response statusCode];
+                                                           if (statusCode == 200) {
+                                                               [self.registerWithServerFutureSource trySetResult:@YES];
+                                                           } else {
+                                                               DDLogError(@"The server returned %@ instead of a 200 status code", task.response);
+                                                               [self.registerWithServerFutureSource
+                                                                trySetFailure:[NSError errorWithDomain:pushManagerDomain code:500 userInfo:nil]];
+                                                           }
+                                                       } else {
+                                                           [self.registerWithServerFutureSource trySetFailure:task.response];
+                                                       }
+                                                       
+                                                   }
+                                                   failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                       [self.registerWithServerFutureSource trySetFailure:error];
+                                                   }];
+    
     return self.registerWithServerFutureSource.future;
 }
 

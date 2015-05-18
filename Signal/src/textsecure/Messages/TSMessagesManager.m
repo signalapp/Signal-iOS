@@ -45,8 +45,6 @@
 #import <CocoaLumberjack/DDLog.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
-#define ddLogLevel LOG_LEVEL_VERBOSE
-
 @interface TSMessagesManager ()
 
 @property SystemSoundID newMessageSound;
