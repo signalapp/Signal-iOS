@@ -41,6 +41,7 @@
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "ContactsManager.h"
+#import "TSCall.h"
 
 #import <CocoaLumberjack/DDLog.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -348,7 +349,12 @@
         }
         
         NSString *name = [thread name];
-        [self notifyUserForIncomingMessage:incomingMessage from:name inThread:thread];
+        
+        if (incomingMessage && thread) {
+            [self notifyUserForIncomingMessage:incomingMessage
+                                          from:name
+                                      inThread:thread];
+        }
     }];
 }
 
@@ -407,6 +413,67 @@
     return numberOfItems;
 }
 
+- (NSUInteger)unreadMessagesCountExcept:(TSThread*)thread {
+    __block NSUInteger numberOfItems;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+        numberOfItems = numberOfItems - [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+    }];
+    
+    return numberOfItems;
+}
+
+- (void)notifyUserForCall:(TSCall*)call inThread:(TSThread*)thread {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive){
+        // Remove previous notification of call and show missed notification.
+        UILocalNotification *notif = [[PushManager sharedManager] closeVOIPBackgroundTask];
+        TSContactThread *cThread = (TSContactThread*)thread;
+        
+        if (call.callType == RPRecentCallTypeMissed) {
+            [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.category   = Signal_CallBack_Category;
+            notification.userInfo   = @{Signal_Call_UserInfo_Key:cThread.contactIdentifier};
+            notification.soundName  = @"NewMessage.aifc";
+            notification.alertBody  = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
+            
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        }
+    }
+}
+
+- (void)notifyUserForError:(TSErrorMessage*)message inThread:(TSThread*)thread {
+    NSString *messageDescription = message.description;
+    
+    if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.category  = Signal_Message_Category;
+        notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
+        notification.soundName = @"NewMessage.aifc";
+        
+        NSString *alertBodyString = @"";
+        
+        NSString *authorName = [thread name];
+        switch ([[Environment preferences] notificationPreviewType]) {
+            case NotificationNamePreview:
+            case NotificationNameNoPreview:
+                alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName,messageDescription];
+                break;
+            case NotificationNoNameNoPreview:
+                alertBodyString = messageDescription;
+                break;
+        }
+        notification.alertBody = alertBodyString;
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    } else {
+        if ([Environment.preferences soundInForeground]) {
+            AudioServicesPlayAlertSound(_newMessageSound);
+        }
+    }
+}
+
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name inThread:(TSThread*)thread {
     NSString *messageDescription = message.description;
     
@@ -424,7 +491,8 @@
                         sender = message.authorId;
                     }
                     
-                    notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
+                    NSString *threadName   = [NSString stringWithFormat:@"\"%@\"", name];
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), sender, threadName, messageDescription];
                 } else {
                     notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
                 }

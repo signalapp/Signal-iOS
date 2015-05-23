@@ -10,12 +10,16 @@
 #import <Foundation/Foundation.h>
 
 #define Signal_Thread_UserInfo_Key           @"Signal_Thread_Id"
+#define Signal_Call_UserInfo_Key             @"Signal_Call_Id"
 
 #define Signal_Call_Accept_Identifier        @"Signal_Call_Accept"
 #define Signal_Call_Decline_Identifier       @"Signal_Call_Decline"
 
+#define Signal_CallBack_Identifier           @"Signal_CallBack"
+
 #define Signal_Call_Category                 @"Signal_IncomingCall"
 #define Signal_Message_Category              @"Signal_Message"
+#define Signal_CallBack_Category             @"Signal_CallBack"
 
 #define Signal_Message_View_Identifier       @"Signal_Message_Read"
 #define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
@@ -66,6 +70,7 @@ typedef void (^registrationTokensSuccessBlock)(NSData *pushToken, NSData *voipTo
 
 -(TOCFuture*)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
+- (UILocalNotification*)closeVOIPBackgroundTask;
 
 #pragma mark Push Notifications Delegate Methods
 

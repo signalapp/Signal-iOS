@@ -24,10 +24,14 @@
 @property (nonatomic,strong) MPMoviePlayerController* videoPlayer;
 @property (nonatomic,strong) AVAudioPlayer* audioPlayer;
 @property (nonatomic,strong) AVAudioRecorder* audioRecorder;
+
 - (void)setupWithThread:(TSThread*)thread;
 - (void)setupWithTSIdentifier:(NSString*)identifier;
 - (void)setupWithTSGroup:(TSGroupModel*)model;
 
 - (void)setComposeOnOpen:(BOOL)compose;
+
+- (TSThread*)thread;
+- (void)popKeyBoard;
 
 @end

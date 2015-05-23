@@ -3,11 +3,12 @@
 #import "FunctionalUtil.h"
 #import "ObservableValue.h"
 #import "PreferencesUtil.h"
+#import "PushManager.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSCall.h"
-#import "TSStorageManager.h"
 #import "TSContactThread.h"
-
+#import "TSMessagesManager.h"
+#import "TSStorageManager.h"
 
 @interface RecentCallManager ()
 @property YapDatabaseConnection *dbConnection;
@@ -41,7 +42,8 @@
     
     [call.futureTermination finallyDo:^(TOCFuture* interactionCompletion) {
         bool isOutgoingCall = call.initiatedLocally;
-        bool isMissedCall = interactionCompletion.hasFailed;
+        bool isMissedCall = [self isMissedCall:interactionCompletion];
+
         Contact* contact = [self tryGetContactForCall:call];
         
         RPRecentCallType callType = isOutgoingCall ? RPRecentCallTypeOutgoing
@@ -52,6 +54,18 @@
                                                       andNumber:call.remoteNumber
                                                     andCallType:callType]];
     }];
+}
+
+- (BOOL)isMissedCall:(TOCFuture*)interactionCompletion {
+    if ([interactionCompletion hasResult]) {
+        if ([[interactionCompletion forceGetResult] isKindOfClass:[CallTermination class]]) {
+            CallTermination *termination = (CallTermination*)interactionCompletion.forceGetResult;
+            if (termination.type == CallTerminationType_HangupRemote) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 - (Contact*)tryGetContactForCall:(CallState*)call {
@@ -82,7 +96,10 @@
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:(callDateSeconds+60)]; // archive has to happen in the future of the original call
             [thread archiveThreadWithTransaction:transaction referenceDate:date];
         }
+        
         [call saveWithTransaction:transaction];
+        
+        [[TSMessagesManager sharedManager] notifyUserForCall:call inThread:thread];
     }];
 }
 

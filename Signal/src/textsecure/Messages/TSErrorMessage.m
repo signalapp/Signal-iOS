@@ -8,6 +8,7 @@
 
 #import "TSErrorMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "TSMessagesManager.h"
 
 #import "TSErrorMessage_privateConstructor.h"
 
@@ -20,11 +21,14 @@
         _errorType = errorMessageType;
     }
     
+    [[TSMessagesManager sharedManager] notifyUserForError:self inThread:thread];
+    
     return self;
 }
 
 - (instancetype)initWithSignal:(IncomingPushMessageSignal*)signal transaction:(YapDatabaseReadWriteTransaction*)transaction failedMessageType:(TSErrorMessageType)errorMessageType{
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:signal.source transaction:transaction];
+    
     return [self initWithTimestamp:signal.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 

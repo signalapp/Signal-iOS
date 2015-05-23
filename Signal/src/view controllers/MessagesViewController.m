@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import <AddressBookUI/AddressBookUI.h>
+
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
@@ -82,8 +83,12 @@ typedef enum : NSUInteger {
 @interface MessagesViewController () {
     UIImage* tappedImage;
     BOOL isGroupConversation;
+    
+    UIView *_unreadContainer;
+    UIImageView *_unreadBackground;
+    UILabel *_unreadLabel;
+    NSUInteger _unreadCount;
 }
-
 
 @property (nonatomic, weak)   UIView *navView;
 @property (nonatomic, retain) TSThread *thread;
@@ -111,6 +116,11 @@ typedef enum : NSUInteger {
 @property BOOL isVisible;
 @property (nonatomic)  BOOL composeOnOpen;
 
+@end
+
+@interface UINavigationItem(){
+    UIView *backButtonView;
+}
 @end
 
 @implementation MessagesViewController
@@ -146,6 +156,9 @@ typedef enum : NSUInteger {
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+- (TSThread *)thread {
+    return _thread;
+}
 
 - (void)hideInputIfNeeded {
     if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
@@ -229,7 +242,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)startReadTimer {
-    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
+    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
 }
 
 - (void)cancelReadTimer {
@@ -237,15 +250,22 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [self updateBackButton];
     [super viewDidAppear:animated];
     [self markAllMessagesAsRead];
     [self startReadTimer];
     _isVisible = YES;
     [self initializeTitleLabelGestureRecognizer];
     
+    [self updateBackButton];
+    
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
+}
+
+- (void)updateBackButton {
+    [self setUnreadCount:[[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -254,6 +274,8 @@ typedef enum : NSUInteger {
         [self.navController hideDropDown:self];
     }
     [super viewWillDisappear:animated];
+    [_unreadContainer removeFromSuperview];
+    _unreadContainer = nil;
     
     [_audioPlayerPoller invalidate];
     [_audioPlayer stop];
@@ -1328,6 +1350,9 @@ typedef enum : NSUInteger {
 
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    
+    [self updateBackButton];
+    
     if(isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupThread* gThread = (TSGroupThread*)self.thread;
@@ -1654,6 +1679,58 @@ typedef enum : NSUInteger {
         [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [thread setDraft:currentDraft transaction:transaction];
         }];
+    }
+}
+
+#pragma mark Unread Badge
+
+- (void)setUnreadCount:(NSUInteger)unreadCount {
+    if (_unreadCount != unreadCount) {
+        _unreadCount = unreadCount;
+        
+        if (_unreadCount > 0) {
+            if (_unreadContainer == nil) {
+                static UIImage *backgroundImage = nil;
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^
+                              {
+                                  UIGraphicsBeginImageContextWithOptions(CGSizeMake(17.0f, 17.0f), false, 0.0f);
+                                  CGContextRef context = UIGraphicsGetCurrentContext();
+                                  CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+                                  CGContextFillEllipseInRect(context, CGRectMake(0.0f, 0.0f, 17.0f, 17.0f));
+                                  backgroundImage = [UIGraphicsGetImageFromCurrentImageContext() stretchableImageWithLeftCapWidth:8 topCapHeight:8];
+                                  UIGraphicsEndImageContext();
+                              });
+                
+                _unreadContainer = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 10.0f, 10.0f)];
+                _unreadContainer.userInteractionEnabled = NO;
+                _unreadContainer.layer.zPosition        = 2000;
+                [self.navigationController.navigationBar addSubview:_unreadContainer];
+                
+                _unreadBackground = [[UIImageView alloc] initWithImage:backgroundImage];
+                [_unreadContainer addSubview:_unreadBackground];
+                
+                _unreadLabel                 = [[UILabel alloc] init];
+                _unreadLabel.backgroundColor = [UIColor clearColor];
+                _unreadLabel.textColor       = [UIColor whiteColor];
+                _unreadLabel.font            = [UIFont systemFontOfSize:12];
+                [_unreadContainer addSubview:_unreadLabel];
+            }
+            _unreadContainer.hidden = false;
+            
+            _unreadLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
+            [_unreadLabel sizeToFit];
+            
+            CGPoint offset = CGPointMake(17.0f, 2.0f);
+            
+            _unreadBackground.frame = CGRectMake(offset.x, offset.y,
+                                                 MAX(_unreadLabel.frame.size.width + 8.0f, 17.0f), 17.0f);
+            _unreadLabel.frame      = CGRectMake(offset.x + floor((2.0f*(_unreadBackground.frame.size.width - _unreadLabel.frame.size.width)/ 2.0f)/2.0f), offset.y + 1.0f,
+                                                 _unreadLabel.frame.size.width, _unreadLabel.frame.size.height);
+            
+        } else if (_unreadContainer != nil) {
+            _unreadContainer.hidden = true;
+        }
     }
 }
 

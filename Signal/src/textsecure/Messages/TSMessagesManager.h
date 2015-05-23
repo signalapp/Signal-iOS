@@ -11,6 +11,7 @@
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
+@class TSCall;
 
 @interface TSMessagesManager : NSObject
 
@@ -21,6 +22,8 @@
 - (void)handleMessageSignal:(IncomingPushMessageSignal*)messageSignal;
 
 - (void)processException:(NSException*)exception outgoingMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread;
+- (void)notifyUserForError:(TSErrorMessage*)message inThread:(TSThread*)thread;
+- (void)notifyUserForCall:(TSCall*)call inThread:(TSThread*)thread;
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal*)message withContent:(PushMessageContent*)content attachments:(NSArray*)attachments completionBlock:(void (^)(NSString* messageIdentifier))completionBlock ;
@@ -28,5 +31,6 @@
 - (void)handleSendToMyself:(TSOutgoingMessage*)outgoingMessage;
 
 - (NSUInteger)unreadMessagesCount;
+- (NSUInteger)unreadMessagesCountExcept:(TSThread*)thread;
 
 @end

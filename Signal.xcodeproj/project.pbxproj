@@ -898,7 +898,6 @@
 		B633C54C1A1D190B0059AC12 /* quit@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "quit@2x.png"; sourceTree = "<group>"; };
 		B633C5501A1D190B0059AC12 /* savephoto@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "savephoto@2x.png"; sourceTree = "<group>"; };
 		B634CBB31AB10D2300C49B99 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B634CBB41AB10D3700C49B99 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B634CBB51AB10D5400C49B99 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = translations/ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B63761E119E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPSessionManager+SignalMethods.h"; sourceTree = "<group>"; };
 		B63761E219E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AFHTTPSessionManager+SignalMethods.m"; sourceTree = "<group>"; };
@@ -942,7 +941,6 @@
 		B640C4761A477B0F005C7C8A /* TSAttachementsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachementsTest.m; sourceTree = "<group>"; };
 		B646D10E1AA5461A004133BA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = translations/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D10F1AA54626004133BA /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = translations/fil.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B646D1131AA54667004133BA /* hi_IN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi_IN; path = translations/hi_IN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1141AA54674004133BA /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = translations/hu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1151AA5467E004133BA /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = translations/it_IT.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B65031CE1A7862AA002EBBBD /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
@@ -982,7 +980,6 @@
 		B68CB7E21AA5485B0065AC3F /* sv_SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv_SE; path = translations/sv_SE.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7E31AA548660065AC3F /* th_TH */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th_TH; path = translations/th_TH.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7E41AA548700065AC3F /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = translations/tr_TR.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B68CB7E51AA5487D0065AC3F /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = translations/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7E61AA548870065AC3F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = translations/zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDatabaseSecondaryIndexes.h; sourceTree = "<group>"; };
 		B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDatabaseSecondaryIndexes.m; sourceTree = "<group>"; };
@@ -1090,7 +1087,6 @@
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSFingerprintGenerator.h; sourceTree = "<group>"; };
 		B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSFingerprintGenerator.m; sourceTree = "<group>"; };
-		B6E80FA61AA5453C0000253B /* et_EE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et_EE; path = translations/et_EE.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FAAAE61A41BC6C007FEC1D /* TSAttachmentPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAttachmentPointer.h; path = Attachements/TSAttachmentPointer.h; sourceTree = "<group>"; };
 		B6FAAAE71A41BC6C007FEC1D /* TSAttachmentPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachmentPointer.m; path = Attachements/TSAttachmentPointer.m; sourceTree = "<group>"; };
@@ -2793,10 +2789,8 @@
 				sv_SE,
 				th_TH,
 				tr_TR,
-				uk,
 				zh_CN,
 				hr,
-				fa,
 				ro,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
@@ -3435,11 +3429,9 @@
 				B676BCEF1AA544E7009637B8 /* de */,
 				B676BCF01AA544F5009637B8 /* el_GR */,
 				B676BCF11AA5451E009637B8 /* es */,
-				B6E80FA61AA5453C0000253B /* et_EE */,
 				B63FBC9E1AA545CB00548746 /* fi */,
 				B646D10E1AA5461A004133BA /* fr */,
 				B646D10F1AA54626004133BA /* fil */,
-				B646D1131AA54667004133BA /* hi_IN */,
 				B646D1141AA54674004133BA /* hu */,
 				B646D1151AA5467E004133BA /* it_IT */,
 				B60341CD1AA5469800A01E42 /* ja_JP */,
@@ -3455,10 +3447,8 @@
 				B68CB7E21AA5485B0065AC3F /* sv_SE */,
 				B68CB7E31AA548660065AC3F /* th_TH */,
 				B68CB7E41AA548700065AC3F /* tr_TR */,
-				B68CB7E51AA5487D0065AC3F /* uk */,
 				B68CB7E61AA548870065AC3F /* zh_CN */,
 				B634CBB31AB10D2300C49B99 /* hr */,
-				B634CBB41AB10D3700C49B99 /* fa */,
 				B634CBB51AB10D5400C49B99 /* ro */,
 			);
 			name = Localizable.strings;
@@ -3607,8 +3597,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3662,8 +3652,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

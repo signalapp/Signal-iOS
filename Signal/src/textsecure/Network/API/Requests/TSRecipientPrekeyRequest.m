@@ -16,7 +16,8 @@
     
     self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientInformation, deviceId]]];
     
-    [self setHTTPMethod:@"GET"];
+    self.HTTPMethod = @"GET";
+    self.parameters = nil;
     
     return self;
 }

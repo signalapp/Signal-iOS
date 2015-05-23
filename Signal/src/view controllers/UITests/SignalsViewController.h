@@ -20,13 +20,11 @@
 @property (nonatomic) BOOL            composeMessage;
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) IBOutlet UIButton *inboxButton;
-@property (nonatomic, retain) IBOutlet UIButton *archiveButton;
-@property (nonatomic, retain) IBOutlet UILabel *inboxCountLabel;
 @property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
 
 @property (nonatomic, retain) CallState* latestCall;
 
 -(IBAction)selectedInbox:(id)sender;
 -(IBAction)selectedArchive:(id)sender;
+
 @end

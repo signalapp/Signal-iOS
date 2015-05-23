@@ -31,6 +31,8 @@
 -(void) hangupOrDenyCall;
 -(void) answerCall;
 -(BOOL) toggleMute;
+-(void) backgroundTimeExpired;
+
 -(ObservableValue*) currentCallObservable;
 
 +(PhoneManager*) phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler;
