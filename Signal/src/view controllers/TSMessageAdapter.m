@@ -187,15 +187,21 @@
         case RPRecentCallTypeIncoming:
             status = kCallIncoming;
             break;
+        default:
+            status = kCallIncoming;
+            break;
     }
     
     switch (status) {
         case kCallMissed:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
+            break;
         case kCallIncoming:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
+            break;
         case kCallOutgoing:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_CALLED", nil), name];
+            break;
         default:
             break;
     }

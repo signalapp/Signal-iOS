@@ -12,12 +12,17 @@
 
 @implementation TSRegisterForPushRequest
 
-- (id) initWithPushIdentifier:(NSString*)identifier{
+- (id) initWithPushIdentifier:(NSString*)identifier voipIdentifier:(NSString*)voipId
+{
     self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"]]];
     
     self.HTTPMethod = @"PUT";
     
-    self.parameters = [NSMutableDictionary dictionaryWithObjects:@[identifier] forKeys:@[@"apnRegistrationId"]];
+    self.parameters = [@{@"apnRegistrationId":identifier} mutableCopy];
+    
+    if (voipId) {
+        [self.parameters setObject:voipId forKeyedSubscript:@"voipRegistrationId"];
+    }
     
     return self;
 }

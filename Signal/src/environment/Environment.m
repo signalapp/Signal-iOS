@@ -11,6 +11,8 @@
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
+#import "TSContactThread.h"
+#import "TSGroupThread.h"
 #import "TSStorageManager.h"
 
 static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
@@ -184,7 +186,22 @@ phoneDirectoryManager;
     _signUpFlowNavigationController = navigationController;
 }
 
-+ (void)messageIdentifier:(NSString*)identifier{
++ (void)messageThreadId:(NSString*)threadId {
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    
+    if (!thread) {
+        DDLogWarn(@"We get UILocalNotifications with unknown threadId: %@", threadId);
+        return;
+    }
+    
+    if ([thread isGroupThread]) {
+        [self messageGroup:(TSGroupThread*)thread];
+    } else {
+        [self messageIdentifier:((TSContactThread*)thread).contactIdentifier withCompose:YES];
+    }
+}
+
++ (void)messageIdentifier:(NSString*)identifier withCompose:(BOOL)compose {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
     
@@ -194,10 +211,23 @@ phoneDirectoryManager;
     
     [vc.navigationController popToRootViewControllerAnimated:YES];
     vc.contactIdentifierFromCompose = identifier;
+    vc.composeMessage               = compose;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
 }
 
-+ (void)messageGroupModel:(TSGroupModel*)model {
++ (void)messageGroup:(TSGroupThread*)groupThread {
+    Environment *env          = [self getCurrent];
+    SignalsViewController *vc = env.signalsViewController;
+    
+    if (vc.presentedViewController) {
+        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [vc.navigationController popToRootViewControllerAnimated:YES];
+    [vc performSegueWithIdentifier:@"showSegue" sender:groupThread];
+}
+
++ (void)messageGroupModel:(TSGroupModel*)model withCompose:(BOOL)compose {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
     
@@ -207,6 +237,7 @@ phoneDirectoryManager;
     
     [vc.navigationController popToRootViewControllerAnimated:YES];
     vc.groupFromCompose = model;
+    vc.composeMessage   = compose;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
 }
 

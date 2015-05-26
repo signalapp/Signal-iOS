@@ -15,8 +15,10 @@
 
 @interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
 
-@property (nonatomic) NSString   *contactIdentifierFromCompose;
-@property (nonatomic) TSGroupModel *groupFromCompose;
+@property (nonatomic) NSString        *contactIdentifierFromCompose;
+@property (nonatomic) TSGroupModel    *groupFromCompose;
+@property (nonatomic) BOOL            composeMessage;
+
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UIButton *inboxButton;
 @property (nonatomic, retain) IBOutlet UIButton *archiveButton;

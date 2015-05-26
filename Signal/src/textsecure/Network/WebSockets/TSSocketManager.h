@@ -23,7 +23,9 @@ extern NSString * const SocketConnectingNotification;
 
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
-+ (void)becomeActive;
++ (void)becomeActiveFromForeground;
++ (void)becomeActiveFromBackground;
+
 + (void)resignActivity;
 + (void)sendNotification;
 

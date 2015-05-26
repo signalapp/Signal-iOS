@@ -85,7 +85,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [super viewWillAppear:animated];
     [self  checkIfEmptyView];
     
-    if (![TSAccountManager isRegistered] && ![VersionMigrations isMigratingTo2Dot0]){
+    if (![TSAccountManager isRegistered] && ![VersionMigrations isMigrating]){
         [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
         return;
     }
@@ -211,12 +211,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 
 -(void) updateInboxCountLabel {
-    
-    __block NSUInteger numberOfItems;
-    [_editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
-    }];
-    
+    NSUInteger numberOfItems = [[TSMessagesManager sharedManager] unreadMessagesCount];
     NSNumber *badgeNumber = [NSNumber numberWithUnsignedInteger:numberOfItems];
     NSString *badgeValue  = nil;
     
@@ -224,6 +219,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         badgeValue = [badgeNumber stringValue];
     }
     
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber.integerValue];
     self.inboxCountLabel.text = badgeValue;
 }
 
@@ -235,23 +231,30 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
     if ([segue.identifier isEqualToString:kSegueIndentifier]){
         MessagesViewController * vc    = [segue destinationViewController];
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         TSThread *thread               = [self threadForIndexPath:selectedIndexPath];
         if (self.contactIdentifierFromCompose){
             [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
+            [vc setComposeOnOpen:self.composeMessage];
             self.contactIdentifierFromCompose = nil;
+            self.composeMessage = NO;
         }
         else if (self.groupFromCompose) {
             [vc setupWithTSGroup:self.groupFromCompose];
+            [vc setComposeOnOpen:self.composeMessage];
             self.groupFromCompose = nil;
+            self.composeMessage = NO;
         }
         else if (thread) {
             [vc setupWithThread:thread];
+            [vc setComposeOnOpen:NO];
         }
-        
+        else if([sender isKindOfClass:[TSGroupThread class]]){
+            [vc setupWithThread:sender];
+            [vc setComposeOnOpen:YES];
+        }
     }
     else if ([segue.identifier isEqualToString:kCallSegue]) {
         InCallViewController* vc = [segue destinationViewController];

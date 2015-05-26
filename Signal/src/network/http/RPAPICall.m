@@ -13,6 +13,7 @@
 #import "SignalUtil.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"
+#import "NSData+ows_StripToken.h"
 
 #define CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL 1
 
@@ -64,10 +65,15 @@
     return apiCall;
 }
 
-+ (RPAPICall*)registerPushNotificationWithPushToken:(NSData*)pushToken {
++ (RPAPICall*)registerPushNotificationWithPushToken:(NSData*)pushToken voipToken:(NSData*)voipToken {
     RPAPICall *apiCall = [self defaultAPICall];
+    if (voipToken) {
+        apiCall.parameters = @{@"voip":[voipToken ows_tripToken]};
+    } else {
+        DDLogWarn(@"No VoIP push token registered, might experience some issues while in background.");
+    }
     apiCall.method     = HTTP_PUT;
-    apiCall.endPoint   = [NSString stringWithFormat:@"/apn/%@", pushToken.encodedAsHexString];
+    apiCall.endPoint   = [NSString stringWithFormat:@"/apn/%@", [pushToken ows_tripToken]];
     return apiCall;
 }
 

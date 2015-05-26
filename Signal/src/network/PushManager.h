@@ -9,6 +9,8 @@
 #import <CollapsingFutures.h>
 #import <Foundation/Foundation.h>
 
+#define Signal_Thread_UserInfo_Key           @"Signal_Thread_Id"
+
 #define Signal_Call_Accept_Identifier        @"Signal_Call_Accept"
 #define Signal_Call_Decline_Identifier       @"Signal_Call_Decline"
 
@@ -19,6 +21,8 @@
 #define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
 
 typedef void(^failedPushRegistrationBlock)(NSError *error);
+typedef void (^pushTokensSuccessBlock)(NSData *pushToken, NSData *voipToken);
+typedef void (^registrationTokensSuccessBlock)(NSData *pushToken, NSData *voipToken, NSString *signupToken);
 
 /**
  *  The Push Manager is responsible for registering the device for Signal push notifications.
@@ -35,7 +39,7 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
  *  @param failure Failure completion block
  */
 
-- (void)registrationAndRedPhoneTokenRequestWithSuccess:(void (^)(NSData* pushToken, NSString* signupToken))success failure:(failedPushRegistrationBlock)failure;
+- (void)registrationAndRedPhoneTokenRequestWithSuccess:(registrationTokensSuccessBlock)success failure:(failedPushRegistrationBlock)failure;
 
 /**
  *  Returns the Push Notification Token of this device
@@ -44,7 +48,7 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
  *  @param failure Failure block, executed when failed to get push token
  */
 
-- (void)requestPushTokenWithSuccess:(void (^)(NSData* pushToken))success failure:(void(^)(NSError *))failure;
+- (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(void(^)(NSError *))failure;
 
 /**
  *  Registers for Users Notifications. By doing this on launch, we are sure that the correct categories of user notifications is registered.
@@ -58,5 +62,16 @@ typedef void(^failedPushRegistrationBlock)(NSError *error);
 
 @property TOCFutureSource *pushNotificationFutureSource;
 @property TOCFutureSource *userNotificationFutureSource;
+@property TOCFutureSource *pushKitNotificationFutureSource;
+
+-(TOCFuture*)registerPushKitNotificationFuture;
+- (BOOL)supportsVOIPPush;
+
+#pragma mark Push Notifications Delegate Methods
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo;
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler;
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
 
 @end

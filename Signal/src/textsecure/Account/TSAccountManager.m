@@ -11,6 +11,7 @@
 #import "Constraints.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
+#import "NSData+ows_StripToken.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 
 #import "SecurityUtils.h"
@@ -71,11 +72,12 @@
     return registrationID;
 }
 
-+ (void)registerForPushNotifications:(NSData *)pushToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock{
++ (void)registerForPushNotifications:(NSData *)pushToken voipToken:(NSData*)voipToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock{
     
-    NSString *stringToken = [[pushToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<> "]];
-    
-    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:stringToken] success:^(NSURLSessionDataTask *task, id responseObject) {
+    NSString *pushTokenString = [pushToken ows_tripToken];
+    NSString *voipTokenString = [voipToken ows_tripToken];
+
+    [[TSNetworkManager sharedManager] queueAuthenticatedRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:pushTokenString voipIdentifier:voipTokenString] success:^(NSURLSessionDataTask *task, id responseObject) {
         success();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSLog(@"NSError: %@", error.debugDescription);
@@ -96,7 +98,12 @@
     }];
 }
 
-+ (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock{
++ (void)registerWithRedPhoneToken:(NSString*)tsToken
+                        pushToken:(NSData*)pushToken
+                        voipToken:(NSData*)voipToken
+                          success:(successCompletionBlock)successBlock
+                          failure:(failedVerificationBlock)failureBlock
+{
     
     NSString *authToken           = [self generateNewAccountAuthenticationToken];
     NSString *signalingKey        = [self generateNewSignalingKeyToken];
@@ -118,10 +125,10 @@
 
             [TSStorageManager storeServerToken:authToken signalingKey:signalingKey phoneNumber:phoneNumber];
             
-            [self registerForPushNotifications:pushToken success:^{
+            [self registerForPushNotifications:pushToken voipToken:voipToken success:^{
                 [self registerPreKeys:^{
                     successBlock();
-                    [TSSocketManager becomeActive];
+                    [TSSocketManager becomeActiveFromForeground];
                 } failure:failureBlock];
             } failure:^(NSError *error) {
                 failureBlock([self errorForRegistrationFailure:kTSRegistrationFailureNetwork HTTPStatusCode:0]);
@@ -140,10 +147,11 @@
 }
 
 + (void)registerPreKeysAfterPush:(NSData*)pushToken
+                       voipToken:(NSData*)voipToken
                          success:(successCompletionBlock)successBlock
                          failure:(failedVerificationBlock)failureBlock
 {
-        [self registerForPushNotifications:pushToken success:^{
+        [self registerForPushNotifications:pushToken voipToken:voipToken success:^{
             [self registerPreKeys:successBlock
                           failure:failureBlock];
         } failure:failureBlock];

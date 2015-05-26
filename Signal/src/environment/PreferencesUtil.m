@@ -27,6 +27,8 @@
 #define HAS_SENT_A_MESSAGE_KEY @"User has sent a message"
 #define HAS_ARCHIVED_A_MESSAGE_KEY @"User archived a message"
 #define kSignalVersionKey @"SignalUpdateVersionKey"
+#define PLAY_SOUND_IN_FOREGROUND_KEY @"NotificationSoundInForeground"
+#define HAS_REGISTERED_VOIP_PUSH @"VOIPPushEnabled"
 
 #define BloomFilterCacheName     @"bloomfilter"
 
@@ -141,15 +143,14 @@
 
 }
 
-
--(NotificationType)notificationPreviewType {
-    NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
-    
+- (BOOL)hasRegisteredVOIPPush {
+    NSNumber *preference = [self tryGetValueForKey:HAS_REGISTERED_VOIP_PUSH];
     if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return NotificationNamePreview;
+        return [preference boolValue];
+    } else{
+        return YES;
     }
+    
 }
 
 -(TSImageQuality)imageUploadQuality {
@@ -161,17 +162,16 @@
     [self setValueForKey:IMAGE_UPLOAD_QUALITY_KEY toValue:@(quality)];
 }
 
--(void)setNotificationPreviewType:(NotificationType)type
-{
-    [self setValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY toValue:@(type)];
-}
-
 -(void)setScreenSecurity:(BOOL)flag{
     [self setValueForKey:SCREEN_SECURITY_KEY toValue:@(flag)];
 }
 
 -(void) setFreshInstallTutorialsEnabled:(BOOL)enabled {
     [self setValueForKey:FRESH_INSTALL_TUTORIALS_ENABLED_KEY toValue:@(enabled)];
+}
+
+-(void)setHasRegisteredVOIPPush:(BOOL)enabled {
+    [self setValueForKey:HAS_REGISTERED_VOIP_PUSH toValue:@(enabled)];
 }
 
 -(void) setContactImagesEnabled:(BOOL)enabled {
@@ -212,6 +212,51 @@
     [NSUserDefaults.standardUserDefaults setObject:currentVersion forKey:kSignalVersionKey];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+
+#pragma mark Notification Preferences
+
+- (BOOL)soundInForeground {
+    NSNumber *preference = [self tryGetValueForKey:PLAY_SOUND_IN_FOREGROUND_KEY];
+    if (preference) {
+        return [preference boolValue];
+    } else{
+        return YES;
+    }
+}
+
+- (void)setSoundInForeground:(BOOL)enabled {
+    [self setValueForKey:PLAY_SOUND_IN_FOREGROUND_KEY toValue:@(enabled)];
+}
+
+-(void)setNotificationPreviewType:(NotificationType)type
+{
+    [self setValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY toValue:@(type)];
+}
+
+-(NotificationType)notificationPreviewType {
+    NSNumber *preference = [self tryGetValueForKey:NOTIFICATION_PREVIEW_TYPE_KEY];
+    
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        return NotificationNamePreview;
+    }
+}
+
+- (NSString*)nameForNotificationPreviewType:(NotificationType)notificationType {
+    switch (notificationType) {
+        case NotificationNamePreview:
+            return NSLocalizedString(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
+        case NotificationNameNoPreview:
+            return NSLocalizedString(@"NOTIFICATIONS_SENDER_ONLY", nil);
+        case NotificationNoNameNoPreview:
+            return NSLocalizedString(@"NOTIFICATIONS_NONE", nil);
+        default:
+            DDLogWarn(@"Undefined NotificationType in Settings");
+            return @"";
+    }
 }
 
 #pragma mark Bloom filter

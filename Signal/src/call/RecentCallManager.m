@@ -39,7 +39,7 @@
 - (void)addCall:(CallState*)call {
     require(call != nil);
     
-    [call.futureCallLocallyAcceptedOrRejected finallyDo:^(TOCFuture* interactionCompletion) {
+    [call.futureTermination finallyDo:^(TOCFuture* interactionCompletion) {
         bool isOutgoingCall = call.initiatedLocally;
         bool isMissedCall = interactionCompletion.hasFailed;
         Contact* contact = [self tryGetContactForCall:call];

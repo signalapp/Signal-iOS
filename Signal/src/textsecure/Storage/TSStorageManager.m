@@ -81,16 +81,24 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 - (void)protectSignalFiles{
     [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
     [self protectFolderAtPath:[self dbPath]];
+    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
+    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
     [self protectFolderAtPath:[[DebugLogger sharedInstance] logsDirectory]];
 }
 
 - (void)protectFolderAtPath:(NSString*)path {
+    if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
+        return;
+    }
+
     NSError *error;
-    NSDictionary *attrs = @{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication,
-                   NSURLIsExcludedFromBackupKey:@YES};
+    NSDictionary *fileProtection = @{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication};
+    [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
     
+    NSDictionary *resourcesAttrs = @{NSURLIsExcludedFromBackupKey: @YES};
     
-    BOOL success = [NSFileManager.defaultManager setAttributes:attrs ofItemAtPath:path error:&error];
+    NSURL *ressourceURL = [NSURL fileURLWithPath:path];
+    BOOL success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
     
     if (error || !success) {
         DDLogError(@"Error while removing files from backup: %@", error.description);
@@ -136,6 +144,22 @@ static NSString * keychainDBPassAccount    = @"TSDatabasePass";
 #endif
     
     return databasePath;
+}
+
+- (BOOL)databasePasswordAccessible {
+    [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    NSError *error;
+    NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount error:&error];
+    
+    if (dbPassword && !error) {
+        return YES;
+    }
+    
+    if (error) {
+        DDLogWarn(@"Database password couldn't be accessed: %@", error.localizedDescription);
+    }
+    
+    return NO;
 }
 
 - (NSData*)databasePassword {

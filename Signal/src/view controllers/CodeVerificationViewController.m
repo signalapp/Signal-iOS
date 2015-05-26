@@ -78,10 +78,10 @@
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text]
         success:^(NSURLSessionDataTask *task, id responseObject) {
 
-          [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken,
-                                                                                      NSString *signupToken) {
-            [TSAccountManager registerWithRedPhoneToken:signupToken
+          [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
+              [TSAccountManager registerWithRedPhoneToken:signupToken
                 pushToken:pushToken
+             voipToken:voipToken
                 success:^{
                   success();
                 }

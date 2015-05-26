@@ -249,8 +249,15 @@ dispatch_queue_t sendingQueue() {
                                                                       body:serializedMessage
                                                             registrationId:cipher.remoteRegistrationId];
     
+    NSError *error;
+    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:serverMessage error:&error];
     
-    return [MTLJSONAdapter JSONDictionaryFromModel:serverMessage];
+    if (error) {
+        DDLogError(@"Error while making JSON dictionary of message: %@", error.debugDescription);
+        return nil;
+    }
+    
+    return jsonDict;
 }
 
 - (TSWhisperMessageType)messageTypeForCipherMessage:(id<CipherMessage>)cipherMessage{

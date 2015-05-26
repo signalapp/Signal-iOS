@@ -340,6 +340,8 @@
 		B640C4771A477B0F005C7C8A /* TSAttachementsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B640C4761A477B0F005C7C8A /* TSAttachementsTest.m */; };
 		B65031CF1A7862AA002EBBBD /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B65031CE1A7862AA002EBBBD /* SignedPreKeyDeletionTests.m */; };
 		B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */; };
+		B66B9F721AEA6D1100E2E609 /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F711AEA6D1100E2E609 /* NotificationSettingsViewController.m */; };
+		B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B671B2461A93B238002BBD9D /* GroupContactsResult.m in Sources */ = {isa = PBXBuildFile; fileRef = B671B2451A93B238002BBD9D /* GroupContactsResult.m */; };
 		B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */; };
@@ -405,6 +407,8 @@
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FAAAE81A41BC6C007FEC1D /* TSAttachmentPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAE71A41BC6C007FEC1D /* TSAttachmentPointer.m */; };
 		B6FAAAEE1A41C918007FEC1D /* TSAttachmentStream.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAED1A41C918007FEC1D /* TSAttachmentStream.m */; };
+		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		B6FE7EBA1ADD63AE00A6D22F /* NSData+ows_StripToken.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FE7EB91ADD63AE00A6D22F /* NSData+ows_StripToken.m */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B90418E7183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B96A3100187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */; };
@@ -946,6 +950,10 @@
 		B65EDA1019E1BE6400AAA7CB /* RPAPICall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPAPICall.h; sourceTree = "<group>"; };
 		B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPAPICall.m; sourceTree = "<group>"; };
 		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
+		B66B9F701AEA6D1100E2E609 /* NotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsViewController.h; sourceTree = "<group>"; };
+		B66B9F711AEA6D1100E2E609 /* NotificationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsViewController.m; sourceTree = "<group>"; };
+		B66B9F7B1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
+		B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
 		B66DBF4919D5BBC8006EA940 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B671B2441A93B238002BBD9D /* GroupContactsResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupContactsResult.h; sourceTree = "<group>"; };
 		B671B2451A93B238002BBD9D /* GroupContactsResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupContactsResult.m; sourceTree = "<group>"; };
@@ -1088,6 +1096,9 @@
 		B6FAAAE71A41BC6C007FEC1D /* TSAttachmentPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachmentPointer.m; path = Attachements/TSAttachmentPointer.m; sourceTree = "<group>"; };
 		B6FAAAEC1A41C918007FEC1D /* TSAttachmentStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAttachmentStream.h; path = Attachements/TSAttachmentStream.h; sourceTree = "<group>"; };
 		B6FAAAED1A41C918007FEC1D /* TSAttachmentStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachmentStream.m; path = Attachements/TSAttachmentStream.m; sourceTree = "<group>"; };
+		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		B6FE7EB81ADD63AE00A6D22F /* NSData+ows_StripToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+ows_StripToken.h"; sourceTree = "<group>"; };
+		B6FE7EB91ADD63AE00A6D22F /* NSData+ows_StripToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+ows_StripToken.m"; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B96A30FE187DA1B600648F3E /* HelveticaNeueLTStd-Bd.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Bd.otf"; sourceTree = "<group>"; };
@@ -1227,6 +1238,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
@@ -1750,6 +1762,8 @@
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
+				B6FE7EB81ADD63AE00A6D22F /* NSData+ows_StripToken.h */,
+				B6FE7EB91ADD63AE00A6D22F /* NSData+ows_StripToken.m */,
 				A59E6D701A79E5D100D98E2E /* MIMETypeUtil.h */,
 				A59E6D711A79E5D100D98E2E /* MIMETypeUtil.m */,
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
@@ -2449,6 +2463,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */,
 				FC3BD9871A30A790005B96BB /* Social.framework */,
 				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
 				FCB11D8B1A129A76002F93FB /* CoreMedia.framework */,
@@ -2594,6 +2609,10 @@
 				FCD274E11A5AFD8000202277 /* PrivacySettingsTableViewController.m */,
 				FCD274E61A5AFDC900202277 /* AdvancedSettingsTableViewController.h */,
 				FCD274E71A5AFDC900202277 /* AdvancedSettingsTableViewController.m */,
+				B66B9F701AEA6D1100E2E609 /* NotificationSettingsViewController.h */,
+				B66B9F711AEA6D1100E2E609 /* NotificationSettingsViewController.m */,
+				B66B9F7B1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.h */,
+				B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */,
 				FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */,
 				FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */,
 			);
@@ -2981,6 +3000,7 @@
 				B63AF5C71A1F757900D01AAD /* TSContactsIntersectionRequest.m in Sources */,
 				B6B0968B1A1D25ED008BFAA6 /* TSStorageManager+SignedPreKeyStore.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
+				B6FE7EBA1ADD63AE00A6D22F /* NSData+ows_StripToken.m in Sources */,
 				B6A5D05C1A7827ED0043D837 /* TSAvailablePreKeysCountRequest.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B6B096871A1D25ED008BFAA6 /* TSStorageManager+IdentityKeyStore.m in Sources */,
@@ -3058,6 +3078,7 @@
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
+				B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,
 				B6FAAAEE1A41C918007FEC1D /* TSAttachmentStream.m in Sources */,
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
@@ -3128,6 +3149,7 @@
 				B6FAAAE81A41BC6C007FEC1D /* TSAttachmentPointer.m in Sources */,
 				B6B096881A1D25ED008BFAA6 /* TSStorageManager+keyFromIntLong.m in Sources */,
 				B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachments.m in Sources */,
+				B66B9F721AEA6D1100E2E609 /* NotificationSettingsViewController.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				B60FB9B01A4711D4006A5A66 /* TSAttachmentEncryptionResult.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,

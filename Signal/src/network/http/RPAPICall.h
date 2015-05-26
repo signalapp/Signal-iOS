@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, HTTPMethod) {
 + (RPAPICall*)requestVerificationCode;
 + (RPAPICall*)requestVerificationCodeWithVoice;
 + (RPAPICall*)verifyVerificationCode:(NSString*)verificationCode;
-+ (RPAPICall*)registerPushNotificationWithPushToken:(NSData*)pushToken;
++ (RPAPICall*)registerPushNotificationWithPushToken:(NSData*)pushToken voipToken:(NSData*)voipToken;
 + (RPAPICall*)requestTextSecureVerificationCode;
 + (RPAPICall*)unregisterWithPushToken:(NSData*)pushToken;
 + (RPAPICall*)fetchBloomFilter;

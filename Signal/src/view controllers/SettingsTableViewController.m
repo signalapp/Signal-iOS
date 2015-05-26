@@ -37,6 +37,7 @@
 #import "AdvancedSettingsTableViewController.h"
 #import "AboutTableViewController.h"
 #import "PushManager.h"
+#import "NotificationSettingsViewController.h"
 
 #define kProfileCellHeight      87.0f
 #define kStandardCellHeight     44.0f
@@ -45,22 +46,23 @@
 
 #define kRegisteredNumberRow 0
 #define kPrivacyRow          0
-#define kAdvancedRow         1
-#define kAboutRow            2
+#define kNotificationRow     1
+#define kAdvancedRow         2
+#define kAboutRow            3
 #define kNetworkRow          0
 #define kUnregisterRow       0
 
 typedef enum {
     kRegisteredRows    = 1,
-    kGeneralRows       = 3,
+    kGeneralRows       = 4,
     kNetworkStatusRows = 1,
     kUnregisterRows    = 1,
 } kRowsForSection;
 
 typedef enum {
     kRegisteredNumberSection=0,
-    kGeneralSection=2,
     kNetworkStatusSection=1,
+    kGeneralSection=2,
     kUnregisterSection=3,
 } kSection;
 
@@ -86,6 +88,7 @@ typedef enum {
     _settingsPrivacyTitle.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",@"");
     _settingsAdvancedTitle.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE",@"");
     _settingsAboutTitle.text  = NSLocalizedString(@"SETTINGS_ABOUT",@"");
+    _settingsNotifications.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
     [_destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
 }
 
@@ -134,15 +137,21 @@ typedef enum {
             switch (indexPath.row) {
                 case kPrivacyRow:
                 {
-                    PrivacySettingsTableViewController * vc = [[PrivacySettingsTableViewController alloc]init];
+                    PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc]init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
                     NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
+                case kNotificationRow:
+                {
+                    NotificationSettingsViewController *vc = [[NotificationSettingsViewController alloc] init];
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
                 case kAdvancedRow:
                 {
-                    AdvancedSettingsTableViewController * vc = [[AdvancedSettingsTableViewController alloc]init];
+                    AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc]init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
                     NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];
@@ -193,7 +202,7 @@ typedef enum {
 
 - (void)proceedToUnregistration{
     [TSAccountManager unregisterTextSecureWithSuccess:^{
-        [PushManager.sharedManager requestPushTokenWithSuccess:^(NSData* pushToken){
+        [PushManager.sharedManager requestPushTokenWithSuccess:^(NSData* pushToken, NSData *voipToken){
             [[RPServerRequestsManager sharedInstance]performRequest:[RPAPICall unregisterWithPushToken:pushToken] success:^(NSURLSessionDataTask *task, id responseObject) {
                 [Environment resetAppData];
                 exit(0);

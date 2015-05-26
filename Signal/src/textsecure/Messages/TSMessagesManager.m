@@ -23,6 +23,7 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSInfoMessage.h"
 
+#import "TSDatabaseView.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+SessionStore.h"
@@ -43,8 +44,6 @@
 
 #import <CocoaLumberjack/DDLog.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
-
-#define ddLogLevel LOG_LEVEL_VERBOSE
 
 @interface TSMessagesManager ()
 
@@ -349,7 +348,7 @@
         }
         
         NSString *name = [thread name];
-        [self notifyUserForIncomingMessage:incomingMessage from:name];
+        [self notifyUserForIncomingMessage:incomingMessage from:name inThread:thread];
     }];
 }
 
@@ -399,8 +398,59 @@
     }];
 }
 
-- (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name {
-    AudioServicesPlayAlertSound(_newMessageSound);
+- (NSUInteger)unreadMessagesCount {
+    __block NSUInteger numberOfItems;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+    }];
+    
+    return numberOfItems;
+}
+
+- (void)notifyUserForIncomingMessage:(TSIncomingMessage*)message from:(NSString*)name inThread:(TSThread*)thread {
+    NSString *messageDescription = message.description;
+    
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.category  = Signal_Message_Category;
+        notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
+        notification.soundName = @"NewMessage.aifc";
+        
+        switch ([[Environment preferences] notificationPreviewType]) {
+            case NotificationNamePreview:
+                if ([thread isGroupThread]) {
+                    NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
+                    if (!sender) {
+                        sender = message.authorId;
+                    }
+                    
+                    notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
+                } else {
+                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                }
+                break;
+            case NotificationNameNoPreview:{
+                if ([thread isGroupThread]) {
+                    notification.alertBody = [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name];
+                } else {
+                    notification.alertBody = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                }
+                break;
+            }
+            case NotificationNoNameNoPreview:
+                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                break;
+            default:
+                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                break;
+        }
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    } else {
+        if ([Environment.preferences soundInForeground]) {
+            AudioServicesPlayAlertSound(_newMessageSound);
+        }
+    }
 }
 
 - (void)dealloc {

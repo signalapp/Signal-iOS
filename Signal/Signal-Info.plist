@@ -8,6 +8,8 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleIcons</key>
 	<dict/>
 	<key>CFBundleIcons~ipad</key>
@@ -21,7 +23,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.3</string>
+	<string>2.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -38,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.0.20</string>
+	<string>2.1.0</string>
 	<key>LOGS_EMAIL</key>
 	<string>support@whispersystems.org</string>
 	<key>LOGS_URL</key>
@@ -47,6 +49,10 @@
 	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSContactsUsageDescription</key>
+	<string>Signal uses your AddressBook as contacts list. We do not store your contacts on the server.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Signal needs access to your microphone to make and receive phone calls.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>HelveticaNeueLTStd-Bd.otf</string>

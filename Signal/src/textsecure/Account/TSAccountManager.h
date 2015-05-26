@@ -60,7 +60,7 @@ typedef void(^failedVerificationBlock)(NSError *error);
 
 #if TARGET_OS_IPHONE
 
-+ (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock;
++ (void)registerWithRedPhoneToken:(NSString*)tsToken pushToken:(NSData*)pushToken voipToken:(NSData*)voipToken success:(successCompletionBlock)successBlock failure:(failedVerificationBlock)failureBlock;
 
 /**
  *  Register's the device's push notification token with the server
@@ -68,7 +68,7 @@ typedef void(^failedVerificationBlock)(NSError *error);
  *  @param pushToken Apple's Push Token
  */
 
-+ (void)registerForPushNotifications:(NSData*)pushToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock;
++ (void)registerForPushNotifications:(NSData*)pushToken voipToken:(NSData*)voipToken success:(successCompletionBlock)success failure:(failedVerificationBlock)failureBlock;
 
 #endif
 
