@@ -423,17 +423,24 @@
                     if (!sender) {
                         sender = message.authorId;
                     }
-                    
-                    notification.alertBody = [NSString stringWithFormat:@"New message from %@ in group \"%@\": %@", sender, name, messageDescription];
+                    notification.alertTitle = [NSString stringWithFormat:@"%@", name];
+                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", sender, messageDescription];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                    notification.alertTitle = name;
+                    notification.alertBody = messageDescription;
                 }
                 break;
             case NotificationNameNoPreview:{
-                if ([thread isGroupThread]) {
-                    notification.alertBody = [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name];
+              if ([thread isGroupThread]) {
+                    NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
+                    if (!sender) {
+                      sender = message.authorId;
+                    }
+                    notification.alertTitle = [NSString stringWithFormat:@"%@", name];
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), sender];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                    notification.alertTitle = [NSString stringWithFormat:@"%@", name];
+                    notification.alertBody = NSLocalizedString(@"APN_Message", nil);
                 }
                 break;
             }
