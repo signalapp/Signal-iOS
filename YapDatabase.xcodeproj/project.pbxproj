@@ -847,7 +847,8 @@
 				452D9D551B1068DB00A93068 /* Extensions */,
 				452D9D5D1B1068DB00A93068 /* LICENSE.txt */,
 			);
-			path = CocoaLumberjack;
+			name = CocoaLumberjack;
+			path = ../../Vendor/CocoaLumberjack;
 			sourceTree = "<group>";
 		};
 		452D9D451B1068DB00A93068 /* CLI */ = {
