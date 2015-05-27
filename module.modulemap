@@ -32,7 +32,6 @@ framework module YapDatabase {
   header "YapDatabaseRelationshipOptions.h"
   header "YapDatabaseRelationshipTransaction.h"
   header "YapDatabaseSearchQueue.h"
-  header "YapDatabaseSearchQueuePrivate.h"
   header "YapDatabaseSearchResultsView.h"
   header "YapDatabaseSearchResultsViewConnection.h"
   header "YapDatabaseSearchResultsViewOptions.h"
