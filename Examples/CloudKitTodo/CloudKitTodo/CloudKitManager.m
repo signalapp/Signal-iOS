@@ -646,10 +646,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 				
 			} completionBlock:^{
 				
-				if (moreComing) {
-					[self _fetchRecordChangesWithCompletionHandler:completionHandler];
-				}
-				
 				if (completionHandler)
 				{
 					if (hasChanges)
@@ -657,7 +653,13 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 					else
 						completionHandler(UIBackgroundFetchResultNoData, moreComing);
 				}
-				dispatch_resume(fetchQueue);
+				
+				if (moreComing) {
+					[self _fetchRecordChangesWithCompletionHandler:completionHandler];
+				}
+				else {
+					dispatch_resume(fetchQueue);
+				}
 			}];
 		
 		} // end if (hasChanges)
