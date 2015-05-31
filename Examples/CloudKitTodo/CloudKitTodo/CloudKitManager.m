@@ -493,6 +493,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		DDLogVerbose(@"CKFetchRecordChangesOperation: serverChangeToken: %@", newServerChangeToken);
 		DDLogVerbose(@"CKFetchRecordChangesOperation: clientChangeTokenData: %@", clientChangeTokenData);
 		
+		// Edge Case:
+		//
+		// I've witnessed the following on a fresh app launch on the device (first run after install):
+		// The first fetchRecordChanges returns:
+		// - no deletedRecordIDs
+		// - no changedRecords
+		// - a serverChangeToken
+		// - and moreComing == YES
+		//
+		// So, oddly enough, this results in (UIBackgroundFetchResultNoData, moreComing==YES).
+		//
+		// Which seems non-intuitive to me, but that's what we're getting from the server.
+		// And, in fact, if we don't follow that up with another fetch,
+		// then we fail to properly fetch what's on the server.
+		
+		BOOL moreComing = weakOperation.moreComing;
+		
 		BOOL hasChanges = NO;
 		if (!operationError)
 		{
@@ -501,7 +518,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			else if (changedRecords.count > 0)
 				hasChanges = YES;
 			
-			self.lastSuccessfulFetchResultWasNoData = (hasChanges == NO);
+			self.lastSuccessfulFetchResultWasNoData = (!hasChanges && !moreComing);
 		}
 		
 		if (operationError)
@@ -530,8 +547,10 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}
 			dispatch_resume(fetchQueue);
 		}
-		else if (!hasChanges)
+		else if (!hasChanges && !moreComing)
 		{
+			DDLogVerbose(@"CKFetchRecordChangesOperation: !hasChanges && !moreComing");
+			
 			// Just to be safe, we're going to go ahead and save the newServerChangeToken.
 			//
 			// By the way:
@@ -551,10 +570,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}
 			dispatch_resume(fetchQueue);
 		}
-		else // if (hasChanges)
+		else // if (hasChanges || moreComing)
 		{
-			BOOL moreComing = weakOperation.moreComing;
-			
 			DDLogVerbose(@"CKFetchRecordChangesOperation: deletedRecordIDs: %@", deletedRecordIDs);
 			DDLogVerbose(@"CKFetchRecordChangesOperation: changedRecords: %@", changedRecords);
 			
