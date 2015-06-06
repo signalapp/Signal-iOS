@@ -407,37 +407,44 @@
 	TestObject *object = [TestObject generateTestObject];
 	TestObjectMetadata *metadata = [object extractMetadata];
 	
+	dispatch_semaphore_t semaphore1 = dispatch_semaphore_create(0);
+	dispatch_semaphore_t semaphore2 = dispatch_semaphore_create(0);
+	dispatch_semaphore_t semaphore3 = dispatch_semaphore_create(0);
+	
 	dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_async(concurrentQueue, ^{
 		
-		[NSThread sleepForTimeInterval:0.1]; // Zz
+		dispatch_semaphore_wait(semaphore1, DISPATCH_TIME_FOREVER);
 		
 		[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 			
 			[transaction setObject:object forKey:key inCollection:nil withMetadata:metadata];
 			
+			dispatch_semaphore_signal(semaphore2);
 			[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
 		}];
 		
+		dispatch_semaphore_signal(semaphore3);
 	});
 	
-	// This transaction should start before the read-write transaction has started
+	// This transaction will execute before the read-write transaction starts
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
 		XCTAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
 		XCTAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
 	}];
 	
-	[NSThread sleepForTimeInterval:0.2]; // Zzzzzz
+	dispatch_semaphore_signal(semaphore1);
+	dispatch_semaphore_wait(semaphore2, DISPATCH_TIME_FOREVER);
 	
-	// This transaction should start after the read-write transaction has started, but before it has committed
+	// This transaction will execute after the read-write transaction has started, but before it has committed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
 		XCTAssertNil([transaction objectForKey:key inCollection:nil], @"Expected nil object");
 		XCTAssertNil([transaction metadataForKey:key inCollection:nil], @"Expected nil metadata");
 	}];
 	
-	[NSThread sleepForTimeInterval:0.4]; // Zzzzzzzzzzzzzzzzzzzzzzzzzz
+	dispatch_semaphore_wait(semaphore3, DISPATCH_TIME_FOREVER);
 	
 	// This transaction should start after the read-write transaction has completed
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction){
