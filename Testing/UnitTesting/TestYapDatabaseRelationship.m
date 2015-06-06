@@ -1279,6 +1279,94 @@
 	}];
 }
 
+- (void)testManual_4
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] init];
+	
+	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
+	
+	XCTAssertTrue(registered, @"Error registering extension");
+	
+	NSString *edgeName      = @"story->topic";
+	NSString *srcKey        = @"storyID";
+	NSString *srcCollection = @"stories";
+	NSString *dstKey        = @"topicID";
+	NSString *dstCollection = @"topics";
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		// Test creating an edge where the source doesn't exist yet
+		
+		YapDatabaseRelationshipEdge *edge =
+		  [YapDatabaseRelationshipEdge edgeWithName:edgeName
+		                                  sourceKey:srcKey
+		                                 collection:srcCollection
+		                             destinationKey:dstKey
+		                                 collection:dstCollection
+		                            nodeDeleteRules:0];
+		
+		[[transaction ext:@"relationship"] addEdge:edge];
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName];
+		XCTAssertTrue(count == 1, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                                   sourceKey:srcKey
+		                                                  collection:srcCollection];
+		XCTAssertTrue(count == 1, @"Expected=1, Found=%lu", (unsigned long)count);
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                              destinationKey:dstKey
+		                                                  collection:dstCollection];
+		XCTAssertTrue(count == 1, @"Expected=1, Found=%lu", (unsigned long)count);
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                                   sourceKey:srcKey
+		                                                  collection:srcCollection
+		                                              destinationKey:dstKey
+		                                                  collection:dstCollection];
+		XCTAssertTrue(count == 1, @"Expected=1, Found=%lu", (unsigned long)count);
+	}];
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// Test adding a bad edge (forgetting to add source || destination)
+		
+		NSUInteger count;
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName];
+		XCTAssertTrue(count == 0, @"Oops");
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                                   sourceKey:srcKey
+		                                                  collection:srcCollection];
+		XCTAssertTrue(count == 0, @"Expected=1, Found=%lu", (unsigned long)count);
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                              destinationKey:dstKey
+		                                                  collection:dstCollection];
+		XCTAssertTrue(count == 0, @"Expected=1, Found=%lu", (unsigned long)count);
+		
+		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
+		                                                   sourceKey:srcKey
+		                                                  collection:srcCollection
+		                                              destinationKey:dstKey
+		                                                  collection:dstCollection];
+		XCTAssertTrue(count == 0, @"Expected=1, Found=%lu", (unsigned long)count);
+	}];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

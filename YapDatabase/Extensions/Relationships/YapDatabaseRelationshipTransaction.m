@@ -469,7 +469,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (NSMutableArray *)findChangesMatchingName:(NSString *)name
                                   sourceKey:(NSString *)srcKey
                                  collection:(NSString *)srcCollection
-                                      rowid:(int64_t)srcRowid
+                                      rowid:(NSNumber *)srcRowid // <- may be nil if unknown
 {
 	if (srcKey == nil)
 		return [self findChangesMatchingName:name];
@@ -484,7 +484,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:@(srcRowid)];
+	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:srcRowid];
 	for (YapDatabaseRelationshipEdge *edge in changedProtocolEdges)
 	{
 		if (name && ![name isEqualToString:edge->name])
@@ -504,9 +504,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		for (YapDatabaseRelationshipEdge *edge in manualChangesMatchingName)
 		{
-			if ((edge->flags & YDB_FlagsHasSourceRowid))
+			if ((edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid)
+				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -551,12 +551,12 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		// Note: Zero is a valid rowid.
 		// So we use flags to properly mark whether a valid rowid has been set.
 		
-		if (!(edge->flags & YDB_FlagsHasSourceRowid))
+		if (!(edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 		{
 			// Shortcut:
 			// We already know the sourceRowid. It was given to us as a parameter.
 			
-			edge->sourceRowid = srcRowid;
+			edge->sourceRowid = srcRowid.unsignedLongLongValue;
 			edge->flags |= YDB_FlagsHasSourceRowid;
 		}
 		
@@ -585,7 +585,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (NSMutableArray *)findChangesMatchingName:(NSString *)name
                              destinationKey:(NSString *)dstKey
                                  collection:(NSString *)dstCollection
-                                      rowid:(int64_t)dstRowid
+                                      rowid:(NSNumber *)dstRowid // <- may be nil if unknown
 {
 	if (dstKey == nil)
 		return [self findChangesMatchingName:name];
@@ -616,9 +616,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			{
 				continue;
 			}
-			else if ((edge->flags & YDB_FlagsHasDestinationRowid))
+			else if ((edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid)
+				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -649,9 +649,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			{
 				continue;
 			}
-			else if ((edge->flags & YDB_FlagsHasDestinationRowid))
+			else if ((edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid)
+				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -710,12 +710,12 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			}
 		}
 		
-		if (!(edge->flags & YDB_FlagsHasDestinationRowid))
+		if (!(edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 		{
 			// Shortcut:
 			// We already know the sourceRowid. It was given to us as a parameter.
 			
-			edge->destinationRowid = dstRowid;
+			edge->destinationRowid = dstRowid.unsignedLongLongValue;
 			edge->flags |= YDB_FlagsHasDestinationRowid;
 		}
 	}
@@ -833,10 +833,10 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (NSMutableArray *)findChangesMatchingName:(NSString *)name
                                   sourceKey:(NSString *)srcKey
                                  collection:(NSString *)srcCollection
-                                      rowid:(int64_t)srcRowid
+                                      rowid:(NSNumber *)srcRowid // <- may be nil if unknown
                              destinationKey:(NSString *)dstKey
                                  collection:(NSString *)dstCollection
-                                      rowid:(int64_t)dstRowid
+                                      rowid:(NSNumber *)dstRowid // <- may be nil if unknown
 {
 	if (srcKey == nil)
 	{
@@ -863,7 +863,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:@(srcRowid)];
+	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:srcRowid];
 	for (YapDatabaseRelationshipEdge *edge in changedProtocolEdges)
 	{
 		if (name && ![name isEqualToString:edge->name])
@@ -875,9 +875,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		{
 			continue;
 		}
-		else if ((edge->flags & YDB_FlagsHasDestinationRowid))
+		else if ((edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 		{
-			if (edge->destinationRowid != dstRowid)
+			if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
 			{
 				continue;
 			}
@@ -903,9 +903,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		for (YapDatabaseRelationshipEdge *edge in manualChangesMatchingName)
 		{
-			if ((edge->flags & YDB_FlagsHasSourceRowid))
+			if ((edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid)
+				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -923,9 +923,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			{
 				continue;
 			}
-			else if ((edge->flags & YDB_FlagsHasDestinationRowid))
+			else if ((edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid)
+				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -970,21 +970,21 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		// Note: Zero is a valid rowid.
 		// So we use flags to properly mark whether a valid rowid has been set.
 		
-		if (!(edge->flags & YDB_FlagsHasSourceRowid))
+		if (!(edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 		{
 			// Shortcut:
 			// We already know the sourceRowid. It was given to us as a parameter.
 			
-			edge->sourceRowid = srcRowid;
+			edge->sourceRowid = srcRowid.unsignedLongLongValue;
 			edge->flags |= YDB_FlagsHasSourceRowid;
 		}
 		
-		if (!(edge->flags & YDB_FlagsHasDestinationRowid))
+		if (!(edge->flags & YDB_FlagsHasDestinationRowid) && dstRowid)
 		{
 			// Shortcut:
 			// We already know the sourceRowid. It was given to us as a parameter.
 			
-			edge->destinationRowid = dstRowid;
+			edge->destinationRowid = dstRowid.unsignedLongLongValue;
 			edge->flags |= YDB_FlagsHasDestinationRowid;
 		}
 	}
@@ -999,7 +999,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (NSMutableArray *)findChangesMatchingName:(NSString *)name
                                   sourceKey:(NSString *)srcKey
                                  collection:(NSString *)srcCollection
-                                      rowid:(int64_t)srcRowid
+                                      rowid:(NSNumber *)srcRowid // <- may be nil if unknown
                         destinationFilePath:(NSString *)dstFilePath
 {
 	if (srcCollection == nil)
@@ -1024,15 +1024,15 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Find matching protocol edges
 	
-	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:@(srcRowid)];
+	NSMutableArray *changedProtocolEdges = [relationshipConnection->protocolChanges objectForKey:srcRowid];
 	for (YapDatabaseRelationshipEdge *edge in changedProtocolEdges)
 	{
-		if (![edge->destinationFilePath isEqualToString:dstFilePath])
+		if (name && ![name isEqualToString:edge->name])
 		{
 			continue;
 		}
 		
-		if (name && ![name isEqualToString:edge->name])
+		if (![edge->destinationFilePath isEqualToString:dstFilePath])
 		{
 			continue;
 		}
@@ -1049,9 +1049,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		for (YapDatabaseRelationshipEdge *edge in manualChangesMatchingName)
 		{
-			if ((edge->flags & YDB_FlagsHasSourceRowid))
+			if ((edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid)
+				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
 				{
 					continue;
 				}
@@ -1101,12 +1101,12 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		// Note: Zero is a valid rowid.
 		// So we use flags to properly mark whether a valid rowid has been set.
 		
-		if (!(edge->flags & YDB_FlagsHasSourceRowid))
+		if (!(edge->flags & YDB_FlagsHasSourceRowid) && srcRowid)
 		{
 			// Shortcut:
 			// We already know the sourceRowid. It was given to us as a parameter.
 			
-			edge->sourceRowid = srcRowid;
+			edge->sourceRowid = srcRowid.unsignedLongLongValue;
 			edge->flags |= YDB_FlagsHasSourceRowid;
 		}
 		
@@ -3618,12 +3618,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		srcCollection = @"";
 	
 	int64_t srcRowid = 0;
-	BOOL found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
-	if (!found)
-	{
-		// The item doesn't exist in the database.
-		return;
-	}
+	BOOL hasSrcRowid = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
 	
 	BOOL stop = NO;
 	
@@ -3633,225 +3628,228 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	NSMutableArray *changedEdges = [self findChangesMatchingName:name
 	                                                   sourceKey:srcKey
 	                                                  collection:srcCollection
-	                                                       rowid:srcRowid];
-	
-	BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+	                                                       rowid:(hasSrcRowid ? @(srcRowid) : nil)];
 	
 	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
-	YapDatabaseString _name;
-	
-	if (name)
+	if (hasSrcRowid)
 	{
-		statement = [relationshipConnection enumerateForSrcNameStatement];
-		if (statement == NULL)
-			return;
+		BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 		
-		// SELECT "rowid", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
-		
-		int const bind_idx_src   = SQLITE_BIND_START + 0;
-		int const bind_idx_name  = SQLITE_BIND_START + 1;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-		
-		MakeYapDatabaseString(&_name, name);
-		sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
-	}
-	else
-	{
-		statement = [relationshipConnection enumerateForSrcStatement];
-		if (statement == NULL)
-			return;
-		
-		// SELECT "rowid", "name", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ?;
-		
-		int const bind_idx_src = SQLITE_BIND_START;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-	}
-	
-	YapDatabaseRelationshipFilePathDecryptor dstFilePathDecryptor =
-	  relationshipConnection->relationship->options.destinationFilePathDecryptor;
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		NSString *edgeName = nil;
-		int64_t edgeRowid;
-		int64_t dstRowid = 0;
-		NSString *dstFilePath = nil;
-		int rules;
-		BOOL manual;
+		sqlite3_stmt *statement;
+		YapDatabaseString _name;
 		
 		if (name)
 		{
+			statement = [relationshipConnection enumerateForSrcNameStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_dst    = SQLITE_COLUMN_START + 1;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 2;
-			int const column_idx_manual = SQLITE_COLUMN_START + 3;
+			int const bind_idx_src   = SQLITE_BIND_START + 0;
+			int const bind_idx_name  = SQLITE_BIND_START + 1;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
 			
-			int column_type = sqlite3_column_type(statement, column_idx_dst);
-			if (column_type == SQLITE_INTEGER)
-			{
-				dstRowid = sqlite3_column_int64(statement, column_idx_dst);
-			}
-			else if (column_type == SQLITE_TEXT)
-			{
-				const unsigned char *text = sqlite3_column_text(statement, column_idx_dst);
-				int textSize = sqlite3_column_bytes(statement, column_idx_dst);
-				
-				dstFilePath = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			}
-			else if (column_type == SQLITE_BLOB && dstFilePathDecryptor)
-			{
-				const void *blob = sqlite3_column_blob(statement, column_idx_dst);
-				int blobSize = sqlite3_column_bytes(statement, column_idx_dst);
-				
-				// Performance tuning:
-				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-				
-				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-				
-				dstFilePath = dstFilePathDecryptor(data);
-			}
-			
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			MakeYapDatabaseString(&_name, name);
+			sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
 		}
 		else
 		{
+			statement = [relationshipConnection enumerateForSrcStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "name", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_name   = SQLITE_COLUMN_START + 1;
-			int const column_idx_dst    = SQLITE_COLUMN_START + 2;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 3;
-			int const column_idx_manual = SQLITE_COLUMN_START + 4;
+			int const bind_idx_src = SQLITE_BIND_START;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
-			int textSize = sqlite3_column_bytes(statement, column_idx_name);
-			
-			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			int column_type = sqlite3_column_type(statement, column_idx_dst);
-			if (column_type == SQLITE_INTEGER)
-			{
-				dstRowid = sqlite3_column_int64(statement, column_idx_dst);
-			}
-			else if (column_type == SQLITE_TEXT)
-			{
-				text = sqlite3_column_text(statement, column_idx_dst);
-				textSize = sqlite3_column_bytes(statement, column_idx_dst);
-				
-				dstFilePath = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			}
-			else if (column_type == SQLITE_BLOB && dstFilePathDecryptor)
-			{
-				const void *blob = sqlite3_column_blob(statement, column_idx_dst);
-				int blobSize = sqlite3_column_bytes(statement, column_idx_dst);
-				
-				// Performance tuning:
-				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-				
-				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-				
-				dstFilePath = dstFilePathDecryptor(data);
-			}
-			
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
 		}
 		
-		YapDatabaseRelationshipEdge *edge = nil;
+		YapDatabaseRelationshipFilePathDecryptor dstFilePathDecryptor =
+		  relationshipConnection->relationship->options.destinationFilePathDecryptor;
 		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+		int status;
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+			NSString *edgeName = nil;
+			int64_t edgeRowid;
+			int64_t dstRowid = 0;
+			NSString *dstFilePath = nil;
+			int rules;
+			BOOL manual;
 			
-			BOOL srcMatches = YES; // We already checked this
-			BOOL dstMatches = EdgeMatchesDestination(changedEdge, dstRowid, dstFilePath);
-			
-			if (typeMatches && srcMatches && dstMatches)
+			if (name)
 			{
-				edge = changedEdge;
+				// SELECT "rowid", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "name" = ?;",
 				
-				[changedEdges removeObjectAtIndex:i];
-				break;
-			}
-			
-			i++;
-		}
-		
-		// Check to see if the edge is broken (one or more nodes have been deleted).
-		
-		BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)];
-		
-		if (!edgeBroken)
-		{
-			// If we don't have an updated version of the edge in memory (pending update on disk),
-			// then create an edge instance from the data.
-			
-			if (edge == nil)
-			{
-				if (!manual && hasProtocolChanges)
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_dst    = SQLITE_COLUMN_START + 1;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 2;
+				int const column_idx_manual = SQLITE_COLUMN_START + 3;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				int column_type = sqlite3_column_type(statement, column_idx_dst);
+				if (column_type == SQLITE_INTEGER)
 				{
-					// all protocol edges on disk with this srcRowid have been overriden
+					dstRowid = sqlite3_column_int64(statement, column_idx_dst);
+				}
+				else if (column_type == SQLITE_TEXT)
+				{
+					const unsigned char *text = sqlite3_column_text(statement, column_idx_dst);
+					int textSize = sqlite3_column_bytes(statement, column_idx_dst);
+					
+					dstFilePath = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				}
+				else if (column_type == SQLITE_BLOB && dstFilePathDecryptor)
+				{
+					const void *blob = sqlite3_column_blob(statement, column_idx_dst);
+					int blobSize = sqlite3_column_bytes(statement, column_idx_dst);
+					
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+					
+					NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+					
+					dstFilePath = dstFilePathDecryptor(data);
+				}
+				
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			}
+			else
+			{
+				// SELECT "rowid", "name", "dst", "rules", "manual" FROM "tableName" WHERE "src" = ?;
+				
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_name   = SQLITE_COLUMN_START + 1;
+				int const column_idx_dst    = SQLITE_COLUMN_START + 2;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 3;
+				int const column_idx_manual = SQLITE_COLUMN_START + 4;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
+				int textSize = sqlite3_column_bytes(statement, column_idx_name);
+				
+				edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				int column_type = sqlite3_column_type(statement, column_idx_dst);
+				if (column_type == SQLITE_INTEGER)
+				{
+					dstRowid = sqlite3_column_int64(statement, column_idx_dst);
+				}
+				else if (column_type == SQLITE_TEXT)
+				{
+					text = sqlite3_column_text(statement, column_idx_dst);
+					textSize = sqlite3_column_bytes(statement, column_idx_dst);
+					
+					dstFilePath = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				}
+				else if (column_type == SQLITE_BLOB && dstFilePathDecryptor)
+				{
+					const void *blob = sqlite3_column_blob(statement, column_idx_dst);
+					int blobSize = sqlite3_column_bytes(statement, column_idx_dst);
+					
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+					
+					NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+					
+					dstFilePath = dstFilePathDecryptor(data);
+				}
+				
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			}
+			
+			YapDatabaseRelationshipEdge *edge = nil;
+			
+			// Does the edge on disk have a corresponding edge in memory that overrides it?
+			
+			NSUInteger i = 0;
+			for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+			{
+				BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+				
+				BOOL srcMatches = YES; // We already checked this
+				BOOL dstMatches = EdgeMatchesDestination(changedEdge, dstRowid, dstFilePath);
+				
+				if (typeMatches && srcMatches && dstMatches)
+				{
+					edge = changedEdge;
+					
+					[changedEdges removeObjectAtIndex:i];
+					break;
+				}
+				
+				i++;
+			}
+			
+			// Check to see if the edge is broken (one or more nodes have been deleted).
+			
+			BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(dstRowid)];
+			
+			if (!edgeBroken)
+			{
+				// If we don't have an updated version of the edge in memory (pending update on disk),
+				// then create an edge instance from the data.
+				
+				if (edge == nil)
+				{
+					if (!manual && hasProtocolChanges)
+					{
+						// all protocol edges on disk with this srcRowid have been overriden
+						continue;
+					}
+					
+					edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+					                                                     name:name ? name : edgeName
+					                                                      src:srcRowid
+					                                                      dst:dstRowid
+					                                              dstFilePath:dstFilePath
+					                                                    rules:rules
+					                                                   manual:manual];
+					
+					edge->sourceKey = srcKey;
+					edge->sourceCollection = srcCollection;
+					
+					if (dstFilePath == nil)
+					{
+						YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
+						
+						edge->destinationKey = dst.key;
+						edge->destinationCollection = dst.collection;
+					}
+				}
+				else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+				{
+					// edge is marked for deletion
 					continue;
 				}
 				
-				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-				                                                     name:name ? name : edgeName
-				                                                      src:srcRowid
-				                                                      dst:dstRowid
-				                                              dstFilePath:dstFilePath
-				                                                    rules:rules
-				                                                   manual:manual];
-				
-				edge->sourceKey = srcKey;
-				edge->sourceCollection = srcCollection;
-				
-				if (dstFilePath == nil)
-				{
-					YapCollectionKey *dst = [databaseTransaction collectionKeyForRowid:dstRowid];
-					
-					edge->destinationKey = dst.key;
-					edge->destinationCollection = dst.collection;
-				}
+				block(edge, &stop);
+				if (stop) break;
 			}
-			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
-			{
-				// edge is marked for deletion
-				continue;
-			}
-			
-			block(edge, &stop);
-			if (stop) break;
 		}
-	}
-	
-	if (status != SQLITE_DONE && !stop)
-	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_reset(statement);
-	if (name) {
-		FreeYapDatabaseString(&_name);
-	}
-	
-	if (stop) return;
-	
+		
+		if (status != SQLITE_DONE && !stop)
+		{
+			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(statement);
+		if (name) {
+			FreeYapDatabaseString(&_name);
+		}
+		
+		if (stop) return;
+		
+	} // end if (hasSrcRowid)
+
 	// Any edges left sitting in the changedEdges array haven't been processed yet.
 	// So we need to enumerate them.
 	
@@ -3916,12 +3914,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		dstCollection = @"";
 	
 	int64_t dstRowid = 0;
-	BOOL found = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
-	if (!found)
-	{
-		// The item doesn't exist in the database.
-		return;
-	}
+	BOOL hasDstRowid = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
 	
 	BOOL stop = NO;
 	
@@ -3931,168 +3924,171 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	NSMutableArray *changedEdges = [self findChangesMatchingName:name
 	                                              destinationKey:dstKey
 	                                                  collection:dstCollection
-	                                                       rowid:dstRowid];
+	                                                       rowid:(hasDstRowid ? @(dstRowid) : nil)];
 	
 	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
-	YapDatabaseString _name;
-	
-	if (name)
+	if (hasDstRowid)
 	{
-		statement = [relationshipConnection enumerateForDstNameStatement];
-		if (statement == NULL)
-			return;
-		
-		// SELECT "rowid", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
-		
-		int const bind_idx_dst  = SQLITE_BIND_START + 0;
-		int const bind_idx_name = SQLITE_BIND_START + 1;
-		
-		sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
-		
-		MakeYapDatabaseString(&_name, name);
-		sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
-	}
-	else
-	{
-		statement = [relationshipConnection enumerateForDstStatement];
-		if (statement == NULL)
-			return;
-		
-		// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
-		
-		int const bind_idx_dst = SQLITE_BIND_START;
-		
-		sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
-	}
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		NSString *edgeName = nil;
-		int64_t edgeRowid;
-		int64_t srcRowid;
-		int rules;
-		BOOL manual;
+		sqlite3_stmt *statement;
+		YapDatabaseString _name;
 		
 		if (name)
 		{
+			statement = [relationshipConnection enumerateForDstNameStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_src    = SQLITE_COLUMN_START + 1;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 2;
-			int const column_idx_manual = SQLITE_COLUMN_START + 3;
+			int const bind_idx_dst  = SQLITE_BIND_START + 0;
+			int const bind_idx_name = SQLITE_BIND_START + 1;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			srcRowid = sqlite3_column_int64(statement, column_idx_src);
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
+			
+			MakeYapDatabaseString(&_name, name);
+			sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
 		}
 		else
 		{
+			statement = [relationshipConnection enumerateForDstStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_name   = SQLITE_COLUMN_START + 1;
-			int const column_idx_src    = SQLITE_COLUMN_START + 2;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 3;
-			int const column_idx_manual = SQLITE_COLUMN_START + 4;
+			int const bind_idx_dst = SQLITE_BIND_START;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
-			int textSize = sqlite3_column_bytes(statement, column_idx_name);
-			
-			srcRowid = sqlite3_column_int64(statement, column_idx_src);
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
-			
-			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
 		}
 		
-		YapDatabaseRelationshipEdge *edge = nil;
-		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+		int status;
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+			NSString *edgeName = nil;
+			int64_t edgeRowid;
+			int64_t srcRowid;
+			int rules;
+			BOOL manual;
 			
-			BOOL srcMatches = EdgeMatchesSource(changedEdge, srcRowid);
-			BOOL dstMatches = YES; // We already checked this
-			
-			if (typeMatches && srcMatches && dstMatches)
+			if (name)
 			{
-				edge = changedEdge;
+				// SELECT "rowid", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ? AND "name" = ?;
 				
-				[changedEdges removeObjectAtIndex:i];
-				break;
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_src    = SQLITE_COLUMN_START + 1;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 2;
+				int const column_idx_manual = SQLITE_COLUMN_START + 3;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				srcRowid = sqlite3_column_int64(statement, column_idx_src);
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			}
+			else
+			{
+				// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
+				
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_name   = SQLITE_COLUMN_START + 1;
+				int const column_idx_src    = SQLITE_COLUMN_START + 2;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 3;
+				int const column_idx_manual = SQLITE_COLUMN_START + 4;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
+				int textSize = sqlite3_column_bytes(statement, column_idx_name);
+				
+				srcRowid = sqlite3_column_int64(statement, column_idx_src);
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+				
+				edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			}
 			
-			i++;
-		}
-		
-		// Check to see if the edge is broken (one or more nodes have been deleted).
-		
-		BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)];
-		
-		if (!edgeBroken)
-		{
-			// If we don't have an updated version of the edge in memory (pending update on disk),
-			// then create an edge instance from the data.
+			YapDatabaseRelationshipEdge *edge = nil;
 			
-			if (edge == nil)
+			// Does the edge on disk have a corresponding edge in memory that overrides it?
+			
+			NSUInteger i = 0;
+			for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
 			{
-				BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+				BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
 				
-				if (!manual && hasProtocolChanges)
+				BOOL srcMatches = EdgeMatchesSource(changedEdge, srcRowid);
+				BOOL dstMatches = YES; // We already checked this
+				
+				if (typeMatches && srcMatches && dstMatches)
 				{
-					// all protocol edges on disk with this srcRowid have been overriden
+					edge = changedEdge;
+					
+					[changedEdges removeObjectAtIndex:i];
+					break;
+				}
+				
+				i++;
+			}
+			
+			// Check to see if the edge is broken (one or more nodes have been deleted).
+			
+			BOOL edgeBroken = [relationshipConnection->deletedInfo ydb_containsKey:@(srcRowid)];
+			
+			if (!edgeBroken)
+			{
+				// If we don't have an updated version of the edge in memory (pending update on disk),
+				// then create an edge instance from the data.
+				
+				if (edge == nil)
+				{
+					BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+					
+					if (!manual && hasProtocolChanges)
+					{
+						// all protocol edges on disk with this srcRowid have been overriden
+						continue;
+					}
+					
+					edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+				                                                         name:name ? name : edgeName
+				                                                          src:srcRowid
+				                                                          dst:dstRowid
+					                                              dstFilePath:nil
+				                                                        rules:rules
+					                                                   manual:manual];
+					
+					YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
+					
+					edge->sourceKey = src.key;
+					edge->sourceCollection = src.collection;
+					
+					edge->destinationKey = dstKey;
+					edge->destinationCollection = dstCollection;
+				}
+				else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+				{
+					// edge is marked for deletion
 					continue;
 				}
 				
-				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                         name:name ? name : edgeName
-			                                                          src:srcRowid
-			                                                          dst:dstRowid
-				                                              dstFilePath:nil
-			                                                        rules:rules
-				                                                   manual:manual];
-				
-				YapCollectionKey *src = [databaseTransaction collectionKeyForRowid:srcRowid];
-				
-				edge->sourceKey = src.key;
-				edge->sourceCollection = src.collection;
-				
-				edge->destinationKey = dstKey;
-				edge->destinationCollection = dstCollection;
+				block(edge, &stop);
+				if (stop) break;
 			}
-			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
-			{
-				// edge is marked for deletion
-				continue;
-			}
-			
-			block(edge, &stop);
-			if (stop) break;
 		}
-	}
-	
-	if (status != SQLITE_DONE && !stop)
-	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_reset(statement);
-	if (name) {
-		FreeYapDatabaseString(&_name);
-	}
-	
-	if (stop) return;
+		
+		if (status != SQLITE_DONE && !stop)
+		{
+			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(statement);
+		if (name) {
+			FreeYapDatabaseString(&_name);
+		}
+		
+		if (stop) return;
+		
+	} // end if (hasDstRowid)
 	
 	// Any edges left sitting in the changedEdges array haven't been processed yet.
 	// So we need to enumerate them.
@@ -4448,23 +4444,11 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (dstCollection == nil)
 		dstCollection = @"";
 	
-	BOOL found;
-	
 	int64_t srcRowid = 0;
-	found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
-	if (!found)
-	{
-		// The source node doesn't exist in the database.
-		return;
-	}
+	BOOL hasSrcRowid = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
 	
 	int64_t dstRowid = 0;
-	found = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
-	if (!found)
-	{
-		// The destination node doesn't exist in the database.
-		return;
-	}
+	BOOL hasDstRowid = [databaseTransaction getRowid:&dstRowid forKey:dstKey inCollection:dstCollection];
 	
 	BOOL stop = NO;
 	
@@ -4474,158 +4458,161 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	NSMutableArray *changedEdges = [self findChangesMatchingName:name
 	                                                   sourceKey:srcKey
 	                                                  collection:srcCollection
-	                                                       rowid:srcRowid
+	                                                       rowid:(hasSrcRowid ? @(srcRowid) : nil)
 	                                              destinationKey:dstKey
 	                                                  collection:dstCollection
-	                                                       rowid:dstRowid];
-	
-	BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
+	                                                       rowid:(hasDstRowid ? @(dstRowid) : nil)];
 	
 	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
-	YapDatabaseString _name;
-	
-	if (name)
+	if (hasSrcRowid && hasDstRowid)
 	{
-		statement = [relationshipConnection enumerateForSrcDstNameStatement];
-		if (statement == NULL)
-			return;
+		sqlite3_stmt *statement;
+		YapDatabaseString _name;
 		
-		// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
-		
-		int const bind_idx_src  = SQLITE_BIND_START + 0;
-		int const bind_idx_dst  = SQLITE_BIND_START + 1;
-		int const bind_idx_name = SQLITE_BIND_START + 2;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-		sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
-		
-		MakeYapDatabaseString(&_name, name);
-		sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
-	}
-	else
-	{
-		statement = [relationshipConnection enumerateForSrcDstStatement];
-		if (statement == NULL)
-			return;
-		
-		// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
-		
-		int const bind_idx_src = SQLITE_BIND_START + 0;
-		int const bind_idx_dst = SQLITE_BIND_START + 1;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-		sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
-	}
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		NSString *edgeName = nil;
-		int64_t edgeRowid;
-		int rules;
-		BOOL manual;
+		BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 		
 		if (name)
 		{
+			statement = [relationshipConnection enumerateForSrcDstNameStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 1;
-			int const column_idx_manual = SQLITE_COLUMN_START + 2;
+			int const bind_idx_src  = SQLITE_BIND_START + 0;
+			int const bind_idx_dst  = SQLITE_BIND_START + 1;
+			int const bind_idx_name = SQLITE_BIND_START + 2;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
+			sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
+			
+			MakeYapDatabaseString(&_name, name);
+			sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
 		}
 		else
 		{
+			statement = [relationshipConnection enumerateForSrcDstStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_name   = SQLITE_COLUMN_START + 1;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 2;
-			int const column_idx_manual = SQLITE_COLUMN_START + 3;
+			int const bind_idx_src = SQLITE_BIND_START + 0;
+			int const bind_idx_dst = SQLITE_BIND_START + 1;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
-			int textSize = sqlite3_column_bytes(statement, column_idx_name);
-			
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
-			
-			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
+			sqlite3_bind_int64(statement, bind_idx_dst, dstRowid);
 		}
 		
-		YapDatabaseRelationshipEdge *edge = nil;
-		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+		int status;
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+			NSString *edgeName = nil;
+			int64_t edgeRowid;
+			int rules;
+			BOOL manual;
 			
-			BOOL srcMatches = YES; // We already checked this
-			BOOL dstMatches = YES; // We already checked this
-			
-			if (typeMatches && srcMatches && dstMatches)
+			if (name)
 			{
-				edge = changedEdge;
+				// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
 				
-				[changedEdges removeObjectAtIndex:i];
-				break;
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 1;
+				int const column_idx_manual = SQLITE_COLUMN_START + 2;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			}
+			else
+			{
+				// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
+				
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_name   = SQLITE_COLUMN_START + 1;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 2;
+				int const column_idx_manual = SQLITE_COLUMN_START + 3;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
+				int textSize = sqlite3_column_bytes(statement, column_idx_name);
+				
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+				
+				edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
 			}
 			
-			i++;
-		}
-		
-		if (edge == nil)
-		{
-			if (!manual && hasProtocolChanges)
+			YapDatabaseRelationshipEdge *edge = nil;
+			
+			// Does the edge on disk have a corresponding edge in memory that overrides it?
+			
+			NSUInteger i = 0;
+			for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
 			{
-				// all protocol edges on disk with this srcRowid have been overriden
+				BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+				
+				BOOL srcMatches = YES; // We already checked this
+				BOOL dstMatches = YES; // We already checked this
+				
+				if (typeMatches && srcMatches && dstMatches)
+				{
+					edge = changedEdge;
+					
+					[changedEdges removeObjectAtIndex:i];
+					break;
+				}
+				
+				i++;
+			}
+			
+			if (edge == nil)
+			{
+				if (!manual && hasProtocolChanges)
+				{
+					// all protocol edges on disk with this srcRowid have been overriden
+					continue;
+				}
+				
+				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+				                                                name:name ? name : edgeName
+				                                                 src:srcRowid
+				                                                 dst:dstRowid
+				                                         dstFilePath:nil
+				                                               rules:rules
+				                                              manual:manual];
+				
+				edge->sourceKey = srcKey;
+				edge->sourceCollection = srcCollection;
+				
+				edge->destinationKey = dstKey;
+				edge->destinationCollection = dstCollection;
+			}
+			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge is marked for deletion
 				continue;
 			}
 			
-			edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                name:name ? name : edgeName
-			                                                 src:srcRowid
-			                                                 dst:dstRowid
-			                                         dstFilePath:nil
-			                                               rules:rules
-			                                              manual:manual];
-			
-			edge->sourceKey = srcKey;
-			edge->sourceCollection = srcCollection;
-			
-			edge->destinationKey = dstKey;
-			edge->destinationCollection = dstCollection;
-		}
-		else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
-		{
-			// edge is marked for deletion
-			continue;
+			block(edge, &stop);
+			if (stop) break;
 		}
 		
-		block(edge, &stop);
-		if (stop) break;
-	}
+		if (status != SQLITE_DONE && !stop)
+		{
+			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(statement);
+		if (name) {
+			FreeYapDatabaseString(&_name);
+		}
+		
+		if (stop) return;
 	
-	if (status != SQLITE_DONE && !stop)
-	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_reset(statement);
-	if (name) {
-		FreeYapDatabaseString(&_name);
-	}
-	
-	if (stop) return;
+	} // end if (hasSrcRowid && hasDstRowid)
 	
 	// Any edges left sitting in the changedEdges array haven't been processed yet.
 	// So we need to enumerate them.
@@ -4695,15 +4682,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	if (srcCollection == nil)
 		srcCollection = @"";
 	
-	BOOL found;
-	
 	int64_t srcRowid = 0;
-	found = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
-	if (!found)
-	{
-		// The source node doesn't exist in the database.
-		return;
-	}
+	BOOL hasSrcRowid = [databaseTransaction getRowid:&srcRowid forKey:srcKey inCollection:srcCollection];
 	
 	BOOL stop = NO;
 	
@@ -4713,187 +4693,190 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	NSMutableArray *changedEdges = [self findChangesMatchingName:name
 	                                                   sourceKey:srcKey
 	                                                  collection:srcCollection
-	                                                       rowid:srcRowid
+	                                                       rowid:(hasSrcRowid ? @(srcRowid) : nil)
 	                                         destinationFilePath:dstFilePath];
 	
-	BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
-	
 	// Enumerate the items already in the database
-	
-	sqlite3_stmt *statement;
-	YapDatabaseString _name;
-	YapDatabaseString _dstFilePath;
-	__attribute__((objc_precise_lifetime)) NSData *dstBlob = nil;
-	
-	YapDatabaseRelationshipFilePathEncryptor dstFilePathEncryptor =
-	  relationshipConnection->relationship->options.destinationFilePathEncryptor;
-	
-	if (name)
+	if (hasSrcRowid)
 	{
-		statement = [relationshipConnection enumerateForSrcDstNameStatement];
-		if (statement == NULL)
-			return;
+		sqlite3_stmt *statement;
+		YapDatabaseString _name;
+		YapDatabaseString _dstFilePath;
+		__attribute__((objc_precise_lifetime)) NSData *dstBlob = nil;
 		
-		// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
+		YapDatabaseRelationshipFilePathEncryptor dstFilePathEncryptor =
+		  relationshipConnection->relationship->options.destinationFilePathEncryptor;
 		
-		int const bind_idx_src  = SQLITE_BIND_START + 0;
-		int const bind_idx_dst  = SQLITE_BIND_START + 1;
-		int const bind_idx_name = SQLITE_BIND_START + 2;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-		
-		if (dstFilePathEncryptor) {
-			dstBlob = dstFilePathEncryptor(dstFilePath);
-		}
-		
-		if (dstBlob)
-		{
-			sqlite3_bind_blob(statement, bind_idx_dst, dstBlob.bytes, (int)dstBlob.length, SQLITE_STATIC);
-		}
-		else
-		{
-			MakeYapDatabaseString(&_dstFilePath, dstFilePath);
-			sqlite3_bind_text(statement, bind_idx_dst, _dstFilePath.str, _dstFilePath.length, SQLITE_STATIC);
-		}
-		
-		MakeYapDatabaseString(&_name, name);
-		sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
-	}
-	else
-	{
-		statement = [relationshipConnection enumerateForSrcDstStatement];
-		if (statement == NULL)
-			return;
-		
-		// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
-		
-		int const bind_idx_src = SQLITE_BIND_START + 0;
-		int const bind_idx_dst = SQLITE_BIND_START + 1;
-		
-		sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
-		
-		if (dstFilePathEncryptor) {
-			dstBlob = dstFilePathEncryptor(dstFilePath);
-		}
-		
-		if (dstBlob)
-		{
-			sqlite3_bind_blob(statement, bind_idx_dst, dstBlob.bytes, (int)dstBlob.length, SQLITE_STATIC);
-		}
-		else
-		{
-			MakeYapDatabaseString(&_dstFilePath, dstFilePath);
-			sqlite3_bind_text(statement, bind_idx_dst, _dstFilePath.str, _dstFilePath.length, SQLITE_STATIC);
-		}
-	}
-	
-	int status;
-	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-	{
-		NSString *edgeName = nil;
-		int64_t edgeRowid;
-		int rules;
-		BOOL manual;
+		BOOL hasProtocolChanges = [relationshipConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 		
 		if (name)
 		{
+			statement = [relationshipConnection enumerateForSrcDstNameStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 1;
-			int const column_idx_manual = SQLITE_COLUMN_START + 2;
+			int const bind_idx_src  = SQLITE_BIND_START + 0;
+			int const bind_idx_dst  = SQLITE_BIND_START + 1;
+			int const bind_idx_name = SQLITE_BIND_START + 2;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
+			
+			if (dstFilePathEncryptor) {
+				dstBlob = dstFilePathEncryptor(dstFilePath);
+			}
+			
+			if (dstBlob)
+			{
+				sqlite3_bind_blob(statement, bind_idx_dst, dstBlob.bytes, (int)dstBlob.length, SQLITE_STATIC);
+			}
+			else
+			{
+				MakeYapDatabaseString(&_dstFilePath, dstFilePath);
+				sqlite3_bind_text(statement, bind_idx_dst, _dstFilePath.str, _dstFilePath.length, SQLITE_STATIC);
+			}
+			
+			MakeYapDatabaseString(&_name, name);
+			sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);
 		}
 		else
 		{
+			statement = [relationshipConnection enumerateForSrcDstStatement];
+			if (statement == NULL)
+				return;
+			
 			// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
 			
-			int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-			int const column_idx_name   = SQLITE_COLUMN_START + 1;
-			int const column_idx_rules  = SQLITE_COLUMN_START + 2;
-			int const column_idx_manual = SQLITE_COLUMN_START + 3;
+			int const bind_idx_src = SQLITE_BIND_START + 0;
+			int const bind_idx_dst = SQLITE_BIND_START + 1;
 			
-			edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+			sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
 			
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
-			int textSize = sqlite3_column_bytes(statement, column_idx_name);
-			
-			rules = sqlite3_column_int(statement, column_idx_rules);
-			manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
-			
-			edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-		}
-		
-		YapDatabaseRelationshipEdge *edge = nil;
-		
-		// Does the edge on disk have a corresponding edge in memory that overrides it?
-		
-		NSUInteger i = 0;
-		for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
-		{
-			BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
-			
-			BOOL srcMatches = YES; // We already checked this
-			BOOL dstMatches = YES; // We already checked this
-			
-			if (typeMatches && srcMatches && dstMatches)
-			{
-				edge = changedEdge;
-				
-				[changedEdges removeObjectAtIndex:i];
-				break;
+			if (dstFilePathEncryptor) {
+				dstBlob = dstFilePathEncryptor(dstFilePath);
 			}
 			
-			i++;
+			if (dstBlob)
+			{
+				sqlite3_bind_blob(statement, bind_idx_dst, dstBlob.bytes, (int)dstBlob.length, SQLITE_STATIC);
+			}
+			else
+			{
+				MakeYapDatabaseString(&_dstFilePath, dstFilePath);
+				sqlite3_bind_text(statement, bind_idx_dst, _dstFilePath.str, _dstFilePath.length, SQLITE_STATIC);
+			}
 		}
 		
-		if (edge == nil)
+		int status;
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 		{
-			if (!manual && hasProtocolChanges)
+			NSString *edgeName = nil;
+			int64_t edgeRowid;
+			int rules;
+			BOOL manual;
+			
+			if (name)
 			{
-				// all protocol edges on disk with this srcRowid have been overriden
+				// SELECT "rowid", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ? AND "name" = ?;
+				
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 1;
+				int const column_idx_manual = SQLITE_COLUMN_START + 2;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+			}
+			else
+			{
+				// SELECT "rowid", "name", "rules", "manual" FROM "tableName" WHERE "src" = ? AND "dst" = ?;
+				
+				int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
+				int const column_idx_name   = SQLITE_COLUMN_START + 1;
+				int const column_idx_rules  = SQLITE_COLUMN_START + 2;
+				int const column_idx_manual = SQLITE_COLUMN_START + 3;
+				
+				edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_name);
+				int textSize = sqlite3_column_bytes(statement, column_idx_name);
+				
+				rules = sqlite3_column_int(statement, column_idx_rules);
+				manual = (BOOL)sqlite3_column_int(statement, column_idx_manual);
+				
+				edgeName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+			}
+			
+			YapDatabaseRelationshipEdge *edge = nil;
+			
+			// Does the edge on disk have a corresponding edge in memory that overrides it?
+			
+			NSUInteger i = 0;
+			for (YapDatabaseRelationshipEdge *changedEdge in changedEdges)
+			{
+				BOOL typeMatches = EdgeMatchesType(changedEdge, manual);
+				
+				BOOL srcMatches = YES; // We already checked this
+				BOOL dstMatches = YES; // We already checked this
+				
+				if (typeMatches && srcMatches && dstMatches)
+				{
+					edge = changedEdge;
+					
+					[changedEdges removeObjectAtIndex:i];
+					break;
+				}
+				
+				i++;
+			}
+			
+			if (edge == nil)
+			{
+				if (!manual && hasProtocolChanges)
+				{
+					// all protocol edges on disk with this srcRowid have been overriden
+					continue;
+				}
+				
+				edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
+				                                                     name:name ? name : edgeName
+				                                                      src:srcRowid
+				                                                      dst:0
+				                                              dstFilePath:dstFilePath
+				                                                    rules:rules
+				                                                   manual:manual];
+				
+				edge->sourceKey = srcKey;
+				edge->sourceCollection = srcCollection;
+			}
+			else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
+			{
+				// edge is marked for deletion
 				continue;
 			}
 			
-			edge = [[YapDatabaseRelationshipEdge alloc] initWithRowid:edgeRowid
-			                                                     name:name ? name : edgeName
-			                                                      src:srcRowid
-			                                                      dst:0
-			                                              dstFilePath:dstFilePath
-			                                                    rules:rules
-			                                                   manual:manual];
-			
-			edge->sourceKey = srcKey;
-			edge->sourceCollection = srcCollection;
-		}
-		else if (edge->isManualEdge && edge->edgeAction == YDB_EdgeActionDelete)
-		{
-			// edge is marked for deletion
-			continue;
+			block(edge, &stop);
+			if (stop) break;
 		}
 		
-		block(edge, &stop);
-		if (stop) break;
-	}
+		if (status != SQLITE_DONE && !stop)
+		{
+			YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+			            status, sqlite3_errmsg(databaseTransaction->connection->db));
+		}
+		
+		sqlite3_reset(statement);
+		if (name) {
+			FreeYapDatabaseString(&_name);
+		}
+		if (!dstBlob) {
+			FreeYapDatabaseString(&_dstFilePath);
+		}
+		
+		if (stop) return;
 	
-	if (status != SQLITE_DONE && !stop)
-	{
-		YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_reset(statement);
-	if (name) {
-		FreeYapDatabaseString(&_name);
-	}
-	if (!dstBlob) {
-		FreeYapDatabaseString(&_dstFilePath);
-	}
-	
-	if (stop) return;
+	} // end if (hasSrcRowid)
 	
 	// Any edges left sitting in the changedEdges array haven't been processed yet.
 	// So we need to enumerate them.
