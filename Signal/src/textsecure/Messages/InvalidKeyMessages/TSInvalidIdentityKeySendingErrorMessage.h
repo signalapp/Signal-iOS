@@ -21,4 +21,6 @@
                                    preKeyBundle:(PreKeyBundle*)preKeyBundle
                                 withTransaction:(YapDatabaseReadWriteTransaction*)transaction;
 
+- (NSString*)recipientId;
+
 @end

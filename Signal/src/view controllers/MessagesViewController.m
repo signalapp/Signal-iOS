@@ -1101,7 +1101,16 @@ typedef enum : NSUInteger {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage*)message;
         NSString *newKeyFingerprint = [errorMessage newIdentityKey];
-        NSString *messageString     = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), _thread.name, newKeyFingerprint];
+        
+        NSString *keyOwner;
+        if ([message isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+            TSInvalidIdentityKeySendingErrorMessage *m = (TSInvalidIdentityKeySendingErrorMessage*)message;
+            keyOwner = [[[Environment getCurrent] contactsManager] nameStringForPhoneIdentifier:m.recipientId];
+        } else {
+            keyOwner = [self.thread name];
+        }
+        
+        NSString *messageString     = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
         NSArray  *actions           = @[NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""), NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")];
         
         [self dismissKeyBoard];
