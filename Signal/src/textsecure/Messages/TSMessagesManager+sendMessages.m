@@ -136,10 +136,28 @@ dispatch_queue_t sendingQueue() {
                         }];
                         break;
                     }
-                    case 409:
+                    case 409:{
                         // Mismatched devices
-                        DDLogError(@"Missing some devices");
+                        DDLogWarn(@"Mismatch Devices.");
+                        
+                        NSError *e;
+                        NSDictionary *serializedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                                           options:0
+                                                                                             error:&e];
+                        
+                        if (e) {
+                            DDLogError(@"Failed to serialize response of mismatched devices: %@", e.description);
+                        } else {
+                            [self handleMismatchedDevices:serializedResponse
+                                                recipient:recipient];
+                        }
+                        
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
+                        });
+                        
                         break;
+                    }
                     case 410:{
                         // staledevices
                         DDLogWarn(@"Stale devices");
@@ -166,6 +184,27 @@ dispatch_queue_t sendingQueue() {
     } else{
         [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
     }
+}
+
+- (void)handleMismatchedDevices:(NSDictionary*)dictionary recipient:(TSRecipient*)recipient {
+    NSArray *extraDevices   = [dictionary objectForKey:@"extraDevices"];
+    NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
+    
+    if (extraDevices && [extraDevices count] > 0) {
+        for (NSNumber *extraDeviceId in extraDevices) {
+            [[TSStorageManager sharedManager] deleteSessionForContact:recipient.uniqueId deviceId:[extraDeviceId intValue]];
+        }
+        
+        [recipient removeDevices:[NSSet setWithArray:extraDevices]];
+    }
+    
+    if (missingDevices && [missingDevices count] > 0) {
+        [recipient addDevices:[NSSet setWithArray:missingDevices]];
+    }
+    
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [recipient saveWithTransaction:transaction];
+    }];
 }
 
 - (void)handleMessageSent:(TSOutgoingMessage*)message {
