@@ -6,25 +6,22 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachmentAdapter.h"
+#import "TSPhotoAdapter.h"
 
 #import "UIDevice+TSHardwareVersion.h"
 #import "JSQMessagesMediaViewBubbleImageMasker.h"
 
-@interface TSAttachmentAdapter ()
-
-@property UIImage *image;
+@interface TSPhotoAdapter ()
 
 @property (strong, nonatomic) UIImageView *cachedImageView;
 @end
 
-@implementation TSAttachmentAdapter
+@implementation TSPhotoAdapter
 
 - (instancetype)initWithAttachment:(TSAttachmentStream*)attachment{
-    self = [super init];
+    self = [super initWithImage:attachment.image];
     
     if (self) {
-        _image           = attachment.image;
         _cachedImageView = nil;
         _attachmentId    = attachment.uniqueId;
         
@@ -34,7 +31,7 @@
 
 - (void)dealloc
 {
-    _image = nil;
+    self.image = nil;
     _cachedImageView = nil;
 }
 
@@ -67,7 +64,7 @@
 
 - (CGSize)mediaViewDisplaySize
 {
-    return [self getBubbleSizeForImage:_image];
+    return [self getBubbleSizeForImage:self.image];
 }
 
 -(BOOL)isImage

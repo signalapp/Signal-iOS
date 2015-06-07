@@ -352,7 +352,7 @@
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
-		B6A3EB4B1A423B3800B2236B /* TSAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */; };
+		B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */; };
 		B6A5D05C1A7827ED0043D837 /* TSAvailablePreKeysCountRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A5D05B1A7827ED0043D837 /* TSAvailablePreKeysCountRequest.m */; };
 		B6A5D0631A7850180043D837 /* TSCurrentSignedPreKeyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A5D0621A7850180043D837 /* TSCurrentSignedPreKeyRequest.m */; };
 		B6AE33BD1A1EB121003DF39D /* TSGroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE33BC1A1EB121003DF39D /* TSGroupModel.m */; };
@@ -989,8 +989,8 @@
 		B69C2D1A1AA5447600A640C2 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = translations/ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D1B1AA5448300A640C2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = translations/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		B6A3EB491A423B3800B2236B /* TSAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentAdapter.h; sourceTree = "<group>"; };
-		B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentAdapter.m; sourceTree = "<group>"; };
+		B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPhotoAdapter.h; sourceTree = "<group>"; };
+		B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPhotoAdapter.m; sourceTree = "<group>"; };
 		B6A5D05A1A7827ED0043D837 /* TSAvailablePreKeysCountRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAvailablePreKeysCountRequest.h; sourceTree = "<group>"; };
 		B6A5D05B1A7827ED0043D837 /* TSAvailablePreKeysCountRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAvailablePreKeysCountRequest.m; sourceTree = "<group>"; };
 		B6A5D0611A7850180043D837 /* TSCurrentSignedPreKeyRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSCurrentSignedPreKeyRequest.h; sourceTree = "<group>"; };
@@ -2099,8 +2099,8 @@
 			children = (
 				A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */,
 				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
-				B6A3EB491A423B3800B2236B /* TSAttachmentAdapter.h */,
-				B6A3EB4A1A423B3800B2236B /* TSAttachmentAdapter.m */,
+				B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */,
+				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
 				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
 			);
@@ -3035,7 +3035,7 @@
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
 				B6B096691A1D25ED008BFAA6 /* TSThread.m in Sources */,
 				B6B096641A1D25ED008BFAA6 /* TSContactThread.m in Sources */,
-				B6A3EB4B1A423B3800B2236B /* TSAttachmentAdapter.m in Sources */,
+				B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
 				76EB062818170B33006006FC /* BadArgument.m in Sources */,

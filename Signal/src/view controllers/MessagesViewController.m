@@ -47,7 +47,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
-#import "TSAttachmentAdapter.h"
+#import "TSPhotoAdapter.h"
 #import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
 
@@ -655,7 +655,7 @@ typedef enum : NSUInteger {
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor ows_blackColor];
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
-                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
     
     return cell;
@@ -839,8 +839,8 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                if([[messageItem media] isKindOfClass:[TSAttachmentAdapter class]]) {
-                    TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
+                if([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
+                    TSPhotoAdapter* messageMedia = (TSPhotoAdapter*)[messageItem media];
                     
                     if ([messageMedia isImage]) {
                         tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
