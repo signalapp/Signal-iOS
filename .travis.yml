@@ -1,5 +1,6 @@
 language: objective-c
-xcode_sdk: iphonesimulator8.1
+osx_image: beta-xcode6.3
+xcode_sdk: iphonesimulator8.3
 install: true
 xcode_workspace: Signal.xcworkspace
 xcode_scheme: Signal
