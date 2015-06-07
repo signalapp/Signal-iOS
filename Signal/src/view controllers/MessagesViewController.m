@@ -92,6 +92,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *incomingBubbleImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage  *currentlyOutgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingMessageFailedImageData;
 @property (nonatomic, strong) NSTimer *audioPlayerPoller;
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
@@ -429,10 +430,11 @@ typedef enum : NSUInteger {
 -(void)initializeBubbles
 {
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
+    self.outgoingBubbleImageData          = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
+    self.incomingBubbleImageData          = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    self.currentlyOutgoingBubbleImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
     
-    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
-    self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
-    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+    self.outgoingMessageFailedImageData   = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor grayColor]];
 }
 
 -(void)initializeCollectionViewLayout
@@ -581,10 +583,14 @@ typedef enum : NSUInteger {
     id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
     
     if ([message.senderId isEqualToString:self.senderId]) {
-        if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
-            return self.outgoingMessageFailedImageData;
+        switch (message.messageState) {
+            case TSOutgoingMessageStateUnsent:
+                return self.outgoingMessageFailedImageData;
+            case TSOutgoingMessageStateAttemptingOut:
+                return self.currentlyOutgoingBubbleImageData;
+            default:
+                return self.outgoingBubbleImageData;
         }
-        return self.outgoingBubbleImageData;
     }
     
     return self.incomingBubbleImageData;
@@ -709,12 +715,17 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+    
+    // If message failed, say that message should be tapped to retry;
+    if (currentMessage.messageType == TSOutgoingMessageAdapter
+        && currentMessage.messageState == TSOutgoingMessageStateUnsent) {
+        return YES;
+    }
+    
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
-    }
-    else {
+    } else {
         if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1) {
             return [self isMessageOutgoingAndDelivered:currentMessage];
         }
@@ -749,25 +760,31 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
     TSMessageAdapter *msg = [self messageAtIndexPath:indexPath];
+    NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+    textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
+    
     if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
+        if (msg.messageType == TSOutgoingMessageAdapter
+            && msg.messageState == TSOutgoingMessageStateUnsent) {
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
+            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+            return attrStr;
+        }
+        
         if([self.thread isKindOfClass:[TSGroupThread class]]) {
-            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
             NSString *name = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:msg.senderId];
             name = name ? name : msg.senderId;
-            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             
-            return (NSAttributedString*)attrStr;
+            return attrStr;
         }
         else {
             _lastDeliveredMessageIndexPath = indexPath;
-            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
-            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             
-            return (NSAttributedString*)attrStr;
+            return attrStr;
         }
     }
     return nil;
