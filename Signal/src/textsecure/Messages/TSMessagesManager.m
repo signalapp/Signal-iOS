@@ -491,11 +491,11 @@
                         sender = message.authorId;
                     }
                     
-                    NSString *threadName   = [NSString stringWithFormat:@"\"%@\"", name];
-                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), sender, threadName, messageDescription];
+                    notification.alertTitle = name;
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), name, sender, messageDescription];
                 } else {
                     notification.alertTitle = name;
-                    notification.alertBody = messageDescription;
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_FROM_DETAILED", nil), name, messageDescription];
                 }
                 break;
             case NotificationNameNoPreview:{
@@ -505,10 +505,10 @@
                       sender = message.authorId;
                     }
                     notification.alertTitle = [NSString stringWithFormat:@"%@", name];
-                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), sender];
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name, sender];
                 } else {
                     notification.alertTitle = [NSString stringWithFormat:@"%@", name];
-                    notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_FROM",nil), name];
                 }
                 break;
             }
