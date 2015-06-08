@@ -135,11 +135,17 @@
 -(CallController*) curCallController {
     return currentCallControllerObservable.currentValue;
 }
--(void) answerCall {
+
+-(void)answerCall {
     [[self curCallController] acceptCall];
 }
--(void) hangupOrDenyCall {
+
+- (void)hangupOrDenyCall {
     [[self curCallController] hangupOrDenyCall];
+}
+
+- (void)backgroundTimeExpired {
+    [[self curCallController] backgroundTimeExpired];
 }
 
 -(BOOL) toggleMute{

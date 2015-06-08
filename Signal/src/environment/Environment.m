@@ -7,6 +7,7 @@
 #import "HostNameEndPoint.h"
 #import "RecentCallManager.h"
 #import "ContactsManager.h"
+#import "MessagesViewController.h"
 #import "PreferencesUtil.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
@@ -197,6 +198,17 @@ phoneDirectoryManager;
     if ([thread isGroupThread]) {
         [self messageGroup:(TSGroupThread*)thread];
     } else {
+        Environment *env             = [self getCurrent];
+        SignalsViewController *vc    = env.signalsViewController;
+        UIViewController      *topvc = vc.navigationController.topViewController;
+        
+        if ([topvc isKindOfClass:[MessagesViewController class]]) {
+            MessagesViewController *mvc = (MessagesViewController*)topvc;
+            if ([mvc.thread.uniqueId isEqualToString:threadId]) {
+                [mvc popKeyBoard];
+                return;
+            }
+        }
         [self messageIdentifier:((TSContactThread*)thread).contactIdentifier withCompose:YES];
     }
 }
@@ -209,7 +221,7 @@ phoneDirectoryManager;
         [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
-    [vc.navigationController popToRootViewControllerAnimated:YES];
+    [vc.navigationController popToRootViewControllerAnimated:NO];
     vc.contactIdentifierFromCompose = identifier;
     vc.composeMessage               = compose;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];
@@ -223,7 +235,7 @@ phoneDirectoryManager;
         [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
-    [vc.navigationController popToRootViewControllerAnimated:YES];
+    [vc.navigationController popToRootViewControllerAnimated:NO];
     [vc performSegueWithIdentifier:@"showSegue" sender:groupThread];
 }
 
@@ -235,7 +247,7 @@ phoneDirectoryManager;
         [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
-    [vc.navigationController popToRootViewControllerAnimated:YES];
+    [vc.navigationController popToRootViewControllerAnimated:NO];
     vc.groupFromCompose = model;
     vc.composeMessage   = compose;
     [vc performSegueWithIdentifier:@"showSegue" sender:nil];

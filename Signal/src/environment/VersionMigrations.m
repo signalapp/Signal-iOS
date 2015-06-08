@@ -257,6 +257,7 @@
     
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSData *pushToken, NSData *voipToken) {
         [TSAccountManager registerForPushNotifications:pushToken voipToken:voipToken success:^{
+            [UIApplication.sharedApplication setNetworkActivityIndicatorVisible:NO];
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_PUSH_KEY];
             [waitingController dismissViewControllerAnimated:YES completion:nil];
         } failure:failure];

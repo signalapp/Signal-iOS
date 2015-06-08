@@ -25,6 +25,7 @@ enum CallTerminationType {
     // -- uh oh --
     CallTerminationType_BadInteractionWithServer, /// The signaling or relay server did something we didn't expect or understand.
     CallTerminationType_UncategorizedFailure, /// Something went wrong. We didn't handle it properly, so we don't know what exactly it was.
+    CallTerminationType_BackgroundTimeExpired, /// The application expired available time while in background.
 };
 
 /**

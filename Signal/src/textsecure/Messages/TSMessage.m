@@ -50,7 +50,7 @@ NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     self = [super initWithTimestamp:timestamp inThread:thread];
     
     if (self) {
-        _body         = body;
+        _body        = body;
         _attachments = [attachments mutableCopy];
     }
     return self;
@@ -62,7 +62,7 @@ NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 
 - (NSString *)description{
     if(self.attachments > 0){
-        return @"Attachment";
+        return NSLocalizedString(@"ATTACHMENT", nil);
     } else {
         return self.body;
     }

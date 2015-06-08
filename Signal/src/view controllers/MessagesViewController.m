@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import <AddressBookUI/AddressBookUI.h>
+
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
 #import "FingerprintViewController.h"
@@ -46,7 +47,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
-#import "TSAttachmentAdapter.h"
+#import "TSPhotoAdapter.h"
 #import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
 
@@ -82,8 +83,12 @@ typedef enum : NSUInteger {
 @interface MessagesViewController () {
     UIImage* tappedImage;
     BOOL isGroupConversation;
+    
+    UIView *_unreadContainer;
+    UIImageView *_unreadBackground;
+    UILabel *_unreadLabel;
+    NSUInteger _unreadCount;
 }
-
 
 @property (nonatomic, weak)   UIView *navView;
 @property (nonatomic, retain) TSThread *thread;
@@ -92,6 +97,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *incomingBubbleImageData;
+@property (nonatomic, retain) JSQMessagesBubbleImage  *currentlyOutgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage  *outgoingMessageFailedImageData;
 @property (nonatomic, strong) NSTimer *audioPlayerPoller;
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
@@ -110,6 +116,11 @@ typedef enum : NSUInteger {
 @property BOOL isVisible;
 @property (nonatomic)  BOOL composeOnOpen;
 
+@end
+
+@interface UINavigationItem(){
+    UIView *backButtonView;
+}
 @end
 
 @implementation MessagesViewController
@@ -145,6 +156,9 @@ typedef enum : NSUInteger {
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+- (TSThread *)thread {
+    return _thread;
+}
 
 - (void)hideInputIfNeeded {
     if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
@@ -228,7 +242,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)startReadTimer {
-    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
+    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(markAllMessagesAsRead) userInfo:nil repeats:YES];
 }
 
 - (void)cancelReadTimer {
@@ -236,15 +250,22 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [self updateBackButton];
     [super viewDidAppear:animated];
     [self markAllMessagesAsRead];
     [self startReadTimer];
     _isVisible = YES;
     [self initializeTitleLabelGestureRecognizer];
     
+    [self updateBackButton];
+    
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
+}
+
+- (void)updateBackButton {
+    [self setUnreadCount:[[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -253,6 +274,8 @@ typedef enum : NSUInteger {
         [self.navController hideDropDown:self];
     }
     [super viewWillDisappear:animated];
+    [_unreadContainer removeFromSuperview];
+    _unreadContainer = nil;
     
     [_audioPlayerPoller invalidate];
     [_audioPlayer stop];
@@ -429,10 +452,11 @@ typedef enum : NSUInteger {
 -(void)initializeBubbles
 {
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
+    self.outgoingBubbleImageData          = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
+    self.incomingBubbleImageData          = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    self.currentlyOutgoingBubbleImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
     
-    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
-    self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
-    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+    self.outgoingMessageFailedImageData   = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor grayColor]];
 }
 
 -(void)initializeCollectionViewLayout
@@ -581,10 +605,14 @@ typedef enum : NSUInteger {
     id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
     
     if ([message.senderId isEqualToString:self.senderId]) {
-        if (message.messageState == TSOutgoingMessageStateUnsent || message.messageState == TSOutgoingMessageStateAttemptingOut) {
-            return self.outgoingMessageFailedImageData;
+        switch (message.messageState) {
+            case TSOutgoingMessageStateUnsent:
+                return self.outgoingMessageFailedImageData;
+            case TSOutgoingMessageStateAttemptingOut:
+                return self.currentlyOutgoingBubbleImageData;
+            default:
+                return self.outgoingBubbleImageData;
         }
-        return self.outgoingBubbleImageData;
     }
     
     return self.incomingBubbleImageData;
@@ -627,7 +655,7 @@ typedef enum : NSUInteger {
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor ows_blackColor];
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
-                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
     
     return cell;
@@ -709,12 +737,17 @@ typedef enum : NSUInteger {
 
 -(BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+    
+    // If message failed, say that message should be tapped to retry;
+    if (currentMessage.messageType == TSOutgoingMessageAdapter
+        && currentMessage.messageState == TSOutgoingMessageStateUnsent) {
+        return YES;
+    }
+    
     if([self.thread isKindOfClass:[TSGroupThread class]]) {
         return currentMessage.messageType == TSIncomingMessageAdapter;
-    }
-    else {
+    } else {
         if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section]-1) {
             return [self isMessageOutgoingAndDelivered:currentMessage];
         }
@@ -749,25 +782,31 @@ typedef enum : NSUInteger {
 
 -(NSAttributedString*)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
     TSMessageAdapter *msg = [self messageAtIndexPath:indexPath];
+    NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
+    textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
+    
     if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
+        if (msg.messageType == TSOutgoingMessageAdapter
+            && msg.messageState == TSOutgoingMessageStateUnsent) {
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
+            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+            return attrStr;
+        }
+        
         if([self.thread isKindOfClass:[TSGroupThread class]]) {
-            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
             NSString *name = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:msg.senderId];
             name = name ? name : msg.senderId;
-            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:name];
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             
-            return (NSAttributedString*)attrStr;
+            return attrStr;
         }
         else {
             _lastDeliveredMessageIndexPath = indexPath;
-            NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-            textAttachment.bounds = CGRectMake(0, 0, 11.0f, 10.0f);
-            NSMutableAttributedString * attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
+            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             
-            return (NSAttributedString*)attrStr;
+            return attrStr;
         }
     }
     return nil;
@@ -800,8 +839,8 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
             
             if (isMediaMessage) {
-                if([[messageItem media] isKindOfClass:[TSAttachmentAdapter class]]) {
-                    TSAttachmentAdapter* messageMedia = (TSAttachmentAdapter*)[messageItem media];
+                if([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
+                    TSPhotoAdapter* messageMedia = (TSPhotoAdapter*)[messageItem media];
                     
                     if ([messageMedia isImage]) {
                         tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
@@ -1062,7 +1101,16 @@ typedef enum : NSUInteger {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage*)message;
         NSString *newKeyFingerprint = [errorMessage newIdentityKey];
-        NSString *messageString     = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), _thread.name, newKeyFingerprint];
+        
+        NSString *keyOwner;
+        if ([message isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+            TSInvalidIdentityKeySendingErrorMessage *m = (TSInvalidIdentityKeySendingErrorMessage*)message;
+            keyOwner = [[[Environment getCurrent] contactsManager] nameStringForPhoneIdentifier:m.recipientId];
+        } else {
+            keyOwner = [self.thread name];
+        }
+        
+        NSString *messageString     = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
         NSArray  *actions           = @[NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""), NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")];
         
         [self dismissKeyBoard];
@@ -1311,6 +1359,9 @@ typedef enum : NSUInteger {
 
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    
+    [self updateBackButton];
+    
     if(isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupThread* gThread = (TSGroupThread*)self.thread;
@@ -1637,6 +1688,58 @@ typedef enum : NSUInteger {
         [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [thread setDraft:currentDraft transaction:transaction];
         }];
+    }
+}
+
+#pragma mark Unread Badge
+
+- (void)setUnreadCount:(NSUInteger)unreadCount {
+    if (_unreadCount != unreadCount) {
+        _unreadCount = unreadCount;
+        
+        if (_unreadCount > 0) {
+            if (_unreadContainer == nil) {
+                static UIImage *backgroundImage = nil;
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^
+                              {
+                                  UIGraphicsBeginImageContextWithOptions(CGSizeMake(17.0f, 17.0f), false, 0.0f);
+                                  CGContextRef context = UIGraphicsGetCurrentContext();
+                                  CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+                                  CGContextFillEllipseInRect(context, CGRectMake(0.0f, 0.0f, 17.0f, 17.0f));
+                                  backgroundImage = [UIGraphicsGetImageFromCurrentImageContext() stretchableImageWithLeftCapWidth:8 topCapHeight:8];
+                                  UIGraphicsEndImageContext();
+                              });
+                
+                _unreadContainer = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 10.0f, 10.0f)];
+                _unreadContainer.userInteractionEnabled = NO;
+                _unreadContainer.layer.zPosition        = 2000;
+                [self.navigationController.navigationBar addSubview:_unreadContainer];
+                
+                _unreadBackground = [[UIImageView alloc] initWithImage:backgroundImage];
+                [_unreadContainer addSubview:_unreadBackground];
+                
+                _unreadLabel                 = [[UILabel alloc] init];
+                _unreadLabel.backgroundColor = [UIColor clearColor];
+                _unreadLabel.textColor       = [UIColor whiteColor];
+                _unreadLabel.font            = [UIFont systemFontOfSize:12];
+                [_unreadContainer addSubview:_unreadLabel];
+            }
+            _unreadContainer.hidden = false;
+            
+            _unreadLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
+            [_unreadLabel sizeToFit];
+            
+            CGPoint offset = CGPointMake(17.0f, 2.0f);
+            
+            _unreadBackground.frame = CGRectMake(offset.x, offset.y,
+                                                 MAX(_unreadLabel.frame.size.width + 8.0f, 17.0f), 17.0f);
+            _unreadLabel.frame      = CGRectMake(offset.x + floor((2.0f*(_unreadBackground.frame.size.width - _unreadLabel.frame.size.width)/ 2.0f)/2.0f), offset.y + 1.0f,
+                                                 _unreadLabel.frame.size.width, _unreadLabel.frame.size.height);
+            
+        } else if (_unreadContainer != nil) {
+            _unreadContainer.hidden = true;
+        }
     }
 }
 

@@ -90,6 +90,13 @@
     
     [self unrestrictedAdvanceCallProgressTo:type];
 }
+
+- (void)backgroundTimeExpired {
+    [self terminateWithReason:CallTerminationType_BackgroundTimeExpired
+              withFailureInfo:nil
+               andRelatedInfo:nil];
+}
+
 -(void)hangupOrDenyCall {
     bool didDeny = [interactiveCallAcceptedOrDenied trySetResult:@NO];
     

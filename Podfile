@@ -18,6 +18,6 @@ pod 'SSKeychain'
 pod 'DJWActionSheet'
 
 pod 'SocketRocket',               :git => 'https://github.com/FredericJacobs/SocketRocket.git', :commit => 'f1567f1be7ce49ecf2c9d284ead8ea7c422ee99b'
-pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :commit => '5ac93a25e313eb3c84e396b2e704ff312410dc4e'
+pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :commit => 'e5582fef8a6b3e35f8070361ef37237222da712b'
 pod 'APDropDownNavToolbar',       :git => 'https://github.com/corbett/APDropDownNavToolbar.git', :branch => 'master'
 pod 'UICKeyChainStore',           :podspec => 'Podspecs/UICKeyChainStore.podspec'

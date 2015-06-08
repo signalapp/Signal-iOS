@@ -14,12 +14,11 @@
 
 + (instancetype)recipientWithTextSecureIdentifier:(NSString*)textSecureIdentifier withTransaction:(YapDatabaseReadTransaction*)transaction;
 
-- (NSSet*)devices; //NSNumbers
-
 - (void)addDevices:(NSSet *)set;
 
 - (void)removeDevices:(NSSet *)set;
 
 @property (nonatomic, readonly) NSString *relay;
+@property (nonatomic, retain)   NSMutableOrderedSet *devices;
 
 @end

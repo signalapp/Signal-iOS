@@ -18,7 +18,7 @@
     self  = [super initWithTimestamp:timeStamp inThread:thread];
     
     if (self) {
-        _callType       = callType;
+        _callType = callType;
     }
     
     return self;

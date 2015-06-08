@@ -37,6 +37,7 @@
 -(void)advanceCallProgressTo:(enum CallProgressType)type;
 -(void)hangupOrDenyCall;
 -(void)acceptCall;
+- (void)backgroundTimeExpired;
 -(void)advanceCallProgressToConversingWithShortAuthenticationString:(NSString*)sas;
 -(void)terminateWithReason:(enum CallTerminationType)reason
            withFailureInfo:(id)failureInfo

@@ -37,7 +37,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self setupAppearance];
-    
     [[PushManager sharedManager] registerPushKitNotificationFuture];
     
     if (getenv("runningTests_dontStartApp")) {
@@ -89,9 +88,14 @@
     [self prepareScreenshotProtection];
     
     if ([TSAccountManager isRegistered]) {
-        if ([self applicationIsActive]) {
+        if (application.applicationState == UIApplicationStateInactive) {
             [TSSocketManager becomeActiveFromForeground];
+        } else if (application.applicationState == UIApplicationStateBackground) {
+            [TSSocketManager becomeActiveFromBackgroundExpectMessage:NO];
+        } else {
+            DDLogWarn(@"The app was launched in an unknown way");
         }
+        
         [[PushManager sharedManager] validateUserNotificationSettings];
         [self refreshContacts];
         [TSPreKeyManager refreshPreKeys];
@@ -157,7 +161,6 @@
     [self protectScreen];
 
     if ([TSAccountManager isRegistered]) {
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
         [self updateBadge];
         [TSSocketManager resignActivity];
     }
@@ -165,6 +168,8 @@
 
 - (void)updateBadge {
     if ([TSAccountManager isRegistered]) {
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:(NSInteger)[[TSMessagesManager sharedManager] unreadMessagesCount]];
     }
 }

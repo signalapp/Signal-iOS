@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "TSYapDatabaseObject.h"
 
-#import "TSAttachmentAdapter.h"
+#import "TSPhotoAdapter.h"
 
 
 @interface TSGroupModel : TSYapDatabaseObject

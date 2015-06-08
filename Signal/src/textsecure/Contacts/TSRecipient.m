@@ -9,12 +9,6 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSRecipient.h"
 
-@interface TSRecipient ()
-
-@property (nonatomic, retain) NSMutableSet *devices;
-
-@end
-
 @implementation TSRecipient
 
 + (NSString*)collection{
@@ -25,7 +19,7 @@
     self = [super initWithUniqueId:textSecureIdentifier];
     
     if (self) {
-        _devices     = [NSMutableSet setWithObject:[NSNumber numberWithInt:1]];
+        _devices     = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
         _relay       = relay;
     }
     
@@ -36,16 +30,24 @@
     return [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
 }
 
-- (NSSet*)devices{
+- (NSMutableOrderedSet*)devices{
     return [_devices copy];
 }
 
 - (void)addDevices:(NSSet *)set{
+    [self checkDevices];
     [_devices unionSet:set];
 }
 
 - (void)removeDevices:(NSSet *)set{
+    [self checkDevices];
     [_devices minusSet:set];
+}
+
+- (void)checkDevices {
+    if (_devices == nil || ![_devices isKindOfClass:[NSMutableOrderedSet class]]) {
+        _devices = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
+    }
 }
 
 @end

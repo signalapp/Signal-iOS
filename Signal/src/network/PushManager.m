@@ -15,6 +15,7 @@
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Environment.h"
+#import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
@@ -26,6 +27,7 @@
 @property TOCFutureSource     *registerWithServerFutureSource;
 @property UIAlertView         *missingPermissionsAlertView;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
+@property UILocalNotification *lastCallNotification;
 
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @end
@@ -53,6 +55,7 @@
                                   delegate:nil
                          cancelButtonTitle:NSLocalizedString(@"OK", @"")
                          otherButtonTitles:nil, nil];
+        _callBackgroundTask = UIBackgroundTaskInvalid;
     }
     return self;
 }
@@ -60,7 +63,6 @@
 #pragma mark Manage Incoming Push
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
     if ([self isRedPhonePush:userInfo]) {
         ResponderSessionDescriptor* call;
         if (![self.notificationTracker shouldProcessNotification:userInfo]){
@@ -82,33 +84,49 @@
         
         [Environment.phoneManager incomingCallWithSession:call];
         
-        
         if (![self applicationIsActive]) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             
             NSString *callerId = call.initiatorNumber.toE164;
             NSString *nameString = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:callerId];
             
-            NSString *displayName = nameString?nameString:callerId;
+            NSString *displayName          = nameString?nameString:callerId;
+            PropertyListPreferences *prefs = [Environment preferences];
             
-            notification.alertBody = [NSString stringWithFormat:@"Incoming call from %@", displayName];
+            if ([prefs notificationPreviewType] == NotificationNoNameNoPreview) {
+                notification.alertBody = NSLocalizedString(@"INCOMING_CALL", nil);
+            } else {
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"INCOMING_CALL_FROM", nil), displayName];
+            }
+            
             notification.category  = Signal_Call_Category;
             notification.soundName = @"r.caf";
             
             [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+            _lastCallNotification = notification;
             
-            if (_callBackgroundTask == 0) {
+            if (_callBackgroundTask == UIBackgroundTaskInvalid) {
                 _callBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-                    _callBackgroundTask = 0;
-                    [Environment.phoneManager hangupOrDenyCall];
+                    [Environment.phoneManager backgroundTimeExpired];
+                    [self closeVOIPBackgroundTask];
                 }];
             }
         }
     } else {
         if (![self applicationIsActive]) {
-            [TSSocketManager becomeActiveFromBackground];
+            [TSSocketManager becomeActiveFromBackgroundExpectMessage:YES];
         }
     }
+}
+
+- (UILocalNotification*)closeVOIPBackgroundTask {
+    [[UIApplication sharedApplication] endBackgroundTask:_callBackgroundTask];
+    _callBackgroundTask = UIBackgroundTaskInvalid;
+    
+    UILocalNotification *notif = _lastCallNotification;
+    _lastCallNotification      = nil;
+    
+    return notif;
 }
 
 /**
@@ -147,6 +165,11 @@
                        dispatch_get_main_queue(), ^{
                            completionHandler();
                        });
+    } else if([identifier isEqualToString:Signal_CallBack_Identifier]){
+        NSString * contactId = [notification.userInfo objectForKeyedSubscript:Signal_Call_UserInfo_Key];
+        PhoneNumber *number =  [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
+        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
+        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else{
         NSString *threadId = [notification.userInfo objectForKey:Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
@@ -294,7 +317,9 @@
     
     UIUserNotificationSettings *settings =
     [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                      categories:[NSSet setWithObjects:[self userNotificationsCallCategory], [self userNotificationsMessageCategory], nil]];
+                                      categories:[NSSet setWithObjects:[self userNotificationsCallCategory],
+                                                                       [self userNotificationsMessageCategory],
+                                                                       [self userNotificationsCallBackCategory], nil]];
     
     [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     return self.userNotificationFutureSource.future;
@@ -303,7 +328,7 @@
 - (UIUserNotificationCategory*)userNotificationsMessageCategory{
     UIMutableUserNotificationAction *action_view  = [UIMutableUserNotificationAction new];
     action_view.identifier                        = Signal_Message_View_Identifier;
-    action_view.title                             = NSLocalizedString(@"View", @"");
+    action_view.title                             = NSLocalizedString(@"PUSH_MANAGER_VIEW", @"");
     action_view.activationMode                    = UIUserNotificationActivationModeForeground;
     action_view.destructive                       = NO;
     action_view.authenticationRequired            = YES;
@@ -335,6 +360,22 @@
     callCategory.identifier = Signal_Call_Category;
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextMinimal];
     [callCategory setActions:@[action_accept, action_decline] forContext:UIUserNotificationActionContextDefault];
+    
+    return callCategory;
+}
+
+- (UIUserNotificationCategory*)userNotificationsCallBackCategory{
+    UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
+    action_accept.identifier                       = Signal_CallBack_Identifier;
+    action_accept.title                            = NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"");
+    action_accept.activationMode                   = UIUserNotificationActivationModeForeground;
+    action_accept.destructive                      = NO;
+    action_accept.authenticationRequired           = NO;
+    
+    UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
+    callCategory.identifier = Signal_CallBack_Category;
+    [callCategory setActions:@[action_accept] forContext:UIUserNotificationActionContextMinimal];
+    [callCategory setActions:@[action_accept] forContext:UIUserNotificationActionContextDefault];
     
     return callCategory;
 }

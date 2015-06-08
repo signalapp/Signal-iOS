@@ -22,6 +22,7 @@
     self.options = @[@(NotificationNamePreview),
                      @(NotificationNameNoPreview),
                      @(NotificationNoNameNoPreview)];
+    
     [super viewDidLoad];
 }
 
@@ -41,9 +42,20 @@
 {
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"NotificationSettingsOption"];
     PropertyListPreferences *prefs = [Environment preferences];
-    [[cell textLabel] setText:[prefs nameForNotificationPreviewType:[[self.options objectAtIndex:(NSUInteger)indexPath.row] unsignedIntegerValue]]];
+    NSUInteger notifType = [[self.options objectAtIndex:(NSUInteger)indexPath.row] unsignedIntegerValue];
+    [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notifType]];
+    
+    NotificationType selectedNotifType = [prefs notificationPreviewType];
+    
+    if (selectedNotifType == notifType) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
     
     return cell;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    return NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

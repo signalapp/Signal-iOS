@@ -21,7 +21,7 @@
 
 #define kWebSocketHeartBeat         30
 #define kWebSocketReconnectTry      5
-#define kBackgroundConnectTimer     10
+#define kBackgroundConnectTimer     25
 #define kBackgroundConnectKeepAlive 15
 
 NSString * const SocketOpenedNotification     = @"SocketOpenedNotification";
@@ -38,7 +38,10 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
 
-@property BOOL didFetchInBackground;
+@property BOOL didConnectBg;
+@property BOOL didRetreiveMessageBg;
+@property BOOL shouldDownloadMessage;
+
 @property (nonatomic, retain) NSTimer *backgroundKeepAliveTimer;
 @property (nonatomic, retain) NSTimer *backgroundConnectTimer;
 
@@ -51,7 +54,10 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     
     if (self) {
         self.websocket = nil;
-        [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
+        [self addObserver:self
+               forKeyPath:@"status"
+                  options:0
+                  context:kSocketStatusObservationContext];
     }
     
     return self;
@@ -63,7 +69,9 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] init];
         sharedMyManager.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-        sharedMyManager.didFetchInBackground   = NO;
+        sharedMyManager.didConnectBg   = NO;
+        sharedMyManager.shouldDownloadMessage = NO;
+        sharedMyManager.didRetreiveMessageBg = NO;
     });
     return sharedMyManager;
 }
@@ -118,7 +126,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 #pragma mark - Delegate methods
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
-    self.pingTimer  = [NSTimer scheduledTimerWithTimeInterval:kWebSocketHeartBeat
+    self.pingTimer  = [NSTimer timerWithTimeInterval:kWebSocketHeartBeat
                                                        target:self
                                                      selector:@selector(webSocketHeartBeat)
                                                      userInfo:nil
@@ -131,6 +139,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     self.status         = kSocketStatusOpen;
     [self.reconnectTimer invalidate];
     self.reconnectTimer = nil;
+    self.didConnectBg   = YES;
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -143,7 +152,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData*)data {
     WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
-    self.didFetchInBackground   = YES;
+    self.didRetreiveMessageBg = YES;
     
     if (wsMessage.type == WebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
@@ -158,7 +167,6 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
     
     [self sendWebSocketMessageAcknowledgement:message];
-    
     [self keepAliveBackground];
     
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]){
@@ -184,7 +192,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     if (self.fetchingTaskIdentifier) {
         [self.backgroundKeepAliveTimer invalidate];
         
-        self.backgroundKeepAliveTimer = [NSTimer scheduledTimerWithTimeInterval:kBackgroundConnectKeepAlive
+        self.backgroundKeepAliveTimer = [NSTimer timerWithTimeInterval:kBackgroundConnectKeepAlive
                                                                          target:self
                                                                        selector:@selector(backgroundTimeExpired)
                                                                        userInfo:nil
@@ -243,8 +251,8 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)scheduleRetry {
-    if (!self.reconnectTimer || ![self.reconnectTimer isValid]) {
-        self.reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:kWebSocketReconnectTry
+    if (![self.reconnectTimer isValid]) {
+        self.reconnectTimer = [NSTimer timerWithTimeInterval:kWebSocketReconnectTry
                                                                target:[self class]
                                                              selector:@selector(becomeActive)
                                                              userInfo:nil
@@ -252,6 +260,8 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer
                                   forMode:NSDefaultRunLoopMode];
+    } else {
+        DDLogWarn(@"Not scheduling retry, valid timer");
     }
 }
 
@@ -259,7 +269,6 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 
 + (void)becomeActiveFromForeground {
     TSSocketManager *sharedInstance = [self sharedManager];
-    [sharedInstance.backgroundKeepAliveTimer invalidate];
     
     if (sharedInstance.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
         [sharedInstance closeBackgroundTask];
@@ -268,26 +277,23 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     [self becomeActive];
 }
 
-
-+ (void)becomeActiveFromBackground {
++ (void)becomeActiveFromBackgroundExpectMessage:(BOOL)expected {
     TSSocketManager *sharedInstance = [TSSocketManager sharedManager];
     
     if (sharedInstance.fetchingTaskIdentifier == UIBackgroundTaskInvalid) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            sharedInstance.backgroundConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kBackgroundConnectTimer
+        sharedInstance.backgroundConnectTimer = [NSTimer timerWithTimeInterval:kBackgroundConnectTimer
                                                                                      target:sharedInstance
                                                                                    selector:@selector(backgroundConnectTimerExpired)
                                                                                    userInfo:nil
                                                                                     repeats:NO];
-            
-            NSRunLoop *loop = [NSRunLoop currentRunLoop];
-            [loop addTimer:[TSSocketManager sharedManager].backgroundConnectTimer
-                   forMode:NSDefaultRunLoopMode];
-            [loop run];
-        });
+        NSRunLoop *loop = [NSRunLoop mainRunLoop];
+        [loop addTimer:[TSSocketManager sharedManager].backgroundConnectTimer
+                forMode:NSDefaultRunLoopMode];
         
         [sharedInstance.backgroundKeepAliveTimer invalidate];
-        sharedInstance.didFetchInBackground   = NO;
+        sharedInstance.didConnectBg           = NO;
+        sharedInstance.didRetreiveMessageBg   = NO;
+        sharedInstance.shouldDownloadMessage  = expected;
         sharedInstance.fetchingTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             [TSSocketManager resignActivity];
             [[TSSocketManager sharedManager] closeBackgroundTask];
@@ -312,9 +318,16 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     [self.backgroundKeepAliveTimer invalidate];
     [self.backgroundConnectTimer   invalidate];
     
-    if (!self.didFetchInBackground) {
+/* 
+ If VOIP Push worked, we should just have to check if message was retreived and if not, alert the user.
+ But we have to rely on the server for the fallback in failed cases since background push is unreliable.
+ https://devforums.apple.com/message/1135227
+
+    if ((self.shouldDownloadMessage && !self.didRetreiveMessageBg) || !self.didConnectBg) {
         [self backgroundConnectTimedOut];
     }
+
+ */
     
     [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
     self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
@@ -323,6 +336,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)backgroundConnectTimedOut {
     UILocalNotification *notification = [[UILocalNotification alloc] init];
     notification.alertBody            = NSLocalizedString(@"APN_FETCHED_FAILED", nil);
+    notification.soundName            = @"NewMessage.aifc";
     [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 }
 

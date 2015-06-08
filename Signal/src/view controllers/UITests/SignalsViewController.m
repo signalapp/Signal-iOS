@@ -48,6 +48,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) CellState viewingThreadsIn;
 @property (nonatomic) long inboxCount;
+@property (nonatomic, retain) UISegmentedControl *segmentedControl;
 
 @end
 
@@ -76,8 +77,21 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
         [self.tableView reloadData];
     } onThread:[NSThread mainThread] untilCancelled:nil];
-    self.title = NSLocalizedString(@"CONVERSATIONS_VIEW_TITLE", @"");
+    
+    self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
+                                                                        NSLocalizedString(@"ARCHIVE_NAV_BAR_TITLE", nil)]];
+    
+    [self.segmentedControl addTarget:self action:@selector(swappedSegmentedControl) forControlEvents:UIControlEventValueChanged];
+    self.navigationItem.titleView = self.segmentedControl;
+    [self.segmentedControl setSelectedSegmentIndex:0];
+}
 
+- (void)swappedSegmentedControl {
+    if (self.segmentedControl.selectedSegmentIndex == 0) {
+        [self selectedInbox:nil];
+    } else {
+        [self selectedArchive:nil];
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -186,7 +200,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)tableViewCellTappedDelete:(NSIndexPath*)indexPath {
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     if([thread isKindOfClass:[TSGroupThread class]]) {
-        DDLogDebug(@"leaving the group");
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
         message.groupMetaMessage = TSGroupMessageQuit;
         [[TSMessagesManager sharedManager] sendMessage:message inThread:thread];
@@ -210,17 +223,20 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 
--(void) updateInboxCountLabel {
+- (NSNumber*)updateInboxCountLabel {
     NSUInteger numberOfItems = [[TSMessagesManager sharedManager] unreadMessagesCount];
-    NSNumber *badgeNumber = [NSNumber numberWithUnsignedInteger:numberOfItems];
-    NSString *badgeValue  = nil;
+    NSNumber *badgeNumber    = [NSNumber numberWithUnsignedInteger:numberOfItems];
+    NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
     
     if (![badgeNumber isEqualToNumber:@0]) {
-        badgeValue = [badgeNumber stringValue];
+        NSString *badgeValue   = [badgeNumber stringValue];
+        unreadString = [unreadString stringByAppendingFormat:@" (%@)", badgeValue];
     }
     
+    [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber.integerValue];
-    self.inboxCountLabel.text = badgeValue;
+    
+    return badgeNumber;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath{
@@ -267,15 +283,11 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 -(IBAction)selectedInbox:(id)sender {
     self.viewingThreadsIn = kInboxState;
-    [self.inboxButton setSelected:YES];
-    [self.archiveButton setSelected:NO];
     [self changeToGrouping:TSInboxGroup];
 }
 
 -(IBAction)selectedArchive:(id)sender {
     self.viewingThreadsIn = kArchiveState;
-    [self.inboxButton setSelected:NO];
-    [self.archiveButton setSelected:YES];
     [self changeToGrouping:TSArchiveGroup];
 }
 
@@ -323,8 +335,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     if ([sectionChanges count] == 0 && [rowChanges count] == 0){
         return;
     }
-    
-    [self updateInboxCountLabel];
     
     [self.tableView beginUpdates];
     
