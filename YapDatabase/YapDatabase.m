@@ -2711,10 +2711,13 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			
 			dispatch_async(strongSelf->snapshotQueue, ^{
 				
-				for (YapDatabaseConnectionState *state in strongSelf->connectionStates)
+				__strong YapDatabase *strongSelf2 = weakSelf;
+				if (strongSelf2 == nil) return;
+				
+				for (YapDatabaseConnectionState *state in strongSelf2->connectionStates)
 				{
 					if (state->longLivedReadTransaction &&
-						state->lastTransactionSnapshot == strongSelf->snapshot)
+						state->lastTransactionSnapshot == strongSelf2->snapshot)
 					{
 						[state->connection maybeResetLongLivedReadTransaction];
 					}
