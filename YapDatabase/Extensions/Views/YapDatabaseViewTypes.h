@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+@class YapDatabaseReadTransaction;
 
 /**
  * Corresponds to the different type of blocks supported by YapDatabaseView.
@@ -28,10 +29,17 @@ typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
 
 typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock)(NSString *collection, NSString *key);
-typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)(NSString *collection, NSString *key, id object);
-typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)(NSString *collection, NSString *key, id metadata);
-typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *collection, NSString *key, id object, id metadata);
+typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock) \
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key);
+
+typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock) \
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object);
+
+typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock) \
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id metadata);
+
+typedef NSString* (^YapDatabaseViewGroupingWithRowBlock) \
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)groupingBlock;
 + (instancetype)withObjectBlock:(YapDatabaseViewGroupingWithObjectBlock)groupingBlock;
@@ -93,18 +101,25 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)(NSString *collection, N
 
 typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock) \
-                 (NSString *group, NSString *collection1, NSString *key1, \
-                                   NSString *collection2, NSString *key2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock) \
-                 (NSString *group, NSString *collection1, NSString *key1, id object1, \
-                                   NSString *collection2, NSString *key2, id object2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock) \
-                 (NSString *group, NSString *collection1, NSString *key1, id metadata, \
-                                   NSString *collection2, NSString *key2, id metadata2);
-typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock) \
-                 (NSString *group, NSString *collection1, NSString *key1, id object1, id metadata1, \
-                                   NSString *collection2, NSString *key2, id object2, id metadata2);
+typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock)                       \
+                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
+                      NSString *collection1, NSString *key1,                           \
+                      NSString *collection2, NSString *key2);
+
+typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock)                    \
+                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
+                      NSString *collection1, NSString *key1, id object1,               \
+                      NSString *collection2, NSString *key2, id object2);
+
+typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock)                  \
+                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
+                      NSString *collection1, NSString *key1, id metadata,              \
+                      NSString *collection2, NSString *key2, id metadata2);
+
+typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)                       \
+                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
+                      NSString *collection1, NSString *key1, id object1, id metadata1, \
+                      NSString *collection2, NSString *key2, id object2, id metadata2);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewSortingWithKeyBlock)sortingBlock;
 + (instancetype)withObjectBlock:(YapDatabaseViewSortingWithObjectBlock)sortingBlock;

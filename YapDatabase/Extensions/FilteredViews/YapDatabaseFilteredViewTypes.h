@@ -23,14 +23,21 @@
 
 typedef id YapDatabaseViewFilteringBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)     \
-                                        (NSString *group, NSString *collection, NSString *key);
-typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)  \
-                                        (NSString *group, NSString *collection, NSString *key, id object);
-typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)\
-                                        (NSString *group, NSString *collection, NSString *key, id metadata);
-typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)     \
-                                        (NSString *group, NSString *collection, NSString *key, id object, id metadata);
+typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)                       \
+                (YapDatabaseReadTransaction *transaction, NSString *group, \
+                   NSString *collection, NSString *key);
+
+typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)                    \
+                (YapDatabaseReadTransaction *transaction, NSString *group, \
+                   NSString *collection, NSString *key, id object);
+
+typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)                  \
+                (YapDatabaseReadTransaction *transaction, NSString *group, \
+                   NSString *collection, NSString *key, id metadata);
+
+typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)                       \
+                (YapDatabaseReadTransaction *transaction, NSString *group, \
+                   NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)filteringBlock;
 + (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)filteringBlock;

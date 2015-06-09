@@ -69,7 +69,7 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key){
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key){
 		
 		if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 			return nil;
@@ -78,11 +78,12 @@
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2){
-		
-		NSString *object1 = (NSString *)obj1;
-		NSString *object2 = (NSString *)obj2;
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
+	{
+		__unsafe_unretained NSString *object1 = (NSString *)obj1;
+		__unsafe_unretained NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
@@ -1271,13 +1272,13 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
+	    ^(YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection1, NSString *key1, id obj1,
 	                       NSString *collection2, NSString *key2, id obj2)
 	{
 		NSString *object1 = (NSString *)obj1;
@@ -1976,17 +1977,18 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
-		NSString *object1 = (NSString *)obj1;
-		NSString *object2 = (NSString *)obj2;
+		__unsafe_unretained NSString *object1 = (NSString *)obj1;
+		__unsafe_unretained NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
@@ -2105,26 +2107,27 @@
     YapDatabaseConnection *connection2 = [database newConnection];
     
     YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-                                         ^NSString *(NSString *collection, NSString *key)
-                                         {
-                                             return @"";
-                                         }];
+		^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
+	{
+		return @"";
+	}];
     
     YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-                                       ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-                                         NSString *collection2, NSString *key2, id obj2)
-                                       {
-                                           NSString *object1 = (NSString *)obj1;
-                                           NSString *object2 = (NSString *)obj2;
-                                           
-                                           return [object1 compare:object2 options:NSNumericSearch];
-                                       }];
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
+	{
+		__unsafe_unretained NSString *object1 = (NSString *)obj1;
+		__unsafe_unretained NSString *object2 = (NSString *)obj2;
+		
+		return [object1 compare:object2 options:NSNumericSearch];
+	}];
     
     YapDatabaseView *databaseView =
-    [[YapDatabaseView alloc] initWithGrouping:grouping
-                                      sorting:sorting
-                                   versionTag:@"1"
-                                      options:options];
+      [[YapDatabaseView alloc] initWithGrouping:grouping
+                                        sorting:sorting
+                                     versionTag:@"1"
+                                        options:options];
     
     // Without registering the view,
     // add a bunch of keys to the database.
@@ -2207,7 +2210,7 @@
 	YapDatabaseConnection *connection = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		if ([key hasPrefix:@"key"])
 			return @"default-group";
@@ -2216,11 +2219,12 @@
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
-		NSString *object1 = (NSString *)obj1;
-		NSString *object2 = (NSString *)obj2;
+		__unsafe_unretained NSString *object1 = (NSString *)obj1;
+		__unsafe_unretained NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
@@ -2562,17 +2566,18 @@
 	YapDatabaseConnection *connection = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
-		NSString *object1 = (NSString *)obj1;
-		NSString *object2 = (NSString *)obj2;
+		__unsafe_unretained NSString *object1 = (NSString *)obj1;
+		__unsafe_unretained NSString *object2 = (NSString *)obj2;
 		
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
@@ -2655,17 +2660,18 @@
 	YapDatabaseConnection *connection = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
-		NSNumber *number1 = (NSNumber *)obj1;
-		NSNumber *number2 = (NSNumber *)obj2;
+		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
+		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 		
 		return [number1 compare:number2];
 	}];
@@ -2848,7 +2854,7 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id obj)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id obj)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
 		
@@ -2859,8 +2865,9 @@
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
@@ -2911,7 +2918,7 @@
 	}];
 	
 	YapDatabaseViewGrouping *newGrouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id obj)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id obj)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)obj;
 		
@@ -2977,14 +2984,15 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id obj)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id obj)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
@@ -3090,7 +3098,7 @@
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id obj)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id obj)
 	{
 		if ([obj isKindOfClass:[NSString class]])
 			return @"";
@@ -3099,8 +3107,9 @@
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+		^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+		    NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 		__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;

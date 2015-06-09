@@ -670,7 +670,7 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 			
-			return groupingBlock(collection, key);
+			return groupingBlock(databaseTransaction, collection, key);
 		};
 	}
 	else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
@@ -680,7 +680,7 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 			
-			return groupingBlock(collection, key, object);
+			return groupingBlock(databaseTransaction, collection, key, object);
 		};
 	}
 	else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
@@ -690,7 +690,7 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 			
-			return groupingBlock(collection, key, metadata);
+			return groupingBlock(databaseTransaction, collection, key, metadata);
 		};
 	}
 	else
@@ -700,7 +700,7 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 			
-			return groupingBlock(collection, key, object, metadata);
+			return groupingBlock(databaseTransaction, collection, key, object, metadata);
 		};
 	}
 	
@@ -1899,8 +1899,9 @@
 			
 			YapCollectionKey *another = [databaseTransaction collectionKeyForRowid:anotherRowid];
 			
-			return sortingBlock(group, collectionKey.collection, collectionKey.key,
-			                                 another.collection,       another.key);
+			return sortingBlock(databaseTransaction, group,
+			                      collectionKey.collection, collectionKey.key,
+			                            another.collection,       another.key);
 		}
 		else if (sortingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
@@ -1913,8 +1914,9 @@
 			                               object:&anotherObject
 			                             forRowid:anotherRowid];
 			
-			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,
-			                                 another.collection,       another.key, anotherObject);
+			return sortingBlock(databaseTransaction, group,
+			                      collectionKey.collection, collectionKey.key,        object,
+			                            another.collection,       another.key, anotherObject);
 		}
 		else if (sortingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
@@ -1927,8 +1929,9 @@
 			                             metadata:&anotherMetadata
 			                             forRowid:anotherRowid];
 			
-			return sortingBlock(group, collectionKey.collection, collectionKey.key,        metadata,
-			                                 another.collection,       another.key, anotherMetadata);
+			return sortingBlock(databaseTransaction, group,
+			                      collectionKey.collection, collectionKey.key,        metadata,
+			                            another.collection,       another.key, anotherMetadata);
 		}
 		else
 		{
@@ -1943,8 +1946,9 @@
 			                             metadata:&anotherMetadata
 			                             forRowid:anotherRowid];
 			
-			return sortingBlock(group, collectionKey.collection, collectionKey.key,        object,        metadata,
-			                                 another.collection,       another.key, anotherObject, anotherMetadata);
+			return sortingBlock(databaseTransaction, group,
+			                      collectionKey.collection, collectionKey.key,        object,        metadata,
+			                            another.collection,       another.key, anotherObject, anotherMetadata);
 		}
 	};
 	
@@ -3399,28 +3403,28 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key);
+			group = groupingBlock(databaseTransaction, collection, key);
 		}
 		else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, object);
+			group = groupingBlock(databaseTransaction, collection, key, object);
 		}
 		else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, metadata);
+			group = groupingBlock(databaseTransaction, collection, key, metadata);
 		}
 		else
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, object, metadata);
+			group = groupingBlock(databaseTransaction, collection, key, object, metadata);
 		}
 	}
 	
@@ -3479,28 +3483,28 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithKeyBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key);
+			group = groupingBlock(databaseTransaction, collection, key);
 		}
 		else if (groupingBlockType == YapDatabaseViewBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, object);
+			group = groupingBlock(databaseTransaction, collection, key, object);
 		}
 		else if (groupingBlockType == YapDatabaseViewBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, metadata);
+			group = groupingBlock(databaseTransaction, collection, key, metadata);
 		}
 		else
 		{
 			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 			    (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 			
-			group = groupingBlock(collection, key, object, metadata);
+			group = groupingBlock(databaseTransaction, collection, key, object, metadata);
 		}
 	}
 	
@@ -3621,7 +3625,7 @@
 				__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 			        (YapDatabaseViewGroupingWithObjectBlock)groupingBlock_generic;
 				
-				group = groupingBlock(collection, key, object);
+				group = groupingBlock(databaseTransaction, collection, key, object);
 			}
 			else
 			{
@@ -3629,7 +3633,7 @@
 			        (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 				
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-				group = groupingBlock(collection, key, object, metadata);
+				group = groupingBlock(databaseTransaction, collection, key, object, metadata);
 			}
 		}
 		
@@ -3784,7 +3788,7 @@
 				__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 			        (YapDatabaseViewGroupingWithMetadataBlock)groupingBlock_generic;
 				
-				group = groupingBlock(collection, key, metadata);
+				group = groupingBlock(databaseTransaction, collection, key, metadata);
 			}
 			else
 			{
@@ -3792,7 +3796,7 @@
 			        (YapDatabaseViewGroupingWithRowBlock)groupingBlock_generic;
 				
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-				group = groupingBlock(collection, key, object, metadata);
+				group = groupingBlock(databaseTransaction, collection, key, object, metadata);
 			}
 		}
 		

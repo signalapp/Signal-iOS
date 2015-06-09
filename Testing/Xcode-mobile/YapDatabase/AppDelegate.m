@@ -345,15 +345,17 @@ static const NSUInteger STR_LENGTH = 2000;
 	NSLog(@"Registering mainView....");
 
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString __unused *collection, NSString __unused *key, id __unused object){
-		
+	    ^NSString *(YapDatabaseReadTransaction __unused *transaction,
+	                NSString __unused *collection, NSString __unused *key, id __unused object)
+	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString __unused *group, NSString __unused *collection1, NSString __unused *key1, id obj1,
-	                       NSString __unused *collection2, NSString __unused *key2, id obj2){
-		
+	    ^(YapDatabaseReadTransaction __unused *transaction, NSString __unused *group,
+	      NSString __unused *collection1, NSString __unused *key1, id obj1,
+	      NSString __unused *collection2, NSString __unused *key2, id obj2)
+	{
 		return [obj1 compare:obj2];
 	}];
 
@@ -372,15 +374,17 @@ static const NSUInteger STR_LENGTH = 2000;
 	NSLog(@"Registering onTheFlyView....");
 
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString __unused *collection, NSString __unused *key, id __unused object){
-		
+	    ^NSString *(YapDatabaseReadTransaction __unused *transaction,
+	                NSString __unused *collection, NSString __unused *key, id __unused object)
+	{
 		return @"";
 	}];
 
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString __unused *group, NSString __unused *collection, NSString __unused *key1, id obj1,
-	                       NSString __unused *collection2, NSString __unused *key2, id obj2){
-		
+	    ^(YapDatabaseReadTransaction __unused *transaction, NSString __unused *group,
+	      NSString __unused *collection, NSString __unused *key1, id obj1,
+	      NSString __unused *collection2, NSString __unused *key2, id obj2)
+	{
 		return [obj1 compare:obj2];
 	}];
 
