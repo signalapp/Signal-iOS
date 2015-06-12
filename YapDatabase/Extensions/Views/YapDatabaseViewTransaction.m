@@ -28,6 +28,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 /**
  * The view is tasked with storing ordered arrays of keys.

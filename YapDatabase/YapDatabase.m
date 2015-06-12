@@ -27,6 +27,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 NSString *const YapDatabaseClosedNotification = @"YapDatabaseClosedNotification";
 
@@ -2612,7 +2613,9 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #pragma mark Manual Checkpointing
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
 static BOOL const YDB_PRINT_WAL_SIZE = YES;
+#endif
 
 /**
  * This method should be called whenever the maximum checkpointable snapshot is incremented.
@@ -2635,6 +2638,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
 		
+	#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
 		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
 		{
 			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
@@ -2646,6 +2650,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
 			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
+	#endif
 		
 		// We're ready to checkpoint more frames.
 		//
@@ -2679,6 +2684,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		YDBLogVerbose(@"Post-checkpoint (mode=passive) (snapshot=%llu): frames(%d) checkpointed(%d)",
 		              maxCheckpointableSnapshot, toalFrameCount, checkpointedFrameCount);
 		
+	#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
 		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
 		{
 			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
@@ -2690,6 +2696,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
 			                                 countStyle:NSByteCountFormatterCountStyleFile]);
 		}
+	#endif
 		
 		// Have we checkpointed the entire WAL yet?
 		
@@ -2853,6 +2860,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 				[strongSelf commitTransaction];
 			}
 			
+		#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
 			if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
 			{
 				NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
@@ -2865,7 +2873,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 				    [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
 				                                   countStyle:NSByteCountFormatterCountStyleFile]);
 			}
-
+		#endif
 			
 		#pragma clang diagnostic pop
 		}});

@@ -34,6 +34,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 static NSUInteger const UNLIMITED_CACHE_LIMIT = 0;
 static NSUInteger const MIN_KEY_CACHE_LIMIT   = 500;

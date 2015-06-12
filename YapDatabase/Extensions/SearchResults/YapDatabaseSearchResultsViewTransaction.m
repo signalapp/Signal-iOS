@@ -24,6 +24,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 static NSString *const ext_key_superclassVersion = @"viewClassVersion";
 static NSString *const ext_key_subclassVersion   = @"searchResultViewClassVersion";
