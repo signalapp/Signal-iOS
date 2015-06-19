@@ -32,20 +32,23 @@ static double const STALLED_PROGRESS = 0.9;
 
 -(void)initializeSocketStatusBar
 {
-    _socketStatusView = [[UIProgressView alloc]initWithProgressViewStyle:UIProgressViewStyleDefault];
+    if (!_socketStatusView) {
+        _socketStatusView = [[UIProgressView alloc]initWithProgressViewStyle:UIProgressViewStyleDefault];
+    }
     
     CGRect bar = self.navigationBar.frame;
     _socketStatusView.frame = CGRectMake(0, bar.size.height-1.0f, self.view.frame.size.width, 1.0f);
     _socketStatusView.progress = 0.0f;
     _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
-    [self.navigationBar addSubview:_socketStatusView];
+    
+    if (![_socketStatusView superview]) {
+        [self.navigationBar addSubview:_socketStatusView];
+    }
 }
 
 -(void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
+[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Socket Status Notifications
