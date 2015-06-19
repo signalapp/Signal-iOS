@@ -796,6 +796,11 @@ typedef enum : NSUInteger {
         if([self.thread isKindOfClass:[TSGroupThread class]]) {
             NSString *name = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:msg.senderId];
             name = name ? name : msg.senderId;
+            
+            if (!name) {
+                name = @"";
+            }
+            
             NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:name];
             [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
             

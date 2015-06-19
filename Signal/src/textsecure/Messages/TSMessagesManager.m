@@ -430,7 +430,9 @@
         TSContactThread *cThread = (TSContactThread*)thread;
         
         if (call.callType == RPRecentCallTypeMissed) {
-            [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            if (notif) {
+                [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            }
             
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.category   = Signal_CallBack_Category;

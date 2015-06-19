@@ -222,7 +222,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 -(Contact*)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber {
-    NSArray *allContacts = latestContactsById.allValues;
+    NSArray *allContacts = [self allContacts];
 
     ContactSearchBlock searchBlock = ^BOOL(Contact *contact, NSUInteger idx, BOOL *stop) {
         for (PhoneNumber *number in contact.parsedPhoneNumbers) {
@@ -336,7 +336,17 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (NSArray*)allContacts {
-    return [latestContactsById allValues];
+    NSMutableArray *allContacts = [NSMutableArray array];
+    
+    for (NSString *key in latestContactsById.allKeys){
+        Contact *contact = [latestContactsById objectForKey:key];
+        
+        if ([contact isKindOfClass:[Contact class]]) {
+            [allContacts addObject:contact];
+        }
+    }
+    return allContacts;
+    
 }
 
 - (NSArray*)recordsForContacts:(NSArray*) contacts{

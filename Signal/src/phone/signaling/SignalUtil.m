@@ -32,15 +32,27 @@
 }
 
 -(bool) isRingingForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"RING"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
+    NSNumber *sessionId = self.tryGetSessionId;
+    BOOL isMethod  = [self.method isEqualToString:@"RING"];
+    BOOL isSession = sessionId?[@(targetSessionId) isEqualToNumber:sessionId]:NO;
+    
+    return isMethod&&isSession;
 }
 
 -(bool) isHangupForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"DELETE"] && self.tryGetSessionId?[@(targetSessionId) isEqualToNumber:self.tryGetSessionId]:NO;
+    NSNumber *sessionId = self.tryGetSessionId;
+    BOOL isMethod  = [self.method isEqualToString:@"DELETE"];
+    BOOL isSession = sessionId?[@(targetSessionId) isEqualToNumber:sessionId]:NO;
+    
+    return isMethod&&isSession;
 }
 
 -(bool) isBusyForSession:(int64_t)targetSessionId {
-    return [self.method isEqualToString:@"BUSY"] && [@(targetSessionId) isEqualToNumber:self.tryGetSessionId];
+    NSNumber *sessionId = self.tryGetSessionId;
+    BOOL isMethod  = [self.method isEqualToString:@"BUSY"];
+    BOOL isSession = sessionId?[@(targetSessionId) isEqualToNumber:sessionId]:NO;
+    
+    return isMethod&&isSession;
 }
 
 +(HttpRequest*) httpRequestToOpenPortWithSessionId:(int64_t)sessionId {
