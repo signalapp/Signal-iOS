@@ -60,7 +60,7 @@
         [self blockingPushRegistration];
     }
     
-    if (VOIPRegistration) {
+    if (VOIPRegistration && [TSAccountManager isRegistered]) {
         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
             [TSAccountManager registerWithRedPhoneToken:signupToken
                                               pushToken:pushToken
