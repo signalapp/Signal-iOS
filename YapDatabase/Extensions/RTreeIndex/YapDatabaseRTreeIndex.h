@@ -23,6 +23,14 @@
  * - enumerate all people in a bounding-box
  * - enumerate all regions overlapping a bounding-box
  *
+ * Note:
+ *
+ * The sqlite3 r-tree documentation <https://www.sqlite.org/rtree.html> states that
+ *
+ * > By default, coordinates are stored in an RTree using 32-bit floating point values. When a coordinate cannot be exactly represented by a 32-bit floating point number, the lower-bound coordinates are rounded down and the upper-bound coordinates are rounded up. Thus, bounding boxes might be slightly larger than specified, but will never be any smaller. This is exactly what is desired for doing the more common "overlapping" queries where the application wants to find every entry in the RTree that overlaps a query bounding box. Rounding the entry bounding boxes outward might cause a few extra entries to appears in an overlapping query if the edge of the entry bounding box corresponds to an edge of the query bounding box. But the overlapping query will never miss a valid table entry.
+ *
+ * so coordinates in the r-tree might differ slightly from the ones you are giving the app, in particular if you are using Double values.
+ *
  * For more information, see the wiki article about rtree indexes:
  * https://github.com/yapstudios/YapDatabase/wiki/RTree-Indexes
 **/
