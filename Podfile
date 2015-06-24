@@ -5,12 +5,12 @@ inhibit_all_warnings!
 link_with ["Signal", "SignalTests"]
 
 pod 'OpenSSL',                    '~> 1.0.203'
-pod 'libPhoneNumber-iOS',         '~> 0.8.2'
+pod 'libPhoneNumber-iOS',         '~> 0.8.5'
 pod 'AxolotlKit',                 '~> 0.7'
 pod 'PastelogKit',                '~> 1.2'
 pod 'TwistedOakCollapsingFutures','~> 1.0'
 pod 'AFNetworking',               '~> 2.5.3'
-pod 'Mantle',                     '~> 2.0'
+pod 'Mantle',                     '~> 2.0.2'
 pod 'FFCircularProgressView',     '>= 0.1'
 pod 'SCWaveformView',             '~> 1.0'
 pod 'YapDatabase/SQLCipher',      '~> 2.6.4'

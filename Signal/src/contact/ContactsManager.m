@@ -346,7 +346,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     }
     return allContacts;
-    
 }
 
 - (NSArray*)recordsForContacts:(NSArray*) contacts{
