@@ -1554,7 +1554,7 @@ NS_INLINE BOOL YDBIsMainThread()
 }
 
 /**
- * Read-write access to the database.
+ * Read-only access to the database.
  *
  * The given block can run concurrently with sibling connections,
  * regardless of whether the sibling connections are executing read-only or read-write transactions.
@@ -1571,7 +1571,7 @@ NS_INLINE BOOL YDBIsMainThread()
 }
 
 /**
- * Read-write access to the database.
+ * Read-only access to the database.
  *
  * The given block can run concurrently with sibling connections,
  * regardless of whether the sibling connections are executing read-only or read-write transactions.
