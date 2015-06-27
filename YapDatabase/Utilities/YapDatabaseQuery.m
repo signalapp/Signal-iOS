@@ -101,14 +101,23 @@
 	
 	@try
 	{
-		NSMutableDictionary *paramIndexToElementCountMap = [NSMutableDictionary dictionary];
+		NSMutableDictionary *paramIndexToArrayCountMap = [NSMutableDictionary dictionary];
 		for (NSUInteger i = 0; i < paramCount; i++)
 		{
 			id param = va_arg(args, id);
 			if ([param isKindOfClass:[NSArray class]])
 			{
-				paramIndexToElementCountMap[@(i)] = @([param count]);
-				[queryParameters addObjectsFromArray:param];
+				NSUInteger arrayCount = [param count];
+				if (arrayCount == 0)
+				{
+					[queryParameters addObject:[NSNull null]];
+				}
+				else
+				{
+					paramIndexToArrayCountMap[@(i)] = @([param count]);
+					[queryParameters addObjectsFromArray:param];
+				}
+				
 			}
 			else
 			{
@@ -116,24 +125,35 @@
 			}
 		}
 		
-		if (paramIndexToElementCountMap.count > 0)
+		if (paramIndexToArrayCountMap.count > 0)
 		{
-			NSUInteger unpackingOffset = 0;
-			NSString *queryString = [format copy];
-			NSRange range;
-			for (NSNumber *index in paramIndexToElementCountMap)
+			NSMutableString *queryString = [format mutableCopy];
+			
+			__block NSUInteger unpackingOffset = 0;
+			
+			[paramIndexToArrayCountMap enumerateKeysAndObjectsUsingBlock:
+			    ^(NSNumber *paramIndexNum, NSNumber *arrayCountNum, BOOL *stop)
 			{
-				NSInteger elementCount = [paramIndexToElementCountMap[index] intValue];
-				NSMutableArray *unpackedParams = [NSMutableArray array];
-				for (NSInteger i = 0; i < elementCount; i++)
+				NSUInteger arrayCount = [arrayCountNum unsignedIntegerValue];
+				
+				NSMutableString *unpackedParamsStr = [NSMutableString stringWithCapacity:(arrayCount * 2)];
+				for (NSUInteger i = 0; i < arrayCount; i++)
 				{
-					[unpackedParams addObject:@"?"];
+					if (i == 0)
+						[unpackedParamsStr appendString:@"?"];
+					else
+						[unpackedParamsStr appendString:@",?"];
 				}
-				NSString *unpackedParamsStr = [unpackedParams componentsJoinedByString:@","];
-				range = NSMakeRange([paramLocations[[index intValue]] intValue] + unpackingOffset, 1);
-				queryString = [queryString stringByReplacingCharactersInRange:range
-																													 withString:unpackedParamsStr];
-			}
+				
+				NSUInteger paramIndex = [paramIndexNum unsignedIntegerValue];
+				NSUInteger paramLocation = [paramLocations[paramIndex] unsignedIntegerValue];
+				
+				NSRange range = NSMakeRange(paramLocation + unpackingOffset, 1);
+				unpackingOffset += [unpackedParamsStr length] - 1;
+				
+				[queryString replaceCharactersInRange:range withString:unpackedParamsStr];
+				
+			}];
 			
 			format = [queryString copy];
 		}

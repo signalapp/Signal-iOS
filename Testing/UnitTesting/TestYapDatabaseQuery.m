@@ -41,6 +41,16 @@
 	expectedArguments = @[@"test", @(1), @(5)];
 	XCTAssertTrue([query.queryString isEqualToString:@"WHERE col2 <> ? AND col IN (?,?)"], @"Incorrect queryString");
 	XCTAssertTrue([query.queryParameters isEqualToArray:expectedArguments], @"Incorrect queryParameters");
+	
+	query = [YapDatabaseQuery queryWithFormat:@"WHERE col1 IN (?) AND col2 IN (?)", @[@(1), @(2)], @[@(3), @(4)]];
+	expectedArguments = @[@(1), @(2), @(3), @(4)];
+	XCTAssertTrue([query.queryString isEqualToString:@"WHERE col1 IN (?,?) AND col2 IN (?,?)"], @"Incorrect queryString: %@", query.queryString);
+	XCTAssertTrue([query.queryParameters isEqualToArray:expectedArguments], @"Incorrect queryParameters");
+	
+	query = [YapDatabaseQuery queryWithFormat:@"WHERE col1 IN (?)", @[]];
+	expectedArguments = @[ [NSNull null] ];
+	XCTAssertTrue([query.queryString isEqualToString:@"WHERE col1 IN (?)"], @"Incorrect queryString: %@", query.queryString);
+	XCTAssertTrue([query.queryParameters isEqualToArray:expectedArguments], @"Incorrect queryParameters");
 }
 
 @end

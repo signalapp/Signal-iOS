@@ -1130,6 +1130,10 @@ static NSString *const ext_key_version_deprecated = @"version";
 			
 			sqlite3_bind_text(statement, bind_idx, [cast UTF8String], -1, SQLITE_TRANSIENT);
 		}
+		else if ([value isKindOfClass:[NSNull class]])
+		{
+			sqlite3_bind_null(statement, bind_idx);
+		}
 		else
 		{
 			YDBLogWarn(@"Unable to bind value for with unsupported class: %@", NSStringFromClass([value class]));
