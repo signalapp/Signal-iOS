@@ -18,9 +18,6 @@
 
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCache.h"
-#if DEBUG
-#import "YapDebugDictionary.h"
-#endif
 
 #import "sqlite3.h"
 
@@ -105,13 +102,13 @@ static NSString *const changeset_key_reset            = @"reset";
 	__strong YapDatabaseCloudKit *parent;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
-	YapCache *cleanMappingTableInfoCache;
-	YapCache *cleanRecordTableInfoCache;
+	YapCache<NSNumber *, id> *cleanMappingTableInfoCache; // rowid -> {[ NSString, NSNull ]}
+	YapCache<NSString *, id> *cleanRecordTableInfoCache;  // hash  -> {[ YDBCKCleanRecordTableInfo, NSNull ]}
 	
-	NSMutableDictionary *dirtyMappingTableInfoDict;
-	NSMutableDictionary *dirtyRecordTableInfoDict;
+	NSMutableDictionary<NSNumber *, YDBCKDirtyMappingTableInfo *> *dirtyMappingTableInfoDict;
+	NSMutableDictionary<NSString *, YDBCKDirtyRecordTableInfo *> *dirtyRecordTableInfoDict;
 	
-	YapCache *recordKeysCache;
+	YapCache<NSString *, NSArray *> *recordKeysCache;
 	
 	BOOL reset;
 	BOOL isOperationCompletionTransaction;
@@ -202,11 +199,7 @@ static NSString *const changeset_key_reset            = @"reset";
 	
 	NSMutableArray *deletedRecordIDs;
 	
-#if DEBUG
-	YapDebugDictionary *modifiedRecords;
-#else
-	NSMutableDictionary *modifiedRecords;
-#endif
+	NSMutableDictionary<CKRecordID *, YDBCKChangeRecord *> *modifiedRecords;
 }
 
 - (instancetype)initWithUUID:(NSString *)uuid

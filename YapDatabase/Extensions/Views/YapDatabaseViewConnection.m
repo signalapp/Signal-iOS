@@ -77,7 +77,7 @@
 		
 		pageCache = [[YapCache alloc] initWithCountLimit:40];
 		pageCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
-		pageCache.allowedObjectClasses = [NSSet setWithObjects:[YapDatabaseViewPage class], nil];
+		pageCache.allowedObjectClasses = [NSSet setWithObject:[YapDatabaseViewPage class]];
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 		sharedKeySetForExternalChangeset = [NSDictionary sharedKeySetForKeys:[self externalChangesetKeys]];

@@ -9,6 +9,7 @@
 #import "YapDatabaseSecondaryIndexTransaction.h"
 
 #import "YapCache.h"
+#import "YapDatabaseStatement.h"
 
 #import "sqlite3.h"
 
@@ -73,7 +74,7 @@
 	
 	NSMutableDictionary *blockDict;
 	
-	YapCache *queryCache;
+	YapCache<NSString *, YapDatabaseStatement *> *queryCache;
 	NSUInteger queryCacheLimit;
 }
 
