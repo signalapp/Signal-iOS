@@ -1623,14 +1623,15 @@
 	{ // Create "view-object"
 	
 		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-		    ^NSString *(NSString *collection, NSString *key)
+		    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 		{
 			return @"";
 		}];
 		
 		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-		    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-		                       NSString *collection2, NSString *key2, id obj2)
+		    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+		        NSString *collection1, NSString *key1, id obj1,
+		        NSString *collection2, NSString *key2, id obj2)
 		{
 			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
@@ -1651,14 +1652,15 @@
 	{ // Create "view-metadata"
 	
 		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-		    ^NSString *(NSString *collection, NSString *key)
+		    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 		{
 			return @"";
 		}];
 		
 		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withMetadataBlock:
-		    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-		                       NSString *collection2, NSString *key2, id obj2)
+		    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+		        NSString *collection1, NSString *key1, id obj1,
+		        NSString *collection2, NSString *key2, id obj2)
 		{
 			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
@@ -1679,7 +1681,8 @@
 	{ // Create "filter-object-even"
 	
 		YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
-		    ^BOOL (NSString *group, NSString *collection, NSString *key, id object)
+		    ^BOOL (YapDatabaseReadTransaction *transaction, NSString *group,
+		             NSString *collection, NSString *key, id object)
 		{
 			__unsafe_unretained NSNumber *number = (NSNumber *)object;
 
@@ -1701,7 +1704,8 @@
 	{ // Create "filter-metadata-odd"
 	
 		YapDatabaseViewFiltering *oddFiltering = [YapDatabaseViewFiltering withMetadataBlock:
-		    ^BOOL (NSString *group, NSString *collection, NSString *key, id metadata)
+		    ^BOOL (YapDatabaseReadTransaction *transaction, NSString *group,
+		             NSString *collection, NSString *key, id metadata)
 		{
 			__unsafe_unretained NSNumber *number = (NSNumber *)metadata;
 
