@@ -605,8 +605,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[dirtyRecordTableInfo incrementOwnerCount];
 			[dirtyRecordTableInfo mergeOriginalValues:recordInfo.originalValues];
 			
-			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:@(rowid)];
-			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:@(rowid)];
+			[parentConnection->cleanRecordTableInfoCache removeObjectForKey:hash];
+			[parentConnection->dirtyRecordTableInfoDict setObject:dirtyRecordTableInfo forKey:hash];
 		}
 		else
 		{
