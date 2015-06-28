@@ -65,11 +65,13 @@ typedef NS_OPTIONS(NSUInteger, YapDatabasePermittedTransactions) {
 #endif
 
 typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
-    YapDatabaseConnectionFlushMemoryFlags_None       = 0,
-    YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
-    YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
-    YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches |
-                                                        YapDatabaseConnectionFlushMemoryFlags_Statements),
+	YapDatabaseConnectionFlushMemoryFlags_None       = 0,
+	YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
+	YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
+	YapDatabaseConnectionFlushMemoryFlags_Internal   = 1 << 2,
+	YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches     |
+	                                                    YapDatabaseConnectionFlushMemoryFlags_Statements |
+	                                                    YapDatabaseConnectionFlushMemoryFlags_Internal   ),
 };
 
 
@@ -565,8 +567,12 @@ NS_ASSUME_NONNULL_BEGIN
  * YapDatabaseConnectionFlushMemoryFlags_Statements:
  *     Flushes all pre-compiled sqlite statements.
  * 
+ * YapDatabaseConnectionFlushMemoryFlags_Internal
+ *     Flushes internal memory used by sqlite instance via sqlite_db_release_memory.
+ *     Generally this means cached database pages.
+ * 
  * YapDatabaseConnectionFlushMemoryFlags_All:
- *     Full flush of all caches and pre-compiled sqlite statements.
+ *     Full flush of everything (caches, statements, internal)
 **/
 - (void)flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 

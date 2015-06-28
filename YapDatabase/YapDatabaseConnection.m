@@ -427,6 +427,11 @@ NS_INLINE BOOL YDBIsMainThread()
 		[self _flushStatements];
 	}
 	
+	if (flags & YapDatabaseConnectionFlushMemoryFlags_Internal)
+	{
+		sqlite3_db_release_memory(db);
+	}
+	
 	[extensions enumerateKeysAndObjectsUsingBlock:^(id __unused extNameObj, id extConnectionObj, BOOL __unused *stop) {
 		
 		[(YapDatabaseExtensionConnection *)extConnectionObj _flushMemoryWithFlags:flags];

@@ -383,6 +383,63 @@
 		XCTAssertNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
 		XCTAssertNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
 	}];
+	
+	[connection1 flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_All];
+	[connection2 flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_All];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		XCTAssertTrue([transaction numberOfCollections] == 2, @"Incorrect number of collections");
+		
+		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
+		XCTAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
+		XCTAssertTrue([transaction numberOfKeysInCollection:@"collection2"] == 0, @"Oops");
+		
+		XCTAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key3 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key4 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key5 inCollection:nil], @"Oops");
+		
+		XCTAssertNotNil([transaction objectForKey:key1 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key2 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key3 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key4 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key5 inCollection:@"collection1"], @"Oops");
+		
+		XCTAssertNil([transaction objectForKey:key1 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key2 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key3 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
+	}];
+	
+	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		XCTAssertTrue([transaction numberOfCollections] == 2, @"Incorrect number of collections");
+		
+		XCTAssertTrue([transaction numberOfKeysInCollection:nil] == 5, @"Oops");
+		XCTAssertTrue([transaction numberOfKeysInCollection:@"collection1"] == 5, @"Oops");
+		XCTAssertTrue([transaction numberOfKeysInCollection:@"collection2"] == 0, @"Oops");
+		
+		XCTAssertNotNil([transaction objectForKey:key1 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key3 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key4 inCollection:nil], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key5 inCollection:nil], @"Oops");
+		
+		XCTAssertNotNil([transaction objectForKey:key1 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key2 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key3 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key4 inCollection:@"collection1"], @"Oops");
+		XCTAssertNotNil([transaction objectForKey:key5 inCollection:@"collection1"], @"Oops");
+		
+		XCTAssertNil([transaction objectForKey:key1 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key2 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key3 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key4 inCollection:@"collection2"], @"Oops");
+		XCTAssertNil([transaction objectForKey:key5 inCollection:@"collection2"], @"Oops");
+	}];
 }
 
 - (void)test2
