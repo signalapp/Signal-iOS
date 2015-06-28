@@ -1,7 +1,7 @@
 #import "YapDatabaseConnectionDefaults.h"
 
 static NSUInteger const DEFAULT_OBJECT_CACHE_LIMIT   = 250;
-static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 500;
+static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 
 
 @implementation YapDatabaseConnectionDefaults

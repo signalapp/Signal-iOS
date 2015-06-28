@@ -316,10 +316,12 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	}
 	else
 	{
-		if (newSuspendCount == 0)
+		if (newSuspendCount == 0) { // <- { brackets } required when YapDatabaseLoggingTechnique_Disabled
 			YDBLogInfo(@"=> RESUMED");
-		else
+		}
+		else {
 			YDBLogInfo(@"=> SUSPENDED : decremented suspendCount == %lu", (unsigned long)newSuspendCount);
+		}
 		
 		[self postSuspendCountChangedNotification];
 	}
@@ -492,10 +494,12 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		nextChangeSet = [masterQueue makeInFlightChangeSet:&isAlreadyInFlight]; // this method is thread-safe
 		if (nextChangeSet == nil)
 		{
-			if (isAlreadyInFlight)
+			if (isAlreadyInFlight) { // <- { brackets } required when YapDatabaseLoggingTechnique_Disabled
 				YDBLogVerbose(@"Skipping dispatch operation - upload in progress");
-			else
+			}
+			else {
 				YDBLogVerbose(@"Skipping dispatch operation - nothing to upload");
+			}
 			
 			if (forceNotification) {
 				[self postInFlightChangeSetChangedNotification:[masterQueue currentChangeSetUUID]];

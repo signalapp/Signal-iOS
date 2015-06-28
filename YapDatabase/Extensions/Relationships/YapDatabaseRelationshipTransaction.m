@@ -20,6 +20,7 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
 
 static NSString *const ext_key_classVersion       = @"classVersion";
 static NSString *const ext_key_versionTag         = @"versionTag";

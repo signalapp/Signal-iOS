@@ -19,6 +19,8 @@
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
+#pragma unused(ydbLogLevel)
+
 
 @implementation YapDatabaseFilteredViewTransaction
 
@@ -1037,15 +1039,25 @@
 		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
-		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		if (pageKey == nil)
+		{
+			// Was previously filtered from this view.
+			// And still filtered from this view.
+			lastHandledGroup = nil;
+		}
+		else
+		{
+			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			[viewConnection->changes addObject:
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:existingIndex
+			                                    withChanges:flags]];
+			
+			lastHandledGroup = group;
+		}
 		
-		[viewConnection->changes addObject:
-		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-		                                        inGroup:group
-		                                        atIndex:existingIndex
-		                                    withChanges:flags]];
-		
-		lastHandledGroup = group;
 		return;
 	}
 	
@@ -1196,15 +1208,25 @@
 		YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedMetadata;
 		
 		NSString *pageKey = [self pageKeyForRowid:rowid];
-		NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		if (pageKey == nil)
+		{
+			// Was previously filtered from this view.
+			// And still filtered from this view.
+			lastHandledGroup = nil;
+		}
+		else
+		{
+			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			[viewConnection->changes addObject:
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:existingIndex
+			                                    withChanges:flags]];
+			
+			lastHandledGroup = group;
+		}
 		
-		[viewConnection->changes addObject:
-		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-		                                        inGroup:group
-		                                        atIndex:existingIndex
-		                                    withChanges:flags]];
-		
-		lastHandledGroup = group;
 		return;
 	}
 	

@@ -1,5 +1,5 @@
-#import "YapDatabaseSecondaryIndexConnection.h"
-#import "YapDatabaseSecondaryIndexPrivate.h"
+#import "YapDatabaseRTreeIndexConnection.h"
+#import "YapDatabaseRTreeIndexPrivate.h"
 #import "YapDatabaseStatement.h"
 
 #import "YapDatabasePrivate.h"
@@ -17,14 +17,12 @@
  * See YapDatabaseLogging.h for more information.
  **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #else
-  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
+static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
-#pragma unused(ydbLogLevel)
 
-
-@implementation YapDatabaseSecondaryIndexConnection
+@implementation YapDatabaseRTreeIndexConnection
 {
 	sqlite3_stmt *insertStatement;
 	sqlite3_stmt *updateStatement;
@@ -32,16 +30,16 @@
 	sqlite3_stmt *removeAllStatement;
 }
 
-@synthesize secondaryIndex = secondaryIndex;
+@synthesize rTreeIndex = rTreeIndex;
 
-- (id)initWithSecondaryIndex:(YapDatabaseSecondaryIndex *)inSecondaryIndex
+- (id)initWithRTreeIndex:(YapDatabaseRTreeIndex *)inRTreeIndex
           databaseConnection:(YapDatabaseConnection *)inDatabaseConnection
 {
 	if ((self = [super init]))
 	{
-		secondaryIndex = inSecondaryIndex;
+		rTreeIndex = inRTreeIndex;
 		databaseConnection = inDatabaseConnection;
-		
+
 		queryCacheLimit = 10;
 		queryCache = [[YapCache alloc] initWithCountLimit:queryCacheLimit];
 		queryCache.allowedKeyClasses = [NSSet setWithObject:[NSString class]];
@@ -73,7 +71,7 @@
 	{
 		[queryCache removeAllObjects];
 	}
-	
+
 	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
 	{
 		[self _flushStatements];
@@ -89,7 +87,7 @@
 **/
 - (YapDatabaseExtension *)extension
 {
-	return secondaryIndex;
+	return rTreeIndex;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,24 +97,24 @@
 - (BOOL)queryCacheEnabled
 {
 	__block BOOL result = NO;
-	
+
 	dispatch_block_t block = ^{
-		
+
 		result = (queryCache == nil) ? NO : YES;
 	};
-	
+
 	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
 		block();
 	else
 		dispatch_sync(databaseConnection->connectionQueue, block);
-	
+
 	return result;
 }
 
 - (void)setQueryCacheEnabled:(BOOL)queryCacheEnabled
 {
 	dispatch_block_t block = ^{
-		
+
 		if (queryCacheEnabled)
 		{
 			if (queryCache == nil)
@@ -131,7 +129,7 @@
 			queryCache = nil;
 		}
 	};
-	
+
 	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
 		block();
 	else
@@ -141,28 +139,28 @@
 - (NSUInteger)queryCacheLimit
 {
 	__block NSUInteger result = 0;
-	
+
 	dispatch_block_t block = ^{
-		
+
 		result = queryCacheLimit;
 	};
-	
+
 	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
 		block();
 	else
 		dispatch_sync(databaseConnection->connectionQueue, block);
-	
+
 	return result;
 }
 
 - (void)setQueryCacheLimit:(NSUInteger)newQueryCacheLimit
 {
 	dispatch_block_t block = ^{
-		
+
 		queryCacheLimit = newQueryCacheLimit;
 		queryCache.countLimit = queryCacheLimit;
 	};
-	
+
 	if (dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey))
 		block();
 	else
@@ -178,11 +176,11 @@
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
-	YapDatabaseSecondaryIndexTransaction *transaction =
-	    [[YapDatabaseSecondaryIndexTransaction alloc]
-	        initWithSecondaryIndexConnection:self
+	YapDatabaseRTreeIndexTransaction *transaction =
+	    [[YapDatabaseRTreeIndexTransaction alloc]
+	        initWithRTreeIndexConnection:self
 	                     databaseTransaction:databaseTransaction];
-	
+
 	return transaction;
 }
 
@@ -191,14 +189,14 @@
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
-	YapDatabaseSecondaryIndexTransaction *transaction =
-	    [[YapDatabaseSecondaryIndexTransaction alloc]
-	        initWithSecondaryIndexConnection:self
+	YapDatabaseRTreeIndexTransaction *transaction =
+	    [[YapDatabaseRTreeIndexTransaction alloc]
+	        initWithRTreeIndexConnection:self
 	                     databaseTransaction:databaseTransaction];
-	
+
 	if (blockDict == nil)
-		blockDict = [NSMutableDictionary dictionaryWithSharedKeySet:secondaryIndex->columnNamesSharedKeySet];
-	
+		blockDict = [NSMutableDictionary dictionaryWithSharedKeySet:rTreeIndex->columnNamesSharedKeySet];
+
 	return transaction;
 }
 
@@ -238,14 +236,14 @@
 {
 	sqlite3 *db = databaseConnection->db;
 	YapDatabaseString stmt; MakeYapDatabaseString(&stmt, stmtString);
-	
+
 	int status = sqlite3_prepare_v2(db, stmt.str, stmt.length+1, statement, NULL);
 	if (status != SQLITE_OK)
 	{
 		YDBLogError(@"%@: Error creating prepared statement: %d %s",
 					NSStringFromSelector(caller_cmd), status, sqlite3_errmsg(db));
 	}
-	
+
 	FreeYapDatabaseString(&stmt);
 }
 
@@ -255,27 +253,27 @@
 	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [secondaryIndex tableName]];
-		
-		for (YapDatabaseSecondaryIndexColumn *column in secondaryIndex->setup)
+		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [rTreeIndex tableName]];
+
+		for (NSString *columnName in rTreeIndex->setup)
 		{
-			[string appendFormat:@", \"%@\"", column.name];
+			[string appendFormat:@", \"%@\"", columnName];
 		}
-		
+
 		[string appendString:@") VALUES (?"];
-		
-		NSUInteger count = [secondaryIndex->setup count];
+
+		NSUInteger count = [rTreeIndex->setup count];
 		NSUInteger i;
 		for (i = 0; i < count; i++)
 		{
 			[string appendString:@", ?"];
 		}
-		
+
 		[string appendString:@");"];
-		
+
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
-	
+
 	return *statement;
 }
 
@@ -285,27 +283,27 @@
 	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [secondaryIndex tableName]];
-		
-		for (YapDatabaseSecondaryIndexColumn *column in secondaryIndex->setup)
+		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [rTreeIndex tableName]];
+
+		for (NSString *columnName in rTreeIndex->setup)
 		{
-			[string appendFormat:@", \"%@\"", column.name];
+			[string appendFormat:@", \"%@\"", columnName];
 		}
-		
+
 		[string appendString:@") VALUES (?"];
-		
-		NSUInteger count = [secondaryIndex->setup count];
+
+		NSUInteger count = [rTreeIndex->setup count];
 		NSUInteger i;
 		for (i = 0; i < count; i++)
 		{
 			[string appendString:@", ?"];
 		}
-		
+
 		[string appendString:@");"];
-		
+
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
-	
+
 	return *statement;
 }
 
@@ -315,11 +313,11 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [secondaryIndex tableName]];
-		
+		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [rTreeIndex tableName]];
+
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
-	
+
 	return *statement;
 }
 
@@ -329,11 +327,11 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\";", [secondaryIndex tableName]];
-		
+		  @"DELETE FROM \"%@\";", [rTreeIndex tableName]];
+
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}
-	
+
 	return *statement;
 }
 

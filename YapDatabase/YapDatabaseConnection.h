@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
  * To disable the metadata cache entirely, set metadataCacheEnabled to NO.
  * To use an inifinite cache size, set the metadataCacheLimit to zero.
  * 
- * By default the metadataCache is enabled and has a limit of 500.
+ * By default the metadataCache is enabled and has a limit of 250.
  * 
  * New connections will inherit the default values set by the parent database object.
  * Thus the default values for new connection instances are configurable.
