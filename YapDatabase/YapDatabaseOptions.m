@@ -18,6 +18,7 @@
 @synthesize pragmaSynchronous = pragmaSynchronous;
 @synthesize pragmaJournalSizeLimit = pragmaJournalSizeLimit;
 @synthesize pragmaPageSize = pragmaPageSize;
+@synthesize pragmaMMapSize = pragmaMMapSize;
 #ifdef SQLITE_HAS_CODEC
 @synthesize cipherKeyBlock = cipherKeyBlock;
 #endif
@@ -31,6 +32,7 @@
 		pragmaSynchronous = YapDatabasePragmaSynchronous_Full;
 		pragmaJournalSizeLimit = 0;
 		pragmaPageSize = 0;
+		pragmaMMapSize = 0;
 		aggressiveWALTruncationSize = (1024 * 1024); // 1 MB
 	}
 	return self;
@@ -43,6 +45,7 @@
 	copy->pragmaSynchronous = pragmaSynchronous;
 	copy->pragmaJournalSizeLimit = pragmaJournalSizeLimit;
 	copy->pragmaPageSize = pragmaPageSize;
+	copy->pragmaMMapSize = pragmaMMapSize;
 #ifdef SQLITE_HAS_CODEC
     copy->cipherKeyBlock = cipherKeyBlock;
 #endif

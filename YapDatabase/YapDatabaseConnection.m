@@ -243,7 +243,9 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				// Set configurable pragmas
 				
-				YapDatabasePragmaSynchronous pragmaSynchronous = database.options.pragmaSynchronous;
+				YapDatabaseOptions *options = database.options;
+				
+				YapDatabasePragmaSynchronous pragmaSynchronous = options.pragmaSynchronous;
 				
 				if (pragmaSynchronous == YapDatabasePragmaSynchronous_Off ||
 				    pragmaSynchronous == YapDatabasePragmaSynchronous_Normal)
@@ -259,6 +261,19 @@ NS_INLINE BOOL YDBIsMainThread()
 					if (status != SQLITE_OK)
 					{
 						YDBLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+					}
+				}
+				
+				if (options.pragmaMMapSize > 0)
+				{
+					NSString *pragma_mmap_size =
+					  [NSString stringWithFormat:@"PRAGMA mmap_size = %ld;", (long)options.pragmaMMapSize];
+					
+					status = sqlite3_exec(db, [pragma_mmap_size UTF8String], NULL, NULL, NULL);
+					if (status != SQLITE_OK)
+					{
+						YDBLogError(@"Error setting PRAGMA mmap_size: %d %s", status, sqlite3_errmsg(db));
+						// This isn't critical, so we can continue.
 					}
 				}
 				
@@ -4562,8 +4577,30 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Vacuum
+#pragma mark Pragma
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns the current page_size configuration via "PRAGMA page_size;".
+ *
+ * This allows you to see if sqlite accepted your page_size configuration request.
+**/
+- (NSInteger)pragmaPageSize
+{
+	return (NSInteger)[YapDatabase pragma:@"page_size" using:db];
+}
+
+/**
+ * Returns the currently memory mapped I/O configureation via "PRAGMA mmap_size;".
+ *
+ * This allows you to see if sqlite accepted your mmap_size configuration request.
+ * Memory mapping may be disabled by sqlite's compile-time options.
+ * Or it may restrict the mmap_size to something smaller than requested.
+**/
+- (NSInteger)pragmaMMapSize
+{
+	return (NSInteger)[YapDatabase pragma:@"mmap_size" using:db];
+}
 
 /**
  * Upgrade Notice:
@@ -4601,7 +4638,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 **/
 - (NSString *)pragmaAutoVacuum
 {
-	__block int value = -1;
+	__block int64_t value = -1;
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 	
@@ -4615,6 +4652,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	
 	return [YapDatabase pragmaValueForAutoVacuum:value];
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Vacuum
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Performs a VACUUM on the sqlite database.

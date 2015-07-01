@@ -111,7 +111,7 @@ static int ddLogLevel = LOG_LEVEL_VERBOSE;
 	database = [[YapDatabase alloc] initWithPath:databasePath serializer:NULL deserializer:NULL options:options];
 	
 	NSLog(@"database.sqliteVersion = %@", database.sqliteVersion);
-	NSLog(@"database.sqlitePageSize = %ld", (long)database.sqlitePageSize);
+	NSLog(@"database.sqlitePageSize = %ld", (long)[[database newConnection] pragmaPageSize]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

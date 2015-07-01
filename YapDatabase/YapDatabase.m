@@ -222,7 +222,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 
 @dynamic options;
 @dynamic sqliteVersion;
-@dynamic sqlitePageSize;
 
 - (NSString *)databasePath_wal
 {
@@ -245,17 +244,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	dispatch_sync(snapshotQueue, ^{
 		result = sqliteVersion;
-	});
-	
-	return result;
-}
-
-- (NSInteger)sqlitePageSize
-{
-	__block NSInteger result = 0;
-	
-	dispatch_sync(snapshotQueue, ^{
-		result = pageSize;
 	});
 	
 	return result;
@@ -730,6 +718,23 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		// This isn't critical, so we can continue.
 	}
 	
+	// Set mmap_size (if needed).
+	//
+	// This configures memory mapped I/O.
+	
+	if (options.pragmaMMapSize > 0)
+	{
+		NSString *pragma_mmap_size =
+		  [NSString stringWithFormat:@"PRAGMA mmap_size = %ld;", (long)options.pragmaMMapSize];
+		
+		status = sqlite3_exec(db, [pragma_mmap_size UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error setting PRAGMA mmap_size: %d %s", status, sqlite3_errmsg(db));
+			// This isn't critical, so we can continue.
+		}
+	}
+	
 	// Disable autocheckpointing.
 	//
 	// YapDatabase has its own optimized checkpointing algorithm built-in.
@@ -860,7 +865,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	return version;
 }
 
-+ (int)pragma:(NSString *)pragmaSetting using:(sqlite3 *)aDb
++ (int64_t)pragma:(NSString *)pragmaSetting using:(sqlite3 *)aDb
 {
 	if (pragmaSetting == nil) return -1;
 	
@@ -874,12 +879,12 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		return NO;
 	}
 	
-	int result = -1;
+	int64_t result = -1;
 	
 	status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		result = sqlite3_column_int(statement, SQLITE_COLUMN_START);
+		result = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 	}
 	else if (status == SQLITE_ERROR)
 	{
@@ -892,7 +897,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	return result;
 }
 
-+ (NSString *)pragmaValueForAutoVacuum:(int)auto_vacuum
++ (NSString *)pragmaValueForAutoVacuum:(int64_t)auto_vacuum
 {
 	switch(auto_vacuum)
 	{
@@ -903,7 +908,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	}
 }
 
-+ (NSString *)pragmaValueForSynchronous:(int)synchronous
++ (NSString *)pragmaValueForSynchronous:(int64_t)synchronous
 {
 	switch(synchronous)
 	{
