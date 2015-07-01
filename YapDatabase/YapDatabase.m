@@ -2659,11 +2659,11 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
 		// Thus, this method is only called by a connection that moves the min snapshot forward.
 		
-		int toalFrameCount = 0;
+		int totalFrameCount = 0;
 		int checkpointedFrameCount = 0;
 		
 		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", SQLITE_CHECKPOINT_PASSIVE,
-		                                       &toalFrameCount, &checkpointedFrameCount);
+		                                       &totalFrameCount, &checkpointedFrameCount);
 		
 		// frameCount      = total number of frames in the log file
 		// checkpointCount = total number of checkpointed frames
@@ -2682,7 +2682,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		}
 		
 		YDBLogVerbose(@"Post-checkpoint (mode=passive) (snapshot=%llu): frames(%d) checkpointed(%d)",
-		              maxCheckpointableSnapshot, toalFrameCount, checkpointedFrameCount);
+		              maxCheckpointableSnapshot, totalFrameCount, checkpointedFrameCount);
 		
 	#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
 		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
@@ -2700,7 +2700,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		
 		// Have we checkpointed the entire WAL yet?
 		
-		if (toalFrameCount == checkpointedFrameCount)
+		if (totalFrameCount == checkpointedFrameCount)
 		{
 			// We've checkpointed every single frame in the WAL.
 			// This means the next read-write transaction may be able to reset the WAL (instead of appending to it).
@@ -2734,7 +2734,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		
 		// Take steps to ensure the WAL gets reset/truncated (if needed).
 		
-		uint64_t walApproximateFileSize = toalFrameCount * strongSelf->pageSize;
+		uint64_t walApproximateFileSize = totalFrameCount * strongSelf->pageSize;
 		
 		if (walApproximateFileSize >= strongSelf->options.aggressiveWALTruncationSize)
 		{
@@ -2801,15 +2801,15 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			
 		#endif
 			
-			int toalFrameCount = 0;
+			int totalFrameCount = 0;
 			int checkpointedFrameCount = 0;
 			
 			int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", checkpointMode,
-			                                       &toalFrameCount, &checkpointedFrameCount);
+			                                       &totalFrameCount, &checkpointedFrameCount);
 			
 			YDBLogInfo(@"Post-checkpoint (mode=%@): result(%d): frames(%d) checkpointed(%d)",
 			             (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
-			             result, toalFrameCount, checkpointedFrameCount);
+			             result, totalFrameCount, checkpointedFrameCount);
 			
 			if ((checkpointMode == SQLITE_CHECKPOINT_RESTART) && (result == SQLITE_OK))
 			{
