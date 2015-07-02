@@ -3,7 +3,7 @@
 #import "BenchmarkYapCache.h"
 #import "BenchmarkYapDatabase.h"
 
-#import "YapDatabase.h"
+#import <YapDatabase/YapDatabase.h>
 
 @implementation AppDelegate
 {

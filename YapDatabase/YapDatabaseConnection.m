@@ -4317,7 +4317,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
 	NSString *className = nil;
-	Class class = NULL;
+	Class extensionClass = NULL;
+    Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
 	
 	BOOL wasPersistent;
 	
@@ -4335,24 +4336,24 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		wasPersistent = YES;
 	}
 	
-	class = NSClassFromString(className);
+	extensionClass = NSClassFromString(className);
 	
 	if (className == nil)
 	{
 		YDBLogWarn(@"Unable to unregister extension(%@). Doesn't appear to be registered.", extensionName);
 	}
-	else if (class == NULL)
+	else if (!extensionClass || ![extensionClass superclass])
 	{
 		YDBLogError(@"Unable to unregister extension(%@) with unknown class(%@)", extensionName, className);
 	}
-	if (![class isSubclassOfClass:[YapDatabaseExtension class]])
+	else if (![extensionClass isSubclassOfClass:abstractExtClass])
 	{
 		YDBLogError(@"Unable to unregister extension(%@) with improper class(%@)", extensionName, className);
 	}
 	else
 	{
 		// Drop tables
-		[class dropTablesForRegisteredName:extensionName withTransaction:transaction wasPersistent:wasPersistent];
+		[extensionClass dropTablesForRegisteredName:extensionName withTransaction:transaction wasPersistent:wasPersistent];
 		
 		// Drop preferences
 		if (wasPersistent)
@@ -4450,6 +4451,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
 	           extensionName, prevExtensionClassName, extensionClassName);
 	
+    Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
 	Class prevExtensionClass = NSClassFromString(prevExtensionClassName);
 	
 	if (prevExtensionClass == NULL)
@@ -4457,7 +4459,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), unknown class(%@)",
 		            extensionName, prevExtensionClassName);
 	}
-	else if (![prevExtensionClass isSubclassOfClass:[YapDatabaseExtension class]])
+	else if (![prevExtensionClass isSubclassOfClass:abstractExtClass])
 	{
 		YDBLogError(@"Unable to drop tables for previously registered extension with name(%@), invalid class(%@)",
 		            extensionName, prevExtensionClassName);

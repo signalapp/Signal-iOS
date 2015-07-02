@@ -1,5 +1,11 @@
 language: objective-c
 osx_image: beta-xcode6.3
 
+before_script:
+  - export LANG=en_US.UTF-8
+before_install:
+  - gem update cocoapods
 script:
-  - xctool -project ./Testing/Xcode-desktop/YapDatabase.xcodeproj -scheme YapDatabase -sdk macosx -arch x86_64 test
+  - cd ./Testing/Xcode-desktop
+  - pod install
+  - xctool -workspace YapDatabase.xcworkspace -scheme YapDatabase -sdk macosx -arch x86_64 test
