@@ -1,15 +1,14 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 
-#import "YapDatabase.h"
-#import "YapDatabaseView.h"
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseView.h>
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import "YapDatabaseLogging.h"
 
 
-static int ddLogLevel = LOG_LEVEL_VERBOSE;
+static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 #pragma unused(ddLogLevel)
 
 

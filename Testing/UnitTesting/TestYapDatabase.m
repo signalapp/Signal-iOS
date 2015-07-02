@@ -3,8 +3,7 @@
 #import "YapDatabase.h"
 #import "TestObject.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 #import <libkern/OSAtomic.h>
 
