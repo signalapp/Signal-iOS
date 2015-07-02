@@ -4,8 +4,8 @@
 #import "YapDatabaseRelationship.h"
 #import "TestNodes.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 
 @interface TestYapDatabaseRelationship : XCTestCase

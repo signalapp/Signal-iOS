@@ -4,8 +4,8 @@
 #import "YapDatabaseView.h"
 #import "YapDatabaseFilteredView.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 @interface TestYapDatabaseFilteredView : XCTestCase
 @end

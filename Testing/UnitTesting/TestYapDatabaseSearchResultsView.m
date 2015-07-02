@@ -6,8 +6,8 @@
 #import "YapDatabaseSearchResultsView.h"
 #import "YapCollectionKey.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 
 @interface TestYapDatabaseSearchResultsView : XCTestCase

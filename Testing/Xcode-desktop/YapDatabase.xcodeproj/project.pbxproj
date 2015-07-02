@@ -7,44 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C6799C4EFD3102E390E089F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC13C60EF1D2541A1902C4AD /* libPods.a */; };
-		DC2C988317E3C63700F1E04F /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */; };
-		DC36A7001A23F3F000DB95FB /* TestNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A6FE1A23F3F000DB95FB /* TestNodes.m */; };
-		DC36A7011A23F3F000DB95FB /* TestYapDatabaseRelationship.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A6FF1A23F3F000DB95FB /* TestYapDatabaseRelationship.m */; };
-		DC36A7031A23F41200DB95FB /* TestYapDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A7021A23F41200DB95FB /* TestYapDatabaseQuery.m */; };
-		DC36A7051A23F42400DB95FB /* TestYapDatabaseSearchResultsView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A7041A23F42400DB95FB /* TestYapDatabaseSearchResultsView.m */; };
-		DC49737617E9173000489267 /* TestYapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */; };
 		DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
-		DC84006617514255003BFBB2 /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005D17514255003BFBB2 /* TestObject.m */; };
-		DC84006817514255003BFBB2 /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84006117514255003BFBB2 /* TestYapDatabase.m */; };
-		DC84006B175142BD003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
-		DC84008E17514E59003BFBB2 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */; };
 		DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84FF8E175130D2003BFBB2 /* Cocoa.framework */; };
 		DC84FF99175130D3003BFBB2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC84FF97175130D3003BFBB2 /* InfoPlist.strings */; };
 		DC84FF9B175130D3003BFBB2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FF9A175130D3003BFBB2 /* main.m */; };
 		DC84FF9F175130D3003BFBB2 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = DC84FF9D175130D3003BFBB2 /* Credits.rtf */; };
 		DC84FFA2175130D3003BFBB2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFA1175130D3003BFBB2 /* AppDelegate.m */; };
 		DC84FFA5175130D3003BFBB2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC84FFA3175130D3003BFBB2 /* MainMenu.xib */; };
-		DC84FFAE175130D3003BFBB2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84FF8E175130D2003BFBB2 /* Cocoa.framework */; };
-		DC84FFB6175130D3003BFBB2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC84FFB4175130D3003BFBB2 /* InfoPlist.strings */; };
 		DC84FFEC17513197003BFBB2 /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFE917513197003BFBB2 /* BenchmarkYapCache.m */; };
 		DC84FFED17513197003BFBB2 /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFEB17513197003BFBB2 /* BenchmarkYapDatabase.m */; };
-		DC9B1005184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */; };
-		DC9B1106184D143800174B0F /* TestYapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */; };
-		DCA528C71797650600B4503B /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA528C41797650500B4503B /* TestViewChangeLogic.m */; };
-		DCEF942B1ABA3B3A009D5604 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCEF94291ABA3B2B009D5604 /* CloudKit.framework */; };
-		DCFC4D8818E4B59B009345AC /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFC4D8718E4B59B009345AC /* XCTest.framework */; };
+		DCFBF7151B45F86D00EC6DFF /* libPods-CocoaLumberjack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */; };
+		DCFBF7171B45F87300EC6DFF /* libPods-YapDatabase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */; };
+		DCFBF71B1B45F92200EC6DFF /* TestNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A6FE1A23F3F000DB95FB /* TestNodes.m */; };
+		DCFBF7211B45F9E200EC6DFF /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84006117514255003BFBB2 /* TestYapDatabase.m */; };
+		DCFBF7221B45F9F700EC6DFF /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005D17514255003BFBB2 /* TestObject.m */; };
+		DCFBF72A1B45FC6800EC6DFF /* libPods-CocoaLumberjack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */; };
+		DCFBF72B1B45FC6800EC6DFF /* libPods-YapDatabase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */; };
+		DCFBF72C1B45FC7500EC6DFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
+		DCFBF72D1B45FCE700EC6DFF /* TestYapDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A7021A23F41200DB95FB /* TestYapDatabaseQuery.m */; };
+		DCFBF72E1B45FD1E00EC6DFF /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */; };
+		DCFBF72F1B45FD2000EC6DFF /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA528C41797650500B4503B /* TestViewChangeLogic.m */; };
+		DCFBF7301B45FD2300EC6DFF /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */; };
+		DCFBF7321B45FE7E00EC6DFF /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */; };
+		DCFBF7331B45FE9B00EC6DFF /* TestYapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */; };
+		DCFBF7341B45FE9E00EC6DFF /* TestYapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */; };
+		DCFBF7351B45FEA000EC6DFF /* TestYapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */; };
+		DCFBF7361B45FEA600EC6DFF /* TestYapDatabaseRelationship.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A6FF1A23F3F000DB95FB /* TestYapDatabaseRelationship.m */; };
+		DCFBF7371B45FEAA00EC6DFF /* TestYapDatabaseSearchResultsView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A7041A23F42400DB95FB /* TestYapDatabaseSearchResultsView.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		DC84FFAF175130D3003BFBB2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DC84FF83175130D2003BFBB2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DC84FF8A175130D2003BFBB2;
-			remoteInfo = YapDatabase;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		8DA75AA5331268A759ABEDDB /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -74,9 +64,6 @@
 		DC84FFA0175130D3003BFBB2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DC84FFA1175130D3003BFBB2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		DC84FFA4175130D3003BFBB2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		DC84FFAB175130D3003BFBB2 /* YapDatabaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YapDatabaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC84FFB3175130D3003BFBB2 /* YapDatabaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YapDatabaseTests-Info.plist"; sourceTree = "<group>"; };
-		DC84FFB5175130D3003BFBB2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DC84FFE817513197003BFBB2 /* BenchmarkYapCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BenchmarkYapCache.h; sourceTree = "<group>"; };
 		DC84FFE917513197003BFBB2 /* BenchmarkYapCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BenchmarkYapCache.m; sourceTree = "<group>"; };
 		DC84FFEA17513197003BFBB2 /* BenchmarkYapDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BenchmarkYapDatabase.h; sourceTree = "<group>"; };
@@ -84,9 +71,11 @@
 		DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseSecondaryIndex.m; path = ../../UnitTesting/TestYapDatabaseSecondaryIndex.m; sourceTree = "<group>"; };
 		DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFilteredView.m; path = ../../UnitTesting/TestYapDatabaseFilteredView.m; sourceTree = "<group>"; };
 		DCA528C41797650500B4503B /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
-		DCEF94291ABA3B2B009D5604 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		DCFC4D8718E4B59B009345AC /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		EC13C60EF1D2541A1902C4AD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCFBF7041B45F2D700EC6DFF /* YapDatabaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YapDatabaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCFBF7071B45F2D700EC6DFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-CocoaLumberjack.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libPods-CocoaLumberjack.a"; sourceTree = "<group>"; };
+		DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-YapDatabase.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libPods-YapDatabase.a"; sourceTree = "<group>"; };
+		DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,20 +83,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCEF942B1ABA3B3A009D5604 /* CloudKit.framework in Frameworks */,
+				DCFBF7171B45F87300EC6DFF /* libPods-YapDatabase.a in Frameworks */,
+				DCFBF7151B45F86D00EC6DFF /* libPods-CocoaLumberjack.a in Frameworks */,
 				DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */,
 				DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */,
-				0C6799C4EFD3102E390E089F /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC84FFA7175130D3003BFBB2 /* Frameworks */ = {
+		DCFBF7011B45F2D700EC6DFF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCFC4D8818E4B59B009345AC /* XCTest.framework in Frameworks */,
-				DC84006B175142BD003BFBB2 /* libsqlite3.dylib in Frameworks */,
-				DC84FFAE175130D3003BFBB2 /* Cocoa.framework in Frameworks */,
+				DCFBF7321B45FE7E00EC6DFF /* libc++.dylib in Frameworks */,
+				DCFBF72C1B45FC7500EC6DFF /* libsqlite3.dylib in Frameworks */,
+				DCFBF72A1B45FC6800EC6DFF /* libPods-CocoaLumberjack.a in Frameworks */,
+				DCFBF72B1B45FC6800EC6DFF /* libPods-YapDatabase.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +154,7 @@
 				DC84FFE717513197003BFBB2 /* Benchmarking */,
 				DC84FFB1175130D3003BFBB2 /* UnitTests */,
 				DC84FF94175130D2003BFBB2 /* App */,
+				DCFBF7051B45F2D700EC6DFF /* YapDatabaseTests */,
 				DC84FF8D175130D2003BFBB2 /* Frameworks */,
 				DC84FF8C175130D2003BFBB2 /* Products */,
 				7B5F8A66BB1DAC61766EB0E7 /* Pods */,
@@ -174,7 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				DC84FF8B175130D2003BFBB2 /* YapDatabase.app */,
-				DC84FFAB175130D3003BFBB2 /* YapDatabaseTests.xctest */,
+				DCFBF7041B45F2D700EC6DFF /* YapDatabaseTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -182,12 +173,12 @@
 		DC84FF8D175130D2003BFBB2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DCEF94291ABA3B2B009D5604 /* CloudKit.framework */,
-				DCFC4D8718E4B59B009345AC /* XCTest.framework */,
+				DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */,
+				DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */,
+				DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */,
 				DC84FF8E175130D2003BFBB2 /* Cocoa.framework */,
 				DC84005A175132E7003BFBB2 /* libsqlite3.dylib */,
 				DC84FF90175130D2003BFBB2 /* Other Frameworks */,
-				EC13C60EF1D2541A1902C4AD /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -239,19 +230,9 @@
 				DC9B101F184D10EA00174B0F /* Secondary Indexes */,
 				DC36A6BE1A23F15100DB95FB /* Relationships */,
 				DC36A6C41A23F1D200DB95FB /* SearchResultsView */,
-				DC84FFB2175130D3003BFBB2 /* Supporting Files */,
 			);
 			name = UnitTests;
 			path = YapDatabaseTests;
-			sourceTree = "<group>";
-		};
-		DC84FFB2175130D3003BFBB2 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				DC84FFB3175130D3003BFBB2 /* YapDatabaseTests-Info.plist */,
-				DC84FFB4175130D3003BFBB2 /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		DC84FFE717513197003BFBB2 /* Benchmarking */ = {
@@ -300,6 +281,22 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		DCFBF7051B45F2D700EC6DFF /* YapDatabaseTests */ = {
+			isa = PBXGroup;
+			children = (
+				DCFBF7061B45F2D700EC6DFF /* Supporting Files */,
+			);
+			path = YapDatabaseTests;
+			sourceTree = "<group>";
+		};
+		DCFBF7061B45F2D700EC6DFF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DCFBF7071B45F2D700EC6DFF /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -322,23 +319,21 @@
 			productReference = DC84FF8B175130D2003BFBB2 /* YapDatabase.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DC84FFAA175130D3003BFBB2 /* YapDatabaseTests */ = {
+		DCFBF7031B45F2D700EC6DFF /* YapDatabaseTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DC84FFBF175130D3003BFBB2 /* Build configuration list for PBXNativeTarget "YapDatabaseTests" */;
+			buildConfigurationList = DCFBF70C1B45F2D700EC6DFF /* Build configuration list for PBXNativeTarget "YapDatabaseTests" */;
 			buildPhases = (
-				DC84FFA6175130D3003BFBB2 /* Sources */,
-				DC84FFA7175130D3003BFBB2 /* Frameworks */,
-				DC84FFA8175130D3003BFBB2 /* Resources */,
-				DC84FFA9175130D3003BFBB2 /* ShellScript */,
+				DCFBF7001B45F2D700EC6DFF /* Sources */,
+				DCFBF7011B45F2D700EC6DFF /* Frameworks */,
+				DCFBF7021B45F2D700EC6DFF /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DC84FFB0175130D3003BFBB2 /* PBXTargetDependency */,
 			);
 			name = YapDatabaseTests;
 			productName = YapDatabaseTests;
-			productReference = DC84FFAB175130D3003BFBB2 /* YapDatabaseTests.xctest */;
+			productReference = DCFBF7041B45F2D700EC6DFF /* YapDatabaseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -350,6 +345,19 @@
 				LastTestingUpgradeCheck = 0510;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Robbie Hanson";
+				TargetAttributes = {
+					DC84FF8A175130D2003BFBB2 = {
+						DevelopmentTeam = 4D98PK6HWS;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
+					};
+					DCFBF7031B45F2D700EC6DFF = {
+						CreatedOnToolsVersion = 6.4;
+					};
+				};
 			};
 			buildConfigurationList = DC84FF86175130D2003BFBB2 /* Build configuration list for PBXProject "YapDatabase" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -364,7 +372,7 @@
 			projectRoot = "";
 			targets = (
 				DC84FF8A175130D2003BFBB2 /* YapDatabase */,
-				DC84FFAA175130D3003BFBB2 /* YapDatabaseTests */,
+				DCFBF7031B45F2D700EC6DFF /* YapDatabaseTests */,
 			);
 		};
 /* End PBXProject section */
@@ -380,11 +388,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC84FFA8175130D3003BFBB2 /* Resources */ = {
+		DCFBF7021B45F2D700EC6DFF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC84FFB6175130D3003BFBB2 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,19 +428,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DC84FFA9175130D3003BFBB2 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -448,34 +442,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC84FFA6175130D3003BFBB2 /* Sources */ = {
+		DCFBF7001B45F2D700EC6DFF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC84006617514255003BFBB2 /* TestObject.m in Sources */,
-				DC36A7031A23F41200DB95FB /* TestYapDatabaseQuery.m in Sources */,
-				DC9B1106184D143800174B0F /* TestYapDatabaseFilteredView.m in Sources */,
-				DC84006817514255003BFBB2 /* TestYapDatabase.m in Sources */,
-				DC36A7001A23F3F000DB95FB /* TestNodes.m in Sources */,
-				DC36A7011A23F3F000DB95FB /* TestYapDatabaseRelationship.m in Sources */,
-				DC9B1005184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m in Sources */,
-				DC36A7051A23F42400DB95FB /* TestYapDatabaseSearchResultsView.m in Sources */,
-				DC2C988317E3C63700F1E04F /* TestViewMappingsLogic.m in Sources */,
-				DC84008E17514E59003BFBB2 /* TestYapDatabaseView.m in Sources */,
-				DCA528C71797650600B4503B /* TestViewChangeLogic.m in Sources */,
-				DC49737617E9173000489267 /* TestYapDatabaseFullTextSearch.m in Sources */,
+				DCFBF71B1B45F92200EC6DFF /* TestNodes.m in Sources */,
+				DCFBF7331B45FE9B00EC6DFF /* TestYapDatabaseFilteredView.m in Sources */,
+				DCFBF7221B45F9F700EC6DFF /* TestObject.m in Sources */,
+				DCFBF7371B45FEAA00EC6DFF /* TestYapDatabaseSearchResultsView.m in Sources */,
+				DCFBF7361B45FEA600EC6DFF /* TestYapDatabaseRelationship.m in Sources */,
+				DCFBF7351B45FEA000EC6DFF /* TestYapDatabaseSecondaryIndex.m in Sources */,
+				DCFBF72E1B45FD1E00EC6DFF /* TestYapDatabaseView.m in Sources */,
+				DCFBF7301B45FD2300EC6DFF /* TestViewMappingsLogic.m in Sources */,
+				DCFBF72D1B45FCE700EC6DFF /* TestYapDatabaseQuery.m in Sources */,
+				DCFBF7211B45F9E200EC6DFF /* TestYapDatabase.m in Sources */,
+				DCFBF7341B45FE9E00EC6DFF /* TestYapDatabaseFullTextSearch.m in Sources */,
+				DCFBF72F1B45FD2000EC6DFF /* TestViewChangeLogic.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		DC84FFB0175130D3003BFBB2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DC84FF8A175130D2003BFBB2 /* YapDatabase */;
-			targetProxy = DC84FFAF175130D3003BFBB2 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		DC84FF97175130D3003BFBB2 /* InfoPlist.strings */ = {
@@ -500,14 +486,6 @@
 				DC84FFA4175130D3003BFBB2 /* en */,
 			);
 			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		DC84FFB4175130D3003BFBB2 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DC84FFB5175130D3003BFBB2 /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -541,6 +519,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				PODS_ROOT = "${SRCROOT}/Pods";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -566,6 +545,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PODS_ROOT = "${SRCROOT}/Pods";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -586,6 +566,10 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -607,60 +591,101 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
-		DC84FFC0175130D3003BFBB2 /* Debug */ = {
+		DCFBF70D1B45F2D700EC6DFF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8DA75AA5331268A759ABEDDB /* Pods.debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/Contents/MacOS/YapDatabase";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaLumberjack\"",
 					"\"${PODS_ROOT}/Headers/Public/YapDatabase\"",
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
-				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				INFOPLIST_FILE = YapDatabaseTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug",
+					"$(PROJECT_DIR)/build/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Debug;
 		};
-		DC84FFC1175130D3003BFBB2 /* Release */ = {
+		DCFBF70E1B45F2D700EC6DFF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C664F403092FD32225EA855D /* Pods.release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/Contents/MacOS/YapDatabase";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CocoaLumberjack\"",
 					"\"${PODS_ROOT}/Headers/Public/YapDatabase\"",
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
-				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				INFOPLIST_FILE = YapDatabaseTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug",
+					"$(PROJECT_DIR)/build/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Release;
 		};
@@ -685,14 +710,13 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DC84FFBF175130D3003BFBB2 /* Build configuration list for PBXNativeTarget "YapDatabaseTests" */ = {
+		DCFBF70C1B45F2D700EC6DFF /* Build configuration list for PBXNativeTarget "YapDatabaseTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DC84FFC0175130D3003BFBB2 /* Debug */,
-				DC84FFC1175130D3003BFBB2 /* Release */,
+				DCFBF70D1B45F2D700EC6DFF /* Debug */,
+				DCFBF70E1B45F2D700EC6DFF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
