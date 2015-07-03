@@ -6,6 +6,14 @@ mkdir -p "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 RESOURCES_TO_COPY=${PODS_ROOT}/resources-to-copy-${TARGETNAME}.txt
 > "$RESOURCES_TO_COPY"
 
+XCASSET_FILES=()
+
+realpath() {
+  DIRECTORY=$(cd "${1%/*}" && pwd)
+  FILENAME="${1##*/}"
+  echo "$DIRECTORY/$FILENAME"
+}
+
 install_resource()
 {
   case $1 in
@@ -31,7 +39,13 @@ install_resource()
       echo "xcrun momc \"${PODS_ROOT}/$1\" \"${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename "$1" .xcdatamodeld`.momd\""
       xcrun momc "${PODS_ROOT}/$1" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename "$1" .xcdatamodeld`.momd"
       ;;
+    *.xcmappingmodel)
+      echo "xcrun mapc \"${PODS_ROOT}/$1\" \"${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename "$1" .xcmappingmodel`.cdm\""
+      xcrun mapc "${PODS_ROOT}/$1" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/`basename "$1" .xcmappingmodel`.cdm"
+      ;;
     *.xcassets)
+      ABSOLUTE_XCASSET_FILE=$(realpath "${PODS_ROOT}/$1")
+      XCASSET_FILES+=("$ABSOLUTE_XCASSET_FILE")
       ;;
     /*)
       echo "$1"
@@ -50,7 +64,7 @@ if [[ "${ACTION}" == "install" ]]; then
 fi
 rm -f "$RESOURCES_TO_COPY"
 
-if [[ -n "${WRAPPER_EXTENSION}" ]] && [ "`xcrun --find actool`" ] && [ `find . -name '*.xcassets' | wc -l` -ne 0 ]
+if [[ -n "${WRAPPER_EXTENSION}" ]] && [ "`xcrun --find actool`" ] && [ -n "$XCASSET_FILES" ]
 then
   case "${TARGETED_DEVICE_FAMILY}" in
     1,2)
@@ -66,5 +80,14 @@ then
       TARGET_DEVICE_ARGS="--target-device mac"
       ;;
   esac
-  find "${PWD}" -name "*.xcassets" -print0 | xargs -0 actool --output-format human-readable-text --notices --warnings --platform "${PLATFORM_NAME}" --minimum-deployment-target "${IPHONEOS_DEPLOYMENT_TARGET}" ${TARGET_DEVICE_ARGS} --compress-pngs --compile "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+
+  # Find all other xcassets (this unfortunately includes those of path pods and other targets).
+  OTHER_XCASSETS=$(find "$PWD" -iname "*.xcassets" -type d)
+  while read line; do
+    if [[ $line != "`realpath $PODS_ROOT`*" ]]; then
+      XCASSET_FILES+=("$line")
+    fi
+  done <<<"$OTHER_XCASSETS"
+
+  printf "%s\0" "${XCASSET_FILES[@]}" | xargs -0 xcrun actool --output-format human-readable-text --notices --warnings --platform "${PLATFORM_NAME}" --minimum-deployment-target "${IPHONEOS_DEPLOYMENT_TARGET}" ${TARGET_DEVICE_ARGS} --compress-pngs --compile "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 fi

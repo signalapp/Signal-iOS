@@ -4,17 +4,18 @@
 
 #import "MyTodo.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
 #import "YapDatabaseLogging.h"
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 #import <CloudKit/CloudKit.h>
 #import <Reachability/Reachability.h>
 
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #endif
 
 AppDelegate *MyAppDelegate;

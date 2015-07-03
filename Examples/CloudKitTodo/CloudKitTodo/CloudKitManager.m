@@ -2,17 +2,17 @@
 #import "DatabaseManager.h"
 #import "AppDelegate.h"
 #import "MyTodo.h"
-#import "DDLog.h"
 
 #import <CloudKit/CloudKit.h>
 #import <Reachability/Reachability.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 // Log Levels: off, error, warn, info, verbose
 // Log Flags : trace
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #endif
 
 CloudKitManager *MyCloudKitManager;
