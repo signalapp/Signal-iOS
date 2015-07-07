@@ -701,5 +701,78 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)asyncVacuumWithCompletionQueue:(nullable dispatch_queue_t)completionQueue
                        completionBlock:(nullable dispatch_block_t)completionBlock;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Backup
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ * 
+ * This method operates as a synchronous ReadWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ * 
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ * 
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+**/
+- (NSError *)backupToPath:(NSString *)backupDatabasePath;
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ * 
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ * 
+ * An optional completion block may be used.
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+ *
+ * @return
+ *   A NSProgress instance that may be used to track the backup progress.
+ *   The progress in cancellable, meaning that invoking [progress cancel] will abort the backup operation.
+**/
+- (NSProgress *)asyncBackupToPath:(NSString *)backupDatabasePath
+                  completionBlock:(nullable void (^)(NSError *error))completionBlock;
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ *
+ * An optional completion block may be used.
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+ *
+ * @return
+ *   A NSProgress instance that may be used to track the backup progress.
+ *   The progress in cancellable, meaning that invoking [progress cancel] will abort the backup operation.
+**/
+- (NSProgress *)asyncBackupToPath:(NSString *)backupDatabasePath
+                  completionQueue:(nullable dispatch_queue_t)completionQueue
+                  completionBlock:(nullable void (^)(NSError *))completionBlock;
+
 NS_ASSUME_NONNULL_END
 @end

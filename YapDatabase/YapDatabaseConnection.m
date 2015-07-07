@@ -2418,10 +2418,10 @@ NS_INLINE BOOL YDBIsMainThread()
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Write-Transaction: Step 9 of 11
-	
 	if (changeset)
 	{
+		// Post-Write-Transaction: Step 9 of 11
+		//
 		// We added frames to the WAL.
 		// We can invoke a checkpoint if there are no other active connections.
 		
@@ -2471,21 +2471,21 @@ NS_INLINE BOOL YDBIsMainThread()
 }
 
 /**
- * This method executes the state transition steps required before executing a vacuum operation.
+ * This method executes the state transition steps required before executing a pseudo read-write transaction.
  *
  * This method must be invoked from within the connectionQueue.
  * This method must be invoked from within the database.writeQueue.
 **/
-- (void)preVacuum
+- (void)prePseudoReadWriteTransaction
 {
-	// A vacuum operation is similar to a read-write transaction,
-	// in that it modifies the database, and so must block other writers (go through writeQueue).
+	// This is similar to a read-write transaction,
+	// in that we intend to block other writers (go through the writeQueue).
 	//
-	// However, a vacuum operation cannot occur within a transaction.
-	// So we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
+	// However, our operation cannot occur within a transaction. (no "BEGIN TRANSCTION;" or "COMMIT TRANSACTION;")
+	// Thus we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
 	// Instead we use a select subset of them.
 	
-	// Pre-Vacuum: Step 1 of 1
+	// Pre-Pseudo-Write-Transaction: Step 1 of 3
 	//
 	// Update our connection state within the state table.
 	//
@@ -2513,57 +2513,83 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting vacuum operation.", self);
 	}});
+	
+	// Pre-Pseudo-Write-Transaction: Step 2 of 3
+	//
+	// Setup write state and changeset variables.
+	
+	hasDiskChanges = NO;
+	
+	// Note: We don't need to setup all changeset variables.
+	
+	// Pre-Pseudo-Write-Transaction: Step 3 of 3
+	//
+	// Add IsOnConnectionQueueKey flag to writeQueue.
+	// This allows various methods that depend on the flag to operate correctly.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 }
 
 /**
- * This method executes the state transition steps required after executing a vacuum operation.
+ * This method executes the state transition steps required after executing a pseudo read-write transaction.
  *
  * This method must be invoked from within the connectionQueue.
  * This method must be invoked from within the database.writeQueue.
 **/
-- (void)postVacuum
+- (void)postPseudoReadWriteTransaction
 {
-	// A vacuum operation is similar to a read-write transaction,
-	// in that it modifies the database, and so must block other writers (go through writeQueue).
+	// This is similar to a read-write transaction,
+	// in that we intend to block other writers (go through the writeQueue).
 	//
-	// However, a vacuum operation cannot occur within a transaction.
-	// So we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
+	// However, our operation cannot occur within a transaction. (no "BEGIN TRANSCTION;" or "COMMIT TRANSACTION;")
+	// Thus we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
 	// Instead we use a select subset of them.
 	
-	// Post-Vacuum: Step 1 of 4
+	// Post-Pseudo-Write-Transaction: Step 1 of 5
 	//
 	// Create changeset.
 	// We're doing this in order to increment the snapshot.
 	
-	snapshot++;
+	NSMutableDictionary *changeset = nil;
+	NSMutableDictionary *userInfo = nil;
 	
-	NSMutableDictionary *changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
-	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+	NSNotification *notification = nil;
 	
-	[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
-	[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
-	
-	[userInfo setObject:self forKey:YapDatabaseConnectionKey];
+	if (hasDiskChanges)
+	{
+		snapshot++;
 		
-	NSNotification *notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
-	                                                             object:database
-	                                                           userInfo:userInfo];
-	
-	[changeset setObject:notification forKey:YapDatabaseNotificationKey];
+		changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		
+		changeset[YapDatabaseSnapshotKey] = @(snapshot);
+		userInfo[YapDatabaseSnapshotKey] = @(snapshot);
+		
+		userInfo[YapDatabaseConnectionKey] = self;
+		
+		notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
+		                                             object:database
+		                                           userInfo:userInfo];
+		
+		changeset[YapDatabaseNotificationKey] = notification;
+	}
 	
 	__block YapDatabaseConnectionState *myState = nil;
 	__block uint64_t minSnapshot = UINT64_MAX;
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Write-Transaction: Step 2 of 4
+		// Post-Pseudo-Write-Transaction: Step 2 of 5
 		//
 		// Notify database of changes, and drop reference to set of changed keys.
 		
-		[database notePendingChanges:changeset fromConnection:self];
-		[database noteCommittedChanges:changeset fromConnection:self];
+		if (changeset)
+		{
+			[database notePendingChanges:changeset fromConnection:self];
+			[database noteCommittedChanges:changeset fromConnection:self];
+		}
 		
-		// Post-Vacuum: Step 3 of 4
+		// Post-Pseudo-Write-Transaction: Step 3 of 5
 		//
 		// Update our connection state within the state table.
 		//
@@ -2590,20 +2616,29 @@ NS_INLINE BOOL YDBIsMainThread()
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 	}});
 	
-	// Post-Vacuum: Step 4 of 4
-	//
-	// We added frames to the WAL.
-	// We can invoke a checkpoint if there are no other active connections.
-	
-	if (minSnapshot == UINT64_MAX)
+	if (changeset)
 	{
-		[database asyncCheckpoint:snapshot];
-		
-		// Note: We didn't actually change anything in the database.
-		// The vacuum operation just defragments the database file.
+		// Post-Pseudo-Write-Transaction: Step 4 of 5
 		//
-		// So there's no need to do anything concerning registeredMemoryTables.
+		// We added frames to the WAL.
+		// We can invoke a checkpoint if there are no other active connections.
+		
+		if (minSnapshot == UINT64_MAX)
+		{
+			[database asyncCheckpoint:snapshot];
+			
+			// Note: We didn't actually change anything in the database.
+			// The vacuum operation just defragments the database file.
+			//
+			// So there's no need to do anything concerning registeredMemoryTables.
+		}
 	}
+	
+	// Post-Pseudo-Write-Transaction: Step 5 of 5
+	//
+	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
 }
 
 /**
@@ -4694,7 +4729,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
-			[self preVacuum];
+			[self prePseudoReadWriteTransaction];
 			
 			int status;
 			
@@ -4714,7 +4749,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			
 			YDBLogVerbose(@"VACUUM complete !");
 			
-			[self postVacuum];
+			hasDiskChanges = YES;
+			[self postPseudoReadWriteTransaction];
 			
 		}}); // End dispatch_sync(database->writeQueue)
 		__postWriteQueue(self);
@@ -4785,7 +4821,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
-			[self preVacuum];
+			[self prePseudoReadWriteTransaction];
 			
 			int status;
 			
@@ -4805,7 +4841,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			
 			YDBLogVerbose(@"VACUUM complete !");
 			
-			[self postVacuum];
+			hasDiskChanges = YES;
+			[self postPseudoReadWriteTransaction];
 			
 			if (completionBlock) {
 				dispatch_async(completionQueue, completionBlock);
@@ -4814,6 +4851,265 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		}}); // End dispatch_sync(database->writeQueue)
 		__postWriteQueue(self);
 	}});     // End dispatch_async(connectionQueue)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Backup
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ *
+ * This method operates as a synchronous ReadWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+**/
+- (NSError *)backupToPath:(NSString *)backupDatabasePath
+{
+	__block NSError *error = nil;
+	
+	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+						   self, database);
+				
+				[self endLongLivedReadTransaction];
+			}
+		}
+		
+		__preWriteQueue(self);
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			[self prePseudoReadWriteTransaction];
+			
+			error = [self _backupToPath:backupDatabasePath withStep:1500 progress:nil];
+			
+			hasDiskChanges = NO; // backup does NOT make actually make changes
+			[self postPseudoReadWriteTransaction];
+			
+		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
+	}});     // End dispatch_sync(connectionQueue)
+	
+	return error;
+}
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ * 
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ * 
+ * An optional completion block may be used.
+ * The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+ *
+ * @return
+ *   A NSProgress instance that may be used to track the backup progress.
+ *   The progress in cancellable, meaning that invoking [progress cancel] will abort the backup operation.
+**/
+- (NSProgress *)asyncBackupToPath:(NSString *)backupDatabasePath
+                  completionBlock:(nullable void (^)(NSError *error))completionBlock
+{
+	return [self asyncBackupToPath:backupDatabasePath completionQueue:NULL completionBlock:completionBlock];
+}
+
+/**
+ * This method backs up the database by exporting all the tables to another sqlite database.
+ *
+ * This method operates as an asynchronous readWrite "transaction".
+ * That is, it behaves in a similar fashion, and you may treat it as if it is a ReadWrite transaction.
+ *
+ * The database will be backed up as it exists at the moment this transaction operates.
+ * That is, it will backup everything in the sqlite file, as well as everything in the WAL file.
+ *
+ * An optional completion block may be used.
+ * Additionally the dispatch_queue to invoke the completion block may also be specified.
+ * If NULL, dispatch_get_main_queue() is automatically used.
+ *
+ * For more information on the BACKUP operation, see the sqlite docs:
+ * https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * As stated in the sqlite docs, it is your responsibilty to ensure that nothing else is
+ * currently using the backupDatabase.
+ *
+ * @return
+ *   A NSProgress instance that may be used to track the backup progress.
+ *   The progress in cancellable, meaning that invoking [progress cancel] will abort the backup operation.
+**/
+- (NSProgress *)asyncBackupToPath:(NSString *)backupDatabasePath
+                  completionQueue:(nullable dispatch_queue_t)completionQueue
+                  completionBlock:(nullable void (^)(NSError *))completionBlock
+{
+	if (completionQueue == NULL && completionBlock != NULL)
+		completionQueue = dispatch_get_main_queue();
+	
+	NSProgress *progress = [NSProgress progressWithTotalUnitCount:0];
+	
+	dispatch_async(connectionQueue, ^{ @autoreleasepool {
+		
+		if (longLivedReadTransaction)
+		{
+			if (throwExceptionsForImplicitlyEndingLongLivedReadTransaction)
+			{
+				@throw [self implicitlyEndingLongLivedReadTransactionException];
+			}
+			else
+			{
+				YDBLogWarn(@"Implicitly ending long-lived read transaction on connection %@, database %@",
+						   self, database);
+				
+				[self endLongLivedReadTransaction];
+			}
+		}
+		
+		__preWriteQueue(self);
+		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
+			
+			[self prePseudoReadWriteTransaction];
+			
+			NSError *error = [self _backupToPath:backupDatabasePath withStep:1500 progress:progress];
+			
+			hasDiskChanges = NO; // backup does NOT make actually make changes
+			[self postPseudoReadWriteTransaction];
+			
+			if (completionBlock)
+			{
+				dispatch_async(completionQueue, ^{ @autoreleasepool {
+					completionBlock(error);
+				}});
+			}
+			
+		}}); // End dispatch_sync(database->writeQueue)
+		__postWriteQueue(self);
+	}});     // End dispatch_async(connectionQueue)
+	
+	return progress;
+}
+
+- (NSError *)_backupToPath:(NSString *)backupDatabasePath withStep:(int)nPages progress:(NSProgress *)progress
+{
+	// First try to open the backup database (using the given path).
+	
+	sqlite3 *backup_db;
+	
+	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+	
+	int status = sqlite3_open_v2([backupDatabasePath UTF8String], &backup_db, flags, NULL);
+	if (status != SQLITE_OK)
+	{
+		NSError *sqliteError = nil;
+		
+		// Sometimes the open function returns a db to allow us to query it for the error message
+		if (backup_db) {
+			sqliteError = [self sqliteErrorWithCode:status message:sqlite3_errmsg(backup_db)];
+		}
+		else {
+			sqliteError = [self sqliteErrorWithCode:status message:NULL];
+		}
+		
+		if (backup_db)
+		{
+			sqlite3_close(backup_db);
+			backup_db = NULL;
+		}
+		
+		return [self ydbErrorWithDescription:@"Error from: sqlite3_open_v2()" sqliteError:sqliteError];
+	}
+	
+	// Initialize backup instance
+	
+	sqlite3_backup *backup = sqlite3_backup_init(backup_db, "main", db, "main");
+	if (backup == NULL)
+	{
+		// From the docs:
+		//
+		// If an error occurs within sqlite3_backup_init(D,N,S,M), then NULL is returned and an error code
+		// and error message are stored in the destination database connection D. The error code and message for
+		// the failed call to sqlite3_backup_init() can be retrieved using the sqlite3_errcode(), sqlite3_errmsg().
+		
+		NSError *sqliteError = [self sqliteErrorWithCode:sqlite3_errcode(backup_db)
+												 message:sqlite3_errmsg(backup_db)];
+		
+		return [self ydbErrorWithDescription:@"Error from: sqlite3_backup_init()" sqliteError:sqliteError];
+	}
+	
+	// Loop through the backup process
+	
+	BOOL cancelled = progress.cancelled;
+	if (!cancelled)
+	{
+		while ((status = sqlite3_backup_step(backup, nPages)) == SQLITE_OK)
+		{
+			if (progress)
+			{
+				int pagecount = sqlite3_backup_pagecount(backup);
+				int remaining = sqlite3_backup_remaining(backup);
+				
+				progress.totalUnitCount = pagecount;
+				progress.completedUnitCount = (pagecount - remaining);
+				
+				cancelled = progress.cancelled;
+				if (cancelled) break;
+			}
+		}
+	}
+	
+	NSError *error = nil;
+	
+	if (cancelled)
+	{
+		error = [self ydbErrorWithDescription:@"Operation cancelled" sqliteError:nil];
+	}
+	else
+	{
+		if (status == SQLITE_DONE)
+		{
+			if (progress)
+			{
+				int pagecount = sqlite3_backup_pagecount(backup);
+				int remaining = sqlite3_backup_remaining(backup);
+				
+				progress.totalUnitCount = pagecount;
+				progress.completedUnitCount = (pagecount - remaining);
+			}
+		}
+		else // if (status != SQLITE_DONE)
+		{
+			NSError *sqliteError = [self sqliteErrorWithCode:status message:sqlite3_errstr(status)];
+			
+			error = [self ydbErrorWithDescription:@"Error from: sqlite3_backup_step()" sqliteError:sqliteError];
+		}
+	}
+	
+	sqlite3_backup_finish(backup);
+	sqlite3_close(backup_db);
+	
+	return error;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4855,6 +5151,38 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		registeredMemoryTables = [newRegisteredMemoryTables copy];
 		registeredMemoryTablesChanged = YES;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Errors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					 
+- (NSError *)sqliteErrorWithCode:(int)status message:(const char *)message
+{
+	NSDictionary *userInfo = nil;
+	if (message)
+	{
+		NSString *errMsg = [NSString stringWithUTF8String:message];
+		if (errMsg)
+		{
+			userInfo = @{ NSLocalizedDescriptionKey : errMsg };
+		}
+	}
+	
+	return [NSError errorWithDomain:@"SQLite" code:status userInfo:userInfo];
+}
+
+- (NSError *)ydbErrorWithDescription:(NSString *)description sqliteError:(NSError *)underlyingError
+{
+	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+	if (description) {
+		userInfo[NSLocalizedDescriptionKey] = description;
+	}
+	if (underlyingError) {
+		userInfo[NSUnderlyingErrorKey] = underlyingError;
+	}
+	
+	return [NSError errorWithDomain:@"YapDatabase" code:0 userInfo:userInfo];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

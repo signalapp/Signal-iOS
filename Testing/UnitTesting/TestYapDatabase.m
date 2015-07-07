@@ -12,6 +12,24 @@
 
 @implementation TestYapDatabase
 
+- (NSString *)randomLetters:(NSUInteger)length
+{
+	NSString *alphabet = @"abcdefghijklmnopqrstuvwxyz";
+	NSUInteger alphabetLength = [alphabet length];
+	
+	NSMutableString *result = [NSMutableString stringWithCapacity:length];
+	
+	NSUInteger i;
+	for (i = 0; i < length; i++)
+	{
+		unichar c = [alphabet characterAtIndex:(NSUInteger)arc4random_uniform((uint32_t)alphabetLength)];
+		
+		[result appendFormat:@"%C", c];
+	}
+	
+	return result;
+}
+
 - (NSString *)databasePath:(NSString *)suffix
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -1059,5 +1077,111 @@
 	}
 }
 #endif
+
+- (void)testBackup_synchronous
+{
+	NSUInteger count = 10000;
+	
+	NSString *databaseBackupName = [NSString stringWithFormat:@"%@.backup", NSStringFromSelector(_cmd)];
+	NSString *databaseBackupPath = [self databasePath:databaseBackupName];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databaseBackupPath error:NULL];
+	
+	{
+		NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+		
+		[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+		YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+		
+		XCTAssertNotNil(database, @"Oops");
+		
+		YapDatabaseConnection *connection = [database newConnection];
+		
+		[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (int i = 0; i < count; i++)
+			{
+				NSString *str = [self randomLetters:100];
+				
+				[transaction setObject:str forKey:str inCollection:nil];
+			}
+		}];
+		
+		NSError *error = [connection backupToPath:databaseBackupPath];
+		
+		XCTAssertNil(error, @"Error: %@", error);
+	}
+	
+	{
+		YapDatabase *backupDatabase = [[YapDatabase alloc] initWithPath:databaseBackupPath];
+		
+		XCTAssertNotNil(backupDatabase, @"Oops");
+		
+		[[backupDatabase newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			NSUInteger num = [transaction numberOfKeysInCollection:nil];
+			
+			XCTAssertTrue(num == count, @"num(%lu) != count(%lu)", (unsigned long)num, (unsigned long)count);
+		}];
+	}
+}
+
+- (void)testBackup_asynchronous
+{
+	NSUInteger count = 10000;
+	
+	NSString *databaseBackupName = [NSString stringWithFormat:@"%@.backup", NSStringFromSelector(_cmd)];
+	NSString *databaseBackupPath = [self databasePath:databaseBackupName];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databaseBackupPath error:NULL];
+	
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		for (int i = 0; i < count; i++)
+		{
+			NSString *str = [self randomLetters:100];
+			
+			[transaction setObject:str forKey:str inCollection:nil];
+		}
+	}];
+	
+	dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+	
+	__block NSProgress *progress = nil;
+	progress = [connection asyncBackupToPath:databaseBackupPath
+	                         completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+	                         completionBlock:^(NSError *error)
+	{
+		
+		XCTAssertNil(error, @"Error: %@", error);
+		
+		YapDatabase *backupDatabase = [[YapDatabase alloc] initWithPath:databaseBackupPath];
+		
+		XCTAssertNotNil(backupDatabase, @"Oops");
+		
+		[[backupDatabase newConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			NSUInteger num = [transaction numberOfKeysInCollection:nil];
+			
+			XCTAssertTrue(num == count, @"num(%lu) != count(%lu)", (unsigned long)num, (unsigned long)count);
+		}];
+		
+		dispatch_semaphore_signal(semaphore);
+	}];
+		
+	
+	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+	
+	XCTAssertTrue(progress.fractionCompleted >= 1.0, @"progress: %@", progress);
+}
 
 @end
