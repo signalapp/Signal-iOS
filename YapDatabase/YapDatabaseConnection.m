@@ -787,10 +787,10 @@ NS_INLINE BOOL YDBIsMainThread()
 	{
 		if (metadataCache)
 		{
-			if (objectCacheLimit == UNLIMITED_CACHE_LIMIT)
+			if (metadataCacheLimit == UNLIMITED_CACHE_LIMIT)
 				keyCacheLimit = UNLIMITED_CACHE_LIMIT;
 			else
-				keyCacheLimit = MAX(keyCacheLimit, objectCacheLimit);
+				keyCacheLimit = MAX(keyCacheLimit, metadataCacheLimit);
 		}
 	}
 	
