@@ -168,49 +168,30 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		YapDatabaseConnectionDefaults *defaults = [database connectionDefaults];
 		
-		NSUInteger keyCacheLimit = MIN_KEY_CACHE_LIMIT;
+		objectCacheLimit = defaults.objectCacheLimit;
+		metadataCacheLimit = defaults.metadataCacheLimit;
 		
 		if (defaults.objectCacheEnabled)
 		{
-			objectCacheLimit = defaults.objectCacheLimit;
-			objectCache = [[YapCache alloc] initWithCountLimit:objectCacheLimit
-			                                      keyCallbacks:[YapCollectionKey keyCallbacks]];
-			objectCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
-			
-			if (keyCacheLimit != UNLIMITED_CACHE_LIMIT)
-			{
-				if (objectCacheLimit == UNLIMITED_CACHE_LIMIT)
-					keyCacheLimit = UNLIMITED_CACHE_LIMIT;
-				else
-					keyCacheLimit = MAX(keyCacheLimit, objectCacheLimit);
-			}
+			[self initializeObjectCache];
 		}
 		if (defaults.metadataCacheEnabled)
 		{
-			metadataCacheLimit = defaults.metadataCacheLimit;
-			metadataCache = [[YapCache alloc] initWithCountLimit:metadataCacheLimit
-			                                        keyCallbacks:[YapCollectionKey keyCallbacks]];
-			metadataCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
-			
-			if (keyCacheLimit != UNLIMITED_CACHE_LIMIT)
-			{
-				if (metadataCacheLimit == UNLIMITED_CACHE_LIMIT)
-					keyCacheLimit = UNLIMITED_CACHE_LIMIT;
-				else
-					keyCacheLimit = MAX(keyCacheLimit, objectCacheLimit);
-			}
+			[self initializeMetadataCache];
 		}
 		
-		objectPolicy = defaults.objectPolicy;
-		metadataPolicy = defaults.metadataPolicy;
-		
-	#if YapDatabaseEnforcePermittedTransactions
-		self.permittedTransactions = YDB_AnyTransaction;
-	#endif
+		NSUInteger keyCacheLimit = [self calculateKeyCacheLimit];
 		
 		keyCache = [[YapCache alloc] initWithCountLimit:keyCacheLimit];
 		keyCache.allowedKeyClasses = [NSSet setWithObject:[NSNumber class]];
 		keyCache.allowedObjectClasses = [NSSet setWithObject:[YapCollectionKey class]];
+		
+		objectPolicy = defaults.objectPolicy;
+		metadataPolicy = defaults.metadataPolicy;
+		
+		#if YapDatabaseEnforcePermittedTransactions
+		self.permittedTransactions = YDB_AnyTransaction;
+		#endif
 		
 		#if TARGET_OS_IPHONE
 		self.autoFlushMemoryFlags = defaults.autoFlushMemoryFlags;
@@ -530,9 +511,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		{
 			if (objectCache == nil)
 			{
-				objectCache = [[YapCache alloc] initWithCountLimit:objectCacheLimit
-				                                      keyCallbacks:[YapCollectionKey keyCallbacks]];
-				objectCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
+				[self initializeObjectCache];
 			}
 		}
 		else // Disabled
@@ -540,7 +519,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			objectCache = nil;
 		}
 		
-		[self updateKeyCacheLimit];
+		keyCache.countLimit = [self calculateKeyCacheLimit];
 	};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
@@ -580,7 +559,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			else
 			{
 				objectCache.countLimit = objectCacheLimit;
-				[self updateKeyCacheLimit];
+				keyCache.countLimit = [self calculateKeyCacheLimit];
 			}
 		}
 	};
@@ -615,9 +594,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		{
 			if (metadataCache == nil)
 			{
-				metadataCache = [[YapCache alloc] initWithCountLimit:metadataCacheLimit
-				                                        keyCallbacks:[YapCollectionKey keyCallbacks]];
-				metadataCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
+				[self initializeMetadataCache];
 			}
 		}
 		else // Disabled
@@ -625,7 +602,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			metadataCache = nil;
 		}
 		
-		[self updateKeyCacheLimit];
+		keyCache.countLimit = [self calculateKeyCacheLimit];
 	};
 	
 	if (dispatch_get_specific(IsOnConnectionQueueKey))
@@ -665,7 +642,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			else
 			{
 				metadataCache.countLimit = metadataCacheLimit;
-				[self updateKeyCacheLimit];
+				keyCache.countLimit = [self calculateKeyCacheLimit];
 			}
 		}
 	};
@@ -768,7 +745,23 @@ NS_INLINE BOOL YDBIsMainThread()
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)updateKeyCacheLimit
+- (void)initializeObjectCache
+{
+	objectCache = [[YapCache alloc] initWithCountLimit:objectCacheLimit
+	                                      keyCallbacks:[YapCollectionKey keyCallbacks]];
+	
+	objectCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
+}
+
+- (void)initializeMetadataCache
+{
+	metadataCache = [[YapCache alloc] initWithCountLimit:metadataCacheLimit
+	                                        keyCallbacks:[YapCollectionKey keyCallbacks]];
+	
+	metadataCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
+}
+
+- (NSUInteger)calculateKeyCacheLimit
 {
 	NSUInteger keyCacheLimit = MIN_KEY_CACHE_LIMIT;
 	
@@ -794,7 +787,7 @@ NS_INLINE BOOL YDBIsMainThread()
 		}
 	}
 	
-	keyCache.countLimit = keyCacheLimit;
+	return keyCacheLimit;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
