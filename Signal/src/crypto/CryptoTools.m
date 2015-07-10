@@ -6,13 +6,17 @@
 #import "Conversions.h"
 #import "EvpMessageDigest.h"
 #import "EvpSymetricUtil.h"
+#import "SecurityFailure.h"
 #import "Util.h"
 
 @implementation CryptoTools
 
 +(NSData*)generateSecureRandomData:(NSUInteger)length {
     NSMutableData* d = [NSMutableData dataWithLength:length];
-    SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    int err = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    if (err != 0) {
+        [SecurityFailure raise:@"SecRandomCopyBytes failed"];
+    }
     return d;
 }
 
