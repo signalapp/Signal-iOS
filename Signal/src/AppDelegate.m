@@ -25,6 +25,11 @@
 #include "TargetConditionals.h"
 #endif
 
+static NSString * const kStoryboardName = @"Storyboard";
+static NSString * const kInitialViewControllerIdentifier = @"UserInitialViewController";
+static NSString * const kURLSchemeSGNLKey = @"sgnl";
+static NSString * const kURLHostVerifyPrefix = @"verify";
+
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow *blankWindow;
@@ -68,8 +73,8 @@
         [DebugLogger.sharedInstance enableFileLogging];
     }
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:[NSBundle mainBundle]];
-    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"UserInitialViewController"];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:kStoryboardName bundle:[NSBundle mainBundle]];
+    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:kInitialViewControllerIdentifier];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = viewController;
@@ -122,8 +127,8 @@
 }
 
 -(BOOL) application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation {
-    if ([url.scheme isEqualToString:@"sgnl"]) {
-        if ([url.host hasPrefix:@"verify"] && ![TSAccountManager isRegistered]) {
+    if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
+        if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController                   = [Environment getCurrent].signUpFlowNavigationController;
             if ([signupController isKindOfClass:[UINavigationController class]]) {
                 UINavigationController *navController = (UINavigationController*)signupController;

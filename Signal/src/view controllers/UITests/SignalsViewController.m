@@ -108,15 +108,6 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self updateInboxCountLabel];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 -(void)tableViewSetUp
 {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -215,8 +206,9 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     TSThread    *thread    = [self threadForIndexPath:indexPath];
     
+    BOOL viewingThreadsIn = self.viewingThreadsIn;
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction] : [thread unarchiveThreadWithTransaction:transaction];
+        viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction] : [thread unarchiveThreadWithTransaction:transaction];
                                         
     }];
     [self checkIfEmptyView];
