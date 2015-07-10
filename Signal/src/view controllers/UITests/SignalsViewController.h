@@ -24,7 +24,4 @@
 
 @property (nonatomic, retain) CallState* latestCall;
 
--(IBAction)selectedInbox:(id)sender;
--(IBAction)selectedArchive:(id)sender;
-
 @end
