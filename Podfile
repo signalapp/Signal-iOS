@@ -4,7 +4,7 @@ inhibit_all_warnings!
 
 link_with ["Signal", "SignalTests"]
 
-pod 'OpenSSL',                    '~> 1.0.203'
+pod 'OpenSSL',                    '~> 1.0.204'
 pod 'libPhoneNumber-iOS',         '~> 0.8.5'
 pod 'AxolotlKit',                 '~> 0.7'
 pod 'PastelogKit',                '~> 1.2'
