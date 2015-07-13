@@ -18,10 +18,11 @@ extern NSString *TSUnreadIncomingMessagesGroup;
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
+extern NSString *TSImageAttachmentDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
 + (BOOL)registerUnreadDatabaseView;
-
++ (BOOL)registerImageAttachmentDatabaseView;
 
 @end

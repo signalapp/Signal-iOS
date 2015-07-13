@@ -181,9 +181,9 @@ dispatch_queue_t attachmentsQueue() {
         TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithIdentifier:attachment.uniqueId
                                                                                data:plaintext key:attachment.encryptionKey
                                                                         contentType:attachment.contentType];
-        
+
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [stream saveWithTransaction:transaction];
+            [stream saveWithTransaction:transaction];            
             if([attachment.avatarOfGroupId length]!=0) {
                 TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId associatedAttachmentId:attachment.uniqueId]; // TODO refactor the TSGroupThread to just take in an ID (as it is all that it uses). Should not take in more than it uses
                 TSGroupThread* gThread = [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
