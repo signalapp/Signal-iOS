@@ -98,7 +98,7 @@
     
     NSData* signalingCipherKey = SignalKeyingStorage.signalingCipherKey;
     NSData* signalingMacKey = SignalKeyingStorage.signalingMacKey;
-    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingCipherKey;
+    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingExtraKey;
     
     NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].ows_concatDatas.encodedAsBase64;
     NSString* body = @{@"key" : encodedSignalingKey, @"challenge" : challenge}.encodedAsJson;
