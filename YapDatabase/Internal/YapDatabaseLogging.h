@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 /**
  * Logging plays a very important role in open-source libraries.
  * 
