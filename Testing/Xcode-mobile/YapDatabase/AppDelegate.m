@@ -13,10 +13,6 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 
 
 @implementation AppDelegate
-{
-	YapDatabase *database;
-	YapDatabaseConnection *databaseConnection;
-}
 
 - (BOOL)application:(UIApplication __unused *)application didFinishLaunchingWithOptions:(NSDictionary __unused *)launchOptions
 {
@@ -37,6 +33,8 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 	delayInSeconds = 2.0;
 	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		
+		[self confirmCheckpointUnderstanding];
 		
 	//	[self testPragmaPageSize];
 	//	[self debug];
@@ -91,9 +89,93 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 	return result;
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Testing Checkpoint Algorithm
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)confirmCheckpointUnderstanding
 {
-	NSLog(@"YapDatabaseModified: %@", notification);
+	NSLog(@"%@", NSStringFromSelector(_cmd));
+	
+	// Goal:
+	//
+	// - observe the behavior of the WAL file size
+	// - ensure it shrinks, according to our understanding of the sqlite documentation
+	//
+	// Instructions:
+	//
+	// - enable VERBOSE logging in YapDatabase.m
+	// - enable YDB_PRINT_WAL_SIZE in YapDatabase.m
+	//
+	// This will result in the logging system printing out the file size of the WAL,
+	// along with checkpoint operation information.
+	
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	NSLog(@"databasePath: %@", databasePath);
+	
+	NSString *databaseWalPath = [databasePath stringByAppendingString:@"-wal"];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:databaseWalPath error:nil];
+	
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), bgQueue, ^{
+		
+		YapDatabaseConnection *databaseConnection1 = [database newConnection];
+		YapDatabaseConnection *databaseConnection2 = [database newConnection];
+		YapDatabaseConnection *databaseConnection3 = [database newConnection];
+		
+		// Put databaseConnection1 on commit #0
+		[databaseConnection1 beginLongLivedReadTransaction];
+		
+		// Write commit #1 to the WAL
+		[databaseConnection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+			
+			for (unsigned int i = 0; i < 200; i++)
+			{
+				NSString *str = [self randomLetters:200];
+				
+				[transaction setObject:str forKey:str inCollection:str];
+			}
+		}];
+		
+		// Put databaseConnection3 on commit #1 for a little bit
+		[databaseConnection3 beginLongLivedReadTransaction];
+		[databaseConnection3 asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			[NSThread sleepForTimeInterval:5.0];
+			
+		} completionBlock:^{
+			
+			NSLog(@"[databaseConnection3 endLongLivedReadTransaction]");
+			[databaseConnection3 endLongLivedReadTransaction];
+		}];
+		
+		// End the read-only transaction on databaseConnection1.
+		// This will result in a checkpoint operation, which should checkpoint commit #1
+		[databaseConnection1 endLongLivedReadTransaction];
+		
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), bgQueue, ^{
+			
+			NSLog(@"========== Post checkpoint read-write transaction ==========");
+			
+			// This write should reset the WAL.
+			// So the size should drop from ~334 KB down to ~66 KB.
+			
+			[databaseConnection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+				
+				for (unsigned int i = 0; i < 10; i++)
+				{
+					NSString *str = [self randomLetters:10];
+					
+					[transaction setObject:str forKey:str inCollection:str];
+				}
+			}];
+		});
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +189,10 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 	YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
 	options.pragmaPageSize = 8192;
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath serializer:NULL deserializer:NULL options:options];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath
+	serializer:NULL
+												 deserializer:NULL
+													  options:options];
 	
 	NSLog(@"database.sqliteVersion = %@", database.sqliteVersion);
 	NSLog(@"database.sqlitePageSize = %ld", (long)[[database newConnection] pragmaPageSize]);
@@ -120,7 +205,7 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 static const NSUInteger COUNT = 2500;
 static const NSUInteger STR_LENGTH = 2000;
 
-- (void)asyncFillDatabase:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+- (void)asyncFillDatabase:(YapDatabaseConnection *)connection afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -137,7 +222,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	});
 }
 
-- (void)asyncFillOddIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+- (void)asyncFillOddIndexes:(YapDatabaseConnection *)connection afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -154,7 +239,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	});
 }
 
-- (void)asyncFillEvenIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+- (void)asyncFillEvenIndexes:(YapDatabaseConnection *)connection afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -171,7 +256,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	});
 }
 
-- (void)asyncDeleteOddIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+- (void)asyncDeleteOddIndexes:(YapDatabaseConnection *)connection afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -188,7 +273,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	});
 }
 
-- (void)asyncDeleteEvenIndexes:(YapDatabaseConnection *)connection after:(const NSTimeInterval)delayInSeconds
+- (void)asyncDeleteEvenIndexes:(YapDatabaseConnection *)connection afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -205,7 +290,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	});
 }
 
-- (void)asyncVacuumAfter:(const NSTimeInterval)delayInSeconds
+- (void)asyncVacuumDatabase:(YapDatabase *)database afterDelay:(const NSTimeInterval)delayInSeconds
 {
 	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
@@ -223,36 +308,36 @@ static const NSUInteger STR_LENGTH = 2000;
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath];
-	databaseConnection = [database newConnection];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	YapDatabaseConnection *databaseConnection = [database newConnection];
 	
 	// Fill up the database with stuff
 	
 	dispatch_time_t when;
 	
-	NSTimeInterval after = 0.5;
+	NSTimeInterval delay = 0.5;
 	
-	[self asyncFillDatabase:databaseConnection after:after];      after += 1.5;
+	[self asyncFillDatabase:databaseConnection afterDelay:delay];      delay += 1.5;
 	
-	[self asyncDeleteEvenIndexes:databaseConnection after:after]; after += 1.5;
-	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
+	[self asyncDeleteEvenIndexes:databaseConnection afterDelay:delay]; delay += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection afterDelay:delay];   delay += 1.5;
 	
-	[self asyncDeleteOddIndexes:databaseConnection after:after];  after += 1.5;
-	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	[self asyncDeleteOddIndexes:databaseConnection afterDelay:delay];  delay += 1.5;
+	[self asyncFillOddIndexes:databaseConnection afterDelay:delay];    delay += 1.5;
 	
-	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
-	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection afterDelay:delay];   delay += 1.5;
+	[self asyncFillOddIndexes:databaseConnection afterDelay:delay];    delay += 1.5;
 	
-	[self asyncDeleteEvenIndexes:databaseConnection after:after]; after += 1.5;
-	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
+	[self asyncDeleteEvenIndexes:databaseConnection afterDelay:delay]; delay += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection afterDelay:delay];   delay += 1.5;
 	
-	[self asyncDeleteOddIndexes:databaseConnection after:after];  after += 1.5;
-	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	[self asyncDeleteOddIndexes:databaseConnection afterDelay:delay];  delay += 1.5;
+	[self asyncFillOddIndexes:databaseConnection afterDelay:delay];    delay += 1.5;
 	
-	[self asyncFillEvenIndexes:databaseConnection after:after];   after += 1.5;
-	[self asyncFillOddIndexes:databaseConnection after:after];    after += 1.5;
+	[self asyncFillEvenIndexes:databaseConnection afterDelay:delay];   delay += 1.5;
+	[self asyncFillOddIndexes:databaseConnection afterDelay:delay];    delay += 1.5;
 	
-	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(after * NSEC_PER_SEC));
+	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
 		
 		[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -285,11 +370,11 @@ static const NSUInteger STR_LENGTH = 2000;
 		}];
 	});
 	
-	[self asyncVacuumAfter:after];
+	[self asyncVacuumDatabase:database afterDelay:delay];
 	
-	after += 4.0;
+	delay += 4.0;
 	
-	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(after * NSEC_PER_SEC));
+	when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC));
 	dispatch_after(when, dispatch_get_main_queue(), ^{
 		
 		[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -309,13 +394,13 @@ static const NSUInteger STR_LENGTH = 2000;
 	
 //	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
-	database = [[YapDatabase alloc] initWithPath:databasePath];
-	databaseConnection = [database newConnection];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	YapDatabaseConnection *databaseConnection = [database newConnection];
 	
-	[self printDatabaseCount];
+	[self printDatabaseCount:databaseConnection];
 	
-	[self registerMainView];
-	[self printMainViewCount];
+	[self registerMainView:database];
+	[self printMainViewCount:databaseConnection];
 	
 	[databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
@@ -331,15 +416,15 @@ static const NSUInteger STR_LENGTH = 2000;
 		}
 	}];
 	
-	[self printDatabaseCount];
-	[self printMainViewCount];
+	[self printDatabaseCount:databaseConnection];
+	[self printMainViewCount:databaseConnection];
 	
-	[self registerOnTheFlyView];
+	[self registerOnTheFlyView:database];
 	
-	[self printOnTheFlyViewCount];
+	[self printOnTheFlyViewCount:databaseConnection];
 }
 
-- (void)registerMainView
+- (void)registerMainView:(YapDatabase *)database
 {
 	NSLog(@"Registering mainView....");
 
@@ -368,7 +453,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		NSLog(@"ERROR registering mainView !");
 }
 
-- (void)registerOnTheFlyView
+- (void)registerOnTheFlyView:(YapDatabase *)database
 {
 	NSLog(@"Registering onTheFlyView....");
 
@@ -397,7 +482,7 @@ static const NSUInteger STR_LENGTH = 2000;
 		NSLog(@"ERROR registering onTheFlyView !");
 }
 
-- (void)printDatabaseCount
+- (void)printDatabaseCount:(YapDatabaseConnection *)databaseConnection
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -407,7 +492,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	}];
 }
 
-- (void)printMainViewCount
+- (void)printMainViewCount:(YapDatabaseConnection *)databaseConnection
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
@@ -417,7 +502,7 @@ static const NSUInteger STR_LENGTH = 2000;
 	}];
 }
 
-- (void)printOnTheFlyViewCount
+- (void)printOnTheFlyViewCount:(YapDatabaseConnection *)databaseConnection
 {
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		

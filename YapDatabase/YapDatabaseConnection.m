@@ -2941,6 +2941,10 @@ NS_INLINE BOOL YDBIsMainThread()
  * we need the long-lived read transactions to "reset". That is, without changing their stable state (their snapshot),
  * we need them to restart the transaction, but this time without locking this WAL.
  * 
+ * In other words, if commit X is the most recent commit, and the connection is reading commit X from the WAL,
+ * then we want to reset the connection such that it's reading commit X directly from the database file.
+ * This will mean the WAL is no longer locked, and can be reset on the next write.
+ * 
  * We use the maybeResetLongLivedReadTransaction method to achieve this.
 **/
 - (void)maybeResetLongLivedReadTransaction
