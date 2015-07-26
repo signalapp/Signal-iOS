@@ -2703,6 +2703,12 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 		}
 	#endif
 		
+		// Check for oversized WAL file
+		
+		uint64_t walApproximateFileSize = totalFrameCount * strongSelf->pageSize;
+		
+		BOOL needsAggressiveCheckpoint = (walApproximateFileSize >= strongSelf->options.aggressiveWALTruncationSize);
+		
 		// Have we checkpointed the entire WAL yet?
 		
 		if (totalFrameCount == checkpointedFrameCount)
@@ -2721,7 +2727,7 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
 			// and thus unlock the WAL so it can be reset.
 			
-			dispatch_async(strongSelf->snapshotQueue, ^{
+			dispatch_block_t block = ^{
 				
 				__strong YapDatabase *strongSelf2 = weakSelf;
 				if (strongSelf2 == nil) return;
@@ -2734,14 +2740,20 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 						[state->connection maybeResetLongLivedReadTransaction];
 					}
 				}
-			});
+			};
+			
+			// if (needsAggressiveCheckpoint)
+			// --> sqlite3_wal_checkpoint_v2 needs all readers reading from the database file only (not WAL)
+			
+			if (needsAggressiveCheckpoint)
+				dispatch_sync(strongSelf->snapshotQueue, block);
+			else
+				dispatch_async(strongSelf->snapshotQueue, block);
 		}
 		
 		// Take steps to ensure the WAL gets reset/truncated (if needed).
 		
-		uint64_t walApproximateFileSize = totalFrameCount * strongSelf->pageSize;
-		
-		if (walApproximateFileSize >= strongSelf->options.aggressiveWALTruncationSize)
+		if (needsAggressiveCheckpoint)
 		{
 			int64_t lastCheckpointTime = mach_absolute_time();
 			[self aggressiveTryTruncateLargeWAL:lastCheckpointTime];
