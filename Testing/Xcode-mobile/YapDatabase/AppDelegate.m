@@ -34,8 +34,7 @@ static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
 	popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		
-		[self confirmCheckpointUnderstanding];
-		
+	//	[self confirmCheckpointUnderstanding];
 	//	[self testPragmaPageSize];
 	//	[self debug];
 	//	[self debugOnTheFlyViews];
