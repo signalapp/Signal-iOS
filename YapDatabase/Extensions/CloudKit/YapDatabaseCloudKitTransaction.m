@@ -1492,9 +1492,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		for (NSUInteger i = 0; i < count; i++)
 		{
 			if (i == 0)
-				[query appendFormat:@"?"];
+				[query appendString:@"?"];
 			else
-				[query appendFormat:@", ?"];
+				[query appendString:@", ?"];
 		}
 		
 		[query appendString:@");"];
@@ -1947,9 +1947,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		for (NSUInteger i = 0; i < count; i++)
 		{
 			if (i == 0)
-				[query appendFormat:@"?"];
+				[query appendString:@"?"];
 			else
-				[query appendFormat:@", ?"];
+				[query appendString:@", ?"];
 		}
 		
 		[query appendString:@");"];
@@ -2267,9 +2267,9 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		for (NSUInteger i = 0; i < numParams; i++)
 		{
 			if (i == 0)
-				[query appendFormat:@"?"];
+				[query appendString:@"?"];
 			else
-				[query appendFormat:@", ?"];
+				[query appendString:@", ?"];
 		}
 		
 		[query appendString:@");"];
