@@ -6,13 +6,11 @@
 //  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
 //
 
-#import <Security/Security.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <CommonCrypto/CommonCryptor.h>
 
 #import "Cryptography.h"
 #import "Constraints.h"
-#import "TSAttachmentStream.h"
 
 #import "NSData+Base64.h"
 

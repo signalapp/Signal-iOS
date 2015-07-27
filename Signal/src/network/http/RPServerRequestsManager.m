@@ -5,15 +5,8 @@
 //  Created by Frederic Jacobs on 31/07/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
-#import "HttpRequest.h"
 #import "RPServerRequestsManager.h"
-#import "Constraints.h"
-#import "CryptoTools.h"
-#import "DataUtil.h"
 #import "Environment.h"
-#import "HostNameEndPoint.h"
-#import "SignalKeyingStorage.h"
-#import "Util.h"
 
 #import "AFHTTPSessionManager+SignalMethods.h"
 

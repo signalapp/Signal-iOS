@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
-		70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 70377AA81916BA0500CAF501 /* InteractiveLabel.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
@@ -17,8 +16,6 @@
 		70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
 		70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */; };
 		70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */; };
-		765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */; };
-		765052A2182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */; };
 		765052AA18294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */; };
 		765052AC18294C9F008313E1 /* HelveticaNeueLTStd-Md.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052A618294C9F008313E1 /* HelveticaNeueLTStd-Md.otf */; };
 		765052B3182BF839008313E1 /* HelveticaNeueLTStd-Th.otf in Resources */ = {isa = PBXBuildFile; fileRef = 765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */; };
@@ -347,7 +344,6 @@
 		B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ADDC31989FF8700E1A773 /* RPServerRequestsManager.m */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
-		B68112ED1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */; };
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
 		B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */; };
@@ -394,7 +390,6 @@
 		B6B096911A1D25ED008BFAA6 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096581A1D25ED008BFAA6 /* NSData+Base64.m */; };
 		B6B096921A1D25ED008BFAA6 /* NSData+hexString.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0965A1A1D25ED008BFAA6 /* NSData+hexString.m */; };
 		B6B096931A1D25ED008BFAA6 /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0965C1A1D25ED008BFAA6 /* NSData+messagePadding.m */; };
-		B6B096941A1D25ED008BFAA6 /* NSString+escape.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0965E1A1D25ED008BFAA6 /* NSString+escape.m */; };
 		B6B096951A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */; };
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachments.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachments.m */; };
@@ -544,8 +539,6 @@
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
-		70377AA71916BA0500CAF501 /* InteractiveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveLabel.h; sourceTree = "<group>"; };
-		70377AA81916BA0500CAF501 /* InteractiveLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InteractiveLabel.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
@@ -559,8 +552,6 @@
 		70BAFD5B190584BE00FA5E0B /* NotificationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationTracker.h; sourceTree = "<group>"; };
 		70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationTracker.m; sourceTree = "<group>"; };
 		70E803ED18F6DD1400BF77BC /* EvpUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpUtil.h; sourceTree = "<group>"; };
-		7650529F182945EF008313E1 /* LocalizableCustomFontLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableCustomFontLabel.h; sourceTree = "<group>"; };
-		765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableCustomFontLabel.m; sourceTree = "<group>"; };
 		765052A518294C9F008313E1 /* HelveticaNeueLTStd-Lt.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Lt.otf"; sourceTree = "<group>"; };
 		765052A618294C9F008313E1 /* HelveticaNeueLTStd-Md.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Md.otf"; sourceTree = "<group>"; };
 		765052B1182BF839008313E1 /* HelveticaNeueLTStd-Th.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "HelveticaNeueLTStd-Th.otf"; sourceTree = "<group>"; };
@@ -963,8 +954,6 @@
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
 		B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+normalizeImage.h"; path = "util/UIImage+normalizeImage.h"; sourceTree = "<group>"; };
 		B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+normalizeImage.m"; path = "util/UIImage+normalizeImage.m"; sourceTree = "<group>"; };
-		B68112EB1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "JSQMessagesCollectionViewCell+menuBarItems.h"; path = "views/JSQMessagesCollectionViewCell+menuBarItems.h"; sourceTree = "<group>"; };
-		B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "JSQMessagesCollectionViewCell+menuBarItems.m"; path = "views/JSQMessagesCollectionViewCell+menuBarItems.m"; sourceTree = "<group>"; };
 		B684A46C19C3446200B11029 /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushManagerTest.m; path = Signal/test/push/PushManagerTest.m; sourceTree = SOURCE_ROOT; };
 		B6850E591995A4710068E715 /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B68B0E8D1A542AD700DE8A02 /* TSErrorMessage_privateConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSErrorMessage_privateConstructor.h; sourceTree = "<group>"; };
@@ -1069,8 +1058,6 @@
 		B6B0965A1A1D25ED008BFAA6 /* NSData+hexString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+hexString.m"; sourceTree = "<group>"; };
 		B6B0965B1A1D25ED008BFAA6 /* NSData+messagePadding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+messagePadding.h"; sourceTree = "<group>"; };
 		B6B0965C1A1D25ED008BFAA6 /* NSData+messagePadding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+messagePadding.m"; sourceTree = "<group>"; };
-		B6B0965D1A1D25ED008BFAA6 /* NSString+escape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+escape.h"; sourceTree = "<group>"; };
-		B6B0965E1A1D25ED008BFAA6 /* NSString+escape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+escape.m"; sourceTree = "<group>"; };
 		B6B0965F1A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLSessionDataTask+StatusCode.h"; sourceTree = "<group>"; };
 		B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionDataTask+StatusCode.m"; sourceTree = "<group>"; };
 		B6B1013A196D213F007E3930 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
@@ -1885,10 +1872,6 @@
 				FCB11D891A1284BB002F93FB /* SettingsTableViewCell.m */,
 				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
 				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
-				70377AA71916BA0500CAF501 /* InteractiveLabel.h */,
-				70377AA81916BA0500CAF501 /* InteractiveLabel.m */,
-				7650529F182945EF008313E1 /* LocalizableCustomFontLabel.h */,
-				765052A0182945EF008313E1 /* LocalizableCustomFontLabel.m */,
 				76EB053818170B33006006FC /* xibs */,
 			);
 			path = views;
@@ -2383,8 +2366,6 @@
 				B6B0965A1A1D25ED008BFAA6 /* NSData+hexString.m */,
 				B6B0965B1A1D25ED008BFAA6 /* NSData+messagePadding.h */,
 				B6B0965C1A1D25ED008BFAA6 /* NSData+messagePadding.m */,
-				B6B0965D1A1D25ED008BFAA6 /* NSString+escape.h */,
-				B6B0965E1A1D25ED008BFAA6 /* NSString+escape.m */,
 				B6B0965F1A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.h */,
 				B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */,
 				B6019E951A2492AB001118DF /* NSDate+millisecondTimeStamp.h */,
@@ -2656,8 +2637,6 @@
 				FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */,
 				B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */,
 				B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */,
-				B68112EB1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.h */,
-				B68112EC1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -3088,7 +3067,6 @@
 				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				76EB05C018170B33006006FC /* DhPacket.m in Sources */,
 				B63885D01A2685D700A226A6 /* PreKeyBundle+jsonDict.m in Sources */,
-				765052A1182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */,
 				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
@@ -3110,7 +3088,6 @@
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
 				FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
-				B68112ED1A4DA30300BA82FF /* JSQMessagesCollectionViewCell+menuBarItems.m in Sources */,
 				B6B096701A1D25ED008BFAA6 /* TSInfoMessage.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
@@ -3154,7 +3131,6 @@
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
-				70377AA91916BA0500CAF501 /* InteractiveLabel.m in Sources */,
 				76EB064618170B33006006FC /* TimeUtil.m in Sources */,
 				70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */,
 				76EB05A418170B33006006FC /* PacketHandler.m in Sources */,
@@ -3205,7 +3181,6 @@
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
-				B6B096941A1D25ED008BFAA6 /* NSString+escape.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				B63AF5D21A1F757900D01AAD /* TSNetworkManager.m in Sources */,
@@ -3285,7 +3260,6 @@
 				76EB05F518170B33006006FC /* CallConnectResult.m in Sources */,
 				BFB074C219A4BCA400F2947C /* ObservableTest.m in Sources */,
 				A157076017F0CD6D007C2BD6 /* IpEndPointTest.m in Sources */,
-				765052A2182945EF008313E1 /* LocalizableCustomFontLabel.m in Sources */,
 				A157076117F0CD6D007C2BD6 /* RtpPacketTests.m in Sources */,
 				76EB05C518170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB058F18170B33006006FC /* HostNameEndPoint.m in Sources */,

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#include <stdlib.h>
-
 #import "Constraints.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"

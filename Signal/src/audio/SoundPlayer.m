@@ -1,5 +1,4 @@
 #import "SoundPlayer.h"
-#import "SoundBoard.h"
 
 @interface SoundInstance ()
 -(void) play;

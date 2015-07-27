@@ -7,31 +7,17 @@
 //
 
 #import "SettingsTableViewController.h"
-#import "DJWActionSheet+OWS.h"
-#import "SettingsTableViewCell.h"
 
 #import "TSAccountManager.h"
-#import "TSStorageManager.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "UIUtil.h"
-#import <Social/Social.h>
 
 #import "RPServerRequestsManager.h"
 
 #import "TSSocketManager.h"
 
-#import <PastelogKit/Pastelog.h>
-
-#import "Cryptography.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <25519/Curve25519.h>
-#import "NSData+hexString.h"
-#import "Environment.h"
 #import "ContactsManager.h"
-#import "Contact.h"
-#import "TSStorageManager.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 
 #import "PrivacySettingsTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"

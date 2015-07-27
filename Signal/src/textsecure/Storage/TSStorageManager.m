@@ -7,18 +7,13 @@
 //
 
 #import "TSStorageManager.h"
-#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
-#import <CocoaLumberjack/DDLog.h>
 #import "CryptoTools.h"
 #import "DebugLogger.h"
 #import "NSData+Base64.h"
 
 #import "TSThread.h"
 #import "TSInteraction.h"
-#import "TSRecipient.h"
-#import "TSAttachment.h"
-#import "TSAttachmentStream.h"
 
 #import <SSKeychain/SSKeychain.h>
 #import "TSDatabaseView.h"

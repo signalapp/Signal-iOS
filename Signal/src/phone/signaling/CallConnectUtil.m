@@ -1,8 +1,6 @@
 #import "CallConnectUtil.h"
 #import "CallConnectUtil_Initiator.h"
 #import "CallConnectUtil_Responder.h"
-#import "SignalUtil.h"
-#import "Util.h"
 
 @implementation CallConnectUtil
 

@@ -1,9 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "JitterQueue.h"
 #import "TestUtil.h"
-#import "EncodedAudioPacket.h"
-#import "Util.h"
-#import "DiscardingLog.h"
 #import "Queue.h"
 
 #define testLoggedNothing(q) test(q->messageQueue.count == 0)

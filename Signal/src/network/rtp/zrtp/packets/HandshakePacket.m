@@ -1,13 +1,7 @@
 #import "HandshakePacket.h"
-#import "Constraints.h"
-#import "Conversions.h"
-#import "Util.h"
-#import "CryptoTools.h"
-#import "Crc32.h"
 #import "DhPacket.h"
 #import "ConfirmPacket.h"
 #import "CommitPacket.h"
-#import "HelloPacket.h"
 #import "ConfirmAckPacket.h"
 #import "HelloAckPacket.h"
 

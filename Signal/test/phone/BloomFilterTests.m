@@ -6,11 +6,9 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import "Cryptography.h"
 #import "Environment.h"
-#import "PropertyListPreferences.h"
 
 @interface PropertyListPreferences()
 - (NSData*)tryRetreiveBloomFilter;

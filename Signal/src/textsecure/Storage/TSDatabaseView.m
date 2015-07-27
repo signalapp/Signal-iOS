@@ -12,9 +12,7 @@
 
 #import "TSThread.h"
 #import "TSIncomingMessage.h"
-#import "TSInteraction.h"
 #import "TSStorageManager.h"
-#import "TSRecipient.h"
 
 NSString *TSInboxGroup                       = @"TSInboxGroup";
 NSString *TSArchiveGroup                     = @"TSArchiveGroup";

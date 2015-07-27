@@ -1,8 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "HelloPacket.h"
 #import "TestUtil.h"
-#import "Util.h"
-#import "Crc32.h"
 
 @interface HandshakePacketTest : XCTestCase
 

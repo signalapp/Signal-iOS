@@ -9,8 +9,6 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import <XCTest/XCTest.h>
 
-#import <AxolotlKit/PreKeyRecord.h>
-
 @interface TSStoragePreKeyStoreTests : XCTestCase
 
 @end

@@ -9,8 +9,6 @@
 #import <XCTest/XCTest.h>
 
 #import <AxolotlKit/SignedPrekeyRecord.h>
-#import <25519/Curve25519.h>
-#import <25519/Ed25519.h>
 
 #import "TSPreKeyManager.h"
 #import "TSStorageManager+SignedPreKeyStore.h"

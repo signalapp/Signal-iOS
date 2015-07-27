@@ -1,10 +1,8 @@
 #import "DnsManager.h"
 
 #import <netdb.h>
-#import "HttpResponse.h"
 #import "IpEndPoint.h"
 #import "ThreadManager.h"
-#import "UdpSocket.h"
 #import "Util.h"
 
 #define STRING_POINTER_FLAG 0xc0

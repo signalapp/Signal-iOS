@@ -9,12 +9,9 @@
 #import "TSVideoAttachmentAdapter.h"
 #import "TSMessagesManager.h"
 
-#import "UIDevice+TSHardwareVersion.h"
 #import "JSQMessagesMediaViewBubbleImageMasker.h"
 #import "FFCircularProgressView.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "TSNetworkManager.h"
-#import "UIColor+OWS.h"
 #import "SCWaveformView.h"
 #import "MIMETypeUtil.h"
 #define AUDIO_BAR_HEIGHT 36

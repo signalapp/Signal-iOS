@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "SpeexCodec.h"
 #import "TestUtil.h"
-#import "Util.h"
 
 @interface SpeexCodecTest : XCTestCase
 

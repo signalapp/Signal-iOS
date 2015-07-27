@@ -1,6 +1,4 @@
 #import "CommitPacket.h"
-#import "Util.h"
-#import "CryptoTools.h"
 
 @implementation CommitPacket
 

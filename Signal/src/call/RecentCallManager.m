@@ -1,12 +1,5 @@
 #import "RecentCallManager.h"
-#import "ContactsManager.h"
-#import "FunctionalUtil.h"
-#import "ObservableValue.h"
-#import "PreferencesUtil.h"
-#import "PushManager.h"
-#import "NSDate+millisecondTimeStamp.h"
 #import "TSCall.h"
-#import "TSContactThread.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager.h"
 

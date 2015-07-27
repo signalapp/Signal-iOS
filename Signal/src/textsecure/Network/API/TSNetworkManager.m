@@ -9,9 +9,7 @@
 #import <AFNetworking/AFNetworking.h>
 
 #import "TSAccountManager.h"
-#import "TSConstants.h"
 #import "TSNetworkManager.h"
-#import "TSRequest.h"
 #import "TSRegisterWithTokenRequest.h"
 #import "TSStorageManager+keyingMaterial.h"
 

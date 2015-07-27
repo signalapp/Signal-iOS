@@ -1,6 +1,4 @@
 #import "EC25KeyAgreementParticipant.h"
-#import "EvpKeyAgreement.h"
-#import "Constraints.h"
 
 @implementation EC25KeyAgreementParticipant
 

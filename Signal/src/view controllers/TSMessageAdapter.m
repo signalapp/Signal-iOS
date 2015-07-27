@@ -7,7 +7,6 @@
 //
 
 #import "JSQCall.h"
-#import "NSDate+millisecondTimeStamp.h"
 
 #import "TSMessageAdapter.h"
 #import "TSIncomingMessage.h"
@@ -15,9 +14,6 @@
 #import "TSCall.h"
 #import "TSInfoMessage.h"
 #import "TSErrorMessage.h"
-#import "TSattachment.h"
-#import "TSAttachmentStream.h"
-#import "TSPhotoAdapter.h"
 #import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
 

@@ -8,8 +8,6 @@
 
 #import "TSDatabaseSecondaryIndexes.h"
 
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
-
 #import "TSInteraction.h"
 
 #define TSTimeStampSQLiteIndex @"messagesTimeStamp"

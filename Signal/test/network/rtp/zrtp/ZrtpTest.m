@@ -1,14 +1,7 @@
 #import <XCTest/XCTest.h>
 #import "TestUtil.h"
-#import "Util.h"
 #import "CallController.h"
 #import "ZrtpManager.h"
-#import "ThreadManager.h"
-#import "ZrtpHandshakeResult.h"
-#import "DiscardingLog.h"
-#import "HelloAckPacket.h"
-#import "ConfirmAckPacket.h"
-#import "HostNameEndPoint.h"
 #import "IpAddress.h"
 #import "SignalKeyingStorage.h"
 

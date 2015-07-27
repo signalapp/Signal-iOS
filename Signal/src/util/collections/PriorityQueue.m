@@ -1,5 +1,4 @@
 #import "PriorityQueue.h"
-#import <CoreFoundation/CoreFoundation.h>
 
 @implementation PriorityQueue
 

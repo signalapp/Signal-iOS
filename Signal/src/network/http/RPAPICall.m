@@ -10,7 +10,6 @@
 #import "CryptoTools.h"
 #import "PhoneNumber.h"
 #import "RPAPICall.h"
-#import "SignalUtil.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"
 #import "NSData+ows_StripToken.h"

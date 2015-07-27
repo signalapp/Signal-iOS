@@ -1,11 +1,8 @@
 #import "ContactsManager.h"
-#import <AddressBook/AddressBook.h>
-#import <libPhoneNumber-iOS/NBPhoneNumber.h>
 #import "Environment.h"
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilter.h"
 #import "PhoneNumberDirectoryFilterManager.h"
-#import "PreferencesUtil.h"
 #import "Util.h"
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()

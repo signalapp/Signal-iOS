@@ -1,11 +1,5 @@
 #import "DH3KKeyAgreementProtocol.h"
 #import "DH3KKeyAgreementParticipant.h"
-#import "Constraints.h"
-#import "CryptoTools.h"
-#import "Util.h"
-#import "Conversions.h"
-
-#import "EvpKeyAgreement.h"
 
 @implementation DH3KKeyAgreementProtocol
 

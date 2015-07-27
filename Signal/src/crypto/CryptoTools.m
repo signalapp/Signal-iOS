@@ -1,12 +1,9 @@
 #import "CryptoTools.h"
 
-#import <openssl/hmac.h>
-
 #import "Constraints.h"
 #import "Conversions.h"
 #import "EvpMessageDigest.h"
 #import "EvpSymetricUtil.h"
-#import "SecurityFailure.h"
 #import "Util.h"
 
 @implementation CryptoTools

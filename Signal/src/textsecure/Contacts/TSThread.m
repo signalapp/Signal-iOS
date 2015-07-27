@@ -7,16 +7,12 @@
 //
 
 #import "TSThread.h"
-#import "ContactsManager.h"
 #import "TSDatabaseView.h"
 #import "TSInteraction.h"
 #import "TSStorageManager.h"
 
-#import "TSCall.h"
 #import "TSOutgoingMessage.h"
 #import "TSIncomingMessage.h"
-#import "TSInfoMessage.h"
-#import "TSErrorMessage.h"
 
 @interface TSThread ()
 

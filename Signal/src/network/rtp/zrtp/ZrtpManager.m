@@ -1,11 +1,8 @@
 #import "ZrtpManager.h"
 #import "ThreadManager.h"
-#import "ZrtpHandshakeSocket.h"
-#import "ZrtpHandshakeResult.h"
 #import "ZrtpInitiator.h"
 #import "ZrtpResponder.h"
 #import "ConfirmAckPacket.h"
-#import "TimeUtil.h"
 
 #define MAX_RETRANSMIT_COUNT 45
 #define MIN_RETRANSMIT_INTERVAL_SECONDS 0.15

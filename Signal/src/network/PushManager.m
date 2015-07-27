@@ -14,10 +14,7 @@
 
 #import "PreferencesUtil.h"
 #import "PushManager.h"
-#import "Environment.h"
-#import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
-#import "TSAccountManager.h"
 #import "TSSocketManager.h"
 
 #define pushManagerDomain @"org.whispersystems.pushmanager"
