@@ -7,7 +7,6 @@
 //
 
 #import "TSMessage.h"
-#import "TSAttachment.h"
 
 NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 

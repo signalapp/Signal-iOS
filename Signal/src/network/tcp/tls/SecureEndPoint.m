@@ -1,6 +1,5 @@
 #import "SecureEndPoint.h"
 #import "Util.h"
-#import "DnsManager.h"
 
 @implementation SecureEndPoint
 @synthesize certificate, hostNameEndPoint;

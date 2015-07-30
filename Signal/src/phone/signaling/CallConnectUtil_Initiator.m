@@ -5,8 +5,6 @@
 #import "IgnoredPacketFailure.h"
 #import "SignalUtil.h"
 #import "UnrecognizedRequestFailure.h"
-#import "Util.h"
-#import "ZrtpManager.h"
 
 @implementation CallConnectUtil_Initiator
 

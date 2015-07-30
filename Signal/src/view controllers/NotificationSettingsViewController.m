@@ -11,7 +11,6 @@
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "UIUtil.h"
 
 @interface NotificationSettingsViewController ()
 

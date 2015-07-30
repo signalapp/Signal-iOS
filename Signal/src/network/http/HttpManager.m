@@ -1,6 +1,4 @@
 #import "HttpManager.h"
-#import "NetworkStream.h"
-#import "HttpSocket.h"
 #import "Util.h"
 
 @implementation HttpManager

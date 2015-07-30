@@ -8,14 +8,11 @@
 
 #import "NewGroupViewController.h"
 #import "SignalsViewController.h"
-#import "Contact.h"
 #import "ContactsManager.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
 
 
-#import "Contact.h"
-#import "TSGroupModel.h"
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 
@@ -24,8 +21,6 @@
 #import "UIUtil.h"
 #import "DJWActionSheet+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <AVFoundation/AVFoundation.h>
-#import <CoreMedia/CoreMedia.h>
 
 static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 

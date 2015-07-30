@@ -13,7 +13,6 @@
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
-#import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 
 @interface CodeVerificationViewController ()

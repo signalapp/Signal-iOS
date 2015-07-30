@@ -1,5 +1,4 @@
 #import "EventWindow.h"
-#import "Util.h"
 
 @implementation EventWindow
 

@@ -1,12 +1,6 @@
 #import "ConfirmPacket.h"
-#import "CryptoTools.h"
-#import "DH3KKeyAgreementProtocol.h"
-#import "Constraints.h"
-#import "FunctionalUtil.h"
 #import "MasterSecret.h"
-#import "Util.h"
 #import "ZrtpInitiator.h"
-#import "PreferencesUtil.h"
 #import "SignalKeyingStorage.h"
 
 #define DHRS1_LENGTH 8

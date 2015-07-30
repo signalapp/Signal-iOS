@@ -8,10 +8,8 @@
 
 #import "FingerprintViewController.h"
 
-#import "Cryptography.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <25519/Curve25519.h>
-#import "NSData+hexString.h"
 #import "DJWActionSheet+OWS.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
@@ -19,7 +17,6 @@
 #import "PresentIdentityQRCodeViewController.h"
 #import "ScanIdentityBarcodeViewController.h"
 #import "SignalsNavigationController.h"
-#include "NSData+Base64.h"
 
 #import "TSFingerprintGenerator.h"
 

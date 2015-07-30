@@ -1,7 +1,6 @@
 #import "HostNameEndPoint.h"
 #import "DnsManager.h"
 #import "IpEndPoint.h"
-#import "ThreadManager.h"
 #import "Util.h"
 
 @implementation HostNameEndPoint

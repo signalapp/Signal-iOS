@@ -45,6 +45,14 @@
 
 +(NSData*)signalingMacKey;
 +(NSData*)signalingCipherKey;
+
+/**
+ *  Returns the extra keying material generated at registration. 
+ ⚠️ Warning: Users of older versions of Signal (<= 2.1.1) might have the signaling cipher key as extra keing material.
+ *
+ *  @return Extra keying material from registration time
+ */
+
 +(NSData*)signalingExtraKey;
 
 @end

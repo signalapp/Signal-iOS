@@ -1,6 +1,4 @@
 #import "ConfirmPacket.h"
-#import "Util.h"
-#import "Conversions.h"
 
 @implementation ConfirmPacket
 

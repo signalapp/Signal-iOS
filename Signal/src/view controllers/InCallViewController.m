@@ -3,11 +3,6 @@
 #import "InCallViewController.h"
 #import "LocalizableText.h"
 #import "RecentCallManager.h"
-#import "Util.h"
-#import "CallAudioManager.h"
-#import "PhoneManager.h"
-
-#import <AudioToolbox/AudioServices.h>
 
 #define BUTTON_BORDER_WIDTH 1.0f
 #define CONTACT_IMAGE_BORDER_WIDTH 2.0f

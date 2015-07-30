@@ -1,10 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "DnsManager.h"
 #import "TestUtil.h"
-#import "Util.h"
-#import "IpAddress.h"
-#import "ThreadManager.h"
-#import <netdb.h>
 
 #define infrastructureTestHostName @"relay.whispersystems.org"
 #define reliableHostName @"example.com"

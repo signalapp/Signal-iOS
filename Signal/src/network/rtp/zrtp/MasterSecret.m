@@ -1,8 +1,5 @@
 #import "MasterSecret.h"
-#import "Conversions.h"
-#import "CryptoTools.h"
 #import "ShortAuthenticationStringGenerator.h"
-#import "Util.h"
 
 #define INITIATOR_SRTP_KEY_LABEL  @"Initiator SRTP master key"
 #define RESPONDER_SRTP_KEY_LABEL  @"Responder SRTP master key"

@@ -6,7 +6,6 @@
 #import "NotificationManifest.h"
 #import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
-#import "SignalUtil.h"
 #import "ThreadManager.h"
 #import "TSContactsIntersectionRequest.h"
 #import "TSStorageManager.h"

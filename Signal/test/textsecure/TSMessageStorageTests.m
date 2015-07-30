@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #import "Cryptography.h"
@@ -17,11 +16,7 @@
 #import "TSStorageManager.h"
 
 #import "TSMessage.h"
-#import "TSErrorMessage.h"
-#import "TSInfoMessage.h"
 #import "TSIncomingMessage.h"
-#import "TSCall.h"
-#import "TSOutgoingMessage.h"
 
 
 @interface TSMessageStorageTests : XCTestCase

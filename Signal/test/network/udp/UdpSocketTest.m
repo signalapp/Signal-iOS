@@ -1,10 +1,7 @@
 #import <XCTest/XCTest.h>
-#import <CoreFoundation/CFSocket.h>
 #import "IpAddress.h"
 #import "TestUtil.h"
-#import "ThreadManager.h"
 #import "UdpSocket.h"
-#import "Util.h"
 
 @interface UdpSocketTest : XCTestCase
 

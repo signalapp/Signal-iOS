@@ -1,6 +1,5 @@
 #import "Conversions.h"
 #import "Util.h"
-#import "CryptoTools.h"
 
 @implementation NSData (Conversions)
 

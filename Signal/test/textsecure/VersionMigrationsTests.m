@@ -13,18 +13,14 @@
 #import "Cryptography.h"
 #import "Environment.h"
 #import "TSStorageManager.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 #import "RecentCall.h"
 #import "RecentCallManager.h"
 #import "Release.h"
-#import "SecurityUtils.h"
 #import "TestUtil.h"
 #import "TSCall.h"
-#import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "SignalKeyingStorage.h"
 #import "UICKeyChainStore.h"
-#import "YapDatabaseConnection.h"
 
 
 @interface VersionMigrations(Testing)

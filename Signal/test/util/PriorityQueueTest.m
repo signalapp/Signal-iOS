@@ -1,7 +1,5 @@
 #import <XCTest/XCTest.h>
 #import "TestUtil.h"
-#import "PriorityQueue.h"
-#import "Util.h"
 
 @interface PriorityQueueTest : XCTestCase
 @end

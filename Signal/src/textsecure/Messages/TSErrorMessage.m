@@ -7,7 +7,6 @@
 //
 
 #import "TSErrorMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
 #import "TSMessagesManager.h"
 
 #import "TSErrorMessage_privateConstructor.h"

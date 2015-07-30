@@ -10,7 +10,6 @@
 #import "CryptoTools.h"
 #import "PhoneNumber.h"
 #import "RPAPICall.h"
-#import "SignalUtil.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"
 #import "NSData+ows_StripToken.h"
@@ -58,7 +57,7 @@
     
     NSData* signalingCipherKey    = SignalKeyingStorage.signalingCipherKey;
     NSData* signalingMacKey       = SignalKeyingStorage.signalingMacKey;
-    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingCipherKey;
+    NSData* signalingExtraKeyData = SignalKeyingStorage.signalingExtraKey;
     NSString* encodedSignalingKey = @[signalingCipherKey, signalingMacKey, signalingExtraKeyData].ows_concatDatas.encodedAsBase64;
     apiCall.parameters            = @{@"key" : encodedSignalingKey, @"challenge" : verificationCode};
 

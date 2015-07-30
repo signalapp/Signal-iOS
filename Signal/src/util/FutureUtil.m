@@ -1,6 +1,5 @@
 #import "Constraints.h"
 #import "FutureUtil.h"
-#import "Operation.h"
 
 @implementation TOCCancelToken (FutureUtil)
 

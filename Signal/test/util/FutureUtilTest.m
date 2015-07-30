@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "TestUtil.h"
 #import "ThreadManager.h"
-#import "Util.h"
 
 @interface FutureUtilTest:XCTestCase
 @end

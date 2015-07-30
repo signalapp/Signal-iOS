@@ -17,20 +17,13 @@
 #import "TSStorageManager.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
-#import "TSSocketManager.h"
-#import "TSContactThread.h"
 #import "TSMessagesManager+sendMessages.h"
-#import "UIImage+normalizeImage.h"
 #import "VersionMigrations.h"
 #import "PreferencesUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
 
 #import <YapDatabase/YapDatabaseViewChange.h>
-#import "YapDatabaseViewTransaction.h"
-#import "YapDatabaseViewMappings.h"
 #import "YapDatabaseViewConnection.h"
-#import "YapDatabaseFullTextSearch.h"
-#import "YapDatabase.h"
 
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f

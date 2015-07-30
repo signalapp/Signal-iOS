@@ -1,8 +1,6 @@
 
 #import "CountryCodeViewController.h"
 #import "CountryCodeTableViewCell.h"
-#import "NBPhoneNumberUtil.h"
-#import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER = @"CountryCodeTableViewCell";

@@ -1,10 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "NetworkStream.h"
 #import "TestUtil.h"
-#import "Util.h"
-#import "HostNameEndPoint.h"
-#import "SecureEndPoint.h"
-#import "ThreadManager.h"
 
 #define TEST_SERVER_HOST @"master.whispersystems.org"
 #define TEST_SERVER_PORT 31337

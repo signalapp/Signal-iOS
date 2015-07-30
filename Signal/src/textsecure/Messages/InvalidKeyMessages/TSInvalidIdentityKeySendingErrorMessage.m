@@ -10,7 +10,6 @@
 
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
-#import "NSDate+millisecondTimeStamp.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSFingerprintGenerator.h"

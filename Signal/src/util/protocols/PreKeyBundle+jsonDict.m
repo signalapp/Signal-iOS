@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "Constraints.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "NSData+Base64.h"
 

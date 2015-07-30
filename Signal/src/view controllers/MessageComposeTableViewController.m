@@ -8,16 +8,10 @@
 
 #import "MessageComposeTableViewController.h"
 #import "Environment.h"
-#import "Contact.h"
-#import "PhoneNumberUtil.h"
-#import "PreferencesUtil.h"
-#import "MessagesViewController.h"
-#import "SignalsViewController.h"
 #import "NotificationManifest.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 
 #import <MessageUI/MessageUI.h>
-#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "ContactTableViewCell.h"
 #import "UIColor+OWS.h"

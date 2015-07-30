@@ -12,14 +12,8 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 
-#import "Cryptography.h"
-#import "IncomingPushMessageSignal.pb.h"
-#import "NSData+Base64.h"
-
 #import "PushManager.h"
 
-#import "TSIncomingMessage.h"
-#import "TSErrorMessage.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSInfoMessage.h"
 
@@ -29,10 +23,7 @@
 #import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+PreKeyStore.h"
-#import "TSNetworkManager.h"
-#import "TSSubmitMessageRequest.h"
 #import "TSMessagesManager+attachments.h"
-#import "TSAttachmentPointer.h"
 
 #import "SignalKeyingStorage.h"
 
@@ -42,9 +33,6 @@
 #import "PreferencesUtil.h"
 #import "ContactsManager.h"
 #import "TSCall.h"
-
-#import <CocoaLumberjack/DDLog.h>
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 @interface TSMessagesManager ()
 

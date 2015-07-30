@@ -14,8 +14,6 @@
 #import <AxolotlKit/SignedPreKeyStore.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
-#import "TSStorageManager+IdentityKeyStore.h"
-
 @implementation TSRegisterPrekeysRequest
 
 - (id)initWithPrekeyArray:(NSArray*)prekeys identityKey:(NSData*)identityKeyPublic signedPreKeyRecord:(SignedPreKeyRecord*)signedRecord preKeyLastResort:(PreKeyRecord*)lastResort {

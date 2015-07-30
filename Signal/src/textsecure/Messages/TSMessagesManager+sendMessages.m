@@ -15,7 +15,6 @@
 
 #import "Environment.h"
 #import "PreferencesUtil.h"
-#import "IncomingPushMessageSignal.pb.h"
 #import "NSData+messagePadding.h"
 #import "TSStorageManager.h"
 #import "TSStorageManager+SessionStore.h"
@@ -26,18 +25,12 @@
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalKeyingStorage.h"
 
-#import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
 #import "TSSubmitMessageRequest.h"
 #import "TSRecipientPrekeyRequest.h"
 
-#import "TSErrorMessage.h"
 #import "TSInfoMessage.h"
-
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
-#import "TSRecipient.h"
 
 @interface TSMessagesManager ()
 dispatch_queue_t sendingQueue(void);

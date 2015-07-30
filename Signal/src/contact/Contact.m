@@ -1,9 +1,7 @@
 #import "Contact.h"
 #import "ContactsManager.h"
 #import "TSStorageManager.h"
-#import "Util.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
 #import "TSRecipient.h"
 
 static NSString *const DEFAULTS_KEY_CONTACT = @"DefaultsKeyContact";

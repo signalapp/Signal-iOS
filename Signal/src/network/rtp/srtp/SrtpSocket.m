@@ -1,6 +1,5 @@
 #import "SrtpSocket.h"
 #import "ZrtpManager.h"
-#import "ZrtpHandshakeSocket.h"
 
 @implementation SrtpSocket
 

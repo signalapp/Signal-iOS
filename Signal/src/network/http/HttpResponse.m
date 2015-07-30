@@ -1,6 +1,5 @@
 #import "HttpResponse.h"
 #import "Util.h"
-#import "Constraints.h"
 #import "HttpRequestOrResponse.h"
 
 @implementation HttpResponse

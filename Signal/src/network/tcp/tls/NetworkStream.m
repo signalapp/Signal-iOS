@@ -2,10 +2,6 @@
 #import "NetworkStream.h"
 #import "Constraints.h"
 #import "Util.h"
-#import "SecureEndPoint.h"
-#import "HostNameEndPoint.h"
-#import "IpEndPoint.h"
-#import "IpAddress.h"
 #import "ThreadManager.h"
 
 #define READ_BUFFER_LENGTH 1024

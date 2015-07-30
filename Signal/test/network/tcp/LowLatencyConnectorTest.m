@@ -1,10 +1,8 @@
 #import <XCTest/XCTest.h>
 #import "LowLatencyConnector.h"
-#import "NetworkStream.h"
 #import "Util.h"
 #import "HostNameEndPoint.h"
 #import "TestUtil.h"
-#import "ThreadManager.h"
 
 @interface LowLatencyConnectorTest : XCTestCase
 @end

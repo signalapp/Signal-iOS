@@ -12,11 +12,8 @@
 #import "Cryptography.h"
 
 #import "TSAllocAttachmentRequest.h"
-#import "TSAttachmentEncryptionResult.h"
 #import "TSAttachmentPointer.h"
-#import "TSAttachmentStream.h"
 #import "TSAttachmentRequest.h"
-#import "TSConstants.h"
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"

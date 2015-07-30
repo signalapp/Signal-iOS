@@ -10,9 +10,7 @@
 
 #import "Environment.h"
 #import "IncomingPushMessageSignal.pb.h"
-#import "TSStorageManager.h"
 #import "ContactsManager.h"
-#import "TSRecipient.h"
 
 #define TSContactThreadPrefix @"c"
 

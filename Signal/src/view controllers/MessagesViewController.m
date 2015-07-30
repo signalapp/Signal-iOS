@@ -19,25 +19,13 @@
 #import "SignalKeyingStorage.h"
 
 #import "JSQCallCollectionViewCell.h"
-#import "JSQCall.h"
-
-#import "JSQDisplayedMessageCollectionViewCell.h"
-#import "JSQInfoMessage.h"
-#import "JSQErrorMessage.h"
 
 #import "UIUtil.h"
 #import "DJWActionSheet+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <AVFoundation/AVFoundation.h>
-#import <CoreMedia/CoreMedia.h>
-
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
 
 #import "TSStorageManager.h"
 #import "TSDatabaseView.h"
-#import "UIColor+OWS.h"
-#import "UIFont+OWS.h"
 #import "UIButton+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>
 
@@ -46,8 +34,6 @@
 #import "TSErrorMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
-#import "TSInteraction.h"
-#import "TSPhotoAdapter.h"
 #import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
 
@@ -55,7 +41,6 @@
 #import "TSMessagesManager+attachments.h"
 #import "NSDate+millisecondTimeStamp.h"
 
-#import "PhoneNumber.h"
 #import "Environment.h"
 #import "PhoneManager.h"
 #import "ContactsManager.h"

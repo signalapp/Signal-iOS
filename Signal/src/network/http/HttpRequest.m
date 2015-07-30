@@ -1,7 +1,6 @@
 #import "HttpRequest.h"
 #import "Util.h"
 #import "CryptoTools.h"
-#import "Constraints.h"
 #import "HttpRequestOrResponse.h"
 
 @interface HttpRequest ()

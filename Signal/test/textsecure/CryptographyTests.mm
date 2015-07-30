@@ -7,7 +7,6 @@
 //
 
 #import <XCTest/XCTest.h>
-#include <stdlib.h>
 #import "Cryptography.h"
 #import "NSData+Base64.h"
 
