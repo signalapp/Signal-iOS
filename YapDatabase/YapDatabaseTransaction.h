@@ -95,11 +95,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Returns a list of all collection names.
+ * 
+ * If the list of collections is really big, it may be more efficient to enumerate them instead.
+ * @see enumerateCollectionsUsingBlock:
 **/
 - (NSArray *)allCollections;
 
 /**
  * Returns a list of all keys in the given collection.
+ * 
+ * If the list of keys is really big, it may be more efficient to enumerate them instead.
+ * @see enumerateKeysInCollection:usingBlock:
 **/
 - (NSArray *)allKeysInCollection:(nullable NSString *)collection;
 
