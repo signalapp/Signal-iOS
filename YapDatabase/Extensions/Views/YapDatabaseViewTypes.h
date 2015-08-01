@@ -51,6 +51,8 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock) \
 
 @end
 
+#pragma mark -
+
 /**
  * The sorting block handles sorting of objects within their group.
  *
@@ -128,5 +130,80 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)                
 
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
 @property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
+
+@end
+
+#pragma mark -
+
+/**
+ * A find block is used to efficiently find items within a view.
+ * It allows you to perform a binary search on the pre-sorted items within a view.
+ * 
+ * The return values from the YapDatabaseViewFindBlock have the following meaning:
+ * 
+ * - NSOrderedAscending : The given row (block parameters) is less than the range I'm looking for.
+ *                        That is, the row would have a smaller index within the view than would the range I seek.
+ * 
+ * - NSOrderedDecending : The given row (block parameters) is greater than the range I'm looking for.
+ *                        That is, the row would have a greater index within the view than would the range I seek.
+ * 
+ * - NSOrderedSame : The given row (block parameters) is within the range I'm looking for.
+ * 
+ * Keep in mind 2 things:
+ * 
+ * #1 : This method can only be used if you need to find items according to their sort order.
+ *      That is, according to how the items are sorted via the view's sortingBlock.
+ *      Attempting to use this method in any other manner makes no sense.
+ *
+ * #2 : The findBlock that you pass needs to be setup in the same manner as the view's sortingBlock.
+ *      That is, the following rules must be followed, or the results will be incorrect:
+ *      
+ *      For example, say you have a view like this, looking for the following range of 3 items:
+ *      myView = @[ A, B, C, D, E, F, G ]
+ *                     ^^^^^^^
+ *      sortingBlock(A, B) => NSOrderedAscending
+ *      findBlock(A)       => NSOrderedAscending
+ *      
+ *      sortingBlock(E, D) => NSOrderedDescending
+ *      findBlock(E)       => NSOrderedDescending
+ * 
+ *      findBlock(B) => NSOrderedSame
+ *      findBlock(C) => NSOrderedSame
+ *      findBlock(D) => NSOrderedSame
+ * 
+ * In other words, you can't sort one way in the sortingBlock, and "sort" another way in the findBlock.
+ * Another way to think about it is in terms of how the Apple docs define the NSOrdered enums:
+ * 
+ * NSOrderedAscending  : The left operand is smaller than the right operand.
+ * NSOrderedDescending : The left operand is greater than the right operand.
+ * 
+ * For the findBlock, the "left operand" is the row that is passed,
+ * and the "right operand" is the desired range.
+ * 
+ * And NSOrderedSame means: "the passed row is within the range I'm looking for".
+**/
+@interface YapDatabaseViewFind : NSObject
+
+typedef id YapDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
+
+typedef NSComparisonResult (^YapDatabaseViewFindWithKeyBlock)      \
+                                 (NSString *collection, NSString *key);
+
+typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)   \
+                                 (NSString *collection, NSString *key, id object);
+
+typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock) \
+                                 (NSString *collection, NSString *key, id metadata);
+
+typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
+                                 (NSString *collection, NSString *key, id object, id metadata);
+
++ (instancetype)withKeyBlock:(YapDatabaseViewFindWithKeyBlock)findBlock;
++ (instancetype)withObjectBlock:(YapDatabaseViewFindWithObjectBlock)findBlock;
++ (instancetype)withMetadataBlock:(YapDatabaseViewFindWithMetadataBlock)findBlock;
++ (instancetype)withRowBlock:(YapDatabaseViewFindWithRowBlock)findBlock;
+
+@property (nonatomic, strong, readonly) YapDatabaseViewFindBlock findBlock;
+@property (nonatomic, assign, readonly) YapDatabaseViewBlockType findBlockType;
 
 @end

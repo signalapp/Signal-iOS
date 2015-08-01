@@ -144,17 +144,6 @@
 
 #pragma mark Finding
 
-typedef id YapDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
-
-typedef NSComparisonResult (^YapDatabaseViewFindWithKeyBlock)      \
-                                                        (NSString *collection, NSString *key);
-typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)   \
-                                                        (NSString *collection, NSString *key, id object);
-typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock) \
-                                                        (NSString *collection, NSString *key, id metadata);
-typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
-                                                        (NSString *collection, NSString *key, id object, id metadata);
-
 /**
  * This method uses a binary search algorithm to find a range of items within the view that match the given criteria.
  * For example:
@@ -234,20 +223,20 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * @param group
  *     The group within the view to search.
  * 
- * @param block
- *     One of the YapDatabaseViewFindWithXBlock types.
- * 
- * @param blockType
- *     The proper YapDatabaseViewBlockTypeWithX type that matches the given block.
+ * @param find
+ *     Instance of YapDatabaseViewFind. (See YapDatabaseViewTypes.h)
  * 
  * @return
  *     If found, the range that matches the items within the desired range.
  *     That is, is these items were passed to the given block, the block would return NSOrderedSame.
  *     If not found, returns NSMakeRange(NSNotFound, 0).
 **/
+- (NSRange)findRangeInGroup:(NSString *)group using:(YapDatabaseViewFind *)find;
+
 - (NSRange)findRangeInGroup:(NSString *)group
                  usingBlock:(YapDatabaseViewFindBlock)block
-                  blockType:(YapDatabaseViewBlockType)blockType;
+                  blockType:(YapDatabaseViewBlockType)blockType
+__attribute((deprecated("Use method findRangeInGroup:using: instead")));
 
 #pragma mark Enumerating
 

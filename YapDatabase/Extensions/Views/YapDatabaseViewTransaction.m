@@ -4311,16 +4311,9 @@
 /**
  * See header file for extensive documentation for this method.
 **/
-- (NSRange)findRangeInGroup:(NSString *)group
-                 usingBlock:(YapDatabaseViewFindBlock)block
-                  blockType:(YapDatabaseViewBlockType)blockType
+- (NSRange)findRangeInGroup:(NSString *)group using:(YapDatabaseViewFind *)find
 {
-	BOOL invalidBlockType = blockType != YapDatabaseViewBlockTypeWithKey      &&
-	                        blockType != YapDatabaseViewBlockTypeWithObject   &&
-	                        blockType != YapDatabaseViewBlockTypeWithMetadata &&
-	                        blockType != YapDatabaseViewBlockTypeWithRow;
-	
-	if (group == nil || block == NULL || invalidBlockType)
+	if (group == nil || find == NULL)
 	{
 		return NSMakeRange(NSNotFound, 0);
 	}
@@ -4338,9 +4331,11 @@
 		return NSMakeRange(NSNotFound, 0);
 	}
 	
-	NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
-		
-		int64_t rowid = 0;
+	// Helper block:
+	//
+	// Finds the rowid for a given index (within the view.group).
+	
+	int64_t (^findRowid)(NSUInteger) = ^int64_t (NSUInteger index){
 		
 		NSUInteger pageOffset = 0;
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -4349,8 +4344,7 @@
 			{
 				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
 				
-				rowid = [page rowidAtIndex:(index - pageOffset)];
-				break;
+				return [page rowidAtIndex:(index - pageOffset)];
 			}
 			else
 			{
@@ -4358,50 +4352,84 @@
 			}
 		}
 		
-		if (blockType == YapDatabaseViewBlockTypeWithKey)
+		NSAssert(NO, @"index(%lu) not found !!!", (unsigned long)index);
+		return (int64_t)0;
+	};
+	
+	// Helper block:
+	//
+	// Executes the findBlock against the row represented by the given index (within the view.group).
+	
+	NSComparisonResult (^compare)(NSUInteger);
+		
+	switch (find.findBlockType)
+	{
+		case YapDatabaseViewBlockTypeWithKey :
 		{
 			__unsafe_unretained YapDatabaseViewFindWithKeyBlock findBlock =
-			    (YapDatabaseViewFindWithKeyBlock)block;
+			  (YapDatabaseViewFindWithKeyBlock)find.findBlock;
 			
-			YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-			
-			return findBlock(ck.collection, ck.key);
+			compare = ^NSComparisonResult (NSUInteger index){
+				
+				int64_t rowid = findRowid(index);
+				
+				YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+				
+				return findBlock(ck.collection, ck.key);
+			};
 		}
-		else if (blockType == YapDatabaseViewBlockTypeWithObject)
+		case YapDatabaseViewBlockTypeWithObject :
 		{
 			__unsafe_unretained YapDatabaseViewFindWithObjectBlock findBlock =
-			    (YapDatabaseViewFindWithObjectBlock)block;
+			    (YapDatabaseViewFindWithObjectBlock)find.findBlock;
 			
-			YapCollectionKey *ck = nil;
-			id object = nil;
-			[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
-			
-			return findBlock(ck.collection, ck.key, object);
+			compare = ^NSComparisonResult (NSUInteger index){
+				
+				int64_t rowid = findRowid(index);
+				
+				YapCollectionKey *ck = nil;
+				id object = nil;
+				[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
+				
+				return findBlock(ck.collection, ck.key, object);
+			};
 		}
-		else if (blockType == YapDatabaseViewBlockTypeWithMetadata)
+		case YapDatabaseViewBlockTypeWithMetadata :
 		{
 			__unsafe_unretained YapDatabaseViewFindWithMetadataBlock findBlock =
-			    (YapDatabaseViewFindWithMetadataBlock)block;
+			    (YapDatabaseViewFindWithMetadataBlock)find.findBlock;
 			
-			YapCollectionKey *ck = nil;
-			id metadata = nil;
-			[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
-			
-			return findBlock(ck.collection, ck.key, metadata);
+			compare = ^NSComparisonResult (NSUInteger index){
+				
+				int64_t rowid = findRowid(index);
+				
+				YapCollectionKey *ck = nil;
+				id metadata = nil;
+				[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
+				
+				return findBlock(ck.collection, ck.key, metadata);
+			};
 		}
-		else
+		default :
 		{
 			__unsafe_unretained YapDatabaseViewFindWithRowBlock findBlock =
-			    (YapDatabaseViewFindWithRowBlock)block;
+			    (YapDatabaseViewFindWithRowBlock)find.findBlock;
 			
-			YapCollectionKey *ck = nil;
-			id object = nil;
-			id metadata = nil;
-			[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
-			
-			return findBlock(ck.collection, ck.key, object, metadata);
+			compare = ^NSComparisonResult (NSUInteger index){
+				
+				int64_t rowid = findRowid(index);
+				
+				YapCollectionKey *ck = nil;
+				id object = nil;
+				id metadata = nil;
+				[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
+				
+				return findBlock(ck.collection, ck.key, object, metadata);
+			};
 		}
-	};
+		
+	} // end switch (blockType)
+		
 	
 	NSUInteger loopCount = 0;
 	
@@ -4477,6 +4505,17 @@
 	YDBLogVerbose(@"Find range in group(%@) took %lu comparisons", group, (unsigned long)loopCount);
 	
 	return NSMakeRange(sMin, (eMax - sMin));
+}
+
+/**
+ * This method is deprecated.
+ * Use findRangeInGroup:using: instead.
+**/
+- (NSRange)findRangeInGroup:(NSString *)group
+                 usingBlock:(YapDatabaseViewFindBlock)block
+                  blockType:(YapDatabaseViewBlockType)blockType
+{
+	return [self findRangeInGroup:group using:[YapDatabaseViewFind withBlock:block blockType:blockType]];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
