@@ -574,6 +574,14 @@ typedef enum : NSUInteger {
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
         
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+
+        // Reset the keyboard from special characters to Default
+        [self.keyboardController endListeningForKeyboard];
+        [self.inputToolbar.contentView.textView resignFirstResponder];
+        [self.inputToolbar.contentView.textView setKeyboardType:UIKeyboardTypeDefault];
+        [self.inputToolbar.contentView.textView becomeFirstResponder];
+        [self.keyboardController beginListeningForKeyboard];
+
         [self finishSendingMessage];
     }
 }
