@@ -2,8 +2,9 @@ language: objective-c
 osx_image: xcode6.4
 
 before_install:
-  - xctool -version
   - gem update cocoapods
+  - brew update
+  - brew outdated xctool || brew upgrade xctool
 before_script:
   - export LANG=en_US.UTF-8
 script:
