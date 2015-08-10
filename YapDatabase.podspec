@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "YapDatabase"
-  s.version      = "2.6.5"
+  s.version      = "2.7"
   s.summary      = "A key/value store built atop sqlite for iOS & Mac."
   s.homepage     = "https://github.com/yapstudios/YapDatabase"
   s.license      = 'MIT'
@@ -28,7 +28,8 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
-    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib', 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib',
+                    'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
     ss.requires_arc = true
   end
 
