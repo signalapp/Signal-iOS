@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.6.5",
+  "version": "2.7",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.6.5"
+    "tag": "2.7"
   },
   "module_map": "module.modulemap",
   "default_subspecs": "standard",
