@@ -598,7 +598,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		{
 			dirtyRecordTableInfo =
 			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
-			                                                       recordID:nil
+			                                                       recordID:record.recordID
 			                                                     ownerCount:0];
 			
 			dirtyRecordTableInfo.dirty_record = record;
@@ -1269,7 +1269,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		{
 			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
 			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:recordInfo.databaseIdentifier
-			                                                       recordID:nil
+			                                                       recordID:record.recordID
 			                                                     ownerCount:0];
 			
 			newDirtyRecordTableInfo.dirty_record = record;
@@ -1311,7 +1311,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		{
 			YDBCKDirtyRecordTableInfo *newDirtyRecordTableInfo =
 			  [[YDBCKDirtyRecordTableInfo alloc] initWithDatabaseIdentifier:recordInfo.databaseIdentifier
-			                                                       recordID:nil
+			                                                       recordID:record.recordID
 			                                                     ownerCount:0];
 			
 			newDirtyRecordTableInfo.dirty_record = record;
