@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/robbie/Programs/GitHub/YapDatabase/Testing/Xcode-desktop/YapDatabaseTesting.xcodeproj">
+      location = "group:YapDatabaseTesting.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
