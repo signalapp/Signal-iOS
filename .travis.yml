@@ -7,5 +7,5 @@ before_script:
   - export LANG=en_US.UTF-8
 script:
   - cd ./Testing/Xcode-desktop
-  - pod install
+  - pod update
   - xctool -workspace YapDatabase.xcworkspace -scheme YapDatabase -sdk macosx -arch x86_64 test
