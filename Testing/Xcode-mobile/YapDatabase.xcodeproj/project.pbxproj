@@ -358,19 +358,10 @@
 				DC717A0C1815DF9500D6E6C8 /* SecondaryIndexes */,
 				DC2EAC3018763B9900FF4EA8 /* Relationships */,
 				DCF3928A19241736004B1161 /* SearchResultsView */,
-				DCAE52181673FE2600395076 /* Supporting Files */,
 			);
 			name = UnitTests;
 			path = YapDatabaseTests;
 			sourceTree = "<group>";
-		};
-		DCAE52181673FE2600395076 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Supporting Files";
-			path = YapDatabaseTests;
-			sourceTree = SOURCE_ROOT;
 		};
 		DCCA963417458C730022CCF3 /* YapDatabase */ = {
 			isa = PBXGroup;
