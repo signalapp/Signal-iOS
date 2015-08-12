@@ -39,6 +39,7 @@
 static NSUInteger const UNLIMITED_CACHE_LIMIT = 0;
 static NSUInteger const MIN_KEY_CACHE_LIMIT   = 500;
 
+#if YapDatabaseEnforcePermittedTransactions
 
 typedef BOOL (*IMP_NSThread_isMainThread)(id, SEL);
 static IMP_NSThread_isMainThread ydb_NSThread_isMainThread;
@@ -48,6 +49,8 @@ NS_INLINE BOOL YDBIsMainThread()
 {
 	return ydb_NSThread_isMainThread(ydb_NSThread_Class, @selector(isMainThread));
 }
+
+#endif
 
 @implementation YapDatabaseConnection {
 @private
@@ -131,6 +134,8 @@ NS_INLINE BOOL YDBIsMainThread()
 		method_setImplementation(extMethod, extensionIMP);
 		loaded = YES;
 		
+	#if YapDatabaseEnforcePermittedTransactions
+		
 		// Optimized invocation of [NSThread isMainThread].
 		// Benchmarks seem to indicate:
 		// - ~30% performance improvement on the main thread
@@ -138,6 +143,8 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		ydb_NSThread_isMainThread = (IMP_NSThread_isMainThread)[NSThread methodForSelector:@selector(isMainThread)];
 		ydb_NSThread_Class = [NSThread class];
+		
+	#endif
 	}
 }
 
