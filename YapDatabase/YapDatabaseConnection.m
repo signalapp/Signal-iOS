@@ -2149,7 +2149,7 @@ NS_INLINE BOOL YDBIsMainThread()
 {
 	if (transaction->rollback)
 	{
-		// Rollback-Write-Transaction: Step 1 of 2
+		// Rollback-Write-Transaction: Step 1 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -2168,17 +2168,39 @@ NS_INLINE BOOL YDBIsMainThread()
 			}
 		});
 		
-		// Rollback-Write-Transaction: Step 2 of 3
+		// Rollback-Write-Transaction: Step 2 of 4
 		//
 		// Rollback sqlite database transaction.
 		
 		[transaction rollbackTransaction];
 		
-		// Rollback-Write-Transaction: Step 3 of 3
+		// Rollback-Write-Transaction: Step 3 of 4
 		//
 		// Reset any in-memory variables which may be out-of-sync with the database.
 		
-		[self postRollbackCleanup];
+		[objectCache removeAllObjects];
+		[metadataCache removeAllObjects];
+		
+		if ([objectChanges count] > 0)
+			objectChanges = nil;
+		
+		if ([metadataChanges count] > 0)
+			metadataChanges = nil;
+		
+		if ([removedKeys count] > 0)
+			removedKeys = nil;
+		
+		if ([removedCollections count] > 0)
+			removedCollections = nil;
+		
+		if ([removedRowids count] > 0)
+			removedRowids = nil;
+		
+		// Rollback-Write-Transaction: Step 4 of 4
+		//
+		// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
+		
+		dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
 		
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction (rollback).", self);
 		
@@ -2783,31 +2805,6 @@ NS_INLINE BOOL YDBIsMainThread()
 											 self, writeStateToSignal->connection);
 		[writeStateToSignal signalWriteLock];
 	}
-}
-
-/**
- * This method is invoked after a read-write transaction completes, which was rolled-back.
- * You should flush anything from memory that may be out-of-sync with the database.
-**/
-- (void)postRollbackCleanup
-{
-	[objectCache removeAllObjects];
-	[metadataCache removeAllObjects];
-	
-	if ([objectChanges count] > 0)
-		objectChanges = nil;
-	
-	if ([metadataChanges count] > 0)
-		metadataChanges = nil;
-	
-	if ([removedKeys count] > 0)
-		removedKeys = nil;
-	
-	if ([removedCollections count] > 0)
-		removedCollections = nil;
-	
-	if ([removedRowids count] > 0)
-		removedRowids = nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

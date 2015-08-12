@@ -260,8 +260,6 @@ static NSString *const ext_key_class = @"class";
 
 - (void)markSqlLevelSharedReadLockAcquired;
 
-- (void)postRollbackCleanup;
-
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)processChangeset:(NSDictionary *)changeset;
 
