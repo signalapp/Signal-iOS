@@ -627,7 +627,7 @@ typedef enum : NSUInteger {
             return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
             
         default:
-            DDLogCError(@"Something went wrong");
+            DDLogError(@"Something went wrong");
             return nil;
     }
 }
@@ -928,7 +928,7 @@ typedef enum : NSUInteger {
                                     NSError *error;
                                     _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
                                     if (error) {
-                                        DDLogCError(@"error: %@", error);
+                                        DDLogError(@"error: %@", error);
                                     }
                                     [_audioPlayer prepareToPlay];
                                     [_audioPlayer play];
@@ -1067,7 +1067,7 @@ typedef enum : NSUInteger {
     [self dismissKeyBoard];
     [DJWActionSheet showInView:self.parentViewController.view withTitle:nil cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:@[NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")] tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-            DDLogCDebug(@"User Cancelled");
+            DDLogDebug(@"User Cancelled");
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
             [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                 [message removeWithTransaction:transaction];
@@ -1107,7 +1107,7 @@ typedef enum : NSUInteger {
         
         [DJWActionSheet showInView:self.parentViewController.view withTitle:messageString cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"") otherButtonTitles:actions tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
             if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                DDLogCDebug(@"User Cancelled");
+                DDLogDebug(@"User Cancelled");
             } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
                 [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
                     [message removeWithTransaction:transaction];

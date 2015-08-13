@@ -107,10 +107,10 @@
 - (void)showAlertForError:(NSError *)error
 {
     if (error == nil) {
-        DDLogCError(@"%@: Error condition, but no NSError to display", self.class);
+        DDLogError(@"%@: Error condition, but no NSError to display", self.class);
         return;
     } else if (error.localizedDescription.length == 0) {
-        DDLogCError(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
+        DDLogError(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
         return;
     }
 

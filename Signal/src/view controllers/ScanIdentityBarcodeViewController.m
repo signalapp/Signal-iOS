@@ -33,7 +33,7 @@
     if (self.input) {
         [self.session addInput:self.input];
     } else {
-        DDLogCDebug(@"Error: %@", error);
+        DDLogDebug(@"Error: %@", error);
     }
     
     self.output = [[AVCaptureMetadataOutput alloc] init];

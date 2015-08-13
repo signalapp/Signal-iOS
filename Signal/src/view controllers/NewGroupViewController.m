@@ -158,9 +158,9 @@ static NSString* const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                           
         if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-            DDLogCDebug(@"User Cancelled");
+            DDLogDebug(@"User Cancelled");
         } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-            DDLogCDebug(@"Destructive button tapped");
+            DDLogDebug(@"Destructive button tapped");
         }else {
             switch (tappedButtonIndex) {
                 case 0:

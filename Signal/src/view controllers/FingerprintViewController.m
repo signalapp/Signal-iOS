@@ -114,10 +114,10 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
                           tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                               _isPresentingDialog = NO;
                               if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                  DDLogCDebug(@"User Cancelled");
+                                  DDLogDebug(@"User Cancelled");
                               } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                  DDLogCDebug(@"Destructive button tapped");
-                              }else {
+                                  DDLogDebug(@"Destructive button tapped");
+                              } else {
                                   switch (tappedButtonIndex) {
                                       case 0:
                                           [self shredKeyingMaterial];
@@ -157,7 +157,7 @@ static NSString* const kScanIdentityBarcodeViewSegue = @"ScanIdentityBarcodeView
 
 
 - (IBAction)unwindIdentityVerificationCancel:(UIStoryboardSegue *)segue{
-    DDLogCDebug(@"action cancelled");
+    DDLogDebug(@"action cancelled");
     // Can later be used to mark identity key as verified if we want step above TOFU in UX
 }
 

@@ -303,7 +303,7 @@
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                       DDLogCDebug(@"Cancel action");
+                                       DDLogDebug(@"Cancel action");
                                    }];
     
     UIAlertAction *okAction = [UIAlertAction
@@ -355,7 +355,7 @@
         }
         case MessageComposeResultSent: {
             [self dismissViewControllerAnimated:NO completion:^{
-                DDLogCDebug(@"view controller dismissed");
+                DDLogDebug(@"view controller dismissed");
             }];
             UIAlertView *successAlert = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"SEND_SMS_INVITE_SUCCESS", @"") delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
             [successAlert show];

@@ -2,7 +2,7 @@
 #import "BadArgument.h"
 #import "SecurityFailure.h"
 #import "BadState.h"
-#import <CocoaLumberjack/DDLog.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 /// 'require(X)' is used to indicate parameter-related preconditions that callers must satisfy.
 /// Failure to satisfy indicates a bug in the caller.
 #define require(expr) if (!(expr)){ NSString *reason = [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@#expr), __FILE__, __LINE__]; DDLogError(@"%@", reason);[BadArgument raise:reason];};

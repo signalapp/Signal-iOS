@@ -7,12 +7,12 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
-    #import <CocoaLumberjack/DDLog.h>
+    #import <CocoaLumberjack/CocoaLumberjack.h>
 
     #ifdef DEBUG
-    static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+    static const NSUInteger ddLogLevel = DDLogLevelAll;
     #else
-    static const int ddLogLevel = LOG_LEVEL_WARN;
+    static const NSUInteger ddLogLevel = DDLogLevelWarning;
     #endif
 
     #import "iOSVersions.h"

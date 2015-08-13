@@ -149,12 +149,11 @@
                               tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
                                   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
                                   if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                      DDLogCDebug(@"User Cancelled");
-                                      
+                                      DDLogDebug(@"User Cancelled");
                                   } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex){
                                       [[TSStorageManager sharedManager] deleteThreadsAndMessages];
                                   } else {
-                                      DDLogCDebug(@"The user tapped button at index: %li", (long)tappedButtonIndex);
+                                      DDLogDebug(@"The user tapped button at index: %li", (long)tappedButtonIndex);
                                   }
                               }];
 

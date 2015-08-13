@@ -27,7 +27,6 @@
                                        owner:self
                                      options:nil][0];
     
-    
     if (self) {
         _scrollView.contentSize   = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
                                              CGRectGetHeight(_scrollView.frame));
