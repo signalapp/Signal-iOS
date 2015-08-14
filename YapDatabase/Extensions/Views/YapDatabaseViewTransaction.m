@@ -3999,7 +3999,7 @@
 
 - (NSUInteger)numberOfGroups
 {
-	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// Note: We don't remove pages or groups until flushPendingChangesToExtensionTables.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
 	__block NSUInteger count = 0;
@@ -4021,7 +4021,7 @@
 
 - (NSArray *)allGroups
 {
-	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// Note: We don't remove pages or groups until flushPendingChangesToExtensionTables.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
 	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->state numberOfGroups]];
@@ -4047,7 +4047,7 @@
 **/
 - (BOOL)hasGroup:(NSString *)group
 {
-	// Note: We don't remove pages or groups until preCommitReadWriteTransaction.
+	// Note: We don't remove pages or groups until flushPendingChangesToExtensionTables.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
 	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
