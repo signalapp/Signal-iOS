@@ -54,7 +54,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	NSArray *tableNames = @[
 	  [self mappingTableNameForRegisteredName:registeredName],
 	  [self recordTableNameForRegisteredName:registeredName],
-	  [self recordTableNameForRegisteredName:registeredName]
+	  [self queueTableNameForRegisteredName:registeredName]
 	];
 	
 	for (NSString *tableName in tableNames)
