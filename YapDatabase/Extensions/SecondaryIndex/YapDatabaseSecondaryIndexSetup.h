@@ -2,11 +2,20 @@
 
 @class YapDatabaseSecondaryIndexColumn;
 
+/**
+ * For detailed information on sqlite datatypes & affinity:
+ * https://www.sqlite.org/datatype3.html
+**/
 typedef NS_ENUM(NSInteger, YapDatabaseSecondaryIndexType) {
 	YapDatabaseSecondaryIndexTypeInteger,
 	YapDatabaseSecondaryIndexTypeReal,
-	YapDatabaseSecondaryIndexTypeText
+	YapDatabaseSecondaryIndexTypeNumeric,
+	YapDatabaseSecondaryIndexTypeText,
+	YapDatabaseSecondaryIndexTypeBlob
 };
+
+NSString* NSStringFromYapDatabaseSecondaryIndexType(YapDatabaseSecondaryIndexType type);
+
 
 @interface YapDatabaseSecondaryIndexSetup : NSObject <NSCopying, NSFastEnumeration>
 

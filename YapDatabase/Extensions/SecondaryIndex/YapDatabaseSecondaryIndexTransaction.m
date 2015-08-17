@@ -230,9 +230,17 @@ static NSString *const ext_key_version_deprecated = @"version";
 		{
 			[createTable appendFormat:@", \"%@\" REAL", column.name];
 		}
+		else if (column.type == YapDatabaseSecondaryIndexTypeNumeric)
+		{
+			[createTable appendFormat:@", \"%@\" NUMERIC", column.name];
+		}
 		else if (column.type == YapDatabaseSecondaryIndexTypeText)
 		{
 			[createTable appendFormat:@", \"%@\" TEXT", column.name];
+		}
+		else if (column.type == YapDatabaseSecondaryIndexTypeBlob)
+		{
+			[createTable appendFormat:@", \"%@\" BLOB", column.name];
 		}
 	}
 	
@@ -478,57 +486,74 @@ static NSString *const ext_key_version_deprecated = @"version";
 		id columnValue = [secondaryIndexConnection->blockDict objectForKey:column.name];
 		if (columnValue && columnValue != [NSNull null])
 		{
-			if (column.type == YapDatabaseSecondaryIndexTypeInteger)
+			if (column.type == YapDatabaseSecondaryIndexTypeInteger ||
+			    column.type == YapDatabaseSecondaryIndexTypeReal    ||
+			    column.type == YapDatabaseSecondaryIndexTypeNumeric  )
 			{
 				if ([columnValue isKindOfClass:[NSNumber class]])
 				{
-					__unsafe_unretained NSNumber *cast = (NSNumber *)columnValue;
+					__unsafe_unretained NSNumber *number = (NSNumber *)columnValue;
 					
-					int64_t num = [cast longLongValue];
-					sqlite3_bind_int64(statement, bind_idx, (sqlite3_int64)num);
-				}
-				else
-				{
-					YDBLogWarn(@"Unable to bind value for column(name=%@, type=integer) with unsupported class: %@."
-					           @" Column requires NSNumber.",
-					           column.name, NSStringFromClass([columnValue class]));
-				}
-			}
-			else if (column.type == YapDatabaseSecondaryIndexTypeReal)
-			{
-				if ([columnValue isKindOfClass:[NSNumber class]])
-				{
-					__unsafe_unretained NSNumber *cast = (NSNumber *)columnValue;
+					CFNumberType numberType = CFNumberGetType((CFNumberRef)number);
 					
-					double num = [cast doubleValue];
-					sqlite3_bind_double(statement, bind_idx, num);
+					if (numberType == kCFNumberFloat32Type ||
+						numberType == kCFNumberFloat64Type ||
+						numberType == kCFNumberFloatType   ||
+						numberType == kCFNumberDoubleType  ||
+						numberType == kCFNumberCGFloatType  )
+					{
+						double num = [number doubleValue];
+						sqlite3_bind_double(statement, bind_idx, num);
+					}
+					else
+					{
+						int64_t num = [number longLongValue];
+						sqlite3_bind_int64(statement, bind_idx, (sqlite3_int64)num);
+					}
 				}
 				else if ([columnValue isKindOfClass:[NSDate class]])
 				{
-					__unsafe_unretained NSDate *cast = (NSDate *)columnValue;
+					__unsafe_unretained NSDate *date = (NSDate *)columnValue;
 					
-					double num = [cast timeIntervalSinceReferenceDate];
+					double num = [date timeIntervalSinceReferenceDate];
 					sqlite3_bind_double(statement, bind_idx, num);
 				}
 				else
 				{
-					YDBLogWarn(@"Unable to bind value for column(name=%@, type=real) with unsupported class: %@."
+					YDBLogWarn(@"Unable to bind value for column(name=%@, type=%@) with unsupported class: %@."
 					           @" Column requires NSNumber or NSDate.",
-					           column.name, NSStringFromClass([columnValue class]));
+					           column.name,
+					           NSStringFromYapDatabaseSecondaryIndexType(column.type),
+					           NSStringFromClass([columnValue class]));
 				}
 			}
-			else // if (column.type == YapDatabaseSecondaryIndexTypeText)
+			else if (column.type == YapDatabaseSecondaryIndexTypeText)
 			{
 				if ([columnValue isKindOfClass:[NSString class]])
 				{
-					__unsafe_unretained NSString *cast = (NSString *)columnValue;
+					__unsafe_unretained NSString *string = (NSString *)columnValue;
 					
-					sqlite3_bind_text(statement, bind_idx, [cast UTF8String], -1, SQLITE_TRANSIENT);
+					sqlite3_bind_text(statement, bind_idx, [string UTF8String], -1, SQLITE_TRANSIENT);
 				}
 				else
 				{
 					YDBLogWarn(@"Unable to bind value for column(name=%@, type=text) with unsupported class: %@."
 					           @" Column requires NSString.",
+					           column.name, NSStringFromClass([columnValue class]));
+				}
+			}
+			else if (column.type == YapDatabaseSecondaryIndexTypeBlob)
+			{
+				if ([columnValue isKindOfClass:[NSData class]])
+				{
+					__unsafe_unretained NSData *data = (NSData *)columnValue;
+					
+					sqlite3_bind_blob(statement, bind_idx, [data bytes], (int)[data length], SQLITE_STATIC);
+				}
+				else
+				{
+					YDBLogWarn(@"Unable to bind value for column(name=%@, type=text) with unsupported class: %@."
+					           @" Column requires NSData.",
 					           column.name, NSStringFromClass([columnValue class]));
 				}
 			}
