@@ -342,7 +342,6 @@
 		[transaction setObject:@"whatever"   forKey:@"1" inCollection:nil];
 		[transaction setObject:@"like as if" forKey:@"2" inCollection:nil];
 		
-		
 		__block NSUInteger count = 0;
 		
 		YapDatabaseQuery *query = [YapDatabaseQuery queryMatchingAll];
@@ -355,6 +354,102 @@
 		}];
 		
 		XCTAssertTrue(count == 1, @"Incorrect count: %lu", (unsigned long)count);
+	}];
+}
+
+- (void)testAggregateQuery
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseSecondaryIndexSetup *setup = [[YapDatabaseSecondaryIndexSetup alloc] init];
+	[setup addColumn:@"department" withType:YapDatabaseSecondaryIndexTypeText];
+	[setup addColumn:@"title" withType:YapDatabaseSecondaryIndexTypeText];
+	[setup addColumn:@"salary" withType:YapDatabaseSecondaryIndexTypeReal];
+	
+	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
+	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object)
+	{
+		// If we're storing other types of objects in our database,
+		// then we should check the object before presuming we can cast it.
+			
+		__unsafe_unretained NSDictionary *employee = (NSDictionary *)object;
+		
+		dict[@"department"] = employee[@"department"];
+		dict[@"title"]      = employee[@"title"];
+		dict[@"salary"]     = employee[@"salary"];
+	}];
+	
+	YapDatabaseSecondaryIndex *secondaryIndex =
+	  [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
+	
+	[database registerExtension:secondaryIndex withName:@"idx"];
+	
+	//
+	// Add some sample rows
+	//
+	
+	NSDictionary *employee1 = @{ @"department":@"brass", @"title":@"CEO",      @"salary":@(100000)};
+	NSDictionary *employee2 = @{ @"department":@"sys",   @"title":@"manager",  @"salary":@(50000)};
+	NSDictionary *employee3 = @{ @"department":@"sys",   @"title":@"sysadmin", @"salary":@(40000)};
+	NSDictionary *employee4 = @{ @"department":@"dev",   @"title":@"manager",  @"salary":@(50000)};
+	NSDictionary *employee5 = @{ @"department":@"dev",   @"title":@"manager",  @"salary":@(50000)};
+	NSDictionary *employee6 = @{ @"department":@"dev",   @"title":@"engineer", @"salary":@(75000)};
+	NSDictionary *employee7 = @{ @"department":@"dev",   @"title":@"engineer", @"salary":@(75000)};
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:employee1 forKey:@"1" inCollection:@"employees"];
+		[transaction setObject:employee2 forKey:@"2" inCollection:@"employees"];
+		[transaction setObject:employee3 forKey:@"3" inCollection:@"employees"];
+		[transaction setObject:employee4 forKey:@"4" inCollection:@"employees"];
+		[transaction setObject:employee5 forKey:@"5" inCollection:@"employees"];
+		[transaction setObject:employee6 forKey:@"6" inCollection:@"employees"];
+		[transaction setObject:employee7 forKey:@"7" inCollection:@"employees"];
+		
+		__block NSUInteger count = 0;
+		
+		YapDatabaseQuery *query = [YapDatabaseQuery queryMatchingAll];
+		[[transaction ext:@"idx"] enumerateKeysAndObjectsMatchingQuery:query usingBlock:
+		    ^(NSString *collection, NSString *key, id object, BOOL *stop)
+		{
+			count++;
+		}];
+		
+		XCTAssertTrue(count == 7, @"Incorrect count: %lu", (unsigned long)count);
+	}];
+	
+	//
+	// Perform some aggregate queries
+	//
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		// Figure out how much money we're wasting on management
+		
+		YapDatabaseQuery *query1 = [YapDatabaseQuery queryWithAggregateFunction:@"SUM(salary)"
+		                                                                 format:@"WHERE title = ?", @"manager"];
+		NSNumber *wasted = [[transaction ext:@"idx"] performAggregateQuery:query1];
+	//	NSLog(@"wasted: %@", wasted);
+		
+		XCTAssert([wasted isKindOfClass:[NSNumber class]], @"Oops");
+		XCTAssert([wasted isEqualToNumber:@(150000)], @"Oops");
+		
+		// Figure out how much the dev department is costing us
+		
+		YapDatabaseQuery *query2 = [YapDatabaseQuery queryWithAggregateFunction:@"SUM(salary)"
+		                                                                 format:@"WHERE department = ?", @"dev"];
+		NSNumber *devCost = [[transaction ext:@"idx"] performAggregateQuery:query2];
+	//	NSLog(@"devCost: %@", devCost);
+		
+		XCTAssert([devCost isKindOfClass:[NSNumber class]], @"Oops");
+		XCTAssert([devCost isEqualToNumber:@(250000)], @"Oops");
 	}];
 }
 

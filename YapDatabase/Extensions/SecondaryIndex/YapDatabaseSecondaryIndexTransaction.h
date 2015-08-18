@@ -55,4 +55,15 @@
 
 - (BOOL)getNumberOfRows:(NSUInteger *)count matchingQuery:(YapDatabaseQuery *)query;
 
+/**
+ * Aggregate Queries.
+ * 
+ * E.g.: avg, max, min, sum
+ * 
+ * For more inforation, see the sqlite docs on "Aggregate Functions":
+ * https://www.sqlite.org/lang_aggfunc.html
+**/
+
+- (id)performAggregateQuery:(YapDatabaseQuery *)query;
+
 @end

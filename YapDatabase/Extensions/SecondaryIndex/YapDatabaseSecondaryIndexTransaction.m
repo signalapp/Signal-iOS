@@ -1075,20 +1075,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Enumerate
+#pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)_enumerateRowidsMatchingQuery:(YapDatabaseQuery *)query
-                           usingBlock:(void (^)(int64_t rowid, BOOL *stop))block
+- (sqlite3_stmt *)prepareQueryString:(NSString *)fullQueryString
 {
-	// Create full query using given filtering clause(s)
-	
-	NSString *fullQueryString =
-	    [NSString stringWithFormat:@"SELECT \"rowid\" FROM \"%@\" %@;", [self tableName], query.queryString];
-	
-	// Turn query into compiled sqlite statement.
-	// Use cache if possible.
-	
 	sqlite3_stmt *statement = NULL;
 	
 	YapDatabaseStatement *wrapper = [secondaryIndexConnection->queryCache objectForKey:fullQueryString];
@@ -1101,25 +1092,31 @@ static NSString *const ext_key_version_deprecated = @"version";
 		sqlite3 *db = databaseTransaction->connection->db;
 		
 		int status = sqlite3_prepare_v2(db, [fullQueryString UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
+		if (status == SQLITE_OK)
+		{
+			if (secondaryIndexConnection->queryCache)
+			{
+				wrapper = [[YapDatabaseStatement alloc] initWithStatement:statement];
+				[secondaryIndexConnection->queryCache setObject:wrapper forKey:fullQueryString];
+			}
+		}
+		else
 		{
 			YDBLogError(@"%@: Error creating query:\n query: '%@'\n error: %d %s",
 						THIS_METHOD, fullQueryString, status, sqlite3_errmsg(db));
 			
 			return NO;
 		}
-		
-		if (secondaryIndexConnection->queryCache)
-		{
-			wrapper = [[YapDatabaseStatement alloc] initWithStatement:statement];
-			[secondaryIndexConnection->queryCache setObject:wrapper forKey:fullQueryString];
-		}
 	}
 	
-	// Bind query parameters appropriately.
+	return statement;
+}
+
+- (void)bindQueryParameters:(NSArray *)queryParams forStatement:(sqlite3_stmt *)statement withOffset:(int)bind_idx_start
+{
+	int bind_idx = bind_idx_start;
 	
-	int bind_idx = SQLITE_BIND_START;
-	for (id value in query.queryParameters)
+	for (id value in queryParams)
 	{
 		if ([value isKindOfClass:[NSNumber class]])
 		{
@@ -1155,10 +1152,6 @@ static NSString *const ext_key_version_deprecated = @"version";
 			
 			sqlite3_bind_text(statement, bind_idx, [cast UTF8String], -1, SQLITE_TRANSIENT);
 		}
-		else if ([value isKindOfClass:[NSNull class]])
-		{
-			sqlite3_bind_null(statement, bind_idx);
-		}
 		else
 		{
 			YDBLogWarn(@"Unable to bind value for with unsupported class: %@", NSStringFromClass([value class]));
@@ -1166,6 +1159,34 @@ static NSString *const ext_key_version_deprecated = @"version";
 		
 		bind_idx++;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Standard Query - Enumerate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)_enumerateRowidsMatchingQuery:(YapDatabaseQuery *)query
+                           usingBlock:(void (^)(int64_t rowid, BOOL *stop))block
+{
+	if (query == nil) return NO;
+	if (query.isAggregateQuery) return NO;
+	
+	// Create full query using given filtering clause(s)
+	
+	NSString *fullQueryString =
+	    [NSString stringWithFormat:@"SELECT \"rowid\" FROM \"%@\" %@;", [self tableName], query.queryString];
+	
+	// Turn query into compiled sqlite statement (using cache if possible)
+	
+	sqlite3_stmt *statement = [self prepareQueryString:fullQueryString];
+	if (statement == NULL)
+	{
+		return NO;
+	}
+	
+	// Bind query parameters appropriately.
+	
+	[self bindQueryParameters:query.queryParameters forStatement:statement withOffset:SQLITE_BIND_START];
 	
 	// Enumerate query results
 	
@@ -1209,10 +1230,13 @@ static NSString *const ext_key_version_deprecated = @"version";
 - (BOOL)enumerateKeysMatchingQuery:(YapDatabaseQuery *)query
                         usingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block
 {
-	if (query == nil) return NO;
-	if (block == nil) return NO;
-	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		if (block == NULL) // Query test : caller still wants BOOL result
+		{
+			*stop = YES;
+			return; // from block
+		}
 		
 		YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
 		
@@ -1226,10 +1250,13 @@ static NSString *const ext_key_version_deprecated = @"version";
                                    usingBlock:
                             (void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block
 {
-	if (query == nil) return NO;
-	if (block == nil) return NO;
-	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		if (block == NULL) // Query test : caller still wants BOOL result
+		{
+			*stop = YES;
+			return; // from block
+		}
 		
 		YapCollectionKey *ck = nil;
 		id metadata = nil;
@@ -1245,10 +1272,13 @@ static NSString *const ext_key_version_deprecated = @"version";
                                   usingBlock:
                             (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block
 {
-	if (query == nil) return NO;
-	if (block == nil) return NO;
-	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		if (block == NULL) // Query test : caller still wants BOOL result
+		{
+			*stop = YES;
+			return; // from block
+		}
 		
 		YapCollectionKey *ck = nil;
 		id object = nil;
@@ -1264,10 +1294,13 @@ static NSString *const ext_key_version_deprecated = @"version";
                         usingBlock:
                             (void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block
 {
-	if (query == nil) return NO;
-	if (block == nil) return NO;
-	
 	BOOL result = [self _enumerateRowidsMatchingQuery:query usingBlock:^(int64_t rowid, BOOL *stop) {
+		
+		if (block == NULL) // Query test : caller still wants BOOL result
+		{
+			*stop = YES;
+			return; // from block
+		}
 		
 		YapCollectionKey *ck = nil;
 		id object = nil;
@@ -1281,7 +1314,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Count
+#pragma mark Standard Query - Count
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (BOOL)getNumberOfRows:(NSUInteger *)countPtr matchingQuery:(YapDatabaseQuery *)query
@@ -1292,82 +1325,17 @@ static NSString *const ext_key_version_deprecated = @"version";
 	    [NSString stringWithFormat:@"SELECT COUNT(*) AS NumberOfRows FROM \"%@\" %@;",
 	                                                           [self tableName], query.queryString];
 	
-	// Turn query into compiled sqlite statement.
-	// Use cache if possible.
+	// Turn query into compiled sqlite statement (using cache if possible)
 	
-	sqlite3_stmt *statement = NULL;
-	
-	YapDatabaseStatement *wrapper = [secondaryIndexConnection->queryCache objectForKey:fullQueryString];
-	if (wrapper)
+	sqlite3_stmt *statement = [self prepareQueryString:fullQueryString];
+	if (statement == NULL)
 	{
-		statement = wrapper.stmt;
-	}
-	else
-	{
-		sqlite3 *db = databaseTransaction->connection->db;
-		
-		int status = sqlite3_prepare_v2(db, [fullQueryString UTF8String], -1, &statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@: Error creating query:\n query: '%@'\n error: %d %s",
-						THIS_METHOD, fullQueryString, status, sqlite3_errmsg(db));
-			
-			return NO;
-		}
-		
-		if (secondaryIndexConnection->queryCache)
-		{
-			wrapper = [[YapDatabaseStatement alloc] initWithStatement:statement];
-			[secondaryIndexConnection->queryCache setObject:wrapper forKey:fullQueryString];
-		}
+		return NO;
 	}
 	
-	// Bind query parameters appropriately.
+	// Bind query parameters appropriately
 	
-	int bind_idx = SQLITE_BIND_START;
-	for (id value in query.queryParameters)
-	{
-		if ([value isKindOfClass:[NSNumber class]])
-		{
-			__unsafe_unretained NSNumber *cast = (NSNumber *)value;
-			
-			CFNumberType numType = CFNumberGetType((__bridge CFNumberRef)cast);
-			
-			if (numType == kCFNumberFloatType   ||
-			    numType == kCFNumberFloat32Type ||
-			    numType == kCFNumberFloat64Type ||
-			    numType == kCFNumberDoubleType  ||
-			    numType == kCFNumberCGFloatType  )
-			{
-				double num = [cast doubleValue];
-				sqlite3_bind_double(statement, bind_idx, num);
-			}
-			else
-			{
-				int64_t num = [cast longLongValue];
-				sqlite3_bind_int64(statement, bind_idx, (sqlite3_int64)num);
-			}
-		}
-		else if ([value isKindOfClass:[NSDate class]])
-		{
-			__unsafe_unretained NSDate *cast = (NSDate *)value;
-			
-			double num = [cast timeIntervalSinceReferenceDate];
-			sqlite3_bind_double(statement, bind_idx, num);
-		}
-		else if ([value isKindOfClass:[NSString class]])
-		{
-			__unsafe_unretained NSString *cast = (NSString *)value;
-			
-			sqlite3_bind_text(statement, bind_idx, [cast UTF8String], -1, SQLITE_TRANSIENT);
-		}
-		else
-		{
-			YDBLogWarn(@"Unable to bind value for with unsupported class: %@", NSStringFromClass([value class]));
-		}
-		
-		bind_idx++;
-	}
+	[self bindQueryParameters:query.queryParameters forStatement:statement withOffset:SQLITE_BIND_START];
 	
 	// Execute query
 	
@@ -1393,6 +1361,85 @@ static NSString *const ext_key_version_deprecated = @"version";
 	sqlite3_reset(statement);
 	
 	if (countPtr) *countPtr = count;
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Aggregate Query
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (id)performAggregateQuery:(YapDatabaseQuery *)query
+{
+	if (query == nil) return nil;
+	if (query.isAggregateQuery == NO) return nil;
+	
+	NSString *fullQueryString =
+	    [NSString stringWithFormat:@"SELECT %@ AS Result FROM \"%@\" %@;",
+	                                        query.aggregateFunction, [self tableName], query.queryString];
+	
+	// Turn query into compiled sqlite statement (using cache if possible)
+	
+	sqlite3_stmt *statement = [self prepareQueryString:fullQueryString];
+	if (statement == NULL)
+	{
+		return nil;
+	}
+	
+	// Bind query parameters appropriately
+	
+	[self bindQueryParameters:query.queryParameters forStatement:statement withOffset:SQLITE_BIND_START];
+	
+	// Execute query
+	
+	id result = nil;
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
+			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
+		
+		int column_idx = SQLITE_COLUMN_START;
+		int column_type = sqlite3_column_type(statement, column_idx);
+		
+		if (column_type == SQLITE_INTEGER)
+		{
+			int64_t num = sqlite3_column_int64(statement, column_idx);
+			result = @(num);
+		}
+		else if (column_type == SQLITE_FLOAT)
+		{
+			double num = sqlite3_column_double(statement, column_idx);
+			result = @(num);
+		}
+		else if (column_type == SQLITE_TEXT)
+		{
+			const unsigned char *text = sqlite3_column_text(statement, column_idx);
+			int textSize = sqlite3_column_bytes(statement, column_idx);
+			
+			result = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		}
+		else if (column_type == SQLITE_BLOB)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx);
+			int blobSize = sqlite3_column_bytes(statement, column_idx);
+			
+			result = [[NSData alloc] initWithBytes:blob length:blobSize];
+		}
+		else if (column_type == SQLITE_NULL)
+		{
+			result = [NSNull null];
+		}
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	
 	return result;
 }
 
