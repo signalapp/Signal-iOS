@@ -1105,7 +1105,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			YDBLogError(@"%@: Error creating query:\n query: '%@'\n error: %d %s",
 						THIS_METHOD, fullQueryString, status, sqlite3_errmsg(db));
 			
-			return NO;
+			return NULL;
 		}
 	}
 	
