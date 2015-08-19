@@ -103,7 +103,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
         [registrationErrorAV show];
         
         [_sendCodeButton setEnabled:YES];
-        [_spinnerView startAnimating];
+        [_spinnerView stopAnimating];
     }];
     
 }
