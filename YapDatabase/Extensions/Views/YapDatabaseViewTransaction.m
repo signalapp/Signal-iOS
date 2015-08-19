@@ -4377,6 +4377,8 @@
 				
 				return findBlock(ck.collection, ck.key);
 			};
+			
+			break;
 		}
 		case YapDatabaseViewBlockTypeWithObject :
 		{
@@ -4393,6 +4395,8 @@
 				
 				return findBlock(ck.collection, ck.key, object);
 			};
+			
+			break;
 		}
 		case YapDatabaseViewBlockTypeWithMetadata :
 		{
@@ -4409,6 +4413,8 @@
 				
 				return findBlock(ck.collection, ck.key, metadata);
 			};
+			
+			break;
 		}
 		default :
 		{
