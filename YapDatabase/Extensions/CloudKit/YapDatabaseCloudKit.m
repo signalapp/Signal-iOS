@@ -99,6 +99,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 
 @dynamic options;
 @dynamic isSuspended;
+@dynamic suspendCount;
 
 - (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
