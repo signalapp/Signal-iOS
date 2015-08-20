@@ -481,17 +481,24 @@
                         sender = message.authorId;
                     }
                     
-                    NSString *threadName   = [NSString stringWithFormat:@"\"%@\"", name];
-                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), sender, threadName, messageDescription];
+                    notification.alertTitle = name;
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), name, sender, messageDescription];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                    notification.alertTitle = name;
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_FROM_DETAILED", nil), name, messageDescription];
                 }
                 break;
             case NotificationNameNoPreview:{
-                if ([thread isGroupThread]) {
-                    notification.alertBody = [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name];
+              if ([thread isGroupThread]) {
+                    NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
+                    if (!sender) {
+                      sender = message.authorId;
+                    }
+                    notification.alertTitle = [NSString stringWithFormat:@"%@", name];
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name, sender];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                    notification.alertTitle = [NSString stringWithFormat:@"%@", name];
+                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_FROM",nil), name];
                 }
                 break;
             }
