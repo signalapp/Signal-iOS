@@ -10,10 +10,10 @@
  * Corresponds to the different type of blocks supported by the various extension subclasses.
 **/
 typedef NS_ENUM(NSInteger, YapDatabaseCloudKitBlockType) {
-	YapDatabaseCloudKitBlockTypeWithKey       = 1,
-	YapDatabaseCloudKitBlockTypeWithObject    = 2,
-	YapDatabaseCloudKitBlockTypeWithMetadata  = 3,
-	YapDatabaseCloudKitBlockTypeWithRow       = 4
+	YapDatabaseCloudKitBlockTypeWithKey,
+	YapDatabaseCloudKitBlockTypeWithObject,
+	YapDatabaseCloudKitBlockTypeWithMetadata,
+	YapDatabaseCloudKitBlockTypeWithRow
 };
 
 

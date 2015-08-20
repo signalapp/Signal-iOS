@@ -5,10 +5,10 @@
  * Specifies the kind of block being used.
 **/
 typedef NS_ENUM(NSInteger, YapDatabaseFullTextSearchBlockType) {
-	YapDatabaseFullTextSearchBlockTypeWithKey       = 201,
-	YapDatabaseFullTextSearchBlockTypeWithObject    = 202,
-	YapDatabaseFullTextSearchBlockTypeWithMetadata  = 203,
-	YapDatabaseFullTextSearchBlockTypeWithRow       = 204
+	YapDatabaseFullTextSearchBlockTypeWithKey,
+	YapDatabaseFullTextSearchBlockTypeWithObject,
+	YapDatabaseFullTextSearchBlockTypeWithMetadata,
+	YapDatabaseFullTextSearchBlockTypeWithRow
 };
 
 /**

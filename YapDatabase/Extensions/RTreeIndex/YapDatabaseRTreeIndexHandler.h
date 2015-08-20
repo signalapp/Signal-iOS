@@ -5,10 +5,10 @@
  * Specifies the kind of block being used.
 **/
 typedef NS_ENUM(NSInteger, YapDatabaseRTreeIndexBlockType) {
-	YapDatabaseRTreeIndexBlockTypeWithKey       = 1131,
-	YapDatabaseRTreeIndexBlockTypeWithObject    = 1132,
-	YapDatabaseRTreeIndexBlockTypeWithMetadata  = 1133,
-	YapDatabaseRTreeIndexBlockTypeWithRow       = 1134
+	YapDatabaseRTreeIndexBlockTypeWithKey,
+	YapDatabaseRTreeIndexBlockTypeWithObject,
+	YapDatabaseRTreeIndexBlockTypeWithMetadata,
+	YapDatabaseRTreeIndexBlockTypeWithRow
 };
 
 

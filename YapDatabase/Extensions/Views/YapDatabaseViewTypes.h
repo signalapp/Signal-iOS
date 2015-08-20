@@ -6,10 +6,10 @@
  * Corresponds to the different type of blocks supported by YapDatabaseView.
 **/
 typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
-	YapDatabaseViewBlockTypeWithKey       = 1,
-	YapDatabaseViewBlockTypeWithObject    = 2,
-	YapDatabaseViewBlockTypeWithMetadata  = 3,
-	YapDatabaseViewBlockTypeWithRow       = 4
+	YapDatabaseViewBlockTypeWithKey,
+	YapDatabaseViewBlockTypeWithObject,
+	YapDatabaseViewBlockTypeWithMetadata,
+	YapDatabaseViewBlockTypeWithRow
 };
 
 /**
