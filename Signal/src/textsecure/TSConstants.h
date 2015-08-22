@@ -37,6 +37,8 @@ typedef enum {
 
 #define textSecureGeneralAPI      @"v1"
 #define textSecureAccountsAPI     @"v1/accounts"
+    #define textSecureAttributesAPI  @"/attributes/"
+
 #define textSecureMessagesAPI     @"v1/messages/"
 #define textSecureKeysAPI         @"v2/keys"
 #define textSecureSignedKeysAPI   @"v2/keys/signed"

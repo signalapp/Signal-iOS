@@ -11,7 +11,6 @@
 #import "SignalsViewController.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager.h"
 
 static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 #define isRegisteredUserDefaultString @"isRegistered"

@@ -8,6 +8,7 @@
 
 #import "TSConstants.h"
 #import "TSAccountManager.h"
+#import "TSAttributes.h"
 #import "TSRegisterWithTokenRequest.h"
 
 @implementation TSRegisterWithTokenRequest
@@ -21,10 +22,9 @@
     
     self.numberToValidate = number;
     
-    [self.parameters addEntriesFromDictionary:@{@"signalingKey": signalingKey,
-                                                @"AuthKey": authKey,
-                                                @"supportsSMS": @"0",
-                                                @"registrationId": [NSString stringWithFormat:@"%i",[TSAccountManager getOrGenerateRegistrationId]]}];
+    NSDictionary *attributes = [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey];
+    
+    [self.parameters addEntriesFromDictionary:attributes];
     
     [self setHTTPMethod:@"PUT"];
     

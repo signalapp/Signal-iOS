@@ -17,18 +17,12 @@
 #import "PreferencesUtil.h"
 #import "NSData+messagePadding.h"
 #import "TSStorageManager.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager+IdentityKeyStore.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
 
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalKeyingStorage.h"
 
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
-#import "TSSubmitMessageRequest.h"
-#import "TSRecipientPrekeyRequest.h"
 
 #import "TSInfoMessage.h"
 

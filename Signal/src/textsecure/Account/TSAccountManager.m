@@ -18,9 +18,6 @@
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSPreKeyManager.h"
-#import "TSRegisterForPushRequest.h"
-#import "TSRegisterWithTokenRequest.h"
-#import "TSUnregisterAccountRequest.h"
 
 @interface TSAccountManager ()
 

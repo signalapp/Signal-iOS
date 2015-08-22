@@ -11,7 +11,6 @@
 #import "TSPreKeyManager.h"
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
-#import "TSStorageManager.h"
 #import "VersionMigrations.h"
 #import "CodeVerificationViewController.h"
 

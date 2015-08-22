@@ -11,14 +11,12 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <25519/Curve25519.h>
 #import "DJWActionSheet+OWS.h"
-#import "TSStorageManager.h"
-#import "TSStorageManager+IdentityKeyStore.h"
-#import "TSStorageManager+SessionStore.h"
 #import "PresentIdentityQRCodeViewController.h"
 #import "ScanIdentityBarcodeViewController.h"
 #import "SignalsNavigationController.h"
 
 #import "TSFingerprintGenerator.h"
+#import "TSStorageHeaders.h"
 
 @interface FingerprintViewController ()
 @property TSContactThread *thread;
