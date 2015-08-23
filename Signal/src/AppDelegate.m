@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import "AppStoreRating.h"
 #import "CategorizingLogger.h"
 #import "ContactsManager.h"
 #import "DebugLogger.h"
@@ -28,6 +29,10 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 @implementation AppDelegate
 
 #pragma mark Detect updates - perform migrations
+
++ (void)initialize{
+    [AppStoreRating setupRatingLibrary];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self setupAppearance];

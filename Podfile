@@ -14,6 +14,7 @@ pod 'Mantle',                     '~> 2.0.4'
 pod 'FFCircularProgressView',     '~> 0.5'
 pod 'SCWaveformView',             '~> 1.0'
 pod 'YapDatabase/SQLCipher',      '~> 2.7'
+pod 'iRate',                      '~> 1.11'
 pod 'SSKeychain'
 pod 'DJWActionSheet'
 
