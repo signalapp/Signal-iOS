@@ -46,7 +46,11 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
     [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
-    [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+    
+    if ([TSAccountManager isRegistered]) {
+        [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+    }
+    
     [Environment.getCurrent initCallListener];
     
     [[TSStorageManager sharedManager] setupDatabase];
@@ -151,6 +155,7 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     if ([TSAccountManager isRegistered]) {
         // We're double checking that the app is active, to be sure since we can't verify in production env due to code signing.
         [TSSocketManager becomeActiveFromForeground];
+        [[Environment getCurrent].contactsManager verifyABPermission];
     }
 
     [self removeScreenProtection];
