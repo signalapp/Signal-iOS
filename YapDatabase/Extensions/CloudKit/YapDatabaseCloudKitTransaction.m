@@ -3795,8 +3795,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	                    preCalculatedHash:hash
 	                             forRowid:rowid
 	             withPrevMappingTableInfo:mappingTableInfo
-	                     prevRecordTableInfo:recordTableInfo
-	                                        flags:flags];
+	                  prevRecordTableInfo:recordTableInfo
+	                                flags:flags];
 	
 	return YES;
 }
@@ -4113,6 +4113,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 - (BOOL)saveRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier
 {
 	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return NO;
+	}
 	
 	if (record == nil) return NO;
 	
