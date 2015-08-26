@@ -84,6 +84,7 @@ static NSString *const ext_key_class = @"class";
 + (NSString *)pragmaValueForSynchronous:(int64_t)synchronous;
 
 + (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
++ (NSArray *)tableNamesUsing:(sqlite3 *)aDb;
 + (NSArray *)columnNamesForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 + (NSDictionary *)columnNamesAndAffinityForTable:(NSString *)tableName using:(sqlite3 *)aDb;
 

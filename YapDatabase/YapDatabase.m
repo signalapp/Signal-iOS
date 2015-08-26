@@ -958,6 +958,44 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	return result;
 }
 
++ (NSArray *)tableNamesUsing:(sqlite3 *)aDb
+{
+	sqlite3_stmt *statement;
+	char *stmt = "SELECT name FROM sqlite_master WHERE type = 'table';";
+	
+	int status = sqlite3_prepare_v2(aDb, stmt, (int)strlen(stmt)+1, &statement, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@: Error creating statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+		return nil;
+	}
+	
+	NSMutableArray *tableNames = [NSMutableArray array];
+	
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+	{
+		const unsigned char *text = sqlite3_column_text(statement, SQLITE_COLUMN_START);
+		int textSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
+		
+		NSString *tableName = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		
+		if (tableName) {
+			[tableNames addObject:tableName];
+		}
+		
+	}
+	
+	if (status != SQLITE_DONE)
+	{
+		YDBLogError(@"%@: Error executing statement! %d %s", THIS_METHOD, status, sqlite3_errmsg(aDb));
+	}
+	
+	sqlite3_finalize(statement);
+	statement = NULL;
+	
+	return tableNames;
+}
+
 /**
  * Extracts and returns column names from the given table in the database.
 **/
