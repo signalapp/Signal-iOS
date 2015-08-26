@@ -214,6 +214,59 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateKeysInAllCollectionsUsingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block;
 
 /**
+ * Fast enumeration over all objects in the database.
+ *
+ * This uses a "SELECT key, object from database WHERE collection = ?" operation, and then steps over the results,
+ * deserializing each object, and then invoking the given block handler.
+ *
+ * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the serialization step for those objects you're not interested in.
+**/
+- (void)enumerateKeysAndObjectsInCollection:(nullable NSString *)collection
+                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block;
+
+/**
+ * Fast enumeration over objects in the database for which you're interested in.
+ * The filter block allows you to decide which objects you're interested in.
+ *
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given key.
+ * If the filter block returns NO, then the block handler is skipped for the given key,
+ * which avoids the cost associated with deserializing the object.
+**/
+- (void)enumerateKeysAndObjectsInCollection:(nullable NSString *)collection
+                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block
+                                 withFilter:(nullable BOOL (^)(NSString *key))filter;
+
+/**
+ * Enumerates all key/object pairs in all collections.
+ * 
+ * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
+ * before moving onto another collection.
+ * 
+ * If you only need to enumerate over certain objects (e.g. subset of collections, or keys with a particular prefix),
+ * consider using the alternative version below which provides a filter,
+ * allowing you to skip the serialization step for those objects you're not interested in.
+**/
+- (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block;
+
+/**
+ * Enumerates all key/object pairs in all collections.
+ * The filter block allows you to decide which objects you're interested in.
+ *
+ * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
+ * before moving onto another collection.
+ * 
+ * From the filter block, simply return YES if you'd like the block handler to be invoked for the given
+ * collection/key pair. If the filter block returns NO, then the block handler is skipped for the given pair,
+ * which avoids the cost associated with deserializing the object.
+**/
+- (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
+                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block
+                                 withFilter:(nullable BOOL (^)(NSString *collection, NSString *key))filter;
+
+/**
  * Fast enumeration over all keys and associated metadata in the given collection.
  * 
  * This uses a "SELECT key, metadata FROM database WHERE collection = ?" operation and steps over the results.
@@ -270,59 +323,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateKeysAndMetadataInAllCollectionsUsingBlock:
                             (void (^)(NSString *collection, NSString *key, __nullable id metadata, BOOL *stop))block
                  withFilter:(nullable BOOL (^)(NSString *collection, NSString *key))filter;
-
-/**
- * Fast enumeration over all objects in the database.
- *
- * This uses a "SELECT key, object from database WHERE collection = ?" operation, and then steps over the results,
- * deserializing each object, and then invoking the given block handler.
- *
- * If you only need to enumerate over certain objects (e.g. keys with a particular prefix),
- * consider using the alternative version below which provides a filter,
- * allowing you to skip the serialization step for those objects you're not interested in.
-**/
-- (void)enumerateKeysAndObjectsInCollection:(nullable NSString *)collection
-                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block;
-
-/**
- * Fast enumeration over objects in the database for which you're interested in.
- * The filter block allows you to decide which objects you're interested in.
- *
- * From the filter block, simply return YES if you'd like the block handler to be invoked for the given key.
- * If the filter block returns NO, then the block handler is skipped for the given key,
- * which avoids the cost associated with deserializing the object.
-**/
-- (void)enumerateKeysAndObjectsInCollection:(nullable NSString *)collection
-                                 usingBlock:(void (^)(NSString *key, id object, BOOL *stop))block
-                                 withFilter:(nullable BOOL (^)(NSString *key))filter;
-
-/**
- * Enumerates all key/object pairs in all collections.
- * 
- * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
- * before moving onto another collection.
- * 
- * If you only need to enumerate over certain objects (e.g. subset of collections, or keys with a particular prefix),
- * consider using the alternative version below which provides a filter,
- * allowing you to skip the serialization step for those objects you're not interested in.
-**/
-- (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block;
-
-/**
- * Enumerates all key/object pairs in all collections.
- * The filter block allows you to decide which objects you're interested in.
- *
- * The enumeration is sorted by collection. That is, it will enumerate fully over a single collection
- * before moving onto another collection.
- * 
- * From the filter block, simply return YES if you'd like the block handler to be invoked for the given
- * collection/key pair. If the filter block returns NO, then the block handler is skipped for the given pair,
- * which avoids the cost associated with deserializing the object.
-**/
-- (void)enumerateKeysAndObjectsInAllCollectionsUsingBlock:
-                                            (void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block
-                                 withFilter:(nullable BOOL (^)(NSString *collection, NSString *key))filter;
 
 /**
  * Fast enumeration over all rows in the database.
@@ -384,22 +384,6 @@ NS_ASSUME_NONNULL_BEGIN
  * That is, it will first enumerate over items in the cache and then fetch items from the database,
  * thus optimizing the cache and reducing query size.
  *
- * If any keys are missing from the database, the 'metadata' parameter will be nil.
- *
- * IMPORTANT:
- * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
-**/
-- (void)enumerateMetadataForKeys:(NSArray *)keys
-                    inCollection:(nullable NSString *)collection
-             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, __nullable id metadata, BOOL *stop))block;
-
-/**
- * Enumerates over the given list of keys (unordered).
- *
- * This method is faster than fetching individual items as it optimizes cache access.
- * That is, it will first enumerate over items in the cache and then fetch items from the database,
- * thus optimizing the cache and reducing query size.
- *
  * If any keys are missing from the database, the 'object' parameter will be nil.
  *
  * IMPORTANT:
@@ -408,6 +392,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateObjectsForKeys:(NSArray *)keys
                    inCollection:(nullable NSString *)collection
             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
+
+/**
+ * Enumerates over the given list of keys (unordered).
+ *
+ * This method is faster than fetching individual items as it optimizes cache access.
+ * That is, it will first enumerate over items in the cache and then fetch items from the database,
+ * thus optimizing the cache and reducing query size.
+ *
+ * If any keys are missing from the database, the 'metadata' parameter will be nil.
+ *
+ * IMPORTANT:
+ * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
+**/
+- (void)enumerateMetadataForKeys:(NSArray *)keys
+                    inCollection:(nullable NSString *)collection
+             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, __nullable id metadata, BOOL *stop))block;
 
 /**
  * Enumerates over the given list of keys (unordered).
