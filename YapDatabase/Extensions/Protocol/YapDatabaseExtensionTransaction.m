@@ -321,6 +321,18 @@
  * Subclasses MUST implement this method.
  * YapDatabaseReadWriteTransaction Hook, invoked post-op.
  *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchRowForKey:inCollection:
+**/
+- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction
  * - removeObjectForKey:inCollection:
 **/

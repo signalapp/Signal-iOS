@@ -3860,34 +3860,51 @@
 }
 
 /**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchObjectForKey:inCollection:collection:
 **/
 - (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
-	// Almost the same as touchRowForKey:inCollection:
+	// Almost the same as touchObjectForKey:inCollection:
 	
-	NSString *pageKey = [self pageKeyForRowid:rowid];
-	if (pageKey)
+	YapDatabaseViewBlockType groupingBlockType;
+	YapDatabaseViewBlockType sortingBlockType;
+	
+	[viewConnection getGroupingBlockType:&groupingBlockType sortingBlockType:&sortingBlockType];
+	
+	if (groupingBlockType == YapDatabaseViewBlockTypeWithObject ||
+	    groupingBlockType == YapDatabaseViewBlockTypeWithRow    ||
+	    sortingBlockType  == YapDatabaseViewBlockTypeWithObject ||
+	    sortingBlockType  == YapDatabaseViewBlockTypeWithRow     )
 	{
-		NSString *group = [viewConnection->state groupForPageKey:pageKey];
-		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
-		
-		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
-		
-		[viewConnection->changes addObject:
-		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-		                                        inGroup:group
-		                                        atIndex:index
-		                                    withChanges:flags]];
+		NSString *pageKey = [self pageKeyForRowid:rowid];
+		if (pageKey)
+		{
+			NSString *group = [viewConnection->state groupForPageKey:pageKey];
+			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			YapDatabaseViewChangesBitMask flags = YapDatabaseViewChangedObject;
+			
+			[viewConnection->changes addObject:
+			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+			                                        inGroup:group
+			                                        atIndex:index
+			                                    withChanges:flags]];
+		}
 	}
 }
 
 /**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchMetadataForKey:inCollection:
 **/
 - (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
@@ -3919,6 +3936,35 @@
 			                                        atIndex:index
 			                                    withChanges:flags]];
 		}
+	}
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchRowForKey:inCollection:
+**/
+- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Almost the same as touchRowForKey:inCollection:
+	
+	NSString *pageKey = [self pageKeyForRowid:rowid];
+	if (pageKey)
+	{
+		NSString *group = [viewConnection->state groupForPageKey:pageKey];
+		NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+		
+		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
+		
+		[viewConnection->changes addObject:
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:group
+		                                        atIndex:index
+		                                    withChanges:flags]];
 	}
 }
 

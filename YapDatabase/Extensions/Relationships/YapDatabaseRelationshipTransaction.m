@@ -3246,7 +3246,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 {
 	YDBLogAutoTrace();
 	
-	// Nothing to do in this extension for touches
+	// Nothing to do in this extension for touches.
+	// We may change this in the future if this decision proves misguided.
 }
 
 /**
@@ -3257,7 +3258,20 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 {
 	YDBLogAutoTrace();
 	
-	// Nothing to do in this extension for touches
+	// Nothing to do in this extension for touches.
+	// We may change this in the future if this decision proves misguided.
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Nothing to do in this extension for touches.
+	// We may change this in the future if this decision proves misguided.
 }
 
 /**

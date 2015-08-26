@@ -209,6 +209,18 @@
  * Subclasses MUST implement this method.
  * YapDatabaseReadWriteTransaction Hook, invoked post-op.
  *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchRowForKey:inCollection:
+**/
+- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	// Nothing to do here
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction
  * - removeObjectForKey:inCollection:
 **/

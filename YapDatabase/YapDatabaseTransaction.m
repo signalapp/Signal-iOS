@@ -4983,9 +4983,6 @@
 	if ([connection->objectChanges objectForKey:cacheKey] == nil)
 		[connection->objectChanges setObject:[YapTouch touch] forKey:cacheKey];
 	
-	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
-		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
-	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchObjectForCollectionKey:cacheKey withRowid:rowid];
@@ -5007,6 +5004,27 @@
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		[extTransaction handleTouchMetadataForCollectionKey:cacheKey withRowid:rowid];
+	}
+}
+
+- (void)touchRowForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (collection == nil) collection = @"";
+	
+	int64_t rowid = 0;
+	if (![self getRowid:&rowid forKey:key inCollection:collection]) return;
+	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	if ([connection->objectChanges objectForKey:cacheKey] == nil)
+		[connection->objectChanges setObject:[YapTouch touch] forKey:cacheKey];
+	
+	if ([connection->metadataChanges objectForKey:cacheKey] == nil)
+		[connection->metadataChanges setObject:[YapTouch touch] forKey:cacheKey];
+	
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+	{
+		[extTransaction handleTouchRowForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 

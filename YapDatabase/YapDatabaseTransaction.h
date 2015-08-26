@@ -735,20 +735,25 @@ NS_ASSUME_NONNULL_BEGIN
  * However, it will mark the object as "updated" within the YapDatabaseModified notification,
  * so any UI components listening for changes will see this object as updated, and can update as appropriate.
  *
- * The touchObjectForKey:inCollection: method is similar to calling setObject:forKey:inCollection:withMetadata:,
- * and passing the object & metadata that already exists for the key. But without the overhead of fetching the items,
- * or re-writing the items to disk.
+ * - touchObjectForKey:inCollection:
+ *   Similar to calling replaceObject:forKey:inCollection: and passing the object that already exists.
+ *   But without the overhead of fetching the object, or re-writing it to disk.
  *
- * The touchMetadataForKey: method is similar to calling replaceMetadata:forKey:,
- * and passing the metadata that already exists for the key. But without the overhead of fetching the metadata,
- * or re-writing the metadata to disk.
+ * - touchMetadataForKey:inCollection:
+ *   Similar to calling replaceMetadata:forKey:inCollection: and passing the metadata that already exists.
+ *   But without the overhead of fetching the metadata, or re-writing it to disk.
  * 
- * Note: It is safe to touch objects during enumeration.
+ * - touchRowForKey:inCollection:
+ *   Similar to calling setObject:forKey:inCollection:withMetadata: and passing the object & metadata the already exist.
+ *   But without the overhead of fetching the items, or re-writing them to disk.
+ *
+ * Note: It is safe to touch items during enumeration.
  * Normally, altering the database while enumerating it will result in an exception (just like altering an array
- * while enumerating it). However, it's safe to touch objects during enumeration.
+ * while enumerating it). However, it's safe to touch items during enumeration.
 **/
 - (void)touchObjectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 - (void)touchMetadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)touchRowForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 #pragma mark Remove
 

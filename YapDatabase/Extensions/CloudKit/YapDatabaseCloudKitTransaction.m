@@ -3543,8 +3543,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	// Nothing to do here.
 	// "Touch" is generally meant for local operations.
 	//
-	// We may add an explicit "remote" touch (declared in YapDatabaseCloudKitTransaction.h)
-	// in the future if there seems to be a need for it.
+	// We may change this in the future if this decision proves to be misguided.
+	// Alternatively, would could possibly add an explicit "remote" touch for YapDatabaseCloudKitTransaction.
 }
 
 /**
@@ -3556,8 +3556,21 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	// Nothing to do here.
 	// "Touch" is generally meant for local operations.
 	//
-	// We may add an explicit "remote" touch (declared in YapDatabaseCloudKitTransaction.h)
-	// in the future if there seems to be a need for it.
+	// We may change this in the future if this decision proves to be misguided.
+	// Alternatively, would could possibly add an explicit "remote" touch for YapDatabaseCloudKitTransaction.
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	// Nothing to do here.
+	// "Touch" is generally meant for local operations.
+	//
+	// We may change this in the future if this decision proves to be misguided.
+	// Alternatively, would could possibly add an explicit "remote" touch for YapDatabaseCloudKitTransaction.
 }
 
 /**
