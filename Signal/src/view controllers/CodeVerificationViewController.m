@@ -9,6 +9,7 @@
 #import "CodeVerificationViewController.h"
 
 #import "Environment.h"
+#import "ContactsManager.h"
 #import "PhoneNumberDirectoryFilterManager.h"
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
@@ -62,7 +63,19 @@
     [self registerWithSuccess:^{
       [_submitCodeSpinner stopAnimating];
       [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-      [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+      [self.navigationController dismissViewControllerAnimated:YES completion:^{
+          UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                                              message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+          
+          [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action) {
+                                                           [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
+                                                       }]];
+          
+          [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+      }];
     } failure:^(NSError *error) {
       [self showAlertForError:error];
       [self enableServerActions:YES];

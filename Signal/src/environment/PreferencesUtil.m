@@ -211,7 +211,6 @@
     return currentVersion;
 }
 
-
 #pragma mark Notification Preferences
 
 - (BOOL)soundInForeground {

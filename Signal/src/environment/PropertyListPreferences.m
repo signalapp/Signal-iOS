@@ -1,6 +1,6 @@
 #import "PropertyListPreferences.h"
 #import "Constraints.h"
-#import "TSStorageManager.h"
+#import "TSStorageHeaders.h"
 
 #define SignalDatabaseCollection @"SignalPreferences"
 

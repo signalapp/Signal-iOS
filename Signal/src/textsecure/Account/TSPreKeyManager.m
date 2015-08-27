@@ -8,14 +8,8 @@
 
 #import "TSPreKeyManager.h"
 
-#import "TSAvailablePreKeysCountRequest.h"
-#import "TSCurrentSignedPreKeyRequest.h"
-#import "TSStorageManager.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+IdentityKeyStore.h"
+#import "TSStorageHeaders.h"
 #import "TSNetworkManager.h"
-#import "TSRegisterPrekeysRequest.h"
 
 #define EPHEMERAL_PREKEYS_MINIMUM 15
 

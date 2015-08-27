@@ -18,11 +18,7 @@
 #import "TSInfoMessage.h"
 
 #import "TSDatabaseView.h"
-#import "TSStorageManager+keyingMaterial.h"
-#import "TSStorageManager+IdentityKeyStore.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+PreKeyStore.h"
+#import "TSStorageManager.h"
 #import "TSMessagesManager+attachments.h"
 
 #import "SignalKeyingStorage.h"

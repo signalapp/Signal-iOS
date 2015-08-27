@@ -13,7 +13,6 @@
 #import "Environment.h"
 #import "PreferencesUtil.h"
 #import "TSFingerprintGenerator.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 #import "UIUtil.h"
 
 @interface PrivacySettingsTableViewController ()

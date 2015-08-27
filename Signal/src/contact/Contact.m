@@ -1,6 +1,5 @@
 #import "Contact.h"
 #import "ContactsManager.h"
-#import "TSStorageManager.h"
 #import "Environment.h"
 #import "TSRecipient.h"
 

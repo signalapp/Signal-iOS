@@ -24,7 +24,6 @@
 #import "DJWActionSheet+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 
-#import "TSStorageManager.h"
 #import "TSDatabaseView.h"
 #import "UIButton+OWS.h"
 #import <YapDatabase/YapDatabaseView.h>

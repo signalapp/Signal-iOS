@@ -10,7 +10,7 @@
 
 @interface TSRegisterWithTokenRequest : TSRequest
 
-- (TSRequest*) initWithVerificationToken:(NSString*)verificationCode signalingKey:(NSString*)signalingKey authKey:(NSString*)authKey number:(NSString*)number;
+- (instancetype)initWithVerificationToken:(NSString*)verificationCode signalingKey:(NSString*)signalingKey authKey:(NSString*)authKey number:(NSString*)number;
 
 @property NSString *numberToValidate;
 

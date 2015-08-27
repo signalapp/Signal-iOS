@@ -13,6 +13,5 @@
 @interface VersionMigrations : NSObject
 
 + (void)performUpdateCheck;
-+ (BOOL)isMigrating;
 
 @end

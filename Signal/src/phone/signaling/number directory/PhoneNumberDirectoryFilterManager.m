@@ -7,8 +7,7 @@
 #import "PreferencesUtil.h"
 #import "RPServerRequestsManager.h"
 #import "ThreadManager.h"
-#import "TSContactsIntersectionRequest.h"
-#import "TSStorageManager.h"
+#import "TSNetworkManager.h"
 #import "TSRecipient.h"
 #import "Util.h"
 
