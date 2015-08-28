@@ -38,13 +38,20 @@ typedef NS_ENUM(NSInteger, YapDatabaseCloudKitBlockType) {
 typedef id YapDatabaseCloudKitRecordBlock; // One of the YapDatabaseCloutKitGetRecordX types below.
 
 typedef void (^YapDatabaseCloudKitRecordWithKeyBlock)
-  (CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key);
+    (YapDatabaseReadTransaction *transaction, CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+     NSString *collection, NSString *key);
+
 typedef void (^YapDatabaseCloudKitRecordWithObjectBlock)
-  (CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key, id object);
+    (YapDatabaseReadTransaction *transaction, CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+     NSString *collection, NSString *key, id object);
+
 typedef void (^YapDatabaseCloudKitRecordWithMetadataBlock)
-  (CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key, id metadata);
+    (YapDatabaseReadTransaction *transaction, CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+     NSString *collection, NSString *key, id metadata);
+
 typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
-  (CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key, id object, id metadata);
+    (YapDatabaseReadTransaction *transaction, CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+     NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseCloudKitRecordWithKeyBlock)recordBlock;
 + (instancetype)withObjectBlock:(YapDatabaseCloudKitRecordWithObjectBlock)recordBlock;

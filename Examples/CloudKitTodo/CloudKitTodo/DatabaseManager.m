@@ -268,8 +268,8 @@ DatabaseManager *MyDatabaseManager;
 - (void)setupCloudKitExtension
 {
 	YapDatabaseCloudKitRecordHandler *recordHandler = [YapDatabaseCloudKitRecordHandler withObjectBlock:
-	    ^(CKRecord *__autoreleasing *inOutRecordPtr, YDBCKRecordInfo *recordInfo,
-		  NSString *collection, NSString *key, MyTodo *todo)
+	    ^(YapDatabaseReadTransaction *transaction, CKRecord *__autoreleasing *inOutRecordPtr,
+	      YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key, MyTodo *todo)
 	{
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
 		if (record                          && // not a newly inserted object
