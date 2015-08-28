@@ -17,16 +17,25 @@ typedef NS_ENUM(NSInteger, YapDatabaseCloudKitBlockType) {
 };
 
 
+/**
+ * The RecordHandler is the primary mechanism that is used to tell YapDatabaseCloudKit about CKRecord changes.
+ * That is, as you make changes to your own custom data model objects, you can use the RecordHandler block to tell
+ * YapDatabaseCloudKit about the changes that were made by handing it CKRecords.
+ * 
+ * Here's the general idea:
+ * - You update an object in the database via the normal setObject:forKey:inCollection method.
+ * - Since YapDatabaseCloudKit is an extension, it's automatically notified that you modified an object.
+ * - YapDatabaseCloudKit then invokes the recordHandler, and passes you the modified object,
+ *   along with an empty base CKRecord (if available), and asks you to set the proper values on the record.
+ * - Afterwards, the extension will check to see if it needs to upload the CKRecord (if it has changes),
+ *   and handles the rest if it does.
+ * 
+ * For more information & sample code, please see the wiki:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit#RecordHandlerBlock
+**/
 @interface YapDatabaseCloudKitRecordHandler : NSObject
 
 typedef id YapDatabaseCloudKitRecordBlock; // One of the YapDatabaseCloutKitGetRecordX types below.
-
-/**
- * @param inOutRecordPtr
- * 
- * @param recordInfo
- * 
-**/
 
 typedef void (^YapDatabaseCloudKitRecordWithKeyBlock)
   (CKRecord **inOutRecordPtr, YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key);
@@ -52,7 +61,15 @@ typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Merge Block.
+ * The MergeBlock is used to merge a CKRecord, which may come from a different device or different user,
+ * into the local system.
+ * 
+ * The MergeBlock is used to perform two tasks:
+ * - It allows you to merge changes (generally made on a different machine) into your local data model object.
+ * - It allows you to modify YapDatabaseCloudKit's change-set queue in the event there are any conflicts.
+ * 
+ * For more information & sample code, please see the wiki:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit#MergeBlock
 **/
 typedef void (^YapDatabaseCloudKitMergeBlock)
     (YapDatabaseReadWriteTransaction *transaction, NSString *collection, NSString *key,
@@ -63,9 +80,14 @@ typedef void (^YapDatabaseCloudKitMergeBlock)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * OperationError Block.
+ * When YapDatabaseCloudKit goes to push a change-set to the server, it creates a CKModifyRecordsOperation.
+ * If that operation comes back with an error from the CloudKit Framework, then YapDatabaseCloudKit automatically
+ * suspends itself, and forwards the error to you via the OperationErrorBlock.
  * 
- * ...
+ * It's your job to look at the errorCode, decide what to do, and resume YapDatabaseCloudKit when ready.
+ * 
+ * For more information, please see the wiki:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit#OperationErrorBlock
 **/
 typedef void (^YapDatabaseCloudKitOperationErrorBlock)
        (NSString *databaseIdentifier, NSError *operationError);
@@ -96,5 +118,8 @@ typedef void (^YapDatabaseCloudKitOperationErrorBlock)
  * then YapDatabaseCloudKit will assume & use [[CKContainer defaultContainer] privateCloudDatabase] for every CKRecord.
  * 
  * However, if you intend to use any other CKDatabase, the you MUST provide a DatabaseIdentifierBlock.
+ * 
+ * For more information & sample code, please see the wiki:
+ * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseCloudKit#The_databaseIdentifier
 **/
 typedef CKDatabase* (^YapDatabaseCloudKitDatabaseIdentifierBlock)(NSString *databaseIdentifier);
