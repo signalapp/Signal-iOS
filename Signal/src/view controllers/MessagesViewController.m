@@ -35,7 +35,9 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSAttachmentPointer.h"
+#import "TSAnimatedAdapter.h"
 #import "TSVideoAttachmentAdapter.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #import "TSMessagesManager+sendMessages.h"
 #import "TSMessagesManager+attachments.h"
@@ -899,13 +901,35 @@ typedef enum : NSUInteger {
                         
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
-                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
+                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream
+                                                                                                      fromRect:convertedRect
+                                                                                                forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                                                    isAnimated:NO];
                             
                             [vc presentFromViewController:self.navigationController];
                         }
                     } else {
                         DDLogWarn(@"Currently unsupported");
                     }
+                }
+                else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
+                    // Show animated image full-screen
+                    TSAnimatedAdapter* messageMedia = (TSAnimatedAdapter*)[messageItem media];
+                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
+                    CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
+                    __block TSAttachment* attachment = nil;
+                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction* transaction) {
+                        attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                    }];
+                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream* attStream = (TSAttachmentStream*)attachment;
+                        FullImageViewController* vc = [[FullImageViewController alloc] initWithAttachment:attStream
+                                                                                                 fromRect:convertedRect
+                                                                                           forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                                               isAnimated:YES];
+                        [vc presentFromViewController:self.navigationController];
+                    }
+
                 }
                 else if([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]){
                     // fileurl disappeared should look up in db as before. will do refactor
@@ -1272,11 +1296,44 @@ typedef enum : NSUInteger {
         [self sendQualityAdjustedAttachment:videoURL];
     }
     else {
-        UIImage *picture_camera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
-        if(picture_camera) {
-            DDLogVerbose(@"Sending picture attachement ...");
-            [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:picture_camera] ofType:@"image/jpeg"];
-        }
+        // Send image as NSData to accommodate both static and animated images
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL]
+                 resultBlock:^(ALAsset *asset)
+         {
+             ALAssetRepresentation *representation = [asset defaultRepresentation];
+             Byte *img_buffer = (Byte*)malloc((unsigned long)representation.size);
+             NSUInteger length_buffered = [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
+             NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
+             NSString *file_type;
+             switch (img_buffer[0])
+             {
+                 case 0x89:
+                     file_type = @"image/png";
+                     break;
+                 case 0x47:
+                     file_type = @"image/gif";
+                     break;
+                 case 0x49:
+                 case 0x4D:
+                     file_type = @"image/tiff";
+                     break;
+                 case 0x42:
+                     file_type = @"@image/bmp";
+                     break;
+                 case 0xFF:
+                 default:
+                     file_type = @"image/jpeg";
+                     break;
+             }
+             DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@", (unsigned long)length_buffered, img_buffer[0], img_buffer[0], file_type);
+             [self sendMessageAttachment:img_data ofType:file_type];
+         }
+                failureBlock:^(NSError *error)
+         {
+             DDLogVerbose(@"Couldn't get image asset: %@", error);
+         }
+        ];
     }
     
 }

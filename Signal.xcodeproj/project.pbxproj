@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		057B54FA6208D8269CFE6146 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D488327B732CFBE8349C7024 /* libPods.a */; };
 		28508611F3DF531CEDF5103D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D488327B732CFBE8349C7024 /* libPods.a */; };
+		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		53EF5134D8FB5FCBDEDE2A35 /* (null) in Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (Weak, ); }; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
@@ -341,6 +342,8 @@
 		B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
 		B684A46D19C3446200B11029 /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B684A46C19C3446200B11029 /* PushManagerTest.m */; };
 		B6850E5A1995A4710068E715 /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6850E591995A4710068E715 /* whisperFake.cer */; };
+		B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B71C0B1EBD009C3DCD /* FLAnimatedImage.m */; };
+		B68EF9BB1C0B1EBD009C3DCD /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */; };
 		B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */; };
@@ -532,6 +535,8 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
+		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -957,6 +962,10 @@
 		B68CB7E31AA548660065AC3F /* th_TH */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th_TH; path = translations/th_TH.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7E41AA548700065AC3F /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = translations/tr_TR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7E61AA548870065AC3F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = translations/zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B68EF9B61C0B1EBD009C3DCD /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLAnimatedImage.h; path = Libraries/FLAnimatedImage/FLAnimatedImage.h; sourceTree = SOURCE_ROOT; };
+		B68EF9B71C0B1EBD009C3DCD /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImage.m; path = Libraries/FLAnimatedImage/FLAnimatedImage.m; sourceTree = SOURCE_ROOT; };
+		B68EF9B81C0B1EBD009C3DCD /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLAnimatedImageView.h; path = Libraries/FLAnimatedImage/FLAnimatedImageView.h; sourceTree = SOURCE_ROOT; };
+		B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImageView.m; path = Libraries/FLAnimatedImage/FLAnimatedImageView.m; sourceTree = SOURCE_ROOT; };
 		B692BF051A76EF0F002786DA /* TSDatabaseSecondaryIndexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDatabaseSecondaryIndexes.h; sourceTree = "<group>"; };
 		B692BF061A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSDatabaseSecondaryIndexes.m; sourceTree = "<group>"; };
 		B69C2D171AA5445000A640C2 /* az_AZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az_AZ; path = translations/az_AZ.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1734,6 +1743,7 @@
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
+				B68EF9B51C0B1E7D009C3DCD /* Animated GIFS */,
 				B6DA6B051B8A2F9A00CA6F98 /* AppStoreRating.h */,
 				B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */,
 				B6FE7EB81ADD63AE00A6D22F /* NSData+ows_StripToken.h */,
@@ -2074,6 +2084,8 @@
 				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
 				B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */,
 				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
+				4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */,
+				4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */,
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
 				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
 			);
@@ -2194,6 +2206,17 @@
 				B65EDA1119E1BE6400AAA7CB /* RPAPICall.m */,
 			);
 			name = Requests;
+			sourceTree = "<group>";
+		};
+		B68EF9B51C0B1E7D009C3DCD /* Animated GIFS */ = {
+			isa = PBXGroup;
+			children = (
+				B68EF9B61C0B1EBD009C3DCD /* FLAnimatedImage.h */,
+				B68EF9B71C0B1EBD009C3DCD /* FLAnimatedImage.m */,
+				B68EF9B81C0B1EBD009C3DCD /* FLAnimatedImageView.h */,
+				B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */,
+			);
+			name = "Animated GIFS";
 			sourceTree = "<group>";
 		};
 		B6B095DD1A1D25C5008BFAA6 /* textsecure */ = {
@@ -2987,6 +3010,7 @@
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				B62EFBEC1A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,
+				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				B6B096861A1D25ED008BFAA6 /* SecurityUtils.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
@@ -3089,6 +3113,7 @@
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
 				B63AF5D01A1F757900D01AAD /* TSSubmitMessageRequest.m in Sources */,
 				B6A5D0631A7850180043D837 /* TSCurrentSignedPreKeyRequest.m in Sources */,
+				B68EF9BB1C0B1EBD009C3DCD /* FLAnimatedImageView.m in Sources */,
 				B6B0966B1A1D25ED008BFAA6 /* TSAttachment.m in Sources */,
 				76EB057618170B33006006FC /* Contact.m in Sources */,
 				B6B0968F1A1D25ED008BFAA6 /* TSYapDatabaseObject.m in Sources */,
@@ -3165,6 +3190,7 @@
 				B6B0968C1A1D25ED008BFAA6 /* TSDatabaseView.m in Sources */,
 				B6B0966A1A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
+				B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */,
 				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,
 				B6B0968E1A1D25ED008BFAA6 /* TSStorageManager.m in Sources */,
 				FCB11D8A1A1284BB002F93FB /* SettingsTableViewCell.m in Sources */,

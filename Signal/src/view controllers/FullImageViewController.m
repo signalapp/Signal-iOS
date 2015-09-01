@@ -3,12 +3,15 @@
 //  Signal
 //
 //  Created by Dylan Bourgeois on 11/11/14.
+//  Animated GIF support added by Mike Okner (@mikeokner) on 11/27/15.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
 #import "FullImageViewController.h"
 #import "DJWActionSheet+OWS.h"
 #import "UIUtil.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#import "FLAnimatedImage.h"
 
 #define kImageViewCornerRadius 5.0f
 
@@ -33,6 +36,8 @@
 
 @property CGRect originRect;
 @property BOOL isPresenting;
+@property BOOL isAnimated;
+@property NSData *fileData;
 
 @property TSAttachmentStream *attachment;
 @property TSInteraction      *interaction;
@@ -42,14 +47,19 @@
 @implementation FullImageViewController
 
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment fromRect:(CGRect)rect forInteraction:(TSInteraction*)interaction {
+- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment
+                          fromRect:(CGRect)rect
+                    forInteraction:(TSInteraction*)interaction
+                        isAnimated:(BOOL)animated
+{
     self = [super initWithNibName:nil bundle:nil];
     
     if  (self) {
-        self.attachment      = attachment;
-        self.imageView.image = self.image;
-        self.originRect      = rect;
-        self.interaction     = interaction;
+        self.attachment = attachment;
+        self.originRect = rect;
+        self.interaction = interaction;
+        self.isAnimated = animated;
+        self.fileData = [NSData dataWithContentsOfURL:[attachment mediaURL]];
     }
     
     return self;
@@ -101,19 +111,32 @@
 
 - (void)initializeImageView
 {
-    self.imageView                              = [[UIImageView alloc]initWithFrame:self.originRect];
-    self.imageView.layer.cornerRadius           = kImageViewCornerRadius;
-    self.imageView.contentMode                  = UIViewContentModeScaleAspectFill;
-    self.imageView.userInteractionEnabled       = YES;
-    self.imageView.clipsToBounds                = YES;
-    self.imageView.layer.allowsEdgeAntialiasing = YES;
-    [self.scrollView addSubview:self.imageView];
+    if (self.isAnimated) {
+        // Present the animated image using Flipboard/FLAnimatedImage
+        FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
+        FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
+        imageView.animatedImage = animatedGif;
+        imageView.frame = self.originRect;
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        imageView.clipsToBounds = YES;
+        self.imageView = imageView;
+    }
+    else {
+        // Present the static image using standard UIImageView
+        self.imageView                              = [[UIImageView alloc]initWithFrame:self.originRect];
+        self.imageView.layer.cornerRadius           = kImageViewCornerRadius;
+        self.imageView.contentMode                  = UIViewContentModeScaleAspectFill;
+        self.imageView.userInteractionEnabled       = YES;
+        self.imageView.clipsToBounds                = YES;
+        self.imageView.layer.allowsEdgeAntialiasing = YES;
+    }
 
+    [self.scrollView addSubview:self.imageView];
 }
 
 - (void)populateImageView:(UIImage*)image
 {
-    if (image) {
+    if (image && !self.isAnimated) {
         self.imageView.image = image;
     }
 }
@@ -371,9 +394,15 @@
             
         } else {
             switch (tappedButtonIndex) {
-                case 0:
-                    UIImageWriteToSavedPhotosAlbum(self.image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+                case 0: {
+                    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+                    [library writeImageDataToSavedPhotosAlbum:self.fileData metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                        if (error) {
+                            DDLogWarn(@"Error Saving image to photo album: %@", error);
+                        }
+                    }];
                     break;
+                }
                 case 1:
                     [[UIPasteboard generalPasteboard] setImage:self.image];
                     break;
