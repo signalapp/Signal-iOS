@@ -37,11 +37,15 @@
     return @{@"image/jpeg":@"jpeg",
              @"image/pjpeg":@"jpeg",
              @"image/png":@"png",
-             @"image/gif":@"gif",
              @"image/tiff":@"tif",
              @"image/x-tiff":@"tif",
              @"image/bmp":@"bmp",
              @"image/x-windows-bmp":@"bmp"
+             };
+}
+
++ (NSDictionary*)supportedAnimatedMIMETypesToExtensionTypes{
+    return @{@"image/gif":@"gif",
              };
 }
 
@@ -89,9 +93,13 @@
               @"jpe":@"image/pjpeg",
               @"jpeg":@"image/jpeg",
               @"jpg":@"image/jpeg",
-              @"gif":@"image/gif",
               @"tif":@"image/tiff",
               @"tiff":@"image/tiff"
+              };
+}
+
++ (NSDictionary*)supportedAnimatedExtensionTypesToMIMETypes{
+    return  @{@"gif":@"image/gif",
               };
 }
 
@@ -107,8 +115,12 @@
     return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:contentType]!=nil;
 }
 
++(BOOL) isSupportedAnimatedMIMEType:(NSString*)contentType {
+    return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:contentType]!=nil;
+}
+
 +(BOOL) isSupportedMIMEType:(NSString*)contentType {
-    return [self isSupportedImageMIMEType:contentType] || [self isSupportedAudioMIMEType:contentType] || [self isSupportedVideoMIMEType:contentType];
+    return [self isSupportedImageMIMEType:contentType] || [self isSupportedAudioMIMEType:contentType] || [self isSupportedVideoMIMEType:contentType] || [self isSupportedAnimatedMIMEType:contentType];
 }
 
 +(BOOL) isSupportedVideoFile:(NSString*) filePath {
@@ -123,6 +135,10 @@
     return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]]!=nil;
 }
 
++(BOOL) isSupportedAnimatedFile:(NSString*) filePath  {
+    return [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]]!=nil;
+}
+
 +(NSString*) getSupportedExtensionFromVideoMIMEType:(NSString*)supportedMIMEType {
     return [[self supportedVideoMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
@@ -133,6 +149,10 @@
 
 +(NSString*) getSupportedExtensionFromImageMIMEType:(NSString*)supportedMIMEType {
     return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+}
+
++(NSString*) getSupportedExtensionFromAnimatedMIMEType:(NSString*)supportedMIMEType {
+    return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 +(NSString*) getSupportedMIMETypeFromVideoFile:(NSString*)supportedVideoFile {
@@ -147,6 +167,10 @@
     return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:[supportedImageFile pathExtension]];
 }
 
++(NSString*) getSupportedMIMETypeFromAnimatedFile:(NSString*)supportedAnimatedFile {
+    return [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:[supportedAnimatedFile pathExtension]];
+}
+
 #pragma mark uses bytes
 +(NSString*) getSupportedImageMIMETypeFromImage:(UIImage*)image {
     return [image contentType];
@@ -157,6 +181,9 @@
 }
 
 #pragma mark full attachment utilities
++ (BOOL)isAnimated:(NSString *)contentType {
+    return [MIMETypeUtil isSupportedAnimatedMIMEType:contentType];
+}
 + (BOOL)isImage:(NSString*)contentType {
     return [MIMETypeUtil isSupportedImageMIMEType:contentType];
 }
@@ -179,7 +206,10 @@
     else if([self isImage:contentType]){
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
     }
-    
+    else if([self isAnimated:contentType]){
+        return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
+    }
+
     DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
     return nil;
 }
@@ -213,6 +243,10 @@
 
 + (NSString*)filePathForAudio:(NSString*)uniqueId ofMIMEType:(NSString*)contentType inFolder:(NSString*)folder{
     return [[folder stringByAppendingFormat:@"/%@",uniqueId] stringByAppendingPathExtension:[self getSupportedExtensionFromAudioMIMEType:contentType]];
+}
+
++ (NSString*)filePathForAnimated:(NSString*)uniqueId ofMIMEType:(NSString*)contentType inFolder:(NSString*)folder{
+    return [[folder stringByAppendingFormat:@"/%@",uniqueId] stringByAppendingPathExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]];
 }
 
 @end

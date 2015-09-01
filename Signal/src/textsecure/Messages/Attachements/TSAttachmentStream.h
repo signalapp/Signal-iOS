@@ -19,6 +19,7 @@
 
 - (UIImage *)image;
 
+- (BOOL)isAnimated;
 - (BOOL)isImage;
 - (BOOL)isVideo;
 -(NSURL*)mediaURL;

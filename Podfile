@@ -14,6 +14,7 @@ pod 'FFCircularProgressView',     '~> 0.5'
 pod 'SCWaveformView',             '~> 1.0'
 pod 'YapDatabase/SQLCipher',      '~> 2.7.2'
 pod 'iRate',                      '~> 1.11'
+pod 'FLAnimatedImage',            '~> 1.0'
 pod 'SSKeychain'
 pod 'DJWActionSheet'
 

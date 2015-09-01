@@ -59,6 +59,10 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return [NSURL fileURLWithPath:[self filePath]];
 }
 
+- (BOOL)isAnimated {
+    return [MIMETypeUtil isAnimated:self.contentType];
+}
+
 - (BOOL)isImage {
     return [MIMETypeUtil isImage:self.contentType];
 }
@@ -72,11 +76,13 @@ NSString * const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 }
 
 - (UIImage*)image {
-    if (![self isImage]) {
+    if ([self isVideo] || [self isAudio]) {
         return [self videoThumbnail];
     }
-
-    return [UIImage imageWithContentsOfFile:self.filePath];
+    else {
+        // [self isAnimated] || [self isImage]
+        return [UIImage imageWithData:[NSData dataWithContentsOfURL:[self mediaURL]]];
+    }
 }
 
 

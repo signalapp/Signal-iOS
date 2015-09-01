@@ -10,6 +10,7 @@
 		057B54FA6208D8269CFE6146 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D488327B732CFBE8349C7024 /* libPods.a */; };
 		28508611F3DF531CEDF5103D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D488327B732CFBE8349C7024 /* libPods.a */; };
 		53EF5134D8FB5FCBDEDE2A35 /* (null) in Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
@@ -539,6 +540,8 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
+		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -2097,6 +2100,8 @@
 				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
 				B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */,
 				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
+				4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */,
+				4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */,
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
 				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
 			);
@@ -2992,6 +2997,7 @@
 				76EB062A18170B33006006FC /* BadState.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				B62EFBEC1A91352F0072ADD3 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,
+				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				B6B096861A1D25ED008BFAA6 /* SecurityUtils.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
 				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,

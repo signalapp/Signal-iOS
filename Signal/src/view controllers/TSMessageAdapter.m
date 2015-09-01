@@ -16,6 +16,7 @@
 #import "TSErrorMessage.h"
 #import "TSAttachmentPointer.h"
 #import "TSVideoAttachmentAdapter.h"
+#import "TSAnimatedAdapter.h"
 
 
 @interface TSMessageAdapter ()
@@ -99,7 +100,12 @@
                 
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
-                    if ([stream isImage]) {
+                    if ([stream isAnimated]) {
+                        adapter.mediaItem = [[TSAnimatedAdapter alloc] initWithAttachment:stream];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
+                    }
+                    else if ([stream isImage]) {
                         adapter.mediaItem = [[TSPhotoAdapter alloc] initWithAttachment:stream];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
