@@ -34,8 +34,7 @@
 @property (nonatomic, strong) IBOutlet UIButton *rejectButton;
 @property (nonatomic, strong) IBOutlet UIButton *answerButton;
 
-@property (nonatomic, strong) IBOutlet UIImageView *connectingIndicatorImageView;
-@property (nonatomic, strong) IBOutlet UIImageView *callStateImageContainerView;
+@property IBOutlet UIView *containerView;
 
 @property (nonatomic, readonly) CallState *callState;
 @property (nonatomic, readonly) Contact *potentiallyKnownContact;

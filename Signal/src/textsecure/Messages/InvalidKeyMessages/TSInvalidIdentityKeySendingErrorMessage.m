@@ -68,7 +68,7 @@
     }];
     
     if (message) {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:thread];
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:thread success:nil failure:nil];
     }
 }
 

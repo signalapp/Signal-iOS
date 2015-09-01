@@ -36,8 +36,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 
--(void)configureWithThread:(TSThread*)thread;
--(void)configureForState:(CellState)state;
--(void)animateDisappear;
++ (instancetype)inboxTableViewCell;
+- (void)configureWithThread:(TSThread*)thread;
+- (void)configureForState:(CellState)state;
+- (void)animateDisappear;
 
 @end

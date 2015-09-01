@@ -113,17 +113,51 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 + (void)blockingContactDialog{
-    UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_TITLE", nil)
-                                                                        message:NSLocalizedString(@"AB_PERMISSION_MISSING_BODY", nil)
-                                                                 preferredStyle:UIAlertControllerStyleAlert];
-    
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-                                                 }]];
-    
-    [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:controller animated:YES completion:nil];
+    switch (ABAddressBookGetAuthorizationStatus()) {
+        case kABAuthorizationStatusRestricted:{
+            UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_TITLE", nil)
+                                                                                message:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BODY", nil)
+                                                                         preferredStyle:UIAlertControllerStyleAlert];
+            
+            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON", nil)
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction *action) {
+                                                             exit(0);
+                                                         }]];
+            
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+            
+            break;
+        }
+        case kABAuthorizationStatusDenied: {
+            UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_TITLE", nil)
+                                                                                message:NSLocalizedString(@"AB_PERMISSION_MISSING_BODY", nil)
+                                                                         preferredStyle:UIAlertControllerStyleAlert];
+            
+            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION", nil)
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction *action) {
+                                                             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+                                                         }]];
+            
+            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:controller animated:YES completion:nil];
+            break;
+        }
+            
+        case kABAuthorizationStatusNotDetermined: {
+            DDLogInfo(@"AddressBook access not granted but status undetermined.");
+            [[Environment getCurrent].contactsManager pullLatestAddressBook];
+            break;
+        }
+            
+        case kABAuthorizationStatusAuthorized:{
+            DDLogInfo(@"AddressBook access not granted but status authorized.");
+            break;
+        }
+            
+        default:
+            break;
+    }
 }
 
 - (void)setupLatestRedPhoneUsers:(NSArray *)users {
@@ -157,7 +191,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     
     id addressBook = (__bridge_transfer id)addressBookRef;
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef requestAccessError) {
-        if (granted) {
+        if (granted && ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
             dispatch_async(ADDRESSBOOK_QUEUE,^{
                 [futureAddressBookSource trySetResult:addressBook];
             });

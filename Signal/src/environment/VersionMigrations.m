@@ -54,7 +54,7 @@
         [self nonBlockingPushRegistration];
     }
     
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] || [self needsRegisterAttributes]) {
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
         [self clearVideoCache];
         [self blockingAttributesUpdate];
     }
@@ -83,7 +83,7 @@
             DDLogWarn(@"Registered for VOIP Push.");
         } failure:failedBlock];
     } failure:failedBlock];
-
+    
 }
 
 + (void)blockingPushRegistration{
@@ -146,7 +146,7 @@
 #pragma mark Upgrading to 2.1.3 - Adding VOIP flag on TS Server
 
 + (BOOL)needsRegisterAttributes {
-    return [self userDefaultsBoolForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
+    return [self userDefaultsBoolForKey:NEEDS_TO_REGISTER_ATTRIBUTES] && [TSAccountManager isRegistered];
 }
 
 + (void)blockingAttributesUpdate {

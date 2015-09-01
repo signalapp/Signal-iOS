@@ -10,6 +10,8 @@
 #import <Foundation/Foundation.h>
 
 #define Signal_Thread_UserInfo_Key           @"Signal_Thread_Id"
+#define Signal_Message_UserInfo_Key          @"Signal_Message_Id"
+
 #define Signal_Call_UserInfo_Key             @"Signal_Call_Id"
 
 #define Signal_Call_Accept_Identifier        @"Signal_Call_Accept"
@@ -18,10 +20,10 @@
 #define Signal_CallBack_Identifier           @"Signal_CallBack"
 
 #define Signal_Call_Category                 @"Signal_IncomingCall"
-#define Signal_Message_Category              @"Signal_Message"
+#define Signal_Full_New_Message_Category     @"Signal_Full_New_Message"
 #define Signal_CallBack_Category             @"Signal_CallBack"
 
-#define Signal_Message_View_Identifier       @"Signal_Message_Read"
+#define Signal_Message_Reply_Identifier      @"Signal_New_Message_Reply"
 #define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
 
 typedef void(^failedPushRegistrationBlock)(NSError *error);
@@ -71,6 +73,7 @@ typedef void (^registrationTokensSuccessBlock)(NSData *pushToken, NSData *voipTo
 -(TOCFuture*)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
 - (UILocalNotification*)closeVOIPBackgroundTask;
+- (void)presentNotification:(UILocalNotification*)notification;
 
 #pragma mark Push Notifications Delegate Methods
 
@@ -78,5 +81,6 @@ typedef void (^registrationTokensSuccessBlock)(NSData *pushToken, NSData *voipTo
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler;
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler;
 
 @end

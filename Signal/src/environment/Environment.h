@@ -6,6 +6,8 @@
 #import "TSGroupModel.h"
 #import "TSStorageHeaders.h"
 
+static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
+
 /**
  *
  * Environment is a data and data accessor class.

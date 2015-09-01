@@ -22,19 +22,21 @@
 
 @implementation InboxTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
-                                       owner:self
-                                     options:nil][0];
++ (instancetype)inboxTableViewCell {
+    InboxTableViewCell *cell = [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class)
+                                                           owner:self
+                                                         options:nil][0];
     
-    if (self) {
-        _scrollView.contentSize   = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
-                                             CGRectGetHeight(_scrollView.frame));
-        
-        _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-        _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    }
-    return self;
+    [cell initializeLayout];
+    return cell;
+}
+
+- (void)initializeLayout {
+    _scrollView.contentSize   = CGSizeMake(CGRectGetWidth(_contentContainerView.bounds),
+                                           CGRectGetHeight(_scrollView.frame));
+    
+    _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
+    _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 }
 
 - (NSString *)reuseIdentifier {
@@ -51,7 +53,7 @@
             _nameLabel.text = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
         }
         if(_contactPictureView.image!=nil) {
-             [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
+            [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         }
     }
     else {
@@ -77,7 +79,7 @@
             [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
         }
     }
-
+    
     self.separatorInset = UIEdgeInsetsMake(0,_contactPictureView.frame.size.width*1.5f, 0, 0);
     
     if (thread.hasUnreadMessages) {
@@ -130,12 +132,12 @@
                              value:[UIColor ows_darkGrayColor]
                              range:NSMakeRange(0, timeString.length)];
     
-
+    
     
     [attributedString addAttribute:NSFontAttributeName
                              value:[UIFont ows_regularFontWithSize:TIME_LABEL_SIZE]
                              range:NSMakeRange(0, timeString.length)];
-
+    
     
     return attributedString;
 }

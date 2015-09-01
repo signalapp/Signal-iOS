@@ -30,15 +30,15 @@
     _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"");
     [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"")
                       forState:UIControlStateNormal];
-
+    
     [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"")
                                 forState:UIControlStateNormal];
     [_sendCodeViaVoiceButton
-        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"")]
-        forState:UIControlStateNormal];
+     setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"")]
+     forState:UIControlStateNormal];
     [_changeNumberButton
-        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"")]
-        forState:UIControlStateNormal];
+     setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"")]
+     forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -59,60 +59,74 @@
 {
     [self enableServerActions:NO];
     [_challengeTextField resignFirstResponder];
-
+    
     [self registerWithSuccess:^{
-      [_submitCodeSpinner stopAnimating];
-      [Environment.getCurrent.phoneDirectoryManager forceUpdate];
-      [self.navigationController dismissViewControllerAnimated:YES completion:^{
-          UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                                              message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
-          
-          [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                           [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-                                                       }]];
-          
-          [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
-      }];
+        [_submitCodeSpinner stopAnimating];
+        [Environment.getCurrent.phoneDirectoryManager forceUpdate];
+        
+        [self.navigationController dismissViewControllerAnimated:YES completion:^{
+            [self passedVerification];
+        }];
     } failure:^(NSError *error) {
-      [self showAlertForError:error];
-      [self enableServerActions:YES];
-      [_submitCodeSpinner stopAnimating];
+        [self showAlertForError:error];
+        [self enableServerActions:YES];
+        [_submitCodeSpinner stopAnimating];
     }];
 }
 
+- (void)passedVerification {
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined ||
+        ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusRestricted) {
+        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                                            message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *action) {
+                                                         [self setupContacts];
+                                                     }]];
+        
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+        
+    } else {
+        [self setupContacts];
+    }
+}
+
+- (void)setupContacts {
+    [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
+}
 
 - (void)registerWithSuccess:(void (^)())success failure:(void (^)(NSError *))failure
 {
     [_submitCodeSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall verifyVerificationCode:_challengeTextField.text]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-
-          [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
-              [TSAccountManager registerWithRedPhoneToken:signupToken
-                pushToken:pushToken
-             voipToken:voipToken
-                success:^{
-                  success();
-                }
-                failure:^(NSError *error) {
-                  failure(error);
-                }];
-          } failure:^(NSError *error) {
-            failure(error);
-            [_submitCodeSpinner stopAnimating];
-          }];
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-          NSHTTPURLResponse *badResponse = (NSHTTPURLResponse *)task.response;
-          NSError *responseError = [self errorForResponse:badResponse];
-
-          failure(responseError);
-          [_submitCodeSpinner stopAnimating];
-
-        }];
+                                                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                                                         
+                                                         [PushManager.sharedManager registrationAndRedPhoneTokenRequestWithSuccess:^(NSData *pushToken, NSData *voipToken, NSString *signupToken) {
+                                                             [TSAccountManager registerWithRedPhoneToken:signupToken
+                                                                                               pushToken:pushToken
+                                                                                               voipToken:voipToken
+                                                                                                 success:^{
+                                                                                                     success();
+                                                                                                 }
+                                                                                                 failure:^(NSError *error) {
+                                                                                                     failure(error);
+                                                                                                 }];
+                                                         } failure:^(NSError *error) {
+                                                             failure(error);
+                                                             [_submitCodeSpinner stopAnimating];
+                                                         }];
+                                                     }
+                                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                         NSHTTPURLResponse *badResponse = (NSHTTPURLResponse *)task.response;
+                                                         NSError *responseError = [self errorForResponse:badResponse];
+                                                         
+                                                         failure(responseError);
+                                                         [_submitCodeSpinner stopAnimating];
+                                                         
+                                                     }];
 }
 
 
@@ -126,14 +140,14 @@
         DDLogError(@"%@: Unable to display error because localizedDescription was not set: %@", self.class, error);
         return;
     }
-
+    
     NSString *alertBody = nil;
     if (error.localizedFailureReason.length > 0) {
         alertBody = error.localizedFailureReason;
     } else if (error.localizedRecoverySuggestion.length > 0) {
         alertBody = error.localizedRecoverySuggestion;
     }
-
+    
     SignalAlertView(error.localizedDescription, alertBody);
 }
 
@@ -143,7 +157,7 @@
     NSString *description = NSLocalizedString(@"REGISTRATION_ERROR", @"");
     NSString *failureReason = nil;
     TSRegistrationFailure failureType;
-
+    
     if (badResponse.statusCode == 401) {
         failureReason = REGISTER_CHALLENGE_ALERT_VIEW_BODY;
         failureType = kTSRegistrationFailureAuthentication;
@@ -152,14 +166,14 @@
         failureType = kTSRegistrationFailureRateLimit;
     } else {
         failureReason = [NSString
-            stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""), (unsigned long)badResponse.statusCode];
+                         stringWithFormat:@"%@ %lu", NSLocalizedString(@"SERVER_CODE", @""), (unsigned long)badResponse.statusCode];
         failureType = kTSRegistrationFailureNetwork;
     }
-
+    
     NSDictionary *userInfo =
-        @{NSLocalizedDescriptionKey : description, NSLocalizedFailureReasonErrorKey : failureReason};
+    @{NSLocalizedDescriptionKey : description, NSLocalizedFailureReasonErrorKey : failureReason};
     NSError *error = [NSError errorWithDomain:TSRegistrationErrorDomain code:failureType userInfo:userInfo];
-
+    
     return error;
 }
 
@@ -167,57 +181,57 @@
 - (IBAction)sendCodeSMSAction:(id)sender
 {
     [self enableServerActions:NO];
-
+    
     [_requestCodeAgainSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall requestVerificationCode]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-          [self enableServerActions:YES];
-          [_requestCodeAgainSpinner stopAnimating];
-
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-
-          DDLogError(@"Registration failed with information %@", error.description);
-
-          UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
-                                                                        message:REGISTER_ERROR_ALERT_VIEW_BODY
-                                                                       delegate:nil
-                                                              cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
-                                                              otherButtonTitles:nil, nil];
-
-          [registrationErrorAV show];
-
-          [self enableServerActions:YES];
-          [_requestCodeAgainSpinner stopAnimating];
-        }];
+                                                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                                                         [self enableServerActions:YES];
+                                                         [_requestCodeAgainSpinner stopAnimating];
+                                                         
+                                                     }
+                                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                         
+                                                         DDLogError(@"Registration failed with information %@", error.description);
+                                                         
+                                                         UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+                                                                                                                       message:REGISTER_ERROR_ALERT_VIEW_BODY
+                                                                                                                      delegate:nil
+                                                                                                             cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+                                                                                                             otherButtonTitles:nil, nil];
+                                                         
+                                                         [registrationErrorAV show];
+                                                         
+                                                         [self enableServerActions:YES];
+                                                         [_requestCodeAgainSpinner stopAnimating];
+                                                     }];
 }
 
 - (IBAction)sendCodeVoiceAction:(id)sender
 {
     [self enableServerActions:NO];
-
+    
     [_requestCallSpinner startAnimating];
     [[RPServerRequestsManager sharedInstance] performRequest:[RPAPICall requestVerificationCodeWithVoice]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-
-          [self enableServerActions:YES];
-          [_requestCallSpinner stopAnimating];
-
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-
-          DDLogError(@"Registration failed with information %@", error.description);
-
-          UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
-                                                                        message:REGISTER_ERROR_ALERT_VIEW_BODY
-                                                                       delegate:nil
-                                                              cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
-                                                              otherButtonTitles:nil, nil];
-
-          [registrationErrorAV show];
-          [self enableServerActions:YES];
-          [_requestCallSpinner stopAnimating];
-        }];
+                                                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                                                         
+                                                         [self enableServerActions:YES];
+                                                         [_requestCallSpinner stopAnimating];
+                                                         
+                                                     }
+                                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                         
+                                                         DDLogError(@"Registration failed with information %@", error.description);
+                                                         
+                                                         UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:REGISTER_ERROR_ALERT_VIEW_TITLE
+                                                                                                                       message:REGISTER_ERROR_ALERT_VIEW_BODY
+                                                                                                                      delegate:nil
+                                                                                                             cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+                                                                                                             otherButtonTitles:nil, nil];
+                                                         
+                                                         [registrationErrorAV show];
+                                                         [self enableServerActions:YES];
+                                                         [_requestCallSpinner stopAnimating];
+                                                     }];
 }
 
 - (void)enableServerActions:(BOOL)enabled
@@ -233,7 +247,7 @@
 - (void)initializeKeyboardHandlers
 {
     UITapGestureRecognizer *outsideTabRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
+    [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
 }
 
@@ -246,14 +260,14 @@
 {
     CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
     CGFloat blueHeaderHeight;
-
+    
     if (screenHeight < 667) {
         self.signalLogo.hidden = YES;
         blueHeaderHeight = screenHeight - 400;
     } else {
         blueHeaderHeight = screenHeight - 410;
     }
-
+    
     _headerConstraint.constant = blueHeaderHeight;
 }
 

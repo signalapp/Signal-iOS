@@ -25,6 +25,9 @@
 #import "TSServerMessage.h"
 
 #import "TSInfoMessage.h"
+#import "CollapsingFutures.h"
+
+#define RETRY_ATTEMPTS 3
 
 @interface TSMessagesManager ()
 dispatch_queue_t sendingQueue(void);
@@ -43,7 +46,10 @@ dispatch_queue_t sendingQueue() {
     return queue;
 }
 
-- (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread{
+- (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread
+            success:(successSendingCompletionBlock)successCompletionBlock
+            failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
     [Environment.preferences setHasSentAMessage:YES];
     dispatch_async(sendingQueue(), ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -54,16 +60,7 @@ dispatch_queue_t sendingQueue() {
                 recipients = [groupThread recipientsWithTransaction:transaction];
             }];
             
-            for(TSRecipient *rec in recipients){
-                // we don't need to send the message to ourselves, but otherwise we send
-                if( ![[rec uniqueId] isEqualToString:[SignalKeyingStorage.localNumber toE164]]){
-                    [self sendMessage:message
-                          toRecipient:rec
-                             inThread:thread
-                          withAttemps:3];
-                }
-            }
-            
+            [self groupSend:recipients Message:message inThread:thread success:successCompletionBlock failure:failedCompletionBlock];
         }
         else if([thread isKindOfClass:[TSContactThread class]]){
             TSContactThread *contactThread = (TSContactThread*)thread;
@@ -79,7 +76,9 @@ dispatch_queue_t sendingQueue() {
                  [self sendMessage:message
                        toRecipient:recipient
                           inThread:thread
-                       withAttemps:3];
+                       withAttemps:RETRY_ATTEMPTS
+                           success:successCompletionBlock
+                           failure:failedCompletionBlock];
              }
              else {
                  // Special situation: if we are sending to ourselves in a single thread, we treat this as an incoming message
@@ -91,10 +90,55 @@ dispatch_queue_t sendingQueue() {
     });
 }
 
+/// For group sends, we're using chained futures to make the code more readable.
+
+- (TOCFuture*)sendMessageFuture:(TSOutgoingMessage*)message
+                      recipient:(TSRecipient*)recipient
+                       inThread:(TSThread*)thread {
+    TOCFutureSource *futureSource = [[TOCFutureSource alloc] init];
+   
+    [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:RETRY_ATTEMPTS success:^{
+        [futureSource trySetResult:@1];
+    } failure:^{
+        [futureSource trySetFailure:@0];
+    }];
+    
+    return futureSource.future;
+}
+
+- (void)groupSend:(NSArray<TSRecipient*>*)recipients
+          Message:(TSOutgoingMessage*)message
+         inThread:(TSThread*)thread
+          success:(successSendingCompletionBlock)successBlock
+          failure:(failedSendingCompletionBlock)failureBlock {
+    
+    NSMutableArray<TOCFuture*> *futures = [NSMutableArray array];
+    
+    for(TSRecipient *rec in recipients){
+        // we don't need to send the message to ourselves, but otherwise we send
+        if( ![[rec uniqueId] isEqualToString:[SignalKeyingStorage.localNumber toE164]]){
+            [futures addObject:[self sendMessageFuture:message recipient:rec inThread:thread]];
+        }
+    }
+    
+    TOCFuture *completionFuture = futures.toc_thenAll;
+    
+    [completionFuture thenDo:^(id value) {
+        BLOCK_SAFE_RUN(successBlock);
+    }];
+    
+    [completionFuture catchDo:^(id failure) {
+        BLOCK_SAFE_RUN(failureBlock);
+    }];
+}
+
 - (void)sendMessage:(TSOutgoingMessage*)message
         toRecipient:(TSRecipient*)recipient
            inThread:(TSThread*)thread
-        withAttemps:(int)remainingAttempts{
+        withAttemps:(int)remainingAttempts
+            success:(successSendingCompletionBlock)successBlock
+            failure:(failedSendingCompletionBlock)failureBlock
+{
     
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
@@ -107,7 +151,7 @@ dispatch_queue_t sendingQueue() {
                     [recipient saveWithTransaction:transaction];
                 }];
                 [self handleMessageSent:message];
-                
+                BLOCK_SAFE_RUN(successBlock);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 long statuscode = response.statusCode;
@@ -116,11 +160,12 @@ dispatch_queue_t sendingQueue() {
                 switch (statuscode) {
                     case 404:{
                         DDLogError(@"Recipient not found");
-                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             [recipient removeWithTransaction:transaction];
                             [message setMessageState:TSOutgoingMessageStateUnsent];
                             [[TSInfoMessage userNotRegisteredMessageInThread:thread transaction:transaction] saveWithTransaction:transaction];
                         }];
+                        BLOCK_SAFE_RUN(failureBlock);
                         break;
                     }
                     case 409:{
@@ -140,7 +185,12 @@ dispatch_queue_t sendingQueue() {
                         }
                         
                         dispatch_async(sendingQueue(), ^{
-                            [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
                         });
                         
                         break;
@@ -157,19 +207,30 @@ dispatch_queue_t sendingQueue() {
                         [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
                         
                         dispatch_async(sendingQueue(), ^{
-                            [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
                         });
                         
                         break;
                     }
                     default:
-                        [self sendMessage:message toRecipient:recipient inThread:thread withAttemps:remainingAttempts];
+                        [self sendMessage:message
+                              toRecipient:recipient
+                                 inThread:thread
+                              withAttemps:remainingAttempts
+                                  success:successBlock
+                                  failure:failureBlock];
                         break;
                 }
             }];
         }];
     } else{
         [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
+        BLOCK_SAFE_RUN(failureBlock);
     }
 }
 

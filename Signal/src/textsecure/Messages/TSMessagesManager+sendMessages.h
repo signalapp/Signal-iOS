@@ -10,6 +10,11 @@
 
 @interface TSMessagesManager (sendMessages)
 
-- (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread;
+typedef void(^successSendingCompletionBlock)();
+typedef void(^failedSendingCompletionBlock)();
+
+- (void)sendMessage:(TSOutgoingMessage*)message inThread:(TSThread*)thread
+            success:(successSendingCompletionBlock)successCompletionBlock
+            failure:(failedSendingCompletionBlock)failedCompletionBlock;
 
 @end

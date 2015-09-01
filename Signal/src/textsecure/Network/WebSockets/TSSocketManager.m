@@ -15,6 +15,7 @@
 #import "TSStorageManager+keyingMaterial.h"
 
 #import "Cryptography.h"
+#import "AFSecurityOWSPolicy.h"
 
 #define kWebSocketHeartBeat         30
 #define kWebSocketReconnectTry      5
@@ -101,12 +102,7 @@ NSString * const SocketConnectingNotification = @"SocketConnectingNotification";
     NSString* webSocketConnect   = [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
     NSURL* webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
-    NSString* cerPath            = [[NSBundle mainBundle] pathForResource:@"textsecure" ofType:@"cer"];
-    NSData* certData             = [[NSData alloc] initWithContentsOfFile:cerPath];
-    CFDataRef certDataRef        = (__bridge CFDataRef)certData;
-    SecCertificateRef certRef    = SecCertificateCreateWithData(NULL, certDataRef);
-    id certificate               = (__bridge id)certRef;
-    [request setSR_SSLPinnedCertificates:@[ certificate ]];
+    request.securityPolicy       = [AFSecurityOWSPolicy OWS_PinningPolicy];
     
     socket                       = [[SRWebSocket alloc] initWithURLRequest:request];
     socket.delegate              = [self sharedManager];

@@ -26,11 +26,16 @@
     return nil;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+
 - (id)initWithURL:(NSURL *)URL cachePolicy:(NSURLRequestCachePolicy)cachePolicy timeoutInterval:(NSTimeInterval)timeoutInterval{
     [NSException raise:NSInternalInconsistencyException
                 format:@"You must use the initWithURL method"];
     return nil;
 }
+
+#pragma clang diagnostic pop
 
 - (void) makeAuthenticatedRequest{
     [self.parameters addEntriesFromDictionary:@{@"Authorization":[TSStorageManager serverAuthToken]}];

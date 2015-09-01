@@ -126,7 +126,7 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage) contentType:@"image/png" inMessage:message thread:self.thread];
     }
     else {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
     }
     isGroupConversation = YES;
 }
@@ -572,7 +572,7 @@ typedef enum : NSUInteger {
         
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:text attachments:nil];
         
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
         [self finishSendingMessage];
     }
 }
@@ -1072,7 +1072,7 @@ typedef enum : NSUInteger {
                 [message removeWithTransaction:transaction];
             }];
         }else {
-            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread];
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
             [self finishSendingMessage];
         }
     }];
@@ -1603,7 +1603,7 @@ typedef enum : NSUInteger {
     TSGroupThread* gThread = (TSGroupThread*)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:gThread messageBody:@"" attachments:[[NSMutableArray alloc] init]];
     message.groupMetaMessage = TSGroupMessageQuit;
-    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread];
+    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread success:nil failure:nil];
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
         [newGroupMemberIds removeObject:[SignalKeyingStorage.localNumber toE164]];
@@ -1630,7 +1630,7 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage) contentType:@"image/png" inMessage:message thread:groupThread];
     }
     else {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread];
+        [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread success:nil failure:nil];
     }
     
     self.thread = groupThread;

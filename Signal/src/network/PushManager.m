@@ -8,8 +8,11 @@
 
 #import <PushKit/PushKit.h>
 
+#import "AppDelegate.h"
 #import "ContactsManager.h"
 #import "InCallViewController.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import "TSMessagesManager+sendMessages.h"
 #import "NotificationTracker.h"
 
 #import "PreferencesUtil.h"
@@ -25,8 +28,9 @@
 @property UIAlertView         *missingPermissionsAlertView;
 @property (nonatomic, strong) NotificationTracker *notificationTracker;
 @property UILocalNotification *lastCallNotification;
-
+@property (nonatomic, retain) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
+
 @end
 
 @implementation PushManager
@@ -53,6 +57,7 @@
                          cancelButtonTitle:NSLocalizedString(@"OK", @"")
                          otherButtonTitles:nil, nil];
         _callBackgroundTask = UIBackgroundTaskInvalid;
+        self.currentNotifications = [NSMutableArray array];
     }
     return self;
 }
@@ -99,7 +104,7 @@
             notification.category  = Signal_Call_Category;
             notification.soundName = @"r.caf";
             
-            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+            [[PushManager sharedManager] presentNotification:notification];
             _lastCallNotification = notification;
             
             if (_callBackgroundTask == UIBackgroundTaskInvalid) {
@@ -143,15 +148,36 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    if ([notification.category isEqualToString:Signal_Message_Category]) {
-        NSString *threadId = [notification.userInfo objectForKey:Signal_Thread_UserInfo_Key];
+    NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+    if (threadId && [TSThread fetchObjectWithUniqueID:threadId]) {
         [Environment messageThreadId:threadId];
     }
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
+    [self application:application handleActionWithIdentifier:identifier forLocalNotification:notification withResponseInfo:@{} completionHandler:completionHandler];
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler {
     
-    if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
+    
+    if ([identifier isEqualToString:Signal_Message_Reply_Identifier]) {
+        NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+        
+        if (threadId) {
+            TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey] attachments:nil];
+            [[TSMessagesManager sharedManager] sendMessage:message inThread:thread success:^{
+                [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
+            } failure:^{
+                UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
+                failedSendNotif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
+                failedSendNotif.userInfo = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
+                [[PushManager sharedManager] presentNotification:failedSendNotif];
+                completionHandler();
+            }];
+        }
+    } else if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
         [Environment.phoneManager answerCall];
         
         completionHandler();
@@ -163,20 +189,37 @@
                            completionHandler();
                        });
     } else if([identifier isEqualToString:Signal_CallBack_Identifier]){
-        NSString * contactId = [notification.userInfo objectForKeyedSubscript:Signal_Call_UserInfo_Key];
+        NSString * contactId = notification.userInfo[Signal_Call_UserInfo_Key];
         PhoneNumber *number =  [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-    } else{
-        NSString *threadId = [notification.userInfo objectForKey:Signal_Thread_UserInfo_Key];
+    } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]){
+        [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
+    } else {
+        NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
         completionHandler();
     }
+
+}
+
+- (void)markAllInThreadAsRead:(NSDictionary*)userInfo completionHandler:(void (^)())completionHandler {
+    NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
+    
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    [[TSStorageManager sharedManager].dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [thread markAllAsReadWithTransaction:transaction];
+    } completionBlock:^{
+        [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+        [self cancelNotificationsWithThreadId:threadId];
+        
+        completionHandler();
+    }];
 }
 
 - (BOOL)isRedPhonePush:(NSDictionary*)pushDict {
-    NSDictionary *aps  = [pushDict objectForKey:@"aps"];
-    NSString *category = [aps      objectForKey:@"category"];
+    NSDictionary *aps  = pushDict[@"aps"];
+    NSString *category = aps[@"category"];
     
     if ([category isEqualToString:Signal_Call_Category]) {
         return YES;
@@ -294,7 +337,7 @@
                                                        NSError *error;
                                                        
                                                        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-                                                       NSString *tsToken = [dictionary objectForKey:@"token"];
+                                                       NSString *tsToken = dictionary[@"token"];
                                                        
                                                        if (!tsToken || !pushToken || error) {
                                                            failure(error);
@@ -315,25 +358,37 @@
     UIUserNotificationSettings *settings =
     [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
                                       categories:[NSSet setWithObjects:[self userNotificationsCallCategory],
-                                                                       [self userNotificationsMessageCategory],
+                                                                       [self fullNewMessageNotificationCategory],
                                                                        [self userNotificationsCallBackCategory], nil]];
     
     [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     return self.userNotificationFutureSource.future;
 }
 
-- (UIUserNotificationCategory*)userNotificationsMessageCategory{
-    UIMutableUserNotificationAction *action_view  = [UIMutableUserNotificationAction new];
-    action_view.identifier                        = Signal_Message_View_Identifier;
-    action_view.title                             = NSLocalizedString(@"PUSH_MANAGER_VIEW", @"");
-    action_view.activationMode                    = UIUserNotificationActivationModeForeground;
-    action_view.destructive                       = NO;
-    action_view.authenticationRequired            = YES;
+- (UIUserNotificationCategory*)fullNewMessageNotificationCategory {
+    UIMutableUserNotificationAction *action_markRead = [UIMutableUserNotificationAction new];
+    action_markRead.identifier                       = Signal_Message_MarkAsRead_Identifier;
+    action_markRead.title                            = NSLocalizedString(@"PUSH_MANAGER_MARKREAD", nil);
+    action_markRead.destructive                      = NO;
+    action_markRead.authenticationRequired           = NO;
+    action_markRead.activationMode                   = UIUserNotificationActivationModeBackground;
+    
+    UIMutableUserNotificationAction *action_reply  = [UIMutableUserNotificationAction new];
+    action_reply.identifier                        = Signal_Message_Reply_Identifier;
+    action_reply.title                             = NSLocalizedString(@"PUSH_MANAGER_REPLY", @"");
+    action_reply.destructive                       = NO;
+    action_reply.authenticationRequired            = NO; // Since YES is broken in iOS 9 GM
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
+        action_reply.behavior                      = UIUserNotificationActionBehaviorTextInput;
+        action_reply.activationMode                = UIUserNotificationActivationModeBackground;
+    } else {
+        action_reply.activationMode                = UIUserNotificationActivationModeForeground;
+    }
     
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
-    messageCategory.identifier = Signal_Message_Category;
-    [messageCategory setActions:@[action_view] forContext:UIUserNotificationActionContextMinimal];
-    [messageCategory setActions:@[action_view] forContext:UIUserNotificationActionContextDefault];
+    messageCategory.identifier = Signal_Full_New_Message_Category;
+    [messageCategory setActions:@[action_markRead, action_reply] forContext:UIUserNotificationActionContextMinimal];
+    [messageCategory setActions:@[] forContext:UIUserNotificationActionContextDefault];
     
     return messageCategory;
 }
@@ -443,6 +498,22 @@
     }
     
     return NO;
+}
+
+- (void)presentNotification:(UILocalNotification*)notification {
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    [self.currentNotifications addObject:notification];
+}
+
+- (void)cancelNotificationsWithThreadId:(NSString*)threadId {
+    NSMutableArray *toDelete = [NSMutableArray array];
+    [self.currentNotifications enumerateObjectsUsingBlock:^(UILocalNotification *notif, NSUInteger idx, BOOL *stop) {
+        if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            [toDelete addObject:notif];
+        }
+    }];
+    [self.currentNotifications removeObjectsInArray:toDelete];
 }
 
 @end

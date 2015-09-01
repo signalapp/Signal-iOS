@@ -6,40 +6,34 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-static NSString *const kHelveticaNeueThin    = @"HelveticaNeue-Thin";
-static NSString *const kHelveticaNeueLight   = @"HelveticaNeue-Light";
-static NSString *const kHelveticaNeueRegular = @"HelveticaNeue";
-static NSString *const kHelveticaNeueMedium  = @"HelveticaNeue-Medium";
-static NSString *const kHelveticaNeueBold    = @"HelveticaNeue-Bold";
-
 #import "UIFont+OWS.h"
 
 @implementation UIFont (OWS)
 
 + (UIFont*) ows_thinFontWithSize:(CGFloat)size
 {
-    return [UIFont fontWithName:kHelveticaNeueThin size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightThin];
 }
 
 + (UIFont*) ows_lightFontWithSize:(CGFloat)size
 {
-    return [UIFont fontWithName:kHelveticaNeueLight size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightLight];
 }
 
 + (UIFont*) ows_regularFontWithSize:(CGFloat)size
 {
-    return [UIFont fontWithName:kHelveticaNeueRegular size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
 }
 
 
 + (UIFont*) ows_mediumFontWithSize:(CGFloat)size
 {
-    return [UIFont fontWithName:kHelveticaNeueMedium size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightMedium];
 }
 
 + (UIFont*) ows_boldFontWithSize:(CGFloat)size
 {
-    return [UIFont fontWithName:kHelveticaNeueBold size:size];
+    return [UIFont boldSystemFontOfSize:size];
 }
 
 @end

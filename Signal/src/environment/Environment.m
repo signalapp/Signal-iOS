@@ -12,7 +12,6 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 
-static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 #define isRegisteredUserDefaultString @"isRegistered"
 
 static Environment* environment = nil;

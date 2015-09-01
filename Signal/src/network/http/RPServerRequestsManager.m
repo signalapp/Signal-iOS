@@ -9,6 +9,7 @@
 #import "Environment.h"
 
 #import "AFHTTPSessionManager+SignalMethods.h"
+#import "AFSecurityOWSPolicy.h"
 
 @interface RPServerRequestsManager ()
 
@@ -29,14 +30,7 @@ MacrosSingletonImplemention
         HostNameEndPoint *endpoint = Environment.getCurrent.masterServerSecureEndPoint.hostNameEndPoint;
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%hu", endpoint.hostname, endpoint.port]];
         self.operationManager = [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConfig];
-        AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
-        securityPolicy.allowInvalidCertificates  = YES; //The certificate is not signed by a CA in the iOS trust store.
-        securityPolicy.validatesCertificateChain = NO;  //Looking at AFNetworking's implementation of chain checking, we don't need to pin all certs in chain. https://github.com/AFNetworking/AFNetworking/blob/e4855e9f25e4914ac2eb5caee26bc6e7a024a840/AFNetworking/AFSecurityPolicy.m#L271 Trust to the trusted cert is already vertified before by AFServerTrustIsValid();
-        NSString *certPath = [NSBundle.mainBundle pathForResource:@"redphone" ofType:@"cer"];
-        NSData *certData = [NSData dataWithContentsOfFile:certPath];
-        SecCertificateRef cert = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certData));
-        securityPolicy.pinnedCertificates = @[(__bridge_transfer NSData *)SecCertificateCopyData(cert)];
-        self.operationManager.securityPolicy = securityPolicy;
+        self.operationManager.securityPolicy = [AFSecurityOWSPolicy OWS_PinningPolicy];
     }
     return self;
 }

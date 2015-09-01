@@ -34,6 +34,10 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     [AppStoreRating setupRatingLibrary];
 }
 
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self setupAppearance];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
@@ -162,20 +166,22 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    [self protectScreen];
-
-    if ([TSAccountManager isRegistered]) {
-        [self updateBadge];
-        [TSSocketManager resignActivity];
-    }
-}
-
-- (void)updateBadge {
-    if ([TSAccountManager isRegistered]) {
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:(NSInteger)[[TSMessagesManager sharedManager] unreadMessagesCount]];
-    }
+    UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
+    bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        
+    }];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self protectScreen];
+        if ([TSAccountManager isRegistered]) {
+            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+            [TSSocketManager resignActivity];
+        }
+        
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    });
+    
 }
 
 - (void)prepareScreenshotProtection{
@@ -264,6 +270,10 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
     [[PushManager sharedManager] application:application handleActionWithIdentifier:identifier forLocalNotification:notification completionHandler:completionHandler];
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler {
+    [[PushManager sharedManager] application:application handleActionWithIdentifier:identifier forLocalNotification:notification withResponseInfo:responseInfo completionHandler:completionHandler];
 }
 
 /**

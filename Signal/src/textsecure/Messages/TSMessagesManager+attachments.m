@@ -106,7 +106,7 @@ dispatch_queue_t attachmentsQueue() {
                         result.pointer.isDownloaded = YES;
                         [result.pointer saveWithTransaction:transaction];
                     }];
-                    [self sendMessage:outgoingMessage inThread:thread];
+                    [self sendMessage:outgoingMessage inThread:thread success:nil failure:nil];
                 } else{
                     DDLogWarn(@"Failed to upload attachment");
                 }

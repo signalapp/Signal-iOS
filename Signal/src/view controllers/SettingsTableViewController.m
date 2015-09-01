@@ -60,6 +60,8 @@ typedef enum {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationItem setHidesBackButton:YES];
+
     [self.navigationController.navigationBar setTranslucent:NO];
     
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];

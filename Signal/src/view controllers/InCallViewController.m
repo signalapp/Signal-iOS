@@ -11,13 +11,6 @@
 #define CONNECTING_FLASH_DURATION 0.5f
 #define END_CALL_CLEANUP_DELAY (int)(3.1f * NSEC_PER_SEC)
 
-static NSString *const SPINNER_CONNECTING_IMAGE_NAME = @"spinner_connecting";
-static NSString *const SPINNER_CONNECTING_FLASH_IMAGE_NAME = @"spinner_connecting_flash";
-static NSString *const SPINNER_RINGING_IMAGE_NAME = @"spinner_ringing";
-static NSString *const SPINNER_ERROR_FLASH_IMAGE_NAME = @"spinner_error";
-
-static NSInteger connectingFlashCounter = 0;
-
 
 @interface InCallViewController () {
     CallAudioManager *_callAudioManager;
@@ -40,7 +33,7 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [self showCallState];
     [self setPotentiallyKnownContact:_potentiallyKnownContact];
     [self localizeButtons];
@@ -58,7 +51,6 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self startConnectingFlashAnimation];
     [UIDevice.currentDevice setProximityMonitoringEnabled:YES];
 }
 
@@ -76,37 +68,8 @@ static NSInteger connectingFlashCounter = 0;
     [self handleIncomingDetails];
 }
 
-- (void)startConnectingFlashAnimation {
-    if(!_ringingAnimationTimer.isValid){
-        _connectingFlashTimer = [NSTimer scheduledTimerWithTimeInterval:CONNECTING_FLASH_DURATION
-                                                                 target:self
-                                                               selector:@selector(flashConnectingIndicator)
-                                                               userInfo:nil
-                                                                repeats:YES];
-    }
-}
-
-- (void)flashConnectingIndicator {
-    
-    NSString *newImageName;
-    
-    if (connectingFlashCounter % 2 == 0) {
-        newImageName = SPINNER_CONNECTING_IMAGE_NAME;
-    } else {
-        newImageName = SPINNER_CONNECTING_FLASH_IMAGE_NAME;
-    }
-    
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:newImageName]];
-    connectingFlashCounter++;
-}
-
 - (void)startRingingAnimation {
     [self stopConnectingFlashAnimation];
-    _ringingAnimationTimer = [NSTimer scheduledTimerWithTimeInterval:RINGING_ROTATION_DURATION
-                                                              target:self
-                                                            selector:@selector(rotateConnectingIndicator)
-                                                            userInfo:nil
-                                                             repeats:YES];
     
     if (!_incomingCallButtonsView.hidden) {
         _vibrateTimer = [NSTimer scheduledTimerWithTimeInterval:VIBRATE_TIMER_DURATION
@@ -121,19 +84,6 @@ static NSInteger connectingFlashCounter = 0;
 
 - (void)vibrate {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-}
-
-- (void)rotateConnectingIndicator {
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_RINGING_IMAGE_NAME]];
-    [UIView animateWithDuration:RINGING_ROTATION_DURATION delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        _connectingIndicatorImageView.transform = CGAffineTransformRotate(_connectingIndicatorImageView.transform, (float)M_PI_2);
-    } completion:nil];
-}
-
-- (void)performCallInSessionAnimation {
-    [UIView animateWithDuration:0.5f animations:^{
-        [_callStateImageContainerView setFrame:CGRectMake(0, _callStateImageContainerView.frame.origin.y, _callStateImageContainerView.frame.size.width, _callStateImageContainerView.frame.size.height)];
-    }];
 }
 
 - (void)stopRingingAnimation {
@@ -154,7 +104,6 @@ static NSInteger connectingFlashCounter = 0;
 - (void)showConnectingError {
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
-    [_connectingIndicatorImageView setImage:[UIImage imageNamed:SPINNER_ERROR_FLASH_IMAGE_NAME]];
 }
 
 - (void)localizeButtons {
@@ -205,7 +154,6 @@ static NSInteger connectingFlashCounter = 0;
         _muteButton.hidden = NO;
         _speakerButton.hidden = NO;
         _authenicationStringLabel.text = sas;
-        [self performCallInSessionAnimation];
     }];
 
     [[_callState observableProgress] watchLatestValue:^(CallProgress* latestProgress) {

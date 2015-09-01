@@ -93,6 +93,14 @@
 #define _iOS_8_2_0 NSFoundationVersionNumber_iOS_8_2_0
 #endif
 
+#ifndef NSFoundationVersionNumber_iOS_9
+#define NSFoundationVersionNumber_iOS_9 1231 //extracted with NSLog(@"%f", NSFoundationVersionNumber)
+#endif
+
+#ifdef NSFoundationVersionNumber_iOS_9
+#define _iOS_9 NSFoundationVersionNumber_iOS_9
+#endif
+
 /**
  Add a Singelton implementation to the .m File
  */

@@ -290,7 +290,7 @@
             
             thread = gThread;
             
-        } else{
+        } else {
             TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source
                                                                            transaction:transaction
                                                                             pushSignal:message];
@@ -424,7 +424,7 @@
             notification.soundName  = @"NewMessage.aifc";
             notification.alertBody  = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
             
-            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+            [[PushManager sharedManager] presentNotification:notification];
         }
     }
 }
@@ -434,7 +434,6 @@
     
     if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.category  = Signal_Message_Category;
         notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
         notification.soundName = @"NewMessage.aifc";
         
@@ -452,7 +451,7 @@
         }
         notification.alertBody = alertBodyString;
         
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        [[PushManager sharedManager]presentNotification:notification];
     } else {
         if ([Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
@@ -465,12 +464,14 @@
     
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.category  = Signal_Message_Category;
-        notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
         notification.soundName = @"NewMessage.aifc";
         
         switch ([[Environment preferences] notificationPreviewType]) {
             case NotificationNamePreview:
+                notification.category  = Signal_Full_New_Message_Category;
+                notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId,
+                                           Signal_Message_UserInfo_Key:message.uniqueId};
+                
                 if ([thread isGroupThread]) {
                     NSString *sender = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:message.authorId];
                     if (!sender) {
@@ -484,6 +485,7 @@
                 }
                 break;
             case NotificationNameNoPreview:{
+                notification.userInfo  = @{Signal_Thread_UserInfo_Key:thread.uniqueId};
                 if ([thread isGroupThread]) {
                     notification.alertBody = [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP",nil), name];
                 } else {
@@ -499,7 +501,7 @@
                 break;
         }
         
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        [[PushManager sharedManager] presentNotification:notification];
     } else {
         if ([Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
