@@ -208,8 +208,8 @@ typedef enum : NSUInteger {
 - (void)initializeTextView {
     [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
     self.inputToolbar.contentView.leftBarButtonItem  = _attachButton;
-    
     self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+    self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
 }
 
 -(void)viewWillAppear:(BOOL)animated {
