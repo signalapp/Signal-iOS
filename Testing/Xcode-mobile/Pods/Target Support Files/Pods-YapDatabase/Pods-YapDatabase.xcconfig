@@ -1,1 +1,0 @@
-PODS_YAPDATABASE_OTHER_LDFLAGS = -weak_library /usr/lib/libc++.dylib -l"sqlite3"

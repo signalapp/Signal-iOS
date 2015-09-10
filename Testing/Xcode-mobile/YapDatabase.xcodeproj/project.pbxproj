@@ -23,6 +23,7 @@
 		DC60889D18CFE702009AA946 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC60889B18CFE699009AA946 /* XCTest.framework */; };
 		DC717A1B1816ED9B00D6E6C8 /* TestYapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC717A1A1816ED9B00D6E6C8 /* TestYapDatabaseSecondaryIndex.m */; };
 		DC8E6043183F0A3D0091633D /* TestYapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8E6042183F0A3D0091633D /* TestYapDatabaseFilteredView.m */; };
+		DC96D1BD1BA1FE28001B4B08 /* TestYapDatabaseHooks.m in Sources */ = {isa = PBXBuildFile; fileRef = DC96D1BC1BA1FE28001B4B08 /* TestYapDatabaseHooks.m */; };
 		DCAE51EB1673FE2600395076 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EA1673FE2600395076 /* UIKit.framework */; };
 		DCAE51ED1673FE2600395076 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EC1673FE2600395076 /* Foundation.framework */; };
 		DCAE51EF1673FE2600395076 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EE1673FE2600395076 /* CoreGraphics.framework */; };
@@ -131,6 +132,7 @@
 		DC60889B18CFE699009AA946 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		DC717A1A1816ED9B00D6E6C8 /* TestYapDatabaseSecondaryIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseSecondaryIndex.m; path = ../../UnitTesting/TestYapDatabaseSecondaryIndex.m; sourceTree = "<group>"; };
 		DC8E6042183F0A3D0091633D /* TestYapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFilteredView.m; path = ../../UnitTesting/TestYapDatabaseFilteredView.m; sourceTree = "<group>"; };
+		DC96D1BC1BA1FE28001B4B08 /* TestYapDatabaseHooks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseHooks.m; path = ../../UnitTesting/TestYapDatabaseHooks.m; sourceTree = "<group>"; };
 		DCAE51E71673FE2600395076 /* YapDatabase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YapDatabase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCAE51EA1673FE2600395076 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCAE51EC1673FE2600395076 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -284,6 +286,14 @@
 			name = FilteredViews;
 			sourceTree = "<group>";
 		};
+		DC96D1BB1BA1FE15001B4B08 /* Hooks */ = {
+			isa = PBXGroup;
+			children = (
+				DC96D1BC1BA1FE28001B4B08 /* TestYapDatabaseHooks.m */,
+			);
+			name = Hooks;
+			sourceTree = "<group>";
+		};
 		DCAE51DE1673FE2600395076 = {
 			isa = PBXGroup;
 			children = (
@@ -358,6 +368,7 @@
 				DC717A0C1815DF9500D6E6C8 /* SecondaryIndexes */,
 				DC2EAC3018763B9900FF4EA8 /* Relationships */,
 				DCF3928A19241736004B1161 /* SearchResultsView */,
+				DC96D1BB1BA1FE15001B4B08 /* Hooks */,
 			);
 			name = UnitTests;
 			path = YapDatabaseTests;
@@ -585,6 +596,7 @@
 				DC24FBEF1688047700E855DC /* TestYapDatabase.m in Sources */,
 				DC2EAC3218763C1D00FF4EA8 /* TestYapDatabaseRelationship.m in Sources */,
 				DC23CFAB1766A17100E103A9 /* TestYapDatabaseView.m in Sources */,
+				DC96D1BD1BA1FE28001B4B08 /* TestYapDatabaseHooks.m in Sources */,
 				DC717A1B1816ED9B00D6E6C8 /* TestYapDatabaseSecondaryIndex.m in Sources */,
 				DCF3928C19241775004B1161 /* TestYapDatabaseSearchResultsView.m in Sources */,
 				DC49735417E90C2F00489267 /* TestYapDatabaseFullTextSearch.m in Sources */,

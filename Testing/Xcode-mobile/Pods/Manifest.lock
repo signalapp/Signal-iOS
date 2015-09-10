@@ -7,9 +7,9 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.0.1):
     - CocoaLumberjack/Default
-  - YapDatabase (2.6.5):
-    - YapDatabase/standard (= 2.6.5)
-  - YapDatabase/standard (2.6.5):
+  - YapDatabase (2.7.2):
+    - YapDatabase/standard (= 2.7.2)
+  - YapDatabase/standard (2.7.2):
     - CocoaLumberjack (~> 2)
 
 DEPENDENCIES:
@@ -17,10 +17,10 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   YapDatabase:
-    :path: "../../"
+    :path: ../../
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 019d1361244274a6138c788c6cb80baabc13fb8f
-  YapDatabase: f80c8b3522b29ca6851a70101ba0959e0e485f81
+  YapDatabase: bcf13bd764ab4961fb48bef937becf964e50063d
 
-COCOAPODS: 0.37.2
+COCOAPODS: 0.38.2
