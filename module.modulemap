@@ -38,6 +38,7 @@ framework module YapDatabase {
   header "YapDatabaseRTreeIndexSetup.h"
   header "YapDatabaseRTreeIndexTransaction.h"    
   header "YapDatabaseSearchQueue.h"
+  header "YapDatabaseSearchQueuePrivate.h"
   header "YapDatabaseSearchResultsView.h"
   header "YapDatabaseSearchResultsViewConnection.h"
   header "YapDatabaseSearchResultsViewOptions.h"
