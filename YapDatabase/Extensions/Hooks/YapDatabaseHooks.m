@@ -60,26 +60,14 @@
 
 @synthesize allowedCollections = allowedCollections;
 
-@synthesize willInsertObject = willInsertObject;
-@synthesize didInsertObject = didInsertObject;
+@synthesize willModifyRow = willModifyRow;
+@synthesize didModifyRow = didModifyRow;
 
-@synthesize willUpdateObject = willUpdateObject;
-@synthesize didUpdateObject = didUpdateObject;
+@synthesize willRemoveRow = willRemoveRow;
+@synthesize didRemoveRow = didRemoveRow;
 
-@synthesize willReplaceObject = willReplaceObject;
-@synthesize didReplaceObject = didReplaceObject;
-
-@synthesize willReplaceMetadata = willReplaceMetadata;
-@synthesize didReplaceMetadata = didReplaceMetadata;
-
-@synthesize willRemoveObject = willRemoveObject;
-@synthesize didRemoveObject = didRemoveObject;
-
-@synthesize willRemoveObjects = willRemoveObjects;
-@synthesize didRemoveObjects = didRemoveObjects;
-
-@synthesize willRemoveAllObjectsInAllCollections = willRemoveAllObjectsInAllCollections;
-@synthesize didRemoveAllObjectsInAllCollections = didRemoveAllObjectsInAllCollections;
+@synthesize willRemoveAllRows = willRemoveAllRows;
+@synthesize didRemoveAllRows = didRemoveAllRows;
 
 - (void)willChangeValueForKey:(NSString *)key
 {

@@ -1,11 +1,13 @@
 #import <XCTest/XCTest.h>
-
-#import "YapDatabase.h"
-#import "TestObject.h"
-
 #import <CocoaLumberjack/CocoaLumberjack.h>
-
 #import <libkern/OSAtomic.h>
+
+#import "TestObject.h"
+#import "YapDatabase.h"
+
+#import "YapProxyObject.h"
+#import "YapProxyObjectPrivate.h"
+
 
 @interface TestYapDatabase : XCTestCase
 @end

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "70949E59264F120277E7BFCC"
+               BlueprintIdentifier = "AA6A940C72F7A9C5F117628C"
                BuildableName = "libYapDatabase.a"
                BlueprintName = "YapDatabase"
                ReferencedContainer = "container:Pods.xcodeproj">

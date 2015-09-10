@@ -1,5 +1,6 @@
 #import "YapDatabaseHooksTransaction.h"
 #import "YapDatabaseHooksPrivate.h"
+#import "YapProxyObjectPrivate.h"
 
 
 @implementation YapDatabaseHooksTransaction
@@ -101,12 +102,27 @@
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
-	if (parentConnection->parent->didInsertObject)
+	if (parentConnection->parent->didModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didInsertObject(transaction, ck.collection, ck.key, object, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksInsertedRow | YapDatabaseHooksChangedObject | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->didModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -126,12 +142,27 @@
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
-	if (parentConnection->parent->didUpdateObject)
+	if (parentConnection->parent->didModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didUpdateObject(transaction, ck.collection, ck.key, object, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedObject | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->didModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -149,12 +180,27 @@
            forCollectionKey:(YapCollectionKey *)ck
                   withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->didReplaceObject)
+	if (parentConnection->parent->didModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didReplaceObject(transaction, ck.collection, ck.key, object);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRowid:rowid collectionKey:ck isMetadata:YES transaction:transaction];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedObject;
+		
+		parentConnection->parent->didModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -172,12 +218,27 @@
              forCollectionKey:(YapCollectionKey *)ck
                     withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->didReplaceMetadata)
+	if (parentConnection->parent->didModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didReplaceMetadata(transaction, ck.collection, ck.key, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRowid:rowid collectionKey:ck isMetadata:NO transaction:transaction];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->didModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -226,12 +287,12 @@
 **/
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->didRemoveObject)
+	if (parentConnection->parent->didRemoveRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didRemoveObject(transaction, ck.collection, ck.key);
+		parentConnection->parent->didRemoveRow(transaction, ck.collection, ck.key);
 	}
 }
 
@@ -252,12 +313,15 @@
 **/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
-	if (parentConnection->parent->didRemoveObjects)
+	if (parentConnection->parent->didRemoveRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didRemoveObjects(transaction, collection, keys);
+		for (NSString *key in keys)
+		{
+			parentConnection->parent->didRemoveRow(transaction, collection, key);
+		}
 	}
 }
 
@@ -269,12 +333,12 @@
 **/
 - (void)handleRemoveAllObjectsInAllCollections
 {
-	if (parentConnection->parent->didRemoveAllObjectsInAllCollections)
+	if (parentConnection->parent->didRemoveAllRows)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->didRemoveAllObjectsInAllCollections(transaction);
+		parentConnection->parent->didRemoveAllRows(transaction);
 	}
 }
 
@@ -297,12 +361,27 @@
               forCollectionKey:(YapCollectionKey *)ck
                   withMetadata:(id)metadata
 {
-	if (parentConnection->parent->willInsertObject)
+	if (parentConnection->parent->willModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willInsertObject(transaction, ck.collection, ck.key, object, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksInsertedRow | YapDatabaseHooksChangedObject | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->willModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -322,12 +401,27 @@
                   withMetadata:(id)metadata
                          rowid:(int64_t)rowid
 {
-	if (parentConnection->parent->willUpdateObject)
+	if (parentConnection->parent->willModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willUpdateObject(transaction, ck.collection, ck.key, object, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedObject | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->willModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -345,12 +439,27 @@
                forCollectionKey:(YapCollectionKey *)ck
                       withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->willReplaceObject)
+	if (parentConnection->parent->willModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willReplaceObject(transaction, ck.collection, ck.key, object);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRealObject:object];
+		[proxyMetadata resetWithRowid:rowid collectionKey:ck isMetadata:YES transaction:transaction];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedObject;
+		
+		parentConnection->parent->willModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -368,12 +477,27 @@
                  forCollectionKey:(YapCollectionKey *)ck
                         withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->willReplaceMetadata)
+	if (parentConnection->parent->willModifyRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willReplaceMetadata(transaction, ck.collection, ck.key, metadata);
+		if (proxyObject == nil)
+			proxyObject = [[YapProxyObject alloc] init];
+		
+		if (proxyMetadata == nil)
+			proxyMetadata = [[YapProxyObject alloc] init];
+		
+		[proxyObject resetWithRowid:rowid collectionKey:ck isMetadata:NO transaction:transaction];
+		[proxyMetadata resetWithRealObject:metadata];
+		
+		YapDatabaseHooksBitMask flags =
+		  YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedMetadata;
+		
+		parentConnection->parent->willModifyRow(transaction, ck.collection, ck.key, proxyObject, proxyMetadata, flags);
+		
+		[proxyObject reset];
+		[proxyMetadata reset];
 	}
 }
 
@@ -386,12 +510,12 @@
 **/
 - (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
-	if (parentConnection->parent->willRemoveObject)
+	if (parentConnection->parent->willRemoveRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willRemoveObject(transaction, ck.collection, ck.key);
+		parentConnection->parent->willRemoveRow(transaction, ck.collection, ck.key);
 	}
 }
 
@@ -412,12 +536,15 @@
 **/
 - (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
-	if (parentConnection->parent->willRemoveObjects)
+	if (parentConnection->parent->willRemoveRow)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willRemoveObjects(transaction, collection, keys);
+		for (NSString *key in keys)
+		{
+			parentConnection->parent->willRemoveRow(transaction, collection, key);
+		}
 	}
 }
 
@@ -430,12 +557,12 @@
 **/
 - (void)handleWillRemoveAllObjectsInAllCollections
 {
-	if (parentConnection->parent->willRemoveAllObjectsInAllCollections)
+	if (parentConnection->parent->willRemoveAllRows)
 	{
 		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
 		  (YapDatabaseReadWriteTransaction *)databaseTransaction;
 		
-		parentConnection->parent->willRemoveAllObjectsInAllCollections(transaction);
+		parentConnection->parent->willRemoveAllRows(transaction);
 	}
 }
 
