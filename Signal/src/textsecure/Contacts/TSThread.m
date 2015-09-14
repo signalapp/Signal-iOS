@@ -118,9 +118,16 @@
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (!_lastMessageDate || [lastMessage.date timeIntervalSinceDate:self.lastMessageDate] > 0) {
+    NSDate *lastMessageDate = lastMessage.date;
+    
+    if ([lastMessage isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *message = (TSIncomingMessage*)lastMessage;
+        lastMessageDate = message.receivedAt;
+    }
+    
+    if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _latestMessageId = lastMessage.uniqueId;
-        _lastMessageDate = lastMessage.date;
+        _lastMessageDate = lastMessageDate;
 
         [self saveWithTransaction:transaction];
     }
