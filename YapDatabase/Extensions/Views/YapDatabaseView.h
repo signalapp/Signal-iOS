@@ -70,8 +70,8 @@
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
 
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType groupingBlockType;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType groupingBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType sortingBlockType;
 
 /**
  * The versionTag assists you in updating your blocks.

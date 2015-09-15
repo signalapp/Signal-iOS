@@ -118,12 +118,12 @@
 	return mostRecentFilteringBlock;
 }
 
-- (YapDatabaseViewBlockType)filteringBlockType
+- (YapDatabaseBlockType)filteringBlockType
 {
 	// This property can be changed from within a readWriteTransaction.
 	// We go through the snapshot queue to ensure we're fetching the most recent value.
 	
-	__block YapDatabaseViewBlockType mostRecentFilteringBlockType = 0;
+	__block YapDatabaseBlockType mostRecentFilteringBlockType = 0;
 	dispatch_block_t block = ^{
 		
 		mostRecentFilteringBlockType = filteringBlockType;
@@ -226,18 +226,19 @@
  * Used by YapDatabaseFilteredViewConnection to fetch & cache the values for a readWriteTransaction.
 **/
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
           filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr
+      filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr
 {
 	__block YapDatabaseViewGroupingBlock  mostRecentGroupingBlock  = NULL;
 	__block YapDatabaseViewSortingBlock   mostRecentSortingBlock   = NULL;
 	__block YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
-	__block YapDatabaseViewBlockType mostRecentGroupingBlockType  = 0;
-	__block YapDatabaseViewBlockType mostRecentSortingBlockType   = 0;
-	__block YapDatabaseViewBlockType mostRecentFilteringBlockType = 0;
+	
+	__block YapDatabaseBlockType mostRecentGroupingBlockType  = 0;
+	__block YapDatabaseBlockType mostRecentSortingBlockType   = 0;
+	__block YapDatabaseBlockType mostRecentFilteringBlockType = 0;
 	
 	dispatch_block_t block = ^{
 	

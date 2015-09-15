@@ -38,7 +38,7 @@
 */
 
 @property (nonatomic, strong, readonly) YapDatabaseFullTextSearchBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseFullTextSearchBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
 
 /**
  * The versionTag assists in making changes to the extension.

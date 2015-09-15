@@ -26,11 +26,11 @@
  * So we declare it here, as opposed to within YapDatabaseViewPrivate.
 **/
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
           filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr;
+      filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr;
 
 @end
 
@@ -157,9 +157,9 @@
  * but NOT the versionTag (since it didn't change).
 **/
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
             sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType
 {
 	groupingBlock        = newGroupingBlock;
 	groupingBlockType    = newGroupingBlockType;
@@ -171,7 +171,7 @@
 }
 
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)newFilteringBlock
-	   filteringBlockType:(YapDatabaseViewBlockType)newFilteringBlockType
+	   filteringBlockType:(YapDatabaseBlockType)newFilteringBlockType
                versionTag:(NSString *)newVersionTag
 {
 	filteringBlock        = newFilteringBlock;
@@ -183,11 +183,11 @@
 }
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
           filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr
+      filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr
 {
 	if (!groupingBlock || !sortingBlock || !filteringBlock)
 	{
@@ -198,9 +198,10 @@
 		YapDatabaseViewGroupingBlock  mostRecentGroupingBlock  = NULL;
 		YapDatabaseViewSortingBlock   mostRecentSortingBlock   = NULL;
 		YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
-		YapDatabaseViewBlockType mostRecentGroupingBlockType  = 0;
-		YapDatabaseViewBlockType mostRecentSortingBlockType   = 0;
-		YapDatabaseViewBlockType mostRecentFilteringBlockType = 0;
+		
+		YapDatabaseBlockType mostRecentGroupingBlockType  = 0;
+		YapDatabaseBlockType mostRecentSortingBlockType   = 0;
+		YapDatabaseBlockType mostRecentFilteringBlockType = 0;
 		
 		BOOL needsGroupingBlock = (groupingBlock == NULL);
 		BOOL needsSortingBlock = (sortingBlock == NULL);
@@ -239,9 +240,9 @@
  * Overrides method in YapDatabaseView
 **/
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
 {
 	[self getGroupingBlock:groupingBlockPtr
 	     groupingBlockType:groupingBlockTypePtr
@@ -252,7 +253,7 @@
 }
 
 - (void)getFilteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-       filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr
+       filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr
 {
 	[self getGroupingBlock:NULL
 	     groupingBlockType:NULL

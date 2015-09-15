@@ -12,7 +12,7 @@
 	
 	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseFullTextSearchBlockTypeWithKey;
+	handler->blockType = YapDatabaseBlockTypeWithKey;
 	
 	return handler;
 }
@@ -23,7 +23,7 @@
 	
 	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseFullTextSearchBlockTypeWithObject;
+	handler->blockType = YapDatabaseBlockTypeWithObject;
 	
 	return handler;
 }
@@ -34,7 +34,7 @@
 	
 	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseFullTextSearchBlockTypeWithMetadata;
+	handler->blockType = YapDatabaseBlockTypeWithMetadata;
 	
 	return handler;
 }
@@ -45,7 +45,7 @@
 	
 	YapDatabaseFullTextSearchHandler *handler = [[YapDatabaseFullTextSearchHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseFullTextSearchBlockTypeWithRow;
+	handler->blockType = YapDatabaseBlockTypeWithRow;
 	
 	return handler;
 }

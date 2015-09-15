@@ -1,15 +1,5 @@
 #import <Foundation/Foundation.h>
-
-
-/**
- * Specifies the kind of block being used.
-**/
-typedef NS_ENUM(NSInteger, YapDatabaseRTreeIndexBlockType) {
-	YapDatabaseRTreeIndexBlockTypeWithKey,
-	YapDatabaseRTreeIndexBlockTypeWithObject,
-	YapDatabaseRTreeIndexBlockTypeWithMetadata,
-	YapDatabaseRTreeIndexBlockTypeWithRow
-};
+#import "YapDatabaseExtensionTypes.h"
 
 
 /**
@@ -46,6 +36,6 @@ typedef void (^YapDatabaseRTreeIndexWithRowBlock)      \
 + (instancetype)withRowBlock:(YapDatabaseRTreeIndexWithRowBlock)block;
 
 @property (nonatomic, strong, readonly) YapDatabaseRTreeIndexBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseRTreeIndexBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
 
 @end

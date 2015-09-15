@@ -155,8 +155,7 @@
  * NSDate *beginningOfMonday = ...   // Monday at 12:00 AM
  * NSDate *beginningOfTuesday =  ... // Tuesday at 12:00 AM
  *
- * YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
- * YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+ * YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
  *
  *     Purchase *purchase = (Purchase *)object;
  *
@@ -235,7 +234,7 @@
 
 - (NSRange)findRangeInGroup:(NSString *)group
                  usingBlock:(YapDatabaseViewFindBlock)block
-                  blockType:(YapDatabaseViewBlockType)blockType
+                  blockType:(YapDatabaseBlockType)blockType
 __attribute((deprecated("Use method findRangeInGroup:using: instead")));
 
 /**

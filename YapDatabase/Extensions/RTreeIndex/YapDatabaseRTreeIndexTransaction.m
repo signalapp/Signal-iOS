@@ -252,10 +252,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 	// Enumerate the existing rows in the database and populate the indexes
 
 	__unsafe_unretained YapDatabaseRTreeIndex *rTreeIndex = rTreeIndexConnection->rTreeIndex;
-
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = rTreeIndex->options.allowedCollections;
 
-	if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = rTreeIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithKeyBlock rTreeIndexBlock =
 		    (YapDatabaseRTreeIndexWithKeyBlock)rTreeIndex->block;
@@ -287,7 +288,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithObjectBlock rTreeIndexBlock =
 		    (YapDatabaseRTreeIndexWithObjectBlock)rTreeIndex->block;
@@ -320,7 +321,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithMetadataBlock rTreeIndexBlock =
 		    (YapDatabaseRTreeIndexWithMetadataBlock)rTreeIndex->block;
@@ -353,7 +354,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else // if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithRow)
+	else // if (blockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithRowBlock rTreeIndexBlock =
 		    (YapDatabaseRTreeIndexWithRowBlock)rTreeIndex->block;
@@ -669,21 +670,23 @@ static NSString *const ext_key_version_deprecated = @"version";
 
 	// Invoke the block to find out if the object should be included in the index.
 
-	if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = rTreeIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithKeyBlock block =
 		    (YapDatabaseRTreeIndexWithKeyBlock)rTreeIndex->block;
 
 		block(rTreeIndexConnection->blockDict, collection, key);
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithObjectBlock block =
 		    (YapDatabaseRTreeIndexWithObjectBlock)rTreeIndex->block;
 
 		block(rTreeIndexConnection->blockDict, collection, key, object);
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithMetadataBlock block =
 		    (YapDatabaseRTreeIndexWithMetadataBlock)rTreeIndex->block;
@@ -736,21 +739,23 @@ static NSString *const ext_key_version_deprecated = @"version";
 
 	// Invoke the block to find out if the object should be included in the index.
 
-	if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = rTreeIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithKeyBlock block =
 		    (YapDatabaseRTreeIndexWithKeyBlock)rTreeIndex->block;
 
 		block(rTreeIndexConnection->blockDict, collection, key);
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithObjectBlock block =
 		    (YapDatabaseRTreeIndexWithObjectBlock)rTreeIndex->block;
 
 		block(rTreeIndexConnection->blockDict, collection, key, object);
 	}
-	else if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseRTreeIndexWithMetadataBlock block =
 		    (YapDatabaseRTreeIndexWithMetadataBlock)rTreeIndex->block;
@@ -803,10 +808,12 @@ static NSString *const ext_key_version_deprecated = @"version";
 
 	// Invoke the block to find out if the object should be included in the index.
 
+	YapDatabaseBlockType blockType = rTreeIndex->blockType;
+	
 	id metadata = nil;
 
-	if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithKey ||
-	    rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithMetadata)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		// Index values are based on the key or object.
 		// Neither have changed, and thus the values haven't changed.
@@ -818,7 +825,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		// Index values are based on object or row (object+metadata).
 		// Invoke block to see what the new values are.
 
-		if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithObject)
+		if (blockType == YapDatabaseBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseRTreeIndexWithObjectBlock block =
 			  (YapDatabaseRTreeIndexWithObjectBlock)rTreeIndex->block;
@@ -873,10 +880,12 @@ static NSString *const ext_key_version_deprecated = @"version";
 
 	// Invoke the block to find out if the object should be included in the index.
 
+	YapDatabaseBlockType blockType = rTreeIndex->blockType;
+	
 	id object = nil;
 
-	if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithKey ||
-	    rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithObject)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithObject)
 	{
 		// Index values are based on the key or object.
 		// Neither have changed, and thus the values haven't changed.
@@ -888,7 +897,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		// Index values are based on metadata or objectAndMetadata.
 		// Invoke block to see what the new values are.
 
-		if (rTreeIndex->blockType == YapDatabaseRTreeIndexBlockTypeWithMetadata)
+		if (blockType == YapDatabaseBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseRTreeIndexWithMetadataBlock block =
 		        (YapDatabaseRTreeIndexWithMetadataBlock)rTreeIndex->block;

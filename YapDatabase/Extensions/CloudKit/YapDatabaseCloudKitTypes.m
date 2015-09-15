@@ -13,7 +13,7 @@
 	
 	YapDatabaseCloudKitRecordHandler *handler = [[YapDatabaseCloudKitRecordHandler alloc] init];
 	handler->recordBlock = recordBlock;
-	handler->recordBlockType = YapDatabaseCloudKitBlockTypeWithKey;
+	handler->recordBlockType = YapDatabaseBlockTypeWithKey;
 	
 	return handler;
 }
@@ -24,7 +24,7 @@
 	
 	YapDatabaseCloudKitRecordHandler *handler = [[YapDatabaseCloudKitRecordHandler alloc] init];
 	handler->recordBlock = recordBlock;
-	handler->recordBlockType = YapDatabaseCloudKitBlockTypeWithObject;
+	handler->recordBlockType = YapDatabaseBlockTypeWithObject;
 	
 	return handler;
 }
@@ -35,7 +35,7 @@
 	
 	YapDatabaseCloudKitRecordHandler *handler = [[YapDatabaseCloudKitRecordHandler alloc] init];
 	handler->recordBlock = recordBlock;
-	handler->recordBlockType = YapDatabaseCloudKitBlockTypeWithMetadata;
+	handler->recordBlockType = YapDatabaseBlockTypeWithMetadata;
 	
 	return handler;
 }
@@ -46,7 +46,7 @@
 	
 	YapDatabaseCloudKitRecordHandler *handler = [[YapDatabaseCloudKitRecordHandler alloc] init];
 	handler->recordBlock = recordBlock;
-	handler->recordBlockType = YapDatabaseCloudKitBlockTypeWithRow;
+	handler->recordBlockType = YapDatabaseBlockTypeWithRow;
 	
 	return handler;
 }

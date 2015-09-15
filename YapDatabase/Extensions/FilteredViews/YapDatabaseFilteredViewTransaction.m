@@ -221,14 +221,14 @@
 	// Setup the block to properly invoke the filterBlock.
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
 	                       filteringBlockType:&filteringBlockType];
 	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
@@ -238,7 +238,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
@@ -250,7 +250,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
@@ -262,7 +262,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -331,8 +331,9 @@
 	
 	YapDatabaseViewGroupingBlock newGroupingBlock;
 	YapDatabaseViewSortingBlock  newSortingBlock;
-	YapDatabaseViewBlockType newGroupingBlockType;
-	YapDatabaseViewBlockType newSortingBlockType;
+	
+	YapDatabaseBlockType newGroupingBlockType;
+	YapDatabaseBlockType newSortingBlockType;
 	
 	[parentViewConnection getGroupingBlock:&newGroupingBlock
 	                     groupingBlockType:&newGroupingBlockType
@@ -423,14 +424,14 @@
 	// Setup the block to properly invoke the filterBlock.
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
 	                       filteringBlockType:&filteringBlockType];
 	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
@@ -440,7 +441,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
@@ -452,7 +453,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
@@ -464,7 +465,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -632,14 +633,14 @@
 	// Setup the block to properly invoke the filterBlock.
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
 	                       filteringBlockType:&filteringBlockType];
 	
 	BOOL (^InvokeFilterBlock)(NSString *group, int64_t rowid, YapCollectionKey *ck);
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
@@ -649,7 +650,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
@@ -661,7 +662,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, object);
 		};
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filterBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
@@ -673,7 +674,7 @@
 			return filterBlock(databaseTransaction, group, ck.collection, ck.key, metadata);
 		};
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -794,35 +795,35 @@
 	  (YapDatabaseFilteredViewConnection *)viewConnection;
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
 	                       filteringBlockType:&filteringBlockType];
 	
 	BOOL passesFilter;
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key, object);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key, metadata);
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -899,35 +900,35 @@
 	  (YapDatabaseFilteredViewConnection *)viewConnection;
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	[filteredViewConnection getFilteringBlock:&filteringBlock_generic
 	                       filteringBlockType:&filteringBlockType];
 	
 	BOOL passesFilter;
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		YapDatabaseViewFilteringWithKeyBlock filterBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		YapDatabaseViewFilteringWithObjectBlock filterBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key, object);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		YapDatabaseViewFilteringWithMetadataBlock filterBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		passesFilter = filterBlock(databaseTransaction, group, collection, key, metadata);
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		YapDatabaseViewFilteringWithRowBlock filterBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -979,9 +980,10 @@
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic = NULL;
-	YapDatabaseViewBlockType groupingBlockType  = 0;
-	YapDatabaseViewBlockType sortingBlockType   = 0;
-	YapDatabaseViewBlockType filteringBlockType = 0;
+	
+	YapDatabaseBlockType groupingBlockType  = 0;
+	YapDatabaseBlockType sortingBlockType   = 0;
+	YapDatabaseBlockType filteringBlockType = 0;
 	
 	[filteredViewConnection getGroupingBlock:NULL
 	                       groupingBlockType:&groupingBlockType
@@ -993,11 +995,11 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                           groupingBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseBlockTypeWithRow ||
+	                           groupingBlockType == YapDatabaseBlockTypeWithObject;
 	
-	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                          sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseBlockTypeWithRow ||
+	                          sortingBlockType == YapDatabaseBlockTypeWithObject;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -1028,8 +1030,8 @@
 		return;
 	}
 	
-	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                            filteringBlockType == YapDatabaseViewBlockTypeWithObject;
+	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseBlockTypeWithRow ||
+	                            filteringBlockType == YapDatabaseBlockTypeWithObject;
 	
 	if (!groupMayHaveChanged && !sortMayHaveChanged && !filterMayHaveChanged)
 	{
@@ -1066,21 +1068,21 @@
 	BOOL passesFilter;
 	id metadata = nil;
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
 		
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key, object);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
@@ -1088,7 +1090,7 @@
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key, metadata);
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -1104,8 +1106,8 @@
 		
 		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
-		BOOL sortingBlockNeedsMetadata = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                                 sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+		BOOL sortingBlockNeedsMetadata = sortingBlockType == YapDatabaseBlockTypeWithRow ||
+		                                 sortingBlockType == YapDatabaseBlockTypeWithMetadata;
 		if (sortingBlockNeedsMetadata && metadata == nil)
 		{
 			metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1148,9 +1150,10 @@
 	  (YapDatabaseFilteredView *)viewConnection->view;
 	
 	YapDatabaseViewFilteringBlock filteringBlock_generic = NULL;
-	YapDatabaseViewBlockType groupingBlockType  = 0;
-	YapDatabaseViewBlockType sortingBlockType   = 0;
-	YapDatabaseViewBlockType filteringBlockType = 0;
+	
+	YapDatabaseBlockType groupingBlockType  = 0;
+	YapDatabaseBlockType sortingBlockType   = 0;
+	YapDatabaseBlockType filteringBlockType = 0;
 	
 	[filteredViewConnection getGroupingBlock:NULL
 	                       groupingBlockType:&groupingBlockType
@@ -1162,11 +1165,11 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                           groupingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL groupMayHaveChanged = groupingBlockType == YapDatabaseBlockTypeWithRow ||
+	                           groupingBlockType == YapDatabaseBlockTypeWithMetadata;
 	
-	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                          sortingBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL sortMayHaveChanged = sortingBlockType == YapDatabaseBlockTypeWithRow ||
+	                          sortingBlockType == YapDatabaseBlockTypeWithMetadata;
 	
 	// Instead of going to the groupingBlock,
 	// just ask the parentViewTransaction what the last group was.
@@ -1197,8 +1200,8 @@
 		return;
 	}
 	
-	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseViewBlockTypeWithRow ||
-	                            filteringBlockType == YapDatabaseViewBlockTypeWithMetadata;
+	BOOL filterMayHaveChanged = filteringBlockType == YapDatabaseBlockTypeWithRow ||
+	                            filteringBlockType == YapDatabaseBlockTypeWithMetadata;
 	
 	if (!groupMayHaveChanged && !sortMayHaveChanged && !filterMayHaveChanged)
 	{
@@ -1235,14 +1238,14 @@
 	BOOL passesFilter;
 	id object = nil;
 	
-	if (filteringBlockType == YapDatabaseViewBlockTypeWithKey)
+	if (filteringBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithKeyBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithKeyBlock)filteringBlock_generic;
 		
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithObject)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithObjectBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithObjectBlock)filteringBlock_generic;
@@ -1250,14 +1253,14 @@
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key, object);
 	}
-	else if (filteringBlockType == YapDatabaseViewBlockTypeWithMetadata)
+	else if (filteringBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithMetadataBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithMetadataBlock)filteringBlock_generic;
 		
 		passesFilter = filteringBlock(databaseTransaction, group, collection, key, metadata);
 	}
-	else // if (filteringBlockType == YapDatabaseViewBlockTypeWithRow)
+	else // if (filteringBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseViewFilteringWithRowBlock filteringBlock =
 		  (YapDatabaseViewFilteringWithRowBlock)filteringBlock_generic;
@@ -1273,8 +1276,8 @@
 		
 		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 		
-		BOOL sortingBlockNeedsObject = sortingBlockType == YapDatabaseViewBlockTypeWithRow ||
-		                               sortingBlockType == YapDatabaseViewBlockTypeWithObject;
+		BOOL sortingBlockNeedsObject = sortingBlockType == YapDatabaseBlockTypeWithRow ||
+		                               sortingBlockType == YapDatabaseBlockTypeWithObject;
 		if (sortingBlockNeedsObject && object == nil)
 		{
 			object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];

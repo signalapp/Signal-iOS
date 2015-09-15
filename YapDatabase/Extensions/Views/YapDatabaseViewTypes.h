@@ -1,16 +1,8 @@
 #import <Foundation/Foundation.h>
+#import "YapDatabaseExtensionTypes.h"
 
 @class YapDatabaseReadTransaction;
 
-/**
- * Corresponds to the different type of blocks supported by YapDatabaseView.
-**/
-typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
-	YapDatabaseViewBlockTypeWithKey,
-	YapDatabaseViewBlockTypeWithObject,
-	YapDatabaseViewBlockTypeWithMetadata,
-	YapDatabaseViewBlockTypeWithRow
-};
 
 /**
  * The grouping block handles both filtering and grouping.
@@ -29,16 +21,16 @@ typedef NS_ENUM(NSInteger, YapDatabaseViewBlockType) {
 
 typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock) \
+typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key);
 
-typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock) \
+typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object);
 
-typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock) \
+typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id metadata);
 
-typedef NSString* (^YapDatabaseViewGroupingWithRowBlock) \
+typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)groupingBlock;
@@ -47,7 +39,7 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock) \
 + (instancetype)withRowBlock:(YapDatabaseViewGroupingWithRowBlock)groupingBlock;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType groupingBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType groupingBlockType;
 
 @end
 
@@ -103,24 +95,24 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock) \
 
 typedef id YapDatabaseViewSortingBlock; // One of the YapDatabaseViewSortingX types below.
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock)                       \
-                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
-                      NSString *collection1, NSString *key1,                           \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithKeyBlock)
+                 (YapDatabaseReadTransaction *transaction, NSString *group,
+                      NSString *collection1, NSString *key1,
                       NSString *collection2, NSString *key2);
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock)                    \
-                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
-                      NSString *collection1, NSString *key1, id object1,               \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithObjectBlock)
+                 (YapDatabaseReadTransaction *transaction, NSString *group,
+                      NSString *collection1, NSString *key1, id object1,
                       NSString *collection2, NSString *key2, id object2);
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock)                  \
-                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
-                      NSString *collection1, NSString *key1, id metadata,              \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithMetadataBlock)
+                 (YapDatabaseReadTransaction *transaction, NSString *group,
+                      NSString *collection1, NSString *key1, id metadata,
                       NSString *collection2, NSString *key2, id metadata2);
 
-typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)                       \
-                 (YapDatabaseReadTransaction *transaction, NSString *group,            \
-                      NSString *collection1, NSString *key1, id object1, id metadata1, \
+typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)
+                 (YapDatabaseReadTransaction *transaction, NSString *group,
+                      NSString *collection1, NSString *key1, id object1, id metadata1,
                       NSString *collection2, NSString *key2, id object2, id metadata2);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewSortingWithKeyBlock)sortingBlock;
@@ -129,7 +121,7 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)                
 + (instancetype)withRowBlock:(YapDatabaseViewSortingWithRowBlock)sortingBlock;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType sortingBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType sortingBlockType;
 
 @end
 
@@ -186,16 +178,16 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)                
 
 typedef id YapDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
 
-typedef NSComparisonResult (^YapDatabaseViewFindWithKeyBlock)      \
+typedef NSComparisonResult (^YapDatabaseViewFindWithKeyBlock)
                                  (NSString *collection, NSString *key);
 
-typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)   \
+typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)
                                  (NSString *collection, NSString *key, id object);
 
-typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock) \
+typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock)
                                  (NSString *collection, NSString *key, id metadata);
 
-typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
+typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)
                                  (NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewFindWithKeyBlock)findBlock;
@@ -204,6 +196,6 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 + (instancetype)withRowBlock:(YapDatabaseViewFindWithRowBlock)findBlock;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFindBlock findBlock;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType findBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType findBlockType;
 
 @end

@@ -1558,7 +1558,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * This method is called from newConnection, either above or from a subclass.
+ * This method is called from [self newConnection].
 **/
 - (void)addConnection:(YapDatabaseConnection *)connection
 {

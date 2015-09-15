@@ -464,8 +464,8 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	void (^RestoreRecordBlock)(int64_t rowid, CKRecord **inOutRecord, YDBCKRecordInfo *recordInfo);
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	if (recordBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
@@ -479,7 +479,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			}
 		};
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	else if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
@@ -495,7 +495,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			}
 		};
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	else if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
@@ -511,7 +511,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			}
 		};
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -619,10 +619,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
 	recordInfo.versionInfo = parentConnection->parent->versionInfo;
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	if (recordBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
@@ -656,7 +656,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	else if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
@@ -690,7 +690,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	else if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
@@ -724,7 +724,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -801,10 +801,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		}
 	};
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	if (recordBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
@@ -838,7 +838,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	else if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
@@ -872,7 +872,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	else if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
@@ -906,7 +906,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -3208,30 +3208,30 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	YDBCKRecordInfo *recordInfo = [[YDBCKRecordInfo alloc] init];
 	CKRecord *record = nil;
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	if (recordBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key);
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	else if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, object);
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	else if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, metadata);
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -3307,30 +3307,30 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Invoke the recordBlock.
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey)
+	if (recordBlockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithKeyBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithKeyBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key);
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	else if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, object);
 	}
-	else if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	else if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, metadata);
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -3372,10 +3372,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		return;
 	}
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey     ||
-	    recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata )
+	if (recordBlockType == YapDatabaseBlockTypeWithKey     ||
+	    recordBlockType == YapDatabaseBlockTypeWithMetadata )
 	{
 		// Nothing to do.
 		// The collection/key/metadata hasn't changed, so the CKRecord hasn't changed.
@@ -3414,14 +3414,14 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Invoke the recordBlock.
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithObject)
+	if (recordBlockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithObjectBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithObjectBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, object);
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;
@@ -3465,10 +3465,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		return;
 	}
 	
-	YapDatabaseCloudKitBlockType recordBlockType = parentConnection->parent->recordBlockType;
+	YapDatabaseBlockType recordBlockType = parentConnection->parent->recordBlockType;
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithKey   ||
-		recordBlockType == YapDatabaseCloudKitBlockTypeWithObject )
+	if (recordBlockType == YapDatabaseBlockTypeWithKey   ||
+		recordBlockType == YapDatabaseBlockTypeWithObject )
 	{
 		// Nothing to do.
 		// The collection/key/object hasn't changed, so the CKRecord hasn't changed.
@@ -3507,14 +3507,14 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	
 	// Invoke the recordBlock.
 	
-	if (recordBlockType == YapDatabaseCloudKitBlockTypeWithMetadata)
+	if (recordBlockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithMetadataBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithMetadataBlock)parentConnection->parent->recordBlock;
 		
 		recordBlock(databaseTransaction, &record, recordInfo, collection, key, metadata);
 	}
-	else // if (recordBlockType == YapDatabaseCloudKitBlockTypeWithRow)
+	else // if (recordBlockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseCloudKitRecordWithRowBlock recordBlock =
 		  (YapDatabaseCloudKitRecordWithRowBlock)parentConnection->parent->recordBlock;

@@ -12,7 +12,7 @@
 
 	YapDatabaseRTreeIndexHandler *handler = [[YapDatabaseRTreeIndexHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseRTreeIndexBlockTypeWithKey;
+	handler->blockType = YapDatabaseBlockTypeWithKey;
 
 	return handler;
 }
@@ -23,7 +23,7 @@
 
 	YapDatabaseRTreeIndexHandler *handler = [[YapDatabaseRTreeIndexHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseRTreeIndexBlockTypeWithObject;
+	handler->blockType = YapDatabaseBlockTypeWithObject;
 
 	return handler;
 }
@@ -34,7 +34,7 @@
 
 	YapDatabaseRTreeIndexHandler *handler = [[YapDatabaseRTreeIndexHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseRTreeIndexBlockTypeWithMetadata;
+	handler->blockType = YapDatabaseBlockTypeWithMetadata;
 
 	return handler;
 }
@@ -45,7 +45,7 @@
 
 	YapDatabaseRTreeIndexHandler *handler = [[YapDatabaseRTreeIndexHandler alloc] init];
 	handler->block = block;
-	handler->blockType = YapDatabaseRTreeIndexBlockTypeWithRow;
+	handler->blockType = YapDatabaseBlockTypeWithRow;
 
 	return handler;
 }

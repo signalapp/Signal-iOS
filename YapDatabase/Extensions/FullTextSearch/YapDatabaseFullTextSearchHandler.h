@@ -1,15 +1,5 @@
 #import <Foundation/Foundation.h>
-
-
-/**
- * Specifies the kind of block being used.
-**/
-typedef NS_ENUM(NSInteger, YapDatabaseFullTextSearchBlockType) {
-	YapDatabaseFullTextSearchBlockTypeWithKey,
-	YapDatabaseFullTextSearchBlockTypeWithObject,
-	YapDatabaseFullTextSearchBlockTypeWithMetadata,
-	YapDatabaseFullTextSearchBlockTypeWithRow
-};
+#import "YapDatabaseExtensionTypes.h"
 
 /**
  * The handler block handles extracting the column values for indexing by the FTS module.
@@ -44,6 +34,6 @@ typedef void (^YapDatabaseFullTextSearchWithRowBlock)      \
 + (instancetype)withRowBlock:(YapDatabaseFullTextSearchWithRowBlock)block;
 
 @property (nonatomic, strong, readonly) YapDatabaseFullTextSearchBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseFullTextSearchBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
 
 @end

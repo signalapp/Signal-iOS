@@ -36,9 +36,9 @@
  * So we declare it here, as opposed to within YapDatabaseViewPrivate.
 **/
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
 
 @end
 
@@ -992,9 +992,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
             sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType
               versionTag:(NSString *)newVersionTag
 {
 	groupingBlock        = newGroupingBlock;
@@ -1010,9 +1010,9 @@
 }
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
 {
 	if (!groupingBlock || !sortingBlock)
 	{
@@ -1020,8 +1020,9 @@
 		
 		YapDatabaseViewGroupingBlock mostRecentGroupingBlock = NULL;
 		YapDatabaseViewSortingBlock  mostRecentSortingBlock  = NULL;
-		YapDatabaseViewBlockType mostRecentGroupingBlockType = 0;
-		YapDatabaseViewBlockType mostRecentSortingBlockType  = 0;
+		
+		YapDatabaseBlockType mostRecentGroupingBlockType = 0;
+		YapDatabaseBlockType mostRecentSortingBlockType  = 0;
 		
 		BOOL needsGroupingBlock = (groupingBlock == NULL);
 		BOOL needsSortingBlock = (sortingBlock == NULL);
@@ -1048,7 +1049,7 @@
 }
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
 {
 	[self getGroupingBlock:groupingBlockPtr
 	     groupingBlockType:groupingBlockTypePtr
@@ -1057,7 +1058,7 @@
 }
 
 - (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+       sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
 {
 	[self getGroupingBlock:NULL
 	     groupingBlockType:NULL
@@ -1065,8 +1066,8 @@
 	      sortingBlockType:sortingBlockTypePtr];
 }
 
-- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
-            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+- (void)getGroupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
 {
 	[self getGroupingBlock:NULL
 	     groupingBlockType:groupingBlockTypePtr

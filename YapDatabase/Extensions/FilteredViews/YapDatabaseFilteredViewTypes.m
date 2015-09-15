@@ -1,5 +1,6 @@
 #import "YapDatabaseFilteredViewTypes.h"
 
+
 @implementation YapDatabaseViewFiltering
 
 @synthesize filteringBlock = filteringBlock;
@@ -11,7 +12,7 @@
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
 	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseViewBlockTypeWithKey;
+	filtering->filteringBlockType = YapDatabaseBlockTypeWithKey;
 	
 	return filtering;
 }
@@ -22,7 +23,7 @@
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
 	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseViewBlockTypeWithObject;
+	filtering->filteringBlockType = YapDatabaseBlockTypeWithObject;
 	
 	return filtering;
 }
@@ -33,7 +34,7 @@
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
 	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseViewBlockTypeWithMetadata;
+	filtering->filteringBlockType = YapDatabaseBlockTypeWithMetadata;
 	
 	return filtering;
 }
@@ -44,7 +45,7 @@
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
 	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseViewBlockTypeWithRow;
+	filtering->filteringBlockType = YapDatabaseBlockTypeWithRow;
 	
 	return filtering;
 }

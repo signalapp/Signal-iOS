@@ -227,11 +227,13 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	__unsafe_unretained YapDatabaseFullTextSearch *fts = ftsConnection->fts;
 	
-	BOOL needsObject = fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject ||
-	                   fts->blockType == YapDatabaseFullTextSearchBlockTypeWithRow;
+	YapDatabaseBlockType blockType = fts->blockType;
 	
-	BOOL needsMetadata = fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata ||
-	                     fts->blockType == YapDatabaseFullTextSearchBlockTypeWithRow;
+	BOOL needsObject = blockType == YapDatabaseBlockTypeWithObject ||
+	                   blockType == YapDatabaseBlockTypeWithRow;
+	
+	BOOL needsMetadata = blockType == YapDatabaseBlockTypeWithMetadata ||
+	                     blockType == YapDatabaseBlockTypeWithRow;
 	
 	if (needsObject && needsMetadata)
 	{
@@ -555,21 +557,23 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
-	if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithKey)
+	YapDatabaseBlockType blockType = fts->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithKeyBlock block =
 		    (YapDatabaseFullTextSearchWithKeyBlock)fts->block;
 		
 		block(ftsConnection->blockDict, collection, key);
 	}
-	else if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithObjectBlock block =
 		    (YapDatabaseFullTextSearchWithObjectBlock)fts->block;
 		
 		block(ftsConnection->blockDict, collection, key, object);
 	}
-	else if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithMetadataBlock block =
 		    (YapDatabaseFullTextSearchWithMetadataBlock)fts->block;
@@ -616,21 +620,23 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
-	if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithKey)
+	YapDatabaseBlockType blockType = fts->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithKeyBlock block =
 		    (YapDatabaseFullTextSearchWithKeyBlock)fts->block;
 		
 		block(ftsConnection->blockDict, collection, key);
 	}
-	else if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithObjectBlock block =
 		    (YapDatabaseFullTextSearchWithObjectBlock)fts->block;
 		
 		block(ftsConnection->blockDict, collection, key, object);
 	}
-	else if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithMetadataBlock block =
 		    (YapDatabaseFullTextSearchWithMetadataBlock)fts->block;
@@ -677,10 +683,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
+	YapDatabaseBlockType blockType = fts->blockType;
+	
 	id metadata = nil;
 	
-	if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithKey ||
-	    fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		// Index values are based on the key or metadata.
 		// Neither have changed, and thus the values haven't changed.
@@ -692,7 +700,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		// Index values are based on object or row (object+metadata).
 		// Invoke block to see what the new values are.
 		
-		if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject)
+		if (blockType == YapDatabaseBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseFullTextSearchWithObjectBlock block =
 		        (YapDatabaseFullTextSearchWithObjectBlock)fts->block;
@@ -741,10 +749,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
+	YapDatabaseBlockType blockType = fts->blockType;
+	
 	id object = nil;
 	
-	if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithKey ||
-	    fts->blockType == YapDatabaseFullTextSearchBlockTypeWithObject)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithObject)
 	{
 		// Index values are based on the key or object.
 		// Neither have changed, and thus the values haven't changed.
@@ -756,7 +766,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		// Index values are based on metadata or row (object+metadata).
 		// Invoke block to see what the new values are.
 		
-		if (fts->blockType == YapDatabaseFullTextSearchBlockTypeWithMetadata)
+		if (blockType == YapDatabaseBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseFullTextSearchWithMetadataBlock block =
 		        (YapDatabaseFullTextSearchWithMetadataBlock)fts->block;

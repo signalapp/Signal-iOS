@@ -24,7 +24,7 @@
 @public
 	
 	YapDatabaseFullTextSearchBlock block;
-	YapDatabaseFullTextSearchBlockType blockType;
+	YapDatabaseBlockType blockType;
 	
 	NSOrderedSet *columnNames;
 	NSDictionary *options;

@@ -258,12 +258,12 @@
 	return mostRecentSortingBlock;
 }
 
-- (YapDatabaseViewBlockType)groupingBlockType
+- (YapDatabaseBlockType)groupingBlockType
 {
 	// This property can be changed from within a readWriteTransaction.
 	// We go through the snapshot queue to ensure we're fetching the most recent value.
 	
-	__block YapDatabaseViewBlockType mostRecentGroupingBlockType = 0;
+	__block YapDatabaseBlockType mostRecentGroupingBlockType = 0;
 	dispatch_block_t block = ^{
 		
 		mostRecentGroupingBlockType = groupingBlockType;
@@ -285,12 +285,12 @@
 	return mostRecentGroupingBlockType;
 }
 
-- (YapDatabaseViewBlockType)sortingBlockType
+- (YapDatabaseBlockType)sortingBlockType
 {
 	// This property can be changed from within a readWriteTransaction.
 	// We go through the snapshot queue to ensure we're fetching the most recent value.
 	
-	__block YapDatabaseViewBlockType mostRecentSortingBlockType = 0;
+	__block YapDatabaseBlockType mostRecentSortingBlockType = 0;
 	dispatch_block_t block = ^{
 		
 		mostRecentSortingBlockType = sortingBlockType;
@@ -453,14 +453,15 @@
  * Used by YapDatabaseViewConnection to fetch & cache the values for a readWriteTransaction.
 **/
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
 {
 	__block YapDatabaseViewGroupingBlock mostRecentGroupingBlock = NULL;
 	__block YapDatabaseViewSortingBlock  mostRecentSortingBlock  = NULL;
-	__block YapDatabaseViewBlockType mostRecentGroupingBlockType = 0;
-	__block YapDatabaseViewBlockType mostRecentSortingBlockType  = 0;
+	
+	__block YapDatabaseBlockType mostRecentGroupingBlockType = 0;
+	__block YapDatabaseBlockType mostRecentSortingBlockType  = 0;
 	
 	dispatch_block_t block = ^{
 	

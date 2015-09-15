@@ -261,9 +261,9 @@
  * but NOT the versionTag (since it didn't change).
 **/
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
             sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType
 {
 	groupingBlock     = newGroupingBlock;
 	groupingBlockType = newGroupingBlockType;

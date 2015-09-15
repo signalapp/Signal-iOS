@@ -286,10 +286,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 	// Enumerate the existing rows in the database and populate the indexes
 	
 	__unsafe_unretained YapDatabaseSecondaryIndex *secondaryIndex = secondaryIndexConnection->secondaryIndex;
-	
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = secondaryIndex->options.allowedCollections;
 	
-	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = secondaryIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithKeyBlock)secondaryIndex->block;
@@ -321,7 +322,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
@@ -354,7 +355,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;
@@ -387,7 +388,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:enumBlock];
 		}
 	}
-	else // if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithRow)
+	else // if (blockType == YapDatabaseBlockTypeWithRow)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock secondaryIndexBlock =
 		    (YapDatabaseSecondaryIndexWithRowBlock)secondaryIndex->block;
@@ -754,21 +755,23 @@ static NSString *const ext_key_version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
-	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = secondaryIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock block =
 		    (YapDatabaseSecondaryIndexWithKeyBlock)secondaryIndex->block;
 		
 		block(secondaryIndexConnection->blockDict, collection, key);
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
 		    (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
 		
 		block(secondaryIndexConnection->blockDict, collection, key, object);
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock block =
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;
@@ -821,21 +824,23 @@ static NSString *const ext_key_version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
-	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey)
+	YapDatabaseBlockType blockType = secondaryIndex->blockType;
+	
+	if (blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock block =
 		    (YapDatabaseSecondaryIndexWithKeyBlock)secondaryIndex->block;
 		
 		block(secondaryIndexConnection->blockDict, collection, key);
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
 		    (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
 		
 		block(secondaryIndexConnection->blockDict, collection, key, object);
 	}
-	else if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock block =
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;
@@ -888,10 +893,12 @@ static NSString *const ext_key_version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
+	YapDatabaseBlockType blockType = secondaryIndex->blockType;
+	
 	id metadata = nil;
 	
-	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey ||
-	    secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		// Index values are based on the key or object.
 		// Neither have changed, and thus the values haven't changed.
@@ -903,7 +910,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		// Index values are based on object or row (object+metadata).
 		// Invoke block to see what the new values are.
 		
-		if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+		if (blockType == YapDatabaseBlockTypeWithObject)
 		{
 			__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
 			  (YapDatabaseSecondaryIndexWithObjectBlock)secondaryIndex->block;
@@ -958,10 +965,12 @@ static NSString *const ext_key_version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
+	YapDatabaseBlockType blockType = secondaryIndex->blockType;
+	
 	id object = nil;
 	
-	if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithKey ||
-	    secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithObject)
+	if (blockType == YapDatabaseBlockTypeWithKey ||
+	    blockType == YapDatabaseBlockTypeWithObject)
 	{
 		// Index values are based on the key or object.
 		// Neither have changed, and thus the values haven't changed.
@@ -973,7 +982,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		// Index values are based on metadata or objectAndMetadata.
 		// Invoke block to see what the new values are.
 		
-		if (secondaryIndex->blockType == YapDatabaseSecondaryIndexBlockTypeWithMetadata)
+		if (blockType == YapDatabaseBlockTypeWithMetadata)
 		{
 			__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock block =
 		        (YapDatabaseSecondaryIndexWithMetadataBlock)secondaryIndex->block;

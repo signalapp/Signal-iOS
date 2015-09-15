@@ -30,7 +30,7 @@ static NSString *const changeset_key_filteringBlockType = @"filteringBlockType";
 @private
 	
 	YapDatabaseViewFilteringBlock filteringBlock;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 @public
 	
@@ -47,28 +47,28 @@ static NSString *const changeset_key_filteringBlockType = @"filteringBlockType";
 @protected
 	
 	YapDatabaseViewFilteringBlock filteringBlock;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseBlockType filteringBlockType;
 	
 	BOOL filteringBlockChanged;
 }
 
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
             sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType;
+        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType;
 
 - (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)newFilteringBlock
-	   filteringBlockType:(YapDatabaseViewBlockType)newFilteringBlockType
+	   filteringBlockType:(YapDatabaseBlockType)newFilteringBlockType
                versionTag:(NSString *)newVersionTag;
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-	   groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+	   groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
 			sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-		sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
+		sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
           filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr;
+      filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr;
 
 - (void)getFilteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-       filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr;
+       filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr;
 
 @end

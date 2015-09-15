@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
+
 #import "YapDatabaseViewTypes.h"
+#import "YapDatabaseExtensionTypes.h"
 
 /**
  * The filtering block removes items from this view that are in the parent view.
@@ -45,6 +47,6 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)                       \
 + (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)filteringBlock;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType filteringBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType filteringBlockType;
 
 @end

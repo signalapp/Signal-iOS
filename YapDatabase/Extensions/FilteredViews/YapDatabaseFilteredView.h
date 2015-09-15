@@ -53,6 +53,6 @@
 @property (nonatomic, strong, readonly) NSString *parentViewName;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
-@property (nonatomic, assign, readonly) YapDatabaseViewBlockType filteringBlockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType filteringBlockType;
 
 @end

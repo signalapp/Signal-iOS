@@ -50,7 +50,7 @@
 	YapDatabaseRTreeIndexOptions *options;
 
 	YapDatabaseRTreeIndexBlock block;
-	YapDatabaseRTreeIndexBlockType blockType;
+	YapDatabaseBlockType blockType;
 
 	NSString *versionTag;
 

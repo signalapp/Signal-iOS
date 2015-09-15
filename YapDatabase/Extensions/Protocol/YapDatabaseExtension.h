@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+#import "YapDatabaseExtensionTypes.h"
 #import "YapDatabaseExtensionConnection.h"
 #import "YapDatabaseExtensionTransaction.h"
 

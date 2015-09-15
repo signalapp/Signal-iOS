@@ -2715,7 +2715,7 @@
 		int min = 0;
 		int max = 5;
 		
-		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
 		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
@@ -2742,7 +2742,7 @@
 		int min = 11;
 		int max = 54;
 		
-		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
 		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
@@ -2769,7 +2769,7 @@
 		int min = 50;
 		int max = 100;
 		
-		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
 		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];
@@ -2796,7 +2796,7 @@
 		int min = 40;
 		int max = 40;
 		
-		YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
+		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
 		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
 			
 			int value = [(NSNumber *)object intValue];

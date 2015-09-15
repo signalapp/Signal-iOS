@@ -50,7 +50,7 @@
 	YapDatabaseSecondaryIndexOptions *options;
 	
 	YapDatabaseSecondaryIndexBlock block;
-	YapDatabaseSecondaryIndexBlockType blockType;
+	YapDatabaseBlockType blockType;
 	
 	NSString *versionTag;
 	

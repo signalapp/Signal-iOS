@@ -58,7 +58,7 @@ static NSString *const changeset_key_changes           = @"changes";
 
 @interface YapDatabaseViewFind ()
 
-+ (instancetype)withBlock:(YapDatabaseViewFindBlock)block blockType:(YapDatabaseViewBlockType)blockType;
++ (instancetype)withBlock:(YapDatabaseViewFindBlock)block blockType:(YapDatabaseBlockType)blockType;
 
 @end
 
@@ -74,8 +74,8 @@ static NSString *const changeset_key_changes           = @"changes";
 	YapDatabaseViewGroupingBlock groupingBlock;
 	YapDatabaseViewSortingBlock sortingBlock;
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseBlockType groupingBlockType;
+	YapDatabaseBlockType sortingBlockType;
 	
 	NSString *versionTag;
 	
@@ -106,8 +106,8 @@ static NSString *const changeset_key_changes           = @"changes";
 	YapDatabaseViewGroupingBlock groupingBlock;
 	YapDatabaseViewSortingBlock sortingBlock;
 	
-	YapDatabaseViewBlockType groupingBlockType;
-	YapDatabaseViewBlockType sortingBlockType;
+	YapDatabaseBlockType groupingBlockType;
+	YapDatabaseBlockType sortingBlockType;
 	
 	NSString *versionTag;
 	
@@ -165,24 +165,24 @@ static NSString *const changeset_key_changes           = @"changes";
 - (sqlite3_stmt *)pageTable_removeAllStatement;
 
 - (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
+       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
             sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType
+        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType
               versionTag:(NSString *)newVersionTag;
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
             sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
 
 - (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr;
+       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr;
 
 - (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-       sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+       sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
 
-- (void)getGroupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
-            sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr;
+- (void)getGroupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
+            sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
 
 @end
 

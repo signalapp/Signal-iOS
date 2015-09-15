@@ -69,7 +69,7 @@ static NSString *const changeset_key_reset            = @"reset";
 @public
 	
 	YapDatabaseCloudKitRecordBlock recordBlock;
-	YapDatabaseCloudKitBlockType recordBlockType;
+	YapDatabaseBlockType recordBlockType;
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock;
 	YapDatabaseCloudKitOperationErrorBlock opErrorBlock;
