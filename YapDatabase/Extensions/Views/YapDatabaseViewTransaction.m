@@ -4525,17 +4525,6 @@
 }
 
 /**
- * This method is deprecated.
- * Use findRangeInGroup:using: instead.
-**/
-- (NSRange)findRangeInGroup:(NSString *)group
-                 usingBlock:(YapDatabaseViewFindBlock)block
-                  blockType:(YapDatabaseBlockType)blockType
-{
-	return [self findRangeInGroup:group using:[YapDatabaseViewFind withBlock:block blockType:blockType]];
-}
-
-/**
  * This method uses a binary search algorithm to find an item within the view that matches the given criteria.
  * 
  * It works similarly to findRangeInGroup:using:, but immediately returns once a single match has been found.

@@ -265,32 +265,4 @@
 	return find;
 }
 
-// Helper method for supporting deprecated methods.
-// This method will disappear in the future.
-+ (instancetype)withBlock:(YapDatabaseViewFindBlock)block blockType:(YapDatabaseBlockType)blockType
-{
-	YapDatabaseViewFind *find = nil;
-	switch (blockType)
-	{
-		case YapDatabaseBlockTypeWithKey      : {
-			find = [YapDatabaseViewFind withKeyBlock:(YapDatabaseViewFindWithKeyBlock)block];
-			break;
-		}
-		case YapDatabaseBlockTypeWithObject   : {
-			find = [YapDatabaseViewFind withObjectBlock:(YapDatabaseViewFindWithObjectBlock)block];
-			break;
-		}
-		case YapDatabaseBlockTypeWithMetadata : {
-			find = [YapDatabaseViewFind withMetadataBlock:(YapDatabaseViewFindWithMetadataBlock)block];
-			break;
-		}
-		case YapDatabaseBlockTypeWithRow      : {
-			find = [YapDatabaseViewFind withRowBlock:(YapDatabaseViewFindWithRowBlock)block];
-			break;
-		}
-	}
-	
-	return find;
-}
-
 @end

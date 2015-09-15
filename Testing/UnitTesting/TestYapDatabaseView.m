@@ -2715,9 +2715,9 @@
 		int min = 0;
 		int max = 5;
 		
-		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
-			
+		YapDatabaseViewFind *find = [YapDatabaseViewFind withObjectBlock:
+		    ^(NSString *collection, NSString *key, id object)
+		{
 			int value = [(NSNumber *)object intValue];
 			
 			if (value < min)
@@ -2726,9 +2726,9 @@
 				return NSOrderedDescending;
 			
 			return NSOrderedSame;
-		};
+		}];
 		
-		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" using:find];
 		
 		NSUInteger location = (max > min) ? min : NSNotFound;
 		NSUInteger length = (max > min) ? (max - min) : 0;
@@ -2742,9 +2742,9 @@
 		int min = 11;
 		int max = 54;
 		
-		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
-			
+		YapDatabaseViewFind *find = [YapDatabaseViewFind withObjectBlock:
+		    ^(NSString *collection, NSString *key, id object)
+		{
 			int value = [(NSNumber *)object intValue];
 			
 			if (value < min)
@@ -2753,9 +2753,9 @@
 				return NSOrderedDescending;
 			
 			return NSOrderedSame;
-		};
+		}];
 		
-		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" using:find];
 		
 		NSUInteger location = (max > min) ? min : NSNotFound;
 		NSUInteger length = (max > min) ? (max - min) : 0;
@@ -2769,9 +2769,9 @@
 		int min = 50;
 		int max = 100;
 		
-		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
-			
+		YapDatabaseViewFind *find = [YapDatabaseViewFind withObjectBlock:
+		    ^(NSString *collection, NSString *key, id object)
+		{
 			int value = [(NSNumber *)object intValue];
 			
 			if (value < min)
@@ -2780,9 +2780,9 @@
 				return NSOrderedDescending;
 			
 			return NSOrderedSame;
-		};
+		}];
 		
-		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" using:find];
 		
 		NSUInteger location = (max > min) ? min : NSNotFound;
 		NSUInteger length = (max > min) ? (max - min) : 0;
@@ -2796,9 +2796,9 @@
 		int min = 40;
 		int max = 40;
 		
-		YapDatabaseBlockType blockType = YapDatabaseBlockTypeWithObject;
-		YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
-			
+		YapDatabaseViewFind *find = [YapDatabaseViewFind withObjectBlock:
+		    ^(NSString *collection, NSString *key, id object)
+		{
 			int value = [(NSNumber *)object intValue];
 			
 			if (value < min)
@@ -2807,9 +2807,9 @@
 				return NSOrderedDescending;
 			
 			return NSOrderedSame;
-		};
+		}];
 		
-		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" usingBlock:block blockType:blockType];
+		NSRange range = [[transaction ext:@"order"] findRangeInGroup:@"" using:find];
 		
 		NSUInteger location = (max > min) ? min : NSNotFound;
 		NSUInteger length = (max > min) ? (max - min) : 0;
