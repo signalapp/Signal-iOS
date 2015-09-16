@@ -39,18 +39,40 @@ static NSString *const ext_key_tag_deprecated     = @"tag";         // used by o
  * Keys for changeset dictionary.
 **/
 
-static NSString *const changeset_key_state             = @"state";
-static NSString *const changeset_key_dirtyMaps         = @"dirtyMaps";
-static NSString *const changeset_key_dirtyPages        = @"dirtyPages";
-static NSString *const changeset_key_reset             = @"reset";
+static NSString *const changeset_key_state      = @"state";
+static NSString *const changeset_key_dirtyMaps  = @"dirtyMaps";
+static NSString *const changeset_key_dirtyPages = @"dirtyPages";
+static NSString *const changeset_key_reset      = @"reset";
 
-static NSString *const changeset_key_groupingBlock     = @"groupingBlock";
-static NSString *const changeset_key_groupingBlockType = @"groupingBlockType";
-static NSString *const changeset_key_sortingBlock      = @"sortingBlock";
-static NSString *const changeset_key_sortingBlockType  = @"sortingBlockType";
-static NSString *const changeset_key_versionTag        = @"versionTag";
+static NSString *const changeset_key_grouping   = @"grouping";
+static NSString *const changeset_key_sorting    = @"sorting";
+static NSString *const changeset_key_versionTag = @"versionTag";
 
-static NSString *const changeset_key_changes           = @"changes";
+static NSString *const changeset_key_changes    = @"changes";
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseViewGrouping () {
+@public
+	
+	YapDatabaseViewGroupingBlock block;
+	YapDatabaseBlockType         blockType;
+	YapDatabaseBlockInvoke       blockInvokeOptions;
+}
+
+@end
+
+@interface YapDatabaseViewSorting () {
+@public
+	
+	YapDatabaseViewSortingBlock block;
+	YapDatabaseBlockType        blockType;
+	YapDatabaseBlockInvoke      blockInvokeOptions;
+}
+
+@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -61,11 +83,8 @@ static NSString *const changeset_key_changes           = @"changes";
 	
 	YapDatabaseViewState *latestState;
 	
-	YapDatabaseViewGroupingBlock groupingBlock;
-	YapDatabaseViewSortingBlock sortingBlock;
-	
-	YapDatabaseBlockType groupingBlockType;
-	YapDatabaseBlockType sortingBlockType;
+	YapDatabaseViewGrouping *grouping;
+	YapDatabaseViewSorting  *sorting;
 	
 	NSString *versionTag;
 	
@@ -93,16 +112,13 @@ static NSString *const changeset_key_changes           = @"changes";
 	id sharedKeySetForInternalChangeset;
 	id sharedKeySetForExternalChangeset;
 	
-	YapDatabaseViewGroupingBlock groupingBlock;
-	YapDatabaseViewSortingBlock sortingBlock;
-	
-	YapDatabaseBlockType groupingBlockType;
-	YapDatabaseBlockType sortingBlockType;
+	YapDatabaseViewGrouping *grouping;
+	YapDatabaseViewSorting  *sorting;
 	
 	NSString *versionTag;
 	
-	BOOL groupingBlockChanged;
-	BOOL sortingBlockChanged;
+	BOOL groupingChanged;
+	BOOL sortingChanged;
 	BOOL versionTagChanged;
 	
 @public
@@ -154,25 +170,16 @@ static NSString *const changeset_key_changes           = @"changes";
 - (sqlite3_stmt *)pageTable_removeForPageKeyStatement;
 - (sqlite3_stmt *)pageTable_removeAllStatement;
 
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseBlockType)newGroupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseBlockType)newSortingBlockType
-              versionTag:(NSString *)newVersionTag;
+- (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
+            sorting:(YapDatabaseViewSorting *)newSorting
+         versionTag:(NSString *)newVersionTag;
 
-- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
-            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
+- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
+            sorting:(YapDatabaseViewSorting **)sortingPtr;
 
-- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr;
+- (void)getGrouping:(YapDatabaseViewGrouping **)groupingBlockPtr;
 
-- (void)getSortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-       sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
-
-- (void)getGroupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
-            sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr;
+- (void)getSorting:(YapDatabaseViewSorting **)sortingBlockPtr;
 
 @end
 

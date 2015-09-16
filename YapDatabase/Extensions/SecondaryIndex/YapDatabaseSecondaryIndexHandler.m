@@ -1,4 +1,5 @@
 #import "YapDatabaseSecondaryIndexHandler.h"
+#import "YapDatabaseSecondaryIndexPrivate.h"
 
 
 @implementation YapDatabaseSecondaryIndexHandler

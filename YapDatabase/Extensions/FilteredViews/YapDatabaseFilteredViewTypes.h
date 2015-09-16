@@ -25,28 +25,28 @@
 
 typedef id YapDatabaseViewFilteringBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)                       \
-                (YapDatabaseReadTransaction *transaction, NSString *group, \
+typedef BOOL (^YapDatabaseViewFilteringWithKeyBlock)
+                (YapDatabaseReadTransaction *transaction, NSString *group,
                    NSString *collection, NSString *key);
 
-typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)                    \
-                (YapDatabaseReadTransaction *transaction, NSString *group, \
+typedef BOOL (^YapDatabaseViewFilteringWithObjectBlock)
+                (YapDatabaseReadTransaction *transaction, NSString *group,
                    NSString *collection, NSString *key, id object);
 
-typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)                  \
-                (YapDatabaseReadTransaction *transaction, NSString *group, \
+typedef BOOL (^YapDatabaseViewFilteringWithMetadataBlock)
+                (YapDatabaseReadTransaction *transaction, NSString *group,
                    NSString *collection, NSString *key, id metadata);
 
-typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)                       \
-                (YapDatabaseReadTransaction *transaction, NSString *group, \
+typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)
+                (YapDatabaseReadTransaction *transaction, NSString *group,
                    NSString *collection, NSString *key, id object, id metadata);
 
-+ (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)filteringBlock;
-+ (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)filteringBlock;
-+ (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)filteringBlock;
-+ (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)filteringBlock;
++ (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)block;
++ (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)block;
++ (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)block;
++ (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)block;
 
-@property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock filteringBlock;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType filteringBlockType;
+@property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock block;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType          blockType;
 
 @end

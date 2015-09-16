@@ -1,51 +1,52 @@
 #import "YapDatabaseFilteredViewTypes.h"
+#import "YapDatabaseFilteredViewPrivate.h"
 
 
 @implementation YapDatabaseViewFiltering
 
-@synthesize filteringBlock = filteringBlock;
-@synthesize filteringBlockType = filteringBlockType;
+@synthesize block = block;
+@synthesize blockType = blockType;
 
-+ (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)filteringBlock
++ (instancetype)withKeyBlock:(YapDatabaseViewFilteringWithKeyBlock)block
 {
-	if (filteringBlock == NULL) return nil;
+	if (block == NULL) return nil;
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
-	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseBlockTypeWithKey;
+	filtering->block = block;
+	filtering->blockType = YapDatabaseBlockTypeWithKey;
 	
 	return filtering;
 }
 
-+ (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)filteringBlock
++ (instancetype)withObjectBlock:(YapDatabaseViewFilteringWithObjectBlock)block
 {
-	if (filteringBlock == NULL) return nil;
+	if (block == NULL) return nil;
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
-	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseBlockTypeWithObject;
+	filtering->block = block;
+	filtering->blockType = YapDatabaseBlockTypeWithObject;
 	
 	return filtering;
 }
 
-+ (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)filteringBlock
++ (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)block
 {
-	if (filteringBlock == NULL) return nil;
+	if (block == NULL) return nil;
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
-	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseBlockTypeWithMetadata;
+	filtering->block = block;
+	filtering->blockType = YapDatabaseBlockTypeWithMetadata;
 	
 	return filtering;
 }
 
-+ (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)filteringBlock
++ (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)block
 {
-	if (filteringBlock == NULL) return nil;
+	if (block == NULL) return nil;
 	
 	YapDatabaseViewFiltering *filtering = [[YapDatabaseViewFiltering alloc] init];
-	filtering->filteringBlock = filteringBlock;
-	filtering->filteringBlockType = YapDatabaseBlockTypeWithRow;
+	filtering->block = block;
+	filtering->blockType = YapDatabaseBlockTypeWithRow;
 	
 	return filtering;
 }

@@ -23,16 +23,14 @@
 @implementation YapDatabaseFilteredView
 
 @synthesize parentViewName = parentViewName;
-
-@synthesize filteringBlock = filteringBlock;
-@synthesize filteringBlockType = filteringBlockType;
+@synthesize filtering = filtering;
 
 @dynamic options;
 
 #pragma mark Invalid
 
-- (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)grouping
-                         sorting:(YapDatabaseViewSorting __unused *)sorting
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)inGrouping
+                         sorting:(YapDatabaseViewSorting __unused *)inSorting
                       versionTag:(NSString __unused *)inVersionTag
                          options:(YapDatabaseViewOptions __unused *)inOptions
 {
@@ -53,32 +51,31 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-                   filtering:(YapDatabaseViewFiltering *)filtering
+                   filtering:(YapDatabaseViewFiltering *)inFiltering
 {
-	return [self initWithParentViewName:inParentViewName filtering:filtering versionTag:nil options:nil];
+	return [self initWithParentViewName:inParentViewName filtering:inFiltering versionTag:nil options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-                   filtering:(YapDatabaseViewFiltering *)filtering
+                   filtering:(YapDatabaseViewFiltering *)inFiltering
                   versionTag:(NSString *)inVersionTag
 {
-	return [self initWithParentViewName:inParentViewName filtering:filtering versionTag:inVersionTag options:nil];
+	return [self initWithParentViewName:inParentViewName filtering:inFiltering versionTag:inVersionTag options:nil];
 }
 
 - (id)initWithParentViewName:(NSString *)inParentViewName
-                   filtering:(YapDatabaseViewFiltering *)filtering
+                   filtering:(YapDatabaseViewFiltering *)inFiltering
                   versionTag:(NSString *)inVersionTag
                      options:(YapDatabaseViewOptions *)inOptions
 {
 	NSAssert(inParentViewName != nil, @"Invalid parameter: parentViewName == nil");
-	NSAssert(filtering != nil, @"Invalid parameter: filtering == nil");
+	NSAssert(inFiltering != nil, @"Invalid parameter: filtering == nil");
 	
 	if ((self = [super init]))
 	{
 		parentViewName = [inParentViewName copy];
 		
-		filteringBlock = filtering.filteringBlock;
-		filteringBlockType = filtering.filteringBlockType;
+		filtering = inFiltering;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
@@ -91,15 +88,15 @@
 #pragma mark Custom Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapDatabaseViewFilteringBlock)filteringBlock
+- (YapDatabaseViewFiltering *)filtering
 {
 	// This property can be changed from within a readWriteTransaction.
 	// We go through the snapshot queue to ensure we're fetching the most recent value.
 	
-	__block YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
+	__block YapDatabaseViewFiltering *mostRecentFiltering = nil;
 	dispatch_block_t block = ^{
 		
-		mostRecentFilteringBlock = filteringBlock;
+		mostRecentFiltering = filtering;
 	};
 	
 	__strong YapDatabase *database = self.registeredDatabase;
@@ -115,34 +112,7 @@
 		block();
 	}
 	
-	return mostRecentFilteringBlock;
-}
-
-- (YapDatabaseBlockType)filteringBlockType
-{
-	// This property can be changed from within a readWriteTransaction.
-	// We go through the snapshot queue to ensure we're fetching the most recent value.
-	
-	__block YapDatabaseBlockType mostRecentFilteringBlockType = 0;
-	dispatch_block_t block = ^{
-		
-		mostRecentFilteringBlockType = filteringBlockType;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	else // not registered
-	{
-		block();
-	}
-	
-	return mostRecentFilteringBlockType;
+	return mostRecentFiltering;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,11 +141,8 @@
 	
 	__unsafe_unretained YapDatabaseView *parentView = (YapDatabaseView *)ext;
 	
-	groupingBlock = parentView->groupingBlock;
-	groupingBlockType = parentView->groupingBlockType;
-	
-	sortingBlock = parentView->sortingBlock;
-	sortingBlockType = parentView->sortingBlockType;
+	grouping = parentView->grouping;
+	sorting = parentView->sorting;
 	
 	return YES;
 }
@@ -210,11 +177,10 @@
 	
 	[super processChangeset:changeset];
 	
-	YapDatabaseViewFilteringBlock newFilteringBlock = changeset[changeset_key_filteringBlock];
-	if (newFilteringBlock)
+	YapDatabaseViewFiltering *newFiltering = changeset[changeset_key_filtering];
+	if (newFiltering)
 	{
-		filteringBlock = newFilteringBlock;
-		filteringBlockType = [changeset[changeset_key_filteringBlockType] integerValue];
+		filtering = newFiltering;
 	}
 }
 
@@ -225,29 +191,19 @@
 /**
  * Used by YapDatabaseFilteredViewConnection to fetch & cache the values for a readWriteTransaction.
 **/
-- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-       groupingBlockType:(YapDatabaseBlockType *)groupingBlockTypePtr
-            sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-        sortingBlockType:(YapDatabaseBlockType *)sortingBlockTypePtr
-          filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseBlockType *)filteringBlockTypePtr
+- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
+            sorting:(YapDatabaseViewSorting **)sortingPtr
+          filtering:(YapDatabaseViewFiltering **)filteringPtr
 {
-	__block YapDatabaseViewGroupingBlock  mostRecentGroupingBlock  = NULL;
-	__block YapDatabaseViewSortingBlock   mostRecentSortingBlock   = NULL;
-	__block YapDatabaseViewFilteringBlock mostRecentFilteringBlock = NULL;
-	
-	__block YapDatabaseBlockType mostRecentGroupingBlockType  = 0;
-	__block YapDatabaseBlockType mostRecentSortingBlockType   = 0;
-	__block YapDatabaseBlockType mostRecentFilteringBlockType = 0;
+	__block YapDatabaseViewGrouping  * mostRecentGrouping  = nil;
+	__block YapDatabaseViewSorting   * mostRecentSorting   = nil;
+	__block YapDatabaseViewFiltering * mostRecentFiltering = nil;
 	
 	dispatch_block_t block = ^{
 	
-		mostRecentGroupingBlock      = groupingBlock;
-		mostRecentGroupingBlockType  = groupingBlockType;
-		mostRecentSortingBlock       = sortingBlock;
-		mostRecentSortingBlockType   = sortingBlockType;
-		mostRecentFilteringBlock     = filteringBlock;
-		mostRecentFilteringBlockType = filteringBlockType;
+		mostRecentGrouping  = grouping;
+		mostRecentSorting   = sorting;
+		mostRecentFiltering = filtering;
 	};
 	
 	__strong YapDatabase *database = self.registeredDatabase;
@@ -259,12 +215,9 @@
 			dispatch_sync(database->snapshotQueue, block);
 	}
 	
-	if (groupingBlockPtr)      *groupingBlockPtr      = mostRecentGroupingBlock;
-	if (groupingBlockTypePtr)  *groupingBlockTypePtr  = mostRecentGroupingBlockType;
-	if (sortingBlockPtr)       *sortingBlockPtr       = mostRecentSortingBlock;
-	if (sortingBlockTypePtr)   *sortingBlockTypePtr   = mostRecentSortingBlockType;
-	if (filteringBlockPtr)     *filteringBlockPtr     = mostRecentFilteringBlock;
-	if (filteringBlockTypePtr) *filteringBlockTypePtr = mostRecentFilteringBlockType;
+	if (groupingPtr)  *groupingPtr  = mostRecentGrouping;
+	if (sortingPtr)   *sortingPtr   = mostRecentSorting;
+	if (filteringPtr) *filteringPtr = mostRecentFiltering;
 }
 
 @end
