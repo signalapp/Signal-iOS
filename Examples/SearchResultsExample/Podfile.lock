@@ -1,0 +1,26 @@
+PODS:
+  - CocoaLumberjack (2.0.1):
+    - CocoaLumberjack/Default (= 2.0.1)
+    - CocoaLumberjack/Extensions (= 2.0.1)
+  - CocoaLumberjack/Core (2.0.1)
+  - CocoaLumberjack/Default (2.0.1):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.0.1):
+    - CocoaLumberjack/Default
+  - YapDatabase (2.7.2):
+    - YapDatabase/standard (= 2.7.2)
+  - YapDatabase/standard (2.7.2):
+    - CocoaLumberjack (~> 2)
+
+DEPENDENCIES:
+  - YapDatabase (from `../../`)
+
+EXTERNAL SOURCES:
+  YapDatabase:
+    :path: ../../
+
+SPEC CHECKSUMS:
+  CocoaLumberjack: 019d1361244274a6138c788c6cb80baabc13fb8f
+  YapDatabase: bcf13bd764ab4961fb48bef937becf964e50063d
+
+COCOAPODS: 0.38.2

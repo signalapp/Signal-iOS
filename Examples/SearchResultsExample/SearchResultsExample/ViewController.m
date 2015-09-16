@@ -1,13 +1,14 @@
 #import "ViewController.h"
 #import "AppDelegate.h"
 #import "Person.h"
-#import "DDLog.h"
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 // Per-file log level for CocoaLumbejack (logging framework)
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+  static const int ddLogLevel = DDLogLevelVerbose;
 #else
-  static const int ddLogLevel = LOG_LEVEL_WARN;
+  static const int ddLogLevel = DDLogLevelWarn;
 #endif
 #pragma unused(ddLogLevel)
 
