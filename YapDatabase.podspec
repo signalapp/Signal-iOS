@@ -18,7 +18,6 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
-    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib' }
     ss.requires_arc = true
   end
 
@@ -28,8 +27,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
-    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib',
-                    'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+    ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
     ss.requires_arc = true
   end
 
