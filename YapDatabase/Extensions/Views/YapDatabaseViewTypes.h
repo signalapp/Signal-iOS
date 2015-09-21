@@ -50,10 +50,10 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)
 + (instancetype)withRowBlock:(YapDatabaseViewGroupingWithRowBlock)block;
 
 // Not implemented quite yet
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewGroupingWithKeyBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops objectBlock:(YapDatabaseViewGroupingWithObjectBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewGroupingWithRowBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewGroupingWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops objectBlock:(YapDatabaseViewGroupingWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewGroupingWithRowBlock)block;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType         blockType;
@@ -138,11 +138,10 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseViewSortingWithRowBlock)block;
 
-// Not implemented quite yet
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewSortingWithKeyBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops objectBlock:(YapDatabaseViewSortingWithObjectBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block;
-//+ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewSortingWithRowBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewSortingWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops objectBlock:(YapDatabaseViewSortingWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewSortingWithRowBlock)block;
 
 @property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType        blockType;
