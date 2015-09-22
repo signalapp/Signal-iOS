@@ -1015,6 +1015,15 @@ static NSString *const ext_key_query             = @"query";
 #pragma mark Cleanup & Commit
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * This method is only called if within a readwrite transaction.
+ *
+ * Subclasses should write any last changes to their database table(s) if needed,
+ * and should perform any needed cleanup before the changeset is requested.
+ *
+ * Remember, the changeset is requested immediately after this method is invoked.
+**/
 - (void)flushPendingChangesToExtensionTables
 {
 	YDBLogAutoTrace();

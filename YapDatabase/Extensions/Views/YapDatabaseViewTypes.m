@@ -23,26 +23,26 @@
 
 + (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)block
 {
-	return [YapDatabaseViewGrouping withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithKey
-	                                   keyBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithKey;
+	return [self withOptions:iops keyBlock:block];
 }
 
 + (instancetype)withObjectBlock:(YapDatabaseViewGroupingWithObjectBlock)block
 {
-	return [YapDatabaseViewGrouping withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithObject
-	                                objectBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithObject;
+	return [self withOptions:iops objectBlock:block];
 }
 
 + (instancetype)withMetadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block
 {
-	return [YapDatabaseViewGrouping withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithMetadata
-	                              metadataBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithMetadata;
+	return [self withOptions:iops metadataBlock:block];
 }
 
 + (instancetype)withRowBlock:(YapDatabaseViewGroupingWithRowBlock)block
 {
-	return [YapDatabaseViewGrouping withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithRow
-	                                   rowBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithRow;
+	return [self withOptions:iops rowBlock:block];
 }
 
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewGroupingWithKeyBlock)block
@@ -153,26 +153,26 @@
 
 + (instancetype)withKeyBlock:(YapDatabaseViewSortingWithKeyBlock)block
 {
-	return [YapDatabaseViewSorting withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithKey
-	                                  keyBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithKey;
+	return [self withOptions:iops keyBlock:block];
 }
 
 + (instancetype)withObjectBlock:(YapDatabaseViewSortingWithObjectBlock)block
 {
-	return [YapDatabaseViewSorting withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithObject
-	                               objectBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithObject;
+	return [self withOptions:iops objectBlock:block];
 }
 
 + (instancetype)withMetadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block
 {
-	return [YapDatabaseViewSorting withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithMetadata
-	                             metadataBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithMetadata;
+	return [self withOptions:iops metadataBlock:block];
 }
 
 + (instancetype)withRowBlock:(YapDatabaseViewSortingWithRowBlock)block
 {
-	return [YapDatabaseViewSorting withOptions:YapDatabaseBlockInvokeDefaultForBlockTypeWithRow
-	                                  rowBlock:block];
+	YapDatabaseBlockInvoke iops = YapDatabaseBlockInvokeDefaultForBlockTypeWithRow;
+	return [self withOptions:iops rowBlock:block];
 }
 
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewSortingWithKeyBlock)block

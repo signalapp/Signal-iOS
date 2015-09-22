@@ -2854,7 +2854,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Subclasses MUST implement this method.
+ * Subclasses may OPTIONALLY implement this method.
  * This method is only called if within a readwrite transaction.
  *
  * Subclasses should write any last changes to their database table(s) if needed,
