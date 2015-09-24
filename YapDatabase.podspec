@@ -9,7 +9,8 @@ Pod::Spec.new do |s|
   s.author       = { "Robbie Hanson" => "robbiehanson@deusty.com" }
   s.source       = { :git => "https://github.com/yapstudios/YapDatabase.git", :tag => s.version.to_s }
   s.module_map = "module.modulemap"
-
+  s.libraries = 'c++'
+  
   s.default_subspec = 'standard'
 
   # use a builtin version of sqlite3
@@ -18,7 +19,6 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
-    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib' }
     ss.requires_arc = true
   end
 
@@ -28,8 +28,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
-    ss.xcconfig = { 'OTHER_LDFLAGS' => '-weak_library /usr/lib/libc++.dylib',
-                    'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+    ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
     ss.requires_arc = true
   end
 
