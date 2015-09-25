@@ -4709,12 +4709,6 @@
 		}
 	}
 	
-    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
-    {
-        [extTransaction handleWillReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
-    }
-    
 	// To use SQLITE_STATIC on our data blob, we use the objc_precise_lifetime attribute.
 	// This ensures the data isn't released until it goes out of scope.
 	
@@ -4726,6 +4720,15 @@
 	
 	sqlite3_stmt *statement = [connection updateObjectForRowidStatement];
 	if (statement == NULL) return;
+	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	// Be sure to execute pre-hook BEFORE we bind query parameters.
+	
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+	{
+		[extTransaction handleWillReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
+	}
 	
 	// UPDATE "database2" SET "data" = ? WHERE "rowid" = ?;
 	
@@ -4896,6 +4899,15 @@
 	sqlite3_stmt *statement = [connection updateMetadataForRowidStatement];
 	if (statement == NULL) return;
 	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	// Be sure to execute pre-hook BEFORE we bind query parameters.
+	
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+	{
+		[extTransaction handleWillReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
+	}
+	
 	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
 	
 	int const bind_idx_metadata = SQLITE_BIND_START + 0;
@@ -4907,12 +4919,6 @@
 	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 	
 	BOOL updated = YES;
-	
-    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
-    {
-        [extTransaction handleWillReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
-    }
 
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
