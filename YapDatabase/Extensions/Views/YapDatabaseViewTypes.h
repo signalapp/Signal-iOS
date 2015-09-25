@@ -49,7 +49,6 @@ typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseViewGroupingWithRowBlock)block;
 
-// Not implemented quite yet
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops keyBlock:(YapDatabaseViewGroupingWithKeyBlock)block;
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops objectBlock:(YapDatabaseViewGroupingWithObjectBlock)block;
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block;

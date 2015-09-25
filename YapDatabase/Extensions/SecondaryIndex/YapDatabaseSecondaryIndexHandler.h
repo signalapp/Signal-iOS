@@ -35,7 +35,13 @@ typedef void (^YapDatabaseSecondaryIndexWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseSecondaryIndexWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseSecondaryIndexWithRowBlock)block;
 
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseSecondaryIndexWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseSecondaryIndexWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseSecondaryIndexWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseSecondaryIndexWithRowBlock)block;
+
 @property (nonatomic, strong, readonly) YapDatabaseSecondaryIndexBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType           blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end

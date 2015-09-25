@@ -28,6 +28,7 @@
 	
 	YapDatabaseSecondaryIndexBlock block;
 	YapDatabaseBlockType           blockType;
+	YapDatabaseBlockInvoke         blockInvokeOptions;
 }
 
 @end
