@@ -12,12 +12,12 @@
 		DC60714A1A33FC3900207DE9 /* checkmark-off.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071481A33FC3900207DE9 /* checkmark-off.png */; };
 		DC60714B1A33FC3900207DE9 /* checkmark-on.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071491A33FC3900207DE9 /* checkmark-on.png */; };
 		DC927FFD1A344BA500FEEAEA /* TodoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC927FFC1A344BA500FEEAEA /* TodoTextView.m */; };
+		DC9A34D61BB5CA650067AD13 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9A34D51BB5CA650067AD13 /* CloudKit.framework */; };
 		DCDE77211A3023E9001D8FCE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77201A3023E9001D8FCE /* main.m */; };
 		DCDE77241A3023E9001D8FCE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77231A3023E9001D8FCE /* AppDelegate.m */; };
 		DCDE772A1A3023E9001D8FCE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCDE77281A3023E9001D8FCE /* Main.storyboard */; };
 		DCDE772C1A3023E9001D8FCE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCDE772B1A3023E9001D8FCE /* Images.xcassets */; };
 		DCDE772F1A3023E9001D8FCE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCDE772D1A3023E9001D8FCE /* LaunchScreen.xib */; };
-		DCDE776A1A302881001D8FCE /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDE77691A302881001D8FCE /* CloudKit.framework */; };
 		DCDE77701A302A44001D8FCE /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE776D1A302A44001D8FCE /* CloudKitManager.m */; };
 		DCDE77711A302A44001D8FCE /* DatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE776F1A302A44001D8FCE /* DatabaseManager.m */; };
 		DCDE77761A302A66001D8FCE /* EditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77731A302A66001D8FCE /* EditViewController.m */; };
@@ -37,6 +37,7 @@
 		DC6071491A33FC3900207DE9 /* checkmark-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-on.png"; sourceTree = "<group>"; };
 		DC927FFB1A344BA500FEEAEA /* TodoTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoTextView.h; sourceTree = "<group>"; };
 		DC927FFC1A344BA500FEEAEA /* TodoTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoTextView.m; sourceTree = "<group>"; };
+		DC9A34D51BB5CA650067AD13 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DCDE771B1A3023E9001D8FCE /* CloudKitTodo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudKitTodo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCDE771F1A3023E9001D8FCE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DCDE77201A3023E9001D8FCE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -46,7 +47,6 @@
 		DCDE772B1A3023E9001D8FCE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DCDE772E1A3023E9001D8FCE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		DCDE77681A302873001D8FCE /* CloudKitTodo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CloudKitTodo.entitlements; sourceTree = "<group>"; };
-		DCDE77691A302881001D8FCE /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DCDE776C1A302A44001D8FCE /* CloudKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudKitManager.h; sourceTree = "<group>"; };
 		DCDE776D1A302A44001D8FCE /* CloudKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudKitManager.m; sourceTree = "<group>"; };
 		DCDE776E1A302A44001D8FCE /* DatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseManager.h; sourceTree = "<group>"; };
@@ -67,8 +67,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC9A34D61BB5CA650067AD13 /* CloudKit.framework in Frameworks */,
 				DCDE78831A302B46001D8FCE /* libsqlite3.dylib in Frameworks */,
-				DCDE776A1A302881001D8FCE /* CloudKit.framework in Frameworks */,
 				8CDE399427C371AE35373288 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,8 +129,8 @@
 		DCDE776B1A3028EA001D8FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC9A34D51BB5CA650067AD13 /* CloudKit.framework */,
 				DCDE78821A302B46001D8FCE /* libsqlite3.dylib */,
-				DCDE77691A302881001D8FCE /* CloudKit.framework */,
 				951E571D3B3D45328846F778 /* libPods.a */,
 			);
 			name = Frameworks;

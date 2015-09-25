@@ -24,6 +24,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: 019d1361244274a6138c788c6cb80baabc13fb8f
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  YapDatabase: bcf13bd764ab4961fb48bef937becf964e50063d
+  YapDatabase: c9bf113e40137e96e67ff65a25cd4bf4bdc0beed
 
 COCOAPODS: 0.38.2

@@ -1,1 +1,1 @@
-YAPDATABASE_OTHER_LDFLAGS = -weak_library /usr/lib/libc++.dylib -l"sqlite3"
+YAPDATABASE_OTHER_LDFLAGS = -l"c++" -l"sqlite3"
