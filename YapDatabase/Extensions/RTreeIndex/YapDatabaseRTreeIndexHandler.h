@@ -21,13 +21,16 @@
 
 typedef id YapDatabaseRTreeIndexBlock; // One of the YapDatabaseRTreeIndexWith_X_Block types below.
 
-typedef void (^YapDatabaseRTreeIndexWithKeyBlock)      \
+typedef void (^YapDatabaseRTreeIndexWithKeyBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key);
-typedef void (^YapDatabaseRTreeIndexWithObjectBlock)   \
+
+typedef void (^YapDatabaseRTreeIndexWithObjectBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
-typedef void (^YapDatabaseRTreeIndexWithMetadataBlock) \
+
+typedef void (^YapDatabaseRTreeIndexWithMetadataBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id metadata);
-typedef void (^YapDatabaseRTreeIndexWithRowBlock)      \
+
+typedef void (^YapDatabaseRTreeIndexWithRowBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseRTreeIndexWithKeyBlock)block;
@@ -35,7 +38,13 @@ typedef void (^YapDatabaseRTreeIndexWithRowBlock)      \
 + (instancetype)withMetadataBlock:(YapDatabaseRTreeIndexWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseRTreeIndexWithRowBlock)block;
 
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseRTreeIndexWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseRTreeIndexWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseRTreeIndexWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseRTreeIndexWithRowBlock)block;
+
 @property (nonatomic, strong, readonly) YapDatabaseRTreeIndexBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType       blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke     blockInvokeOptions;
 
 @end

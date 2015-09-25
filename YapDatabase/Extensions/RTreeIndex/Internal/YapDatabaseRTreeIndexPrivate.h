@@ -19,6 +19,19 @@
 **/
 #define YAP_DATABASE_RTREE_INDEX_CLASS_VERSION 1
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseRTreeIndexHandler () {
+@public
+	
+	YapDatabaseRTreeIndexBlock block;
+	YapDatabaseBlockType       blockType;
+	YapDatabaseBlockInvoke     blockInvokeOptions;
+}
+
+@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -46,11 +59,9 @@
 @interface YapDatabaseRTreeIndex () {
 @public
 
+	YapDatabaseRTreeIndexHandler *handler;
 	YapDatabaseRTreeIndexSetup *setup;
 	YapDatabaseRTreeIndexOptions *options;
-
-	YapDatabaseRTreeIndexBlock block;
-	YapDatabaseBlockType blockType;
 
 	NSString *versionTag;
 

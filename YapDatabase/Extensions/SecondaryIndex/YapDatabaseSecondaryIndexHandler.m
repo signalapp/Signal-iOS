@@ -1,5 +1,5 @@
 #import "YapDatabaseSecondaryIndexHandler.h"
-#import "YapDatabaseSecondaryIndexPrivate.h"
+#import "YapDatabaseSecondaryIndexPrivate.h" // Required for public/package ivars
 
 
 @implementation YapDatabaseSecondaryIndexHandler
