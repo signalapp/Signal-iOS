@@ -54,9 +54,7 @@ extern NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification;
                           versionInfo:(id)versionInfo
                               options:(YapDatabaseCloudKitOptions *)options;
 
-@property (nonatomic, strong, readonly) YapDatabaseCloudKitRecordBlock recordBlock;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType recordBlockType;
-
+@property (nonatomic, strong, readonly) YapDatabaseCloudKitRecordHandler *recordHandler;
 @property (nonatomic, strong, readonly) YapDatabaseCloudKitMergeBlock mergeBlock;
 @property (nonatomic, strong, readonly) YapDatabaseCloudKitOperationErrorBlock operationErrorBlock;
 

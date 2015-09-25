@@ -49,8 +49,14 @@ typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseCloudKitRecordWithMetadataBlock)recordBlock;
 + (instancetype)withRowBlock:(YapDatabaseCloudKitRecordWithRowBlock)recordBlock;
 
-@property (nonatomic, strong, readonly) YapDatabaseCloudKitRecordBlock recordBlock;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType recordBlockType;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseCloudKitRecordWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseCloudKitRecordWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseCloudKitRecordWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseCloudKitRecordWithRowBlock)block;
+
+@property (nonatomic, strong, readonly) YapDatabaseCloudKitRecordBlock block;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType           blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end
 

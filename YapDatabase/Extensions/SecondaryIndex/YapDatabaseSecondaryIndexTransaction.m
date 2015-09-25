@@ -733,13 +733,13 @@ static NSString *const ext_key_version_deprecated = @"version";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Private helper method used to invoke the handler block and process the result.
+ * Private helper method for other handleXXX hook methods.
 **/
-- (void)_handleChangeForRowid:(int64_t)rowid
-                collectionKey:(YapCollectionKey *)collectionKey
-                       object:(id)object
-                     metadata:(id)metadata
-                     isInsert:(BOOL)isInsert
+- (void)_handleChangeWithRowid:(int64_t)rowid
+                 collectionKey:(YapCollectionKey *)collectionKey
+                        object:(id)object
+                      metadata:(id)metadata
+                      isInsert:(BOOL)isInsert
 {
 	YDBLogAutoTrace();
 	
@@ -818,11 +818,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:YES];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:YES];
 }
 
 /**
@@ -847,11 +847,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		return;
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**
@@ -879,11 +879,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**
@@ -911,11 +911,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**
@@ -948,11 +948,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**
@@ -985,11 +985,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**
@@ -1023,11 +1023,11 @@ static NSString *const ext_key_version_deprecated = @"version";
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeForRowid:rowid
-	              collectionKey:collectionKey
-	                     object:object
-	                   metadata:metadata
-	                   isInsert:NO];
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    isInsert:NO];
 }
 
 /**

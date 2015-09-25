@@ -89,9 +89,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 #pragma mark Init
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize recordBlock = recordBlock;
-@synthesize recordBlockType = recordBlockType;
-
+@synthesize recordHandler = handler;
 @synthesize mergeBlock = mergeBlock;
 @synthesize operationErrorBlock = opErrorBlock;
 
@@ -101,11 +99,11 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 @dynamic isSuspended;
 @dynamic suspendCount;
 
-- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
+- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)inRecordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
 {
-	return [self initWithRecordHandler:recordHandler
+	return [self initWithRecordHandler:inRecordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
 	           databaseIdentifierBlock:NULL
@@ -114,13 +112,13 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	                           options:nil];
 }
 
-- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
+- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)inRecordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
                            versionTag:(NSString *)inVersionTag
                           versionInfo:(id)inVersionInfo
 {
-	return [self initWithRecordHandler:recordHandler
+	return [self initWithRecordHandler:inRecordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
 	           databaseIdentifierBlock:NULL
@@ -129,14 +127,14 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	                           options:nil];
 }
 
-- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
+- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)inRecordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
                            versionTag:(NSString *)inVersionTag
                           versionInfo:(id)inVersionInfo
                               options:(YapDatabaseCloudKitOptions *)inOptions
 {
-	return [self initWithRecordHandler:recordHandler
+	return [self initWithRecordHandler:inRecordHandler
 	                        mergeBlock:inMergeBlock
 	               operationErrorBlock:inOpErrorBlock
 	           databaseIdentifierBlock:NULL
@@ -145,7 +143,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	                           options:inOptions];
 }
 
-- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)recordHandler
+- (instancetype)initWithRecordHandler:(YapDatabaseCloudKitRecordHandler *)inRecordHandler
                            mergeBlock:(YapDatabaseCloudKitMergeBlock)inMergeBlock
                   operationErrorBlock:(YapDatabaseCloudKitOperationErrorBlock)inOpErrorBlock
               databaseIdentifierBlock:(YapDatabaseCloudKitDatabaseIdentifierBlock)inDatabaseIdentifierBlock
@@ -155,9 +153,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 {
 	if ((self = [super init]))
 	{
-		recordBlock = recordHandler.recordBlock;
-		recordBlockType = recordHandler.recordBlockType;
-		
+		recordHandler = inRecordHandler;
 		mergeBlock = inMergeBlock;
 		opErrorBlock = inOpErrorBlock;
 		databaseIdentifierBlock = inDatabaseIdentifierBlock;

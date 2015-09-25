@@ -41,6 +41,20 @@ static NSString *const changeset_key_reset            = @"reset";
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@interface YapDatabaseCloudKitRecordHandler () {
+@public
+	
+	YapDatabaseCloudKitRecordBlock block;
+	YapDatabaseBlockType           blockType;
+	YapDatabaseBlockInvoke         blockInvokeOptions;
+}
+
+@end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 @interface YDBCKRecordInfo ()
 
 @property (nonatomic, strong, readwrite) id versionInfo;
@@ -68,8 +82,7 @@ static NSString *const changeset_key_reset            = @"reset";
 @interface YapDatabaseCloudKit () {
 @public
 	
-	YapDatabaseCloudKitRecordBlock recordBlock;
-	YapDatabaseBlockType recordBlockType;
+	YapDatabaseCloudKitRecordHandler *recordHandler;
 	
 	YapDatabaseCloudKitMergeBlock mergeBlock;
 	YapDatabaseCloudKitOperationErrorBlock opErrorBlock;
