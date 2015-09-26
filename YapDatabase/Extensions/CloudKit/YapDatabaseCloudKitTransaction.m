@@ -3408,7 +3408,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	id object = nil;
 	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
-		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	[self _handleChangeWithRowid:rowid
@@ -3446,7 +3446,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	id object = nil;
 	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
-		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
@@ -3490,7 +3490,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	id object = nil;
 	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
-		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
@@ -3535,7 +3535,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	id object = nil;
 	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
-		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
+		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
