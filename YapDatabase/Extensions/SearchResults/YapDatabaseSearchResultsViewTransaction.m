@@ -1373,11 +1373,8 @@ static NSString *const ext_key_query             = @"query";
 		// Implementation Note:
 		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
 		
-		BOOL groupMayHaveChanged = grouping->blockType == YapDatabaseBlockTypeWithRow ||
-		                           grouping->blockType == YapDatabaseBlockTypeWithObject;
-		
-		BOOL sortMayHaveChanged = sorting->blockType == YapDatabaseBlockTypeWithRow ||
-		                          sorting->blockType == YapDatabaseBlockTypeWithObject;
+		BOOL groupMayHaveChanged = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+		BOOL sortMayHaveChanged  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 		
 		// Instead of going to the groupingBlock,
 		// just ask the parentViewTransaction what the last group was.
@@ -1423,8 +1420,7 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearch *fts =
 		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
 		
-		BOOL searchMayHaveChanged = (fts->handler->blockType == YapDatabaseBlockTypeWithRow) ||
-		                            (fts->handler->blockType == YapDatabaseBlockTypeWithObject);
+		BOOL searchMayHaveChanged = (fts->handler->blockType & YapDatabaseBlockType_ObjectFlag);
 		
 		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
 		{
@@ -1482,8 +1478,7 @@ static NSString *const ext_key_query             = @"query";
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id metadata = nil;
-			if (sorting->blockType == YapDatabaseBlockTypeWithRow ||
-			    sorting->blockType == YapDatabaseBlockTypeWithMetadata)
+			if (sorting->blockType & YapDatabaseBlockType_MetadataFlag)
 			{
 				metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 			}
@@ -1550,10 +1545,7 @@ static NSString *const ext_key_query             = @"query";
 				// Sorting is based on the object, which has changed.
 				// So the sort order may possibly have changed.
 				
-				// From previous if statement (above) we know:
-				// sortingBlockType is object or row (object+metadata)
-				
-				if (sorting->blockType == YapDatabaseBlockTypeWithRow)
+				if (sorting->blockType & YapDatabaseBlockType_MetadataFlag)
 				{
 					// Need the metadata for the sorting block
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1635,8 +1627,7 @@ static NSString *const ext_key_query             = @"query";
 					}
 				}
 				
-				if (metadata == nil && (sorting->blockType == YapDatabaseBlockTypeWithRow ||
-				                        sorting->blockType == YapDatabaseBlockTypeWithMetadata))
+				if (metadata == nil && (sorting->blockType & YapDatabaseBlockType_MetadataFlag))
 				{
 					// Need the metadata for the sorting block
 					metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
@@ -1684,11 +1675,8 @@ static NSString *const ext_key_query             = @"query";
 		// Implementation Note:
 		// This code is modeled after that in YapDatabaseFilteredViewTransaction.
 		
-		BOOL groupMayHaveChanged = grouping->blockType == YapDatabaseBlockTypeWithRow ||
-		                           grouping->blockType == YapDatabaseBlockTypeWithMetadata;
-		
-		BOOL sortMayHaveChanged = sorting->blockType == YapDatabaseBlockTypeWithRow ||
-		                          sorting->blockType == YapDatabaseBlockTypeWithMetadata;
+		BOOL groupMayHaveChanged = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+		BOOL sortMayHaveChanged  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 		
 		// Instead of going to the groupingBlock,
 		// just ask the parentViewTransaction what the last group was.
@@ -1734,8 +1722,7 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearch *fts =
 		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
 		
-		BOOL searchMayHaveChanged = fts->handler->blockType == YapDatabaseBlockTypeWithRow ||
-		                            fts->handler->blockType == YapDatabaseBlockTypeWithObject;
+		BOOL searchMayHaveChanged = (fts->handler->blockType & YapDatabaseBlockType_MetadataFlag);
 		
 		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
 		{
@@ -1793,8 +1780,7 @@ static NSString *const ext_key_query             = @"query";
 			YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
 			
 			id object= nil;
-			if (sorting->blockType == YapDatabaseBlockTypeWithRow ||
-			    sorting->blockType == YapDatabaseBlockTypeWithObject)
+			if (sorting->blockType & YapDatabaseBlockType_ObjectFlag)
 			{
 				object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 			}
@@ -1861,10 +1847,7 @@ static NSString *const ext_key_query             = @"query";
 				// Sorting is based on the metadata, which has changed.
 				// So the sort order may possibly have changed.
 				
-				// From previous if statement (above) we know:
-				// sortingBlockType is metadata or objectAndMetadata
-				
-				if (sorting->blockType == YapDatabaseBlockTypeWithRow)
+				if (sorting->blockType & YapDatabaseBlockType_ObjectFlag)
 				{
 					// Need the object for the sorting block
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
@@ -1946,8 +1929,7 @@ static NSString *const ext_key_query             = @"query";
 					}
 				}
 				
-				if (object == nil && (sorting->blockType == YapDatabaseBlockTypeWithRow ||
-				                      sorting->blockType == YapDatabaseBlockTypeWithObject))
+				if (object == nil && (sorting->blockType & YapDatabaseBlockType_ObjectFlag))
 				{
 					// Need the object for the sorting block
 					object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];

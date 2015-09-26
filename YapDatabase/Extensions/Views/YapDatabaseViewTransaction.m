@@ -642,17 +642,11 @@
 	[viewConnection getGrouping:&grouping
 	                    sorting:&sorting];
 	
-	BOOL groupingNeedsObject = grouping->blockType == YapDatabaseBlockTypeWithObject ||
-	                           grouping->blockType == YapDatabaseBlockTypeWithRow;
+	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 	
-	BOOL groupingNeedsMetadata = grouping->blockType == YapDatabaseBlockTypeWithMetadata ||
-	                             grouping->blockType == YapDatabaseBlockTypeWithRow;
-	
-	BOOL sortingNeedsObject = sorting->blockType  == YapDatabaseBlockTypeWithObject ||
-	                          sorting->blockType  == YapDatabaseBlockTypeWithRow;
-	
-	BOOL sortingNeedsMetadata = sorting->blockType  == YapDatabaseBlockTypeWithMetadata ||
-	                            sorting->blockType  == YapDatabaseBlockTypeWithRow;
+	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 	
 	BOOL needsObject = groupingNeedsObject || sortingNeedsObject;
 	BOOL needsMetadata = groupingNeedsMetadata || sortingNeedsMetadata;
@@ -3599,13 +3593,10 @@
 	[viewConnection getGrouping:&grouping sorting:&sorting];
 	
 	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
 	
-	BOOL groupingNeedsMetadata = (grouping->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                             (grouping->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
 	if ((groupingMayHaveChanged && groupingNeedsMetadata) || (sortingMayHaveChanged && sortingNeedsMetadata))
@@ -3642,13 +3633,10 @@
 	[viewConnection getGrouping:&grouping sorting:&sorting];
 	
 	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
 	
-	BOOL groupingNeedsObject = (grouping->blockType == YapDatabaseBlockTypeWithObject) ||
-	                           (grouping->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
 	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
@@ -3688,19 +3676,13 @@
 	[viewConnection getGrouping:&grouping sorting:&sorting];
 	
 	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
 	
-	BOOL groupingNeedsObject = (grouping->blockType == YapDatabaseBlockTypeWithObject) ||
-	                           (grouping->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                             (grouping->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 	
 	id object = nil;
 	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
@@ -3746,19 +3728,13 @@
 	[viewConnection getGrouping:&grouping sorting:&sorting];
 	
 	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
 	
-	BOOL groupingNeedsObject = (grouping->blockType == YapDatabaseBlockTypeWithObject) ||
-	                           (grouping->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                             (grouping->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 	
 	id object = nil;
 	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
@@ -3805,19 +3781,13 @@
 	[viewConnection getGrouping:&grouping sorting:&sorting];
 	
 	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
 	
-	BOOL groupingNeedsObject = (grouping->blockType == YapDatabaseBlockTypeWithObject) ||
-	                           (grouping->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
+	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                             (grouping->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
+	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 	
 	id object = nil;
 	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))

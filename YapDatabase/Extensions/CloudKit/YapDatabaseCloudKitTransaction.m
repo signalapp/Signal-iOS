@@ -3366,8 +3366,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 	
 	id metadata = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	    (recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -3407,8 +3406,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 	
 	id object = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithObject) ||
-	    (recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -3446,15 +3444,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 	
 	id object = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithObject) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -3492,15 +3488,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 	
 	id object = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithObject) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -3539,15 +3533,13 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	}
 	
 	id object = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithObject) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((recordHandler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-		(recordHandler->blockType == YapDatabaseBlockTypeWithRow))
+	if (recordHandler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}

@@ -954,11 +954,8 @@
 	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsMetadata = (filtering->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                              (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsMetadata   = (sorting->blockType   & YapDatabaseBlockType_MetadataFlag);
+	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
 	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
@@ -1002,11 +999,8 @@
 	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsObject = (filtering->blockType == YapDatabaseBlockTypeWithObject) ||
-	                            (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
+	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
 	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
@@ -1052,11 +1046,8 @@
 	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsObject = (filtering->blockType == YapDatabaseBlockTypeWithObject) ||
-	                            (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
+	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
 	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
@@ -1064,11 +1055,8 @@
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsMetadata = (filtering->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                              (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsMetadata   = (sorting->blockType   & YapDatabaseBlockType_MetadataFlag);
+	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
 	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
@@ -1114,11 +1102,8 @@
 	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsObject = (filtering->blockType == YapDatabaseBlockTypeWithObject) ||
-	                            (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
+	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
 	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
@@ -1126,11 +1111,8 @@
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsMetadata = (filtering->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                              (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsMetadata   = (sorting->blockType   & YapDatabaseBlockType_MetadataFlag);
+	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
 	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
@@ -1177,11 +1159,8 @@
 	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
-	BOOL sortingNeedsObject = (sorting->blockType == YapDatabaseBlockTypeWithObject) ||
-	                          (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsObject = (filtering->blockType == YapDatabaseBlockTypeWithObject) ||
-	                            (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
+	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
 	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
@@ -1189,11 +1168,8 @@
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	BOOL sortingNeedsMetadata = (sorting->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                            (sorting->blockType == YapDatabaseBlockTypeWithRow);
-	
-	BOOL filteringNeedsMetadata = (filtering->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	                              (filtering->blockType == YapDatabaseBlockTypeWithRow);
+	BOOL sortingNeedsMetadata   = (sorting->blockType   & YapDatabaseBlockType_MetadataFlag);
+	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
 	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))

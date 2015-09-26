@@ -873,8 +873,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 	}
 	
 	id metadata = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -905,8 +904,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 	}
 	
 	id object = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithObject) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -935,15 +933,13 @@ static NSString *const ext_key_version_deprecated = @"version";
 	}
 	
 	id object = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithObject) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -972,15 +968,13 @@ static NSString *const ext_key_version_deprecated = @"version";
 	}
 	
 	id object = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithObject) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1010,15 +1004,13 @@ static NSString *const ext_key_version_deprecated = @"version";
 	}
 	
 	id object = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithObject) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
 	id metadata = nil;
-	if ((handler->blockType == YapDatabaseBlockTypeWithMetadata) ||
-	    (handler->blockType == YapDatabaseBlockTypeWithRow))
+	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}

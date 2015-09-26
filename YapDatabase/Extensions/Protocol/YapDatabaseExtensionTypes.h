@@ -3,11 +3,27 @@
 /**
  * Corresponds to the different type of blocks supported by the various extension subclasses.
 **/
-typedef NS_ENUM(NSInteger, YapDatabaseBlockType) {
-	YapDatabaseBlockTypeWithKey,
-	YapDatabaseBlockTypeWithObject,
-	YapDatabaseBlockTypeWithMetadata,
-	YapDatabaseBlockTypeWithRow
+typedef NS_OPTIONS(NSUInteger, YapDatabaseBlockType) {
+	
+	// Flags Only
+	
+	YapDatabaseBlockType_ObjectFlag   = 1 << 0, // 0001,
+	YapDatabaseBlockType_MetadataFlag = 1 << 1, // 0010,
+	
+	// Allowed Values
+	
+	YapDatabaseBlockTypeWithKey        =  0,                                                                    // 0000
+	YapDatabaseBlockTypeWithObject     =  YapDatabaseBlockType_ObjectFlag,                                      // 0001
+	YapDatabaseBlockTypeWithMetadata   =  YapDatabaseBlockType_MetadataFlag,                                    // 0010
+	YapDatabaseBlockTypeWithRow        = (YapDatabaseBlockType_ObjectFlag | YapDatabaseBlockType_MetadataFlag), // 0011
+	
+	// Note:
+	//
+	// A common operation is to check if the blockType requires an 'object' parameter.
+	// In other words, if the blockType is (WithObject || WithRow).
+	// This can be accomplished by making use of the bitmask like so:
+	//
+	// if (blockType & YapDatabaseBlockType_ObjectFlag) -> block needs 'object' parameter
 };
 
 /**
