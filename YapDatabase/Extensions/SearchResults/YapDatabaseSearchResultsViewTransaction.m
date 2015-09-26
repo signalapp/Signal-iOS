@@ -1423,8 +1423,8 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearch *fts =
 		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
 		
-		BOOL searchMayHaveChanged = fts->blockType == YapDatabaseBlockTypeWithRow ||
-		                            fts->blockType == YapDatabaseBlockTypeWithObject;
+		BOOL searchMayHaveChanged = (fts->handler->blockType == YapDatabaseBlockTypeWithRow) ||
+		                            (fts->handler->blockType == YapDatabaseBlockTypeWithObject);
 		
 		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
 		{
@@ -1734,8 +1734,8 @@ static NSString *const ext_key_query             = @"query";
 		__unsafe_unretained YapDatabaseFullTextSearch *fts =
 		  (YapDatabaseFullTextSearch *)[[ftsTransaction extensionConnection] extension];
 		
-		BOOL searchMayHaveChanged = fts->blockType == YapDatabaseBlockTypeWithRow ||
-		                            fts->blockType == YapDatabaseBlockTypeWithObject;
+		BOOL searchMayHaveChanged = fts->handler->blockType == YapDatabaseBlockTypeWithRow ||
+		                            fts->handler->blockType == YapDatabaseBlockTypeWithObject;
 		
 		if (!groupMayHaveChanged && !sortMayHaveChanged && !searchMayHaveChanged)
 		{

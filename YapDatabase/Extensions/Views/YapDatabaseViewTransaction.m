@@ -3352,90 +3352,6 @@
 #pragma mark Transaction Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
-	
-	__unsafe_unretained NSString *collection = collectionKey.collection;
-	__unsafe_unretained NSString *key = collectionKey.key;
-	
-	// Should we ignore the row based on the allowedCollections ?
-	
-	YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
-	
-	if (allowedCollections && ![allowedCollections isAllowed:collection])
-	{
-		lastHandledGroup = nil;
-		return;
-	}
-	
-	// Invoke the grouping block to find out if the object should be included in the view.
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	
-	[viewConnection getGrouping:&grouping];
-	
-	NSString *group = nil;
-	
-	if (grouping->blockType == YapDatabaseBlockTypeWithKey)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithKeyBlock)grouping->block;
-		
-		group = groupingBlock(databaseTransaction, collection, key);
-	}
-	else if (grouping->blockType == YapDatabaseBlockTypeWithObject)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithObjectBlock)grouping->block;
-		
-		group = groupingBlock(databaseTransaction, collection, key, object);
-	}
-	else if (grouping->blockType == YapDatabaseBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithMetadataBlock)grouping->block;
-		
-		group = groupingBlock(databaseTransaction, collection, key, metadata);
-	}
-	else
-	{
-		__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-		    (YapDatabaseViewGroupingWithRowBlock)grouping->block;
-		
-		group = groupingBlock(databaseTransaction, collection, key, object, metadata);
-	}
-	
-	if (group == nil)
-	{
-		// This was an insert operation, so we know the key wasn't already in the view.
-	}
-	else
-	{
-		// Add key to view.
-		// This was an insert operation, so we know the key wasn't already in the view.
-		
-		YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
-		
-		[self insertRowid:rowid
-		    collectionKey:collectionKey
-		           object:object
-		         metadata:metadata
-		          inGroup:group withChanges:flags isNew:YES];
-	}
-	
-	lastHandledGroup = group;
-}
-
 - (void)_handleChangeWithRowid:(int64_t)rowid
                  collectionKey:(YapCollectionKey *)collectionKey
                         object:(id)object
@@ -3444,6 +3360,7 @@
                        sorting:(YapDatabaseViewSorting *)sorting
             blockInvokeBitMask:(YapDatabaseBlockInvoke)blockInvokeBitMask
                 changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
+                      isInsert:(BOOL)isInsert
 {
 	YDBLogAutoTrace();
 	
@@ -3464,8 +3381,19 @@
 	
 	// Determine if the grouping or sorting may have changed
 	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	BOOL groupingMayHaveChanged;
+	BOOL sortingMayHaveChanged;
+	
+	if (isInsert)
+	{
+		groupingMayHaveChanged = YES;
+		sortingMayHaveChanged  = YES;
+	}
+	else
+	{
+		groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
+		sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
+	}
 	
 	NSString *group = nil;
 	
@@ -3528,9 +3456,11 @@
 		if (group == nil)
 		{
 			// Remove row from view (if needed).
-			// This was an update operation, so the row may have previously been in the view.
 			
-			[self removeRowid:rowid collectionKey:collectionKey];
+			if (!isInsert)
+			{
+				[self removeRowid:rowid collectionKey:collectionKey];
+			}
 			
 			lastHandledGroup = nil;
 			return;
@@ -3592,6 +3522,37 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
+- (void)handleInsertObject:(id)object
+          forCollectionKey:(YapCollectionKey *)collectionKey
+              withMetadata:(id)metadata
+                     rowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeOnInsertOnly;
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
+	
+	YapDatabaseViewGrouping *grouping = nil;
+	YapDatabaseViewSorting *sorting = nil;
+	
+	[viewConnection getGrouping:&grouping sorting:&sorting];
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	                      object:object
+	                    metadata:metadata
+	                    grouping:grouping
+	                     sorting:sorting
+	          blockInvokeBitMask:blockInvokeBitMask
+	              changesBitMask:changesBitMask
+	                    isInsert:YES];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
 - (void)handleUpdateObject:(id)object
           forCollectionKey:(YapCollectionKey *)collectionKey
               withMetadata:(id)metadata
@@ -3616,7 +3577,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**
@@ -3658,7 +3620,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**
@@ -3700,7 +3663,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**
@@ -3757,9 +3721,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
-	
-	
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**
@@ -3816,7 +3779,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**
@@ -3874,7 +3838,8 @@
 	                    grouping:grouping
 	                     sorting:sorting
 	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask];
+	              changesBitMask:changesBitMask
+	                    isInsert:NO];
 }
 
 /**

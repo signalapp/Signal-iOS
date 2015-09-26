@@ -46,7 +46,13 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseViewFilteringWithRowBlock)block;
 
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseViewFilteringWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseViewFilteringWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseViewFilteringWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseViewFilteringWithRowBlock)block;
+
 @property (nonatomic, strong, readonly) YapDatabaseViewFilteringBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType          blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke        blockInvokeOptions;
 
 @end

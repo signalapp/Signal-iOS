@@ -19,13 +19,16 @@
 
 typedef id YapDatabaseFullTextSearchBlock; // One of YapDatabaseFullTextSearchXBlock types
 
-typedef void (^YapDatabaseFullTextSearchWithKeyBlock)      \
+typedef void (^YapDatabaseFullTextSearchWithKeyBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key);
-typedef void (^YapDatabaseFullTextSearchWithObjectBlock)   \
+
+typedef void (^YapDatabaseFullTextSearchWithObjectBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
-typedef void (^YapDatabaseFullTextSearchWithMetadataBlock) \
+
+typedef void (^YapDatabaseFullTextSearchWithMetadataBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id metadata);
-typedef void (^YapDatabaseFullTextSearchWithRowBlock)      \
+
+typedef void (^YapDatabaseFullTextSearchWithRowBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseFullTextSearchWithKeyBlock)block;
@@ -33,7 +36,13 @@ typedef void (^YapDatabaseFullTextSearchWithRowBlock)      \
 + (instancetype)withMetadataBlock:(YapDatabaseFullTextSearchWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseFullTextSearchWithRowBlock)block;
 
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseFullTextSearchWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseFullTextSearchWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseFullTextSearchWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseFullTextSearchWithRowBlock)block;
+
 @property (nonatomic, strong, readonly) YapDatabaseFullTextSearchBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType           blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end

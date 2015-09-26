@@ -30,6 +30,7 @@ static NSString *const changeset_key_filtering = @"filtering";
 	
 	YapDatabaseViewFilteringBlock block;
 	YapDatabaseBlockType          blockType;
+	YapDatabaseBlockInvoke        blockInvokeOptions;
 }
 
 @end
