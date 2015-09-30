@@ -15,7 +15,7 @@
 /**
  * Default countLimit, as specified in header file.
 **/
-#define YAP_CACHE_DEFAULT_COUNT_LIMIT 40
+static const NSUInteger YapCacheDefaultCountLimit = 40;
 
 
 @interface YapCacheItem : NSObject {
@@ -82,22 +82,22 @@
 
 - (instancetype)init
 {
-	return [self initWithCountLimit:0 keyCallbacks:kCFTypeDictionaryKeyCallBacks];
+	return [self initWithCountLimit:YapCacheDefaultCountLimit
+	                   keyCallbacks:kCFTypeDictionaryKeyCallBacks];
 }
 
 - (instancetype)initWithCountLimit:(NSUInteger)inCountLimit
 {
-	return [self initWithCountLimit:inCountLimit keyCallbacks:kCFTypeDictionaryKeyCallBacks];
+	return [self initWithCountLimit:inCountLimit
+	                   keyCallbacks:kCFTypeDictionaryKeyCallBacks];
 }
 
 - (id)initWithCountLimit:(NSUInteger)inCountLimit keyCallbacks:(CFDictionaryKeyCallBacks)inKeyCallbacks
 {
 	if ((self = [super init]))
 	{
-		if (inCountLimit == 0)
-			countLimit = YAP_CACHE_DEFAULT_COUNT_LIMIT;
-		else
-			countLimit = inCountLimit;
+		// zero is a valid countLimit (it means unlimited)
+		countLimit = inCountLimit;
 		
 		cfdict = CFDictionaryCreateMutable(kCFAllocatorDefault,
 		                                   0,
