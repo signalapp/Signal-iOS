@@ -3868,7 +3868,25 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	int64_t rowid;
 	if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
 	{
-		YDBLogWarn(@"%@ - No row in database with given collection/key: %@, %@", THIS_METHOD, collection, key);
+		// Doesn't exist in the database.
+		// Remove from pendingAttachRequests (if needed), and return.
+		
+		BOOL logWarning = YES;
+		
+		if ([parentConnection->pendingAttachRequests count] > 0)
+		{
+			YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+			
+			if ([parentConnection->pendingAttachRequests objectForKey:collectionKey]) {
+				[parentConnection->pendingAttachRequests removeObjectForKey:collectionKey];
+				logWarning = NO;
+			}
+		}
+		
+		if (logWarning) {
+			YDBLogWarn(@"%@ - No row in database with given collection/key: %@, %@", THIS_METHOD, collection, key);
+		}
+		
 		return;
 	}
 	
