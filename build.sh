@@ -7,7 +7,7 @@ set -x
 
 # Setup paths to stuff we need
 
-OPENSSL_VERSION="1.0.1l"
+OPENSSL_VERSION="1.0.1p"
 
 DEVELOPER=$(xcode-select --print-path)
 
@@ -38,7 +38,7 @@ build()
    TYPE=$3
 
    export BUILD_TOOLS="${DEVELOPER}"
-   export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
+   export CC="${BUILD_TOOLS}/usr/bin/gcc -fembed-bitcode -arch ${ARCH}"
 
    mkdir -p "lib-${TYPE}"
 
