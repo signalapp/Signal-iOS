@@ -79,6 +79,41 @@ static unsigned char DH3K_PRIME[]={
                       andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
 }
 
++(Environment*) stagingEnvironmentWithLogging:(id<Logging>)logging {
+    ErrorHandlerBlock errorNoter = ^(id error, id relatedInfo, bool causedTermination) {DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination); };
+    
+    NSString *defaultRegion;
+#if TARGET_OS_IPHONE
+    defaultRegion = [[PhoneNumberUtil sharedInstance].nbPhoneNumberUtil countryCodeByCarrier];
+    
+    if ([defaultRegion isEqualToString:@"ZZ"]) {
+        defaultRegion = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    }
+#else
+    defaultRegion = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+#endif
+    
+    
+    NSAssert([defaultRegion isKindOfClass:[NSString class]], @"");
+    
+    return [Environment environmentWithLogging:logging
+                                 andErrorNoter:errorNoter
+                                 andServerPort:31337
+                       andMasterServerHostName:@"redphone-staging.whispersystems.org"
+                           andDefaultRelayName:@"redphone-staging-relay"
+                  andRelayServerHostNameSuffix:@"whispersystems.org"
+                                andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+           andCurrentRegionCodeForPhoneNumbers:defaultRegion
+             andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                               andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
+                          andRecentCallManager:[RecentCallManager new]
+                    andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
+                               andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
+                              andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
+                            andContactsManager:[ContactsManager new]
+                      andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
+}
+
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
     NSArray* keyAgreementProtocols = self.supportedKeyAgreementProtocols;
     if ([testingAndLegacyOptions containsObject:TESTING_OPTION_USE_DH_FOR_HANDSHAKE]) {

@@ -158,7 +158,7 @@
     NSString *failureReason = nil;
     TSRegistrationFailure failureType;
     
-    if (badResponse.statusCode == 401) {
+    if (badResponse.statusCode == 401 || badResponse.statusCode == 403) {
         failureReason = REGISTER_CHALLENGE_ALERT_VIEW_BODY;
         failureType = kTSRegistrationFailureAuthentication;
     } else if (badResponse.statusCode == 413) {
