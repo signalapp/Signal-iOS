@@ -21,6 +21,10 @@ xcuserdata
 *.moved-aside
 *.xcuserstate
 
+# Carthage
+Carthage/Checkouts
+Carthage/Build
+
 ## Custom
 LumberjackUser.h
 LumberjackUser.temp.h

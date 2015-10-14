@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseExtension.h"
+
 #import "YapDatabaseSecondaryIndexSetup.h"
 #import "YapDatabaseSecondaryIndexHandler.h"
 #import "YapDatabaseSecondaryIndexOptions.h"
