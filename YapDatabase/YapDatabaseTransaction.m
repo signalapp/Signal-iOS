@@ -90,7 +90,7 @@
 	__block BOOL prevExtModifiesMainDatabaseTable;
 	do
 	{
-		isMutated = NO;
+		YapMutationStackItem_Bool *mutation = [connection->mutationStack push];
 		
 		restart = NO;
 		prevExtModifiesMainDatabaseTable = NO;
@@ -102,7 +102,7 @@
 			
 			if (extModifiesMainDatabaseTable)
 			{
-				if (!isMutated)
+				if (!mutation.isMutated)
 				{
 					prevExtModifiesMainDatabaseTable = YES;
 				}
@@ -1235,7 +1235,7 @@
 	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT DISTINCT "collection" FROM "database2";
@@ -1257,19 +1257,19 @@
 			
 			block(collection, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
 	sqlite3_reset(statement);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -1291,7 +1291,7 @@
 	sqlite3_stmt *statement = [connection enumerateCollectionsForKeyStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "collection" FROM "database2" WHERE "key" = ?;
@@ -1317,12 +1317,12 @@
 			
 			block(collection, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -1331,7 +1331,7 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_key);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -1720,7 +1720,7 @@
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// Check the cache first (to optimize cache)
@@ -1737,7 +1737,7 @@
 		{
 			block(keyIndex, object, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 		}
 		else
 		{
@@ -1750,7 +1750,7 @@
 	if (stop) {
 		return;
 	}
-	if (isMutated) {
+	if (mutation.isMutated) {
 		@throw [self mutationDuringEnumerationException];
 		return;
 	}
@@ -1861,12 +1861,12 @@
 				
 				[keyIndexDict removeObjectForKey:key];
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -1878,7 +1878,7 @@
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -1893,14 +1893,14 @@
 			
 			// Do NOT add keys to the cache that don't exist in the database.
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 		}
 		
 		if (stop) {
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -1932,7 +1932,7 @@
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// Check the cache first (to optimize cache)
@@ -1952,7 +1952,7 @@
 			else
 				block(keyIndex, metadata, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 		}
 		else
 		{
@@ -1965,7 +1965,7 @@
 	if (stop) {
 		return;
 	}
-	if (isMutated) {
+	if (mutation.isMutated) {
 		@throw [self mutationDuringEnumerationException];
 		return;
 	}
@@ -2075,12 +2075,12 @@
 				
 				[keyIndexDict removeObjectForKey:key];
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -2092,7 +2092,7 @@
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -2107,14 +2107,14 @@
 			
 			// Do NOT add keys to the cache that don't exist in the database.
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 		}
 		
 		if (stop) {
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -2146,7 +2146,7 @@
 	if ([keys count] == 0) return;
 	if (collection == nil) collection = @"";
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	__block BOOL stop = NO;
 	
 	// Check the cache first (to optimize cache)
@@ -2169,7 +2169,7 @@
 				else
 					block(keyIndex, object, metadata, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			else
 			{
@@ -2187,7 +2187,7 @@
 	if (stop) {
 		return;
 	}
-	if (isMutated) {
+	if (mutation.isMutated) {
 		@throw [self mutationDuringEnumerationException];
 		return;
 	}
@@ -2326,12 +2326,12 @@
 				
 				[keyIndexDict removeObjectForKey:key];
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -2343,7 +2343,7 @@
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -2358,14 +2358,14 @@
 			
 			// Do NOT add keys to the cache that don't exist in the database.
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 		}
 		
 		if (stop) {
 			FreeYapDatabaseString(&_collection);
 			return;
 		}
-		if (isMutated) {
+		if (mutation.isMutated) {
 			FreeYapDatabaseString(&_collection);
 			@throw [self mutationDuringEnumerationException];
 			return;
@@ -2396,7 +2396,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
@@ -2425,12 +2425,12 @@
 			
 			block(rowid, key, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -2439,7 +2439,7 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -2460,7 +2460,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key" FROM "database2" WHERE collection = ?;
@@ -2491,12 +2491,12 @@
 				
 				block(rowid, collection, key, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -2505,7 +2505,7 @@
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_collection);
 		
-		if (isMutated && !stop)
+		if (!stop && mutation.isMutated)
 		{
 			@throw [self mutationDuringEnumerationException];
 		}
@@ -2532,7 +2532,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key" FROM "database2";
@@ -2564,19 +2564,19 @@
 			
 			block(rowid, collection, key, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
 	sqlite3_reset(statement);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -2616,7 +2616,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "data", FROM "database2" WHERE "collection" = ?;
@@ -2679,13 +2679,13 @@
 				
 				block(rowid, key, object, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -2694,7 +2694,7 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -2734,7 +2734,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
@@ -2800,13 +2800,13 @@
 					
 					block(rowid, collection, key, object, &stop);
 					
-					if (stop || isMutated) break;
+					if (stop || mutation.isMutated) break;
 				}
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -2815,7 +2815,7 @@
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_collection);
 		
-		if (isMutated && !stop)
+		if (!stop && mutation.isMutated)
 		{
 			@throw [self mutationDuringEnumerationException];
 		}
@@ -2864,7 +2864,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "data" FROM "database2" ORDER BY \"collection\" ASC;";
@@ -2920,13 +2920,13 @@
 				
 				block(rowid, collection, key, object, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -2934,7 +2934,7 @@
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -2976,7 +2976,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "metadata" FROM "database2" WHERE "collection" = ?;
@@ -3050,13 +3050,13 @@
 				
 				block(rowid, key, metadata, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -3065,7 +3065,7 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -3107,7 +3107,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	BOOL unlimitedMetadataCacheLimit = (connection->metadataCacheLimit == 0);
@@ -3183,13 +3183,13 @@
 					
 					block(rowid, collection, key, metadata, &stop);
 					
-					if (stop || isMutated) break;
+					if (stop || mutation.isMutated) break;
 				}
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -3198,7 +3198,7 @@
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_collection);
 		
-		if (isMutated && !stop)
+		if (!stop && mutation.isMutated)
 		{
 			@throw [self mutationDuringEnumerationException];
 		}
@@ -3248,7 +3248,7 @@
 	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "metadata" FROM "database2" ORDER BY "collection" ASC;
@@ -3325,20 +3325,20 @@
 				
 				block(rowid, collection, key, metadata, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
 	sqlite3_reset(statement);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -3378,7 +3378,7 @@
 	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "key", "data", "metadata" FROM "database2" WHERE "collection" = ?;
@@ -3480,13 +3480,13 @@
 				
 				block(rowid, key, object, metadata, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -3495,7 +3495,7 @@
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_collection);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -3535,7 +3535,7 @@
 	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	BOOL unlimitedObjectCacheLimit = (connection->objectCacheLimit == 0);
@@ -3640,13 +3640,13 @@
 					
 					block(rowid, collection, key, object, metadata, &stop);
 					
-					if (stop || isMutated) break;
+					if (stop || mutation.isMutated) break;
 				}
 				
 			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 		}
 		
-		if ((status != SQLITE_DONE) && !stop && !isMutated)
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 		{
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
@@ -3655,7 +3655,7 @@
 		sqlite3_reset(statement);
 		FreeYapDatabaseString(&_collection);
 		
-		if (isMutated && !stop)
+		if (!stop && mutation.isMutated)
 		{
 			@throw [self mutationDuringEnumerationException];
 		}
@@ -3704,7 +3704,7 @@
 	sqlite3_stmt *statement = [connection enumerateRowsInAllCollectionsStatement];
 	if (statement == NULL) return;
 	
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
 	BOOL stop = NO;
 	
 	// SELECT "rowid", "collection", "key", "data", "metadata" FROM "database2" ORDER BY \"collection\" ASC;";
@@ -3789,13 +3789,13 @@
 				
 				block(rowid, collection, key, object, metadata, &stop);
 				
-				if (stop || isMutated) break;
+				if (stop || mutation.isMutated) break;
 			}
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
@@ -3803,7 +3803,7 @@
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [self mutationDuringEnumerationException];
 	}
@@ -4531,7 +4531,7 @@
 	if (!set) return;
 	
 	connection->hasDiskChanges = YES;
-	isMutated = YES;  // mutation during enumeration protection
+	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 	
 	[connection->keyCache setObject:cacheKey forKey:@(rowid)];
 	
@@ -4754,7 +4754,7 @@
 	if (!updated) return;
 	
 	connection->hasDiskChanges = YES;
-	isMutated = YES;  // mutation during enumeration protection
+	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 	
 	id _object = nil;
 	if (connection->objectPolicy == YapDatabasePolicyContainment) {
@@ -4934,7 +4934,7 @@
 	if (!updated) return;
 	
 	connection->hasDiskChanges = YES;
-	isMutated = YES;  // mutation during enumeration protection
+	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 	
 	if (metadata)
 	{
@@ -5081,17 +5081,16 @@
 	if (!removed) return;
 	
 	connection->hasDiskChanges = YES;
-	isMutated = YES;  // mutation during enumeration protection
-	NSNumber *rowidNumber = @(rowid);
+	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 	
-	[connection->keyCache removeObjectForKey:rowidNumber];
+	[connection->keyCache removeObjectForKey:@(rowid)];
 	[connection->objectCache removeObjectForKey:cacheKey];
 	[connection->metadataCache removeObjectForKey:cacheKey];
 	
 	[connection->objectChanges removeObjectForKey:cacheKey];
 	[connection->metadataChanges removeObjectForKey:cacheKey];
 	[connection->removedKeys addObject:cacheKey];
-	[connection->removedRowids addObject:rowidNumber];
+	[connection->removedRowids addObject:@(rowid)];
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
@@ -5279,7 +5278,7 @@
 			statement = NULL;
 			
 			connection->hasDiskChanges = YES;
-			isMutated = YES;  // mutation during enumeration protection
+			[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 			
 			[connection->keyCache removeObjectsForKeys:foundRowids];
 			[connection->removedRowids addObjectsFromArray:foundRowids];
@@ -5429,7 +5428,7 @@
 		FreeYapDatabaseString(&_collection);
 		
 		connection->hasDiskChanges = YES;
-		isMutated = YES;  // mutation during enumeration protection
+		[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 		
 		return;
 	} // end shortcut
@@ -5571,7 +5570,7 @@
 			statement = NULL;
 			
 			connection->hasDiskChanges = YES;
-			isMutated = YES;  // mutation during enumeration protection
+			[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 			
 			[connection->removedRowids addObjectsFromArray:foundRowids];
 			
@@ -5612,7 +5611,7 @@
 	sqlite3_reset(statement);
 	
 	connection->hasDiskChanges = YES;
-	isMutated = YES;  // mutation during enumeration protection
+	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
 	
 	[connection->keyCache removeAllObjects];
 	[connection->objectCache removeAllObjects];

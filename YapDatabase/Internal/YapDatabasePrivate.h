@@ -9,6 +9,7 @@
 #import "YapCache.h"
 #import "YapMemoryTable.h"
 #import "YapCollectionKey.h"
+#import "YapMutationStack.h"
 
 #import "sqlite3.h"
 
@@ -201,6 +202,8 @@ static NSString *const ext_key_class = @"class";
 	NSMutableSet *removedCollections;
 	NSMutableSet *removedRowids;
 	BOOL allKeysRemoved;
+	
+	YapMutationStack_Bool *mutationStack;
 }
 
 - (id)initWithDatabase:(YapDatabase *)database;
@@ -283,8 +286,6 @@ static NSString *const ext_key_class = @"class";
 	
 @protected
 	NSMutableDictionary *extensions;
-	
-	BOOL isMutated; // Used for "mutation during enumeration" protection
 	
 @public
 	__unsafe_unretained YapDatabaseConnection *connection;

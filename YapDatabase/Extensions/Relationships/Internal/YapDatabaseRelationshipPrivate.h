@@ -72,8 +72,6 @@
 	NSMutableDictionary *deletedInfo; // key:(NSNumber *)rowidNumber, value:(YapCollectionKey *)collectionKey
 	
 	NSMutableSet *filesToDelete;
-	
-//	NSMutableSet *mutatedSomething;
 }
 
 - (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;

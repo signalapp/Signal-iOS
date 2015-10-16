@@ -2131,6 +2131,9 @@ NS_INLINE BOOL YDBIsMainThread()
 	
 	allKeysRemoved = NO;
 	
+	if (mutationStack == nil)
+		mutationStack = [[YapMutationStack_Bool alloc] init];
+	
 	// Pre-Write-Transaction: Step 5 of 5
 	//
 	// Add IsOnConnectionQueueKey flag to writeQueue.
@@ -2149,7 +2152,9 @@ NS_INLINE BOOL YDBIsMainThread()
 {
 	if (transaction->rollback)
 	{
-		// Rollback-Write-Transaction: Step 1 of 4
+		YDBLogVerbose(@"YapDatabaseConnection(%p) rollback read-write transaction", self);
+		
+		// Rollback-Write-Transaction: Step 1 of 3
 		//
 		// Update our connection state within the state table.
 		//
@@ -2168,307 +2173,289 @@ NS_INLINE BOOL YDBIsMainThread()
 			}
 		});
 		
-		// Rollback-Write-Transaction: Step 2 of 4
+		// Rollback-Write-Transaction: Step 2 of 3
 		//
 		// Rollback sqlite database transaction.
 		
 		[transaction rollbackTransaction];
 		
-		// Rollback-Write-Transaction: Step 3 of 4
+		// Rollback-Write-Transaction: Step 3 of 3
 		//
 		// Reset any in-memory variables which may be out-of-sync with the database.
 		
 		[objectCache removeAllObjects];
 		[metadataCache removeAllObjects];
 		
-		if ([objectChanges count] > 0)
-			objectChanges = nil;
-		
-		if ([metadataChanges count] > 0)
-			metadataChanges = nil;
-		
-		if ([removedKeys count] > 0)
-			removedKeys = nil;
-		
-		if ([removedCollections count] > 0)
-			removedCollections = nil;
-		
-		if ([removedRowids count] > 0)
-			removedRowids = nil;
-		
-		// Rollback-Write-Transaction: Step 4 of 4
-		//
-		// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
-		
-		dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
-		
-		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction (rollback).", self);
-		
-		return;
 	}
-	
-	// Post-Write-Transaction: Step 1 of 11
-	//
-	// Run any pre-commit operations.
-	// This allows extensions to to perform any cleanup before the changeset is requested.
-	
-	[transaction preCommitReadWriteTransaction];
-	
-	// Post-Write-Transaction: Step 2 of 11
-	//
-	// Fetch changesets.
-	// Then update the snapshot in the 'yap' database (if any changes were made).
-	// We use 'yap' database and snapshot value to check for a race condition.
-	//
-	// The "internal" changeset gets sent directly to sibling database connections.
-	// The "external" changeset gets plugged into the YapDatabaseModifiedNotification as the userInfo dict.
-	
-	NSNotification *notification = nil;
-	
-	NSMutableDictionary *changeset = nil;
-	NSMutableDictionary *userInfo = nil;
-	
-	[self getInternalChangeset:&changeset externalChangeset:&userInfo];
-	if (changeset || userInfo || hasDiskChanges)
+	else // if (!transaction->rollback)
 	{
-		// If hasDiskChanges is YES, then the database file was modified.
-		// In this case, we're sure to write the incremented snapshot number to the database.
+		// Post-Write-Transaction: Step 1 of 10
 		//
-		// If hasDiskChanges is NO, then the database file was not modified.
-		// However, something was "touched" or an in-memory extension was changed.
+		// Run any pre-commit operations.
+		// This allows extensions to to perform any cleanup before the changeset is requested.
 		
-		if (hasDiskChanges)
-			snapshot = [self incrementSnapshotInDatabase];
-		else
-			snapshot++;
+		[transaction preCommitReadWriteTransaction];
 		
-		if (changeset == nil)
-			changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+		// Post-Write-Transaction: Step 2 of 10
+		//
+		// Fetch changesets.
+		// Then update the snapshot in the 'yap' database (if any changes were made).
+		// We use 'yap' database and snapshot value to check for a race condition.
+		//
+		// The "internal" changeset gets sent directly to sibling database connections.
+		// The "external" changeset gets plugged into the YapDatabaseModifiedNotification as the userInfo dict.
 		
-		if (userInfo == nil)
-			userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+		NSNotification *notification = nil;
 		
-		[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
-		[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+		NSMutableDictionary *changeset = nil;
+		NSMutableDictionary *userInfo = nil;
 		
-		[userInfo setObject:self forKey:YapDatabaseConnectionKey];
-		
-		if (transaction->customObjectForNotification)
-			[userInfo setObject:transaction->customObjectForNotification forKey:YapDatabaseCustomKey];
-		
-		notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
-		                                             object:database
-		                                           userInfo:userInfo];
-		
-		[changeset setObject:notification forKey:YapDatabaseNotificationKey];
-	}
-	
-	// Post-Write-Transaction: Step 3 of 11
-	//
-	// Auto-drop tables from previous extensions that aren't being used anymore.
-	//
-	// Note the timing of when this happens:
-	// - Only once
-	// - At the end of a readwrite transaction that has made modifications to the database
-	// - Only if the modifications weren't dedicated to registering/unregistring an extension
-	
-	BOOL clearPreviouslyRegisteredExtensionNames = NO;
-	
-	if (changeset && !registeredExtensionsChanged && database->previouslyRegisteredExtensionNames)
-	{
-		for (NSString *prevExtensionName in database->previouslyRegisteredExtensionNames)
+		[self getInternalChangeset:&changeset externalChangeset:&userInfo];
+		if (changeset || userInfo || hasDiskChanges)
 		{
-			if ([registeredExtensions objectForKey:prevExtensionName] == nil)
-			{
-				[self _unregisterExtensionWithName:prevExtensionName transaction:transaction];
-			}
+			// If hasDiskChanges is YES, then the database file was modified.
+			// In this case, we're sure to write the incremented snapshot number to the database.
+			//
+			// If hasDiskChanges is NO, then the database file was not modified.
+			// However, something was "touched" or an in-memory extension was changed.
+			
+			if (hasDiskChanges)
+				snapshot = [self incrementSnapshotInDatabase];
+			else
+				snapshot++;
+			
+			if (changeset == nil)
+				changeset = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForInternalChangeset];
+			
+			if (userInfo == nil)
+				userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
+			
+			[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+			[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+			
+			[userInfo setObject:self forKey:YapDatabaseConnectionKey];
+		
+			if (transaction->customObjectForNotification)
+				[userInfo setObject:transaction->customObjectForNotification forKey:YapDatabaseCustomKey];
+			
+			notification = [NSNotification notificationWithName:YapDatabaseModifiedNotification
+			                                             object:database
+			                                           userInfo:userInfo];
+			
+			[changeset setObject:notification forKey:YapDatabaseNotificationKey];
 		}
 		
-		clearPreviouslyRegisteredExtensionNames = YES;
-	}
-	
-	// Post-Write-Transaction: Step 4 of 11
-	//
-	// Check to see if it's safe to commit our changes.
-	//
-	// There may be read-only transactions that have acquired "yap-level" snapshots
-	// without "sql-level" snapshots. That is, these read-only transaction may have a snapshot
-	// of the in-memory metadata dictionary at the time they started, but as for the sqlite connection
-	// they only have a "BEGIN DEFERRED TRANSACTION", and haven't actually executed
-	// any "select" statements. Thus they haven't actually invoked the sqlite machinery to
-	// acquire the "sql-level" snapshot (last valid commit record in the WAL).
-	//
-	// It is our responsibility to block until all read-only transactions have either completed,
-	// or have acquired the necessary "sql-level" shared read lock.
-	//
-	// We avoid writer starvation by enforcing new read-only transactions that start after our writer
-	// started to immediately acquire "sql-level" shared read locks when they start.
-	// Thus we would only ever wait for read-only transactions that started before our
-	// read-write transaction started. And since most of the time the read-write transactions
-	// take longer than read-only transactions, we avoid any blocking in most cases.
-	
-	__block YapDatabaseConnectionState *myState = nil;
-	__block BOOL safeToCommit = NO;
-	
-	do
-	{
-		__block BOOL waitForReadOnlyTransactions = NO;
+		// Post-Write-Transaction: Step 3 of 10
+		//
+		// Auto-drop tables from previous extensions that aren't being used anymore.
+		//
+		// Note the timing of when this happens:
+		// - Only once
+		// - At the end of a readwrite transaction that has made modifications to the database
+		// - Only if the modifications weren't dedicated to registering/unregistring an extension
 		
+		BOOL clearPreviouslyRegisteredExtensionNames = NO;
+		
+		if (changeset && !registeredExtensionsChanged && database->previouslyRegisteredExtensionNames)
+		{
+			for (NSString *prevExtensionName in database->previouslyRegisteredExtensionNames)
+			{
+				if ([registeredExtensions objectForKey:prevExtensionName] == nil)
+				{
+					[self _unregisterExtensionWithName:prevExtensionName transaction:transaction];
+				}
+			}
+			
+			clearPreviouslyRegisteredExtensionNames = YES;
+		}
+		
+		// Post-Write-Transaction: Step 4 of 10
+		//
+		// Check to see if it's safe to commit our changes.
+		//
+		// There may be read-only transactions that have acquired "yap-level" snapshots
+		// without "sql-level" snapshots. That is, these read-only transaction may have a snapshot
+		// of the in-memory metadata dictionary at the time they started, but as for the sqlite connection
+		// they only have a "BEGIN DEFERRED TRANSACTION", and haven't actually executed
+		// any "select" statements. Thus they haven't actually invoked the sqlite machinery to
+		// acquire the "sql-level" snapshot (last valid commit record in the WAL).
+		//
+		// It is our responsibility to block until all read-only transactions have either completed,
+		// or have acquired the necessary "sql-level" shared read lock.
+		//
+		// We avoid writer starvation by enforcing new read-only transactions that start after our writer
+		// started to immediately acquire "sql-level" shared read locks when they start.
+		// Thus we would only ever wait for read-only transactions that started before our
+		// read-write transaction started. And since most of the time the read-write transactions
+		// take longer than read-only transactions, we avoid any blocking in most cases.
+		
+		__block YapDatabaseConnectionState *myState = nil;
+		__block BOOL safeToCommit = NO;
+		
+		do
+		{
+			__block BOOL waitForReadOnlyTransactions = NO;
+			
+			dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+				
+				for (YapDatabaseConnectionState *state in database->connectionStates)
+				{
+					if (state->connection == self)
+					{
+						myState = state;
+					}
+					else if (state->activeReadTransaction && !state->sqlLevelSharedReadLock)
+					{
+						waitForReadOnlyTransactions = YES;
+					}
+				}
+				
+				NSAssert(myState != nil, @"Missing state in database->connectionStates");
+				
+				if (waitForReadOnlyTransactions)
+				{
+					myState->waitingForWriteLock = YES;
+					[myState prepareWriteLock];
+				}
+				else
+				{
+					myState->waitingForWriteLock = NO;
+					safeToCommit = YES;
+					
+					// Post-Write-Transaction: Step 5 of 10
+					//
+					// Register pending changeset with database.
+					// Our commit is actually a two step process.
+					// First we execute the sqlite level commit.
+					// Second we execute the final stages of the yap level commit.
+					//
+					// This two step process means we have an edge case,
+					// where another connection could come around and begin its yap level transaction
+					// before this connection's yap level commit, but after this connection's sqlite level commit.
+					//
+					// By registering the pending changeset in advance,
+					// we provide a near seamless workaround for the edge case.
+					
+					if (changeset)
+					{
+						[database notePendingChanges:changeset fromConnection:self];
+					}
+					
+					if (clearPreviouslyRegisteredExtensionNames)
+					{
+						// It's only safe to clear this ivar within the snapshot queue
+						database->previouslyRegisteredExtensionNames = nil;
+					}
+				}
+				
+			}});
+		
+			if (waitForReadOnlyTransactions)
+			{
+				// Block until a read-only transaction signals us.
+				// This will occur when the last read-only transaction (that started before our read-write
+				// transaction started) either completes or acquires an "sql-level" shared read lock.
+				//
+				// Note: Since we're using a dispatch semaphore, order doesn't matter.
+				// That is, it's fine if the read-only transaction signals our write lock before we start waiting on it.
+				// In this case we simply return immediately from the wait call.
+				
+				YDBLogVerbose(@"YapDatabaseConnection(%p) blocked waiting for write lock...", self);
+				
+				[myState waitForWriteLock];
+			}
+			
+		} while (!safeToCommit);
+	
+		// Post-Write-Transaction: Step 6 of 10
+		//
+		// Execute "COMMIT TRANSACTION" on database connection.
+		// This will write the changes to the WAL, and may invoke a checkpoint.
+		//
+		// Notice that we do this outside the context of the transactionStateQueue.
+		// We do this so we don't block read-only transactions from starting or finishing.
+		// However, this does leave us open for the possibility that a read-only transaction will
+		// get a "yap-level" snapshot of the metadata dictionary before this commit,
+		// but a "sql-level" snapshot of the sql database after this commit.
+		// This is rare but must be guarded against.
+		// The solution is pretty simple and straight-forward.
+		// When a read-only transaction starts, if there's an active write transaction,
+		// it immediately acquires an "sql-level" snapshot. It does this by invoking a select statement,
+		// which invokes the internal sqlite snapshot machinery for the transaction.
+		// So rather than using a dummy select statement that we ignore, we instead select a lastCommit number
+		// from the database. If it doesn't match what we expect, then we know we've run into the race condition,
+		// and we make the read-only transaction back out and try again.
+		
+		[transaction commitTransaction];
+		
+		__block uint64_t minSnapshot = UINT64_MAX;
+	
 		dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+			
+			// Post-Write-Transaction: Step 7 of 10
+			//
+			// Notify database of changes, and drop reference to set of changed keys.
+			
+			if (changeset)
+			{
+				[database noteCommittedChanges:changeset fromConnection:self];
+			}
+			
+			// Post-Write-Transaction: Step 8 of 10
+			//
+			// Update our connection state within the state table.
+			//
+			// We are the only write transaction for this database.
+			// It is important for read-only transactions on other connections to know we're no longer a writer.
 			
 			for (YapDatabaseConnectionState *state in database->connectionStates)
 			{
-				if (state->connection == self)
+				if (state->activeReadTransaction)
 				{
-					myState = state;
-				}
-				else if (state->activeReadTransaction && !state->sqlLevelSharedReadLock)
-				{
-					waitForReadOnlyTransactions = YES;
+					minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
 				}
 			}
 			
-			NSAssert(myState != nil, @"Missing state in database->connectionStates");
+			myState->activeWriteTransaction = NO;
+			myState->waitingForWriteLock = NO;
 			
-			if (waitForReadOnlyTransactions)
-			{
-				myState->waitingForWriteLock = YES;
-				[myState prepareWriteLock];
-			}
-			else
-			{
-				myState->waitingForWriteLock = NO;
-				safeToCommit = YES;
-				
-				// Post-Write-Transaction: Step 5 of 11
-				//
-				// Register pending changeset with database.
-				// Our commit is actually a two step process.
-				// First we execute the sqlite level commit.
-				// Second we execute the final stages of the yap level commit.
-				//
-				// This two step process means we have an edge case,
-				// where another connection could come around and begin its yap level transaction
-				// before this connection's yap level commit, but after this connection's sqlite level commit.
-				//
-				// By registering the pending changeset in advance,
-				// we provide a near seamless workaround for the edge case.
-				
-				if (changeset)
-				{
-					[database notePendingChanges:changeset fromConnection:self];
-				}
-				
-				if (clearPreviouslyRegisteredExtensionNames)
-				{
-					// It's only safe to clear this ivar within the snapshot queue
-					database->previouslyRegisteredExtensionNames = nil;
-				}
-			}
-			
+			YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
 		}});
-		
-		if (waitForReadOnlyTransactions)
-		{
-			// Block until a read-only transaction signals us.
-			// This will occur when the last read-only transaction (that started before our read-write
-			// transaction started) either completes or acquires an "sql-level" shared read lock.
-			//
-			// Note: Since we're using a dispatch semaphore, order doesn't matter.
-			// That is, it's fine if the read-only transaction signals our write lock before we start waiting on it.
-			// In this case we simply return immediately from the wait call.
-			
-			YDBLogVerbose(@"YapDatabaseConnection(%p) blocked waiting for write lock...", self);
-			
-			[myState waitForWriteLock];
-		}
-		
-	} while (!safeToCommit);
 	
-	// Post-Write-Transaction: Step 6 of 11
-	//
-	// Execute "COMMIT TRANSACTION" on database connection.
-	// This will write the changes to the WAL, and may invoke a checkpoint.
-	//
-	// Notice that we do this outside the context of the transactionStateQueue.
-	// We do this so we don't block read-only transactions from starting or finishing.
-	// However, this does leave us open for the possibility that a read-only transaction will
-	// get a "yap-level" snapshot of the metadata dictionary before this commit,
-	// but a "sql-level" snapshot of the sql database after this commit.
-	// This is rare but must be guarded against.
-	// The solution is pretty simple and straight-forward.
-	// When a read-only transaction starts, if there's an active write transaction,
-	// it immediately acquires an "sql-level" snapshot. It does this by invoking a select statement,
-	// which invokes the internal sqlite snapshot machinery for the transaction.
-	// So rather than using a dummy select statement that we ignore, we instead select a lastCommit number
-	// from the database. If it doesn't match what we expect, then we know we've run into the race condition,
-	// and we make the read-only transaction back out and try again.
-	
-	[transaction commitTransaction];
-	
-	__block uint64_t minSnapshot = UINT64_MAX;
-	
-	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
-		
-		// Post-Write-Transaction: Step 7 of 11
-		//
-		// Notify database of changes, and drop reference to set of changed keys.
-		
 		if (changeset)
 		{
-			[database noteCommittedChanges:changeset fromConnection:self];
-		}
-		
-		// Post-Write-Transaction: Step 8 of 11
-		//
-		// Update our connection state within the state table.
-		//
-		// We are the only write transaction for this database.
-		// It is important for read-only transactions on other connections to know we're no longer a writer.
-		
-		for (YapDatabaseConnectionState *state in database->connectionStates)
-		{
-			if (state->activeReadTransaction)
+			// Post-Write-Transaction: Step 9 of 10
+			//
+			// We added frames to the WAL.
+			// We can invoke a checkpoint if there are no other active connections.
+			
+			if (minSnapshot == UINT64_MAX)
 			{
-				minSnapshot = MIN(state->lastTransactionSnapshot, minSnapshot);
+				[database asyncCheckpoint:snapshot];
+				
+				[registeredMemoryTables enumerateKeysAndObjectsUsingBlock:
+				    ^(id __unused key, YapMemoryTable *memoryTable, BOOL __unused *stop)
+				{
+					[memoryTable asyncCheckpoint:snapshot];
+				}];
 			}
 		}
-		
-		myState->activeWriteTransaction = NO;
-		myState->waitingForWriteLock = NO;
-		
-		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-write transaction.", self);
-	}});
 	
-	if (changeset)
-	{
-		// Post-Write-Transaction: Step 9 of 11
+		// Post-Write-Transaction: Step 10 of 10
 		//
-		// We added frames to the WAL.
-		// We can invoke a checkpoint if there are no other active connections.
+		// Post YapDatabaseModifiedNotification (if needed)
 		
-		if (minSnapshot == UINT64_MAX)
+		if (notification)
 		{
-			[database asyncCheckpoint:snapshot];
-			
-			[registeredMemoryTables enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL __unused *stop) {
-				
-				[(YapMemoryTable *)obj asyncCheckpoint:snapshot];
-			}];
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[[NSNotificationCenter defaultCenter] postNotification:notification];
+			});
 		}
-	}
 	
-	// Post-Write-Transaction: Step 10 of 11
-	//
-	// Post YapDatabaseModifiedNotification (if needed),
-	// and clear changeset variables (which are now a part of the notification).
+	} // end else if (!transaction->rollback)
 	
-	if (notification)
-	{
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[[NSNotificationCenter defaultCenter] postNotification:notification];
-		});
-	}
+	
+	// Clear changeset variables (which are now a part of the notification)
 	
 	if ([objectChanges count] > 0)
 		objectChanges = nil;
@@ -2485,8 +2472,8 @@ NS_INLINE BOOL YDBIsMainThread()
 	if ([removedRowids count] > 0)
 		removedRowids = nil;
 	
-	// Post-Write-Transaction: Step 11 of 11
-	//
+	[mutationStack clear];
+	
 	// Drop IsOnConnectionQueueKey flag from writeQueue since we're exiting writeQueue.
 	
 	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, NULL, NULL);
