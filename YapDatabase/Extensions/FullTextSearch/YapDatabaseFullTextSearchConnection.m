@@ -35,14 +35,14 @@
 	sqlite3_stmt *rowidQuerySnippetStatement;
 }
 
-@synthesize fullTextSearch = fts;
+@synthesize fullTextSearch = parent;
 
-- (id)initWithFTS:(YapDatabaseFullTextSearch *)inFTS
-   databaseConnection:(YapDatabaseConnection *)inDatabaseConnection
+- (id)initWithParent:(YapDatabaseFullTextSearch *)inParent
+  databaseConnection:(YapDatabaseConnection *)inDatabaseConnection
 {
 	if ((self = [super init]))
 	{
-		fts = inFTS;
+		parent = inParent;
 		databaseConnection = inDatabaseConnection;
 	}
 	return self;
@@ -85,7 +85,7 @@
 **/
 - (YapDatabaseExtension *)extension
 {
-	return fts;
+	return parent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,8 +98,8 @@
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	YapDatabaseFullTextSearchTransaction *transaction =
-	  [[YapDatabaseFullTextSearchTransaction alloc] initWithFTSConnection:self
-	                                                  databaseTransaction:databaseTransaction];
+	  [[YapDatabaseFullTextSearchTransaction alloc] initWithParentConnection:self
+	                                                     databaseTransaction:databaseTransaction];
 	
 	return transaction;
 }
@@ -110,18 +110,38 @@
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	YapDatabaseFullTextSearchTransaction *transaction =
-	  [[YapDatabaseFullTextSearchTransaction alloc] initWithFTSConnection:self
-	                                                  databaseTransaction:databaseTransaction];
+	  [[YapDatabaseFullTextSearchTransaction alloc] initWithParentConnection:self
+	                                                     databaseTransaction:databaseTransaction];
 	
-	if (blockDict == nil)
-		blockDict = [NSMutableDictionary dictionaryWithSharedKeySet:fts->columnNamesSharedKeySet];
-	
+	[self prepareForReadWriteTransaction];
 	return transaction;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Changeset
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Initializes any ivars that a read-write transaction may need.
+**/
+- (void)prepareForReadWriteTransaction
+{
+	if (blockDict == nil)
+		blockDict = [NSMutableDictionary dictionaryWithSharedKeySet:parent->columnNamesSharedKeySet];
+	
+	if (mutationStack == nil)
+		mutationStack = [[YapMutationStack_Bool alloc] init];
+}
+
+- (void)postCommitCleanup
+{
+	[mutationStack clear];
+}
+
+- (void)postRollbackCleanup
+{
+	[mutationStack clear];
+}
 
 /**
  * Required override method from YapDatabaseExtensionConnection
@@ -157,16 +177,16 @@
 	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [fts tableName]];
+		[string appendFormat:@"INSERT INTO \"%@\" (\"rowid\"", [parent tableName]];
 		
-		for (NSString *columnName in fts->columnNames)
+		for (NSString *columnName in parent->columnNames)
 		{
 			[string appendFormat:@", \"%@\"", columnName];
 		}
 		
 		[string appendString:@") VALUES (?"];
 		
-		NSUInteger count = [fts->columnNames count];
+		NSUInteger count = [parent->columnNames count];
 		NSUInteger i;
 		for (i = 0; i < count; i++)
 		{
@@ -193,16 +213,16 @@
 	if (*statement == NULL)
 	{
 		NSMutableString *string = [NSMutableString stringWithCapacity:100];
-		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [fts tableName]];
+		[string appendFormat:@"INSERT OR REPLACE INTO \"%@\" (\"rowid\"", [parent tableName]];
 		
-		for (NSString *columnName in fts->columnNames)
+		for (NSString *columnName in parent->columnNames)
 		{
 			[string appendFormat:@", \"%@\"", columnName];
 		}
 		
 		[string appendString:@") VALUES (?"];
 		
-		NSUInteger count = [fts->columnNames count];
+		NSUInteger count = [parent->columnNames count];
 		NSUInteger i;
 		for (i = 0; i < count; i++)
 		{
@@ -228,7 +248,7 @@
 	sqlite3_stmt **statement = &removeRowidStatement;
 	if (*statement == NULL)
 	{
-		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [fts tableName]];
+		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\" WHERE \"rowid\" = ?;", [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -247,7 +267,7 @@
 	sqlite3_stmt **statement = &removeAllStatement;
 	if (*statement == NULL)
 	{
-		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [fts tableName]];
+		NSString *string = [NSString stringWithFormat:@"DELETE FROM \"%@\";", [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -267,7 +287,7 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;", [fts tableName]];
+		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;", [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -288,7 +308,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"%1$@\" MATCH ?;",
-		  [fts tableName]];
+		  [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -308,7 +328,7 @@
 	if (*statement == NULL)
 	{
 		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;", [fts tableName]];
+		  @"SELECT \"rowid\" FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;", [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		
@@ -329,7 +349,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", snippet(\"%1$@\", ?, ?, ?, ?, ?) FROM \"%1$@\" WHERE \"rowid\" = ? AND \"%1$@\" MATCH ?;",
-		  [fts tableName]];
+		  [parent tableName]];
 		
 		sqlite3 *db = databaseConnection->db;
 		

@@ -27,12 +27,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 
 @implementation YapDatabaseFullTextSearchTransaction
 
-- (id)initWithFTSConnection:(YapDatabaseFullTextSearchConnection *)inFTSConnection
-        databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
+- (id)initWithParentConnection:(YapDatabaseFullTextSearchConnection *)inParentConnection
+           databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
 {
 	if ((self = [super init]))
 	{
-		ftsConnection = inFTSConnection;
+		parentConnection = inParentConnection;
 		databaseTransaction = inDatabaseTransaction;
 	}
 	return self;
@@ -67,7 +67,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		
 		[self setIntValue:classVersion forExtensionKey:ext_key__classVersion persistent:YES];
 		
-		NSString *versionTag = ftsConnection->fts->versionTag;
+		NSString *versionTag = parentConnection->parent->versionTag;
 		[self setStringValue:versionTag forExtensionKey:ext_key__versionTag persistent:YES];
 	}
 	else
@@ -75,7 +75,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		// Check user-supplied config version.
 		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
 		
-		NSString *versionTag = ftsConnection->fts->versionTag;
+		NSString *versionTag = parentConnection->parent->versionTag;
 		
 		NSString *oldVersionTag = [self stringValueForExtensionKey:ext_key__versionTag persistent:YES];
 		
@@ -173,7 +173,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	__block NSUInteger i = 0;
 	
-	NSOrderedSet *columnNames = ftsConnection->fts->columnNames;
+	NSOrderedSet *columnNames = parentConnection->parent->columnNames;
 	for (NSString *columnName in columnNames)
 	{
 		if (i == 0)
@@ -184,7 +184,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		i++;
 	}
 	
-	NSDictionary *options = ftsConnection->fts->options;
+	NSDictionary *options = parentConnection->parent->options;
 	[options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 		
 		NSString *option = (NSString *)key;
@@ -225,7 +225,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Enumerate the existing rows in the database and populate the indexes
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	if (handler->blockType == YapDatabaseBlockTypeWithKey)
 	{
@@ -235,12 +235,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 		[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:
 		    ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop) {
 			
-			block(ftsConnection->blockDict, collection, key);
+			block(parentConnection->blockDict, collection, key);
 			
-			if ([ftsConnection->blockDict count] > 0)
+			if ([parentConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
-				[ftsConnection->blockDict removeAllObjects];
+				[parentConnection->blockDict removeAllObjects];
 			}
 		}];
 	}
@@ -252,12 +252,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 		[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:
 		    ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop) {
 			
-			block(ftsConnection->blockDict, collection, key, object);
+			block(parentConnection->blockDict, collection, key, object);
 			
-			if ([ftsConnection->blockDict count] > 0)
+			if ([parentConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
-				[ftsConnection->blockDict removeAllObjects];
+				[parentConnection->blockDict removeAllObjects];
 			}
 		}];
 	}
@@ -269,12 +269,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 		[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:
 		    ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop) {
 			
-			block(ftsConnection->blockDict, collection, key, metadata);
+			block(parentConnection->blockDict, collection, key, metadata);
 			
-			if ([ftsConnection->blockDict count] > 0)
+			if ([parentConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
-				[ftsConnection->blockDict removeAllObjects];
+				[parentConnection->blockDict removeAllObjects];
 			}
 		}];
 	}
@@ -286,12 +286,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 		[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:
 		    ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop) {
 			
-			block(ftsConnection->blockDict, collection, key, object, metadata);
+			block(parentConnection->blockDict, collection, key, object, metadata);
 			
-			if ([ftsConnection->blockDict count] > 0)
+			if ([parentConnection->blockDict count] > 0)
 			{
 				[self addRowid:rowid isNew:YES];
-				[ftsConnection->blockDict removeAllObjects];
+				[parentConnection->blockDict removeAllObjects];
 			}
 		}];
 	}
@@ -316,17 +316,17 @@ static NSString *const ext_key__version_deprecated = @"version";
 **/
 - (YapDatabaseExtensionConnection *)extensionConnection
 {
-	return ftsConnection;
+	return parentConnection;
 }
 
 - (NSString *)registeredName
 {
-	return [ftsConnection->fts registeredName];
+	return [parentConnection->parent registeredName];
 }
 
 - (NSString *)tableName
 {
-	return [ftsConnection->fts tableName];
+	return [parentConnection->parent tableName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,9 +339,9 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	sqlite3_stmt *statement = NULL;
 	if (isNew)
-		statement = [ftsConnection insertRowidStatement];
+		statement = [parentConnection insertRowidStatement];
 	else
-		statement = [ftsConnection setRowidStatement];
+		statement = [parentConnection setRowidStatement];
 	
 	if (statement == NULL)
 		return;
@@ -352,9 +352,9 @@ static NSString *const ext_key__version_deprecated = @"version";
 	sqlite3_bind_int64(statement, SQLITE_BIND_START, rowid);
 	
 	int i = SQLITE_BIND_START + 1;
-	for (NSString *columnName in ftsConnection->fts->columnNames)
+	for (NSString *columnName in parentConnection->parent->columnNames)
 	{
-		NSString *columnValue = [ftsConnection->blockDict objectForKey:columnName];
+		NSString *columnValue = [parentConnection->blockDict objectForKey:columnName];
 		if (columnValue)
 		{
 			sqlite3_bind_text(statement, i, [columnValue UTF8String], -1, SQLITE_TRANSIENT);
@@ -374,14 +374,14 @@ static NSString *const ext_key__version_deprecated = @"version";
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	isMutated = YES;
+	[parentConnection->mutationStack markAsMutated];
 }
 
 - (void)removeRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
-	sqlite3_stmt *statement = [ftsConnection removeRowidStatement];
+	sqlite3_stmt *statement = [parentConnection removeRowidStatement];
 	if (statement == NULL) return;
 	
 	// DELETE FROM "tableName" WHERE "rowid" = ?;
@@ -400,7 +400,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
 	
-	isMutated = YES;
+	[parentConnection->mutationStack markAsMutated];
 }
 
 - (void)removeRowids:(NSArray *)rowids
@@ -465,14 +465,14 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	sqlite3_finalize(statement);
 	
-	isMutated = YES;
+	[parentConnection->mutationStack markAsMutated];
 }
 
 - (void)removeAllRowids
 {
 	YDBLogAutoTrace();
 	
-	sqlite3_stmt *statement = [ftsConnection removeAllStatement];
+	sqlite3_stmt *statement = [parentConnection removeAllStatement];
 	if (statement == NULL)
 		return;
 	
@@ -492,7 +492,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	sqlite3_reset(statement);
 	
-	isMutated = YES;
+	[parentConnection->mutationStack markAsMutated];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -504,12 +504,16 @@ static NSString *const ext_key__version_deprecated = @"version";
 **/
 - (void)didCommitTransaction
 {
+	YDBLogAutoTrace();
+	
+	[parentConnection postCommitCleanup];
+	
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
 	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
 	
-	ftsConnection = nil;       // Do not remove !
+	parentConnection = nil;       // Do not remove !
 	databaseTransaction = nil; // Do not remove !
 }
 
@@ -518,12 +522,16 @@ static NSString *const ext_key__version_deprecated = @"version";
 **/
 - (void)didRollbackTransaction
 {
+	YDBLogAutoTrace();
+	
+	[parentConnection postRollbackCleanup];
+	
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
 	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
 	
-	ftsConnection = nil;       // Do not remove !
+	parentConnection = nil;       // Do not remove !
 	databaseTransaction = nil; // Do not remove !
 }
 
@@ -547,38 +555,38 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	// Invoke the block to find out if the object should be included in the index.
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	if (handler->blockType == YapDatabaseBlockTypeWithKey)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithKeyBlock block =
 		    (YapDatabaseFullTextSearchWithKeyBlock)handler->block;
 		
-		block(ftsConnection->blockDict, collection, key);
+		block(parentConnection->blockDict, collection, key);
 	}
 	else if (handler->blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithObjectBlock block =
 		    (YapDatabaseFullTextSearchWithObjectBlock)handler->block;
 		
-		block(ftsConnection->blockDict, collection, key, object);
+		block(parentConnection->blockDict, collection, key, object);
 	}
 	else if (handler->blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithMetadataBlock block =
 		    (YapDatabaseFullTextSearchWithMetadataBlock)handler->block;
 		
-		block(ftsConnection->blockDict, collection, key, metadata);
+		block(parentConnection->blockDict, collection, key, metadata);
 	}
 	else
 	{
 		__unsafe_unretained YapDatabaseFullTextSearchWithRowBlock block =
 		    (YapDatabaseFullTextSearchWithRowBlock)handler->block;
 		
-		block(ftsConnection->blockDict, collection, key, object, metadata);
+		block(parentConnection->blockDict, collection, key, object, metadata);
 	}
 	
-	if ([ftsConnection->blockDict count] == 0)
+	if ([parentConnection->blockDict count] == 0)
 	{
 		// This was an insert operation, so we don't have to worry about removing anything.
 	}
@@ -588,7 +596,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		// This was an insert operation, so we know we can insert rather than update.
 		
 		[self addRowid:rowid isNew:isInsert];
-		[ftsConnection->blockDict removeAllObjects];
+		[parentConnection->blockDict removeAllObjects];
 	}
 }
 
@@ -621,7 +629,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectModified |
 	                                            YapDatabaseBlockInvokeIfMetadataModified;
@@ -646,7 +654,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectModified;
 	
@@ -676,7 +684,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfMetadataModified;
 	
@@ -706,7 +714,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectTouched;
 	
@@ -742,7 +750,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfMetadataTouched;
 	
@@ -778,7 +786,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = ftsConnection->fts->handler;
+	__unsafe_unretained YapDatabaseFullTextSearchHandler *handler = parentConnection->parent->handler;
 	
 	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectTouched |
 	                                            YapDatabaseBlockInvokeIfMetadataTouched;
@@ -850,11 +858,11 @@ static NSString *const ext_key__version_deprecated = @"version";
 	if (block == nil) return;
 	if ([query length] == 0) return;
 	
-	sqlite3_stmt *statement = [ftsConnection queryStatement];
+	sqlite3_stmt *statement = [parentConnection queryStatement];
 	if (statement == NULL) return;
 
 	BOOL stop = NO;
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
 	
 	// SELECT "rowid" FROM "tableName" WHERE "tableName" MATCH ?;
 	
@@ -873,12 +881,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 			
 			block(rowid, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
@@ -888,7 +896,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	sqlite3_reset(statement);
 	FreeYapDatabaseString(&_query);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [databaseTransaction mutationDuringEnumerationException];
 	}
@@ -957,7 +965,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	if (block == nil) return;
 	if ([query length] == 0) return;
 	
-	sqlite3_stmt *statement = [ftsConnection querySnippetStatement];
+	sqlite3_stmt *statement = [parentConnection querySnippetStatement];
 	if (statement == NULL) return;
 	
 	YapDatabaseFullTextSearchSnippetOptions *options;
@@ -967,7 +975,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 		options = [[YapDatabaseFullTextSearchSnippetOptions alloc] init]; // default snippet options
 	
 	BOOL stop = NO;
-	isMutated = NO; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
 	
 	// SELECT "rowid", snippet("tableName", ?, ?, ?, ?, ?) FROM "tableName" WHERE "tableName" MATCH ?;
 	
@@ -993,7 +1001,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	int columnIndex = -1;
 	if (options.columnName)
 	{
-		NSUInteger index = [ftsConnection->fts->columnNames indexOfObject:options.columnName];
+		NSUInteger index = [parentConnection->parent->columnNames indexOfObject:options.columnName];
 		if (index == NSNotFound)
 		{
 			YDBLogWarn(@"Invalid snippet option: columnName(%@) not found", options.columnName);
@@ -1023,12 +1031,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 			
 			block(snippet, rowid, &stop);
 			
-			if (stop || isMutated) break;
+			if (stop || mutation.isMutated) break;
 			
 		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
 	}
 	
-	if ((status != SQLITE_DONE) && !stop && !isMutated)
+	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
 	{
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
@@ -1042,7 +1050,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	FreeYapDatabaseString(&_ellipsesText);
 	FreeYapDatabaseString(&_query);
 	
-	if (isMutated && !stop)
+	if (!stop && mutation.isMutated)
 	{
 		@throw [databaseTransaction mutationDuringEnumerationException];
 	}
@@ -1123,7 +1131,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	if ([query length] == 0) return NO;
 	
-	sqlite3_stmt *statement = [ftsConnection rowidQueryStatement];
+	sqlite3_stmt *statement = [parentConnection rowidQueryStatement];
 	if (statement == NULL) return NO;
 	
 	// SELECT "rowid" FROM "tableName" WHERE "rowid" = ? AND "tableName" MATCH ?;
@@ -1161,7 +1169,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 {
 	if ([query length] == 0) return nil;
 	
-	sqlite3_stmt *statement = [ftsConnection rowidQuerySnippetStatement];
+	sqlite3_stmt *statement = [parentConnection rowidQuerySnippetStatement];
 	if (statement == NULL) return nil;
 	
 	YapDatabaseFullTextSearchSnippetOptions *options;
@@ -1195,7 +1203,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 	int columnIndex = -1;
 	if (options.columnName)
 	{
-		NSUInteger index = [ftsConnection->fts->columnNames indexOfObject:options.columnName];
+		NSUInteger index = [parentConnection->parent->columnNames indexOfObject:options.columnName];
 		if (index == NSNotFound)
 		{
 			YDBLogWarn(@"Invalid snippet option: columnName(%@) not found", options.columnName);

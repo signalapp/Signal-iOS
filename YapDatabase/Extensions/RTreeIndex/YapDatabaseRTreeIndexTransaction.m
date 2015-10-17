@@ -1076,7 +1076,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 	// Enumerate query results
 
 	BOOL stop = NO;
-	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enumeration protection
+	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
 
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)

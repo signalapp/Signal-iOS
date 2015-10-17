@@ -121,7 +121,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self databaseConnection:databaseConnection];
+	return [[YapDatabaseFullTextSearchConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName
