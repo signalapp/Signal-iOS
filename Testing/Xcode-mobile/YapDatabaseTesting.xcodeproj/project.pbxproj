@@ -13,7 +13,6 @@
 		DC23CFAB1766A17100E103A9 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFAA1766A17100E103A9 /* TestYapDatabaseView.m */; };
 		DC24FBEF1688047700E855DC /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBEE1688047700E855DC /* TestYapDatabase.m */; };
 		DC2EAC3218763C1D00FF4EA8 /* TestYapDatabaseRelationship.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2EAC3118763C1D00FF4EA8 /* TestYapDatabaseRelationship.m */; };
-		DC2EAC3518766F5100FF4EA8 /* TestNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2EAC3418766F5100FF4EA8 /* TestNodes.m */; };
 		DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F261673FFEC00DFAFAA /* TestObject.m */; };
 		DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F2F1674001600DFAFAA /* BenchmarkYapCache.m */; };
 		DC3D2F3E1675657100DFAFAA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC3D2F3D1675657100DFAFAA /* libsqlite3.dylib */; };
@@ -39,6 +38,7 @@
 		DCAE52131673FE2600395076 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EA1673FE2600395076 /* UIKit.framework */; };
 		DCAE52141673FE2600395076 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAE51EC1673FE2600395076 /* Foundation.framework */; };
 		DCAE521C1673FE2600395076 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DCAE521A1673FE2600395076 /* InfoPlist.strings */; };
+		DCCBD6601BD1C87300EF0C6D /* TestNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2EAC3418766F5100FF4EA8 /* TestNodes.m */; settings = {ASSET_TAGS = (); }; };
 		DCE9DEDF1805DAB100A7057E /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9DEDE1805DAB100A7057E /* BenchmarkYapDatabase.m */; };
 		DCEE835017AAC7F3009BF81D /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCEE834F17AAC7F3009BF81D /* TestViewMappingsLogic.m */; };
 		DCEF93F71ABA3837009D5604 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCEF93F61ABA3837009D5604 /* CloudKit.framework */; };
@@ -418,6 +418,7 @@
 				DCAE51E41673FE2600395076 /* Frameworks */,
 				DCAE51E51673FE2600395076 /* Resources */,
 				185608789DAA46C075D89A81 /* Copy Pods Resources */,
+				BC1083A6C4D6D07559E60867 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -435,7 +436,6 @@
 				DCAE520B1673FE2600395076 /* Sources */,
 				DCAE520C1673FE2600395076 /* Frameworks */,
 				DCAE520D1673FE2600395076 /* Resources */,
-				DCAE520E1673FE2600395076 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -473,7 +473,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DCAE51E21673FE2600395076 /* Build configuration list for PBXProject "YapDatabase" */;
+			buildConfigurationList = DCAE51E21673FE2600395076 /* Build configuration list for PBXProject "YapDatabaseTesting" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -546,6 +546,21 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
+		BC1083A6C4D6D07559E60867 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DC5BE2611AE61607007E77FD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -559,19 +574,6 @@
 			shellPath = /bin/bash;
 			shellScript = "${PROJECT_DIR}/Logging/LumberjackUser.bash";
 		};
-		DCAE520E1673FE2600395076 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -582,7 +584,6 @@
 				DCAE51F71673FE2600395076 /* main.m in Sources */,
 				DCAE51FB1673FE2600395076 /* AppDelegate.m in Sources */,
 				DCAE52041673FE2600395076 /* ViewController.m in Sources */,
-				DC2EAC3518766F5100FF4EA8 /* TestNodes.m in Sources */,
 				DCE9DEDF1805DAB100A7057E /* BenchmarkYapDatabase.m in Sources */,
 				DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */,
 			);
@@ -594,6 +595,7 @@
 			files = (
 				DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */,
 				DC24FBEF1688047700E855DC /* TestYapDatabase.m in Sources */,
+				DCCBD6601BD1C87300EF0C6D /* TestNodes.m in Sources */,
 				DC2EAC3218763C1D00FF4EA8 /* TestYapDatabaseRelationship.m in Sources */,
 				DC23CFAB1766A17100E103A9 /* TestYapDatabaseView.m in Sources */,
 				DC96D1BD1BA1FE28001B4B08 /* TestYapDatabaseHooks.m in Sources */,
@@ -720,7 +722,7 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -746,7 +748,7 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -804,7 +806,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
@@ -829,7 +830,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
@@ -851,7 +851,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DCAE51E21673FE2600395076 /* Build configuration list for PBXProject "YapDatabase" */ = {
+		DCAE51E21673FE2600395076 /* Build configuration list for PBXProject "YapDatabaseTesting" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCAE52201673FE2600395076 /* Debug */,

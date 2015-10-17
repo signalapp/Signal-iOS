@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -13,9 +13,10 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.7.2"
+    "tag": "2.7.3"
   },
   "module_map": "module.modulemap",
+  "libraries": "c++",
   "default_subspecs": "standard",
   "subspecs": [
     {
@@ -28,9 +29,6 @@
       },
       "source_files": "YapDatabase/**/*.{h,m,mm}",
       "private_header_files": "YapDatabase/**/Internal/*.h",
-      "xcconfig": {
-        "OTHER_LDFLAGS": "-weak_library /usr/lib/libc++.dylib"
-      },
       "requires_arc": true
     },
     {
@@ -46,7 +44,6 @@
       "source_files": "YapDatabase/**/*.{h,m,mm}",
       "private_header_files": "YapDatabase/**/Internal/*.h",
       "xcconfig": {
-        "OTHER_LDFLAGS": "-weak_library /usr/lib/libc++.dylib",
         "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
       },
       "requires_arc": true
