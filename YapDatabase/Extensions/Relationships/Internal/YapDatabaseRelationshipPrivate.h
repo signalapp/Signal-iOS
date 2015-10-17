@@ -60,7 +60,7 @@
 @interface YapDatabaseRelationshipConnection () {
 @public
 	
-	__strong YapDatabaseRelationship *relationship;
+	__strong YapDatabaseRelationship *parent;
 	__unsafe_unretained YapDatabaseConnection *databaseConnection;
 	
 	NSMutableDictionary *protocolChanges; // key:(NSNumber *)srcRowidNumber, value:(NSMutableArray *)edges
@@ -74,7 +74,7 @@
 	NSMutableSet *filesToDelete;
 }
 
-- (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;
+- (id)initWithParent:(YapDatabaseRelationship *)parent databaseConnection:(YapDatabaseConnection *)databaseConnection;
 
 - (void)postCommitCleanup;
 - (void)postRollbackCleanup;
@@ -113,11 +113,11 @@
 @interface YapDatabaseRelationshipTransaction () {
 @protected
 	
-	__unsafe_unretained YapDatabaseRelationshipConnection *relationshipConnection;
+	__unsafe_unretained YapDatabaseRelationshipConnection *parentConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
 }
 
-- (id)initWithRelationshipConnection:(YapDatabaseRelationshipConnection *)relationshipConnection
-                 databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
+- (id)initWithParentConnection:(YapDatabaseRelationshipConnection *)parentConnection
+           databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
 @end
