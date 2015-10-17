@@ -274,7 +274,7 @@ static NSMutableArray *keys;
 		NSLog(@"YapDatabase Benchmarks:");
 		NSLog(@" - sqlite version     = %@", database.sqliteVersion);
 		NSLog(@" - pragma synchronous = %@", pragmaSynchronousStr);
-		NSLog(@" - pragma mmap_size   = %ld", [connection pragmaMMapSize]);
+		NSLog(@" - pragma mmap_size   = %ld", (long)[connection pragmaMMapSize]);
 		NSLog(@"====================================================");
 		NSLog(@"POPULATE DATABASE");
 		
