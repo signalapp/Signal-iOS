@@ -132,9 +132,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-    return [[YapDatabaseRTreeIndexConnection alloc]
-	           initWithRTreeIndex:self
-            databaseConnection:databaseConnection];
+    return [[YapDatabaseRTreeIndexConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

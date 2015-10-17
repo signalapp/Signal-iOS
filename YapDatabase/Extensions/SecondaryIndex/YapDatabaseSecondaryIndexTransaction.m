@@ -707,7 +707,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 {
 	YDBLogAutoTrace();
 	
-	[parentConnection postRollbackCleanup];
+	[parentConnection postCommitCleanup];
 	
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,

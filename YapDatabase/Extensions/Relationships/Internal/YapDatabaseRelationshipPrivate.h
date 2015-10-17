@@ -76,8 +76,8 @@
 
 - (id)initWithRelationship:(YapDatabaseRelationship *)relationship databaseConnection:(YapDatabaseConnection *)dbc;
 
-- (void)postRollbackCleanup;
 - (void)postCommitCleanup;
+- (void)postRollbackCleanup;
 
 - (sqlite3_stmt *)findManualEdgeStatement;
 - (sqlite3_stmt *)insertEdgeStatement;

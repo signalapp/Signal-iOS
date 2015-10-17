@@ -158,14 +158,19 @@
 {
 	if (protocolChanges == nil)
 		protocolChanges = [[NSMutableDictionary alloc] init];
+	
 	if (manualChanges == nil)
 		manualChanges = [[NSMutableDictionary alloc] init];
+	
 	if (inserted == nil)
 		inserted = [[NSMutableSet alloc] init];
+	
 	if (deletedOrder == nil)
 		deletedOrder = [[NSMutableArray alloc] init];
+	
 	if (deletedInfo == nil)
 		deletedInfo = [[NSMutableDictionary alloc] init];
+	
 	if (filesToDelete == nil)
 		filesToDelete = [[NSMutableSet alloc] init];
 }
