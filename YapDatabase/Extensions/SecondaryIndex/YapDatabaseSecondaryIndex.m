@@ -125,9 +125,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseSecondaryIndexConnection alloc]
-	           initWithSecondaryIndex:self
-	               databaseConnection:databaseConnection];
+	return [[YapDatabaseSecondaryIndexConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName
