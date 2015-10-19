@@ -594,15 +594,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Returns the current page_size configuration via "PRAGMA page_size;".
- *
- * This allows you to see if sqlite accepted your page_size configuration request.
+ * Allows you to verify that sqlite accepted your page_size configuration request.
 **/
 - (NSInteger)pragmaPageSize;
 
 /**
- * Returns the current memory mapped I/O configuration via "PRAGMA mmap_size;".
- * 
- * This allows you to see if sqlite accepted your mmap_size configuration request.
+ * Returns the currently memory mapped I/O configureation via "PRAGMA mmap_size;".
+ * Allows you to verify that sqlite accepted your mmap_size configuration request.
+ *
  * Memory mapping may be disabled by sqlite's compile-time options.
  * Or it may restrict the mmap_size to something smaller than requested.
 **/

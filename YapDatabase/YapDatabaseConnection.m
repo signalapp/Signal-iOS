@@ -4607,24 +4607,47 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 
 /**
  * Returns the current page_size configuration via "PRAGMA page_size;".
- *
- * This allows you to see if sqlite accepted your page_size configuration request.
+ * Allows you to verify that sqlite accepted your page_size configuration request.
 **/
 - (NSInteger)pragmaPageSize
 {
-	return (NSInteger)[YapDatabase pragma:@"page_size" using:db];
+	__block int64_t value = -1;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		value = [YapDatabase pragma:@"page_size" using:db];
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return (NSInteger)value;
 }
 
 /**
  * Returns the currently memory mapped I/O configureation via "PRAGMA mmap_size;".
+ * Allows you to verify that sqlite accepted your mmap_size configuration request.
  *
- * This allows you to see if sqlite accepted your mmap_size configuration request.
  * Memory mapping may be disabled by sqlite's compile-time options.
  * Or it may restrict the mmap_size to something smaller than requested.
 **/
 - (NSInteger)pragmaMMapSize
 {
-	return (NSInteger)[YapDatabase pragma:@"mmap_size" using:db];
+	__block int64_t value = -1;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		value = [YapDatabase pragma:@"mmap_size" using:db];
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return (NSInteger)value;
 }
 
 /**
