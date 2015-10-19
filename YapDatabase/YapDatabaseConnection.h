@@ -593,6 +593,12 @@ NS_ASSUME_NONNULL_BEGIN
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Returns the current synchronous configuration via "PRAGMA synchronous;".
+ * Allows you to verify that sqlite accepted your synchronous configuration request.
+**/
+- (NSString *)pragmaSynchronous;
+
+/**
  * Returns the current page_size configuration via "PRAGMA page_size;".
  * Allows you to verify that sqlite accepted your page_size configuration request.
 **/

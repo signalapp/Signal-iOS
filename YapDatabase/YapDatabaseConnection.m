@@ -4606,6 +4606,27 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Returns the current synchronous configuration via "PRAGMA synchronous;".
+ * Allows you to verify that sqlite accepted your synchronous configuration request.
+**/
+- (NSString *)pragmaSynchronous
+{
+	__block int64_t value = -1;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		value = [YapDatabase pragma:@"synchronous" using:db];
+	}};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return [YapDatabase pragmaValueForSynchronous:value];
+}
+
+/**
  * Returns the current page_size configuration via "PRAGMA page_size;".
  * Allows you to verify that sqlite accepted your page_size configuration request.
 **/

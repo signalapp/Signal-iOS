@@ -80,9 +80,12 @@ static NSString *const ext_key_class = @"class";
 /**
  * General utility methods.
 **/
+
 + (int64_t)pragma:(NSString *)pragmaSetting using:(sqlite3 *)aDb;
-+ (NSString *)pragmaValueForAutoVacuum:(int64_t)auto_vacuum;
+
 + (NSString *)pragmaValueForSynchronous:(int64_t)synchronous;
++ (NSString *)pragmaValueForAutoVacuum:(int64_t)auto_vacuum;
+
 
 + (BOOL)tableExists:(NSString *)tableName using:(sqlite3 *)aDb;
 + (NSArray *)tableNamesUsing:(sqlite3 *)aDb;

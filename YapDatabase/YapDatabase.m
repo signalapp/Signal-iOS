@@ -897,17 +897,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	return result;
 }
 
-+ (NSString *)pragmaValueForAutoVacuum:(int64_t)auto_vacuum
-{
-	switch(auto_vacuum)
-	{
-		case 0 : return @"NONE";
-		case 1 : return @"FULL";
-		case 2 : return @"INCREMENTAL";
-		default: return @"UNKNOWN";
-	}
-}
-
 + (NSString *)pragmaValueForSynchronous:(int64_t)synchronous
 {
 	switch(synchronous)
@@ -915,6 +904,17 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		case 0 : return @"OFF";
 		case 1 : return @"NORMAL";
 		case 2 : return @"FULL";
+		default: return @"UNKNOWN";
+	}
+}
+
++ (NSString *)pragmaValueForAutoVacuum:(int64_t)auto_vacuum
+{
+	switch(auto_vacuum)
+	{
+		case 0 : return @"NONE";
+		case 1 : return @"FULL";
+		case 2 : return @"INCREMENTAL";
 		default: return @"UNKNOWN";
 	}
 }
