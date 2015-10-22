@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 
 @class YapDatabaseConnection;
+@class YapDatabaseExtensionTransaction;
 
 /**
  * Welcome to YapDatabase!
@@ -442,8 +443,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @see [YapDatabase registerExtension:withName:]
 **/
-- (__kindof YapDatabaseExtensionTransaction *)extension:(NSString *)extensionName;
-- (__kindof YapDatabaseExtensionTransaction *)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
+- (nullable __kindof YapDatabaseExtensionTransaction *)extension:(NSString *)extensionName;
+- (nullable __kindof YapDatabaseExtensionTransaction *)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
 
 NS_ASSUME_NONNULL_END
 @end
