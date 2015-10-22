@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
  * If the list of collections is really big, it may be more efficient to enumerate them instead.
  * @see enumerateCollectionsUsingBlock:
 **/
-- (NSArray *)allCollections;
+- (NSArray<NSString *> *)allCollections;
 
 /**
  * Returns a list of all keys in the given collection.
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
  * If the list of keys is really big, it may be more efficient to enumerate them instead.
  * @see enumerateKeysInCollection:usingBlock:
 **/
-- (NSArray *)allKeysInCollection:(nullable NSString *)collection;
+- (NSArray<NSString *> *)allKeysInCollection:(nullable NSString *)collection;
 
 #pragma mark Object & Metadata
 
@@ -389,7 +389,7 @@ NS_ASSUME_NONNULL_BEGIN
  * IMPORTANT:
  * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
-- (void)enumerateObjectsForKeys:(NSArray *)keys
+- (void)enumerateObjectsForKeys:(NSArray<NSString *> *)keys
                    inCollection:(nullable NSString *)collection
             unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
 
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
  * IMPORTANT:
  * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
-- (void)enumerateMetadataForKeys:(NSArray *)keys
+- (void)enumerateMetadataForKeys:(NSArray<NSString *> *)keys
                     inCollection:(nullable NSString *)collection
              unorderedUsingBlock:(void (^)(NSUInteger keyIndex, __nullable id metadata, BOOL *stop))block;
 
@@ -421,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
  * IMPORTANT:
  * Due to cache optimizations, the items may not be enumerated in the same order as the 'keys' parameter.
 **/
-- (void)enumerateRowsForKeys:(NSArray *)keys
+- (void)enumerateRowsForKeys:(NSArray<NSString *> *)keys
                 inCollection:(nullable NSString *)collection
          unorderedUsingBlock:(void (^)(NSUInteger keyIndex, __nullable id object, __nullable id metadata, BOOL *stop))block;
 
@@ -442,8 +442,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @see [YapDatabase registerExtension:withName:]
 **/
-- (id)extension:(NSString *)extensionName;
-- (id)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
+- (__kindof YapDatabaseExtensionTransaction *)extension:(NSString *)extensionName;
+- (__kindof YapDatabaseExtensionTransaction *)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
 
 NS_ASSUME_NONNULL_END
 @end
@@ -768,7 +768,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Deletes the database rows with the given keys in the given collection.
 **/
-- (void)removeObjectsForKeys:(NSArray *)keys inCollection:(nullable NSString *)collection;
+- (void)removeObjectsForKeys:(NSArray<NSString *> *)keys inCollection:(nullable NSString *)collection;
 
 /**
  * Deletes every key/object pair from the given collection.

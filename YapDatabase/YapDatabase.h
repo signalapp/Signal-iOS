@@ -785,7 +785,7 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  * but which are no longer registered. YapDatabase will automatically cleanup these orphaned extensions,
  * and also clear the previouslyRegisteredExtensionNames information at this point.
 **/
-- (nullable NSArray *)previouslyRegisteredExtensionNames;
+- (nullable NSArray<NSString *> *)previouslyRegisteredExtensionNames;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Connection Pooling

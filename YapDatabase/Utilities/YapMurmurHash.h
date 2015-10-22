@@ -12,9 +12,9 @@ NSUInteger YapMurmurHash2(NSUInteger hash1, NSUInteger hash2);
 
 NSUInteger YapMurmurHash3(NSUInteger hash1, NSUInteger hash2, NSUInteger hash3);
 
-NSUInteger YapMurmurHashData(NSData *data);
+NSUInteger YapMurmurHashData(NSData  * _Nonnull data);
 
-uint32_t YapMurmurHashData_32(NSData *data);
-uint64_t YapMurmurHashData_64(NSData *data);
+uint32_t YapMurmurHashData_32(NSData * _Nonnull data);
+uint64_t YapMurmurHashData_64(NSData * _Nonnull data);
 
 #endif

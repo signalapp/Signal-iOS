@@ -1,13 +1,14 @@
 #import <Foundation/Foundation.h>
 
 
-typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
+typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id _Nonnull item);
 
 /**
  * This class provides a standardized way to create a sort of whitelist / blacklist.
  * It is used often within the options of extensions to create the set of allowedCollections.
 **/
 @interface YapWhitelistBlacklist : NSObject
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Creates a whitelist based instance.
@@ -15,7 +16,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * Only items in the whitelist are allowed.
  * Any items not in the whitelist are disallowed.
 **/
-- (instancetype)initWithWhitelist:(NSSet *)whitelist;
+- (instancetype)initWithWhitelist:(nullable NSSet *)whitelist;
 
 /**
  * Creates a blacklist based instance.
@@ -23,7 +24,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * Only items in the blacklist are disallowed.
  * Any items not in the blacklist are allowed.
 **/
-- (instancetype)initWithBlacklist:(NSSet *)blacklist;
+- (instancetype)initWithBlacklist:(nullable NSSet *)blacklist;
 
 /**
  * Creates a filterBlock based instance.
@@ -44,7 +45,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * If the filterBlock returns YES for a given item, that item is allowed.
  * If the filterBlock returns  NO for a given item, that item is disallowed.
 **/
-- (instancetype)initWithFilterBlock:(YapWhitelistBlacklistFilterBlock)block;
+- (instancetype)initWithFilterBlock:(nullable YapWhitelistBlacklistFilterBlock)block;
 
 /**
  * Inspects the whitelist or blacklist, or consults the filterBlock (depending on initialization),
@@ -52,4 +53,5 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
 **/
 - (BOOL)isAllowed:(id)item;
 
+NS_ASSUME_NONNULL_END
 @end

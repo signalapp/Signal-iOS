@@ -26,6 +26,7 @@
  * query = [YapDatabaseQuery queryWithFormat:@"WHERE title = ? AND department IN (?)", @"manager", departments];
 **/
 @interface YapDatabaseQuery : NSObject
+NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Standard Queries
 
@@ -101,4 +102,5 @@
 
 @property (nonatomic, readonly) BOOL isAggregateQuery;
 
+NS_ASSUME_NONNULL_END
 @end

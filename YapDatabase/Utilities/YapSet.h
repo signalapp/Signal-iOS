@@ -14,6 +14,7 @@
  * @see YapDatabaseConnection hasChangeForAnyKeys:inNotifications:
 **/
 @interface YapSet : NSObject <NSFastEnumeration>
+NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithSet:(NSMutableSet *)set;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary;
@@ -38,4 +39,5 @@
 // If you make improvements, feel free to submit a patch to the github project and get some good karma for it!
 // https://github.com/yapstudios/YapDatabase
 
+NS_ASSUME_NONNULL_END
 @end

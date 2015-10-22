@@ -9,6 +9,7 @@
  * (using the current transaction) on demand.
 **/
 @interface YapProxyObject : NSProxy
+NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
@@ -16,4 +17,5 @@
 
 @property (nonatomic, readonly) id realObject;
 
+NS_ASSUME_NONNULL_END
 @end

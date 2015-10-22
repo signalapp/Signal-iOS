@@ -30,6 +30,7 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
 #endif
 
 @interface YapDatabaseOptions : NSObject <NSCopying>
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * How should YapDatabase proceed if it is unable to open an existing database file
@@ -209,4 +210,5 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
 **/
 @property (nonatomic, assign, readwrite) unsigned long long aggressiveWALTruncationSize;
 
+NS_ASSUME_NONNULL_END
 @end

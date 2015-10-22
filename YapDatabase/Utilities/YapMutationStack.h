@@ -4,10 +4,12 @@
 @class YapMutationStackItem_Abstract;
 
 @interface YapMutationStack_Abstract : NSObject
+NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 - (void)clear;
 
+NS_ASSUME_NONNULL_END
 @end
 
 @interface YapMutationStackItem_Abstract : NSObject
@@ -21,6 +23,7 @@
 @class YapMutationStackItem_Bool;
 
 @interface YapMutationStack_Bool : YapMutationStack_Abstract
+NS_ASSUME_NONNULL_BEGIN
 
 - (YapMutationStackItem_Bool *)push;
 
@@ -29,6 +32,7 @@
 
 - (void)markAsMutated;
 
+NS_ASSUME_NONNULL_END
 @end
 
 @interface YapMutationStackItem_Bool : YapMutationStackItem_Abstract
@@ -44,6 +48,7 @@
 @class YapMutationStackItem_Set;
 
 @interface YapMutationStack_Set : YapMutationStack_Abstract
+NS_ASSUME_NONNULL_BEGIN
 
 - (YapMutationStackItem_Set *)push;
 
@@ -52,10 +57,13 @@
 
 - (void)markAsMutated:(id)object;
 
+NS_ASSUME_NONNULL_END
 @end
 
 @interface YapMutationStackItem_Set : YapMutationStackItem_Abstract
+NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isMutated:(id)object;
 
+NS_ASSUME_NONNULL_END
 @end

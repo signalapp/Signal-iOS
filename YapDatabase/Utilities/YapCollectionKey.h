@@ -11,8 +11,9 @@
  * and provides the proper methods to use the object in various classes (such as NSDictionary, NSSet, etc).
 **/
 @interface YapCollectionKey : NSObject <NSCopying, NSCoding>
+NS_ASSUME_NONNULL_BEGIN
 
-- (id)initWithCollection:(NSString *)collection key:(NSString *)key;
+- (id)initWithCollection:(nullable NSString *)collection key:(NSString *)key;
 
 @property (nonatomic, strong, readonly) NSString *collection;
 @property (nonatomic, strong, readonly) NSString *key;
@@ -30,4 +31,5 @@
 BOOL YapCollectionKeyEqual(const __unsafe_unretained YapCollectionKey *ck1,
                            const __unsafe_unretained YapCollectionKey *ck2);
 
+NS_ASSUME_NONNULL_END
 @end
