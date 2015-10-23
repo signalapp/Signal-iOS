@@ -3,6 +3,8 @@
 @class YapDatabaseConnection;
 @class YapDatabaseExtensionTransaction;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -50,7 +52,6 @@
  * A transaction allows you to safely access the database as needed in a thread-safe and optimized manner.
 **/
 @interface YapDatabaseReadTransaction : NSObject
-NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Transactions are light-weight objects created by connections.
@@ -782,5 +783,6 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 - (void)removeAllObjectsInAllCollections;
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END

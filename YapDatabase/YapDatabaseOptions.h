@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -30,7 +32,6 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
 #endif
 
 @interface YapDatabaseOptions : NSObject <NSCopying>
-NS_ASSUME_NONNULL_BEGIN
 
 /**
  * How should YapDatabase proceed if it is unable to open an existing database file
@@ -210,5 +211,6 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 @property (nonatomic, assign, readwrite) unsigned long long aggressiveWALTruncationSize;
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END

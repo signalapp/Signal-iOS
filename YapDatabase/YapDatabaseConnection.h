@@ -6,6 +6,8 @@
 @class YapDatabaseReadWriteTransaction;
 @class YapDatabaseExtensionConnection;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -78,7 +80,6 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
 
 
 @interface YapDatabaseConnection : NSObject
-NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A database connection maintains a strong reference to its parent.
@@ -780,5 +781,6 @@ NS_ASSUME_NONNULL_BEGIN
                   completionQueue:(nullable dispatch_queue_t)completionQueue
                   completionBlock:(nullable void (^)(NSError *))completionBlock;
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END
