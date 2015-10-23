@@ -29,6 +29,8 @@
 
 #define RETRY_ATTEMPTS 3
 
+#define InvalidDeviceException @"InvalidDeviceException"
+
 @interface TSMessagesManager ()
 dispatch_queue_t sendingQueue(void);
 @end
@@ -274,8 +276,12 @@ dispatch_queue_t sendingQueue() {
             }
         }
         @catch (NSException *exception) {
-            [self processException:exception outgoingMessage:message inThread:thread];
-            return;
+            if ([exception.name isEqualToString:InvalidDeviceException]){
+                [recipient removeDevices:[NSSet setWithObject:deviceNumber]];
+            } else {
+                [self processException:exception outgoingMessage:message inThread:thread];
+                return;
+            }
         }
     }
     
@@ -293,6 +299,10 @@ dispatch_queue_t sendingQueue() {
             dispatch_semaphore_signal(sema);
         } failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"Server replied on PreKeyBundle request with error: %@", error);
+            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+            if (response.statusCode == 404) {
+                @throw [NSException exceptionWithName:InvalidDeviceException reason:@"Device not registered" userInfo:nil];
+            }
             dispatch_semaphore_signal(sema);
         }];
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
