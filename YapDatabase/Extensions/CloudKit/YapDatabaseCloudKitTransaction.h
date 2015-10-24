@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseExtensionTransaction.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseCloudKitTransaction : YapDatabaseExtensionTransaction
 
@@ -33,7 +34,7 @@
  *   Further, which item it returns is not guaranteed, and may change between method invocations.
  *   So, in this particular case, you likely should be using 'collectionKeysForRecordID:databaseIdentifier:'.
 **/
-- (BOOL)getKey:(NSString **)keyPtr collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nonnull * _Nullable)keyPtr collection:(NSString * _Nonnull * _Nullable)collectionPtr
                                   forRecordID:(CKRecordID *)recordID
                            databaseIdentifier:(NSString *)databaseIdentifier;
 
@@ -46,7 +47,7 @@
  * 
  * @see YapCollectionKey
 **/
-- (NSArray *)collectionKeysForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
+- (NSArray<YapCollectionKey *> *)collectionKeysForRecordID:(CKRecordID *)recordID databaseIdentifier:(NSString *)databaseIdentifier;
 
 /**
  * If the given key/collection tuple is associated with a record,
@@ -70,8 +71,8 @@
  *   YES if the given collection/key is associated with a CKRecord.
  *   NO otherwise.
 **/
-- (BOOL)getRecordID:(CKRecordID **)recordIDPtr
- databaseIdentifier:(NSString **)databaseIdentifierPtr
+- (BOOL)getRecordID:(CKRecordID * _Nonnull * _Nullable)recordIDPtr
+ databaseIdentifier:(NSString * _Nonnull * _Nullable)databaseIdentifierPtr
              forKey:(NSString *)key
        inCollection:(NSString *)collection;
 
@@ -157,9 +158,9 @@
  *   That is, if we deleted the item locally, and the delete operation is pending upload to the cloudKit server.
  *   If this value is YES, then you may not want to create a new database item for the record.
 **/
-- (void)getRecordChangeTag:(NSString **)outRecordChangeTag
-   hasPendingModifications:(BOOL *)outPendingModifications
-          hasPendingDelete:(BOOL *)outPendingDelete
+- (void)getRecordChangeTag:(NSString * _Nonnull * _Nullable)outRecordChangeTag
+   hasPendingModifications:(nullable BOOL *)outPendingModifications
+          hasPendingDelete:(nullable BOOL *)outPendingDelete
                forRecordID:(CKRecordID *)recordID
         databaseIdentifier:(NSString *)databaseIdentifier;
 
@@ -345,3 +346,5 @@
 - (BOOL)saveRecord:(CKRecord *)record databaseIdentifier:(NSString *)databaseIdentifier;
 
 @end
+
+NS_ASSUME_NONNULL_END

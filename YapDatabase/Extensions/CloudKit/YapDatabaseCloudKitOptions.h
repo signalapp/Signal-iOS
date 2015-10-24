@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapWhitelistBlacklist.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseCloudKitOptions : NSObject <NSCopying>
 
@@ -30,3 +31,5 @@
 // Todo: Need ability to set default options for CKModifyRecordsOperation
 
 @end
+
+NS_ASSUME_NONNULL_END
