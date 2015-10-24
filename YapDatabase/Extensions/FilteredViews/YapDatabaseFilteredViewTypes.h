@@ -3,6 +3,8 @@
 #import "YapDatabaseViewTypes.h"
 #import "YapDatabaseExtensionTypes.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * The filtering block removes items from this view that are in the parent view.
  *
@@ -56,3 +58,5 @@ typedef BOOL (^YapDatabaseViewFilteringWithRowBlock)
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke        blockInvokeOptions;
 
 @end
+
+NS_ASSUME_NONNULL_END
