@@ -1,14 +1,14 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id _Nonnull item);
+typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
 
 /**
  * This class provides a standardized way to create a sort of whitelist / blacklist.
  * It is used often within the options of extensions to create the set of allowedCollections.
 **/
 @interface YapWhitelistBlacklist : NSObject
-NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Creates a whitelist based instance.
@@ -53,5 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 - (BOOL)isAllowed:(id)item;
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END

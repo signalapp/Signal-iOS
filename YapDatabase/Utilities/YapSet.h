@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * The YapSet class can be treated more or less like a regular NSSet.
  *
@@ -14,7 +16,6 @@
  * @see YapDatabaseConnection hasChangeForAnyKeys:inNotifications:
 **/
 @interface YapSet : NSObject <NSFastEnumeration>
-NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithSet:(NSMutableSet *)set;
 - (id)initWithDictionary:(NSMutableDictionary *)dictionary;
@@ -39,5 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 // If you make improvements, feel free to submit a patch to the github project and get some good karma for it!
 // https://github.com/yapstudios/YapDatabase
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END
