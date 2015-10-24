@@ -3,6 +3,7 @@
 #import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseFullTextSearchSnippetOptions.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Welcome to YapDatabase!
@@ -66,3 +67,5 @@
             (void (^)(NSString *snippet, NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
 
 @end
+
+NS_ASSUME_NONNULL_END
