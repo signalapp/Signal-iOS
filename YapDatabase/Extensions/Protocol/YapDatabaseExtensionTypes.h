@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Corresponds to the different type of blocks supported by the various extension subclasses.
 **/
@@ -82,3 +84,5 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseBlockInvoke) {
 	// The default options for YapDatabaseBlockTypeWithRow
 	YapDatabaseBlockInvokeDefaultForBlockTypeWithRow      = YapDatabaseBlockInvokeAny,
 };
+
+NS_ASSUME_NONNULL_END
