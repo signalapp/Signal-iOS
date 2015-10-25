@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
  * If the given {collection, key} are included in the view, then returns the associated group.
  * If the {collection, key} isn't in the view, then returns nil.
 **/
-- (NSString *)groupForKey:(NSString *)key inCollection:(NSString *)collection;
+- (NSString *)groupForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Fetches both the group and the index within the group for the given {collection, key}.
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)getGroup:(NSString * _Nonnull * _Nullable)groupPtr
            index:(nullable NSUInteger *)indexPtr
           forKey:(NSString *)key
-    inCollection:(NSString *)collection;
+    inCollection:(nullable NSString *)collection;
 
 /**
  * Returns the versionTag in effect for this transaction.
@@ -553,7 +553,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
 - (NSIndexPath *)indexPathForKey:(NSString *)key
-                    inCollection:(NSString *)collection
+                    inCollection:(nullable NSString *)collection
                     withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
@@ -564,7 +564,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)getRow:(nullable NSUInteger *)rowPtr
        section:(nullable NSUInteger *)sectionPtr
         forKey:(NSString *)key
-  inCollection:(NSString *)collection
+  inCollection:(nullable NSString *)collection
   withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**

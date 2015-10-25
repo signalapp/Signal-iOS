@@ -47,22 +47,22 @@ NS_ASSUME_NONNULL_BEGIN
 // Query matching + Snippets
 
 - (void)enumerateKeysMatching:(NSString *)query
-           withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
+           withSnippetOptions:(nullable YapDatabaseFullTextSearchSnippetOptions *)options
                    usingBlock:
             (void (^)(NSString *snippet, NSString *collection, NSString *key, BOOL *stop))block;
 
 - (void)enumerateKeysAndMetadataMatching:(NSString *)query
-                      withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
+                      withSnippetOptions:(nullable YapDatabaseFullTextSearchSnippetOptions *)options
                               usingBlock:
             (void (^)(NSString *snippet, NSString *collection, NSString *key, id metadata, BOOL *stop))block;
 
 - (void)enumerateKeysAndObjectsMatching:(NSString *)query
-                     withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
+                     withSnippetOptions:(nullable YapDatabaseFullTextSearchSnippetOptions *)options
                              usingBlock:
             (void (^)(NSString *snippet, NSString *collection, NSString *key, id object, BOOL *stop))block;
 
 - (void)enumerateRowsMatching:(NSString *)query
-           withSnippetOptions:(YapDatabaseFullTextSearchSnippetOptions *)options
+           withSnippetOptions:(nullable YapDatabaseFullTextSearchSnippetOptions *)options
                    usingBlock:
             (void (^)(NSString *snippet, NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
 
