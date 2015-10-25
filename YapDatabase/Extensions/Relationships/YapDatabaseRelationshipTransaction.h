@@ -4,6 +4,8 @@
 #import "YapDatabaseRelationshipEdge.h"
 #import "YapDatabaseRelationshipNode.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -71,9 +73,9 @@
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (void)enumerateEdgesWithName:(NSString *)name
-                     sourceKey:(NSString *)sourceKey
-                    collection:(NSString *)sourceCollection
+- (void)enumerateEdgesWithName:(nullable NSString *)name
+                     sourceKey:(nullable NSString *)sourceKey
+                    collection:(nullable NSString *)sourceCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 /**
@@ -96,9 +98,9 @@
  * If you pass a non-nil destinationKey, and destinationCollection is nil,
  * then the destinationCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (void)enumerateEdgesWithName:(NSString *)name
-                destinationKey:(NSString *)destinationKey
-                    collection:(NSString *)destinationCollection
+- (void)enumerateEdgesWithName:(nullable NSString *)name
+                destinationKey:(nullable NSString *)destinationKey
+                    collection:(nullable NSString *)destinationCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 /**
@@ -115,8 +117,8 @@
  * @param destinationFilePath (optional)
  *   The edge.destinationFilePath to match.
 **/
-- (void)enumerateEdgesWithName:(NSString *)name
-           destinationFilePath:(NSString *)destinationFilePath
+- (void)enumerateEdgesWithName:(nullable NSString *)name
+           destinationFilePath:(nullable NSString *)destinationFilePath
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 /**
@@ -151,11 +153,11 @@
  * If you pass a non-nil destinationKey, and destinationCollection is nil,
  * then the destinationCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (void)enumerateEdgesWithName:(NSString *)name
-                     sourceKey:(NSString *)sourceKey
-                    collection:(NSString *)sourceCollection
-                destinationKey:(NSString *)destinationKey
-                    collection:(NSString *)destinationCollection
+- (void)enumerateEdgesWithName:(nullable NSString *)name
+                     sourceKey:(nullable NSString *)sourceKey
+                    collection:(nullable NSString *)sourceCollection
+                destinationKey:(nullable NSString *)destinationKey
+                    collection:(nullable NSString *)destinationCollection
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 /**
@@ -184,10 +186,10 @@
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (void)enumerateEdgesWithName:(NSString *)name
-                     sourceKey:(NSString *)sourceKey
-                    collection:(NSString *)sourceCollection
-           destinationFilePath:(NSString *)destinationFilePath
+- (void)enumerateEdgesWithName:(nullable NSString *)name
+                     sourceKey:(nullable NSString *)sourceKey
+                    collection:(nullable NSString *)sourceCollection
+           destinationFilePath:(nullable NSString *)destinationFilePath
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 #pragma mark Count
@@ -220,9 +222,9 @@
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (NSUInteger)edgeCountWithName:(NSString *)name
-                      sourceKey:(NSString *)sourceKey
-                     collection:(NSString *)sourceCollection;
+- (NSUInteger)edgeCountWithName:(nullable NSString *)name
+                      sourceKey:(nullable NSString *)sourceKey
+                     collection:(nullable NSString *)sourceCollection;
 
 /**
  * Returns a count of every edge that matches any parameters you specify.
@@ -244,9 +246,9 @@
  * If you pass a non-nil destinationKey, and destinationCollection is nil,
  * then the destinationCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (NSUInteger)edgeCountWithName:(NSString *)name
-                 destinationKey:(NSString *)destinationKey
-                     collection:(NSString *)destinationCollection;
+- (NSUInteger)edgeCountWithName:(nullable NSString *)name
+                 destinationKey:(nullable NSString *)destinationKey
+                     collection:(nullable NSString *)destinationCollection;
 
 /**
  * Returns a count of every edge that matches any parameters you specify.
@@ -262,8 +264,8 @@
  * @param destinationFilePath (optional)
  *   The edge.destinationFilePath to match.
 **/
-- (NSUInteger)edgeCountWithName:(NSString *)name
-            destinationFilePath:(NSString *)destinationFilePath;
+- (NSUInteger)edgeCountWithName:(nullable NSString *)name
+            destinationFilePath:(nullable NSString *)destinationFilePath;
 
 /**
  * Returns a count of every edge that matches any parameters you specify.
@@ -297,11 +299,11 @@
  * If you pass a non-nil destinationKey, and destinationCollection is nil,
  * then the destinationCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (NSUInteger)edgeCountWithName:(NSString *)name
-                      sourceKey:(NSString *)sourceKey
-                     collection:(NSString *)sourceCollection
-                 destinationKey:(NSString *)destinationKey
-                     collection:(NSString *)destinationCollection;
+- (NSUInteger)edgeCountWithName:(nullable NSString *)name
+                      sourceKey:(nullable NSString *)sourceKey
+                     collection:(nullable NSString *)sourceCollection
+                 destinationKey:(nullable NSString *)destinationKey
+                     collection:(nullable NSString *)destinationCollection;
 
 /**
  * Returns a count of every edge that matches any parameters you specify.
@@ -329,10 +331,10 @@
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
 **/
-- (NSUInteger)edgeCountWithName:(NSString *)name
-                      sourceKey:(NSString *)sourceKey
-                     collection:(NSString *)sourceCollection
-            destinationFilePath:(NSString *)destinationFilePath;
+- (NSUInteger)edgeCountWithName:(nullable NSString *)name
+                      sourceKey:(nullable NSString *)sourceKey
+                     collection:(nullable NSString *)sourceCollection
+            destinationFilePath:(nullable NSString *)destinationFilePath;
 
 @end
 
@@ -395,9 +397,9 @@
 **/
 - (void)removeEdgeWithName:(NSString *)edgeName
                  sourceKey:(NSString *)sourceKey
-                collection:(NSString *)sourceCollection
+                collection:(nullable NSString *)sourceCollection
             destinationKey:(NSString *)destinationKey
-                collection:(NSString *)destinationCollection
+                collection:(nullable NSString *)destinationCollection
             withProcessing:(YDB_NotifyReason)reason;
 
 /**
@@ -435,3 +437,5 @@
 - (void)flush;
 
 @end
+
+NS_ASSUME_NONNULL_END

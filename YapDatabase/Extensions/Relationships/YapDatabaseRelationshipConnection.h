@@ -3,6 +3,8 @@
 
 @class YapDatabaseRelationship;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -27,3 +29,5 @@
 @property (nonatomic, strong, readonly) YapDatabaseRelationship *relationship;
 
 @end
+
+NS_ASSUME_NONNULL_END
