@@ -4,6 +4,8 @@
 #import "YapDatabaseViewTypes.h"
 #import "YapDatabaseViewMappings.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -32,6 +34,7 @@
  * Keep in mind that the YapDatabaseViewTransaction object is linked to the YapDatabaseReadTransaction object.
  * So don't try to use it outside the transaction block (cause it won't work).
 **/
+
 @interface YapDatabaseViewTransaction : YapDatabaseExtensionTransaction
 
 #pragma mark Groups
@@ -48,7 +51,7 @@
  *
  * @see YapDatabaseView - groupingBlock
 **/
-- (NSArray *)allGroups;
+- (NSArray<NSString *> *)allGroups;
 
 /**
  * Returns YES if there are any keys in the given group.
@@ -87,20 +90,20 @@
  * Returns the key & collection at the given index within the given group.
  * Returns nil if the group doesn't exist, or if the index is out of bounds.
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nullable * _Nullable)keyPtr
+    collection:(NSString * _Nullable * _Nullable)collectionPtr
        atIndex:(NSUInteger)index
        inGroup:(NSString *)group;
 
 /**
  * Shortcut for: [view getKey:&key collection:&collection atIndex:0 inGroup:group]
 **/
-- (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+- (BOOL)getFirstKey:(NSString * _Nonnull * _Nullable)keyPtr collection:(NSString * _Nonnull * _Nullable)collectionPtr inGroup:(NSString *)group;
 
 /**
  * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfItemsInGroup-1) inGroup:group]
 **/
-- (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+- (BOOL)getLastKey:(NSString * _Nonnull * _Nullable)keyPtr collection:(NSString * _Nonnull * _Nullable)collectionPtr inGroup:(NSString *)group;
 
 /**
  * Shortcut for fetching just the collection at the given index.
@@ -125,8 +128,8 @@
  * Returns YES if the {collection, key} is included in the view.
  * Otherwise returns NO, and sets the parameters to nil & zero.
 **/
-- (BOOL)getGroup:(NSString **)groupPtr
-           index:(NSUInteger *)indexPtr
+- (BOOL)getGroup:(NSString * _Nonnull * _Nullable)groupPtr
+           index:(nullable NSUInteger *)indexPtr
           forKey:(NSString *)key
     inCollection:(NSString *)collection;
 
@@ -335,9 +338,9 @@
  * In all other cases, the view will properly reflect a corresponding change in the notification that's posted.
 **/
 
-- (void)touchRowForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)touchObjectForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)touchRowForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)touchObjectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)touchMetadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * This method allows you to change the grouping and/or sorting on-the-fly.
@@ -347,7 +350,7 @@
 **/
 - (void)setGrouping:(YapDatabaseViewGrouping *)grouping
             sorting:(YapDatabaseViewSorting *)sorting
-         versionTag:(NSString *)versionTag;
+         versionTag:(nullable NSString *)versionTag;
 
 @end
 
@@ -371,7 +374,7 @@
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+- (nullable id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -381,7 +384,7 @@
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
+- (nullable id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -391,7 +394,7 @@
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)firstObjectInGroup:(NSString *)group;
+- (nullable id)firstObjectInGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -401,7 +404,7 @@
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)lastObjectInGroup:(NSString *)group;
+- (nullable id)lastObjectInGroup:(NSString *)group;
 
 /**
  * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
@@ -529,8 +532,8 @@
  * Returns NO if the indexPath is invalid, or the mappings aren't initialized.
  * Otherwise returns YES, and sets the key & collection ptr (both optional).
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nonnull * _Nullable)keyPtr
+    collection:(NSString * _Nonnull * _Nullable)collectionPtr
    atIndexPath:(NSIndexPath *)indexPath
   withMappings:(YapDatabaseViewMappings *)mappings;
 
@@ -539,8 +542,8 @@
  * Returns NO if the row or section is invalid, or the mappings aren't initialized.
  * Otherwise returns YES, and sets the key & collection ptr (both optional).
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nonnull * _Nullable)keyPtr
+    collection:(NSString * _Nonnull * _Nullable)collectionPtr
         forRow:(NSUInteger)row
      inSection:(NSUInteger)section
   withMappings:(YapDatabaseViewMappings *)mappings;
@@ -558,8 +561,8 @@
  * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
  * Otherwise returns YES, and sets the row & section (both optional).
 **/
-- (BOOL)getRow:(NSUInteger *)rowPtr
-       section:(NSUInteger *)sectionPtr
+- (BOOL)getRow:(nullable NSUInteger *)rowPtr
+       section:(nullable NSUInteger *)sectionPtr
         forKey:(NSString *)key
   inCollection:(NSString *)collection
   withMappings:(YapDatabaseViewMappings *)mappings;
@@ -574,7 +577,7 @@
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the object at the given indexPath, assuming the given mappings are being used.
@@ -590,7 +593,7 @@
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the metadata at the given indexPath, assuming the given mappings are being used.
@@ -602,7 +605,7 @@
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the object at the given indexPath, assuming the given mappings are being used.
@@ -618,6 +621,8 @@
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end
+
+NS_ASSUME_NONNULL_END

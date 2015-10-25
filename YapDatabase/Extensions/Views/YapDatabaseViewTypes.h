@@ -3,6 +3,7 @@
 
 @class YapDatabaseReadTransaction;
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The grouping block handles both filtering and grouping.
@@ -28,20 +29,21 @@
  * So you can use the 'options' parameter to specify YapDatabaseBlockInvokeOnInsertOnly.
  * This will allow the view to properly optimize based on the details of your actual groupingBlock implementation.
 **/
+
 @interface YapDatabaseViewGrouping : NSObject
 
 typedef id YapDatabaseViewGroupingBlock; // One of the YapDatabaseViewGroupingX types below.
 
-typedef NSString* (^YapDatabaseViewGroupingWithKeyBlock)
+typedef NSString* _Nullable (^YapDatabaseViewGroupingWithKeyBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key);
 
-typedef NSString* (^YapDatabaseViewGroupingWithObjectBlock)
+typedef NSString* _Nullable (^YapDatabaseViewGroupingWithObjectBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object);
 
-typedef NSString* (^YapDatabaseViewGroupingWithMetadataBlock)
+typedef NSString* _Nullable (^YapDatabaseViewGroupingWithMetadataBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id metadata);
 
-typedef NSString* (^YapDatabaseViewGroupingWithRowBlock)
+typedef NSString* _Nullable (^YapDatabaseViewGroupingWithRowBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)block;
@@ -222,3 +224,5 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)
 @property (nonatomic, assign, readonly) YapDatabaseBlockType findBlockType;
 
 @end
+
+NS_ASSUME_NONNULL_END

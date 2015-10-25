@@ -9,6 +9,8 @@
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewRangeOptions.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  * 
@@ -59,12 +61,12 @@
 
 - (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
                          sorting:(YapDatabaseViewSorting *)sorting
-                      versionTag:(NSString *)versionTag;
+                      versionTag:(nullable NSString *)versionTag;
 
 - (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)grouping
                          sorting:(YapDatabaseViewSorting *)sorting
-                      versionTag:(NSString *)versionTag
-                         options:(YapDatabaseViewOptions *)options;
+                      versionTag:(nullable NSString *)versionTag
+                         options:(nullable YapDatabaseViewOptions *)options;
 
 
 @property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
@@ -130,3 +132,5 @@
                                       withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END
