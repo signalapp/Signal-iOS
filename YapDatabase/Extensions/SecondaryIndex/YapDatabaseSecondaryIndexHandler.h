@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseExtensionTypes.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The handler block handles extracting the column values for the secondary indexes.
@@ -45,3 +46,5 @@ typedef void (^YapDatabaseSecondaryIndexWithRowBlock)
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end
+
+NS_ASSUME_NONNULL_END

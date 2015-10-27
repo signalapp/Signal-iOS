@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseRelationshipEdge.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -81,7 +83,7 @@ typedef NS_ENUM(NSInteger, YDB_NotifyReason) {
  *
  * @see YapDatabaseRelationshipEdge
 **/
-- (NSArray *)yapDatabaseRelationshipEdges;
+- (nullable NSArray<YapDatabaseRelationshipEdge *> *)yapDatabaseRelationshipEdges;
 
 @optional
 
@@ -97,4 +99,4 @@ typedef NS_ENUM(NSInteger, YDB_NotifyReason) {
 
 @end
 
-
+NS_ASSUME_NONNULL_END

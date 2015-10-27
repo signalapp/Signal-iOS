@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A YapDatabaseQuery is used to pass SQL style queries into various extension classes.
@@ -102,3 +103,5 @@
 @property (nonatomic, readonly) BOOL isAggregateQuery;
 
 @end
+
+NS_ASSUME_NONNULL_END

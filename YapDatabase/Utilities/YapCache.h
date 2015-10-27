@@ -4,6 +4,8 @@
 #define YAP_CACHE_STATISTICS 0
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * YapCache implements a simple strict cache.
  *
@@ -97,8 +99,8 @@
  * In general, assertions are disabled when you compile for release.
  * But to be precise, the checks are only run if NS_BLOCK_ASSERTIONS is not defined.
 **/
-@property (nonatomic, copy, readwrite) NSSet *allowedKeyClasses;
-@property (nonatomic, copy, readwrite) NSSet *allowedObjectClasses;
+@property (nonatomic, copy, readwrite) NSSet<Class> *allowedKeyClasses;
+@property (nonatomic, copy, readwrite) NSSet<Class> *allowedObjectClasses;
 
 //
 // The normal cache stuff...
@@ -113,7 +115,7 @@
 
 - (void)removeAllObjects;
 - (void)removeObjectForKey:(id)key;
-- (void)removeObjectsForKeys:(NSArray *)keys;
+- (void)removeObjectsForKeys:(NSArray<NSString *> *)keys;
 
 - (void)enumerateKeysWithBlock:(void (^)(id key, BOOL *stop))block;
 - (void)enumerateKeysAndObjectsWithBlock:(void (^)(id key, id obj, BOOL *stop))block;
@@ -142,3 +144,5 @@
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END

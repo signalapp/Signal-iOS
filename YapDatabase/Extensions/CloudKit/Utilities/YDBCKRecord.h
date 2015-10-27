@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface CKRecord (YapDatabaseCloudKit)
 
@@ -47,3 +48,5 @@
 @property (nonatomic, strong, readonly) CKRecord *record;
 
 @end
+
+NS_ASSUME_NONNULL_END

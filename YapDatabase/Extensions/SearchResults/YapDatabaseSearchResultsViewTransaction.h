@@ -3,6 +3,7 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseSearchQueue.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseSearchResultsViewTransaction : YapDatabaseViewTransaction
 
@@ -15,7 +16,7 @@
  *
  * Note: snippets must be enabled via YapDatabaseSearchResultsViewOptions.
 **/
-- (NSString *)snippetForKey:(NSString *)key inCollection:(NSString *)collection;
+- (NSString *)snippetForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 @end
 
@@ -48,3 +49,5 @@
 - (void)performSearchWithQueue:(YapDatabaseSearchQueue *)queue;
 
 @end
+
+NS_ASSUME_NONNULL_END

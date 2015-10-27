@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
 
@@ -15,7 +16,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * Only items in the whitelist are allowed.
  * Any items not in the whitelist are disallowed.
 **/
-- (instancetype)initWithWhitelist:(NSSet *)whitelist;
+- (instancetype)initWithWhitelist:(nullable NSSet *)whitelist;
 
 /**
  * Creates a blacklist based instance.
@@ -23,7 +24,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * Only items in the blacklist are disallowed.
  * Any items not in the blacklist are allowed.
 **/
-- (instancetype)initWithBlacklist:(NSSet *)blacklist;
+- (instancetype)initWithBlacklist:(nullable NSSet *)blacklist;
 
 /**
  * Creates a filterBlock based instance.
@@ -44,7 +45,7 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
  * If the filterBlock returns YES for a given item, that item is allowed.
  * If the filterBlock returns  NO for a given item, that item is disallowed.
 **/
-- (instancetype)initWithFilterBlock:(YapWhitelistBlacklistFilterBlock)block;
+- (instancetype)initWithFilterBlock:(nullable YapWhitelistBlacklistFilterBlock)block;
 
 /**
  * Inspects the whitelist or blacklist, or consults the filterBlock (depending on initialization),
@@ -53,3 +54,5 @@ typedef BOOL (^YapWhitelistBlacklistFilterBlock)(id item);
 - (BOOL)isAllowed:(id)item;
 
 @end
+
+NS_ASSUME_NONNULL_END

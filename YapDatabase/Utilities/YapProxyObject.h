@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * YapProxyObject acts as a proxy for a real object in order to lazily load the object on demand.
  * 
@@ -8,6 +10,7 @@
  * If not, the proxy is configured to automatically load the underlying object
  * (using the current transaction) on demand.
 **/
+
 @interface YapProxyObject : NSProxy
 
 - (instancetype)init;
@@ -17,3 +20,5 @@
 @property (nonatomic, readonly) id realObject;
 
 @end
+
+NS_ASSUME_NONNULL_END

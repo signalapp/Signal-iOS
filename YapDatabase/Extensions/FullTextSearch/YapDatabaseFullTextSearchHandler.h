@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseExtensionTypes.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * The handler block handles extracting the column values for indexing by the FTS module.
  *
@@ -46,3 +48,5 @@ typedef void (^YapDatabaseFullTextSearchWithRowBlock)
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end
+
+NS_ASSUME_NONNULL_END

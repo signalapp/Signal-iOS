@@ -3,6 +3,7 @@
 
 @class YapDatabaseSearchResultsView;
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseSearchResultsViewConnection : YapDatabaseViewConnection
 
@@ -10,3 +11,5 @@
 @property (nonatomic, strong, readonly) YapDatabaseSearchResultsView *searchResultsView;
 
 @end
+
+NS_ASSUME_NONNULL_END

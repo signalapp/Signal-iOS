@@ -4,6 +4,9 @@
 @class YapDatabase;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
+@class YapDatabaseExtensionConnection;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Welcome to YapDatabase!
@@ -77,7 +80,6 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
 
 
 @interface YapDatabaseConnection : NSObject
-NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A database connection maintains a strong reference to its parent.
@@ -400,8 +402,8 @@ NS_ASSUME_NONNULL_BEGIN
  * For a complete discussion, please see the wiki page:
  * https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions
 **/
-- (NSArray *)beginLongLivedReadTransaction;
-- (NSArray *)endLongLivedReadTransaction;
+- (NSArray<NSNotification *> *)beginLongLivedReadTransaction;
+- (NSArray<NSNotification *> *)endLongLivedReadTransaction;
 
 - (BOOL)isInLongLivedReadTransaction;
 
@@ -441,37 +443,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Query for any change to a collection
 
-- (BOOL)hasChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
-- (BOOL)hasObjectChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
-- (BOOL)hasMetadataChangeForCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+- (BOOL)hasChangeForCollection:(NSString *)collection inNotifications:(NSArray<NSNotification *> *)notifications;
+- (BOOL)hasObjectChangeForCollection:(NSString *)collection inNotifications:(NSArray<NSNotification *> *)notifications;
+- (BOOL)hasMetadataChangeForCollection:(NSString *)collection inNotifications:(NSArray<NSNotification *> *)notifications;
 
 // Query for a change to a particular key/collection tuple
 
 - (BOOL)hasChangeForKey:(NSString *)key
            inCollection:(NSString *)collection
-        inNotifications:(NSArray *)notifications;
+        inNotifications:(NSArray<NSNotification *> *)notifications;
 
 - (BOOL)hasObjectChangeForKey:(NSString *)key
                  inCollection:(NSString *)collection
-              inNotifications:(NSArray *)notifications;
+              inNotifications:(NSArray<NSNotification *> *)notifications;
 
 - (BOOL)hasMetadataChangeForKey:(NSString *)key
                    inCollection:(NSString *)collection
-                inNotifications:(NSArray *)notifications;
+                inNotifications:(NSArray<NSNotification *> *)notifications;
 
 // Query for a change to a particular set of keys in a collection
 
 - (BOOL)hasChangeForAnyKeys:(NSSet *)keys
                inCollection:(NSString *)collection
-            inNotifications:(NSArray *)notifications;
+            inNotifications:(NSArray<NSNotification *> *)notifications;
 
 - (BOOL)hasObjectChangeForAnyKeys:(NSSet *)keys
                      inCollection:(NSString *)collection
-                  inNotifications:(NSArray *)notifications;
+                  inNotifications:(NSArray<NSNotification *> *)notifications;
 
 - (BOOL)hasMetadataChangeForAnyKeys:(NSSet *)keys
                        inCollection:(NSString *)collection
-                    inNotifications:(NSArray *)notifications;
+                    inNotifications:(NSArray<NSNotification *> *)notifications;
 
 // Advanced query techniques
 
@@ -486,7 +488,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
  * The hasChange... methods (above) already take this into account.
 **/
-- (BOOL)didClearCollection:(NSString *)collection inNotifications:(NSArray *)notifications;
+- (BOOL)didClearCollection:(NSString *)collection inNotifications:(NSArray<NSNotification *> *)notifications;
 
 /**
  * Returns YES if [transaction removeAllObjectsInAllCollections] was invoked
@@ -498,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This method is designed to be used in conjunction with the enumerateChangedKeys.... methods (below).
  * The hasChange... methods (above) already take this into account.
 **/
-- (BOOL)didClearAllCollectionsInNotifications:(NSArray *)notifications;
+- (BOOL)didClearAllCollectionsInNotifications:(NSArray<NSNotification *> *)notifications;
 
 /**
  * Allows you to enumerate all the changed keys in the given collection, for the given commits.
@@ -512,7 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @see didClearCollection:inNotifications:
 **/
 - (void)enumerateChangedKeysInCollection:(NSString *)collection
-                         inNotifications:(NSArray *)notifications
+                         inNotifications:(NSArray<NSNotification *> *)notifications
                               usingBlock:(void (^)(NSString *key, BOOL *stop))block;
 
 /**
@@ -525,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  * @see didClearAllCollectionsInNotifications:
 **/
-- (void)enumerateChangedCollectionKeysInNotifications:(NSArray *)notifications
+- (void)enumerateChangedCollectionKeysInNotifications:(NSArray<NSNotification *> *)notifications
                                            usingBlock:(void (^)(YapCollectionKey *ck, BOOL *stop))block;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -545,8 +547,8 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  * @see YapDatabase registerExtension:withName:
 **/
-- (id)extension:(NSString *)extensionName;
-- (id)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
+- (__kindof YapDatabaseExtensionConnection *)extension:(NSString *)extensionName;
+- (__kindof YapDatabaseExtensionConnection *)ext:(NSString *)extensionName; // <-- Shorthand (same as extension: method)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Memory
@@ -779,5 +781,6 @@ NS_ASSUME_NONNULL_BEGIN
                   completionQueue:(nullable dispatch_queue_t)completionQueue
                   completionBlock:(nullable void (^)(NSError *))completionBlock;
 
-NS_ASSUME_NONNULL_END
 @end
+
+NS_ASSUME_NONNULL_END

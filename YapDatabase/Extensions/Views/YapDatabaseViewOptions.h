@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapWhitelistBlacklist.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -69,3 +71,5 @@
 @property (nonatomic, assign, readwrite) BOOL skipInitialViewPopulation;
 
 @end
+
+NS_ASSUME_NONNULL_END

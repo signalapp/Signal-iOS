@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -45,7 +47,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 + (instancetype)edgeWithName:(NSString *)name
               destinationKey:(NSString *)destinationKey
-                  collection:(NSString *)destinationCollection
+                  collection:(nullable NSString *)destinationCollection
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
@@ -79,9 +81,9 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 + (instancetype)edgeWithName:(NSString *)name
                    sourceKey:(NSString *)sourceKey
-                  collection:(NSString *)sourceCollection
+                  collection:(nullable NSString *)sourceCollection
               destinationKey:(NSString *)destinationKey
-                  collection:(NSString *)destinationCollection
+                  collection:(nullable NSString *)destinationCollection
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
@@ -100,7 +102,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 + (instancetype)edgeWithName:(NSString *)name
                    sourceKey:(NSString *)sourceKey
-                  collection:(NSString *)sourceCollection
+                  collection:(nullable NSString *)sourceCollection
          destinationFilePath:(NSString *)destinationFilePath
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
@@ -111,7 +113,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 - (id)initWithName:(NSString *)name
     destinationKey:(NSString *)key
-        collection:(NSString *)collection
+        collection:(nullable NSString *)collection
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
@@ -125,16 +127,16 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 - (id)initWithName:(NSString *)name
          sourceKey:(NSString *)sourceKey
-        collection:(NSString *)sourceCollection
+        collection:(nullable NSString *)sourceCollection
     destinationKey:(NSString *)destinationKey
-        collection:(NSString *)destinationCollection
+        collection:(nullable NSString *)destinationCollection
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
  * For documentation @see edgeWithName:sourceKey:collection:destinationFilePath:nodeDeleteRules:
 **/
 - (id)initWithName:(NSString *)name sourceKey:(NSString *)sourceKey
-                                   collection:(NSString *)sourceCollection
+                                   collection:(nullable NSString *)sourceCollection
                           destinationFilePath:(NSString *)destinationFilePath
                               nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
@@ -159,3 +161,5 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 @property (nonatomic, assign, readonly) BOOL isManualEdge;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapWhitelistBlacklist.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  * https://github.com/yapstudios/YapDatabase
@@ -39,3 +41,5 @@
 @property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
 
 @end
+
+NS_ASSUME_NONNULL_END

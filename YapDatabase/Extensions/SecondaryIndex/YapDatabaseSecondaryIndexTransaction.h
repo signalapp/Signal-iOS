@@ -3,6 +3,7 @@
 #import "YapDatabaseExtensionTransaction.h"
 #import "YapDatabaseQuery.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseSecondaryIndexTransaction : YapDatabaseExtensionTransaction
 
@@ -67,3 +68,5 @@
 - (id)performAggregateQuery:(YapDatabaseQuery *)query;
 
 @end
+
+NS_ASSUME_NONNULL_END
