@@ -774,7 +774,7 @@
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "e676a7e8-4553-44e0-a416-5414d0b152eb";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -797,7 +797,7 @@
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabase;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "e676a7e8-4553-44e0-a416-5414d0b152eb";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
