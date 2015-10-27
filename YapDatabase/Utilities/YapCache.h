@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The various YapDatabase classes which use it do this themselves.
 **/
 
-@interface YapCache : NSObject
+@interface YapCache<KeyType, ObjectType> : NSObject
 
 /**
  * Initializes a cache.
@@ -106,19 +106,19 @@ NS_ASSUME_NONNULL_BEGIN
 // The normal cache stuff...
 //
 
-- (void)setObject:(id)object forKey:(id)key;
+- (void)setObject:(ObjectType)object forKey:(KeyType)key;
 
-- (id)objectForKey:(id)key;
-- (BOOL)containsKey:(id)key;
+- (nullable ObjectType)objectForKey:(KeyType)key;
+- (BOOL)containsKey:(KeyType)key;
 
 - (NSUInteger)count;
 
 - (void)removeAllObjects;
-- (void)removeObjectForKey:(id)key;
-- (void)removeObjectsForKeys:(NSArray<NSString *> *)keys;
+- (void)removeObjectForKey:(KeyType)key;
+- (void)removeObjectsForKeys:(NSArray<KeyType> *)keys;
 
-- (void)enumerateKeysWithBlock:(void (^)(id key, BOOL *stop))block;
-- (void)enumerateKeysAndObjectsWithBlock:(void (^)(id key, id obj, BOOL *stop))block;
+- (void)enumerateKeysWithBlock:(void (^)(KeyType key, BOOL *stop))block;
+- (void)enumerateKeysAndObjectsWithBlock:(void (^)(KeyType key, ObjectType obj, BOOL *stop))block;
 
 //
 // Some debugging stuff that gets compiled out

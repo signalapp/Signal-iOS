@@ -187,9 +187,9 @@ static NSString *const ext_key_class = @"class";
 	
 	BOOL hasDiskChanges;
 	
-	YapCache *keyCache;
-	YapCache *objectCache;
-	YapCache *metadataCache;
+	YapCache<NSNumber *, YapCollectionKey *> *keyCache;
+	YapCache<YapCollectionKey *, id> *objectCache;
+	YapCache<YapCollectionKey *, id> *metadataCache;
 	
 	NSUInteger objectCacheLimit;          // Read-only by transaction. Use as consideration of whether to add to cache.
 	NSUInteger metadataCacheLimit;        // Read-only by transaction. Use as consideration of whether to add to cache.

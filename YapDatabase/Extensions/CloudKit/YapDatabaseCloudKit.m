@@ -26,7 +26,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	NSOperationQueue *masterOperationQueue;
 	
 	YapDatabaseConnection *completionDatabaseConnection;
-	YapCache *databaseCache;
+	YapCache<NSString *, CKDatabase *> *databaseCache;
 }
 
 /**

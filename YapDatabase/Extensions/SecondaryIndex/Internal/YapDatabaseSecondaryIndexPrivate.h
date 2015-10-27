@@ -10,6 +10,7 @@
 
 #import "YapCache.h"
 #import "YapMutationStack.h"
+#import "YapDatabaseStatement.h"
 
 #import "sqlite3.h"
 
@@ -86,7 +87,7 @@
 	
 	NSMutableDictionary *blockDict;
 	
-	YapCache *queryCache;
+	YapCache<NSString *, YapDatabaseStatement *> *queryCache;
 	NSUInteger queryCacheLimit;
 	
 	YapMutationStack_Bool *mutationStack;
