@@ -405,6 +405,10 @@ static NSString *const ext_key_class = @"class";
                 (void (^)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block
      withFilter:(BOOL (^)(int64_t rowid, NSString *collection, NSString *key))filter;
 
+- (void)_enumerateRowidsForKeys:(NSArray *)keys
+                   inCollection:(NSString *)collection
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, int64_t rowid, BOOL *stop))block;
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

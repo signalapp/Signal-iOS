@@ -1303,6 +1303,40 @@ static NSString *const ext_key_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Query Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method assists in performing a query over a subset of rows,
+ * where the subset is a known set of keys.
+ *
+ * For example:
+ *
+ * Say you have a known set of items, and you want to figure out which of these items fit in the rectangle.
+ *
+ * NSArray *keys = [self itemKeys];
+ * NSArray *rowids = [[[transaction ext:@"idx"] rowidsForKeys:keys inCollection:@"tracks"] allValues];
+ *
+ * YapDatabaseQuery *query =
+ *   [YapDatabaseQuery queryWithFormat:@"WHERE minLon > 0 AND maxLat <= 10 AND rowid IN (?)", rowids];
+ **/
+- (NSDictionary<NSString*, NSNumber*> *)rowidsForKeys:(NSArray<NSString *> *)keys
+										 inCollection:(nullable NSString *)collection
+{
+	NSMutableDictionary<NSString*, NSNumber*> *results = [NSMutableDictionary dictionaryWithCapacity:keys.count];
+	
+	[databaseTransaction _enumerateRowidsForKeys:keys
+	                                inCollection:collection
+	                         unorderedUsingBlock:^(NSUInteger keyIndex, int64_t rowid, BOOL *stop)
+	{
+		NSString *key = keys[keyIndex];
+		results[key] = @(rowid);
+	}];
+	
+	return results;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

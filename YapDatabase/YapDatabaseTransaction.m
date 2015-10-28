@@ -3824,6 +3824,159 @@
 	}
 }
 
+/**
+ * Fetches the rowid for each given key.
+ *
+ * The rowids are delivered unordered, which is why the block has a keyIndex parameter.
+ * If a key doesn't exist in the database, the block is never invoked for its keyIndex.
+**/
+- (void)_enumerateRowidsForKeys:(NSArray *)keys
+                   inCollection:(NSString *)collection
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, int64_t rowid, BOOL *stop))block
+{
+	if (block == NULL) return;
+	if (keys.count == 0) return;
+	if (collection == nil) collection = @"";
+	
+	if (keys.count == 1)
+	{
+		int64_t rowid = 0;
+		if ([self getRowid:&rowid forKey:[keys firstObject] inCollection:collection])
+		{
+			BOOL stop = NO;
+			block(0, rowid, &stop);
+		}
+		
+		return;
+	}
+	
+	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
+	BOOL stop = NO;
+	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	
+	NSMutableDictionary *keyIndexDict = nil;
+	
+	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
+	// We need to watch out for this in case a large array of keys is passed.
+	
+	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+	NSUInteger offset = 0;
+	
+	do
+	{
+		// Determine how many parameters to use in the query
+		
+		NSUInteger left = keys.count - offset;
+		NSUInteger numKeyParams = MIN(left, (maxHostParams-1)); // minus 1 for collection param
+		
+		// Create the SQL query:
+		//
+		// SELECT "rowid", "key" FROM "database2" WHERE "collection" = ? AND key IN (?, ?, ...);
+		
+		int const column_idx_rowid = SQLITE_COLUMN_START + 0;
+		int const column_idx_key   = SQLITE_COLUMN_START + 1;
+		
+		NSUInteger capacity = 80 + (numKeyParams * 3);
+		NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+		
+		[query appendString:@"SELECT \"rowid\", \"key\" FROM \"database2\""];
+		[query appendString:@" WHERE \"collection\" = ? AND \"key\" IN ("];
+		
+		NSUInteger i;
+		for (i = 0; i < numKeyParams; i++)
+		{
+			if (i == 0)
+				[query appendString:@"?"];
+			else
+				[query appendString:@", ?"];
+		}
+		
+		[query appendString:@");"];
+		
+		sqlite3_stmt *statement;
+		
+		int status = sqlite3_prepare_v2(connection->db, [query UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"Error creating 'objectsForKeys' statement: %d %s",
+						status, sqlite3_errmsg(connection->db));
+			break; // Break from do/while. Still need to free _collection.
+		}
+		
+		// Bind parameters.
+		// And move objects from the missingIndexes array into keyIndexDict.
+		
+		if (keyIndexDict)
+			keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		else
+			[keyIndexDict removeAllObjects];
+		
+		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		for (i = 0; i < numKeyParams; i++)
+		{
+			NSUInteger keyIndex = i + offset;
+			NSString *key = keys[keyIndex];
+			
+			[keyIndexDict setObject:@(keyIndex) forKey:key];
+			
+			sqlite3_bind_text(statement, (int)(SQLITE_BIND_START + 1 + i), [key UTF8String], -1, SQLITE_TRANSIENT);
+		}
+		
+		// Execute the query and step over the results
+		
+		status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			if (connection->needsMarkSqlLevelSharedReadLock)
+				[connection markSqlLevelSharedReadLockAcquired];
+			
+			do
+			{
+				int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_key);
+				int textSize = sqlite3_column_bytes(statement, column_idx_key);
+				
+				NSString *key = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				NSUInteger keyIndex = [[keyIndexDict objectForKey:key] unsignedIntegerValue];
+				
+				// Note: We already checked the cache (above),
+				// so we already know this item is not in the cache.
+				
+				block(keyIndex, rowid, &stop);
+				
+				if (stop || mutation.isMutated) break;
+				
+			} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+		}
+		
+		if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
+		{
+			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_finalize(statement);
+		statement = NULL;
+		
+		if (stop) {
+			FreeYapDatabaseString(&_collection);
+			return;
+		}
+		if (mutation.isMutated) {
+			FreeYapDatabaseString(&_collection);
+			@throw [self mutationDuringEnumerationException];
+			return;
+		}
+		
+		offset += numKeyParams;
+		
+	} while (offset < keys.count);
+	
+	FreeYapDatabaseString(&_collection);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Extensions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

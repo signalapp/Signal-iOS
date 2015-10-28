@@ -1449,6 +1449,42 @@ static NSString *const ext_key_version_deprecated = @"version";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Query Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This method assists in performing a query over a subset of rows,
+ * where the subset is a known set of keys.
+ * 
+ * For example:
+ * 
+ * Say you have a bunch of tracks & playlist objects in the database.
+ * And you've added a secondary index on track.duration.
+ * Now you want to quickly figure out the duration of an entire playlist.
+ * 
+ * NSArray *keys = [self trackKeysInPlaylist:playlist];
+ * NSArray *rowids = [[[transaction ext:@"idx"] rowidsForKeys:keys inCollection:@"tracks"] allValues];
+ *
+ * YapDatabaseQuery *query =
+ *   [YapDatabaseQuery queryWithAggregateFunction:@"SUM(duration)" format:@"WHERE rowid IN (?)", rowids];
+**/
+- (NSDictionary<NSString*, NSNumber*> *)rowidsForKeys:(NSArray<NSString *> *)keys
+                                         inCollection:(nullable NSString *)collection
+{
+	NSMutableDictionary<NSString*, NSNumber*> *results = [NSMutableDictionary dictionaryWithCapacity:keys.count];
+	
+	[databaseTransaction _enumerateRowidsForKeys:keys
+	                                inCollection:collection
+	                         unorderedUsingBlock:^(NSUInteger keyIndex, int64_t rowid, BOOL *stop)
+	{
+		NSString *key = keys[keyIndex];
+		results[key] = @(rowid);
+	}];
+	
+	return results;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

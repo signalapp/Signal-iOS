@@ -53,7 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Skips the enumeration process, and just gives you the count of matching rows.
 **/
-
 - (BOOL)getNumberOfRows:(NSUInteger *)count matchingQuery:(YapDatabaseQuery *)query;
 
 /**
@@ -64,8 +63,26 @@ NS_ASSUME_NONNULL_BEGIN
  * For more inforation, see the sqlite docs on "Aggregate Functions":
  * https://www.sqlite.org/lang_aggfunc.html
 **/
-
 - (id)performAggregateQuery:(YapDatabaseQuery *)query;
+
+/**
+ * This method assists in performing a query over a subset of rows,
+ * where the subset is a known set of keys.
+ * 
+ * For example:
+ * 
+ * Say you have a bunch of tracks & playlist objects in the database.
+ * And you've added a secondary index on track.duration.
+ * Now you want to quickly figure out the duration of an entire playlist.
+ * 
+ * NSArray *keys = [self trackKeysInPlaylist:playlist];
+ * NSArray *rowids = [[[transaction ext:@"idx"] rowidsForKeys:keys inCollection:@"tracks"] allValues];
+ *
+ * YapDatabaseQuery *query =
+ *   [YapDatabaseQuery queryWithAggregateFunction:@"SUM(duration)" format:@"WHERE rowid IN (?)", rowids];
+**/
+- (NSDictionary<NSString*, NSNumber*> *)rowidsForKeys:(NSArray<NSString *> *)keys
+                                         inCollection:(nullable NSString *)collection;
 
 @end
 
