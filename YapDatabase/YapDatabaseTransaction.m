@@ -1760,12 +1760,14 @@
 	
 	// Go to database for any missing keys (if needed)
 	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	
+	NSMutableDictionary *keyIndexDict = nil;
+	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
 	
 	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	
 	do
 	{
@@ -1810,7 +1812,10 @@
 		// Bind parameters.
 		// And move objects from the missingIndexes array into keyIndexDict.
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		if (keyIndexDict == nil)
+			keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		else
+			[keyIndexDict removeAllObjects];
 		
 		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
@@ -1975,12 +1980,14 @@
 	
 	// Go to database for any missing keys (if needed)
 	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	
+	NSMutableDictionary *keyIndexDict = nil;
+	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
 	
 	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	
 	do
 	{
@@ -2025,7 +2032,10 @@
 		// Bind parameters.
 		// And move objects from the missingIndexes array into keyIndexDict.
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		if (keyIndexDict == nil)
+			keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		else
+			[keyIndexDict removeAllObjects];
 		
 		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
@@ -2197,12 +2207,14 @@
 	
 	// Go to database for any missing keys (if needed)
 	
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	
+	NSMutableDictionary *keyIndexDict = nil;
+	
 	// Sqlite has an upper bound on the number of host parameters that may be used in a single query.
 	// We need to watch out for this in case a large array of keys is passed.
 	
 	NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(connection->db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 	
 	do
 	{
@@ -2248,7 +2260,10 @@
 		// Bind parameters.
 		// And move objects from the missingIndexes array into keyIndexDict.
 		
-		NSMutableDictionary *keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		if (keyIndexDict == nil)
+			keyIndexDict = [NSMutableDictionary dictionaryWithCapacity:numKeyParams];
+		else
+			[keyIndexDict removeAllObjects];
 		
 		sqlite3_bind_text(statement, SQLITE_BIND_START, _collection.str, _collection.length, SQLITE_STATIC);
 		
