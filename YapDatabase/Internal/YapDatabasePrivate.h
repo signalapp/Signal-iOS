@@ -126,7 +126,7 @@ static NSString *const ext_key_class = @"class";
  *
  * - snapshot : NSNumber with the changeset's snapshot
 **/
-- (void)notePendingChanges:(NSDictionary *)changeset fromConnection:(YapDatabaseConnection *)connection;
+- (void)notePendingChangeset:(NSDictionary *)changeset fromConnection:(YapDatabaseConnection *)connection;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -134,9 +134,9 @@ static NSString *const ext_key_class = @"class";
  * This method is used if a transaction finds itself in a race condition.
  * That is, the transaction started before it was able to process changesets from sibling connections.
  * 
- * It should fetch the changesets needed and then process them via [connection noteCommittedChanges:].
+ * It should fetch the changesets needed and then process them via [connection noteCommittedChangeset:].
 **/
-- (NSArray *)pendingAndCommittedChangesSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot;
+- (NSArray *)pendingAndCommittedChangesetsSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot;
 
 /**
  * This method is only accessible from within the snapshotQueue.
@@ -148,7 +148,7 @@ static NSString *const ext_key_class = @"class";
  * 
  * - snapshot : NSNumber with the changeset's snapshot
 **/
-- (void)noteCommittedChanges:(NSDictionary *)changeset fromConnection:(YapDatabaseConnection *)connection;
+- (void)noteCommittedChangeset:(NSDictionary *)changeset fromConnection:(YapDatabaseConnection *)connection;
 
 /**
  * This method should be called whenever the maximum checkpointable snapshot is incremented.
@@ -262,15 +262,10 @@ static NSString *const ext_key_class = @"class";
 - (BOOL)registerMemoryTable:(YapMemoryTable *)table withName:(NSString *)name;
 - (void)unregisterMemoryTableWithName:(NSString *)name;
 
-- (YapDatabaseReadTransaction *)newReadTransaction;
-- (YapDatabaseReadWriteTransaction *)newReadWriteTransaction;
-
 - (void)markSqlLevelSharedReadLockAcquired;
 
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
-- (void)processChangeset:(NSDictionary *)changeset;
-
-- (void)noteCommittedChanges:(NSDictionary *)changeset;
+- (void)noteCommittedChangeset:(NSDictionary *)changeset;
 
 - (void)maybeResetLongLivedReadTransaction;
 

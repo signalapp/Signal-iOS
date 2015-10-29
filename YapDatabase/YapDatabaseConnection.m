@@ -1854,14 +1854,14 @@ NS_INLINE BOOL YDBIsMainThread()
 				// The transaction can see the sqlite commit from another transaction,
 				// and it hasn't processed the changeset(s) yet. We need to process them now.
 				
-				NSArray *changesets = [database pendingAndCommittedChangesSince:yapSnapshot until:sqlSnapshot];
+				NSArray *changesets = [database pendingAndCommittedChangesetsSince:yapSnapshot until:sqlSnapshot];
 				
 				for (NSDictionary *changeset in changesets)
 				{
-					[self noteCommittedChanges:changeset];
+					[self noteCommittedChangeset:changeset];
 				}
 				
-				// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
+				// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == sqlSnapshot,
 				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != sqlSnapshot(%llu): %@",
 				         snapshot, sqlSnapshot, changesets);
@@ -1890,14 +1890,14 @@ NS_INLINE BOOL YDBIsMainThread()
 			{
 				// The transaction hasn't processed recent changeset(s) yet. We need to process them now.
 				
-				NSArray *changesets = [database pendingAndCommittedChangesSince:localSnapshot until:globalSnapshot];
+				NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 				
 				for (NSDictionary *changeset in changesets)
 				{
-					[self noteCommittedChanges:changeset];
+					[self noteCommittedChangeset:changeset];
 				}
 				
-				// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
+				// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == globalSnapshot,
 				         @"Invalid connection state in preReadTransaction: snapshot(%llu) != globalSnapshot(%llu): %@",
 				         snapshot, globalSnapshot, changesets);
@@ -2088,14 +2088,14 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		if (localSnapshot < globalSnapshot)
 		{
-			NSArray *changesets = [database pendingAndCommittedChangesSince:localSnapshot until:globalSnapshot];
+			NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 			
 			for (NSDictionary *changeset in changesets)
 			{
-				[self noteCommittedChanges:changeset];
+				[self noteCommittedChangeset:changeset];
 			}
 			
-			// The noteCommittedChanges method (invoked above) updates our 'snapshot' variable.
+			// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 			NSAssert(snapshot == globalSnapshot,
 			         @"Invalid connection state in preReadWriteTransaction: snapshot(%llu) != globalSnapshot(%llu)",
 			         snapshot, globalSnapshot);
@@ -2338,7 +2338,7 @@ NS_INLINE BOOL YDBIsMainThread()
 					
 					if (changeset)
 					{
-						[database notePendingChanges:changeset fromConnection:self];
+						[database notePendingChangeset:changeset fromConnection:self];
 					}
 					
 					if (clearPreviouslyRegisteredExtensionNames)
@@ -2398,7 +2398,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			
 			if (changeset)
 			{
-				[database noteCommittedChanges:changeset fromConnection:self];
+				[database noteCommittedChangeset:changeset fromConnection:self];
 			}
 			
 			// Post-Write-Transaction: Step 8 of 10
@@ -2594,8 +2594,8 @@ NS_INLINE BOOL YDBIsMainThread()
 		
 		if (changeset)
 		{
-			[database notePendingChanges:changeset fromConnection:self];
-			[database noteCommittedChanges:changeset fromConnection:self];
+			[database notePendingChangeset:changeset fromConnection:self];
+			[database noteCommittedChangeset:changeset fromConnection:self];
 		}
 		
 		// Post-Pseudo-Write-Transaction: Step 3 of 5
@@ -2861,7 +2861,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			
 			for (NSDictionary *changeset in pendingChangesets)
 			{
-				[self noteCommittedChanges:changeset];
+				[self noteCommittedChangeset:changeset];
 				
 				NSNotification *notification = [changeset objectForKey:YapDatabaseNotificationKey];
 				if (notification) {
@@ -3571,12 +3571,12 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
  *
  * This method is invoked with the changeset from a sibling connection.
 **/
-- (void)noteCommittedChanges:(NSDictionary *)changeset
+- (void)noteCommittedChangeset:(NSDictionary *)changeset
 {
 	// This method must be invoked from within connectionQueue.
 	// It may be invoked from:
 	//
-	// 1. [database noteCommittedChanges:fromConnection:]
+	// 1. [database noteCommittedChangeset:fromConnection:]
 	//   via dispatch_async(connectionQueue, ...)
 	//
 	// 2. [self  preReadTransaction:]
@@ -3630,7 +3630,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		}
 		else
 		{
-			// This method is being invoked from [database noteCommittedChanges:].
+			// This method is being invoked from [database noteCommittedChangeset:].
 			// We cannot process the changeset yet.
 			// We must wait for the longLivedReadTransaction to be reset.
 			
