@@ -186,6 +186,22 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     
 }
 
+- (void)application:(UIApplication *)application
+performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
+  completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    if ([TSAccountManager isRegistered]) {
+        [[Environment getCurrent].signalsViewController composeNew];
+    } else {
+        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                                            message:@"Someone's exited to send his first message! Register now to send your first message."
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
+        completionHandler(YES);
+        [self.window.rootViewController presentViewController:controller animated:YES completion:^{
+            completionHandler(NO);
+        }];
+    }
+}
+
 - (void)prepareScreenshotProtection{
     self.blankWindow = ({
         UIWindow *window              = [[UIWindow alloc] initWithFrame:self.window.bounds];

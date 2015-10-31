@@ -96,7 +96,7 @@
                             <inset key="imageInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
-                                <segue destination="cZ7-de-SUi" kind="modal" id="Ea3-ew-jtL"/>
+                                <segue destination="cZ7-de-SUi" kind="modal" identifier="composeNew" id="Ea3-ew-jtL"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

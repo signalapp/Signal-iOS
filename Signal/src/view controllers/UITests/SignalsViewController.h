@@ -25,5 +25,6 @@
 @property (nonatomic, retain) CallState* latestCall;
 
 - (NSNumber*)updateInboxCountLabel;
+- (void)composeNew;
 
 @end

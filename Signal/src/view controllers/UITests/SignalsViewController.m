@@ -126,6 +126,16 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     return _previewActions;
 }
 
+- (void)composeNew {
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    
+    [self performSegueWithIdentifier:@"composeNew" sender:self];
+}
+
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         [self selectedInbox:nil];
