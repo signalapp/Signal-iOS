@@ -21,7 +21,6 @@ PODS:
   - AFNetworking/UIKit (2.6.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - APDropDownNavToolbar (1.1)
   - AxolotlKit (0.7):
     - 25519 (~> 2.0.1)
     - HKDFKit (~> 0.0.3)
@@ -64,8 +63,6 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.6)
-  - APDropDownNavToolbar (from `https://github.com/corbett/APDropDownNavToolbar.git`,
-    branch `master`)
   - AxolotlKit
   - DJWActionSheet
   - FFCircularProgressView (~> 0.5)
@@ -84,9 +81,6 @@ DEPENDENCIES:
   - YapDatabase/SQLCipher (~> 2.7.2)
 
 EXTERNAL SOURCES:
-  APDropDownNavToolbar:
-    :branch: master
-    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :commit: e5582fef8a6b3e35f8070361ef37237222da712b
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
@@ -95,9 +89,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/FredericJacobs/SocketRocket.git
 
 CHECKOUT OPTIONS:
-  APDropDownNavToolbar:
-    :commit: 98a606b343c0ccc6cca1cd243b296325716f21e7
-    :git: https://github.com/corbett/APDropDownNavToolbar.git
   JSQMessagesViewController:
     :commit: e5582fef8a6b3e35f8070361ef37237222da712b
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
@@ -108,7 +99,6 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
-  APDropDownNavToolbar: 5d0c3f363208543d20e86ddb4630927c28cdfd4b
   AxolotlKit: 8652fca51f4bc8225cbda791b0026c21e912b694
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80

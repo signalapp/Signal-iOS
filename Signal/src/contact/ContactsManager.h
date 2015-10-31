@@ -2,6 +2,7 @@
 #import "CollapsingFutures.h"
 #import "Contact.h"
 #import "ObservableValue.h"
+#import <Contacts/Contacts.h>
 
 /**
  *
@@ -25,6 +26,8 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @private NSDictionary *latestContactsById;
 @private NSDictionary *latestWhisperUsersById;
 }
+
+@property CNContactStore *contactStore;
 
 -(ObservableValue *) getObservableContacts;
 -(ObservableValue *) getObservableRedPhoneUsers;

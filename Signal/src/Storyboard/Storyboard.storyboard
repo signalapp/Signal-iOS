@@ -1451,10 +1451,6 @@ A0 09 9A FF A8 8A 09 99</string>
                         <color key="barTintColor" red="0.067691504955291748" green="0.55628502368927002" blue="0.92999207973480225" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Ili-XA-ka5">
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                    </toolbar>
                     <connections>
                         <segue destination="MY2-bB-USa" kind="relationship" relationship="rootViewController" id="3Fm-tH-SUz"/>
                     </connections>

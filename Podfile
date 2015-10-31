@@ -19,4 +19,3 @@ pod 'DJWActionSheet'
 
 pod 'SocketRocket', :git => 'https://github.com/FredericJacobs/SocketRocket.git', :commit => 'dd7e47fed78214785d7c032081da94008335fc35'
 pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :commit => 'e5582fef8a6b3e35f8070361ef37237222da712b'
-pod 'APDropDownNavToolbar',       :git => 'https://github.com/corbett/APDropDownNavToolbar.git', :branch => 'master'
