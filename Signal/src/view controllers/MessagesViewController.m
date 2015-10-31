@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import <AddressBookUI/AddressBookUI.h>
+#import <ContactsUI/CNContactViewController.h>
 
 #import "MessagesViewController.h"
 #import "FullImageViewController.h"
@@ -99,6 +100,7 @@ typedef enum : NSUInteger {
 
 @property BOOL isVisible;
 @property (nonatomic)  BOOL composeOnOpen;
+@property (nonatomic)  BOOL peek;
 
 @end
 
@@ -131,6 +133,16 @@ typedef enum : NSUInteger {
     isGroupConversation = YES;
 }
 
+- (void)peekSetup {
+    _peek = YES;
+    [self setComposeOnOpen:NO];
+}
+
+- (void)popped {
+    _peek = NO;
+    [self hideInputIfNeeded];
+}
+
 - (void)setComposeOnOpen:(BOOL)compose {
     _composeOnOpen = compose;
 }
@@ -145,13 +157,18 @@ typedef enum : NSUInteger {
 }
 
 - (void)hideInputIfNeeded {
+    if (_peek) {
+        [self inputToolbar].hidden = YES;
+        return;
+    }
+    
     if([_thread  isKindOfClass:[TSGroupThread class]] && ![((TSGroupThread*)_thread).groupModel.groupMemberIds containsObject:[SignalKeyingStorage.localNumber toE164]]) {
         [self inputToolbar].hidden= YES; // user has requested they leave the group. further sends disallowed
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-    }
-    else if(![self isTextSecureReachable] ){
+    } else if(![self isTextSecureReachable] ){
         [self inputToolbar].hidden= YES; // only RedPhone
     } else {
+        [self inputToolbar].hidden= NO;
         [self loadDraftInCompose];
     }
 }
@@ -234,22 +251,28 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self updateBackButton];
     [super viewDidAppear:animated];
     [self markAllMessagesAsRead];
     [self startReadTimer];
     _isVisible = YES;
     [self initializeTitleLabelGestureRecognizer];
     
-    [self updateBackButton];
+    [self updateBackButtonAsync];
     
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
 }
 
-- (void)updateBackButton {
-    [self setUnreadCount:[[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread]];
+- (void)updateBackButtonAsync {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSUInteger count = [[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread];
+        dispatch_async(dispatch_get_main_queue() , ^{
+            if (self) {
+                [self setUnreadCount:count];
+            }
+        });
+    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -474,22 +497,53 @@ typedef enum : NSUInteger {
         
         Contact *contact = [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:[self phoneNumberForThread]];
         if (!contact) {
-            ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
             
-            ABRecordRef aContact = ABPersonCreate();
-            CFErrorRef anError = NULL;
-            
-            ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-            
-            ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef) [self phoneNumberForThread].toE164, kABPersonPhoneMainLabel, NULL);
-            
-            ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
-            CFRelease(phone);
-            
-            if (!anError && aContact) {
-                view.displayedPerson = aContact; // Assume person is already defined.
-                view.allowsAddingToAddressBook = YES;
-                [self.navigationController pushViewController:view animated:YES];
+            if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(NSFoundationVersionNumber_iOS_9))) {
+                ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
+                
+                ABRecordRef aContact = ABPersonCreate();
+                CFErrorRef anError = NULL;
+                
+                ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+                
+                ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef) [self phoneNumberForThread].toE164, kABPersonPhoneMainLabel, NULL);
+                
+                ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
+                CFRelease(phone);
+                
+                if (!anError && aContact) {
+                    view.displayedPerson = aContact; // Assume person is already defined.
+                    view.allowsAddingToAddressBook = YES;
+                    [self.navigationController pushViewController:view animated:YES];
+                }
+            } else {
+                CNContactStore *contactStore = [Environment getCurrent].contactsManager.contactStore;
+                
+                CNMutableContact *cncontact = [[CNMutableContact alloc] init];
+                cncontact.phoneNumbers = @[[CNLabeledValue labeledValueWithLabel:nil value:[CNPhoneNumber phoneNumberWithStringValue:[self phoneNumberForThread].toE164]]];
+                
+                CNContactViewController *controller = [CNContactViewController viewControllerForUnknownContact:cncontact];
+                controller.allowsActions = NO;
+                controller.allowsEditing = YES;
+                controller.contactStore = contactStore;
+                
+                [self.navigationController pushViewController:controller animated:YES];
+                 
+                 // The "Add to existing contacts" is known to be destroying the view controller stack on iOS 9 http://stackoverflow.com/questions/32973254/cncontactviewcontroller-forunknowncontact-unusable-destroys-interface
+                    
+                    // Warning the user
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"iOS 9 Bug" message:@"iOS 9 introduced a bug that prevents us from adding this number to an existing contact from the app. You can still create a new contact for this number or copy-paste it into an existing contact sheet." preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    
+                    [alertController addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleCancel handler:nil]];
+                    
+                    [alertController addAction:[UIAlertAction actionWithTitle:@"Copy number" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                        pasteboard.string = [self phoneNumberForThread].toE164;
+                        [controller.navigationController popViewControllerAnimated:YES];
+                    }]];
+                    
+                [controller presentViewController:alertController animated:YES completion:nil];
             }
         }
     }
@@ -1349,7 +1403,7 @@ typedef enum : NSUInteger {
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
     
-    [self updateBackButton];
+    [self updateBackButtonAsync];
     
     if(isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

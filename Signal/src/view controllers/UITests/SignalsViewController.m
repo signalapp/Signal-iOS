@@ -27,8 +27,6 @@
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
-
-static NSString *const inboxTableViewCell   = @"inBoxTableViewCell";
 static NSString *const kSegueIndentifier    = @"showSegue";
 static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
@@ -40,6 +38,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic) CellState viewingThreadsIn;
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
+@property (nonatomic)  NSArray<id<UIPreviewActionItem>> *previewActions;
 
 @end
 
@@ -75,6 +74,56 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
     [self.segmentedControl addTarget:self action:@selector(swappedSegmentedControl) forControlEvents:UIControlEventValueChanged];
     self.navigationItem.titleView = self.segmentedControl;
     [self.segmentedControl setSelectedSegmentIndex:0];
+    
+    if ([self.traitCollection
+         respondsToSelector:@selector(forceTouchCapability)] &&
+        (self.traitCollection.forceTouchCapability ==
+         UIForceTouchCapabilityAvailable))
+    {
+        [self registerForPreviewingWithDelegate:self sourceView:self.view];
+    }
+}
+
+- (UIViewController *)previewingContext:
+(id<UIViewControllerPreviewing>)previewingContext
+              viewControllerForLocation:(CGPoint)location {
+    NSIndexPath *indexPath = [self.tableView
+                              indexPathForRowAtPoint:location];
+    
+    MessagesViewController * vc    = [[MessagesViewController alloc] initWithNibName:nil bundle:nil];
+    TSThread *thread               = [self threadForIndexPath:indexPath];
+    [vc setupWithThread:thread];
+    [vc peekSetup];
+    
+    return vc;
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+     commitViewController:(UIViewController *)viewControllerToCommit {
+    
+    MessagesViewController *vc = (MessagesViewController*)viewControllerToCommit;
+    [vc popped];
+    
+    [self.navigationController pushViewController:vc
+                                         animated:NO];
+}
+
+- (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
+    return self.previewActions;
+}
+
+- (NSArray<id<UIPreviewActionItem>> *)previewActions {
+    if (_previewActions == nil) {
+        UIPreviewAction *printAction = [UIPreviewAction
+                                        actionWithTitle:@"Print"
+                                        style:UIPreviewActionStyleDefault
+                                        handler:^(UIPreviewAction * _Nonnull action,
+                                                  UIViewController * _Nonnull previewViewController) {
+                                            // ... code to handle action here
+                                        }];
+        _previewActions = @[printAction];
+    }
+    return _previewActions;
 }
 
 - (void)swappedSegmentedControl {
@@ -117,7 +166,7 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (InboxTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
     
-    InboxTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:inboxTableViewCell];
+    InboxTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([InboxTableViewCell class])];
     TSThread *thread         = [self threadForIndexPath:indexPath];
     
     if (!cell) {
@@ -125,8 +174,10 @@ static NSString* const kShowSignupFlowSegue = @"showSignupFlow";
         cell.delegate = self;
     }
     
-    [cell configureWithThread:thread];
-    [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [cell configureWithThread:thread];
+        [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
+    });
     
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0]-1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);

@@ -32,5 +32,6 @@
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread*)thread;
+- (NSUInteger)unreadMessagesInThread:(TSThread*)thread;
 
 @end

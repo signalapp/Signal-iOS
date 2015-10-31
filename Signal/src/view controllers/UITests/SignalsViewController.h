@@ -13,7 +13,7 @@
 #import "TSGroupModel.h"
 #import "CallState.h"
 
-@interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate>
+@interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic) NSString        *contactIdentifierFromCompose;
 @property (nonatomic) TSGroupModel    *groupFromCompose;

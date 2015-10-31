@@ -407,6 +407,14 @@
     return numberOfItems;
 }
 
+- (NSUInteger)unreadMessagesInThread:(TSThread*)thread {
+    __block NSUInteger numberOfItems;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+    }];
+    return numberOfItems;
+}
+
 - (void)notifyUserForCall:(TSCall*)call inThread:(TSThread*)thread {
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive){
         // Remove previous notification of call and show missed notification.

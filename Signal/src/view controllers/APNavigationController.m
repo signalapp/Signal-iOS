@@ -60,9 +60,9 @@
         frame.origin.y = CGRectGetMaxY(self.navigationBar.frame);
         self.dropDownToolbar.frame = frame;
         [UIView animateWithDuration:0.25 animations:^{
-            CGRect frame = self.dropDownToolbar.frame;
-            frame.origin.y = 0.;
-            weakSelf.dropDownToolbar.frame = frame;
+            CGRect finalframe = self.dropDownToolbar.frame;
+            finalframe.origin.y = 0.;
+            weakSelf.dropDownToolbar.frame = finalframe;
         } completion:^(BOOL finished) {
             weakSelf.isDropDownVisible = !weakSelf.isDropDownVisible;
             weakSelf.dropDownToolbar.hidden = YES;
@@ -86,9 +86,9 @@
         self.dropDownToolbar.hidden = NO;
         self.dropDownToolbar.frame = frame;
         [UIView animateWithDuration:0.25 animations:^{
-            CGRect frame = self.dropDownToolbar.frame;
-            frame.origin.y = CGRectGetMaxY(self.navigationBar.frame);
-            weakSelf.dropDownToolbar.frame = frame;
+            CGRect finalframe = self.dropDownToolbar.frame;
+            finalframe.origin.y = CGRectGetMaxY(self.navigationBar.frame);
+            weakSelf.dropDownToolbar.frame = finalframe;
         } completion:^(BOOL finished) {
             weakSelf.isDropDownVisible = !weakSelf.isDropDownVisible;
         }];

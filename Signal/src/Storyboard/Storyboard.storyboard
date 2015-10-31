@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
     <scenes>
         <!--Conversations-->
@@ -40,22 +41,25 @@
                                     <constraint firstAttribute="centerY" secondItem="Srx-i1-WhD" secondAttribute="centerY" constant="95" id="XST-YY-qXT"/>
                                 </constraints>
                             </view>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
+                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
                                 <rect key="frame" x="0.0" y="64" width="330" height="504"/>
                                 <animations/>
-                                <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="showCell" id="bnD-Ld-pC4">
-                                        <rect key="frame" x="0.0" y="22" width="330" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="cells" id="Ao0-kZ-6Fk">
+                                        <rect key="frame" x="0.0" y="28" width="330" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bnD-Ld-pC4" id="9EM-iT-Acg">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ao0-kZ-6Fk" id="Kzg-Il-hgK">
                                             <rect key="frame" x="0.0" y="0.0" width="297" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                         </tableViewCellContentView>
                                         <animations/>
                                         <connections>
-                                            <segue destination="DtA-8O-wrT" kind="push" identifier="showSegue" id="06M-BZ-tnn"/>
+                                            <segue destination="DtA-8O-wrT" kind="push" identifier="showSegue" id="ANb-Oa-vQe">
+                                                <segue key="commit" inheritsFrom="parent" id="3Aj-hB-zgq"/>
+                                                <segue key="preview" inheritsFrom="commit" id="ktS-lA-hcf"/>
+                                            </segue>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -2040,8 +2044,9 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="ANb-Oa-vQe"/>
         <segue reference="DR8-fx-0PD"/>
-        <segue reference="D0d-4f-lcI"/>
         <segue reference="xo7-5J-BJb"/>
+        <segue reference="D0d-4f-lcI"/>
     </inferredMetricsTieBreakers>
 </document>

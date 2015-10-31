@@ -29,6 +29,9 @@
 - (void)setupWithTSIdentifier:(NSString*)identifier;
 - (void)setupWithTSGroup:(TSGroupModel*)model;
 
+- (void)peekSetup;
+- (void)popped;
+
 - (void)setComposeOnOpen:(BOOL)compose;
 
 - (TSThread*)thread;

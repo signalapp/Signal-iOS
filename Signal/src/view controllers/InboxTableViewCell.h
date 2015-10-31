@@ -34,7 +34,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) IBOutlet UIView *archiveView;
 @property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
+@property (nonatomic, retain) IBOutlet UIView *messageCounter;
 @property (nonatomic, assign) id<TableViewCellDelegate> delegate;
+@property (nonatomic, retain) NSString *threadId;
 
 + (instancetype)inboxTableViewCell;
 - (void)configureWithThread:(TSThread*)thread;

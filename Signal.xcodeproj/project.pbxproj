@@ -394,6 +394,8 @@
 		B6B096931A1D25ED008BFAA6 /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B0965C1A1D25ED008BFAA6 /* NSData+messagePadding.m */; };
 		B6B096951A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */; };
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
+		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; };
+		B6B2269A1BE4C59200860F4D /* APNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B226991BE4C59200860F4D /* APNavigationController.m */; };
 		B6B50AAB1A4192C500F8F607 /* TSMessagesManager+attachments.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachments.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6BADBE41B88CB940086A80D /* TSUpdateAttributesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BADBE31B88CB940086A80D /* TSUpdateAttributesRequest.m */; };
@@ -1062,6 +1064,9 @@
 		B6B096601A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionDataTask+StatusCode.m"; sourceTree = "<group>"; };
 		B6B1013A196D213F007E3930 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
+		B6B226961BE4B7D200860F4D /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
+		B6B226981BE4C59200860F4D /* APNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APNavigationController.h; sourceTree = "<group>"; };
+		B6B226991BE4C59200860F4D /* APNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APNavigationController.m; sourceTree = "<group>"; };
 		B6B50AA91A4192C500F8F607 /* TSMessagesManager+attachments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSMessagesManager+attachments.h"; sourceTree = "<group>"; };
 		B6B50AAA1A4192C500F8F607 /* TSMessagesManager+attachments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TSMessagesManager+attachments.m"; sourceTree = "<group>"; };
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
@@ -1227,6 +1232,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
@@ -1853,6 +1859,8 @@
 		76EB04FE18170B33006006FC /* view controllers */ = {
 			isa = PBXGroup;
 			children = (
+				B6B226981BE4C59200860F4D /* APNavigationController.h */,
+				B6B226991BE4C59200860F4D /* APNavigationController.m */,
 				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
 				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
 				FCFD25791A1543D500F4C644 /* Signup */,
@@ -2449,6 +2457,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6B226961BE4B7D200860F4D /* ContactsUI.framework */,
 				B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */,
 				FC3BD9871A30A790005B96BB /* Social.framework */,
 				B60EDE031A05A01700D73516 /* AudioToolbox.framework */,
@@ -3174,6 +3183,7 @@
 				B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */,
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
+				B6B2269A1BE4C59200860F4D /* APNavigationController.m in Sources */,
 				B6B096761A1D25ED008BFAA6 /* TSServerMessage.m in Sources */,
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
