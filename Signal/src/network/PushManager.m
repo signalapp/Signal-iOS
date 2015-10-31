@@ -95,10 +95,12 @@
             NSString *displayName          = nameString?nameString:callerId;
             PropertyListPreferences *prefs = [Environment preferences];
             
+            notification.alertBody = @"☎️ ";
+            
             if ([prefs notificationPreviewType] == NotificationNoNameNoPreview) {
-                notification.alertBody = NSLocalizedString(@"INCOMING_CALL", nil);
+                notification.alertBody = [notification.alertBody stringByAppendingString:NSLocalizedString(@"INCOMING_CALL", nil)];
             } else {
-                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"INCOMING_CALL_FROM", nil), displayName];
+                notification.alertBody = [notification.alertBody stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"INCOMING_CALL_FROM", nil), displayName]];
             }
             
             notification.category  = Signal_Call_Category;
@@ -169,6 +171,7 @@
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey] attachments:nil];
             [[TSMessagesManager sharedManager] sendMessage:message inThread:thread success:^{
                 [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
+                [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
             } failure:^{
                 UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
                 failedSendNotif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
