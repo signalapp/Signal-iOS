@@ -61,7 +61,9 @@ NSString * const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 
 - (NSString *)description{
     if(self.attachments > 0){
-        return NSLocalizedString(@"ATTACHMENT", nil);
+        NSString *attachmentId = self.attachments[0];
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+        return attachment.description;
     } else {
         return self.body;
     }

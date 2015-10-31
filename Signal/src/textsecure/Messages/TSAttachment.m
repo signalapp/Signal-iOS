@@ -8,6 +8,7 @@
 //
 
 #import "TSAttachment.h"
+#import "MIMETypeUtil.h"
 
 @implementation TSAttachment
 
@@ -32,6 +33,20 @@
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     return [f numberFromString:self.uniqueId];
+}
+
+- (NSString*)description {
+    NSString *attachmentString = NSLocalizedString(@"ATTACHMENT", nil);
+    
+    if ([MIMETypeUtil isImage:self.contentType]) {
+        return [NSString stringWithFormat:@"📷 %@", attachmentString];
+    } else if ([MIMETypeUtil isVideo:self.contentType]) {
+        return [NSString stringWithFormat:@"📽 %@", attachmentString];
+    } else if ([MIMETypeUtil isAudio:self.contentType]) {
+        return [NSString stringWithFormat:@"📻 %@", attachmentString];
+    }
+    
+    return attachmentString;
 }
 
 @end
