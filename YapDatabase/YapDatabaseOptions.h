@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, YapDatabasePragmaSynchronous) {
 };
 
 #ifdef SQLITE_HAS_CODEC
-typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
+typedef NSData *_Nonnull (^YapDatabaseCipherKeyBlock)(void);
 #endif
 
 @interface YapDatabaseOptions : NSObject <NSCopying>
