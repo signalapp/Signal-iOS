@@ -168,6 +168,59 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
  * Important: If you do not set a cipherKeyBlock the database will NOT be configured with encryption.
 **/
 @property (nonatomic, copy, readwrite) YapDatabaseCipherKeyBlock cipherKeyBlock;
+
+/**
+ * Set the PBKDF2 iteration number for deriving the key to the SQLCipher database.
+ *
+ * This is the PBKDF2 iteration number that will be passed to SQLCipher via the 'kdf_iter' pragma.
+ * This parameter will be used everytime the database is openened and you must not change it,
+ * otherwise SQLCipher will not be able to decrypt it.
+ * https://www.zetetic.net/sqlcipher/sqlcipher-api/#kdf_iter
+ *
+ * You must use the 'YapDatabase/SQLCipher' subspec
+ * in your Podfile for this option to take effect.
+ *
+ * This parameter isn't compulsory to a SQLCipher database but it is useful if you want
+ * to customize the iteration count (for performance reasons) of PBKDF.
+ * Default is 64,000 PBKDF2 iterations (effectively 256,000 SHA1 operations)
+ **/
+@property (nonatomic, assign, readwrite) NSUInteger kdfIterNumber;
+
+/**
+ * Set the PBKDF2 iteration number for the SQLCipher database.
+ *
+ * In some very specific cases, it is not possible to call 'kdf_iter' (@see kdfIterNumber)
+ * as one of the first operations on a database. In these cases cipherDefaultkdfIterNumber
+ * can be used to globally alter the default number of PBKDF2 iterations used when opening a database.
+ *
+ * This is the PBKDF2 iteration number that will be passed to SQLCipher via the 'cipher_default_kdf_iter' pragma.
+ * This parameter will be used everytime the database is openened and you must not change it,
+ * otherwise SQLCipher will not be able to decrypt it.
+ * https://www.zetetic.net/sqlcipher/sqlcipher-api/#cipher_default_kdf_iter
+ *
+ * You must use the 'YapDatabase/SQLCipher' subspec
+ * in your Podfile for this option to take effect.
+ *
+ * This parameter isn't compulsory to a SQLCipher database but it is useful if you want
+ * to customize the iteration count (for performance reasons) of PBKDF.
+ **/
+@property (nonatomic, assign, readwrite) NSUInteger cipherDefaultkdfIterNumber;
+
+/**
+ * Set the page size for the encrypted database. The default page size is 1024 bytes.
+ *
+ * This is the adjusted page size that will be passed to SQLCipher via the 'cipher_page_size' pragma.
+ * This parameter will be used everytime the database is openened and you must not change it,
+ * otherwise SQLCipher will not be able to decrypt it.
+ * https://www.zetetic.net/sqlcipher/sqlcipher-api/#cipher_page_size
+ *
+ * You must use the 'YapDatabase/SQLCipher' subspec
+ * in your Podfile for this option to take effect.
+ *
+ * This parameter isn't compulsory to a SQLCipher database but it is useful if you want
+ * to customize the page size of your encrypted database.
+ **/
+@property (nonatomic, assign, readwrite) NSUInteger cipherPageSize;
 #endif
 
 /**
