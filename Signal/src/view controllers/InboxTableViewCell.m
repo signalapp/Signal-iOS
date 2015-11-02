@@ -150,6 +150,7 @@
 {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
     _nameLabel.textColor    = [UIColor ows_blackColor];
+    _snippetLabel.font      = [UIFont ows_regularFontWithSize:12];
     _snippetLabel.textColor = [UIColor lightGrayColor];
     _timeLabel.textColor    = [UIColor ows_darkGrayColor];
 }
