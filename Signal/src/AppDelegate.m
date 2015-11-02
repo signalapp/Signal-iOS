@@ -172,9 +172,9 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     }];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self protectScreen];
         if ([TSAccountManager isRegistered]) {
             dispatch_sync(dispatch_get_main_queue(), ^{
+                [self protectScreen];
                 [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
             });
             [TSSocketManager resignActivity];
