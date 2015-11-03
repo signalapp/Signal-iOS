@@ -2,6 +2,10 @@
 
 #import "YapDatabase.h"
 #import "YapDatabaseExtension.h"
+
+#import "YapDatabaseHooksConnection.h"
+#import "YapDatabaseHooksTransaction.h"
+
 #import "YapProxyObject.h"
 #import "YapWhitelistBlacklist.h"
 

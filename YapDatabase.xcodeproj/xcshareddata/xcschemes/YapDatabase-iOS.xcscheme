@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0630"
+   LastUpgradeVersion = "0700"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,37 +14,40 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4580F0391B14C98600E53C40"
-               BuildableName = "UniversalFramework"
-               BlueprintName = "UniversalFramework"
+               BlueprintIdentifier = "DCF7C2BD1BCC8E870087ED39"
+               BuildableName = "YapDatabase.framework"
+               BlueprintName = "YapDatabase-iOS"
                ReferencedContainer = "container:YapDatabase.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      buildConfiguration = "Debug">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </TestAction>
    <LaunchAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4580F0391B14C98600E53C40"
-            BuildableName = "UniversalFramework"
-            BlueprintName = "UniversalFramework"
+            BlueprintIdentifier = "DCF7C2BD1BCC8E870087ED39"
+            BuildableName = "YapDatabase.framework"
+            BlueprintName = "YapDatabase-iOS"
             ReferencedContainer = "container:YapDatabase.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -52,17 +55,17 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
+      buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4580F0391B14C98600E53C40"
-            BuildableName = "UniversalFramework"
-            BlueprintName = "UniversalFramework"
+            BlueprintIdentifier = "DCF7C2BD1BCC8E870087ED39"
+            BuildableName = "YapDatabase.framework"
+            BlueprintName = "YapDatabase-iOS"
             ReferencedContainer = "container:YapDatabase.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

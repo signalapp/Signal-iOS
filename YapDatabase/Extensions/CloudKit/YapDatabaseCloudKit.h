@@ -2,12 +2,16 @@
 #import <CloudKit/CloudKit.h>
 
 #import "YapDatabaseExtension.h"
+
 #import "YapDatabaseCloudKitTypes.h"
 #import "YapDatabaseCloudKitOptions.h"
 #import "YapDatabaseCloudKitConnection.h"
 #import "YapDatabaseCloudKitTransaction.h"
 
 #import "YDBCKChangeSet.h"
+#import "YDBCKMergeInfo.h"
+#import "YDBCKRecordInfo.h"
+#import "YDBCKRecord.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
