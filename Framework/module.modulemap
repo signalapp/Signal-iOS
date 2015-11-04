@@ -17,6 +17,7 @@ framework module YapDatabase {
 		header "YapProxyObject.h"
 		header "YapSet.h"
 		header "YapWhitelistBlacklist.h"
+		header "YapMutationStack.h"
 	}
 	
 	// Extension: View
