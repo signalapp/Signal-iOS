@@ -2,6 +2,7 @@ YapDatabase
 ===========
 
 [![Build Status](https://travis-ci.org/yapstudios/YapDatabase.svg?branch=master)](https://travis-ci.org/yapstudios/YapDatabase)
+[![Pod Version](http://img.shields.io/cocoapods/v/YapDatabase.svg?style=flat)](https://cocoapods.org/pods/YapDatabase)
 
 YapDatabase is a "**key/value store and MUCH MORE**" built atop sqlite for iOS & Mac.
 It has the following features:
