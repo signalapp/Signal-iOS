@@ -12,6 +12,7 @@
 #import "YapMutationStack.h"
 
 #import "sqlite3.h"
+#import "yap_vfs_shim.h"
 
 /**
  * Helper method to conditionally invoke sqlite3_finalize on a statement, and then set the ivar to NULL.
@@ -198,6 +199,9 @@ static NSString *const ext_key_class = @"class";
 	YapDatabasePolicy metadataPolicy;     // Read-only by transaction. Use to determine what goes in metadataChanges.
 	
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
+	
+	yap_file *main_file;
+	yap_file *wal_file;
 	
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;

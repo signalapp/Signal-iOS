@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, YapDatabasePragmaSynchronous) {
 };
 
 #ifdef SQLITE_HAS_CODEC
-typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
+typedef NSData *_Nonnull (^YapDatabaseCipherKeyBlock)(void);
 #endif
 
 @interface YapDatabaseOptions : NSObject <NSCopying>
@@ -122,6 +122,8 @@ typedef NSData* (^YapDatabaseCipherKeyBlock)(void);
  * This option allows you to enable Memory Mapped I/O.
  * https://www.sqlite.org/mmap.html
  * 
+ * The value is specified in BYTES.
+ *
  * The default value is zero, meaning that Memory Mapped I/O is not used.
  * It is likely that you can achieve improved performance by setting this to a large value.
  * 

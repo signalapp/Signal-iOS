@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1E15D25851399B5D89307351 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26683EB35E436E50FDE31B26 /* libPods.a */; };
 		DC5F53D01B7AAA12009F4E2F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26683EB35E436E50FDE31B26 /* libPods.a */; };
-		DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
 		DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84FF8E175130D2003BFBB2 /* Cocoa.framework */; };
 		DC84FF99175130D3003BFBB2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC84FF97175130D3003BFBB2 /* InfoPlist.strings */; };
 		DC84FF9B175130D3003BFBB2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FF9A175130D3003BFBB2 /* main.m */; };
@@ -19,15 +18,14 @@
 		DC84FFEC17513197003BFBB2 /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFE917513197003BFBB2 /* BenchmarkYapCache.m */; };
 		DC84FFED17513197003BFBB2 /* BenchmarkYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84FFEB17513197003BFBB2 /* BenchmarkYapDatabase.m */; };
 		DC96D1BA1BA1F223001B4B08 /* TestYapDatabaseHooks.m in Sources */ = {isa = PBXBuildFile; fileRef = DC96D1B91BA1F223001B4B08 /* TestYapDatabaseHooks.m */; };
+		DCDA29E11BE586FA005C9835 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDA29E01BE586FA005C9835 /* libsqlite3.tbd */; };
 		DCFBF71B1B45F92200EC6DFF /* TestNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A6FE1A23F3F000DB95FB /* TestNodes.m */; };
 		DCFBF7211B45F9E200EC6DFF /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84006117514255003BFBB2 /* TestYapDatabase.m */; };
 		DCFBF7221B45F9F700EC6DFF /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84005D17514255003BFBB2 /* TestObject.m */; };
-		DCFBF72C1B45FC7500EC6DFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84005A175132E7003BFBB2 /* libsqlite3.dylib */; };
 		DCFBF72D1B45FCE700EC6DFF /* TestYapDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = DC36A7021A23F41200DB95FB /* TestYapDatabaseQuery.m */; };
 		DCFBF72E1B45FD1E00EC6DFF /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC84008D17514E59003BFBB2 /* TestYapDatabaseView.m */; };
 		DCFBF72F1B45FD2000EC6DFF /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA528C41797650500B4503B /* TestViewChangeLogic.m */; };
 		DCFBF7301B45FD2300EC6DFF /* TestViewMappingsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */; };
-		DCFBF7321B45FE7E00EC6DFF /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */; };
 		DCFBF7331B45FE9B00EC6DFF /* TestYapDatabaseFilteredView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */; };
 		DCFBF7341B45FE9E00EC6DFF /* TestYapDatabaseFullTextSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */; };
 		DCFBF7351B45FEA000EC6DFF /* TestYapDatabaseSecondaryIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */; };
@@ -56,10 +54,6 @@
 		DC36A7021A23F41200DB95FB /* TestYapDatabaseQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseQuery.m; path = ../../UnitTesting/TestYapDatabaseQuery.m; sourceTree = "<group>"; };
 		DC36A7041A23F42400DB95FB /* TestYapDatabaseSearchResultsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseSearchResultsView.m; path = ../../UnitTesting/TestYapDatabaseSearchResultsView.m; sourceTree = "<group>"; };
 		DC49737417E9173000489267 /* TestYapDatabaseFullTextSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFullTextSearch.m; path = ../../UnitTesting/TestYapDatabaseFullTextSearch.m; sourceTree = "<group>"; };
-		DC5F53C81B7AA765009F4E2F /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = Pods/../build/Debug/libPods.a; sourceTree = "<group>"; };
-		DC5F53CC1B7AA7D3009F4E2F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCocoaLumberjack.a; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libCocoaLumberjack.a"; sourceTree = "<group>"; };
-		DC5F53CD1B7AA7D3009F4E2F /* libYapDatabase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libYapDatabase.a; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libYapDatabase.a"; sourceTree = "<group>"; };
-		DC84005A175132E7003BFBB2 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		DC84005C17514255003BFBB2 /* TestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestObject.h; path = ../../UnitTesting/TestObject.h; sourceTree = "<group>"; };
 		DC84005D17514255003BFBB2 /* TestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestObject.m; path = ../../UnitTesting/TestObject.m; sourceTree = "<group>"; };
 		DC84006117514255003BFBB2 /* TestYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabase.m; path = ../../UnitTesting/TestYapDatabase.m; sourceTree = "<group>"; };
@@ -85,11 +79,9 @@
 		DC9B1004184B1B4300174B0F /* TestYapDatabaseSecondaryIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseSecondaryIndex.m; path = ../../UnitTesting/TestYapDatabaseSecondaryIndex.m; sourceTree = "<group>"; };
 		DC9B1105184D143800174B0F /* TestYapDatabaseFilteredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseFilteredView.m; path = ../../UnitTesting/TestYapDatabaseFilteredView.m; sourceTree = "<group>"; };
 		DCA528C41797650500B4503B /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
+		DCDA29E01BE586FA005C9835 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		DCFBF7041B45F2D700EC6DFF /* YapDatabaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YapDatabaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCFBF7071B45F2D700EC6DFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-CocoaLumberjack.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libPods-CocoaLumberjack.a"; sourceTree = "<group>"; };
-		DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-YapDatabase.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/YapDatabase-cwfxspdifoplvzdancqzmdwnalei/Build/Products/Debug/libPods-YapDatabase.a"; sourceTree = "<group>"; };
-		DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC84005B175132E7003BFBB2 /* libsqlite3.dylib in Frameworks */,
+				DCDA29E11BE586FA005C9835 /* libsqlite3.tbd in Frameworks */,
 				DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */,
 				1E15D25851399B5D89307351 /* libPods.a in Frameworks */,
 			);
@@ -108,8 +100,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC5F53D01B7AAA12009F4E2F /* libPods.a in Frameworks */,
-				DCFBF7321B45FE7E00EC6DFF /* libc++.dylib in Frameworks */,
-				DCFBF72C1B45FC7500EC6DFF /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,16 +175,10 @@
 		DC84FF8D175130D2003BFBB2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DC5F53CC1B7AA7D3009F4E2F /* libCocoaLumberjack.a */,
-				DC5F53CD1B7AA7D3009F4E2F /* libYapDatabase.a */,
-				DC5F53C81B7AA765009F4E2F /* libPods.a */,
-				DCFBF7311B45FE7E00EC6DFF /* libc++.dylib */,
-				DCFBF7161B45F87300EC6DFF /* libPods-YapDatabase.a */,
-				DCFBF7141B45F86D00EC6DFF /* libPods-CocoaLumberjack.a */,
 				DC84FF8E175130D2003BFBB2 /* Cocoa.framework */,
-				DC84005A175132E7003BFBB2 /* libsqlite3.dylib */,
 				DC84FF90175130D2003BFBB2 /* Other Frameworks */,
 				26683EB35E436E50FDE31B26 /* libPods.a */,
+				DCDA29E01BE586FA005C9835 /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

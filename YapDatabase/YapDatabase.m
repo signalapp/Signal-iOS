@@ -268,6 +268,21 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 }
 
 - (id)initWithPath:(NSString *)inPath
+           options:(nullable YapDatabaseOptions *)inOptions
+{
+	return [self initWithPath:inPath
+	         objectSerializer:NULL
+	       objectDeserializer:NULL
+	       metadataSerializer:NULL
+	     metadataDeserializer:NULL
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
+	                  options:inOptions];
+}
+
+- (id)initWithPath:(NSString *)inPath
         serializer:(YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
 {
@@ -276,11 +291,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	        objectPreSanitizer:NULL
-	       objectPostSanitizer:NULL
-	      metadataPreSanitizer:NULL
-	     metadataPostSanitizer:NULL
-	                   options:nil];
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
+	                  options:nil];
 }
 
 - (id)initWithPath:(NSString *)inPath
@@ -293,10 +308,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	        objectPreSanitizer:NULL
-	       objectPostSanitizer:NULL
-	      metadataPreSanitizer:NULL
-	     metadataPostSanitizer:NULL
+	       objectPreSanitizer:NULL
+	      objectPostSanitizer:NULL
+	     metadataPreSanitizer:NULL
+	    metadataPostSanitizer:NULL
 	                  options:inOptions];
 }
 
@@ -312,10 +327,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	       objectDeserializer:inDeserializer
 	       metadataSerializer:inSerializer
 	     metadataDeserializer:inDeserializer
-	        objectPreSanitizer:inPreSanitizer
-	       objectPostSanitizer:inPostSanitizer
-	      metadataPreSanitizer:inPreSanitizer
-	     metadataPostSanitizer:inPostSanitizer
+	       objectPreSanitizer:inPreSanitizer
+	      objectPostSanitizer:inPostSanitizer
+	     metadataPreSanitizer:inPreSanitizer
+	    metadataPostSanitizer:inPostSanitizer
 	                  options:inOptions];
 }
 

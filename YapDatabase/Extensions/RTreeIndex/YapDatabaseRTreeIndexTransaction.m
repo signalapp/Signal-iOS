@@ -1078,21 +1078,14 @@ static NSString *const ext_key_version_deprecated = @"version";
 	BOOL stop = NO;
 	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
 
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
-			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
+		int64_t rowid = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 
-		do
-		{
-			int64_t rowid = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
+		block(rowid, &stop);
 
-			block(rowid, &stop);
-
-			if (stop || mutation.isMutated) break;
-
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+		if (stop || mutation.isMutated) break;
 	}
 
 	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
@@ -1283,9 +1276,6 @@ static NSString *const ext_key_version_deprecated = @"version";
 	int status = sqlite3_step(statement);
 	if (status == SQLITE_ROW)
 	{
-		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
-			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
-
 		count = (NSUInteger)sqlite3_column_int64(statement, SQLITE_COLUMN_START);
 	}
 	else if (status == SQLITE_ERROR)

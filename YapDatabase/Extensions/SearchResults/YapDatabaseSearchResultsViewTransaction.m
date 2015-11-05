@@ -2549,9 +2549,6 @@ static NSString *const ext_key_query             = @"query";
 		int status = sqlite3_step(statement);
 		if (status == SQLITE_ROW)
 		{
-			if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
-				[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
-			
 			const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
 			int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
 			
