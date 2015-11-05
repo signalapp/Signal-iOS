@@ -4,20 +4,22 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <libkern/OSAtomic.h>
 
-typedef struct yap_file_wal yap_file_wal;
-struct yap_file_wal {
-	yap_file *file;
-	yap_file_wal *next; // linked list ptr
-};
-
-static yap_file_wal *yap_file_wal_linked_list = NULL;
-static OSSpinLock yap_file_wal_linked_list_spinlock = OS_SPINLOCK_INIT;
+static yap_file *yap_file_wal_linked_list = NULL;
+static sqlite3_mutex *yap_file_wal_linked_list_mutex = NULL;
 
 
 static bool yap_file_wal_matches(yap_file *main_file, yap_file *wal_file)
 {
+	// Compare main_file->filename to wal_file->filename
+	//
+	// The filenames should be the same,
+	// except the wal filename should also have a "-wal" suffix at the end.
+	//
+	// E.g.
+	// - main : "/foo/bar/db.sqlite"
+	// - wal  : "/foo/bar/db.sqlite-wal"
+	
 	const char *main_filename = main_file->filename;
 	const char *wal_filename = wal_file->filename;
 	
@@ -40,44 +42,38 @@ static bool yap_file_wal_matches(yap_file *main_file, yap_file *wal_file)
 	return wal_file->isWAL;
 }
 
-static int yap_file_wal_register(yap_file *file)
+static void yap_file_wal_register(yap_file *file)
 {
-	yap_file_wal *item = sqlite3_malloc(sizeof(yap_file_wal));
-	if (item == NULL) {
-		return SQLITE_NOMEM;
-	}
+	if (file == NULL) return;
 	
-	item->file = file;
-	item->next = NULL;
-	
-	OSSpinLockLock(&yap_file_wal_linked_list_spinlock);
+	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
 	{
 		// Add to front of linked list
 		
 		if (yap_file_wal_linked_list)
 		{
-			item->next = yap_file_wal_linked_list;
+			file->next = yap_file_wal_linked_list;
 		}
 		
-		yap_file_wal_linked_list = item;
+		yap_file_wal_linked_list = file;
 	}
-	OSSpinLockUnlock(&yap_file_wal_linked_list_spinlock);
-	
-	return SQLITE_OK;
+	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
 }
 
 static void yap_file_wal_unregister(yap_file *file)
 {
-	OSSpinLockLock(&yap_file_wal_linked_list_spinlock);
+	if (file == NULL) return;
+	
+	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
 	{
-		yap_file_wal *match = NULL;
-		yap_file_wal *match_prev = NULL;
+		yap_file *match = NULL;
+		yap_file *match_prev = NULL;
 		
-		yap_file_wal *item = yap_file_wal_linked_list;
+		yap_file *item = yap_file_wal_linked_list;
 		
 		while (item)
 		{
-			if (item->file == file)
+			if (item == file)
 			{
 				match = item;
 				break;
@@ -97,11 +93,9 @@ static void yap_file_wal_unregister(yap_file *file)
 			
 			if (match_prev)
 				match_prev->next = match->next;
-			
-			sqlite3_free(match);
 		}
 	}
-	OSSpinLockUnlock(&yap_file_wal_linked_list_spinlock);
+	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
 }
 
 /**
@@ -115,25 +109,25 @@ yap_file* yap_file_wal_find(yap_file *main_file)
 {
 	if (main_file == NULL) return NULL;
 	
-	yap_file *result = NULL;
+	yap_file *match = NULL;
 	
-	OSSpinLockLock(&yap_file_wal_linked_list_spinlock);
+	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
 	{
-		yap_file_wal *item = yap_file_wal_linked_list;
+		yap_file *item = yap_file_wal_linked_list;
 		while (item)
 		{
-			if (yap_file_wal_matches(main_file, item->file))
+			if (yap_file_wal_matches(main_file, item))
 			{
-				result = item->file;
+				match = item;
 				break;
 			}
 			
 			item = item->next;
 		}
 	}
-	OSSpinLockUnlock(&yap_file_wal_linked_list_spinlock);
+	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
 	
-	return result;
+	return match;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,8 +138,6 @@ static int yap_file_close(sqlite3_file *file)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: close\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	int result = realFile->pMethods->xClose((sqlite3_file *)realFile);
 	
@@ -168,8 +160,6 @@ static int yap_file_read(sqlite3_file *file, void *zBuf, int iAmt, sqlite3_int64
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: read\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	int result = realFile->pMethods->xRead((sqlite3_file *)realFile, zBuf, iAmt, iOfst);
 	
 	if (yapFile->xNotifyDidRead && (result == SQLITE_OK))
@@ -185,8 +175,6 @@ static int yap_file_write(sqlite3_file *file, const void *zBuf, int iAmt, sqlite
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: write\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xWrite((sqlite3_file *)realFile, zBuf, iAmt, iOfst);
 }
 
@@ -194,8 +182,6 @@ static int yap_file_truncate(sqlite3_file *file, sqlite3_int64 size)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: truncate\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	return realFile->pMethods->xTruncate((sqlite3_file *)realFile, size);
 }
@@ -205,8 +191,6 @@ static int yap_file_sync(sqlite3_file *file, int flags)
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: sync\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xSync((sqlite3_file *)realFile, flags);
 }
 
@@ -214,8 +198,6 @@ static int yap_file_fileSize(sqlite3_file *file, sqlite3_int64 *pSize)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: fileSize\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	return realFile->pMethods->xFileSize((sqlite3_file *)realFile, pSize);
 }
@@ -225,8 +207,6 @@ static int yap_file_lock(sqlite3_file *file, int eLock)
 	yap_file * yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: lock\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xLock((sqlite3_file *)realFile, eLock);
 }
 
@@ -234,8 +214,6 @@ static int yap_file_unlock(sqlite3_file *file, int eLock)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: unlock\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	return realFile->pMethods->xUnlock((sqlite3_file *)realFile, eLock);
 }
@@ -245,8 +223,6 @@ static int yap_file_checkReservedLock(sqlite3_file *file, int *pResOut)
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: checkReservedLock\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xCheckReservedLock((sqlite3_file *)realFile, pResOut);
 }
 
@@ -254,8 +230,6 @@ static int yap_file_fileControl(sqlite3_file *file, int op, void *pArg)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: fileControl\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	return realFile->pMethods->xFileControl((sqlite3_file *)realFile, op, pArg);
 }
@@ -265,8 +239,6 @@ static int yap_file_sectorSize(sqlite3_file *file)
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: sectorSize\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xSectorSize((sqlite3_file *)realFile);
 }
 
@@ -274,8 +246,6 @@ static int yap_file_deviceCharacteristics(sqlite3_file *file)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: deviceCharacteristics\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	return realFile->pMethods->xDeviceCharacteristics((sqlite3_file *)realFile);
 }
@@ -285,8 +255,6 @@ static int yap_file_shmMap(sqlite3_file *file, int iPg, int pgsz, int isWrite, v
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: shmMap\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xShmMap((sqlite3_file *)realFile, iPg, pgsz, isWrite, pp);
 }
 
@@ -294,21 +262,6 @@ static int yap_file_shmLock(sqlite3_file *file, int offset, int n, int flags)
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	if (flags & SQLITE_SHM_LOCK)
-//	{
-//		if (flags & SQLITE_SHM_SHARED)
-//			printf("%s: shm: lock, shared (%d, %d)\n", (yapFile->isWAL ? "WAL" : "main"), offset, n);
-//		else
-//			printf("%s: shm: lock, exclusive (%d, %d)\n", (yapFile->isWAL ? "WAL" : "main"), offset, n);
-//	}
-//	else
-//	{
-//		if (flags & SQLITE_SHM_SHARED)
-//			printf("%s: shm: unlock, shared (%d, %d)\n", (yapFile->isWAL ? "WAL" : "main"), offset, n);
-//		else
-//			printf("%s: shm: unlock, exclusive (%d, %d)\n", (yapFile->isWAL ? "WAL" : "main"), offset, n);
-//	}
 	
 	return realFile->pMethods->xShmLock((sqlite3_file *)realFile, offset, n, flags);
 }
@@ -318,8 +271,6 @@ static void yap_file_shmBarrier(sqlite3_file *file)
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: shmBarrier\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xShmBarrier((sqlite3_file *)realFile);
 }
 
@@ -328,8 +279,6 @@ static int yap_file_shmUnmap(sqlite3_file *file, int deleteFlag)
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
 	
-//	printf("%s: shmUnmap\n", (yapFile->isWAL ? "WAL" : "main"));
-	
 	return realFile->pMethods->xShmUnmap((sqlite3_file *)realFile, deleteFlag);
 }
 
@@ -337,8 +286,6 @@ static int yap_file_fetch(sqlite3_file *file, sqlite3_int64 iOfst, int iAmt, voi
 {
 	yap_file *yapFile = (yap_file *)file;
 	const sqlite3_file *realFile = yapFile->pReal;
-	
-//	printf("%s: fetch\n", (yapFile->isWAL ? "WAL" : "main"));
 	
 	int result = realFile->pMethods->xFetch((sqlite3_file *)realFile, iOfst, iAmt, pp);
 	
@@ -369,6 +316,7 @@ static int yap_file_unfetch(sqlite3_file *file, sqlite3_int64 iOfst, void *ptr)
 static int yap_vfs_open(sqlite3_vfs *vfs, const char *zName, sqlite3_file *file, int flags, int *pOutFlags)
 {
 	yap_file *yapFile = (yap_file *)file;
+	yapFile->next = NULL;
 	
 	// Regarding zName parameter, from the SQLite docs:
 	//
@@ -438,74 +386,98 @@ static int yap_vfs_open(sqlite3_vfs *vfs, const char *zName, sqlite3_file *file,
 
 static int yap_vfs_delete(sqlite3_vfs *vfs, const char *zName, int syncDir)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xDelete((sqlite3_vfs *)p, zName, syncDir);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xDelete((sqlite3_vfs *)realVFS, zName, syncDir);
 }
 
 static int yap_vfs_access(sqlite3_vfs *vfs, const char *zName, int flags, int *pResOut)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xAccess((sqlite3_vfs *)p, zName, flags, pResOut);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xAccess((sqlite3_vfs *)realVFS, zName, flags, pResOut);
 }
 
 static int yap_vfs_fullPathname(sqlite3_vfs *vfs, const char *zName, int nOut, char *zOut)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xFullPathname((sqlite3_vfs *)p, zName, nOut, zOut);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xFullPathname((sqlite3_vfs *)realVFS, zName, nOut, zOut);
 }
 
 static void* yap_vfs_dlOpen(sqlite3_vfs *vfs, const char *zFilename)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xDlOpen((sqlite3_vfs *)p, zFilename);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xDlOpen((sqlite3_vfs *)realVFS, zFilename);
 }
 
 void yap_vfs_dlError(sqlite3_vfs *vfs, int nByte, char *zErrMsg)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	p->xDlError((sqlite3_vfs *)p, nByte, zErrMsg);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	realVFS->xDlError((sqlite3_vfs *)realVFS, nByte, zErrMsg);
 }
 
 static void (*yap_vfs_dlSym(sqlite3_vfs *vfs, void *ptr, const char *zSym))(void)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xDlSym((sqlite3_vfs *)p, ptr, zSym);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xDlSym((sqlite3_vfs *)realVFS, ptr, zSym);
 }
 
 static void yap_vfs_dlClose(sqlite3_vfs *vfs, void *ptr)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	p->xDlClose((sqlite3_vfs *)p, ptr);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	realVFS->xDlClose((sqlite3_vfs *)realVFS, ptr);
 }
 
 static int yap_vfs_randomness(sqlite3_vfs *vfs, int nByte, char *zOut)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xRandomness((sqlite3_vfs *)p, nByte, zOut);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xRandomness((sqlite3_vfs *)realVFS, nByte, zOut);
 }
 
 static int yap_vfs_sleep(sqlite3_vfs *vfs, int microseconds)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xSleep((sqlite3_vfs *)p, microseconds);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xSleep((sqlite3_vfs *)realVFS, microseconds);
 }
 
 static int yap_vfs_currentTime(sqlite3_vfs *vfs, double *pTimeOut)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xCurrentTime((sqlite3_vfs *)p, pTimeOut);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xCurrentTime((sqlite3_vfs *)realVFS, pTimeOut);
 }
 
 static int yap_vfs_getLastError(sqlite3_vfs *vfs, int iErr, char *zErr)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xGetLastError((sqlite3_vfs *)p, iErr, zErr);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xGetLastError((sqlite3_vfs *)realVFS, iErr, zErr);
 }
 
 static int yap_vfs_currentTimeInt64(sqlite3_vfs *vfs, sqlite3_int64 *pTimeOut)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xCurrentTimeInt64((sqlite3_vfs *)p, pTimeOut);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xCurrentTimeInt64((sqlite3_vfs *)realVFS, pTimeOut);
 }
 
 static int yap_vfs_setSystemCall(sqlite3_vfs *vfs, const char *zName, sqlite3_syscall_ptr pFunc)
@@ -516,14 +488,18 @@ static int yap_vfs_setSystemCall(sqlite3_vfs *vfs, const char *zName, sqlite3_sy
 
 static sqlite3_syscall_ptr yap_vfs_getSystemCall(sqlite3_vfs *vfs, const char *zName)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xGetSystemCall((sqlite3_vfs *)p, zName);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xGetSystemCall((sqlite3_vfs *)realVFS, zName);
 }
 
 static const char* yap_vfs_nextSystemCall(sqlite3_vfs *vfs, const char *zName)
 {
-	const sqlite3_vfs *p = ((yap_vfs *)vfs)->pReal;
-	return p->xNextSystemCall((sqlite3_vfs *)p, zName);
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
+	
+	return realVFS->xNextSystemCall((sqlite3_vfs *)realVFS, zName);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,6 +509,12 @@ static const char* yap_vfs_nextSystemCall(sqlite3_vfs *vfs, const char *zName)
 int yap_vfs_shim_register(const char *yap_vfs_name,        // Name for yap VFS shim
                           const char *underlying_vfs_name) // Name of the underlying VFS
 {
+	// We do this here because this method is typically only called once.
+	// And is expected to be called in a thread-safe manner.
+	if (yap_file_wal_linked_list_mutex == NULL) {
+		yap_file_wal_linked_list_mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+	}
+	
 	if (yap_vfs_name == NULL)
 	{
 		// yap_vfs_name is required

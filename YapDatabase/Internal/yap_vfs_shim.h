@@ -1,6 +1,10 @@
 #ifndef yap_vfs_shim_h
 #define yap_vfs_shim_h
 
+#if defined __cplusplus
+extern "C" {
+#endif
+	
 #include "sqlite3.h"
 #include "stdbool.h"
 
@@ -16,7 +20,7 @@
  * > then passes control off to another VFS to do the actual work.
  * 
  * The yap_vfs_shim provides a "shim" around a real VFS.
- * It's only function (currently) is to report to YapDatabaseConnection when the shared lock has been taken.
+ * It's designed to provide additional functionality for YapDatabaseConnection.
 **/
 
 typedef struct yap_vfs yap_vfs;
@@ -30,6 +34,8 @@ struct yap_file {
 	sqlite3_file base;             // Base class. Must be first in struct.
 	const sqlite3_file *pReal;     // The real underlying file.
 	
+	yap_file *next;                // Do NOT touch. For internal use only.
+	
 	const char *filename;
 	bool isWAL;
 	
@@ -39,6 +45,9 @@ struct yap_file {
 
 /**
  * Invoke this method to register the yap_vfs shim with the sqlite system.
+ * 
+ * Thie method only needs to be called once.
+ * It is recommended you use something like dispatch_once or std::call_once to invoke it.
  * 
  * @param yap_vfs_name
  *   The name to use when registering the shim with sqlite.
@@ -64,8 +73,13 @@ int yap_vfs_shim_register(const char *yap_vfs_name,         // Name for yap VFS 
  *
  * Note: SQLite opens the WAL lazily. That is, it won't open the WAL file until the first time it's needed.
  * (E.g. first transaction) So this method may return NULL until that occurs.
+ * 
+ * This method is thread-safe.
 **/
 yap_file* yap_file_wal_find(yap_file *main_file);
 
+#if defined __cplusplus
+};
+#endif
 
 #endif /* yap_vfs_shim_h */
