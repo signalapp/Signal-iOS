@@ -1311,8 +1311,9 @@ static NSString *const ext_key_version_deprecated = @"version";
 	return result;
 }
 
-- (BOOL)_enumerateIndexedValuesInColumn:(NSString *)column matchingQuery:(YapDatabaseQuery *)query
-						   usingBlock:(void (^)(id indexedValue, BOOL *stop))block
+- (BOOL)_enumerateIndexedValuesInColumn:(NSString *)column
+                          matchingQuery:(YapDatabaseQuery *)query
+                             usingBlock:(void (^)(id indexedValue, BOOL *stop))block
 {
 	if (column == nil) return NO;
 	if (query == nil) return NO;
@@ -1321,7 +1322,8 @@ static NSString *const ext_key_version_deprecated = @"version";
 	// Create full query using given filtering clause(s)
 
 	NSString *fullQueryString =
-	[NSString stringWithFormat:@"SELECT \"%@\" AS IndexedValue FROM \"%@\" %@;", column, [self tableName], query.queryString];
+	  [NSString stringWithFormat:@"SELECT \"%@\" AS IndexedValue FROM \"%@\" %@;",
+	  column, [self tableName], query.queryString];
 
 	// Turn query into compiled sqlite statement (using cache if possible)
 
@@ -1340,54 +1342,47 @@ static NSString *const ext_key_version_deprecated = @"version";
 	BOOL stop = NO;
 	YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
 
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		if (databaseTransaction->connection->needsMarkSqlLevelSharedReadLock)
-			[databaseTransaction->connection markSqlLevelSharedReadLockAcquired];
-
 		int columnType = sqlite3_column_type(statement, SQLITE_COLUMN_START);
-		id indexedValue;
+		id indexedValue = nil;
 
-		do
-		{
-			switch(columnType) {
-				case SQLITE_INTEGER:
-				{
-					int64_t value = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
-					indexedValue = @(value);
-					break;
-				}
-
-				case SQLITE_FLOAT:
-				{
-					double value = sqlite3_column_double(statement, SQLITE_COLUMN_START);
-					indexedValue = @(value);
-					break;
-				}
-
-				case SQLITE_TEXT:
-				{
-					const unsigned char *text = sqlite3_column_text(statement, SQLITE_COLUMN_START);
-					int textSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
-					indexedValue = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-					break;
-				}
-
-				case SQLITE_BLOB:
-				{
-					const void *value = sqlite3_column_blob(statement, SQLITE_COLUMN_START);
-					int valueSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
-					indexedValue = [[NSData alloc] initWithBytes:value length:valueSize];
-					break;
-				}
+		switch(columnType) {
+			case SQLITE_INTEGER:
+			{
+				int64_t value = sqlite3_column_int64(statement, SQLITE_COLUMN_START);
+				indexedValue = @(value);
+				break;
+			}
+			
+			case SQLITE_FLOAT:
+			{
+				double value = sqlite3_column_double(statement, SQLITE_COLUMN_START);
+				indexedValue = @(value);
+				break;
 			}
 
-			block(indexedValue, &stop);
+			case SQLITE_TEXT:
+			{
+				const unsigned char *text = sqlite3_column_text(statement, SQLITE_COLUMN_START);
+				int textSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
+				indexedValue = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				break;
+			}
 
-			if (stop || mutation.isMutated) break;
+			case SQLITE_BLOB:
+			{
+				const void *value = sqlite3_column_blob(statement, SQLITE_COLUMN_START);
+				int valueSize = sqlite3_column_bytes(statement, SQLITE_COLUMN_START);
+				indexedValue = [[NSData alloc] initWithBytes:value length:valueSize];
+				break;
+			}
+		}
+		
+		block(indexedValue, &stop);
 
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+		if (stop || mutation.isMutated) break;
 	}
 
 	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
@@ -1407,10 +1402,14 @@ static NSString *const ext_key_version_deprecated = @"version";
 	return (status == SQLITE_DONE);
 }
 
-- (BOOL)enumerateIndexedValuesInColumn:(NSString *)column matchingQuery:(YapDatabaseQuery *)query usingBlock:(void(^)(id indexedValue, BOOL *stop))block
+- (BOOL)enumerateIndexedValuesInColumn:(NSString *)column
+                         matchingQuery:(YapDatabaseQuery *)query
+                            usingBlock:(void(^)(id indexedValue, BOOL *stop))block
 {
-	BOOL result = [self _enumerateIndexedValuesInColumn:column matchingQuery:query usingBlock:^(id indexedValue, BOOL *stop) {
-
+	BOOL result = [self _enumerateIndexedValuesInColumn:column
+	                                      matchingQuery:query
+	                                         usingBlock:^(id indexedValue, BOOL *stop)
+	{
 		if (block == NULL) // Query test : caller still wants BOOL result
 		{
 			*stop = YES;
