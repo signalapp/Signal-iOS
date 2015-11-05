@@ -8,7 +8,7 @@
 #import "YapDatabaseLogging.h"
 
 
-static int ddLogLevel = YDB_LOG_LEVEL_VERBOSE;
+static int ddLogLevel = DDLogLevelWarning;
 #pragma unused(ddLogLevel)
 
 

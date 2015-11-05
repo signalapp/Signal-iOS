@@ -872,18 +872,14 @@ static NSString *const ext_key__version_deprecated = @"version";
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
 	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		do
-		{
-			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
-			
-			block(rowid, &stop);
-			
-			if (stop || mutation.isMutated) break;
-			
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+		int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+		
+		block(rowid, &stop);
+		
+		if (stop || mutation.isMutated) break;
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
@@ -1017,23 +1013,19 @@ static NSString *const ext_key__version_deprecated = @"version";
 	YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
 	sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
 	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	int status;
+	while ((status = sqlite3_step(statement)) == SQLITE_ROW)
 	{
-		do
-		{
-			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
-			
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
-			int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
-			
-			NSString *snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-			
-			block(snippet, rowid, &stop);
-			
-			if (stop || mutation.isMutated) break;
-			
-		} while ((status = sqlite3_step(statement)) == SQLITE_ROW);
+		int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+		
+		const unsigned char *text = sqlite3_column_text(statement, column_idx_snippet);
+		int textSize = sqlite3_column_bytes(statement, column_idx_snippet);
+		
+		NSString *snippet = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+		
+		block(snippet, rowid, &stop);
+		
+		if (stop || mutation.isMutated) break;
 	}
 	
 	if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)

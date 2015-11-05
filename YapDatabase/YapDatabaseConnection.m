@@ -21,6 +21,8 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#include "yap_vfs_shim.h"
+
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
@@ -51,6 +53,23 @@ NS_INLINE BOOL YDBIsMainThread()
 }
 
 #endif
+
+static const char * const yap_vfs_shim_name = "yap_vfs_shim";
+
+static void yapNotifyDidRead(yap_file *file)
+{
+	__unsafe_unretained YapDatabaseConnection *connection =
+	          (__bridge YapDatabaseConnection *)file->yap_database_connection;
+	
+	if (connection)
+	{
+		if (connection->needsMarkSqlLevelSharedReadLock)
+			[connection markSqlLevelSharedReadLockAcquired];
+	}
+	
+	file->xNotifyDidRead = NULL;
+}
+
 
 @implementation YapDatabaseConnection {
 @private
@@ -145,6 +164,11 @@ NS_INLINE BOOL YDBIsMainThread()
 		ydb_NSThread_Class = [NSThread class];
 		
 	#endif
+		
+		// Register the yap_vfs shim with sqlite.
+		// This only needs to be done once.
+		
+		yap_vfs_shim_register(yap_vfs_shim_name, NULL);
 	}
 }
 
@@ -216,7 +240,7 @@ NS_INLINE BOOL YDBIsMainThread()
 			
 			int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
 			
-			int status = sqlite3_open_v2([database.databasePath UTF8String], &db, flags, NULL);
+			int status = sqlite3_open_v2([database.databasePath UTF8String], &db, flags, yap_vfs_shim_name);
 			if (status != SQLITE_OK)
 			{
 				// Sometimes the open function returns a db to allow us to query it for the error message
@@ -350,6 +374,17 @@ NS_INLINE BOOL YDBIsMainThread()
 	
 	if (db)
 	{
+		if (main_file)
+		{
+			main_file->yap_database_connection = NULL;
+			main_file->xNotifyDidRead = NULL;
+		}
+		if (wal_file)
+		{
+			wal_file->yap_database_connection = NULL;
+			wal_file->xNotifyDidRead = NULL;
+		}
+		
 		if (![database connectionPoolEnqueue:db])
 		{
 			int status = sqlite3_close(db);
@@ -1829,15 +1864,20 @@ NS_INLINE BOOL YDBIsMainThread()
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
-		if (hasActiveWriteTransaction || longLivedReadTransaction)
+		if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
 		{
+			// If there is a write transaction in progress,
+			// then it's not safe to proceed until we acquire a "sql-level" snapshot.
+			//
 			// If this is for a longLivedReadTransaction,
 			// then we need to immediately acquire a "sql-level" snapshot.
 			//
-			// Otherwise if there is a write transaction in progress,
-			// then it's not safe to proceed until we acquire a "sql-level" snapshot.
+			// If sqlite hasn't opened the wal_file yet,
+			// then we need to invoke the sql machinery so we can get access to it.
+			// We need the wal_file in order to properly receive notifications of
+			// when sqlite acquires an "sql-level" snapshot.
 			//
-			// During this process we need to ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
+			// During this process we ensure that our "yap-level" snapshot of the in-memory data (caches, etc)
 			// is in sync with our "sql-level" snapshot of the database.
 			//
 			// We can check this by comparing the connection's snapshot ivar with
@@ -1910,6 +1950,31 @@ NS_INLINE BOOL YDBIsMainThread()
 		myState->lastTransactionSnapshot = snapshot;
 		myState->lastTransactionTime = mach_absolute_time();
 	}});
+	
+	if (main_file == NULL)
+	{
+		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
+		if (main_file) {
+			main_file->yap_database_connection = (__bridge void *)self;
+		}
+	}
+	if (wal_file == NULL)
+	{
+		wal_file = yap_file_wal_find(main_file);
+		if (wal_file)
+		{
+			wal_file->yap_database_connection = (__bridge void *)self;
+		}
+	}
+	
+	if (needsMarkSqlLevelSharedReadLock)
+	{
+		if (main_file)
+			main_file->xNotifyDidRead = yapNotifyDidRead;
+		
+		if (wal_file)
+			wal_file->xNotifyDidRead = yapNotifyDidRead;
+	}
 }
 
 /**

@@ -1131,4 +1131,102 @@
 	XCTAssertTrue(progress.fractionCompleted >= 1.0, @"progress: %@", progress);
 }
 
+- (void)testVFS_standard
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[self _testVFS_withPath:databasePath options:nil];
+}
+
+- (void)testVFS_memoryMappedIO
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	// When using Memory Mapped IO, sqlite uses xFetch instead of xRead.
+	// Since this is a different code path, it's worthwhile to have different test cases.
+	
+	YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
+	options.pragmaMMapSize = (1024 * 1024 * 1); // in bytes
+	
+	[self _testVFS_withPath:databasePath options:options];
+}
+
+- (void)_testVFS_withPath:(NSString *)databasePath options:(YapDatabaseOptions *)options
+{
+	// Yap uses a vfs shim in order to send a notification which is useful
+	// in detecting when sqlite has acquired its snapshot.
+	//
+	// This allows read-only transactions to skip the sqlite machinery in certain circustances.
+	// Which is helpful, as a read-only transaction may only require the cache.
+	//
+	// However, this requires us to watch out for a particular edge case:
+	//
+	// - a read-write transaction that occurs AFTER a read-only transaction has started
+	// - the read-write transaction is ready to commit BEFORE the read-only transaction has
+	//   acquired its sql-level snapshot
+	//
+	// In this case, we have to make the read-write transaction wait until the read-only transaction has
+	// acquired its sql-level snapshot. And we use a custom vfs shim in order to notify the read-only
+	// transaction of when the sql-level snapshot has been taken.
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath options:options];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	dispatch_queue_t queue1 = dispatch_queue_create("completion_connection1", DISPATCH_QUEUE_SERIAL);
+	dispatch_queue_t queue2 = dispatch_queue_create("completion_connection2", DISPATCH_QUEUE_SERIAL);
+	
+	dispatch_semaphore_t semaphore1 = dispatch_semaphore_create(0);
+	dispatch_semaphore_t semaphore2 = dispatch_semaphore_create(0);
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+		
+		// Force connection1 to acquire 'wal_file' instance.
+	}];
+	
+	[connection1 asyncReadWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+		
+//		NSLog(@"connection1: sleeping...");
+		[NSThread sleepForTimeInterval:4.0];
+//		NSLog(@"connection1: Done sleeping !");
+		
+		NSUInteger numberOfCollections = [transaction numberOfCollections];
+//		NSLog(@"connection1: numberOfCollections = %lu", (unsigned long)numberOfCollections);
+		
+		XCTAssert(numberOfCollections == 0);
+		
+	} completionQueue:queue1 completionBlock:^{
+		
+		dispatch_semaphore_signal(semaphore1);
+	}];
+	
+	// Make sure connection1's read-only transaction starts BEFORE connection2's read-write transaction
+	[NSThread sleepForTimeInterval:1.0];
+	
+//	NSLog(@"Starting readWrite transaction on connection2...");
+	[connection2 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+		
+//		NSLog(@"connection2: modifying database...");
+		
+		[transaction setObject:@"object" forKey:@"key" inCollection:@"collection"];
+		
+		NSUInteger numberOfCollections = [transaction numberOfCollections];
+//		NSLog(@"connection2: numberOfCollections = %lu", (unsigned long)numberOfCollections);
+		
+		XCTAssert(numberOfCollections == 1);
+		
+	} completionQueue:queue2 completionBlock:^{
+		
+		dispatch_semaphore_signal(semaphore2);
+	}];
+	
+	dispatch_semaphore_wait(semaphore1, DISPATCH_TIME_FOREVER);
+	dispatch_semaphore_wait(semaphore2, DISPATCH_TIME_FOREVER);
+}
+
 @end
