@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The default value is nil.
 **/
-@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (nullable, nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
 
 /**
  * You can configure the view to skip the initial view population.
