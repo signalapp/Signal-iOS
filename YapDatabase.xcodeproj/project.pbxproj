@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65580CA51BF36A020055E65C /* yap_vfs_shim.c in Sources */ = {isa = PBXBuildFile; fileRef = 65580CA31BF36A020055E65C /* yap_vfs_shim.c */; };
+		65580CA61BF36A020055E65C /* yap_vfs_shim.h in Headers */ = {isa = PBXBuildFile; fileRef = 65580CA41BF36A020055E65C /* yap_vfs_shim.h */; };
+		65580CA71BF36A9A0055E65C /* yap_vfs_shim.c in Sources */ = {isa = PBXBuildFile; fileRef = 65580CA31BF36A020055E65C /* yap_vfs_shim.c */; };
+		65580CA81BF36AA20055E65C /* yap_vfs_shim.h in Headers */ = {isa = PBXBuildFile; fileRef = 65580CA41BF36A020055E65C /* yap_vfs_shim.h */; };
 		DC302B0A1BE94F99009F8C4D /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216F1BCED5D100188E23 /* libsqlite3.tbd */; };
 		DC302B0B1BE94FDF009F8C4D /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B081BE94F31009F8C4D /* libsqlite3.tbd */; };
 		DC302B121BE950D9009F8C4D /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */; };
@@ -447,6 +451,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		65580CA31BF36A020055E65C /* yap_vfs_shim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yap_vfs_shim.c; sourceTree = "<group>"; };
+		65580CA41BF36A020055E65C /* yap_vfs_shim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yap_vfs_shim.h; sourceTree = "<group>"; };
 		DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC302B081BE94F31009F8C4D /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.1.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		DC302B2D1BE95218009F8C4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -1075,6 +1081,8 @@
 			children = (
 				DC651FBD1BCEC77E00188E23 /* NSDictionary+YapDatabase.h */,
 				DC651FBE1BCEC77E00188E23 /* NSDictionary+YapDatabase.m */,
+				65580CA31BF36A020055E65C /* yap_vfs_shim.c */,
+				65580CA41BF36A020055E65C /* yap_vfs_shim.h */,
 				DC651FBF1BCEC77E00188E23 /* YapDatabaseConnectionDefaults.h */,
 				DC651FC01BCEC77E00188E23 /* YapDatabaseConnectionDefaults.m */,
 				DC651FC11BCEC77E00188E23 /* YapDatabaseConnectionState.h */,
@@ -1285,6 +1293,7 @@
 				DC651FEF1BCEC77E00188E23 /* YDBCKAttachRequest.h in Headers */,
 				DC6520271BCEC77E00188E23 /* YapDatabaseFilteredViewPrivate.h in Headers */,
 				DC651FFB1BCEC77E00188E23 /* YDBCKMappingTableInfo.h in Headers */,
+				65580CA61BF36A020055E65C /* yap_vfs_shim.h in Headers */,
 				DC651FF31BCEC77E00188E23 /* YDBCKChangeQueue.h in Headers */,
 				DC6520B91BCEC77E00188E23 /* YapDatabaseSecondaryIndexPrivate.h in Headers */,
 				DC65204F1BCEC77E00188E23 /* YapDatabaseHooksPrivate.h in Headers */,
@@ -1396,6 +1405,7 @@
 				DC651FF01BCEC77E00188E23 /* YDBCKAttachRequest.h in Headers */,
 				DC6520281BCEC77E00188E23 /* YapDatabaseFilteredViewPrivate.h in Headers */,
 				DC651FFC1BCEC77E00188E23 /* YDBCKMappingTableInfo.h in Headers */,
+				65580CA81BF36AA20055E65C /* yap_vfs_shim.h in Headers */,
 				DC651FF41BCEC77E00188E23 /* YDBCKChangeQueue.h in Headers */,
 				DC6520BA1BCEC77E00188E23 /* YapDatabaseSecondaryIndexPrivate.h in Headers */,
 				DC6520501BCEC77E00188E23 /* YapDatabaseHooksPrivate.h in Headers */,
@@ -1650,6 +1660,7 @@
 				DC6520C11BCEC77E00188E23 /* YapDatabaseSecondaryIndexConnection.m in Sources */,
 				DC6520691BCEC77E00188E23 /* YapDatabaseExtensionTransaction.m in Sources */,
 				DC6521431BCEC77E00188E23 /* YapDatabaseQuery.m in Sources */,
+				65580CA51BF36A020055E65C /* yap_vfs_shim.c in Sources */,
 				DC65215F1BCEC77E00188E23 /* YapDatabaseOptions.m in Sources */,
 				DC6520931BCEC77E00188E23 /* YapDatabaseRTreeIndexHandler.m in Sources */,
 				DC6520E91BCEC77E00188E23 /* YapDatabaseViewChange.m in Sources */,
@@ -1741,6 +1752,7 @@
 				DC6520C21BCEC77E00188E23 /* YapDatabaseSecondaryIndexConnection.m in Sources */,
 				DC65206A1BCEC77E00188E23 /* YapDatabaseExtensionTransaction.m in Sources */,
 				DC6521441BCEC77E00188E23 /* YapDatabaseQuery.m in Sources */,
+				65580CA71BF36A9A0055E65C /* yap_vfs_shim.c in Sources */,
 				DC6521601BCEC77E00188E23 /* YapDatabaseOptions.m in Sources */,
 				DC6520941BCEC77E00188E23 /* YapDatabaseRTreeIndexHandler.m in Sources */,
 				DC6520EA1BCEC77E00188E23 /* YapDatabaseViewChange.m in Sources */,
