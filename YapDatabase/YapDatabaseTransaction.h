@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Keep in mind that transactions are short lived objects.
  * Each transaction is a new/different transaction object.
 **/
-@property (nullable, nonatomic, strong, readwrite) id userInfo;
+@property (nonatomic, strong, readwrite, nullable) id userInfo;
 
 #pragma mark Count
 
