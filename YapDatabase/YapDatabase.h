@@ -312,11 +312,11 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
 @property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
 @property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
 
-@property (nullable, nonatomic, strong, readonly) YapDatabasePreSanitizer objectPreSanitizer;
-@property (nullable, nonatomic, strong, readonly) YapDatabasePostSanitizer objectPostSanitizer;
+@property (nonatomic, strong, readonly, nullable) YapDatabasePreSanitizer objectPreSanitizer;
+@property (nonatomic, strong, readonly, nullable) YapDatabasePostSanitizer objectPostSanitizer;
 
-@property (nullable, nonatomic, strong, readonly) YapDatabasePreSanitizer metadataPreSanitizer;
-@property (nullable, nonatomic, strong, readonly) YapDatabasePostSanitizer metadataPostSanitizer;
+@property (nonatomic, strong, readonly, nullable) YapDatabasePreSanitizer metadataPreSanitizer;
+@property (nonatomic, strong, readonly, nullable) YapDatabasePostSanitizer metadataPostSanitizer;
 
 @property (nonatomic, copy, readonly) YapDatabaseOptions *options;
 

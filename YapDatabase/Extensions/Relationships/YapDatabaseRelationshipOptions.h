@@ -59,7 +59,7 @@ typedef _Nonnull id (^YapDatabaseRelationshipFilePathDecryptor)(NSData *data);
  *
  * The default value is nil.
 **/
-@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (nonatomic, strong, readwrite, nullable) YapWhitelistBlacklist *allowedCollections;
 
 /**
  * The relationship extension allows you to create relationships between objects in the database & files on disk.

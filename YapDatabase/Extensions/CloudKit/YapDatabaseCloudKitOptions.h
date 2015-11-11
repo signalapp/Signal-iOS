@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The default value is nil.
 **/
-@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (nonatomic, strong, readwrite, nullable) YapWhitelistBlacklist *allowedCollections;
 
 
 // Todo: Need ability to set default options for CKModifyRecordsOperation
