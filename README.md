@@ -13,6 +13,17 @@ Help us translate Signal! The translation effort happens on [Transifex](https://
 
 Signal works with [RedPhone](https://github.com/WhisperSystems/Redphone) and [TextSecure](https://github.com/WhisperSystems/TextSecure) on Android.
 
+## Contributing Code
+Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md).
+
+If you're new to the Signal-iOS codebase, we recommend going through our issues and picking out a simple bug to fix (check the "easy" label in our issues) in order to get yourself familiar.
+
+For larger changes and feature ideas, we ask that you propose it on the mailing list for a high-level discussion before implementation.
+
+This repository is set up with [BitHub](https://whispersystems.org/blog/bithub/), so you can make money for committing to Signal-iOS. The current BitHub price for an accepted pull request is:
+
+[![Current BitHub Price](https://bithub.herokuapp.com/v1/status/payment/commit/)](https://whispersystems.org/blog/bithub/)
+
 ## Cryptography Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. 
