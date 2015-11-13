@@ -1809,7 +1809,7 @@ static void yapNotifyDidRead(yap_file *file)
 **/
 - (void)preReadTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	// Pre-Read-Transaction: Step 1 of 3
+	// Pre-Read-Transaction: Step 1 of 4
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -1823,7 +1823,7 @@ static void yapNotifyDidRead(yap_file *file)
 		
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Read-Transaction: Step 2 of 3
+		// Pre-Read-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -1860,7 +1860,7 @@ static void yapNotifyDidRead(yap_file *file)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Read-Transaction: Step 3 of 3
+		// Pre-Read-Transaction: Step 3 of 4
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
@@ -1951,6 +1951,15 @@ static void yapNotifyDidRead(yap_file *file)
 		myState->lastTransactionTime = mach_absolute_time();
 	}});
 	
+	// Pre-Read-Transaction: Step 4 of 4
+	//
+	// Enable sqlite VFS shim listeners for read notifications (if needed).
+	//
+	// Note: Code above performs the following:
+	//     if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
+	//
+	// So we initialize the 'wal_file' here, if we haven't already.
+	
 	if (main_file == NULL)
 	{
 		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
@@ -1958,7 +1967,7 @@ static void yapNotifyDidRead(yap_file *file)
 			main_file->yap_database_connection = (__bridge void *)self;
 		}
 	}
-	if (wal_file == NULL)
+	if (wal_file == NULL) // <- See note above
 	{
 		wal_file = yap_file_wal_find(main_file);
 		if (wal_file)
@@ -1984,7 +1993,7 @@ static void yapNotifyDidRead(yap_file *file)
 **/
 - (void)postReadTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	// Post-Read-Transaction: Step 1 of 4
+	// Post-Read-Transaction: Step 1 of 5
 	//
 	// 1. Execute "COMMIT TRANSACTION" on database connection.
 	// If we had acquired "sql-level" shared read lock, this will release associated resources.
@@ -1992,12 +2001,23 @@ static void yapNotifyDidRead(yap_file *file)
 	
 	[transaction commitTransaction];
 	
+	// Post-Read-Transaction: Step 2 of 5
+	//
+	// Disable sqlite VFS shim listeners for read notifications (if needed).
+	
+	if (main_file)
+		main_file->xNotifyDidRead = NULL;
+	
+	if (wal_file)
+		wal_file->xNotifyDidRead = NULL;
+	
+	
 	__block uint64_t minSnapshot = 0;
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Read-Transaction: Step 2 of 4
+		// Post-Read-Transaction: Step 3 of 5
 		//
 		// Update our connection state within the state table.
 		//
@@ -2061,7 +2081,7 @@ static void yapNotifyDidRead(yap_file *file)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-only transaction.", self);
 	}});
 	
-	// Post-Read-Transaction: Step 3 of 4
+	// Post-Read-Transaction: Step 4 of 5
 	//
 	// Check to see if this connection has been holding back the checkpoint process.
 	// That is, was this connection the last active connection on an old snapshot?
@@ -2081,7 +2101,7 @@ static void yapNotifyDidRead(yap_file *file)
 		}];
 	}
 	
-	// Post-Read-Transaction: Step 4 of 4
+	// Post-Read-Transaction: Step 5 of 5
 	//
 	// If we discovered a blocked write transaction,
 	// and it was blocked waiting on us (because we had a "yap-level" snapshot without an "sql-level" snapshot),
@@ -2805,7 +2825,7 @@ static void yapNotifyDidRead(yap_file *file)
 	
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
-	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+	dispatch_block_t block = ^{ @autoreleasepool {
 		
 		// Update our connection state within the state table.
 		//
@@ -2847,7 +2867,12 @@ static void yapNotifyDidRead(yap_file *file)
 		{
 			writeStateToSignal = blockedWriteState;
 		}
-	}});
+	}};
+	
+	if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(database->snapshotQueue, block);
 	
 	needsMarkSqlLevelSharedReadLock = NO;
 	
