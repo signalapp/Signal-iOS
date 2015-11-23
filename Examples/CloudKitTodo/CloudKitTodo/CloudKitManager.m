@@ -850,7 +850,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 {
 	DDLogInfo(@"%@ - %@", THIS_FILE, THIS_METHOD);
 	
-	YDBCKChangeSet *failedChangeSet = [[MyDatabaseManager.cloudKitExtension pendingChangeSets] firstObject];
+	YDBCKChangeSet *failedChangeSet = [MyDatabaseManager.cloudKitExtension currentChangeSet];
 	NSArray *recordIDs = failedChangeSet.recordIDsToSave;
 	
 	if (recordIDs.count == 0)
