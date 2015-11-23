@@ -8,9 +8,9 @@ PODS:
   - CocoaLumberjack/Extensions (2.2.0):
     - CocoaLumberjack/Default
   - Reachability (3.2)
-  - YapDatabase (2.7.3):
-    - YapDatabase/standard (= 2.7.3)
-  - YapDatabase/standard (2.7.3):
+  - YapDatabase (2.7.6):
+    - YapDatabase/standard (= 2.7.6)
+  - YapDatabase/standard (2.7.6):
     - CocoaLumberjack (~> 2)
 
 DEPENDENCIES:
@@ -24,6 +24,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  YapDatabase: 6d6a30e97face6c3158830823c27614afe83e1e0
+  YapDatabase: 00e5a5d1b5dba1bd540ef644576233b5612e6122
 
 COCOAPODS: 0.39.0

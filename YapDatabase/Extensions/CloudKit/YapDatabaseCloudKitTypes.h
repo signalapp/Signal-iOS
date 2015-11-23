@@ -31,19 +31,19 @@ NS_ASSUME_NONNULL_BEGIN
 typedef id YapDatabaseCloudKitRecordBlock; // One of the YapDatabaseCloutKitGetRecordX types below.
 
 typedef void (^YapDatabaseCloudKitRecordWithKeyBlock)
-    (YapDatabaseReadTransaction *transaction, CKRecord * _Nonnull * _Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+    (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
      NSString *collection, NSString *key);
 
 typedef void (^YapDatabaseCloudKitRecordWithObjectBlock)
-    (YapDatabaseReadTransaction *transaction, CKRecord * _Nonnull * _Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+    (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
      NSString *collection, NSString *key, id object);
 
 typedef void (^YapDatabaseCloudKitRecordWithMetadataBlock)
-    (YapDatabaseReadTransaction *transaction, CKRecord * _Nonnull * _Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+    (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
      NSString *collection, NSString *key, id metadata);
 
 typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
-    (YapDatabaseReadTransaction *transaction, CKRecord * _Nonnull * _Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
+    (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
      NSString *collection, NSString *key, id object, id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseCloudKitRecordWithKeyBlock)recordBlock;
