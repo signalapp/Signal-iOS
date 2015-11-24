@@ -56,7 +56,7 @@
 	if (atDate == nil)
 		atDate = [NSDate date];
 	
-	return [date isAfterOrEqual:atDate];
+	return [date isBeforeOrEqual:atDate];
 }
 
 - (BOOL)isReadyToRetryAtDate:(NSDate *)atDate
@@ -70,7 +70,7 @@
 		if (atDate == nil)
 			atDate = [NSDate date];
 		
-		return [nextRetry isAfterOrEqual:atDate];
+		return [nextRetry isBeforeOrEqual:atDate];
 	}
 }
 

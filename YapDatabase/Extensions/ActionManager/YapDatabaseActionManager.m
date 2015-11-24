@@ -626,7 +626,7 @@
 				// The actionItem has been run at least once. (actionItem.isStarted == YES)
 				// It's configured with a retryTimeout, in order to run multiple times (if needed).
 				
-				if ([actionItem.nextRetry isBeforeOrEqual:now])
+				if ([actionItem isReadyToRetryAtDate:now])
 				{
 					if (!actionItem.requiresInternet || hasInternet)
 						needsRun = YES;                         // restart it
