@@ -70,6 +70,13 @@
 	});
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	
+	[titleView becomeFirstResponder];
+}
+
 - (void)setTodoID:(NSString *)newTodoID
 {
 	todoID = newTodoID;
