@@ -321,7 +321,9 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		
 		dispatch_resume(setupQueue);
 	};
-		
+	
+	modifyRecordZonesOperation.allowsCellularAccess = YES;
+	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifyRecordZonesOperation];
 }
 
@@ -385,6 +387,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		
 		dispatch_resume(setupQueue);
 	};
+	
+	modifySubscriptionsOperation.allowsCellularAccess = YES;
 	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:modifySubscriptionsOperation];
 }
@@ -682,6 +686,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		} // end if (hasChanges)
 	};
 	
+	operation.allowsCellularAccess = YES;
+	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
 }
 
@@ -740,6 +746,8 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 			}];
 		}
 	};
+	
+	operation.allowsCellularAccess = YES;
 	
 	[[[CKContainer defaultContainer] privateCloudDatabase] addOperation:operation];
 }
