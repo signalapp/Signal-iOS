@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.subspec 'standard' do |ss|
     ss.library = 'sqlite3'
     ss.dependency 'CocoaLumberjack', '~> 2'
+    ss.dependency 'Reachability', '~> 3'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm,c}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
     ss.requires_arc = true
