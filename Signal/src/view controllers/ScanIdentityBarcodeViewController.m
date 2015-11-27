@@ -45,7 +45,7 @@
     self.prevLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
     self.prevLayer.frame = self.view.bounds;
     self.prevLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    [self.view.layer addSublayer:self.prevLayer];
+    [self.view.layer insertSublayer:self.prevLayer atIndex:0];
     
     [self.session startRunning];
     
