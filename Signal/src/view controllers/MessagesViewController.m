@@ -35,6 +35,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSAttachmentPointer.h"
+#import "TSAnimatedAdapter.h"
 #import "TSVideoAttachmentAdapter.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
@@ -896,13 +897,35 @@ typedef enum : NSUInteger {
                         
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream*)attachment;
-                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream fromRect:convertedRect forInteraction:[self interactionAtIndexPath:indexPath]];
+                            FullImageViewController * vc = [[FullImageViewController alloc] initWithAttachment:attStream
+                                                                                                      fromRect:convertedRect
+                                                                                                forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                                                    isAnimated:NO];
                             
                             [vc presentFromViewController:self.navigationController];
                         }
                     } else {
                         DDLogWarn(@"Currently unsupported");
                     }
+                }
+                else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
+                    // Show animated image full-screen
+                    TSAnimatedAdapter* messageMedia = (TSAnimatedAdapter*)[messageItem media];
+                    tappedImage = ((UIImageView*)[messageMedia mediaView]).image;
+                    CGRect convertedRect = [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame toView:nil];
+                    __block TSAttachment* attachment = nil;
+                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction* transaction) {
+                        attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                    }];
+                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream* attStream = (TSAttachmentStream*)attachment;
+                        FullImageViewController* vc = [[FullImageViewController alloc] initWithAttachment:attStream
+                                                                                                 fromRect:convertedRect
+                                                                                           forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                                               isAnimated:YES];
+                        [vc presentFromViewController:self.navigationController];
+                    }
+
                 }
                 else if([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]){
                     // fileurl disappeared should look up in db as before. will do refactor
@@ -1275,8 +1298,8 @@ typedef enum : NSUInteger {
                  resultBlock:^(ALAsset *asset)
          {
              ALAssetRepresentation *representation = [asset defaultRepresentation];
-             Byte *img_buffer = (Byte*)malloc(representation.size);
-             NSUInteger length_buffered = [representation getBytes:img_buffer fromOffset:0 length:representation.size error:nil];
+             Byte *img_buffer = (Byte*)malloc((unsigned long)representation.size);
+             NSUInteger length_buffered = [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
              NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
              NSString *file_type;
              switch (img_buffer[0])

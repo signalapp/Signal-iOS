@@ -29,6 +29,7 @@
     if (self) {
         _cachedImageView = nil;
         _attachment      = attachment;
+        _attachmentId    = attachment.uniqueId;
         _image           = [attachment image];
         _fileData        = [NSData dataWithContentsOfURL:[attachment mediaURL]];
     }
@@ -40,6 +41,7 @@
 {
     _cachedImageView = nil;
     _attachment = nil;
+    _attachmentId = nil;
     _image = nil;
     _fileData = nil;
 }
