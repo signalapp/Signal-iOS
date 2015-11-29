@@ -1,24 +1,24 @@
 PODS:
   - 25519 (2.0.2)
-  - AFNetworking (2.6.1):
-    - AFNetworking/NSURLConnection (= 2.6.1)
-    - AFNetworking/NSURLSession (= 2.6.1)
-    - AFNetworking/Reachability (= 2.6.1)
-    - AFNetworking/Security (= 2.6.1)
-    - AFNetworking/Serialization (= 2.6.1)
-    - AFNetworking/UIKit (= 2.6.1)
-  - AFNetworking/NSURLConnection (2.6.1):
+  - AFNetworking (2.6.3):
+    - AFNetworking/NSURLConnection (= 2.6.3)
+    - AFNetworking/NSURLSession (= 2.6.3)
+    - AFNetworking/Reachability (= 2.6.3)
+    - AFNetworking/Security (= 2.6.3)
+    - AFNetworking/Serialization (= 2.6.3)
+    - AFNetworking/UIKit (= 2.6.3)
+  - AFNetworking/NSURLConnection (2.6.3):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.6.1):
+  - AFNetworking/NSURLSession (2.6.3):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.6.1)
-  - AFNetworking/Security (2.6.1)
-  - AFNetworking/Serialization (2.6.1)
-  - AFNetworking/UIKit (2.6.1):
+  - AFNetworking/Reachability (2.6.3)
+  - AFNetworking/Security (2.6.3)
+  - AFNetworking/Serialization (2.6.3)
+  - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - AxolotlKit (0.7):
@@ -40,14 +40,14 @@ PODS:
   - JSQMessagesViewController (7.1.0):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.8)
+  - libPhoneNumber-iOS (0.8.10)
   - Mantle (2.0.5):
     - Mantle/extobjc (= 2.0.5)
   - Mantle/extobjc (2.0.5)
   - OpenSSL (1.0.204.1)
   - PastelogKit (1.3):
     - CocoaLumberjack (~> 2.0)
-  - ProtocolBuffers (1.9.9.1)
+  - ProtocolBuffers (1.9.9.2)
   - SCWaveformView (1.0.0)
   - SocketRocket (0.4.2)
   - SQLCipher/common (3.1.0)
@@ -57,7 +57,7 @@ PODS:
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UnionFind (1.0.1)
-  - YapDatabase/SQLCipher (2.7.3):
+  - YapDatabase/SQLCipher (2.7.6):
     - CocoaLumberjack (~> 2)
     - SQLCipher/fts
 
@@ -98,7 +98,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
-  AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
+  AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   AxolotlKit: 8652fca51f4bc8225cbda791b0026c21e912b694
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
@@ -107,17 +107,17 @@ SPEC CHECKSUMS:
   iRate: 599ed07c854e0695f3c605d1b2a64c67d912acb7
   JSQMessagesViewController: ca11f86fa68ca70835f05e169df9244147c1dc40
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: fe877b7c44c270a9da2082d3e2892d5316f6a2f9
+  libPhoneNumber-iOS: 7bfd00f843fdcd82b5182b463e8eb3b27579f41d
   Mantle: 1912395033f601de5adc8ee91e48f46e4c7051ad
   OpenSSL: 7f853fcada78e5162c2183b4d90ebbd0aa02f5ac
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
-  ProtocolBuffers: 1aac782c597fd7b95c5d278df55c34bff2937909
+  ProtocolBuffers: 7111461618460961e6b7469177ec45ee551b4f0e
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SocketRocket: ffe08119b00ef982f6c37052a4705a057c8494ad
   SQLCipher: c44fcca49c31483c2489cfb79aa7a69407f3794a
   SSKeychain: 3f42991739c6c60a9cf1bbd4dff6c0d3694bcf3d
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
-  YapDatabase: 6d6a30e97face6c3158830823c27614afe83e1e0
+  YapDatabase: 00e5a5d1b5dba1bd540ef644576233b5612e6122
 
-COCOAPODS: 0.38.2
+COCOAPODS: 0.39.0

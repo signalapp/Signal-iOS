@@ -83,14 +83,6 @@
     return apiCall;
 }
 
-+ (RPAPICall*)fetchBloomFilter {
-    RPAPICall *apiCall        = [self defaultAPICall];
-    apiCall.method            = HTTP_GET;
-    apiCall.endPoint          = @"/users/directory";
-    apiCall.requestSerializer = [self basicAuthenticationSerializer];
-    return apiCall;
-}
-
 + (RPAPICall*)unregisterWithPushToken:(NSData*)pushToken {
     RPAPICall *apiCall         = [self defaultAPICall];
     apiCall.method             = HTTP_DELETE;

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "TSThread.h"
-#import "TSRecipient.h"
+#import "SignalRecipient.h"
 
 @class IncomingPushMessageSignal;
 
@@ -19,6 +19,5 @@
 + (instancetype)getOrCreateThreadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction pushSignal:(IncomingPushMessageSignal*)pushSignal;
 
 - (NSString*)contactIdentifier;
-- (TSRecipient *)recipientWithTransaction:(YapDatabaseReadTransaction*)transaction;
 
 @end

@@ -10,7 +10,6 @@
 
 #import "Environment.h"
 #import "LockInteractionController.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "TSAccountManager.h"
@@ -57,6 +56,16 @@
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
         [self clearVideoCache];
         [self blockingAttributesUpdate];
+    }
+    
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
+        NSFileManager *fm         = [NSFileManager defaultManager];
+        NSArray  *cachesDir       = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *bloomFilterPath = [[cachesDir  objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
+        [fm removeItemAtPath:bloomFilterPath  error:nil];
+        [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            [transaction removeAllObjectsInCollection:@"TSRecipient"];
+        }];
     }
 }
 

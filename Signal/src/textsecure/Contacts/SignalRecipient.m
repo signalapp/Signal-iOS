@@ -7,20 +7,24 @@
 //
 
 #import "TSStorageManager+IdentityKeyStore.h"
-#import "TSRecipient.h"
+#import "SignalRecipient.h"
 
-@implementation TSRecipient
+@implementation SignalRecipient
 
 + (NSString*)collection{
-    return @"TSRecipient";
+    return @"SignalRecipient";
 }
 
-- (instancetype)initWithTextSecureIdentifier:(NSString*)textSecureIdentifier relay:(NSString *)relay{
+- (instancetype)initWithTextSecureIdentifier:(NSString*)textSecureIdentifier
+                                       relay:(NSString *)relay
+                               supportsVoice:(BOOL)voiceCapable
+{
     self = [super initWithUniqueId:textSecureIdentifier];
     
     if (self) {
-        _devices     = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
-        _relay       = relay;
+        _devices       = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
+        _relay         = relay;
+        _supportsVoice = voiceCapable;
     }
     
     return self;

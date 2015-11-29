@@ -7,7 +7,7 @@
 //
 
 #import "TSGroupThread.h"
-#import "TSRecipient.h"
+#import "SignalRecipient.h"
 #import "NSData+Base64.h"
 
 @implementation TSGroupThread
@@ -56,19 +56,6 @@
 
 + (NSData*)groupIdFromThreadId:(NSString*)threadId{
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length-1)]];
-}
-
-- (NSArray *)recipientsWithTransaction:(YapDatabaseReadTransaction*)transaction{
-    NSMutableArray *recipients = [[NSMutableArray alloc] init];
-    
-    for(NSString *recipientId in _groupModel.groupMemberIds) {
-        TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
-        if (!recipient){
-            recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:recipientId relay:nil];
-        }
-        [recipients addObject:recipient];
-    }
-    return recipients;
 }
 
 @end

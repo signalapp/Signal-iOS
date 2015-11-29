@@ -564,9 +564,17 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
+- (SignalRecipient*)signalRecipient {
+    __block SignalRecipient *recipient;
+    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        recipient = [SignalRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164 withTransaction:transaction];
+    }];
+    return recipient;
+}
+
 -(BOOL)isRedPhoneReachable
 {
-    return [[Environment getCurrent].contactsManager isPhoneNumberRegisteredWithRedPhone:[self phoneNumberForThread]];
+    return [self signalRecipient].supportsVoice;
 }
 
 
@@ -575,11 +583,7 @@ typedef enum : NSUInteger {
         return YES;
     }
     else {
-        __block TSRecipient *recipient;
-        [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            recipient = [TSRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164 withTransaction:transaction];
-        }];
-        return recipient?YES:NO;
+        return [self signalRecipient];
     }
 }
 

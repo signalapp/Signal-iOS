@@ -10,7 +10,6 @@
 
 #import "Environment.h"
 #import "ContactsManager.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 #import "RPServerRequestsManager.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
@@ -62,7 +61,6 @@
     
     [self registerWithSuccess:^{
         [_submitCodeSpinner stopAnimating];
-        [Environment.getCurrent.phoneDirectoryManager forceUpdate];
         
         [self.navigationController dismissViewControllerAnimated:YES completion:^{
             [self passedVerification];

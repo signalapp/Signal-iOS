@@ -1,8 +1,5 @@
-#import "ContactsManager.h"
+#import "ContactsManager+updater.h"
 #import "Environment.h"
-#import "NotificationManifest.h"
-#import "PhoneNumberDirectoryFilter.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 #import "Util.h"
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
@@ -22,8 +19,6 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
     if (self) {
         life                                = [TOCCancelTokenSource new];
         observableContactsController        = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        observableRedPhoneUsersController   = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        [self registerNotificationHandlers];
     }
     return self;
 }
@@ -46,12 +41,6 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
             [self setupLatestContacts:latestContacts];
         }
     } untilCancelled:life.token];
-    
-    [observableRedPhoneUsersController watchLatestValueOnArbitraryThread:^(NSArray *latestUsers) {
-        @synchronized(self) {
-            [self setupLatestRedPhoneUsers:latestUsers];
-        }
-    } untilCancelled:life.token];
 }
 
 -(void)dealloc {
@@ -64,17 +53,6 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL*);
     }
 }
 
-#pragma mark - Notification Handlers
--(void) registerNotificationHandlers{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedDirectoryHandler:) name:NOTIFICATION_DIRECTORY_UPDATE object:nil];
-}
-
--(void) updatedDirectoryHandler:(NSNotification*) notification {
-    NSArray *currentUsers = [self getSignalUsersFromContactsArray:latestContactsById.allValues];
-    
-    [observableRedPhoneUsersController updateValue:currentUsers];
-}
-
 #pragma mark - Address Book callbacks
 
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context);
@@ -82,7 +60,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     ContactsManager* contactsManager = (__bridge ContactsManager*)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [contactsManager pullLatestAddressBook];
-        [[[Environment getCurrent] phoneDirectoryManager] forceUpdate];
+        [contactsManager intersectContacts];
     });
 }
 
@@ -96,6 +74,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void*)self);
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
                 [self pullLatestAddressBook];
+                [self intersectContacts];
             });
         }];
     });
@@ -116,10 +95,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 - (void)setupLatestContacts:(NSArray *)contacts {
     if (contacts) {
         latestContactsById = [ContactsManager keyContactsById:contacts];
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [self updatedDirectoryHandler:nil];
-        });
     }
 }
 
@@ -181,10 +156,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 -(ObservableValue *)getObservableContacts {
     return observableContactsController;
-}
-
--(ObservableValue *)getObservableRedPhoneUsers {
-    return observableRedPhoneUsersController;
 }
 
 #pragma mark - Address Book utils
@@ -402,7 +373,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-- (NSArray*)allContacts {
+- (NSArray<Contact *> *)allContacts {
     NSMutableArray *allContacts = [NSMutableArray array];
     
     for (NSString *key in latestContactsById.allKeys){
@@ -460,8 +431,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 -(NSArray*) getSignalUsersFromContactsArray:(NSArray*)contacts {
     return [[contacts filter:^int(Contact* contact) {
-        return [self isContactRegisteredWithRedPhone:contact] || contact.isTextSecureContact;
-    }]sortedArrayUsingComparator:[[self class] contactComparator]];
+        return contact.isRedPhoneContact || contact.isTextSecureContact;
+    }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 
 + (NSComparator)contactComparator {
@@ -497,19 +468,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return newSet.allObjects;
 }
 
-- (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact {
-    for(PhoneNumber *phoneNumber in contact.parsedPhoneNumbers){
-        if ( [self isPhoneNumberRegisteredWithRedPhone:phoneNumber]) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber*)phoneNumber {
-    PhoneNumberDirectoryFilter* directory = Environment.getCurrent.phoneDirectoryManager.getCurrentFilter;
-    return phoneNumber != nil && [directory containsPhoneNumber:phoneNumber];
-}
 
 - (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier{
     for (Contact *contact in self.allContacts) {

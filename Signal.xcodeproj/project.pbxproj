@@ -151,10 +151,6 @@
 		76EB060118170B33006006FC /* InitiateSignal.proto in Resources */ = {isa = PBXBuildFile; fileRef = 76EB04A518170B33006006FC /* InitiateSignal.proto */; };
 		76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04A718170B33006006FC /* InitiatorSessionDescriptor.m */; };
 		76EB060318170B33006006FC /* InitiatorSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04A718170B33006006FC /* InitiatorSessionDescriptor.m */; };
-		76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AA18170B33006006FC /* PhoneNumberDirectoryFilter.m */; };
-		76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AA18170B33006006FC /* PhoneNumberDirectoryFilter.m */; };
-		76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */; };
-		76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */; };
 		76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */; };
 		76EB060918170B33006006FC /* ResponderSessionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */; };
 		76EB060A18170B33006006FC /* SignalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B018170B33006006FC /* SignalUtil.m */; };
@@ -177,8 +173,6 @@
 		76EB061B18170B33006006FC /* DiscardingLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C618170B33006006FC /* DiscardingLog.m */; };
 		76EB061C18170B33006006FC /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
 		76EB061D18170B33006006FC /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
-		76EB062018170B33006006FC /* BloomFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CE18170B33006006FC /* BloomFilter.m */; };
-		76EB062118170B33006006FC /* BloomFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CE18170B33006006FC /* BloomFilter.m */; };
 		76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D118170B33006006FC /* CyclicalBuffer.m */; };
 		76EB062318170B33006006FC /* CyclicalBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D118170B33006006FC /* CyclicalBuffer.m */; };
 		76EB062418170B33006006FC /* PriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D318170B33006006FC /* PriorityQueue.m */; };
@@ -254,7 +248,6 @@
 		A157077117F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073617F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m */; };
 		A157077217F0CD6D007C2BD6 /* EventWindowTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073817F0CD6D007C2BD6 /* EventWindowTest.m */; };
 		A157077417F0CD6D007C2BD6 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073C17F0CD6D007C2BD6 /* TestUtil.m */; };
-		A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */; };
 		A157077717F0CD6D007C2BD6 /* ConversionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074317F0CD6D007C2BD6 /* ConversionsTest.m */; };
 		A157077817F0CD6D007C2BD6 /* Crc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074517F0CD6D007C2BD6 /* Crc32Test.m */; };
 		A157077917F0CD6D007C2BD6 /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A157074717F0CD6D007C2BD6 /* CryptoToolsTest.m */; };
@@ -364,7 +357,7 @@
 		B6B096631A1D25ED008BFAA6 /* TSPreKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F11A1D25ED008BFAA6 /* TSPreKeyManager.m */; };
 		B6B096641A1D25ED008BFAA6 /* TSContactThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */; };
 		B6B096651A1D25ED008BFAA6 /* TSGroupThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */; };
-		B6B096681A1D25ED008BFAA6 /* TSRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */; };
+		B6B096681A1D25ED008BFAA6 /* SignalRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FD1A1D25ED008BFAA6 /* SignalRecipient.m */; };
 		B6B096691A1D25ED008BFAA6 /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B095FF1A1D25ED008BFAA6 /* TSThread.m */; };
 		B6B0966A1A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096021A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B6B0966B1A1D25ED008BFAA6 /* TSAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B096041A1D25ED008BFAA6 /* TSAttachment.m */; };
@@ -400,12 +393,12 @@
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6BADBE41B88CB940086A80D /* TSUpdateAttributesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BADBE31B88CB940086A80D /* TSUpdateAttributesRequest.m */; };
 		B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */; };
-		B6BE7EED1AB100250038D0C8 /* BloomFilterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */; };
 		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
 		B6C6AE561A305ED1006BAF8F /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE541A305ED1006BAF8F /* textsecure.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B6E314C91A38FAAF00A41AFB /* TSFingerprintGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */; };
+		B6E4ECF61C0106DF0014E766 /* ContactsManager+updater.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E4ECF51C0106DF0014E766 /* ContactsManager+updater.m */; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FAAAE81A41BC6C007FEC1D /* TSAttachmentPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAE71A41BC6C007FEC1D /* TSAttachmentPointer.m */; };
 		B6FAAAEE1A41C918007FEC1D /* TSAttachmentStream.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FAAAED1A41C918007FEC1D /* TSAttachmentStream.m */; };
@@ -690,10 +683,6 @@
 		76EB04A518170B33006006FC /* InitiateSignal.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = InitiateSignal.proto; sourceTree = "<group>"; };
 		76EB04A618170B33006006FC /* InitiatorSessionDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitiatorSessionDescriptor.h; sourceTree = "<group>"; };
 		76EB04A718170B33006006FC /* InitiatorSessionDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitiatorSessionDescriptor.m; sourceTree = "<group>"; };
-		76EB04A918170B33006006FC /* PhoneNumberDirectoryFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberDirectoryFilter.h; sourceTree = "<group>"; };
-		76EB04AA18170B33006006FC /* PhoneNumberDirectoryFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberDirectoryFilter.m; sourceTree = "<group>"; };
-		76EB04AB18170B33006006FC /* PhoneNumberDirectoryFilterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberDirectoryFilterManager.h; sourceTree = "<group>"; };
-		76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberDirectoryFilterManager.m; sourceTree = "<group>"; };
 		76EB04AD18170B33006006FC /* ResponderSessionDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResponderSessionDescriptor.h; sourceTree = "<group>"; };
 		76EB04AE18170B33006006FC /* ResponderSessionDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResponderSessionDescriptor.m; sourceTree = "<group>"; };
 		76EB04AF18170B33006006FC /* SignalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalUtil.h; sourceTree = "<group>"; };
@@ -720,8 +709,6 @@
 		76EB04C718170B33006006FC /* ValueLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ValueLogger.h; sourceTree = "<group>"; };
 		76EB04C918170B33006006FC /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
 		76EB04CA18170B33006006FC /* ArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtil.m; sourceTree = "<group>"; };
-		76EB04CD18170B33006006FC /* BloomFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomFilter.h; sourceTree = "<group>"; };
-		76EB04CE18170B33006006FC /* BloomFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilter.m; sourceTree = "<group>"; };
 		76EB04D018170B33006006FC /* CyclicalBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CyclicalBuffer.h; sourceTree = "<group>"; };
 		76EB04D118170B33006006FC /* CyclicalBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CyclicalBuffer.m; sourceTree = "<group>"; };
 		76EB04D218170B33006006FC /* PriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
@@ -802,8 +789,6 @@
 		A157073A17F0CD6D007C2BD6 /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		A157073B17F0CD6D007C2BD6 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
 		A157073C17F0CD6D007C2BD6 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
-		A157073E17F0CD6D007C2BD6 /* BloomFilterTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BloomFilterTest.h; sourceTree = "<group>"; };
-		A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilterTest.m; sourceTree = "<group>"; };
 		A157074217F0CD6D007C2BD6 /* ConversionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversionsTest.h; sourceTree = "<group>"; };
 		A157074317F0CD6D007C2BD6 /* ConversionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversionsTest.m; sourceTree = "<group>"; };
 		A157074417F0CD6D007C2BD6 /* Crc32Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32Test.h; sourceTree = "<group>"; };
@@ -1002,8 +987,8 @@
 		B6B095F51A1D25ED008BFAA6 /* TSContactThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactThread.m; sourceTree = "<group>"; };
 		B6B095F61A1D25ED008BFAA6 /* TSGroupThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroupThread.h; sourceTree = "<group>"; };
 		B6B095F71A1D25ED008BFAA6 /* TSGroupThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroupThread.m; sourceTree = "<group>"; };
-		B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSRecipient.h; sourceTree = "<group>"; };
-		B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSRecipient.m; sourceTree = "<group>"; };
+		B6B095FC1A1D25ED008BFAA6 /* SignalRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalRecipient.h; sourceTree = "<group>"; };
+		B6B095FD1A1D25ED008BFAA6 /* SignalRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalRecipient.m; sourceTree = "<group>"; };
 		B6B095FE1A1D25ED008BFAA6 /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSThread.h; path = ../TSThread.h; sourceTree = "<group>"; };
 		B6B095FF1A1D25ED008BFAA6 /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSThread.m; path = ../TSThread.m; sourceTree = "<group>"; };
 		B6B096011A1D25ED008BFAA6 /* IncomingPushMessageSignal.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingPushMessageSignal.pb.h; sourceTree = "<group>"; };
@@ -1076,7 +1061,6 @@
 		B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockInteractionController.h; sourceTree = "<group>"; };
 		B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockInteractionController.m; sourceTree = "<group>"; };
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BloomFilterTests.m; sourceTree = "<group>"; };
 		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
 		B6C6AE541A305ED1006BAF8F /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
@@ -1085,6 +1069,8 @@
 		B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppStoreRating.m; sourceTree = "<group>"; };
 		B6E314C71A38FAAF00A41AFB /* TSFingerprintGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSFingerprintGenerator.h; sourceTree = "<group>"; };
 		B6E314C81A38FAAF00A41AFB /* TSFingerprintGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSFingerprintGenerator.m; sourceTree = "<group>"; };
+		B6E4ECF41C0106DF0014E766 /* ContactsManager+updater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ContactsManager+updater.h"; sourceTree = "<group>"; };
+		B6E4ECF51C0106DF0014E766 /* ContactsManager+updater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ContactsManager+updater.m"; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FAAAE61A41BC6C007FEC1D /* TSAttachmentPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSAttachmentPointer.h; path = Attachements/TSAttachmentPointer.h; sourceTree = "<group>"; };
 		B6FAAAE71A41BC6C007FEC1D /* TSAttachmentPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachmentPointer.m; path = Attachements/TSAttachmentPointer.m; sourceTree = "<group>"; };
@@ -1179,7 +1165,6 @@
 		E197B62518BBF63B00F073E5 /* SoundBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundBoard.h; sourceTree = "<group>"; };
 		E197B62618BBF63B00F073E5 /* SoundBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundBoard.m; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		E1B3DC731885EFA100B7F794 /* NotificationManifest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManifest.h; sourceTree = "<group>"; };
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
@@ -1347,7 +1332,6 @@
 				70DBA29918CFE98500771DAD /* crypto */,
 				76EB041118170B33006006FC /* environment */,
 				76EB041D18170B33006006FC /* network */,
-				E1B3DC731885EFA100B7F794 /* NotificationManifest.h */,
 				70BAFD5B190584BE00FA5E0B /* NotificationTracker.h */,
 				70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */,
 				B6B095EA1A1D25ED008BFAA6 /* textsecure */,
@@ -1397,6 +1381,8 @@
 				76EB040518170B33006006FC /* Contact.m */,
 				76EB040818170B33006006FC /* ContactsManager.h */,
 				76EB040918170B33006006FC /* ContactsManager.m */,
+				B6E4ECF41C0106DF0014E766 /* ContactsManager+updater.h */,
+				B6E4ECF51C0106DF0014E766 /* ContactsManager+updater.m */,
 			);
 			path = contact;
 			sourceTree = "<group>";
@@ -1697,10 +1683,6 @@
 			children = (
 				B671B2441A93B238002BBD9D /* GroupContactsResult.h */,
 				B671B2451A93B238002BBD9D /* GroupContactsResult.m */,
-				76EB04A918170B33006006FC /* PhoneNumberDirectoryFilter.h */,
-				76EB04AA18170B33006006FC /* PhoneNumberDirectoryFilter.m */,
-				76EB04AB18170B33006006FC /* PhoneNumberDirectoryFilterManager.h */,
-				76EB04AC18170B33006006FC /* PhoneNumberDirectoryFilterManager.m */,
 			);
 			name = "number directory";
 			path = "../phone/signaling/number directory";
@@ -1761,8 +1743,6 @@
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
 				76EB04C918170B33006006FC /* ArrayUtil.h */,
 				76EB04CA18170B33006006FC /* ArrayUtil.m */,
-				76EB04CD18170B33006006FC /* BloomFilter.h */,
-				76EB04CE18170B33006006FC /* BloomFilter.m */,
 				76EB04CF18170B33006006FC /* collections */,
 				76EB04D618170B33006006FC /* constraints */,
 				76EB04E018170B33006006FC /* Conversions.h */,
@@ -2032,7 +2012,6 @@
 			children = (
 				A157073017F0CD6D007C2BD6 /* PhoneNumberTest.m */,
 				A157073117F0CD6D007C2BD6 /* signaling */,
-				B6BE7EEC1AB100250038D0C8 /* BloomFilterTests.m */,
 			);
 			path = phone;
 			sourceTree = "<group>";
@@ -2066,8 +2045,6 @@
 		A157073D17F0CD6D007C2BD6 /* util */ = {
 			isa = PBXGroup;
 			children = (
-				A157073E17F0CD6D007C2BD6 /* BloomFilterTest.h */,
-				A157073F17F0CD6D007C2BD6 /* BloomFilterTest.m */,
 				A157074217F0CD6D007C2BD6 /* ConversionsTest.h */,
 				A157074317F0CD6D007C2BD6 /* ConversionsTest.m */,
 				A157074417F0CD6D007C2BD6 /* Crc32Test.h */,
@@ -2267,8 +2244,8 @@
 			isa = PBXGroup;
 			children = (
 				B6B095F31A1D25ED008BFAA6 /* Threads */,
-				B6B095FC1A1D25ED008BFAA6 /* TSRecipient.h */,
-				B6B095FD1A1D25ED008BFAA6 /* TSRecipient.m */,
+				B6B095FC1A1D25ED008BFAA6 /* SignalRecipient.h */,
+				B6B095FD1A1D25ED008BFAA6 /* SignalRecipient.m */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -2684,6 +2661,7 @@
 				D221A086169C9E5E00537ABF /* Frameworks */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				DC8D50B785074F8FA3DBAACE /* Copy Pods Resources */,
+				8F3AB5C1386B0A342A82D871 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2704,8 +2682,8 @@
 				D221A0A5169C9E5F00537ABF /* Sources */,
 				D221A0A6169C9E5F00537ABF /* Frameworks */,
 				D221A0A7169C9E5F00537ABF /* Resources */,
-				D221A0A8169C9E5F00537ABF /* ShellScript */,
 				BA4E2805598B464FB7B24430 /* Copy Pods Resources */,
+				599E3FF58EB09DC4524C94AE /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2902,6 +2880,36 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
+		599E3FF58EB09DC4524C94AE /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8F3AB5C1386B0A342A82D871 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		BA4E2805598B464FB7B24430 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2916,19 +2924,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		D221A0A8169C9E5F00537ABF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
 		DC8D50B785074F8FA3DBAACE /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3004,6 +2999,7 @@
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
 				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
+				B6E4ECF61C0106DF0014E766 /* ContactsManager+updater.m in Sources */,
 				B62EFBEE1A91352F0072ADD3 /* TSInvalidIdentityKeySendingErrorMessage.m in Sources */,
 				B6B0968A1A1D25ED008BFAA6 /* TSStorageManager+SessionStore.m in Sources */,
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
@@ -3054,7 +3050,7 @@
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
 				76EB065618170B34006006FC /* InCallViewController.m in Sources */,
 				B63006431B9631EC00F2FEB5 /* AFSecurityOWSPolicy.m in Sources */,
-				B6B096681A1D25ED008BFAA6 /* TSRecipient.m in Sources */,
+				B6B096681A1D25ED008BFAA6 /* SignalRecipient.m in Sources */,
 				76EB05FE18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB05CA18170B33006006FC /* RecipientUnavailable.m in Sources */,
 				B692BF071A76EF0F002786DA /* TSDatabaseSecondaryIndexes.m in Sources */,
@@ -3151,7 +3147,6 @@
 				B6B096951A1D25ED008BFAA6 /* NSURLSessionDataTask+StatusCode.m in Sources */,
 				E197B62118BBF12700F073E5 /* AppAudioManager.m in Sources */,
 				FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */,
-				76EB062018170B33006006FC /* BloomFilter.m in Sources */,
 				B63AF5D31A1F757900D01AAD /* TSSocketManager.m in Sources */,
 				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
@@ -3178,7 +3173,6 @@
 				FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */,
 				76EB057218170B33006006FC /* RecentCall.m in Sources */,
 				B62EFBED1A91352F0072ADD3 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */,
-				76EB060418170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */,
 				B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */,
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
@@ -3194,7 +3188,6 @@
 				B6B096721A1D25ED008BFAA6 /* TSMessage.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
-				76EB060618170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
@@ -3244,7 +3237,6 @@
 				76EB058B18170B33006006FC /* Release.m in Sources */,
 				76EB05D318170B33006006FC /* ZrtpInitiator.m in Sources */,
 				76EB061518170B33006006FC /* AnonymousConditionLogger.m in Sources */,
-				76EB060718170B33006006FC /* PhoneNumberDirectoryFilterManager.m in Sources */,
 				76EB05A118170B33006006FC /* IpAddress.m in Sources */,
 				76EB05CD18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				76EB05B718170B33006006FC /* MasterSecret.m in Sources */,
@@ -3253,7 +3245,6 @@
 				A157075717F0CD6D007C2BD6 /* AudioFrameTest.m in Sources */,
 				76EB063F18170B33006006FC /* Operation.m in Sources */,
 				76EB05AB18170B33006006FC /* SequenceCounter.m in Sources */,
-				B6BE7EED1AB100250038D0C8 /* BloomFilterTests.m in Sources */,
 				76EB061D18170B33006006FC /* ArrayUtil.m in Sources */,
 				76EB05E318170B33006006FC /* SecureEndPoint.m in Sources */,
 				76EB060D18170B33006006FC /* CategorizingLogger.m in Sources */,
@@ -3279,7 +3270,6 @@
 				76EB05C518170B33006006FC /* HandshakePacket.m in Sources */,
 				76EB058F18170B33006006FC /* HostNameEndPoint.m in Sources */,
 				B640C4771A477B0F005C7C8A /* TSAttachementsTest.m in Sources */,
-				76EB062118170B33006006FC /* BloomFilter.m in Sources */,
 				76EB064518170B33006006FC /* ThreadManager.m in Sources */,
 				76EB068718170B34006006FC /* ContactTableViewCell.m in Sources */,
 				76EB063B18170B33006006FC /* FunctionalUtil.m in Sources */,
@@ -3293,7 +3283,6 @@
 				76EB05F918170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				A157076717F0CD6D007C2BD6 /* MasterSecretTest.m in Sources */,
 				76EB05CF18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
-				76EB060518170B33006006FC /* PhoneNumberDirectoryFilter.m in Sources */,
 				A157076817F0CD6D007C2BD6 /* ShortAuthenticationStringGeneratorTest.m in Sources */,
 				76EB065718170B34006006FC /* InCallViewController.m in Sources */,
 				A157076917F0CD6D007C2BD6 /* PregeneratedKeyAgreementParticipantProtocol.m in Sources */,
@@ -3329,7 +3318,6 @@
 				A157077117F0CD6D007C2BD6 /* DecayingSampleEstimatorTest.m in Sources */,
 				A157077217F0CD6D007C2BD6 /* EventWindowTest.m in Sources */,
 				A157077417F0CD6D007C2BD6 /* TestUtil.m in Sources */,
-				A157077517F0CD6D007C2BD6 /* BloomFilterTest.m in Sources */,
 				76EB05E918170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB058718170B33006006FC /* PreferencesUtil.m in Sources */,
 				76EB064118170B33006006FC /* AnonymousTerminator.m in Sources */,
@@ -3454,6 +3442,7 @@
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
@@ -3523,6 +3512,7 @@
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
@@ -3688,7 +3678,9 @@
 			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -3738,7 +3730,9 @@
 			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",

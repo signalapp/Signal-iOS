@@ -1,12 +1,8 @@
 #import "PreferencesUtil.h"
 #import "Constraints.h"
 
-#import "NotificationManifest.h"
-
 #define CALL_STREAM_DES_BUFFER_LEVEL_KEY @"CallStreamDesiredBufferLevel"
 
-#define PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY @"Directory Bloom Hash Count"
-#define PHONE_DIRECTORY_EXPIRATION @"Directory Expiration"
 
 #define DEFAULT_CALL_STREAM_DES_BUFFER_LEVEL 0.5
 
@@ -27,37 +23,7 @@
 #define PLAY_SOUND_IN_FOREGROUND_KEY @"NotificationSoundInForeground"
 #define HAS_REGISTERED_VOIP_PUSH @"VOIPPushEnabled"
 
-#define BloomFilterCacheName     @"bloomfilter"
-
 @implementation PropertyListPreferences (PropertyUtil)
-
--(PhoneNumberDirectoryFilter*) tryGetSavedPhoneNumberDirectory {
-    NSUInteger hashCount = [[self tryGetValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY] unsignedIntegerValue];
-    NSData* data = [self tryRetreiveBloomFilter];
-    NSDate* expiration = [self tryGetValueForKey:PHONE_DIRECTORY_EXPIRATION];
-    if (hashCount == 0 || data.length == 0 || expiration == nil) return nil;
-    BloomFilter* bloomFilter = [BloomFilter bloomFilterWithHashCount:hashCount andData:data];
-    return [PhoneNumberDirectoryFilter phoneNumberDirectoryFilterWithBloomFilter:bloomFilter
-                                                               andExpirationDate:expiration];
-}
--(void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter {
-    [self storeBloomfilter:nil];
-    [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:nil];
-    [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:nil];
-    if (phoneNumberDirectoryFilter == nil) return;
-    
-    NSData* data = [[phoneNumberDirectoryFilter bloomFilter] data];
-    NSNumber* hashCount = @([[phoneNumberDirectoryFilter bloomFilter] hashCount]);
-    NSDate* expiry = phoneNumberDirectoryFilter.getExpirationDate;
-    [self storeBloomfilter:data];
-    [self setValueForKey:PHONE_DIRECTORY_BLOOM_FILTER_HASH_COUNT_KEY toValue:hashCount];
-    [self setValueForKey:PHONE_DIRECTORY_EXPIRATION toValue:expiry];
-    [self sendDirectoryUpdateNotification];
-}
-
--(void) sendDirectoryUpdateNotification{
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DIRECTORY_UPDATE object:nil];
-}
 
 -(NSTimeInterval) getCachedOrDefaultDesiredBufferDepth {
     id v = [self tryGetValueForKey:CALL_STREAM_DES_BUFFER_LEVEL_KEY];
@@ -253,54 +219,6 @@
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
-}
-
-#pragma mark Bloom filter
-
-- (NSData*)tryRetreiveBloomFilter {
-    return [NSData dataWithContentsOfFile:[self bloomfilterPath]];
-}
-
-- (void)storeBloomfilter:(NSData*)bloomFilterData {
-    if (!bloomFilterData) {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSError       *error;
-        
-        if ([fileManager fileExistsAtPath:[self bloomfilterPath]]) {
-            [fileManager removeItemAtPath:[self bloomfilterPath] error:&error];
-        }
-        
-        if (error) {
-            DDLogError(@"Failed to remove bloomfilter with error: %@", error);
-        }
-        
-        return;
-    }
-    
-    NSError *error;
-    [bloomFilterData writeToFile:[self bloomfilterPath] options:NSDataWritingAtomic error:&error];
-    if (error) {
-        DDLogError(@"Failed to store bloomfilter with error: %@", error);
-    }
-}
-
-- (NSString*)bloomfilterPath {
-    NSFileManager *fm         = [NSFileManager defaultManager];
-    NSArray  *cachesDir       = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *bloomFilterPath = [cachesDir  objectAtIndex:0];
-    NSError  *error;
-    
-    if (![fm fileExistsAtPath:bloomFilterPath]) {
-        [fm createDirectoryAtPath:bloomFilterPath withIntermediateDirectories:YES attributes:@{} error:&error];
-    }
-
-    if (error) {
-        DDLogError(@"Failed to create caches directory with error: %@", error.description);
-    }
-    
-    bloomFilterPath = [bloomFilterPath stringByAppendingPathComponent:BloomFilterCacheName];
-    
-    return bloomFilterPath;
 }
 
 @end

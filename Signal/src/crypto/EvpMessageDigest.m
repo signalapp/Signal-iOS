@@ -1,7 +1,7 @@
 #import "EvpMessageDigest.h"
 
-#import <evp.h>
-#import <hmac.h>
+#import <OpenSSL/evp.h>
+#import <OpenSSL/hmac.h>
 
 #import "Constraints.h"
 #import "EvpUtil.h"

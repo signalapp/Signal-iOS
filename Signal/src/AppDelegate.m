@@ -4,7 +4,6 @@
 #import "ContactsManager.h"
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Release.h"
@@ -49,7 +48,6 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
-    [Environment.getCurrent.phoneDirectoryManager startUntilCancelled:nil];
     
     if ([TSAccountManager isRegistered]) {
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
@@ -104,7 +102,6 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
         }
         
         [[PushManager sharedManager] validateUserNotificationSettings];
-        [self refreshContacts];
         [TSPreKeyManager refreshPreKeys];
     }
     
@@ -265,12 +262,6 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
     
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 
-}
-
-- (void)refreshContacts {
-    Environment *env = [Environment getCurrent];
-    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
-    [manager forceUpdate];
 }
 
 #pragma mark Push Notifications Delegate Methods

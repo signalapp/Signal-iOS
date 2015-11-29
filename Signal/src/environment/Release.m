@@ -3,7 +3,6 @@
 #import "PhoneManager.h"
 #import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 
 #define RELEASE_ZRTP_CLIENT_ID @"Whisper 000     ".encodedAsAscii
 #define RELEASE_ZRTP_VERSION_ID @"1.10".encodedAsAscii
@@ -75,8 +74,7 @@ static unsigned char DH3K_PRIME[]={
                     andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
                                andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
                               andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                            andContactsManager:[ContactsManager new]
-                      andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
+                            andContactsManager:[ContactsManager new]];
 }
 
 +(Environment*) stagingEnvironmentWithLogging:(id<Logging>)logging {
@@ -110,8 +108,7 @@ static unsigned char DH3K_PRIME[]={
                     andTestingAndLegacyOptions:@[ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER]
                                andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
                               andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                            andContactsManager:[ContactsManager new]
-                      andPhoneDirectoryManager:[PhoneNumberDirectoryFilterManager new]];
+                            andContactsManager:[ContactsManager new]];
 }
 
 +(Environment*) unitTestEnvironment:(NSArray*)testingAndLegacyOptions {
@@ -134,8 +131,7 @@ static unsigned char DH3K_PRIME[]={
                     andTestingAndLegacyOptions:testingAndLegacyOptions
                                andZrtpClientId:TESTING_ZRTP_CLIENT_ID
                               andZrtpVersionId:TESTING_ZRTP_VERSION_ID
-                            andContactsManager:nil
-                      andPhoneDirectoryManager:nil];
+                            andContactsManager:nil];
 }
 
 +(NSArray*) supportedKeyAgreementProtocols {

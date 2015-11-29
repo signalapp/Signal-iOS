@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "PhoneNumberDirectoryFilter.h"
 #import "PropertyListPreferences.h"
 #import "Zid.h"
 
@@ -20,8 +19,6 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 @interface PropertyListPreferences (PropertyUtil)
 
-- (PhoneNumberDirectoryFilter*) tryGetSavedPhoneNumberDirectory;
-- (void) setSavedPhoneNumberDirectory:(PhoneNumberDirectoryFilter*)phoneNumberDirectoryFilter;
 - (NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
 - (void) setCachedDesiredBufferDepth:(double)value;
 

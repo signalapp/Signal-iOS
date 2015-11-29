@@ -6,7 +6,6 @@
 #import "DH3KKeyAgreementProtocol.h"
 #import "RecentCallManager.h"
 #import "MessagesViewController.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
 #import "TSContactThread.h"
@@ -32,8 +31,7 @@ zrtpClientId,
 zrtpVersionId,
 phoneManager,
 recentCallManager,
-contactsManager,
-phoneDirectoryManager;
+contactsManager;
 
 +(NSString*) currentRegionCodeForPhoneNumbers {
     return self.getCurrent.currentRegionCodeForPhoneNumbers;
@@ -88,8 +86,7 @@ phoneDirectoryManager;
                 andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
                            andZrtpClientId:(NSData*)zrtpClientId
                           andZrtpVersionId:(NSData*)zrtpVersionId
-                        andContactsManager:(ContactsManager *)contactsManager
-                  andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager {
+                        andContactsManager:(ContactsManager *)contactsManager {
     
     require(errorNoter != nil);
     require(zrtpClientId != nil);
@@ -114,7 +111,6 @@ phoneDirectoryManager;
     e->masterServerSecureEndPoint = [SecureEndPoint secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:masterServerHostName
                                                                                                                  andPort:serverPort]
                                                   identifiedByCertificate:certificate];
-    e->phoneDirectoryManager = phoneDirectoryManager;
     e->defaultRelayName = defaultRelayName;
     e->certificate = certificate;
     e->relayServerHostNameSuffix = relayServerHostNameSuffix;

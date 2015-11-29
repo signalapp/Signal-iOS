@@ -10,7 +10,7 @@
 
 #import "Environment.h"
 #import "IncomingPushMessageSignal.pb.h"
-#import "ContactsManager.h"
+#import "ContactsManager+updater.h"
 
 #define TSContactThreadPrefix @"c"
 
@@ -26,11 +26,16 @@
 }
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString*)contactId transaction:(YapDatabaseReadWriteTransaction*)transaction pushSignal:(IncomingPushMessageSignal*)pushSignal{
-    TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
+    SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
     
     if (!recipient) {
         NSString *relay = pushSignal.hasRelay && ![pushSignal.relay isEqualToString:@""]?pushSignal.relay:nil;
-        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay];
+        recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay supportsVoice:YES];
+        [[Environment getCurrent].contactsManager lookupIdentifier:contactId
+                                                           success:^(NSSet<NSString *> *matchedIds) {}
+                                                           failure:^(NSError *error) {
+                                                               DDLogInfo(@"Failed to retreive call status. Will be retreived on next contact intersection.");
+                                                           }];
         [recipient saveWithTransaction:transaction];
     }
     
@@ -79,14 +84,6 @@
 
 + (NSString*)contactIdFromThreadId:(NSString*)threadId{
     return [threadId substringWithRange:NSMakeRange(1, threadId.length-1)];
-}
-
-- (TSRecipient *)recipientWithTransaction:(YapDatabaseReadTransaction*)transaction{
-    TSRecipient *recipient = [TSRecipient recipientWithTextSecureIdentifier:self.contactIdentifier withTransaction:transaction];
-    if (!recipient){
-        recipient = [[TSRecipient alloc] initWithTextSecureIdentifier:self.contactIdentifier relay:nil];
-    }
-    return recipient;
 }
 
 @end

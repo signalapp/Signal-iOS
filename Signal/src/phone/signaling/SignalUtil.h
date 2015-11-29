@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "HttpManager.h"
 #import "HttpRequestUtil.h"
-#import "PhoneNumberDirectoryFilter.h"
 
 #define SIGNAL_STATUS_CODE_STALE_SESSION 404
 #define SIGNAL_STATUS_CODE_NO_SUCH_USER 404

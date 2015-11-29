@@ -14,13 +14,14 @@
  *
  */
 
+#define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
+
 typedef void(^ABAccessRequestCompletionBlock)(BOOL hasAccess);
 typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 @interface ContactsManager : NSObject {
 @private TOCFuture* futureAddressBook;
 @private ObservableValueController* observableContactsController;
-@private ObservableValueController* observableRedPhoneUsersController;
 @private ObservableValueController* observableTextSecureUsersController;
 @private TOCCancelTokenSource* life;
 @private NSDictionary *latestContactsById;
@@ -30,9 +31,7 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @property CNContactStore *contactStore;
 
 -(ObservableValue *) getObservableContacts;
--(ObservableValue *) getObservableRedPhoneUsers;
-
-- (BOOL)isPhoneNumberRegisteredWithRedPhone:(PhoneNumber*)phoneNumber;
+//-(ObservableValue *) getObservableRedPhoneUsers;
 
 -(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 -(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
@@ -46,11 +45,9 @@ typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 - (void)verifyABPermission;
 
-- (NSArray*)allContacts;
+- (NSArray<Contact *> *)allContacts;
 - (NSArray*)signalContacts;
 - (NSArray*)textSecureContacts;
-
-- (BOOL)isContactRegisteredWithRedPhone:(Contact*)contact;
 
 -(void)doAfterEnvironmentInitSetup;
 

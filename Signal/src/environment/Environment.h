@@ -26,7 +26,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 @class RecentCallManager;
 @class ContactsManager;
 @class PhoneManager;
-@class PhoneNumberDirectoryFilterManager;
 @class SignalsViewController;
 
 @interface Environment : NSObject
@@ -45,7 +44,6 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 @property (nonatomic, readonly) NSData* zrtpClientId;
 @property (nonatomic, readonly) NSData* zrtpVersionId;
 @property (nonatomic, readonly) ContactsManager *contactsManager;
-@property (nonatomic, readonly) PhoneNumberDirectoryFilterManager* phoneDirectoryManager;
 
 @property (nonatomic, readonly) SignalsViewController *signalsViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
@@ -55,21 +53,20 @@ static NSString* const kCallSegue = @"2.0_6.0_Call_Segue";
 +(SecureEndPoint*) getSecureEndPointToSignalingServerNamed:(NSString*)name;
 
 +(Environment*) environmentWithLogging:(id<Logging>)logging
-                     andErrorNoter:(ErrorHandlerBlock)errorNoter
-                     andServerPort:(in_port_t)serverPort
-           andMasterServerHostName:(NSString*)masterServerHostName
-               andDefaultRelayName:(NSString*)defaultRelayName
-      andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
-                    andCertificate:(Certificate*)certificate
-andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
- andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
-                   andPhoneManager:(PhoneManager*)phoneManager
-              andRecentCallManager:(RecentCallManager *)recentCallManager
-        andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
-                   andZrtpClientId:(NSData*)zrtpClientId
-                  andZrtpVersionId:(NSData*)zrtpVersionId
-                andContactsManager:(ContactsManager *)contactsManager
-          andPhoneDirectoryManager:(PhoneNumberDirectoryFilterManager*)phoneDirectoryManager;
+                         andErrorNoter:(ErrorHandlerBlock)errorNoter
+                         andServerPort:(in_port_t)serverPort
+               andMasterServerHostName:(NSString*)masterServerHostName
+                   andDefaultRelayName:(NSString*)defaultRelayName
+          andRelayServerHostNameSuffix:(NSString*)relayServerHostNameSuffix
+                        andCertificate:(Certificate*)certificate
+   andCurrentRegionCodeForPhoneNumbers:(NSString*)currentRegionCodeForPhoneNumbers
+     andSupportedKeyAgreementProtocols:(NSArray*)keyAgreementProtocolsInDescendingPriority
+                       andPhoneManager:(PhoneManager*)phoneManager
+                  andRecentCallManager:(RecentCallManager *)recentCallManager
+            andTestingAndLegacyOptions:(NSArray*)testingAndLegacyOptions
+                       andZrtpClientId:(NSData*)zrtpClientId
+                      andZrtpVersionId:(NSData*)zrtpVersionId
+                    andContactsManager:(ContactsManager *)contactsManager;
 
 +(Environment*) getCurrent;
 +(void) setCurrent:(Environment*)curEnvironment;

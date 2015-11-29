@@ -3,7 +3,6 @@
 #import "Contact.h"
 #import "PhoneManager.h"
 #import "PhoneNumber.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 
 #define PICK_UP_NOTIFICATION @"RedPhoneCallPickUpNotification"
 #define HANG_UP_NOTIFICATION @"RedPhoneCallHangUpNotification"

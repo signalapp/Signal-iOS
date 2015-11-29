@@ -15,6 +15,5 @@
 
 + (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction*)transaction;
 - (NSData*)groupId;
-- (NSArray *)recipientsWithTransaction:(YapDatabaseReadTransaction*)transaction;
 
 @end

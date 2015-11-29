@@ -8,9 +8,8 @@
 
 #import "MessageComposeTableViewController.h"
 #import "Environment.h"
-#import "NotificationManifest.h"
-#import "PhoneNumberDirectoryFilterManager.h"
 
+#import "ContactsManager+updater.h"
 #import <MessageUI/MessageUI.h>
 
 #import "ContactTableViewCell.h"
@@ -59,18 +58,8 @@
 -(void) viewDidAppear:(BOOL)animated  {
     [super viewDidAppear:animated];
     
-    BOOL isRefreshing = [Environment getCurrent].phoneDirectoryManager.isRefreshing;
     if([contacts count]==0) {
-        if([Environment getCurrent].phoneDirectoryManager.isRefreshing) {
-            [self showLoadingBackgroundView:YES];
-        }
-        else {
-            [self showEmptyBackgroundView:YES];
-        }
-    }
-    else if(isRefreshing) {
-        self.tableView.contentOffset = CGPointMake(0, -self.refreshControl.frame.size.height);
-        [self.refreshControl beginRefreshing];
+        [self showEmptyBackgroundView:YES];
     }
 }
 
@@ -214,15 +203,7 @@
     sendTextButton.hidden = YES;
     
     [sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
-    [self initializeObservers];
     [self initializeRefreshControl];
-    
-}
-
--(void)initializeObservers
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidRefresh) name:NOTIFICATION_DIRECTORY_WAS_UPDATED object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactRefreshFailed) name:NOTIFICATION_DIRECTORY_FAILED object:nil];
 }
 
 -(void)initializeRefreshControl {
@@ -332,9 +313,6 @@
     sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
     
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
-    
     [self presentViewController:alertController
                        animated:YES
                      completion:[UIUtil modalCompletionBlock]];
@@ -443,19 +421,6 @@
 
 #pragma mark Refresh controls
 
-- (void)contactRefreshFailed {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT message:TIMEOUT_CONTACTS_DETAIL delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil];
-    [alert show];
-    [self updateAfterRefreshTry];
-}
-
-- (void)contactsDidRefresh {
-    contacts = [[Environment getCurrent] contactsManager].signalContacts;
-    [self updateSearchResultsForSearchController:self.searchController];
-    [self.tableView reloadData];
-    [self updateAfterRefreshTry];
-}
-
 - (void) updateAfterRefreshTry {
     [self.refreshControl endRefreshing];
     
@@ -469,9 +434,25 @@
 }
 
 - (void)refreshContacts {
-    Environment *env = [Environment getCurrent];
-    PhoneNumberDirectoryFilterManager *manager = [env phoneDirectoryManager];
-    [manager forceUpdate];
+    [[Environment getCurrent].contactsManager updateSignalContactIntersectionWithSuccess:^{
+        contacts = [[Environment getCurrent] contactsManager].signalContacts;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateSearchResultsForSearchController:self.searchController];
+            [self.tableView reloadData];
+            [self updateAfterRefreshTry];
+        });
+    } failure:^(NSError *error) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT
+                                                        message:TIMEOUT_CONTACTS_DETAIL
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                              otherButtonTitles:nil];
+        [alert show];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateAfterRefreshTry];
+        });
+    }];
+    
     if([contacts count]==0) {
         [self showLoadingBackgroundView:YES];
     }
