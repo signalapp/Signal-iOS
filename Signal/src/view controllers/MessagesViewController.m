@@ -225,10 +225,17 @@ typedef enum : NSUInteger {
 }
 
 - (void)initializeTextView {
-    [self.inputToolbar.contentView.textView  setFont:[UIFont ows_regularFontWithSize:17.f]];
+    self.inputToolbar.contentView.textView.font = [UIFont ows_regularFontWithSize:17.f];
     self.inputToolbar.contentView.leftBarButtonItem  = _attachButton;
-    
     self.inputToolbar.contentView.rightBarButtonItem = _messageButton;
+    self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
+    
+    //1px line
+    CGFloat one_px = 1.0/[UIScreen mainScreen].scale;
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.inputToolbar.contentView.bounds.size.width, one_px)];
+    line.backgroundColor = [UIColor ows_materialBlueColor];
+    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.inputToolbar.contentView addSubview:line];
 }
 
 -(void)viewWillAppear:(BOOL)animated {

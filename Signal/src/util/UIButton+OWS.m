@@ -1,5 +1,5 @@
 //
-//  UIFont+OWS.m
+//  UIButton+OWS.m
 //  Signal
 //
 //  Created by Christine Corbett Moran on 2/10/15.
