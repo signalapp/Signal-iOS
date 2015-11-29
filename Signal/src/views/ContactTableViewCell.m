@@ -25,7 +25,6 @@
 
 
 - (void)configureWithContact:(Contact *)contact {
-    _callButton.hidden =  !contact.isRedPhoneContact;
     if(!contact.isTextSecureContact) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
@@ -63,16 +62,5 @@
     }
     return fullNameAttributedString;
 }
-
--(IBAction)callContact:(id)sender
-{
-    if (_associatedContact.isRedPhoneContact) {
-        NSArray *redPhoneIdentifiers = [_associatedContact redPhoneIdentifiers];
-        [Environment.phoneManager initiateOutgoingCallToContact:_associatedContact atRemoteNumber:[redPhoneIdentifiers firstObject]];
-    } else{
-        DDLogWarn(@"Tried to intiate a call but contact has no RedPhone identifier");
-    }
-}
-
 
 @end

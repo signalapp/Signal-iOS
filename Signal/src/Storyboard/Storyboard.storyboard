@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="tuk-0x-yCb">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
@@ -92,7 +92,7 @@
                                 <segue destination="n1f-7Y-906" kind="push" id="dB4-oM-uSL"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="add-conversation" width="100" id="Oft-fU-tf5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">
                             <inset key="imageInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
@@ -1736,7 +1736,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Settings" id="Yrv-vP-ZVP" userLabel="_7.0a - Navigation Bar">
-                        <barButtonItem key="rightBarButtonItem" image="btnCancel--white" id="B0V-Wf-lqd">
+                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="B0V-Wf-lqd">
                             <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -1806,19 +1806,6 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fLe-oL-dMO">
-                                            <rect key="frame" x="266" y="-3" width="52" height="53"/>
-                                            <animations/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="52" id="AOr-xI-am4"/>
-                                                <constraint firstAttribute="height" constant="52" id="dQN-ek-OOr"/>
-                                            </constraints>
-                                            <inset key="contentEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
-                                            <state key="normal" image="btnPhone--blue"/>
-                                            <connections>
-                                                <action selector="callContact:" destination="Ld5-sX-pB8" eventType="touchUpInside" id="5t9-mr-Zna"/>
-                                            </connections>
-                                        </button>
                                     </subviews>
                                     <animations/>
                                     <constraints>
@@ -1826,13 +1813,10 @@ A0 09 9A FF A8 8A 09 99</string>
                                         <constraint firstAttribute="trailingMargin" secondItem="urb-Me-knG" secondAttribute="trailing" constant="72" id="R9g-GE-nWU"/>
                                         <constraint firstItem="urb-Me-knG" firstAttribute="leading" secondItem="EqP-87-4hZ" secondAttribute="leadingMargin" constant="12" id="Zjd-vI-V9V"/>
                                         <constraint firstItem="urb-Me-knG" firstAttribute="top" secondItem="EqP-87-4hZ" secondAttribute="topMargin" constant="-4" id="iex-zH-iTD"/>
-                                        <constraint firstItem="fLe-oL-dMO" firstAttribute="centerY" secondItem="urb-Me-knG" secondAttribute="centerY" id="j8L-QL-A7r"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="fLe-oL-dMO" secondAttribute="trailing" constant="-6" id="xKq-t8-eXd"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <animations/>
                                 <connections>
-                                    <outlet property="callButton" destination="fLe-oL-dMO" id="vXp-mN-WSg"/>
                                     <outlet property="nameLabel" destination="urb-Me-knG" id="2h5-l1-QDQ"/>
                                 </connections>
                             </tableViewCell>
@@ -2024,11 +2008,9 @@ A0 09 9A FF A8 8A 09 99</string>
     </scenes>
     <resources>
         <image name="_arrow_button" width="12" height="23"/>
-        <image name="add-conversation" width="44" height="44"/>
         <image name="btnCamera--white" width="52" height="40"/>
         <image name="btnCancel--white" width="44" height="44"/>
         <image name="btnGroup--white" width="44" height="44"/>
-        <image name="btnPhone--blue" width="44" height="44"/>
         <image name="btnQRShow--white" width="66" height="66"/>
         <image name="btnQRShow--white-1" width="66" height="66"/>
         <image name="call.png" width="100" height="100"/>
@@ -2044,8 +2026,8 @@ A0 09 9A FF A8 8A 09 99</string>
         <image name="speaker-inactive" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ANb-Oa-vQe"/>
         <segue reference="DR8-fx-0PD"/>
+        <segue reference="ANb-Oa-vQe"/>
         <segue reference="xo7-5J-BJb"/>
         <segue reference="D0d-4f-lcI"/>
     </inferredMetricsTieBreakers>
