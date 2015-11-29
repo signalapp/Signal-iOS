@@ -35,6 +35,7 @@ PODS:
     - CocoaLumberjack/Default
   - DJWActionSheet (1.0.4)
   - FFCircularProgressView (0.5)
+  - FLAnimatedImage (1.0.8)
   - HKDFKit (0.0.3)
   - iRate (1.11.4)
   - JSQMessagesViewController (7.1.0):
@@ -66,6 +67,7 @@ DEPENDENCIES:
   - AxolotlKit
   - DJWActionSheet
   - FFCircularProgressView (~> 0.5)
+  - FLAnimatedImage (~> 1.0)
   - iRate (~> 1.11)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`,
     commit `e5582fef8a6b3e35f8070361ef37237222da712b`)
@@ -103,6 +105,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
+  FLAnimatedImage: f9422f796135aff80d8c00b2afc48015bb746e24
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   iRate: 599ed07c854e0695f3c605d1b2a64c67d912acb7
   JSQMessagesViewController: ca11f86fa68ca70835f05e169df9244147c1dc40

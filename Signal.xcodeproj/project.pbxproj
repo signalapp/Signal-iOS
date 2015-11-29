@@ -11,6 +11,7 @@
 		28508611F3DF531CEDF5103D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D488327B732CFBE8349C7024 /* libPods.a */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		53EF5134D8FB5FCBDEDE2A35 /* (null) in Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (Weak, ); }; };
+		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
