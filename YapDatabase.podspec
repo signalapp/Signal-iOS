@@ -30,6 +30,7 @@ Pod::Spec.new do |s|
     ss.dependency 'SQLCipher/fts'
     ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
     ss.dependency 'CocoaLumberjack', '~> 2'
+    ss.dependency 'Reachability', '~> 3'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm,c}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
     ss.requires_arc = true
