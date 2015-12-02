@@ -224,12 +224,13 @@
 			self.reachability = reachability;
 		}
 		
+		[reachability startNotifier]; // safe to be called multiple times
 		self.hasInternet = reachability.isReachable;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(reachabilityChanged:)
 		                                             name:kReachabilityChangedNotification
-		                                           object:nil];
+		                                           object:reachability];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(databaseModified:)
