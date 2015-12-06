@@ -1,0 +1,1 @@
+../../../../../../YapDatabase/Extensions/SearchResults/Internal/YapDatabaseSearchResultsViewPrivate.h
