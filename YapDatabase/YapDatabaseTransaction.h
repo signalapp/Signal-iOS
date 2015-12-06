@@ -393,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 - (void)enumerateObjectsForKeys:(NSArray<NSString *> *)keys
                    inCollection:(nullable NSString *)collection
-            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id object, BOOL *stop))block;
+            unorderedUsingBlock:(void (^)(NSUInteger keyIndex, id __nullable object, BOOL *stop))block;
 
 /**
  * Enumerates over the given list of keys (unordered).
