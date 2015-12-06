@@ -36,21 +36,27 @@
 	return [self initWithDatabase:database readOnlyConnection:nil readWriteConnection:nil];
 }
 
-- (instancetype)initWithDatabase:(YapDatabase *)database
+- (instancetype)initWithDatabase:(YapDatabase *)inDatabase
               readOnlyConnection:(nullable YapDatabaseConnection *)inReadOnlyConnection
              readWriteConnection:(nullable YapDatabaseConnection *)inReadWriteConnection
 {
 	if (!inReadOnlyConnection && !inReadWriteConnection)
-		NSParameterAssert(database != nil);
+		NSParameterAssert(inDatabase != nil);
 	
-	if (inReadOnlyConnection && database)
-		NSParameterAssert(inReadOnlyConnection.database == database);
+	if (inReadOnlyConnection && inDatabase)
+		NSParameterAssert(inReadOnlyConnection.database == inDatabase);
 	
-	if (inReadWriteConnection && database)
-		NSParameterAssert(inReadWriteConnection.database == database);
+	if (inReadWriteConnection && inDatabase)
+		NSParameterAssert(inReadWriteConnection.database == inDatabase);
 	
 	if (inReadOnlyConnection && inReadWriteConnection)
 		NSParameterAssert(inReadOnlyConnection.database == inReadWriteConnection.database);
+	
+	YapDatabase *database = inDatabase;
+	if (database == nil)
+		database = inReadOnlyConnection.database;
+	if (database == nil)
+		database = inReadWriteConnection.database;
 	
 	if ((self = [super init]))
 	{
@@ -90,7 +96,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(databaseModified:)
 		                                             name:YapDatabaseModifiedNotification
-		                                           object:readWriteConnection.database];
+		                                           object:database];
 	}
 	return self;
 }

@@ -34,8 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
  *   The manager class typically handles things such as:
  *   - downloaing resources on demand
  *   - parsing the results
- *   - providing getter methods to fetch items from the cache
+ *   - providing getter methods to fetch particular items
  *   - automatically checking expiration dates & refreshing items as needed
+ *   - automatically deleting unused expired items
  * 
  *   You'll notice the manager class is the ONLY class that hanles reading/writing certain values in the database.
  *   And it doesn't matter if a value doesn't get written to disk, as it can simply be re-downloaed.
