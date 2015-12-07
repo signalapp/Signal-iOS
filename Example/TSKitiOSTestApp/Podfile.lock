@@ -1,0 +1,84 @@
+PODS:
+  - 25519 (2.0.2)
+  - AFNetworking (3.0.4):
+    - AFNetworking/NSURLSession (= 3.0.4)
+    - AFNetworking/Reachability (= 3.0.4)
+    - AFNetworking/Security (= 3.0.4)
+    - AFNetworking/Serialization (= 3.0.4)
+    - AFNetworking/UIKit (= 3.0.4)
+  - AFNetworking/NSURLSession (3.0.4):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.0.4)
+  - AFNetworking/Security (3.0.4)
+  - AFNetworking/Serialization (3.0.4)
+  - AFNetworking/UIKit (3.0.4):
+    - AFNetworking/NSURLSession
+  - Alamofire (3.1.4)
+  - AxolotlKit (0.8):
+    - 25519 (~> 2.0.1)
+    - HKDFKit (~> 0.0.3)
+    - ProtocolBuffers (~> 1.9.8)
+  - CocoaLumberjack (2.2.0):
+    - CocoaLumberjack/Default (= 2.2.0)
+    - CocoaLumberjack/Extensions (= 2.2.0)
+  - CocoaLumberjack/Core (2.2.0)
+  - CocoaLumberjack/Default (2.2.0):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.2.0):
+    - CocoaLumberjack/Default
+  - HKDFKit (0.0.3)
+  - libPhoneNumber-iOS (0.8.10)
+  - Mantle (2.0.6):
+    - Mantle/extobjc (= 2.0.6)
+  - Mantle/extobjc (2.0.6)
+  - ProtocolBuffers (1.9.9.2)
+  - SocketRocket-PinningPolicy (0.4.2)
+  - SQLCipher/common (3.3.1)
+  - SQLCipher/fts (3.3.1):
+    - SQLCipher/common
+  - SSKeychain (1.3.1)
+  - TextSecureKit (0.0.1):
+    - AFNetworking
+    - Alamofire
+    - AxolotlKit
+    - libPhoneNumber-iOS
+    - Mantle
+    - SocketRocket-PinningPolicy
+    - SSKeychain
+    - TwistedOakCollapsingFutures
+    - YapDatabase/SQLCipher
+  - TwistedOakCollapsingFutures (1.0.0):
+    - UnionFind (~> 1.0)
+  - UnionFind (1.0.1)
+  - YapDatabase/SQLCipher (2.7.7):
+    - CocoaLumberjack (~> 2)
+    - SQLCipher/fts
+
+DEPENDENCIES:
+  - TextSecureKit (from `../../TextSecureKit.podspec`)
+
+EXTERNAL SOURCES:
+  TextSecureKit:
+    :path: "../../TextSecureKit.podspec"
+
+SPEC CHECKSUMS:
+  '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
+  AFNetworking: a0075feb321559dc78d9d85b55d11caa19eabb93
+  Alamofire: fbc829692f351fa1d8a31dd75fd7f7f56fea31fb
+  AxolotlKit: a33962f26943990e5d69d05b30470cea18caeed0
+  CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
+  HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
+  libPhoneNumber-iOS: 7bfd00f843fdcd82b5182b463e8eb3b27579f41d
+  Mantle: 299966b00759634931699f69cb6a30b9239b944d
+  ProtocolBuffers: 7111461618460961e6b7469177ec45ee551b4f0e
+  SocketRocket-PinningPolicy: 28f8b3e9584feef9a1c7018deca4b08224784e97
+  SQLCipher: d490d2effe735895d2204d25a154b1e722278421
+  SSKeychain: 04c4ec40f4c3deda524e269bc76e5f30e638a174
+  TextSecureKit: 869dd7d9399ee00134d35db0763b82d24d3df888
+  TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
+  UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
+  YapDatabase: a7a1ae3e0f89c319e3b22615c2351987fbbdbded
+
+COCOAPODS: 0.39.0
