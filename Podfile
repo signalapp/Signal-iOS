@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 inhibit_all_warnings!
 link_with ["Signal", "SignalTests"]
 
-pod 'OpenSSL',                    '~> 1.0.204.1'
+pod 'OpenSSL',                    '~> 1.0.205'
 pod 'libPhoneNumber-iOS',         '~> 0.8.7'
 pod 'AxolotlKit'               
 pod 'PastelogKit',                '~> 1.3'
