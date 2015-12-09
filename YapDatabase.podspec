@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "YapDatabase"
-  s.version      = "2.7.6"
+  s.version      = "2.7.7"
   s.summary      = "A key/value store built atop sqlite for iOS & Mac."
   s.homepage     = "https://github.com/yapstudios/YapDatabase"
   s.license      = 'MIT'
@@ -13,8 +13,9 @@ Pod::Spec.new do |s|
     :tag => s.version.to_s
   }
   
-  s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
+  s.ios.deployment_target = '6.0'
+  s.tvos.deployment_target = '9.0'
   
   s.module_map = "Framework/module.modulemap"
   s.libraries  = 'c++'
