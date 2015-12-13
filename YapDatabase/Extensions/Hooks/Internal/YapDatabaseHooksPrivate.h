@@ -13,15 +13,6 @@
 @public
 	
 	YapWhitelistBlacklist *allowedCollections;
-
-	YDBHooks_WillModifyRow willModifyRow;
-	YDBHooks_DidModifyRow   didModifyRow;
-
-	YDBHooks_WillRemoveRow willRemoveRow;
-	YDBHooks_DidRemoveRow   didRemoveRow;
-
-	YDBHooks_WillRemoveAllRows willRemoveAllRows;
-	YDBHooks_DidRemoveAllRows   didRemoveAllRows;
 }
 
 @end
