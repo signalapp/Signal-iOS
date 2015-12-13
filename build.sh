@@ -7,12 +7,16 @@ set -x
 
 # Setup paths to stuff we need
 
-OPENSSL_VERSION="1.0.1p"
+OPENSSL_VERSION="1.0.1q"
 
 DEVELOPER=$(xcode-select --print-path)
 
 IOS_SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version)
 IOS_DEPLOYMENT_VERSION="6.0"
+APPLETV_SDK_VERSION=$(xcrun --sdk appletvos --show-sdk-version)
+APPLETV_DEPLOYMENT_VERSION="9.1"
+WATCHOS_SDK_VERSION=$(xcrun --sdk watchos --show-sdk-version)
+WATCHOS_DEPLOYMENT_VERSION="2.1"
 OSX_SDK_VERSION=$(xcrun --sdk macosx --show-sdk-version)
 OSX_DEPLOYMENT_VERSION="10.8"
 
