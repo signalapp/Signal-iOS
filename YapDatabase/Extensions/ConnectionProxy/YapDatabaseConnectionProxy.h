@@ -6,8 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * A "proxy" connection is a trade-off in terms of the ACID guarantees of the database.
  * 
- * The underlying SQLite database ensures that a transaction is atomic & durable.
- * That is, if the transaction completes, then all data from the transaction has been written to the database.
+ * Under normal operations, you must execute a read-write transaction in order to modify the datatbase.
+ * If the transaction completes, then all data from the transaction has been written to the database.
  * And further, the transaction is durable even in the event of an application or system crash.
  * In other words, you're guaranteed the data will be there when the app re-launches.
  *
