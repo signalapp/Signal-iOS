@@ -32,22 +32,6 @@ Pod::Spec.new do |s|
   s.ios.preserve_paths      = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
   s.ios.vendored_libraries  = 'lib-ios/libcrypto.a', 'lib-ios/libssl.a'
 
-  s.watchos.platform          = :watchos, '2.0'
-  s.watchos.deployment_target = '2.0'
-  s.watchos.source_files        = 'include-watchos/openssl/**/*.h'
-  s.watchos.public_header_files = 'include-watchos/openssl/**/*.h'
-  s.watchos.header_dir          = 'openssl'
-  s.watchos.preserve_paths      = 'lib-watchos/libcrypto.a', 'lib-watchos/libssl.a'
-  s.watchos.vendored_libraries  = 'lib-watchos/libcrypto.a', 'lib-watchos/libssl.a'
-
-  s.tvos.platform          = tvos, '9.1'
-  s.tvos.deployment_target = '9.1'
-  s.tvos.source_files        = 'include-appletv/openssl/**/*.h'
-  s.tvos.public_header_files = 'include-appletv/openssl/**/*.h'
-  s.tvos.header_dir          = 'openssl'
-  s.tvos.preserve_paths      = 'lib-appletv/libcrypto.a', 'lib-appletv/libssl.a'
-  s.tvos.vendored_libraries  = 'lib-appletv/libcrypto.a', 'lib-appletv/libssl.a'
-
   s.osx.platform          = :osx, '10.9'
   s.osx.deployment_target = '10.8'
   s.osx.source_files        = 'include-osx/openssl/**/*.h'
