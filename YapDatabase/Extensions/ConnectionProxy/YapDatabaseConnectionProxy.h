@@ -120,6 +120,12 @@ NS_ASSUME_NONNULL_BEGIN
  * then that value is returned, even if the value has not been written to the database yet.
 **/
 - (id)objectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (id)metadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+
+- (BOOL)getObject:(__nullable id * __nullable)objectPtr
+         metadata:(__nullable id * __nullable)metadataPtr
+           forKey:(NSString *)key
+     inCollection:(nullable NSString *)collection;
 
 /**
  * Sets a value for the given collection/key tuple.
@@ -137,6 +143,27 @@ NS_ASSUME_NONNULL_BEGIN
  *   If nil, this is equivalent to invoking removeObjectForKey:inCollection:
 **/
 - (void)setObject:(nullable id)object forKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)setObject:(nullable id)object
+           forKey:(NSString *)key
+     inCollection:(nullable NSString *)collection
+     withMetadata:(nullable id)metadata;
+
+/**
+ * The replace methods allows you to modify the object, without modifying the metadata for the row.
+ * Or vice-versa, you can modify the metadata, without modifying the object for the row.
+ * 
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * The proxy will attempt to write the value to the database at some point in the near future.
+ * If the application is terminated before the write completes, then the value may not make it to the database.
+ * However, the proxy will immediately begin to return the new value when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+**/
+- (void)replaceObject:(nullable id)object forKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)replaceMetadata:(nullable id)metadata forKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Removes any set value for the given collection/key tuple.
