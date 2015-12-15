@@ -26,9 +26,8 @@ OSX_SDK=$(xcrun --sdk macosx --show-sdk-path)
 
 # Clean up whatever was left from our previous build
 
-rm -rf include-ios include-osx include-appletv include-watchos lib-ios lib-osx lib-appletv lib-watchos
-rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*"
-rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*.log"
+rm -rf include-ios include-osx lib-ios lib-osx
+rm -rf /tmp/openssl-${OPENSSL_VERSION}*
 
 configure() {
     OS=$1
@@ -58,9 +57,9 @@ build()
    export CC="${BUILD_TOOLS}/usr/bin/gcc -fembed-bitcode -arch ${ARCH}"
 
    mkdir -p "lib-${TYPE}"
-
-   rm -rf "openssl-${OPENSSL_VERSION}"
-   tar xfz "openssl-${OPENSSL_VERSION}.tar.gz"
+   
+   rm -rf openssl-${OPENSSL_VERSION}
+   tar xfz openssl-${OPENSSL_VERSION}.tar.gz
    pushd .
    cd "openssl-${OPENSSL_VERSION}"
 
@@ -71,7 +70,7 @@ build()
    if [ "$TYPE" == "ios" ]; then
       # IOS
       if [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "i386" ]; then
-         configure "iPhoneSimulator" $ARCH ${IPHONESIMULATOR_PLATFORM} ${IPHONESIMULATOR_SDK_VERSION} ${IPHONESIMULATOR_DEPLOYMENT_VERSION}
+         configure "iPhoneSimulator" $ARCH ${IPHONESIMULATOR_PLATFORM} ${IPHONEOS_SDK_VERSION} ${IPHONEOS_DEPLOYMENT_VERSION}
       else
          configure "iPhoneOS" $ARCH ${IPHONEOS_PLATFORM} ${IPHONEOS_SDK_VERSION} ${IPHONEOS_DEPLOYMENT_VERSION}
       fi
@@ -89,7 +88,6 @@ build()
    make &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    make install &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    popd
-   rm -rf "openssl-${OPENSSL_VERSION}"
 
    # Add arch to library
    if [ -f "lib-${TYPE}/libcrypto.a" ]; then
@@ -99,6 +97,8 @@ build()
       cp "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libcrypto.a" "lib-${TYPE}/libcrypto.a"
       cp "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}/lib/libssl.a" "lib-${TYPE}/libssl.a"
    fi
+
+   rm -rf "openssl-${OPENSSL_VERSION}"
 }
 
 build "i386" "${IPHONESIMULATOR_SDK}" "ios"
@@ -110,12 +110,12 @@ build "arm64" "${IPHONEOS_SDK}" "ios"
 mkdir -p include-ios
 cp -r /tmp/openssl-${OPENSSL_VERSION}-arm64/include/openssl include-ios/
 
+rm -rf /tmp/openssl-${OPENSSL_VERSION}*
+
 build "i386" "${OSX_SDK}" "osx"
 build "x86_64" "${OSX_SDK}" "osx"
 
 mkdir -p include-osx
 cp -r /tmp/openssl-${OPENSSL_VERSION}-x86_64/include/openssl include-osx/
 
-rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*"
-rm -rf "/tmp/openssl-${OPENSSL_VERSION}-*.log"
-
+rm -rf /tmp/openssl-${OPENSSL_VERSION}*
