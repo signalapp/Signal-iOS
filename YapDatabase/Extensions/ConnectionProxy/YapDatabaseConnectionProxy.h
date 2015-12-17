@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
+
 #import "YapDatabase.h"
+#import "YapWhitelistBlacklist.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -190,6 +192,64 @@ NS_ASSUME_NONNULL_BEGIN
  * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
 **/
 - (void)removeObjectsForKeys:(NSArray<NSString *> *)keys inCollection:(nullable NSString *)collection;
+
+/**
+ * Immediately discards all changes that were queued to be written to the database.
+ * Thus any pending changes are not written to the database,
+ * and any currently queued readWriteTransaction is aborted.
+ *
+ * This method is typically used if you intend to clear the database.
+ * For example:
+ *
+ * // blacklist everything - act as if db is empty
+ * YapWhitelistBlacklist *whitelist = [[YapWhitelistBlacklist alloc] initWithWhitelist:nil];
+ * [connectionProxy abortAndReset:whitelist];
+ * 
+ * // Then actually clear the db - but asynchronously
+ * [connectionProxy.readWriteTransaction asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ * 
+ *     [transaction removeAllObjectsInAllCollections];
+ *
+ * } completionBlock:^{
+ *     
+ *     // allow the connectionProxy to start reading from the db again
+ *     connectionProxy.fetchedCollectionsFilter = nil;
+ * }];
+ * 
+ * @param fetchedCollectionsFilter
+ *   This parameter allows you to instruct the connectionProxy to act as if
+ *   the readOnlyConnection doesn't see any objects within certain collections.
+ *
+ * @see fetchedCollectionsFilter
+**/
+- (void)abortAndReset:(nullable YapWhitelistBlacklist *)fetchedCollectionsFilter;
+
+/**
+ * The fetchedCollectionsFilter is useful when you need to delete one or more collections from the database.
+ * For example:
+ * - you're going to ASYNCHRONOUSLY delete the "foobar" collection from the database
+ * - you want to instruct the connectionProxy to act as if it's readOnlyConnection doesn't see
+ *   any objects in this collection (even before the ASYNC cleanup transaction completes).
+ * - when the cleanup transaction does complete, you instruct the connectionProxy to return to normal.
+ *
+ * NSSet *set = [NSSet setWithObject:@"foobar"];
+ * YapWhitelistBlacklist *blacklist = [[YapWhitelistBlacklist alloc] initWithBlacklist:set];
+ * connectionProxy.fetchedCollectionsFilter = blacklist;
+ * 
+ * [connectionProxy.readWriteTransaction asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *
+ *     [transaction removeAllObjectsInCollection:@"foobar"];
+ *
+ * } completionBlock:^{
+ *
+ *     // allow the connectionProxy to start reading the "foobar" collection again
+ *     connectionProxy.fetchedCollectionsFilter = nil;
+ * }];
+ * 
+ * Keep in mind that the fetchedCollectionsFilter only applies to how the proxy interacts with the readOnlyConnection.
+ * That is, it still allows the proxy to write values to any collection.
+**/
+@property (atomic, strong, readwrite) YapWhitelistBlacklist *fetchedCollectionsFilter;
 
 @end
 

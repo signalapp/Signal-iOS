@@ -50,6 +50,9 @@
 	NSMutableArray<NSMutableSet *> *pendingObjectBatches;
 	NSMutableArray<NSMutableSet *> *pendingMetadataBatches;
 	NSMutableArray<NSNumber *> *pendingBatchCommits;
+	
+	uint64_t abortAndResetCount;
+	YapWhitelistBlacklist *fetchedCollectionsFilter;
 }
 
 @synthesize readOnlyConnection = readOnlyConnection;
@@ -146,6 +149,12 @@
 	__block NSMutableDictionary *metadataBatch = nil;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
+		
+		if (abortAndResetCount > 0) // user asked to abort this write
+		{
+			abortAndResetCount--;
+			return;
+		}
 		
 		NSUInteger oCount = currentObjectBatch.count;
 		NSUInteger mCount = currentMetadataBatch.count;
@@ -297,16 +306,28 @@
 #pragma mark Public API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Returns the proxy's value for the given collection/key tuple.
+ *
+ * If this proxy instance has recently had a value set for the given collection/key,
+ * then that value is returned, even if the value has not been written to the database yet.
+**/
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (key == nil) return nil;
+	if (collection == nil) collection = @""; // required for [filter isAllowed:collection]
 	
 	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	__block id object = nil;
+	__block BOOL collectionFiltered = NO;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
 		object = [pendingObjectCache objectForKey:ck];
+		
+		if (!object && fetchedCollectionsFilter) {
+			collectionFiltered = ![fetchedCollectionsFilter isAllowed:collection];
+		}
 	}});
 	
 	if (object)
@@ -317,24 +338,39 @@
 			return object;
 	}
 	
-	[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-		
-		object = [transaction objectForKey:key inCollection:collection];
-	}];
+	if (!collectionFiltered)
+	{
+		[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			object = [transaction objectForKey:key inCollection:collection];
+		}];
+	}
 	
 	return object;
 }
 
+/**
+ * Returns the proxy's value for the given collection/key tuple.
+ *
+ * If this proxy instance has recently had a value set for the given collection/key,
+ * then that value is returned, even if the value has not been written to the database yet.
+**/
 - (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (key == nil) return nil;
+	if (collection == nil) collection = @""; // required for [filter isAllowed:collection]
 	
 	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	__block id metadata = nil;
+	__block BOOL collectionFiltered = NO;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
 		metadata = [pendingMetadataCache objectForKey:ck];
+		
+		if (!metadata && fetchedCollectionsFilter) {
+			collectionFiltered = ![fetchedCollectionsFilter isAllowed:collection];
+		}
 	}});
 	
 	if (metadata)
@@ -345,14 +381,23 @@
 			return metadata;
 	}
 	
-	[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-		
-		metadata = [transaction metadataForKey:key inCollection:collection];
-	}];
+	if (!collectionFiltered)
+	{
+		[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			metadata = [transaction metadataForKey:key inCollection:collection];
+		}];
+	}
 	
 	return metadata;
 }
 
+/**
+ * Returns the proxy's value for the given collection/key tuple.
+ *
+ * If this proxy instance has recently had a value set for the given collection/key,
+ * then that value is returned, even if the value has not been written to the database yet.
+**/
 - (BOOL)getObject:(id *)objectPtr
          metadata:(id *)metadataPtr
            forKey:(NSString *)key
@@ -364,15 +409,21 @@
 		if (metadataPtr) *metadataPtr = nil;
 		return NO;
 	}
+	if (collection == nil) collection = @""; // required for [filter isAllowed:collection]
 	
 	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	__block id object = nil;
 	__block id metadata = nil;
+	__block BOOL collectionFiltered = NO;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
 		object = [pendingObjectCache objectForKey:ck];
 		metadata = [pendingMetadataCache objectForKey:ck];
+		
+		if ((!object || !metadata) && fetchedCollectionsFilter) {
+			collectionFiltered = ![fetchedCollectionsFilter isAllowed:collection];
+		}
 	}});
 	
 	if (object && metadata)
@@ -382,20 +433,23 @@
 		return YES;
 	}
 	
-	[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-		
-		if (!object)
-		{
-			if (!metadata)
-				[transaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
-			else
-				object = [transaction objectForKey:key inCollection:collection];
-		}
-		else // if (!metadata)
-		{
-			metadata = [transaction metadataForKey:key inCollection:collection];
-		}
-	}];
+	if (!collectionFiltered)
+	{
+		[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			if (!object)
+			{
+				if (!metadata)
+					[transaction getObject:&object metadata:&metadata forKey:key inCollection:collection];
+				else
+					object = [transaction objectForKey:key inCollection:collection];
+			}
+			else // if (!metadata)
+			{
+				metadata = [transaction metadataForKey:key inCollection:collection];
+			}
+		}];
+	}
 	
 	if (objectPtr)   *objectPtr   = ((object   == [YapNull null]) ? nil : object);
 	if (metadataPtr) *metadataPtr = ((metadata == [YapNull null]) ? nil : metadata);
@@ -403,11 +457,41 @@
 	return (object != nil);
 }
 
+/**
+ * Sets a value for the given collection/key tuple.
+ *
+ * The proxy will attempt to write the value to the database at some point in the near future.
+ * If the application is terminated before the write completes, then the value may not make it to the database.
+ * However, the proxy will immediately begin to return the new value when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+ *
+ * @param object
+ *   The value for the collection/key tuple.
+ *   If nil, this is equivalent to invoking removeObjectForKey:inCollection:
+**/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
 	[self setObject:object forKey:key inCollection:collection withMetadata:nil];
 }
 
+/**
+ * Sets a value for the given collection/key tuple.
+ *
+ * The proxy will attempt to write the value to the database at some point in the near future.
+ * If the application is terminated before the write completes, then the value may not make it to the database.
+ * However, the proxy will immediately begin to return the new value when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+ *
+ * @param object
+ *   The value for the collection/key tuple.
+ *   If nil, this is equivalent to invoking removeObjectForKey:inCollection:
+**/
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection withMetadata:(id)metadata
 {
 	if (object == nil)
@@ -440,6 +524,20 @@
 	}
 }
 
+/**
+ * The replace methods allows you to modify the object, without modifying the metadata for the row.
+ * Or vice-versa, you can modify the metadata, without modifying the object for the row.
+ *
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * The proxy will attempt to write the value to the database at some point in the near future.
+ * If the application is terminated before the write completes, then the value may not make it to the database.
+ * However, the proxy will immediately begin to return the new value when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+**/
 - (void)replaceObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (object == nil)
@@ -450,23 +548,34 @@
 	
 	if (key == nil) return;
 	
-	__block BOOL existsInDatabase = NO;
-	[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	__block BOOL collectionFiltered = NO;
+	dispatch_sync(queue, ^{ @autoreleasepool {
 		
-		existsInDatabase = [transaction hasObjectForKey:key inCollection:collection];
-	}];
+		if (fetchedCollectionsFilter) {
+			collectionFiltered = ![fetchedCollectionsFilter isAllowed:collection];
+		}
+	}});
+	
+	__block BOOL existsInDatabase = NO;
+	if (!collectionFiltered)
+	{
+		[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			existsInDatabase = [transaction hasObjectForKey:key inCollection:collection];
+		}];
+	}
 	
 	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	__block BOOL needsWrite = NO;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
-		id object = [pendingObjectCache objectForKey:ck];
+		id existing_object = [pendingObjectCache objectForKey:ck];
 		
 		BOOL exists = NO;
-		if (object)
+		if (existing_object)
 		{
-			if (object == [YapNull null]) {
+			if (existing_object == [YapNull null]) {
 				// Ignore - The row doesn't exist to us because it's already scheduled for deletion.
 			}
 			else {
@@ -492,27 +601,54 @@
 	}
 }
 
+/**
+ * The replace methods allows you to modify the object, without modifying the metadata for the row.
+ * Or vice-versa, you can modify the metadata, without modifying the object for the row.
+ *
+ * If there is no row in the database for the given key/collection then this method does nothing.
+ *
+ * The proxy will attempt to write the value to the database at some point in the near future.
+ * If the application is terminated before the write completes, then the value may not make it to the database.
+ * However, the proxy will immediately begin to return the new value when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+**/
 - (void)replaceMetadata:(id)metadata forKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (key == nil) return;
 	
-	__block BOOL existsInDatabase = NO;
-	[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+	__block BOOL collectionFiltered = NO;
+	dispatch_sync(queue, ^{ @autoreleasepool {
 		
-		existsInDatabase = [transaction hasObjectForKey:key inCollection:collection];
-	}];
+		if (fetchedCollectionsFilter) {
+			collectionFiltered = ![fetchedCollectionsFilter isAllowed:collection];
+		}
+	}});
+	
+	__block BOOL existsInDatabase = NO;
+	if (!collectionFiltered)
+	{
+		[readOnlyConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+			
+			existsInDatabase = [transaction hasObjectForKey:key inCollection:collection];
+		}];
+	}
 	
 	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	__block BOOL needsWrite = NO;
 	
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
-		id object = [pendingObjectCache objectForKey:ck];
+		// Check pendingObjectCache (NOT pendingMetadataCache) to determine row status.
+		
+		id existing_object = [pendingObjectCache objectForKey:ck];
 		
 		BOOL exists = NO;
-		if (object)
+		if (existing_object)
 		{
-			if (object == [YapNull null]) {
+			if (existing_object == [YapNull null]) {
 				// Ignore - The row doesn't exist to us because it's already scheduled for deletion.
 			}
 			else {
@@ -541,6 +677,17 @@
 	}
 }
 
+/**
+ * Removes any set value for the given collection/key tuple.
+ *
+ * The proxy will attempt to remove the value from the database at some point in the near future.
+ * If the application is terminated before the write completes, then the update may not make it to the database.
+ * However, the proxy will immediately begin to return nil when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+**/
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	if (key == nil) return;
@@ -564,6 +711,17 @@
 	}
 }
 
+/**
+ * Removes any set value(s) for the given collection/key tuple(s).
+ *
+ * The proxy will attempt to remove the value(s) from the database at some point in the near future.
+ * If the application is terminated before the write completes, then the update may not make it to the database.
+ * However, the proxy will immediately begin to return nil when queried for the same collection/key tuple.
+ *
+ * This is the trade-off you make when using a proxy.
+ * The values written to a proxy are not guaranteed to be written to the database.
+ * However, the values are immediately available (from this proxy instance) without waiting for the database disk IO.
+**/
 - (void)removeObjectsForKeys:(NSArray<NSString *> *)keys inCollection:(NSString *)collection
 {
 	if (keys.count == 0) return;
@@ -589,6 +747,88 @@
 	if (needsWrite) {
 		[self asyncWriteNextBatch];
 	}
+}
+
+/**
+ * Immediately discards all changes that were queued to written to the database.
+ * Thus the changes are not written to the database,
+ * and any currently queued readWriteTransaction is aborted.
+ *
+ * This method is typically used if you intend to clear the database.
+ * E.g.:
+ *
+ * [connectionProxy abortAndReset];
+ * [connectionProxy.readWriteTransaction readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *
+ *     [transaction removeAllObjectsInAllCollections];
+ * }];
+**/
+- (void)abortAndReset:(YapWhitelistBlacklist *)filter
+{
+	dispatch_sync(queue, ^{ @autoreleasepool {
+		
+		abortAndResetCount++;
+		fetchedCollectionsFilter = filter;
+		
+		[pendingObjectCache removeAllObjects];
+		[currentObjectBatch removeAllObjects];
+		
+		[pendingMetadataCache removeAllObjects];
+		[currentMetadataBatch removeAllObjects];
+	}});
+}
+
+/**
+ * The fetchedCollectionsFilter is useful when you need to delete one or more collections from the database.
+ * For example:
+ * - you're going to ASYNCHRONOUSLY delete the "foobar" collection from the database
+ * - you want to instruct the connectionProxy to act as if it's readOnlyConnection doesn't see
+ *   any objects in this collection (even before the ASYNC cleanup transaction completes).
+ * - when the cleanup transaction does complete, you instruct the connectionProxy to return to normal.
+ *
+ * NSSet *set = [NSSet setWithObject:@"foobar"];
+ * YapWhitelistBlacklist *blacklist = [[YapWhitelistBlacklist alloc] initWithBlacklist:set];
+ * connectionProxy.fetchedCollectionsFilter = blacklist;
+ *
+ * [connectionProxy.readWriteTransaction asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ *
+ *     [transaction removeAllObjectsInCollection:@"foobar"];
+ *
+ * } completionBlock:^{
+ *
+ *     // allow the connectionProxy to start reading the "foobar" collection again
+ *     connectionProxy.fetchedCollectionsFilter = nil;
+ * }];
+ *
+ * Keep in mind that the fetchedCollectionsFilter only applies to how the proxy interacts with the readOnlyConnection.
+ * That is, it still allows the proxy to write values to any collection.
+**/
+- (YapWhitelistBlacklist *)fetchedCollectionsFilter
+{
+	__block YapWhitelistBlacklist *filter = nil;
+	
+	dispatch_block_t block = ^{
+		filter = fetchedCollectionsFilter;
+	};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return filter;
+}
+
+- (void)setFetchedCollectionsFilter:(YapWhitelistBlacklist *)filter
+{
+	dispatch_block_t block = ^{
+		fetchedCollectionsFilter = filter;
+	};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
 }
 
 @end
