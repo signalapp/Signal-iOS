@@ -767,7 +767,10 @@
 {
 	dispatch_sync(queue, ^{ @autoreleasepool {
 		
-		abortAndResetCount++;
+		if ((currentObjectBatch.count > 0) && (currentMetadataBatch.count > 0))
+		{
+			abortAndResetCount++;
+		}
 		fetchedCollectionsFilter = filter;
 		
 		[pendingObjectCache removeAllObjects];
