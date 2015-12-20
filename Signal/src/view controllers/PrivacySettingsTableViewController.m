@@ -111,6 +111,15 @@
     }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    switch (section) {
+        case 0:
+            return NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
+        default:
+            return nil;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0:
