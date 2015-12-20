@@ -51,8 +51,10 @@
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
     
     //Enable Screen Security Cell
-    self.enableScreenSecurityCell = [[UITableViewCell alloc]init];
+    self.enableScreenSecurityCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Identifier"];
     self.enableScreenSecurityCell.textLabel.text = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"");
+    self.enableScreenSecurityCell.detailTextLabel.text = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
+    self.enableScreenSecurityCell.detailTextLabel.textColor = [UIColor lightGrayColor];
     
     self.enableScreenSecuritySwitch = [[UISwitch alloc]initWithFrame:CGRectZero];
     
