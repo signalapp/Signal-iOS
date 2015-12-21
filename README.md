@@ -11,7 +11,7 @@ Help us translate Signal! The translation effort happens on [Transifex](https://
 
 ## Interoperability 
 
-Signal works with [RedPhone](https://github.com/WhisperSystems/Redphone) and [TextSecure](https://github.com/WhisperSystems/TextSecure) on Android.
+Signal works with [Signal](https://github.com/WhisperSystems/Signal-Android) on Android.
 
 ## Contributing Code
 Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md).
