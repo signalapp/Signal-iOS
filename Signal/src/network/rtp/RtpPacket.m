@@ -41,7 +41,7 @@ const uint8_t PACKET_VERSION = 2;
 @synthesize wasAdjustedDueToInteropIssues;
 
 +(RtpPacket*) rtpPacketWithDefaultsAndSequenceNumber:(uint16_t)sequenceNumber andPayload:(NSData *)payload {
-    require(payload != nil);
+    ows_require(payload != nil);
     return [RtpPacket rtpPacketWithVersion:PACKET_VERSION
                                 andPadding:0
           andContributingSourceIdentifiers:@[]
@@ -64,13 +64,13 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
                       andTimeStamp:(uint32_t)timeStamp
                         andPayload:(NSData*)payload {
     
-    require((version & ~0x3) == 0);
-    require((payloadType & ~0x7F) == 0);
-    require(extensionData != nil);
-    require(extensionData.length < 0x10000);
-    require(contributingSourceIdentifiers != nil);
-    require(contributingSourceIdentifiers.count < 0x10);
-    require(payload != nil);
+    ows_require((version & ~0x3) == 0);
+    ows_require((payloadType & ~0x7F) == 0);
+    ows_require(extensionData != nil);
+    ows_require(extensionData.length < 0x10000);
+    ows_require(contributingSourceIdentifiers != nil);
+    ows_require(contributingSourceIdentifiers.count < 0x10);
+    ows_require(payload != nil);
     
     RtpPacket* p = [RtpPacket new];
     p->version = version;
@@ -97,11 +97,11 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
                       andTimeStamp:(uint32_t)timeStamp
                         andPayload:(NSData*)payload {
     
-    require((version & ~0x3) == 0);
-    require((payloadType & ~0x7F) == 0);
-    require(contributingSourceIdentifiers != nil);
-    require(contributingSourceIdentifiers.count < 0x10);
-    require(payload != nil);
+    ows_require((version & ~0x3) == 0);
+    ows_require((payloadType & ~0x7F) == 0);
+    ows_require(contributingSourceIdentifiers != nil);
+    ows_require(contributingSourceIdentifiers.count < 0x10);
+    ows_require(payload != nil);
     
     RtpPacket* p = [RtpPacket new];
     p->version = version;
@@ -215,7 +215,7 @@ andSynchronizationSourceIdentifier:(uint32_t)synchronizedSourceIdentifier
     checkOperationDescribe(packetData.length >= *minSize, @"Rtp packet overlaps header and padding.");
 }
 +(RtpPacket*) rtpPacketParsedFromPacketData:(NSData*)packetData {
-    require(packetData != nil);
+    ows_require(packetData != nil);
     
     NSUInteger minSize = MINIMUM_RTP_HEADER_LENGTH;
     checkOperationDescribe(packetData.length >= minSize, @"Rtp packet ends before header finished.");

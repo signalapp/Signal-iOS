@@ -19,14 +19,14 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 @interface PropertyListPreferences (PropertyUtil)
 
-- (NSTimeInterval) getCachedOrDefaultDesiredBufferDepth;
-- (void) setCachedDesiredBufferDepth:(double)value;
+- (NSTimeInterval)getCachedOrDefaultDesiredBufferDepth;
+- (void)setCachedDesiredBufferDepth:(double)value;
 
-- (BOOL) getHasSentAMessage;
-- (void) setHasSentAMessage:(BOOL)enabled;
+- (BOOL)getHasSentAMessage;
+- (void)setHasSentAMessage:(BOOL)enabled;
 
-- (BOOL) getHasArchivedAMessage;
-- (void) setHasArchivedAMessage:(BOOL)enabled;
+- (BOOL)getHasArchivedAMessage;
+- (void)setHasArchivedAMessage:(BOOL)enabled;
 
 - (BOOL)loggingIsEnabled;
 - (void)setLoggingEnabled:(BOOL)flag;
@@ -36,19 +36,19 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 - (NotificationType)notificationPreviewType;
 - (void)setNotificationPreviewType:(NotificationType)type;
-- (NSString*)nameForNotificationPreviewType:(NotificationType)notificationType;
+- (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
 
 - (BOOL)soundInForeground;
 - (void)setSoundInForeground:(BOOL)enabled;
 
 - (BOOL)hasRegisteredVOIPPush;
--(void)setHasRegisteredVOIPPush:(BOOL)enabled;
+- (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
 - (TSImageQuality)imageUploadQuality;
 - (void)setImageUploadQuality:(TSImageQuality)quality;
 
-- (NSString*)lastRanVersion;
-- (NSString*)setAndGetCurrentVersion;
+- (NSString *)lastRanVersion;
+- (NSString *)setAndGetCurrentVersion;
 
 
 @end

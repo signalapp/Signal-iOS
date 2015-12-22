@@ -11,14 +11,14 @@
 
 @property (nonatomic, readonly) in_port_t relayUdpPort;
 @property (nonatomic, readonly) int64_t sessionId;
-@property (nonatomic, readonly) NSString* relayServerName;
+@property (nonatomic, readonly) NSString *relayServerName;
 
-+(InitiatorSessionDescriptor*) initiatorSessionDescriptorWithSessionId:(int64_t)sessionId
-                                                    andRelayServerName:(NSString*)relayServerName
-                                                          andRelayPort:(in_port_t)relayUdpPort;
++ (InitiatorSessionDescriptor *)initiatorSessionDescriptorWithSessionId:(int64_t)sessionId
+                                                     andRelayServerName:(NSString *)relayServerName
+                                                           andRelayPort:(in_port_t)relayUdpPort;
 
-+(InitiatorSessionDescriptor*) initiatorSessionDescriptorFromJson:(NSString*)json;
++ (InitiatorSessionDescriptor *)initiatorSessionDescriptorFromJson:(NSString *)json;
 
--(NSString*) toJson;
+- (NSString *)toJson;
 
 @end

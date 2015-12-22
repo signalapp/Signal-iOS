@@ -1,6 +1,6 @@
 //
 //  MessageComposeTableViewController.h
-//  
+//
 //
 //  Created by Dylan Bourgeois on 02/11/14.
 //
@@ -10,9 +10,9 @@
 
 #import "Contact.h"
 
-#import "JSQMessagesToolbarContentView.h"
-#import "JSQMessagesInputToolbar.h"
 #import "JSQMessagesComposerTextView.h"
+#import "JSQMessagesInputToolbar.h"
+#import "JSQMessagesToolbarContentView.h"
 
 #import "JSQMessagesKeyboardController.h"
 #import "LocalizableText.h"

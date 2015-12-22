@@ -7,11 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TSGroupThread.h"
 #import "TSGroupModel.h"
+#import "TSGroupThread.h"
 
-@interface ShowGroupMembersViewController : UITableViewController <UITableViewDelegate, UITabBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
+@interface ShowGroupMembersViewController : UITableViewController <UITableViewDelegate,
+                                                                   UITabBarDelegate,
+                                                                   UIImagePickerControllerDelegate,
+                                                                   UINavigationControllerDelegate,
+                                                                   UITextFieldDelegate>
 
-- (void)configWithThread:(TSGroupThread*)thread;
+- (void)configWithThread:(TSGroupThread *)thread;
 
 @end

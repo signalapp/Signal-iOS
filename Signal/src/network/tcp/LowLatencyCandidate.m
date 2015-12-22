@@ -7,7 +7,7 @@
 
 +(LowLatencyCandidate*) lowLatencyCandidateToRemoteEndPoint:(id<NetworkEndPoint>)remoteEndPoint {
     
-    require(remoteEndPoint != nil);
+    ows_require(remoteEndPoint != nil);
     
     LowLatencyCandidate* r = [LowLatencyCandidate new];
     r->remoteEndPoint = remoteEndPoint;

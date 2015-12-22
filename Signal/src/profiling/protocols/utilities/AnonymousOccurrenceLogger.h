@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "OccurrenceLogger.h"
 
-@interface AnonymousOccurrenceLogger : NSObject<OccurrenceLogger>
+@interface AnonymousOccurrenceLogger : NSObject <OccurrenceLogger>
 
-@property (readonly,nonatomic,copy) void (^marker)(id details);
+@property (readonly, nonatomic, copy) void (^marker)(id details);
 
-+(AnonymousOccurrenceLogger*) anonymousOccurencyLoggerWithMarker:(void(^)(id details))marker;
++ (AnonymousOccurrenceLogger *)anonymousOccurencyLoggerWithMarker:(void (^)(id details))marker;
 
 @end

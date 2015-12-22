@@ -8,8 +8,8 @@
 
 +(HostNameEndPoint*) hostNameEndPointWithHostName:(NSString*)hostname
                                           andPort:(in_port_t)port {
-    require(hostname != nil);
-    require(port > 0);
+    ows_require(hostname != nil);
+    ows_require(port > 0);
     
     HostNameEndPoint* h = [HostNameEndPoint new];
     h->hostname = hostname.copy; // avoid mutability

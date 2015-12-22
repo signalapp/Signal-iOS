@@ -16,42 +16,38 @@
 + (id)sharedManager {
     static TSAdapterCacheManager *sharedManager = nil;
     static dispatch_once_t onceToken;
-    
+
     dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] init];
+      sharedManager = [[self alloc] init];
     });
-    
+
     return sharedManager;
 }
 
 - (id)init {
     if (self = [super init]) {
-        messageAdaptersCache = [[NSCache alloc]init];
+        messageAdaptersCache = [[NSCache alloc] init];
     }
     return self;
 }
 
-- (void)cacheAdapter:(TSMessageAdapter*)adapter forInteractionId:(NSString*)identifier
-{
+- (void)cacheAdapter:(TSMessageAdapter *)adapter forInteractionId:(NSString *)identifier {
     NSParameterAssert(adapter);
     NSParameterAssert(identifier);
     [messageAdaptersCache setObject:adapter forKey:identifier];
 }
 
--(void)clearCacheEntryForInteractionId:(NSString*)identifier
-{
+- (void)clearCacheEntryForInteractionId:(NSString *)identifier {
     NSParameterAssert(identifier);
     [messageAdaptersCache removeObjectForKey:identifier];
 }
 
--(TSMessageAdapter*)adapterForInteractionId:(NSString*)identifier
-{
+- (TSMessageAdapter *)adapterForInteractionId:(NSString *)identifier {
     NSParameterAssert(identifier);
     return [messageAdaptersCache objectForKey:identifier];
 }
 
--(BOOL)containsCacheEntryForInteractionId:(NSString*)identifier
-{
+- (BOOL)containsCacheEntryForInteractionId:(NSString *)identifier {
     return [messageAdaptersCache objectForKey:identifier] != nil;
 }
 

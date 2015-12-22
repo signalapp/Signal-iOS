@@ -9,8 +9,8 @@
 
 +(Certificate*) certificateFromTrust:(SecTrustRef)trust
                              atIndex:(CFIndex)index {
-    require(trust != nil);
-    require(index >= 0);
+    ows_require(trust != nil);
+    ows_require(index >= 0);
     
     SecCertificateRef cert = SecTrustGetCertificateAtIndex(trust, index);
     checkOperation(cert != nil);
@@ -23,8 +23,8 @@
 
 +(Certificate*) certificateFromResourcePath:(NSString*)resourcePath
                                      ofType:(NSString*)resourceType {
-    require(resourcePath != nil);
-    require(resourceType != nil);
+    ows_require(resourcePath != nil);
+    ows_require(resourceType != nil);
     
     NSString *certPath = [NSBundle.mainBundle pathForResource:resourcePath ofType:resourceType];
     NSData *certData = [[NSData alloc] initWithContentsOfFile:certPath];
@@ -43,7 +43,7 @@
 }
 
 -(void) setAsAnchorForTrust:(SecTrustRef)trust {
-    require(trust != nil);
+    ows_require(trust != nil);
     
     CFMutableArrayRef anchorCerts = CFArrayCreateMutable(NULL, 1, &kCFTypeArrayCallBacks);
     checkOperation(anchorCerts != NULL);

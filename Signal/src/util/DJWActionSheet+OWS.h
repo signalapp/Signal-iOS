@@ -11,4 +11,3 @@
 @interface DJWActionSheet (OWS)
 + (UIColor *)DJWActionSheetButtonBackgroundColorForState:(UIControlState)controlState;
 @end
-

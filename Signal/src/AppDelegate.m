@@ -1,23 +1,25 @@
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
+#import "CodeVerificationViewController.h"
 #import "ContactsManager.h"
 #import "DebugLogger.h"
 #import "Environment.h"
+#import "NotificationsManager.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Release.h"
 #import "TSAccountManager.h"
-#import "TSPreKeyManager.h"
 #import "TSMessagesManager.h"
+#import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
+#import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
-#import "CodeVerificationViewController.h"
 
-static NSString * const kStoryboardName = @"Storyboard";
-static NSString * const kInitialViewControllerIdentifier = @"UserInitialViewController";
-static NSString * const kURLSchemeSGNLKey = @"sgnl";
-static NSString * const kURLHostVerifyPrefix = @"verify";
+static NSString *const kStoryboardName                  = @"Storyboard";
+static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
+static NSString *const kURLSchemeSGNLKey                = @"sgnl";
+static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @interface AppDelegate ()
 
@@ -29,7 +31,7 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 
 #pragma mark Detect updates - perform migrations
 
-+ (void)initialize{
++ (void)initialize {
     [AppStoreRating setupRatingLibrary];
 }
 
@@ -40,58 +42,63 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self setupAppearance];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
-    
+
     if (getenv("runningTests_dontStartApp")) {
         return YES;
     }
-    
-    CategorizingLogger* logger = [CategorizingLogger categorizingLogger];
-    [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index) {}];
+
+    // Initializing logger
+    CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
+    [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
+    }];
+
+    // Setting up environment
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
-    
+
     if ([TSAccountManager isRegistered]) {
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
-    
     [Environment.getCurrent initCallListener];
-    
-    [[TSStorageManager sharedManager] setupDatabase];
-    
+
+    [self setupTSKitEnv];
+
     BOOL loggingIsEnabled;
-    
+
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
     loggingIsEnabled = TRUE;
-    [DebugLogger.sharedInstance enableTTYLogging];
+    [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
     loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
     [self verifyBackgroundBeforeKeysAvailableLaunch];
-    
+
     if (loggingIsEnabled) {
-        [DebugLogger.sharedInstance enableFileLogging];
+        [DebugLogger.sharedLogger enableFileLogging];
     }
-    
+
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:kStoryboardName bundle:[NSBundle mainBundle]];
-    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:kInitialViewControllerIdentifier];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    UIViewController *viewController =
+        [storyboard instantiateViewControllerWithIdentifier:kInitialViewControllerIdentifier];
+
+    self.window                    = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = viewController;
-    
+
     [self.window makeKeyAndVisible];
-    
-    [VersionMigrations performUpdateCheck]; // this call must be made after environment has been initialized because in general upgrade may depend on environment
-    
-    //Accept push notification when app is not open
+
+    [VersionMigrations performUpdateCheck]; // this call must be made after environment has been initialized because in
+                                            // general upgrade may depend on environment
+
+    // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
-        [self application:application didReceiveRemoteNotification:remoteNotif ];
+        [self application:application didReceiveRemoteNotification:remoteNotif];
     }
-    
+
     [self prepareScreenshotProtection];
-    
+
     if ([TSAccountManager isRegistered]) {
         if (application.applicationState == UIApplicationStateInactive) {
             [TSSocketManager becomeActiveFromForeground];
@@ -100,50 +107,61 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
         } else {
             DDLogWarn(@"The app was launched in an unknown way");
         }
-        
+
         [[PushManager sharedManager] validateUserNotificationSettings];
         [TSPreKeyManager refreshPreKeys];
     }
-    
+
     return YES;
 }
 
-- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+- (void)setupTSKitEnv {
+    [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
+    [[TSStorageManager sharedManager] setupDatabase];
+    [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
-- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 #ifdef DEBUG
     DDLogWarn(@"We're in debug mode, and registered a fake push identifier");
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[@"aFakePushIdentifier" dataUsingEncoding:NSUTF8StringEncoding]];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:@"aFakePushIdentifier"];
 #else
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 #endif
 }
 
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
+- (void)application:(UIApplication *)application
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
--(BOOL) application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
-            id signupController                   = [Environment getCurrent].signUpFlowNavigationController;
+            id signupController = [Environment getCurrent].signUpFlowNavigationController;
             if ([signupController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navController = (UINavigationController*)signupController;
+                UINavigationController *navController = (UINavigationController *)signupController;
                 UIViewController *controller          = [navController.childViewControllers lastObject];
                 if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
-                    CodeVerificationViewController *cvvc  = (CodeVerificationViewController*)controller;
-                    NSString *verificationCode            = [url.path substringFromIndex:1];
-                    
-                    cvvc.challengeTextField.text          = verificationCode;
+                    CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
+                    NSString *verificationCode           = [url.path substringFromIndex:1];
+
+                    cvvc.challengeTextField.text = verificationCode;
                     [cvvc verifyChallengeAction:nil];
-                } else{
-                    DDLogWarn(@"Not the verification view controller we expected. Got %@ instead", NSStringFromClass(controller.class));
+                } else {
+                    DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
+                              NSStringFromClass(controller.class));
                 }
-                
             }
-        } else{
+        } else {
             DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
         }
     } else {
@@ -152,9 +170,10 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
     return NO;
 }
 
--(void)applicationDidBecomeActive:(UIApplication *)application {
+- (void)applicationDidBecomeActive:(UIApplication *)application {
     if ([TSAccountManager isRegistered]) {
-        // We're double checking that the app is active, to be sure since we can't verify in production env due to code signing.
+        // We're double checking that the app is active, to be sure since we can't verify in production env due to code
+        // signing.
         [TSSocketManager becomeActiveFromForeground];
         [[Environment getCurrent].contactsManager verifyABPermission];
     }
@@ -164,56 +183,63 @@ static NSString * const kURLHostVerifyPrefix = @"verify";
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
-    bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-        
+    bgTask                                    = [application beginBackgroundTaskWithExpirationHandler:^{
+
     }];
-    
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if ([TSAccountManager isRegistered]) {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [self protectScreen];
-                [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
-            });
-            [TSSocketManager resignActivity];
-        }
-        
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
+      if ([TSAccountManager isRegistered]) {
+          dispatch_sync(dispatch_get_main_queue(), ^{
+            [self protectScreen];
+            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+          });
+          [TSSocketManager resignActivity];
+      }
+
+      [application endBackgroundTask:bgTask];
+      bgTask = UIBackgroundTaskInvalid;
     });
-    
 }
 
 - (void)application:(UIApplication *)application
-performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-  completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
+               completionHandler:(void (^)(BOOL succeeded))completionHandler {
     if ([TSAccountManager isRegistered]) {
         [[Environment getCurrent].signalsViewController composeNew];
     } else {
-        UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                                            message:@"Someone's exited to send his first message! Register now to send your first message."
-                                                                     preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *controller = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                             message:
+                                 @"Someone's exited to send his first message! Register now to send your first message."
+                      preferredStyle:UIAlertControllerStyleAlert];
         completionHandler(YES);
-        [self.window.rootViewController presentViewController:controller animated:YES completion:^{
-            completionHandler(NO);
-        }];
+        [self.window.rootViewController presentViewController:controller
+                                                     animated:YES
+                                                   completion:^{
+                                                     completionHandler(NO);
+                                                   }];
     }
 }
 
-- (void)prepareScreenshotProtection{
+- (void)prepareScreenshotProtection {
     self.blankWindow = ({
         UIWindow *window              = [[UIWindow alloc] initWithFrame:self.window.bounds];
         window.hidden                 = YES;
         window.opaque                 = YES;
         window.userInteractionEnabled = NO;
         window.windowLevel            = CGFLOAT_MAX;
-        
+
         // There appears to be no more reliable way to get the launchscreen image from an asset bundle
-        NSDictionary *dict = @{@"320x480" : @"LaunchImage-700",
-                               @"320x568" : @"LaunchImage-700-568h",
-                               @"375x667" : @"LaunchImage-800-667h",
-                               @"414x736" : @"LaunchImage-800-Portrait-736h"};
-        
-        NSString *key = [NSString stringWithFormat:@"%dx%d", (int)[UIScreen mainScreen].bounds.size.width, (int)[UIScreen mainScreen].bounds.size.height];
+        NSDictionary *dict = @{
+            @"320x480" : @"LaunchImage-700",
+            @"320x568" : @"LaunchImage-700-568h",
+            @"375x667" : @"LaunchImage-800-667h",
+            @"414x736" : @"LaunchImage-800-Portrait-736h"
+        };
+
+        NSString *key = [NSString stringWithFormat:@"%dx%d",
+                                                   (int)[UIScreen mainScreen].bounds.size.width,
+                                                   (int)[UIScreen mainScreen].bounds.size.height];
         UIImage *launchImage = [UIImage imageNamed:dict[key]];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:launchImage];
         UIViewController *vc = [[UIViewController alloc] initWithNibName:nil bundle:nil];
@@ -222,46 +248,45 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
         [vc.view addSubview:imgView];
         [vc.view setBackgroundColor:[UIColor ows_blackColor]];
         window.rootViewController = vc;
-        
+
         window;
     });
 }
 
-- (void)protectScreen{
-    if (Environment.preferences.screenSecurityIsEnabled){
+- (void)protectScreen {
+    if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = NO;
     }
 }
 
-- (void)removeScreenProtection{
+- (void)removeScreenProtection {
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.blankWindow.hidden = YES;
     }
 }
 
--(void)setupAppearance {
+- (void)setupAppearance {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    
-    [[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
 
 
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-    
+
     NSShadow *shadow = [NSShadow new];
     [shadow setShadowColor:[UIColor clearColor]];
-    
-    NSDictionary *navbarTitleTextAttributes = @{
-                                                NSForegroundColorAttributeName:[UIColor whiteColor],
-                                                NSShadowAttributeName:shadow,
-                                                };
-    
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
-    
-    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 
+    NSDictionary *navbarTitleTextAttributes = @{
+        NSForegroundColorAttributeName : [UIColor whiteColor],
+        NSShadowAttributeName : shadow,
+    };
+
+    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
+
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 }
 
 #pragma mark Push Notifications Delegate Methods
@@ -269,20 +294,38 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [[PushManager sharedManager] application:application
+                didReceiveRemoteNotification:userInfo
+                      fetchCompletionHandler:completionHandler];
 }
 
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
 }
 
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
-    [[PushManager sharedManager] application:application handleActionWithIdentifier:identifier forLocalNotification:notification completionHandler:completionHandler];
+- (void)application:(UIApplication *)application
+    handleActionWithIdentifier:(NSString *)identifier
+          forLocalNotification:(UILocalNotification *)notification
+             completionHandler:(void (^)())completionHandler {
+    [[PushManager sharedManager] application:application
+                  handleActionWithIdentifier:identifier
+                        forLocalNotification:notification
+                           completionHandler:completionHandler];
 }
 
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler {
-    [[PushManager sharedManager] application:application handleActionWithIdentifier:identifier forLocalNotification:notification withResponseInfo:responseInfo completionHandler:completionHandler];
+- (void)application:(UIApplication *)application
+    handleActionWithIdentifier:(NSString *)identifier
+          forLocalNotification:(UILocalNotification *)notification
+              withResponseInfo:(NSDictionary *)responseInfo
+             completionHandler:(void (^)())completionHandler {
+    [[PushManager sharedManager] application:application
+                  handleActionWithIdentifier:identifier
+                        forLocalNotification:notification
+                            withResponseInfo:responseInfo
+                           completionHandler:completionHandler];
 }
 
 /**
@@ -292,10 +335,10 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
     if ([self applicationIsActive]) {
         return;
     }
-    
+
     if (![[TSStorageManager sharedManager] databasePasswordAccessible]) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.alertBody = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
+        notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         exit(0);
     }
@@ -303,11 +346,11 @@ performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
 
 - (BOOL)applicationIsActive {
     UIApplication *app = [UIApplication sharedApplication];
-    
+
     if (app.applicationState == UIApplicationStateActive) {
         return YES;
     }
-    
+
     return NO;
 }
 

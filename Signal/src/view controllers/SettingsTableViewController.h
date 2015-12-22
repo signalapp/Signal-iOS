@@ -21,6 +21,6 @@
 @property IBOutlet UILabel *settingsAboutTitle;
 @property IBOutlet UIButton *destroyAccountButton;
 
--(IBAction)unregisterUser:(id)sender;
+- (IBAction)unregisterUser:(id)sender;
 - (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue;
 @end

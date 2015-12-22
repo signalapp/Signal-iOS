@@ -13,12 +13,12 @@
 
 @interface RPServerRequestsManager : NSObject
 
-MacrosSingletonInterface
++ (instancetype)sharedManager;
 
-- (void)performRequest:(RPAPICall*)apiCall
+- (void)performRequest:(RPAPICall *)apiCall
                success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
                failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 
-- (TOCFuture*)futureForRequest:(RPAPICall*)apiCall;
+- (TOCFuture *)futureForRequest:(RPAPICall *)apiCall;
 
 @end

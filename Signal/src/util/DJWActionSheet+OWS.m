@@ -11,8 +11,7 @@
 
 @implementation DJWActionSheet (OWS)
 
-+ (UIColor *)DJWActionSheetButtonBackgroundColorForState:(UIControlState)controlState
-{
++ (UIColor *)DJWActionSheetButtonBackgroundColorForState:(UIControlState)controlState {
     switch (controlState) {
         case UIControlStateNormal:
             return [UIColor whiteColor];
@@ -20,7 +19,7 @@
         case UIControlStateHighlighted:
             return [UIColor ows_materialBlueColor];
             break;
-            
+
         default:
             return [UIColor whiteColor];
             break;

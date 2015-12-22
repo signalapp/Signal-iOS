@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "RecentCall.h"
 #import "PhoneManager.h"
+#import "RecentCall.h"
 
 /**
  *
@@ -12,10 +12,9 @@
 
 @interface RecentCallManager : NSObject
 
-- (void)watchForCallsThrough:(PhoneManager*)phoneManager
-			  untilCancelled:(TOCCancelToken*)untilCancelledToken;
+- (void)watchForCallsThrough:(PhoneManager *)phoneManager untilCancelled:(TOCCancelToken *)untilCancelledToken;
 
 - (void)addRecentCall:(RecentCall *)recentCall;
-- (void)addMissedCallDueToBusy:(ResponderSessionDescriptor*)incomingCallDescriptor;
+- (void)addMissedCallDueToBusy:(ResponderSessionDescriptor *)incomingCallDescriptor;
 
 @end

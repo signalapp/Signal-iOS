@@ -19,11 +19,12 @@ enum CallProgressType {
 
     /// Securing covers:
     /// - The initiator has received a zrtp 'Hello' from the responder
-    /// - The initiator has not yet determined the handshake is over (by receiving a zrtp 'ConfAck' or authenticated audio data)
+    /// - The initiator has not yet determined the handshake is over (by receiving a zrtp 'ConfAck' or authenticated
+    /// audio data)
     /// - The responder's user has accepted the call (causing the responder to send zrtp 'Hello')
     /// - The responder has not yet determined the handshake is over (by receiving a zrtp 'Confirm2')
     CallProgressType_Securing,
-    
+
     /// Talking covers:
     /// - Sending/Receiving encrypted and authenticated audio
     CallProgressType_Talking,
@@ -39,11 +40,11 @@ enum CallProgressType {
  * The CallProgress class is just an NSObject wrapper for the CallProgressType enum.
  *
  **/
-@interface CallProgress : NSObject<NSCopying>
+@interface CallProgress : NSObject <NSCopying>
 
 @property (nonatomic, readonly) enum CallProgressType type;
 
-+(CallProgress*) callProgressWithType:(enum CallProgressType)type;
--(NSString*) localizedDescriptionForUser;
++ (CallProgress *)callProgressWithType:(enum CallProgressType)type;
+- (NSString *)localizedDescriptionForUser;
 
 @end

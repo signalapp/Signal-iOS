@@ -6,41 +6,26 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
+#import <Foundation/Foundation.h>
 @class PhoneNumber;
 
 @interface RPAPICall : NSObject
 
-typedef NS_ENUM(NSInteger, HTTPMethod) {
-    HTTP_GET,
-    HTTP_POST,
-    HTTP_PUT,
-    HTTP_DELETE,
-    SIGNAL_RING,
-    SIGNAL_BUSY
-};
+typedef NS_ENUM(NSInteger, HTTPMethod) { HTTP_GET, HTTP_POST, HTTP_PUT, HTTP_DELETE, SIGNAL_RING, SIGNAL_BUSY };
 
 #pragma mark API Call Properties
 
 @property (nonatomic, readonly) NSString *endPoint;
 @property (nonatomic, readonly) HTTPMethod method;
 @property (nonatomic, readonly) NSDictionary *parameters;
-@property (nonatomic, readonly) AFHTTPRequestSerializer  <AFURLRequestSerialization>  *requestSerializer;
-@property (nonatomic, readonly) AFHTTPResponseSerializer <AFURLResponseSerialization> *responseSerializer;
+@property (nonatomic, readonly) AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer;
+@property (nonatomic, readonly) AFHTTPResponseSerializer<AFURLResponseSerialization> *responseSerializer;
 
 #pragma mark API Call Contstructors
 
-+ (RPAPICall*)requestVerificationCode;
-+ (RPAPICall*)requestVerificationCodeWithVoice;
-+ (RPAPICall*)verifyVerificationCode:(NSString*)verificationCode;
-+ (RPAPICall*)registerPushNotificationWithPushToken:(NSData*)pushToken voipToken:(NSData*)voipToken;
-+ (RPAPICall*)requestTextSecureVerificationCode;
-+ (RPAPICall*)unregisterWithPushToken:(NSData*)pushToken;
-
-//+ (RPAPICall*)requestToOpenPortWithSessionId:(int64_t)sessionId;
-//+ (RPAPICall*)requestToRingWithSessionId:(int64_t)sessionId;
-//+ (RPAPICall*)requestToSignalBusyWithSessionId:(int64_t)sessionId;
-//+ (RPAPICall*)requestToInitiateToRemoteNumber:(PhoneNumber*)remoteNumber;
++ (RPAPICall *)registerPushNotificationWithPushToken:(NSData *)pushToken voipToken:(NSData *)voipToken;
++ (RPAPICall *)unregisterWithPushToken:(NSData *)pushToken;
++ (RPAPICall *)verifyWithTSToken:(NSString *)tsToken attributesParameters:(NSDictionary *)attributes;
 
 @end

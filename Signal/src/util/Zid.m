@@ -1,15 +1,21 @@
-#import "Zid.h"
 #import "Constraints.h"
+#import "Zid.h"
 
 @implementation Zid
-+(Zid*) zidWithData:(NSData*)zidData {
-    require(zidData != nil);
-    require(zidData.length == 12);
-    Zid* s = [Zid new];
++ (Zid *)zidWithData:(NSData *)zidData {
+    ows_require(zidData != nil);
+    ows_require(zidData.length == 12);
+    Zid *s  = [Zid new];
     s->data = zidData;
     return s;
 }
--(NSData*) getData {
+
++ (instancetype)nullZid {
+    NSMutableData *data = [NSMutableData dataWithLength:12];
+    return [self zidWithData:data];
+}
+
+- (NSData *)getData {
     return data;
 }
 @end

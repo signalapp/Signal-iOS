@@ -10,20 +10,20 @@
     return [IpAddress ipv4AddressFromString:LOCAL_HOST_IP];
 }
 +(IpAddress*) ipAddressFromString:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     if ([IpAddress isIpv4Text:text]) return [IpAddress ipv4AddressFromString:text];
     if ([IpAddress isIpv6Text:text]) return [IpAddress ipv6AddressFromString:text];
     [BadArgument raise:[NSString stringWithFormat:@"Invalid IP address: %@", text]];
     return nil;
 }
 +(IpAddress*) tryGetIpAddressFromString:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     if ([IpAddress isIpv4Text:text]) return [IpAddress ipv4AddressFromString:text];
     if ([IpAddress isIpv6Text:text]) return [IpAddress ipv6AddressFromString:text];
     return nil;
 }
 +(IpAddress*) ipv4AddressFromString:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     
     IpAddress* a = [IpAddress new];
     
@@ -45,7 +45,7 @@
     return a;
 }
 +(IpAddress*) ipv6AddressFromString:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     
     IpAddress* a = [IpAddress new];
 
@@ -112,12 +112,12 @@
 }
 
 +(bool) isIpv4Text:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     struct sockaddr_in s;
     return inet_pton(AF_INET, [text UTF8String], &(s.sin_addr)) == 1;
 }
 +(bool) isIpv6Text:(NSString*)text {
-    require(text != nil);
+    ows_require(text != nil);
     struct sockaddr_in6 s;
     return inet_pton(AF_INET6, [text UTF8String], &(s.sin6_addr)) == 1;
 }

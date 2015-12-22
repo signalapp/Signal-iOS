@@ -9,12 +9,14 @@
  *
 **/
 @interface AudioSocket : NSObject {
-@private SrtpSocket* srtpSocket;
-@private bool started;
+   @private
+    SrtpSocket *srtpSocket;
+   @private
+    bool started;
 }
 
-+(AudioSocket*) audioSocketOver:(SrtpSocket*)srtpSocket;
--(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken;
--(void) send:(EncodedAudioPacket*)audioPacket;
++ (AudioSocket *)audioSocketOver:(SrtpSocket *)srtpSocket;
+- (void)startWithHandler:(PacketHandler *)handler untilCancelled:(TOCCancelToken *)untilCancelledToken;
+- (void)send:(EncodedAudioPacket *)audioPacket;
 
 @end

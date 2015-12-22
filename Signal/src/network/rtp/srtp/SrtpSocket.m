@@ -10,13 +10,13 @@
             andOutgoingCipherKey:(NSData*)outgoingCipherKey
                andOutgoingMacKey:(NSData*)outgoingMacKey
                  andOutgoingSalt:(NSData*)outgoingSalt {
-    require(rtpSocket != nil);
-    require(incomingCipherKey != nil);
-    require(incomingMacKey != nil);
-    require(incomingSalt != nil);
-    require(outgoingCipherKey != nil);
-    require(outgoingMacKey != nil);
-    require(outgoingSalt != nil);
+    ows_require(rtpSocket != nil);
+    ows_require(incomingCipherKey != nil);
+    ows_require(incomingMacKey != nil);
+    ows_require(incomingSalt != nil);
+    ows_require(outgoingCipherKey != nil);
+    ows_require(outgoingMacKey != nil);
+    ows_require(outgoingSalt != nil);
     
     SrtpSocket* s = [SrtpSocket new];
     s->incomingContext = [SrtpStream srtpStreamWithCipherKey:incomingCipherKey andMacKey:incomingMacKey andCipherIvSalt:incomingSalt];
@@ -27,22 +27,22 @@
 }
 
 -(RtpPacket*) decryptAndAuthenticateReceived:(RtpPacket*)securedRtpPacket {
-    require(securedRtpPacket != nil);
+    ows_require(securedRtpPacket != nil);
     return [incomingContext verifyAuthenticationAndDecryptSecuredRtpPacket:securedRtpPacket];
 }
 -(RtpPacket*) encryptAndAuthenticateToSend:(RtpPacket*)normalRtpPacket {
-    require(normalRtpPacket != nil);
+    ows_require(normalRtpPacket != nil);
     return [outgoingContext encryptAndAuthenticateNormalRtpPacket:normalRtpPacket];
 }
 
 -(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(handler != nil);
+    ows_require(handler != nil);
     requireState(!hasBeenStarted);
     hasBeenStarted = true;
     
     PacketHandlerBlock packetHandler = ^(id packet) {
-        require(packet != nil);
-        require([packet isKindOfClass:RtpPacket.class]);
+        ows_require(packet != nil);
+        ows_require([packet isKindOfClass:RtpPacket.class]);
         
         RtpPacket* decryptedPacket;
         @try {
@@ -60,7 +60,7 @@
 }
 
 -(void) secureAndSendRtpPacket:(RtpPacket *)packet {
-    require(packet != nil);
+    ows_require(packet != nil);
     [rtpSocket send:[self encryptAndAuthenticateToSend:packet]];
 }
 @end

@@ -6,7 +6,7 @@
 @implementation HttpSocket
 
 +(HttpSocket*) httpSocketOver:(NetworkStream*)rawDataChannel {
-    require(rawDataChannel != nil);
+    ows_require(rawDataChannel != nil);
     
     HttpSocket* h = [HttpSocket new];
     h->rawDataChannelTcp = rawDataChannel;
@@ -16,7 +16,7 @@
     return h;
 }
 +(HttpSocket*) httpSocketOverUdp:(UdpSocket*)rawDataChannel {
-    require(rawDataChannel != nil);
+    ows_require(rawDataChannel != nil);
     
     HttpSocket* h = [HttpSocket new];
     h->rawDataChannelUdp = rawDataChannel;
@@ -27,7 +27,7 @@
 }
 
 -(void) sendHttpRequestOrResponse:(HttpRequestOrResponse*)requestOrResponse {
-    require(requestOrResponse != nil);
+    ows_require(requestOrResponse != nil);
     requireState(httpSignalResponseHandler != nil);
     [sentPacketsLogger markOccurrence:requestOrResponse];
     NSData* data = [requestOrResponse serialize];
@@ -38,29 +38,29 @@
     }
 }
 -(void) sendHttpRequest:(HttpRequest*)request {
-    require(request != nil);
+    ows_require(request != nil);
     [self sendHttpRequestOrResponse:[HttpRequestOrResponse httpRequestOrResponse:request]];
 }
 -(void) sendHttpResponse:(HttpResponse*)response {
-    require(response != nil);
+    ows_require(response != nil);
     [self sendHttpRequestOrResponse:[HttpRequestOrResponse httpRequestOrResponse:response]];
 }
 -(void) send:(HttpRequestOrResponse*)packet {
-    require(packet != nil);
+    ows_require(packet != nil);
     [self sendHttpRequestOrResponse:packet];
 }
 -(void) startWithHandler:(PacketHandler*)handler
           untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
-    require(handler != nil);
+    ows_require(handler != nil);
     requireState(httpSignalResponseHandler == nil);
     httpSignalResponseHandler = handler;
     
     TOCCancelTokenSource* lifetime = [TOCCancelTokenSource cancelTokenSourceUntil:untilCancelledToken];
     
     PacketHandler* packetHandler = [PacketHandler packetHandler:^(id packet) {
-        require(packet != nil);
-        require([packet isKindOfClass:NSData.class]);
+        ows_require(packet != nil);
+        ows_require([packet isKindOfClass:NSData.class]);
         NSData* data = packet;
         
         [partialDataBuffer replaceBytesInRange:NSMakeRange(partialDataBuffer.length, data.length) withBytes:[data bytes]];

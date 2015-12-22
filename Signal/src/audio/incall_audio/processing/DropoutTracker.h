@@ -28,23 +28,30 @@
  *
  * > @author Stuart O. Anderson
  *
- * Link to android implementation with comments: 
+ * Link to android implementation with comments:
  * https://github.com/WhisperSystems/RedPhone/blob/2a6e8cec64cc457d2eb02351d0f3adf769db7a84/src/org/thoughtcrime/redphone/audio/DropoutTracker.java
  *
  */
 
 @interface DropoutTracker : NSObject {
-@private Queue* priorLatenesses;
-@private NSMutableArray* lateBins;
-@private SequenceCounter* sequenceCounter;
-@private NSTimeInterval audioDurationPerPacket;
-@private bool startTimeInitialized;
-@private NSTimeInterval startTime;
-@private NSTimeInterval drift;
+   @private
+    Queue *priorLatenesses;
+   @private
+    NSMutableArray *lateBins;
+   @private
+    SequenceCounter *sequenceCounter;
+   @private
+    NSTimeInterval audioDurationPerPacket;
+   @private
+    bool startTimeInitialized;
+   @private
+    NSTimeInterval startTime;
+   @private
+    NSTimeInterval drift;
 }
 
-+(DropoutTracker*) dropoutTrackerWithAudioDurationPerPacket:(NSTimeInterval)audioDurationPerPacket;
--(void) observeSequenceNumber:(uint16_t)seqNum;
--(double)getDepthForThreshold:(NSUInteger)maxEvents;
++ (DropoutTracker *)dropoutTrackerWithAudioDurationPerPacket:(NSTimeInterval)audioDurationPerPacket;
+- (void)observeSequenceNumber:(uint16_t)seqNum;
+- (double)getDepthForThreshold:(NSUInteger)maxEvents;
 
 @end

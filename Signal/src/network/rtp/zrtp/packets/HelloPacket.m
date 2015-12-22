@@ -46,16 +46,16 @@
         }
     }
     
-    require(hasDH3k);
+    ows_require(hasDH3k);
     return agreeSpecIds;
 }
 +(HelloPacket*) helloPacketWithDefaultsAndHashChain:(HashChain*)hashChain
                                              andZid:(Zid*)zid
                            andKeyAgreementProtocols:(NSArray*)keyAgreementProtocols {
     
-    require(hashChain != nil);
-    require(zid != nil);
-    require(keyAgreementProtocols != nil);
+    ows_require(hashChain != nil);
+    ows_require(zid != nil);
+    ows_require(keyAgreementProtocols != nil);
     
     return [HelloPacket helloPacketWithVersion:Environment.getCurrent.zrtpVersionId
                                    andClientId:Environment.getCurrent.zrtpClientId
@@ -86,26 +86,26 @@
                          andSasSpecIds:(NSArray*)sasIds
               authenticatedWithHmacKey:(NSData*)hmacKey {
     
-    require(versionId != nil);
-    require(clientId != nil);
-    require(hashChainH3 != nil);
-    require(hashIds != nil);
-    require(cipherIds != nil);
-    require(authIds != nil);
-    require(agreeIds != nil);
-    require(sasIds != nil);
-    require((flags0SMP & ~FLAGS_0SMP_MASK) == 0);
-    require((flagsUnusedLow4 & ~FLAGS_UNUSED_LOW_MASK) == 0);
-    require((flagsUnusedHigh4 & ~FLAGS_UNUSED_HIGH_MASK) == 0);
+    ows_require(versionId != nil);
+    ows_require(clientId != nil);
+    ows_require(hashChainH3 != nil);
+    ows_require(hashIds != nil);
+    ows_require(cipherIds != nil);
+    ows_require(authIds != nil);
+    ows_require(agreeIds != nil);
+    ows_require(sasIds != nil);
+    ows_require((flags0SMP & ~FLAGS_0SMP_MASK) == 0);
+    ows_require((flagsUnusedLow4 & ~FLAGS_UNUSED_LOW_MASK) == 0);
+    ows_require((flagsUnusedHigh4 & ~FLAGS_UNUSED_HIGH_MASK) == 0);
     
-    require(versionId.length == VERSION_ID_LENGTH);
-    require(clientId.length == CLIENT_ID_LENGTH);
-    require(hashChainH3.length == HASH_CHAIN_ITEM_LENGTH);
-    require(hashIds.count <= MAX_SPEC_IDS);
-    require(cipherIds.count <= MAX_SPEC_IDS);
-    require(authIds.count <= MAX_SPEC_IDS);
-    require(agreeIds.count <= MAX_SPEC_IDS);
-    require(sasIds.count <= MAX_SPEC_IDS);
+    ows_require(versionId.length == VERSION_ID_LENGTH);
+    ows_require(clientId.length == CLIENT_ID_LENGTH);
+    ows_require(hashChainH3.length == HASH_CHAIN_ITEM_LENGTH);
+    ows_require(hashIds.count <= MAX_SPEC_IDS);
+    ows_require(cipherIds.count <= MAX_SPEC_IDS);
+    ows_require(authIds.count <= MAX_SPEC_IDS);
+    ows_require(agreeIds.count <= MAX_SPEC_IDS);
+    ows_require(sasIds.count <= MAX_SPEC_IDS);
     
     HelloPacket* p = [HelloPacket new];
     p->flagsUnusedLow4 = flagsUnusedLow4;
@@ -216,7 +216,7 @@
     sasIds = specIds[SAS_IDS_INDEX];
 }
 +(HelloPacket*) helloPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    require(handshakePacket != nil);
+    ows_require(handshakePacket != nil);
     checkOperationDescribe([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_HELLO], @"Not a hello packet");
     
     NSData* payload = [handshakePacket payload];

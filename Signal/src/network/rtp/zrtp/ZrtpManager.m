@@ -15,8 +15,8 @@
 +(TOCFuture*) asyncPerformHandshakeOver:(RtpSocket*)rtpSocket
                       andCallController:(CallController*)callController {
     
-    require(rtpSocket != nil);
-    require(callController != nil);
+    ows_require(rtpSocket != nil);
+    ows_require(callController != nil);
     
     ZrtpHandshakeSocket* handshakeChannel = [ZrtpHandshakeSocket zrtpHandshakeSocketOverRtp:rtpSocket];
     
@@ -37,10 +37,10 @@
                                    andZrtpRole:(id<ZrtpRole>)zrtpRole
                              andCallController:(CallController*)callController {
     
-    require(handshakeSocket != nil);
-    require(rtpSocket != nil);
-    require(callController != nil);
-    require(zrtpRole != nil);
+    ows_require(handshakeSocket != nil);
+    ows_require(rtpSocket != nil);
+    ows_require(callController != nil);
+    ows_require(zrtpRole != nil);
     
     ZrtpManager* manager = [ZrtpManager new];
     
@@ -63,8 +63,8 @@
 
 -(TOCFuture*) asyncPerformHandshake {
     PacketHandlerBlock packetHandler = ^(id packet) {
-        require(packet != nil);
-        require([packet isKindOfClass:HandshakePacket.class]);
+        ows_require(packet != nil);
+        ows_require([packet isKindOfClass:HandshakePacket.class]);
         [self handleHandshakePacket:(HandshakePacket*)packet];
     };
     
@@ -163,7 +163,7 @@
 }
 
 -(void) handleHandshakePacket:(HandshakePacket*)packet {
-    require(packet != nil);
+    ows_require(packet != nil);
     if (done) return;
     
     HandshakePacket* response = [zrtpRole handlePacket:packet];

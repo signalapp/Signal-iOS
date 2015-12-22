@@ -5,7 +5,7 @@
 
 +(HttpManager*) httpManagerFor:(HttpSocket*)httpSocket
                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(httpSocket != nil);
+    ows_require(httpSocket != nil);
     
     HttpManager* m = [HttpManager new];
     m->httpChannel = httpSocket;
@@ -16,7 +16,7 @@
 }
 +(HttpManager*) startWithEndPoint:(id<NetworkEndPoint>)endPoint
                    untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(endPoint != nil);
+    ows_require(endPoint != nil);
     
     NetworkStream* dataChannel = [NetworkStream networkStreamToEndPoint:endPoint];
     
@@ -28,7 +28,7 @@
 -(TOCFuture*) asyncResponseForRequest:(HttpRequest*)request
                       unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
-    require(request != nil);
+    ows_require(request != nil);
     requireState(isStarted);
     
     @try {
@@ -48,8 +48,8 @@
 +(TOCFuture*) asyncOkResponseFromMasterServer:(HttpRequest*)request
                               unlessCancelled:(TOCCancelToken*)unlessCancelledToken
                               andErrorHandler:(ErrorHandlerBlock)errorHandler {
-    require(request != nil);
-    require(errorHandler != nil);
+    ows_require(request != nil);
+    ows_require(errorHandler != nil);
     
     HttpManager* manager = [HttpManager startWithEndPoint:Environment.getMasterServerSecureEndPoint
                                            untilCancelled:unlessCancelledToken];
@@ -67,7 +67,7 @@
 -(TOCFuture*) asyncOkResponseForRequest:(HttpRequest*)request
                         unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     
-    require(request != nil);
+    ows_require(request != nil);
     
     TOCFuture* futureResponse = [self asyncResponseForRequest:request
                                               unlessCancelled:unlessCancelledToken];
@@ -79,7 +79,7 @@
 }
 -(void) startWithRejectingRequestHandlerAndErrorHandler:(ErrorHandlerBlock)errorHandler
                                          untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(errorHandler != nil);
+    ows_require(errorHandler != nil);
     
     HttpResponse*(^requestHandler)(HttpRequest* remoteRequest) = ^(HttpRequest* remoteRequest) {
         errorHandler(@"Rejecting Requests", remoteRequest, false);
@@ -95,8 +95,8 @@
                 andErrorHandler:(ErrorHandlerBlock)errorHandler
                  untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
-    require(requestHandler != nil);
-    require(errorHandler != nil);
+    ows_require(requestHandler != nil);
+    ows_require(errorHandler != nil);
     
     @synchronized(self) {
         requireState(!isStarted);
@@ -109,8 +109,8 @@
     };
     
     PacketHandlerBlock httpHandler = ^(HttpRequestOrResponse* requestOrResponse) {
-        require(requestOrResponse != nil);
-        require([requestOrResponse isKindOfClass:HttpRequestOrResponse.class]);
+        ows_require(requestOrResponse != nil);
+        ows_require([requestOrResponse isKindOfClass:HttpRequestOrResponse.class]);
         @synchronized (self) {
             if (requestOrResponse.isRequest) {
                 HttpResponse* response = requestHandler([requestOrResponse request]);

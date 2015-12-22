@@ -8,8 +8,8 @@
 +(PacketHandler*) packetHandler:(PacketHandlerBlock)dataHandler
                withErrorHandler:(ErrorHandlerBlock)errorHandler {
     
-    require(dataHandler != nil);
-    require(errorHandler != nil);
+    ows_require(dataHandler != nil);
+    ows_require(errorHandler != nil);
     
     PacketHandler* p = [PacketHandler new];
     p->dataHandler = [dataHandler copy];

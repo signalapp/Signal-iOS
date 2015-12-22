@@ -1,8 +1,9 @@
-#import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
-#import "PhoneNumber.h"
-#import "ContactsManager.h"
+#import <Foundation/Foundation.h>
+#import <TextSecureKit/TSCall.h>
 #import "Contact.h"
+#import "ContactsManager.h"
+#import "PhoneNumber.h"
 
 /**
  *
@@ -12,11 +13,6 @@
  *
  */
 
-typedef enum {
-	RPRecentCallTypeIncoming = 1,
-	RPRecentCallTypeOutgoing,
-	RPRecentCallTypeMissed,
-} RPRecentCallType;
 
 extern NSString *const CALL_TYPE_IMAGE_NAME_INCOMING;
 extern NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING;
@@ -34,5 +30,5 @@ extern NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING;
                               andNumber:(PhoneNumber *)number
                             andCallType:(RPRecentCallType)type;
 
--(void)updateRecentCallWithContactId:(ABRecordID) contactID;
+- (void)updateRecentCallWithContactId:(ABRecordID)contactID;
 @end

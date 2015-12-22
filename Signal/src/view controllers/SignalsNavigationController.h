@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TSSocketManager.h"
 #import "APNavigationController.h"
+#import "TSSocketManager.h"
 @interface SignalsNavigationController : APNavigationController
-@property (nonatomic, strong) UIProgressView* socketStatusView;
+@property (nonatomic, strong) UIProgressView *socketStatusView;
 @property (nonatomic, strong) NSTimer *updateStatusTimer;
 @end

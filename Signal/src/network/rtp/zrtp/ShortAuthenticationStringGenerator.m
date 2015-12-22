@@ -78,8 +78,8 @@ const char* PGP_LIST_ODD[] = {
 @implementation ShortAuthenticationStringGenerator
 
 +(NSString*) generateFromData:(NSData*)sasBytes {
-    require(sasBytes != nil);
-    require(sasBytes.length >= MIN_SAS_BYTES);
+    ows_require(sasBytes != nil);
+    ows_require(sasBytes.length >= MIN_SAS_BYTES);
     uint8_t wordIndexOne = [sasBytes uint8At:0];
     uint8_t wordIndexTwo = [sasBytes uint8At:1];
     

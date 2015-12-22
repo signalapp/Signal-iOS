@@ -1,10 +1,10 @@
 #import "RecentCall.h"
 
-static NSString *const DEFAULTS_KEY_CONTACT_ID = @"DefaultsKeyContactID";
-static NSString *const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";
-static NSString *const DEFAULTS_KEY_CALL_TYPE = @"DefaultsKeycallType";
-static NSString *const DEFAULTS_KEY_DATE = @"DefaultsKeyDate";
-static NSString *const DEFAULTS_KEY_IS_ARCHIVED = @"DefaultsKeyDateIsArchived";
+static NSString *const DEFAULTS_KEY_CONTACT_ID    = @"DefaultsKeyContactID";
+static NSString *const DEFAULTS_KEY_PHONE_NUMBER  = @"DefaultsKeyPhoneNumber";
+static NSString *const DEFAULTS_KEY_CALL_TYPE     = @"DefaultsKeycallType";
+static NSString *const DEFAULTS_KEY_DATE          = @"DefaultsKeyDate";
+static NSString *const DEFAULTS_KEY_IS_ARCHIVED   = @"DefaultsKeyDateIsArchived";
 static NSString *const DEFAULTS_KEY_USER_NOTIFIED = @"DefaultsKeyUserNotified";
 
 NSString *const CALL_TYPE_IMAGE_NAME_INCOMING = @"incoming_call_icon";
@@ -17,16 +17,15 @@ NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 + (RecentCall *)recentCallWithContactID:(ABRecordID)contactID
                               andNumber:(PhoneNumber *)number
                             andCallType:(RPRecentCallType)type {
-
-    RecentCall *recentCall = [RecentCall new];
+    RecentCall *recentCall      = [RecentCall new];
     recentCall->contactRecordID = contactID;
-    recentCall->callType = type;
-    recentCall->date = [NSDate date];
-    recentCall->phoneNumber = number;
-    recentCall->userNotified = type == RPRecentCallTypeMissed ? false : true;
+    recentCall->callType        = type;
+    recentCall->date            = [NSDate date];
+    recentCall->phoneNumber     = number;
+    recentCall->userNotified    = type == RPRecentCallTypeMissed ? false : true;
     return recentCall;
 }
--(void)updateRecentCallWithContactId:(ABRecordID)contactID{
+- (void)updateRecentCallWithContactId:(ABRecordID)contactID {
     contactRecordID = contactID;
 }
 
@@ -42,13 +41,13 @@ NSString *const CALL_TYPE_IMAGE_NAME_OUTGOING = @"outgoing_call_icon";
 }
 
 - (id)initWithCoder:(NSCoder *)decoder {
-    if((self = [super init])) {
-        callType = (RPRecentCallType)[[decoder decodeObjectForKey:DEFAULTS_KEY_CALL_TYPE] intValue];
+    if ((self = [super init])) {
+        callType        = (RPRecentCallType)[[decoder decodeObjectForKey:DEFAULTS_KEY_CALL_TYPE] intValue];
         contactRecordID = [[decoder decodeObjectForKey:DEFAULTS_KEY_CONTACT_ID] intValue];
-        phoneNumber = [decoder decodeObjectForKey:DEFAULTS_KEY_PHONE_NUMBER];
-        date = [decoder decodeObjectForKey:DEFAULTS_KEY_DATE];
-        isArchived = [decoder decodeBoolForKey:DEFAULTS_KEY_IS_ARCHIVED];
-        userNotified = [decoder decodeBoolForKey:DEFAULTS_KEY_USER_NOTIFIED];
+        phoneNumber     = [decoder decodeObjectForKey:DEFAULTS_KEY_PHONE_NUMBER];
+        date            = [decoder decodeObjectForKey:DEFAULTS_KEY_DATE];
+        isArchived      = [decoder decodeBoolForKey:DEFAULTS_KEY_IS_ARCHIVED];
+        userNotified    = [decoder decodeBoolForKey:DEFAULTS_KEY_USER_NOTIFIED];
     }
     return self;
 }

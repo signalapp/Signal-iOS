@@ -5,8 +5,8 @@
 @synthesize inputStream, outputStream;
 
 +(StreamPair*) streamPairWithInput:(NSInputStream*)input andOutput:(NSOutputStream*)output {
-    require(input != nil);
-    require(output != nil);
+    ows_require(input != nil);
+    ows_require(output != nil);
 
     StreamPair* r = [StreamPair new];
     r->inputStream = input;

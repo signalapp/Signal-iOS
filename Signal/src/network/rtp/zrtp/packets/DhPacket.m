@@ -17,9 +17,9 @@
               andSharedSecretHashes:(DhPacketSharedSecretHashes*)sharedSecretHashes
                        andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
     
-    require(hashChain != nil);
-    require(sharedSecretHashes != nil);
-    require(agreer != nil);
+    ows_require(hashChain != nil);
+    ows_require(sharedSecretHashes != nil);
+    ows_require(agreer != nil);
     
     return [self dhPacketWithHashChainH0:[hashChain h0]
                    andSharedSecretHashes:sharedSecretHashes
@@ -31,9 +31,9 @@
               andSharedSecretHashes:(DhPacketSharedSecretHashes*)sharedSecretHashes
                        andKeyAgreer:(id<KeyAgreementParticipant>)agreer {
     
-    require(hashChain != nil);
-    require(sharedSecretHashes != nil);
-    require(agreer != nil);
+    ows_require(hashChain != nil);
+    ows_require(sharedSecretHashes != nil);
+    ows_require(agreer != nil);
     
     return [self dhPacketWithHashChainH0:[hashChain h0]
                    andSharedSecretHashes:sharedSecretHashes
@@ -46,11 +46,11 @@
                     andPublicKeyData:(NSData*)publicKeyData
                           andIsPart1:(bool)isPart1 {
     
-    require(hashChainH0 != nil);
-    require(sharedSecretHashes != nil);
-    require(publicKeyData != nil);
+    ows_require(hashChainH0 != nil);
+    ows_require(sharedSecretHashes != nil);
+    ows_require(publicKeyData != nil);
     
-    require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
+    ows_require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
     
     DhPacket* p = [DhPacket new];
     p->isPart1 = isPart1;
@@ -86,7 +86,7 @@
 
 +(DhPacket*) dhPacketFromHandshakePacket:(HandshakePacket*)handshakePacket andIsPart1:(bool)isPart1 {
     
-    require(handshakePacket != nil);
+    ows_require(handshakePacket != nil);
     NSData* expectedTypeIdDhPacket = isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;
     NSData* payload = [handshakePacket payload];
     
@@ -102,7 +102,7 @@
 }
 
 -(HandshakePacket*) embedIntoHandshakePacketAuthenticatedWithMacKey:(NSData*)macKey {
-    require(macKey != nil);
+    ows_require(macKey != nil);
     requireState(hashChainH1.length == HASH_CHAIN_ITEM_LENGTH);
     
     NSData* typeId = isPart1 ? HANDSHAKE_TYPE_DH_1 : HANDSHAKE_TYPE_DH_2;

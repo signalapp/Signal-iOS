@@ -14,12 +14,11 @@
 @implementation SettingsTableViewCell
 
 - (void)awakeFromNib {
-
     if (self.toggle) {
         [self.toggle setOn:[Environment.preferences screenSecurityIsEnabled]];
         [self.toggle addTarget:self action:@selector(toggleSetting:) forControlEvents:UIControlEventValueChanged];
     }
-    
+
     if ([self.reuseIdentifier isEqualToString:@"imageUploadQuality"]) {
         [self updateImageQualityLabel];
     }
@@ -31,8 +30,7 @@
 
 #pragma mark - UISwitch
 
--(void)toggleSetting:(id)sender
-{
+- (void)toggleSetting:(id)sender {
     if ([self.reuseIdentifier isEqualToString:@"enableScreenSecurity"]) {
         [Environment.preferences setScreenSecurity:self.toggle.isOn];
     }
@@ -40,9 +38,9 @@
 
 #pragma mark - Detail Label
 
--(void)updateImageQualityLabel
-{
-    /* this is currently unused, thus unlocalized. code should probably be excised as this will never be part of design */
+- (void)updateImageQualityLabel {
+    /* this is currently unused, thus unlocalized. code should probably be excised as this will never be part of design
+     */
     switch ([Environment.preferences imageUploadQuality]) {
         case TSImageQualityUncropped:
             self.detailLabel.text = @"Full";
@@ -57,7 +55,9 @@
             self.detailLabel.text = @"Low";
             break;
         default:
-            DDLogWarn(@"Unknown Image Quality setting : %lu <%s>", [Environment.preferences imageUploadQuality], __PRETTY_FUNCTION__);
+            DDLogWarn(@"Unknown Image Quality setting : %lu <%s>",
+                      [Environment.preferences imageUploadQuality],
+                      __PRETTY_FUNCTION__);
             break;
     }
 }

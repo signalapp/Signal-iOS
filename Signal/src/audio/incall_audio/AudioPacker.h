@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "Queue.h"
 #import "EncodedAudioFrame.h"
 #import "EncodedAudioPacket.h"
+#import "Queue.h"
 
 #define AUDIO_FRAMES_PER_PACKET 2
 
@@ -18,17 +18,20 @@
  *
  */
 @interface AudioPacker : NSObject {
-@private NSMutableArray* framesToSend;
-@private uint16_t nextSequenceNumber;
-@private Queue* audioFrameToReceiveQueue;
+   @private
+    NSMutableArray *framesToSend;
+   @private
+    uint16_t nextSequenceNumber;
+   @private
+    Queue *audioFrameToReceiveQueue;
 }
 
-+(AudioPacker*) audioPacker;
++ (AudioPacker *)audioPacker;
 
--(void)packFrame:(EncodedAudioFrame*)frame;
--(EncodedAudioPacket*) tryGetFinishedAudioPacket;
+- (void)packFrame:(EncodedAudioFrame *)frame;
+- (EncodedAudioPacket *)tryGetFinishedAudioPacket;
 
--(void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket*)potentiallyMissingPacket;
--(EncodedAudioFrame*) tryGetReceivedFrame;
+- (void)unpackPotentiallyMissingAudioPacket:(EncodedAudioPacket *)potentiallyMissingPacket;
+- (EncodedAudioFrame *)tryGetReceivedFrame;
 
 @end

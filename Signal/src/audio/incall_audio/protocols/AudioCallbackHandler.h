@@ -7,6 +7,6 @@
  *
  **/
 @protocol AudioCallbackHandler <NSObject>
--(void) handleNewDataRecorded:(CyclicalBuffer*) data;
--(void) handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining;
+- (void)handleNewDataRecorded:(CyclicalBuffer *)data;
+- (void)handlePlaybackOccurredWithBytesRequested:(NSUInteger)requested andBytesRemaining:(NSUInteger)bytesRemaining;
 @end

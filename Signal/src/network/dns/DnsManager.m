@@ -41,7 +41,7 @@ void handleDnsCompleted(CFHostRef hostRef, CFHostInfoType typeInfo, const CFStre
 
 +(TOCFuture*) asyncQueryAddressesForDomainName:(NSString*)domainName
                                unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
-    require(domainName != nil);
+    ows_require(domainName != nil);
     
     CFHostRef hostRef = CFHostCreateWithName(kCFAllocatorDefault, (__bridge CFStringRef)domainName);
     checkOperation(hostRef != nil);

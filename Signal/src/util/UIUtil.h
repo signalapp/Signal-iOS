@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
+#import "MIMETypeUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIImage+normalizeImage.h"
 #import "UIImage+contentTypes.h"
-#import "MIMETypeUtil.h"
+#import "UIImage+normalizeImage.h"
 
 typedef void (^completionBlock)(void);
 
@@ -16,8 +16,8 @@ typedef void (^completionBlock)(void);
 
 @interface UIUtil : NSObject
 
-+ (void)applyRoundedBorderToImageView:(UIImageView *__strong*)imageView;
-+ (void)removeRoundedBorderToImageView:(UIImageView *__strong*)imageView;
++ (void)applyRoundedBorderToImageView:(UIImageView *__strong *)imageView;
++ (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView;
 
 + (completionBlock)modalCompletionBlock;
 @end

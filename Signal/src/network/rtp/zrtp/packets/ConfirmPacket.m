@@ -38,9 +38,9 @@
                                               withMacKey:(NSData*)macKey
                                             andCipherKey:(NSData*)cipherKey
                                               andIsPart1:(bool)isPart1 {
-    require(handshakePacket != nil);
-    require(macKey != nil);
-    require(cipherKey != nil);
+    ows_require(handshakePacket != nil);
+    ows_require(macKey != nil);
+    ows_require(cipherKey != nil);
     NSData* expectedConfirmTypeId = isPart1 ? HANDSHAKE_TYPE_CONFIRM_1 : HANDSHAKE_TYPE_CONFIRM_2;
     
     checkOperation([[handshakePacket typeId] isEqualToData:expectedConfirmTypeId]);
@@ -62,12 +62,12 @@
                                   andCipherKey:(NSData*)cipherKey
                                          andIv:(NSData*)iv
                                     andIsPart1:(bool)isPart1 {
-    require(macKey != nil);
-    require(cipherKey != nil);
-    require(hashChainH0 != nil);
-    require(iv != nil);
-    require(iv.length == CONFIRM_IV_LENGTH);
-    require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
+    ows_require(macKey != nil);
+    ows_require(cipherKey != nil);
+    ows_require(hashChainH0 != nil);
+    ows_require(iv != nil);
+    ows_require(iv.length == CONFIRM_IV_LENGTH);
+    ows_require(hashChainH0.length == HASH_CHAIN_ITEM_LENGTH);
     
     ConfirmPacket* p = [ConfirmPacket new];
     p->hashChainH0 = hashChainH0;
@@ -80,8 +80,8 @@
 }
 
 -(HandshakePacket*) generateEmbedding:(NSData*)cipherKey andMacKey:(NSData*)macKey {
-    require(cipherKey != nil);
-    require(macKey != nil);
+    ows_require(cipherKey != nil);
+    ows_require(macKey != nil);
     
     NSData* sensitiveData = [@[
                              hashChainH0,

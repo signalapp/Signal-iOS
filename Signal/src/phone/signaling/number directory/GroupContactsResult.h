@@ -12,13 +12,13 @@
 
 @interface GroupContactsResult : NSObject
 
-- (instancetype)initWithMembersId:(NSArray*)memberIdentifiers without:(NSArray*)removeIds;
+- (instancetype)initWithMembersId:(NSArray *)memberIdentifiers without:(NSArray *)removeIds;
 
 - (NSUInteger)numberOfMembers;
 
-- (BOOL)isContactAtIndexPath:(NSIndexPath*)indexPath;
+- (BOOL)isContactAtIndexPath:(NSIndexPath *)indexPath;
 
-- (Contact*)contactForIndexPath:(NSIndexPath*)indexPath;
-- (NSString*)identifierForIndexPath:(NSIndexPath*)indexPath;
+- (Contact *)contactForIndexPath:(NSIndexPath *)indexPath;
+- (NSString *)identifierForIndexPath:(NSIndexPath *)indexPath;
 
 @end

@@ -6,7 +6,7 @@ xcode_sdk: iphonesimulator9.1
 before_install:
     - brew update
     - brew uninstall xctool && brew install --HEAD xctool
-install: true
+install: travis_wait pod install
 
 xcode_workspace: Signal.xcworkspace
 xcode_scheme: Signal

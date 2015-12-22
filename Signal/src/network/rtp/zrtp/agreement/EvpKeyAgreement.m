@@ -182,7 +182,7 @@ enum KeyAgreementType {
 
 
 -(NSData*) serializeEcPublicKey:(EVP_PKEY*)evkey {
-    require(evkey != NULL);
+    ows_require(evkey != NULL);
     
     EC_KEY* ec_key = NULL;
     @try {

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import "AboutTableViewController.h"
 #import <Social/Social.h>
+#import "AboutTableViewController.h"
 #import "UIUtil.h"
 
 @interface AboutTableViewController ()
@@ -24,57 +24,56 @@
 
 @implementation AboutTableViewController
 
--(instancetype)init {
+- (instancetype)init {
     return [super initWithStyle:UITableViewStyleGrouped];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
--(void)loadView
-{
+- (void)loadView {
     [super loadView];
-    
+
     self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"");
-    
-    //Version
-    self.versionCell = [[UITableViewCell alloc]init];
+
+    // Version
+    self.versionCell                = [[UITableViewCell alloc] init];
     self.versionCell.textLabel.text = NSLocalizedString(@"SETTINGS_VERSION", @"");
-    
-    self.versionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 75, 30)];
-    self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+
+    self.versionLabel           = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 75, 30)];
+    self.versionLabel.text      = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     self.versionLabel.textColor = [UIColor lightGrayColor];
-    self.versionLabel.font = [UIFont ows_regularFontWithSize:16.0f];
+    self.versionLabel.font      = [UIFont ows_regularFontWithSize:16.0f];
     self.versionLabel.textAlignment = NSTextAlignmentRight;
-    
-    self.versionCell.accessoryView = self.versionLabel;
+
+    self.versionCell.accessoryView          = self.versionLabel;
     self.versionCell.userInteractionEnabled = NO;
-    
-    //Support
-    self.supportCell = [[UITableViewCell alloc]init];
+
+    // Support
+    self.supportCell                = [[UITableViewCell alloc] init];
     self.supportCell.textLabel.text = NSLocalizedString(@"SETTINGS_SUPPORT", @"");
-    self.supportCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
-    //Footer
-    self.footerView = [[UILabel alloc]init];
-    self.footerView.text = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
-    self.footerView.textColor = [UIColor ows_darkGrayColor];
-    self.footerView.font = [UIFont ows_regularFontWithSize:15.0f];
+    self.supportCell.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
+
+    // Footer
+    self.footerView               = [[UILabel alloc] init];
+    self.footerView.text          = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
+    self.footerView.textColor     = [UIColor ows_darkGrayColor];
+    self.footerView.font          = [UIFont ows_regularFontWithSize:15.0f];
     self.footerView.numberOfLines = 2;
     self.footerView.textAlignment = NSTextAlignmentCenter;
-    
-    
-    //Twitter Invite
-    self.twitterInviteCell = [[UITableViewCell alloc]init];
+
+
+    // Twitter Invite
+    self.twitterInviteCell                = [[UITableViewCell alloc] init];
     self.twitterInviteCell.textLabel.text = NSLocalizedString(@"SETTINGS_SHARE_INSTALL", @"");
-    
-    UIImageView* twitterImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"twitter_logo"]];
+
+    UIImageView *twitterImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"twitter_logo"]];
     [twitterImageView setFrame:CGRectMake(0, 0, 34, 34)];
     twitterImageView.contentMode = UIViewContentModeScaleAspectFit;
-    
+
     self.twitterInviteCell.accessoryView = twitterImageView;
 }
 
@@ -86,39 +85,47 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0: return 1;
-        case 1: return 1;
-        case 2: return 1;
-        default: return 0;
+        case 0:
+            return 1;
+        case 1:
+            return 1;
+        case 2:
+            return 1;
+        default:
+            return 0;
     }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
-        case 0: return NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
-        case 1: return NSLocalizedString(@"SETTINGS_INVITE_HEADER", @"");
-        case 2: return NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-        
-        default: return nil;
+        case 0:
+            return NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
+        case 1:
+            return NSLocalizedString(@"SETTINGS_INVITE_HEADER", @"");
+        case 2:
+            return NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
+
+        default:
+            return nil;
     }
 }
 
--(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
-        case 0: return self.versionCell;
-        case 1: return self.twitterInviteCell;
-        case 2: return self.supportCell;
+        case 0:
+            return self.versionCell;
+        case 1:
+            return self.twitterInviteCell;
+        case 2:
+            return self.supportCell;
     }
-    
+
     return nil;
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
     switch (indexPath.section) {
         case 1:
             [self tappedInviteTwitter];
@@ -126,7 +133,7 @@
         case 2:
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://support.whispersystems.org"]];
             break;
-            
+
         default:
             break;
     }
@@ -141,12 +148,10 @@
 }
 
 - (void)tappedInviteTwitter {
-    
-    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
-    {
-        SLComposeViewController *tweetSheet = [SLComposeViewController
-                                               composeViewControllerForServiceType:SLServiceTypeTwitter];
-        
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+        SLComposeViewController *tweetSheet =
+            [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+
         NSString *tweetString = [NSString stringWithFormat:NSLocalizedString(@"SETTINGS_INVITE_TWITTER_TEXT", @"")];
         [tweetSheet setInitialText:tweetString];
         [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
@@ -154,7 +159,6 @@
         };
         [self presentViewController:tweetSheet animated:YES completion:[UIUtil modalCompletionBlock]];
     }
-
 }
 
 @end

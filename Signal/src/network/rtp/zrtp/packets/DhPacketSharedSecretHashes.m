@@ -17,15 +17,15 @@
                                                           andRs2:(NSData*)rs2
                                                           andAux:(NSData*)aux
                                                           andPbx:(NSData*)pbx {
-    require(rs1 != nil);
-    require(rs2 != nil);
-    require(aux != nil);
-    require(pbx != nil);
+    ows_require(rs1 != nil);
+    ows_require(rs2 != nil);
+    ows_require(aux != nil);
+    ows_require(pbx != nil);
     
-    require(rs1.length == DH_RS1_LENGTH);
-    require(rs2.length == DH_RS2_LENGTH);
-    require(aux.length == DH_AUX_LENGTH);
-    require(pbx.length == DH_PBX_LENGTH);
+    ows_require(rs1.length == DH_RS1_LENGTH);
+    ows_require(rs2.length == DH_RS2_LENGTH);
+    ows_require(aux.length == DH_AUX_LENGTH);
+    ows_require(pbx.length == DH_PBX_LENGTH);
     
     DhPacketSharedSecretHashes* h = [DhPacketSharedSecretHashes new];
     h->rs1 = rs1;

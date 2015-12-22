@@ -7,7 +7,7 @@
 
 +(IpEndPoint*) ipEndPointAtAddress:(IpAddress*)address
                             onPort:(in_port_t)port {
-    require(address != nil);
+    ows_require(address != nil);
     IpEndPoint* p = [IpEndPoint new];
     p->address = address;
     p->port = port;
@@ -28,8 +28,8 @@
 }
 
 +(IpEndPoint*) ipEndPointFromSockaddrData:(NSData*)sockaddrData {
-    require(sockaddrData != nil);
-    require(sockaddrData.length >= sizeof(struct sockaddr));
+    ows_require(sockaddrData != nil);
+    ows_require(sockaddrData.length >= sizeof(struct sockaddr));
     
     struct sockaddr s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr));
@@ -41,8 +41,8 @@
     return nil;
 }
 +(IpEndPoint*) ipv4EndPointFromSockaddrData:(NSData*)sockaddrData {
-    require(sockaddrData != nil);
-    require(sockaddrData.length >= sizeof(struct sockaddr_in));
+    ows_require(sockaddrData != nil);
+    ows_require(sockaddrData.length >= sizeof(struct sockaddr_in));
     
     struct sockaddr_in s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr_in));
@@ -50,8 +50,8 @@
     return [[IpAddress ipv4AddressFromSockaddr:s] withPort:ntohs(s.sin_port)];
 }
 +(IpEndPoint*) ipv6EndPointFromSockaddrData:(NSData*)sockaddrData {
-    require(sockaddrData != nil);
-    require(sockaddrData.length >= sizeof(struct sockaddr_in6));
+    ows_require(sockaddrData != nil);
+    ows_require(sockaddrData.length >= sizeof(struct sockaddr_in6));
     
     struct sockaddr_in6 s;
     memcpy(&s, [sockaddrData bytes], sizeof(struct sockaddr_in6));

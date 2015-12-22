@@ -10,10 +10,7 @@
 #import "NextResponderScrollView.h"
 #import "TSThread.h"
 
-typedef enum : NSUInteger {
-    kArchiveState = 0,
-    kInboxState = 1
-} CellState;
+typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
 
 
 @class InboxTableViewCell;
@@ -23,10 +20,10 @@ typedef enum : NSUInteger {
 
 @end
 
-@interface InboxTableViewCell : UITableViewCell  <UIScrollViewDelegate>
+@interface InboxTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property (nonatomic, strong) IBOutlet UILabel * snippetLabel;
+@property (nonatomic, strong) IBOutlet UILabel *snippetLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
 @property (nonatomic, strong) IBOutlet UILabel *timeLabel;
 @property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
@@ -39,7 +36,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) NSString *threadId;
 
 + (instancetype)inboxTableViewCell;
-- (void)configureWithThread:(TSThread*)thread;
+- (void)configureWithThread:(TSThread *)thread;
 - (void)configureForState:(CellState)state;
 - (void)animateDisappear;
 

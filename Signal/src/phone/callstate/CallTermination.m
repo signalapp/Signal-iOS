@@ -5,31 +5,30 @@
 
 @synthesize type, failure, messageInfo;
 
-+(CallTermination*) callTerminationOfType:(enum CallTerminationType)type
-                              withFailure:(id)failure
-                           andMessageInfo:(id)messageInfo {
-    
-    CallTermination* instance = [CallTermination new];
-    instance->type = type;
-    instance->failure = failure;
-    instance->messageInfo = messageInfo;
++ (CallTermination *)callTerminationOfType:(enum CallTerminationType)type
+                               withFailure:(id)failure
+                            andMessageInfo:(id)messageInfo {
+    CallTermination *instance = [CallTermination new];
+    instance->type            = type;
+    instance->failure         = failure;
+    instance->messageInfo     = messageInfo;
     return instance;
 }
 
--(BOOL)isEqual:(id)object {
-    return [object isKindOfClass:CallTermination.class] && ((CallTermination*)object).type == type;
+- (BOOL)isEqual:(id)object {
+    return [object isKindOfClass:CallTermination.class] && ((CallTermination *)object).type == type;
 }
--(NSUInteger)hash {
+- (NSUInteger)hash {
     return type;
 }
--(NSString *)description {
+- (NSString *)description {
     return makeCallTerminationLocalizedTextDictionary()[self];
 }
--(NSString*) localizedDescriptionForUser {
+- (NSString *)localizedDescriptionForUser {
     return [self description];
 }
 
--(id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone {
     return [CallTermination callTerminationOfType:type
                                       withFailure:[failure copyWithZone:zone]
                                    andMessageInfo:[messageInfo copyWithZone:zone]];

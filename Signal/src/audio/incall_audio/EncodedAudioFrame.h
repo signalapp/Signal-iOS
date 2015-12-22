@@ -8,13 +8,14 @@
 **/
 
 @interface EncodedAudioFrame : NSObject {
-@private NSData* audioData;
+   @private
+    NSData *audioData;
 }
 
-+(EncodedAudioFrame*) encodedAudioFrameWithData:(NSData*)audioData;
-+(EncodedAudioFrame*) encodedAudioFrameWithoutData;
++ (EncodedAudioFrame *)encodedAudioFrameWithData:(NSData *)audioData;
++ (EncodedAudioFrame *)encodedAudioFrameWithoutData;
 
--(bool) isMissingAudioData;
--(NSData*) tryGetAudioData;
+- (bool)isMissingAudioData;
+- (NSData *)tryGetAudioData;
 
 @end

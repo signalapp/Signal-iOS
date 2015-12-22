@@ -5,7 +5,7 @@
 @implementation UdpSocket
 
 +(UdpSocket*) udpSocketToFirstSenderOnLocalPort:(in_port_t)localPort {
-    require(localPort > 0);
+    ows_require(localPort > 0);
     UdpSocket* p = [UdpSocket new];
     p->specifiedLocalPort = localPort;
     p->specifiedRemoteEndPoint = nil;
@@ -14,9 +14,9 @@
 
 +(UdpSocket*) udpSocketFromLocalPort:(in_port_t)localPort
                     toRemoteEndPoint:(IpEndPoint*)remoteEndPoint {
-    require(remoteEndPoint != nil);
-    require([remoteEndPoint port] > 0);
-    require(localPort > 0);
+    ows_require(remoteEndPoint != nil);
+    ows_require([remoteEndPoint port] > 0);
+    ows_require(localPort > 0);
     
     UdpSocket* p = [UdpSocket new];
     p->specifiedLocalPort = localPort;
@@ -24,8 +24,8 @@
     return p;
 }
 +(UdpSocket*) udpSocketTo:(IpEndPoint*)remoteEndPoint {
-    require(remoteEndPoint != nil);
-    require([remoteEndPoint port] > 0);
+    ows_require(remoteEndPoint != nil);
+    ows_require([remoteEndPoint port] > 0);
     
     UdpSocket* p = [UdpSocket new];
     p->specifiedLocalPort = 0; // passing port 0 to CFSocketAddress means 'pick one for me'
@@ -42,7 +42,7 @@
 
 -(void) send:(NSData*)packet {
     @synchronized(self) {
-        require(packet != nil);
+        ows_require(packet != nil);
         requireState(socket != nil);
         requireState(self.isRemoteEndPointKnown);
         
@@ -155,7 +155,7 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
 -(void) startWithHandler:(PacketHandler*)handler
           untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
-    require(handler != nil);
+    ows_require(handler != nil);
     
     @synchronized(self) {
         bool isFirstTime = currentHandler == nil;

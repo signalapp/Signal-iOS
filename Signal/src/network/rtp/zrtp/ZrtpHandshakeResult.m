@@ -5,8 +5,8 @@
 @synthesize masterSecret, secureRtpSocket;
 
 +(ZrtpHandshakeResult*) zrtpHandshakeResultWithSecureChannel:(SrtpSocket*)secureRtpSocket andMasterSecret:(MasterSecret*)masterSecret {
-    require(secureRtpSocket != nil);
-    require(masterSecret != nil);
+    ows_require(secureRtpSocket != nil);
+    ows_require(masterSecret != nil);
     
     ZrtpHandshakeResult* z = [ZrtpHandshakeResult new];
     z->masterSecret = masterSecret;

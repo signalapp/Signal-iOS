@@ -6,13 +6,13 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQPhotoMediaItem.h>
 #import "TSAttachmentStream.h"
-#import <Foundation/Foundation.h>
 
 @interface TSAnimatedAdapter : JSQMediaItem
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment;
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment;
 
 - (BOOL)isImage;
 - (BOOL)isAudio;

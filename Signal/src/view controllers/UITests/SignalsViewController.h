@@ -6,25 +6,28 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#include "InboxTableViewCell.h"
 #import <UIKit/UIKit.h>
+#include "InboxTableViewCell.h"
 
+#import "CallState.h"
 #import "Contact.h"
 #import "TSGroupModel.h"
-#import "CallState.h"
 
-@interface SignalsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate, UIViewControllerPreviewingDelegate>
+@interface SignalsViewController : UIViewController <UITableViewDelegate,
+                                                     UITableViewDataSource,
+                                                     TableViewCellDelegate,
+                                                     UIViewControllerPreviewingDelegate>
 
-@property (nonatomic) NSString        *contactIdentifierFromCompose;
-@property (nonatomic) TSGroupModel    *groupFromCompose;
-@property (nonatomic) BOOL            composeMessage;
+@property (nonatomic) NSString *contactIdentifierFromCompose;
+@property (nonatomic) TSGroupModel *groupFromCompose;
+@property (nonatomic) BOOL composeMessage;
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
 
-@property (nonatomic, retain) CallState* latestCall;
+@property (nonatomic, retain) CallState *latestCall;
 
-- (NSNumber*)updateInboxCountLabel;
+- (NSNumber *)updateInboxCountLabel;
 - (void)composeNew;
 
 @end

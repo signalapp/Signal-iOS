@@ -5,26 +5,26 @@
 
 @synthesize type;
 
-+(CallProgress*) callProgressWithType:(enum CallProgressType)type {
-    CallProgress* instance = [CallProgress new];
-    instance->type = type;
++ (CallProgress *)callProgressWithType:(enum CallProgressType)type {
+    CallProgress *instance = [CallProgress new];
+    instance->type         = type;
     return instance;
 }
 
--(BOOL)isEqual:(id)object {
-    return [object isKindOfClass:CallProgress.class] && ((CallProgress*)object).type == type;
+- (BOOL)isEqual:(id)object {
+    return [object isKindOfClass:CallProgress.class] && ((CallProgress *)object).type == type;
 }
--(NSUInteger)hash {
+- (NSUInteger)hash {
     return type;
 }
--(NSString *)description {
+- (NSString *)description {
     return makeCallProgressLocalizedTextDictionary()[self];
 }
--(NSString*) localizedDescriptionForUser {
+- (NSString *)localizedDescriptionForUser {
     return [self description];
 }
 
--(id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone {
     return [CallProgress callProgressWithType:type];
 }
 

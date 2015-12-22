@@ -1,8 +1,10 @@
+#import <Contacts/Contacts.h>
 #import <Foundation/Foundation.h>
+#import <TextSecureKit/ContactsManagerProtocol.h>
+#import <TextSecureKit/PhoneNumber.h>
 #import "CollapsingFutures.h"
 #import "Contact.h"
 #import "ObservableValue.h"
-#import <Contacts/Contacts.h>
 
 /**
  *
@@ -16,43 +18,43 @@
 
 #define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
 
-typedef void(^ABAccessRequestCompletionBlock)(BOOL hasAccess);
-typedef void(^ABReloadRequestCompletionBlock)(NSArray *contacts);
+typedef void (^ABAccessRequestCompletionBlock)(BOOL hasAccess);
+typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
-@interface ContactsManager : NSObject {
-@private TOCFuture* futureAddressBook;
-@private ObservableValueController* observableContactsController;
-@private ObservableValueController* observableTextSecureUsersController;
-@private TOCCancelTokenSource* life;
-@private NSDictionary *latestContactsById;
-@private NSDictionary *latestWhisperUsersById;
+@interface ContactsManager : NSObject <ContactsManagerProtocol> {
+   @private
+    TOCFuture *futureAddressBook;
+   @private
+    ObservableValueController *observableContactsController;
+   @private
+    TOCCancelTokenSource *life;
+   @private
+    NSDictionary *latestContactsById;
+   @private
+    NSDictionary *latestWhisperUsersById;
 }
 
 @property CNContactStore *contactStore;
 
--(ObservableValue *) getObservableContacts;
-//-(ObservableValue *) getObservableRedPhoneUsers;
+- (ObservableValue *)getObservableContacts;
 
--(NSArray*) getContactsFromAddressBook:(ABAddressBookRef)addressBook;
--(Contact*) latestContactWithRecordId:(ABRecordID)recordId;
--(Contact*) latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
--(NSArray*) latestContactsWithSearchString:(NSString *)searchString;
+- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
+- (Contact *)latestContactWithRecordId:(ABRecordID)recordId;
+- (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
+- (NSArray *)latestContactsWithSearchString:(NSString *)searchString;
 
-+(NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
-
-+(BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
-+(BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString;
++ (NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
 
 - (void)verifyABPermission;
 
 - (NSArray<Contact *> *)allContacts;
-- (NSArray*)signalContacts;
-- (NSArray*)textSecureContacts;
+- (NSArray *)signalContacts;
+- (NSArray *)textSecureContacts;
 
--(void)doAfterEnvironmentInitSetup;
+- (void)doAfterEnvironmentInitSetup;
 
-- (NSString*)nameStringForPhoneIdentifier:(NSString*)identifier;
-- (UIImage*)imageForPhoneIdentifier:(NSString*)identifier;
+- (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier;
+- (UIImage *)imageForPhoneIdentifier:(NSString *)identifier;
 
 + (NSComparator)contactComparator;
 

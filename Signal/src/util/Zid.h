@@ -1,8 +1,12 @@
 #import <Foundation/Foundation.h>
 
 @interface Zid : NSObject {
-@private NSData* data;
+   @private
+    NSData *data;
 }
-+(Zid*) zidWithData:(NSData*)zidData;
--(NSData*) getData;
+
++ (instancetype)nullZid;
++ (Zid *)zidWithData:(NSData *)zidData;
+- (NSData *)getData;
+
 @end

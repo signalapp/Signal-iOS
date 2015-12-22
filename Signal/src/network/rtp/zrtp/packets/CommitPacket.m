@@ -27,11 +27,11 @@
                                                 andCommitmentToHello:(HelloPacket*)hello
                                                           andDhPart2:(DhPacket*)dhPart2 {
     
-    require(keyAgreementProtocol != nil);
-    require(hashChain != nil);
-    require(zid != nil);
-    require(hello != nil);
-    require(dhPart2 != nil);
+    ows_require(keyAgreementProtocol != nil);
+    ows_require(hashChain != nil);
+    ows_require(zid != nil);
+    ows_require(hello != nil);
+    ows_require(dhPart2 != nil);
     
     NSData* dhPart2Data = [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication];
     NSData* helloData = [[hello embeddedIntoHandshakePacket] dataUsedForAuthentication];
@@ -56,22 +56,22 @@
                    andDhPart2HelloCommitment:(NSData*)dhPart2HelloCommitment
                                   andHmacKey:(NSData*)hmacKey {
     
-    require(h2 != nil);
-    require(zid != nil);
-    require(hashSpecId != nil);
-    require(cipherSpecId != nil);
-    require(authSpecId != nil);
-    require(agreeSpecId != nil);
-    require(sasSpecId != nil);
-    require(dhPart2HelloCommitment != nil);
-    require(hmacKey != nil);
+    ows_require(h2 != nil);
+    ows_require(zid != nil);
+    ows_require(hashSpecId != nil);
+    ows_require(cipherSpecId != nil);
+    ows_require(authSpecId != nil);
+    ows_require(agreeSpecId != nil);
+    ows_require(sasSpecId != nil);
+    ows_require(dhPart2HelloCommitment != nil);
+    ows_require(hmacKey != nil);
     
-    require(h2.length == HASH_CHAIN_ITEM_LENGTH);
-    require(hashSpecId.length == HASH_SPEC_LENGTH);
-    require(cipherSpecId.length == CIPHER_SPEC_LENGTH);
-    require(authSpecId.length == AUTH_SPEC_LENGTH);
-    require(agreeSpecId.length == AGREE_SPEC_LENGTH);
-    require(sasSpecId.length == SAS_SPEC_LENGTH);
+    ows_require(h2.length == HASH_CHAIN_ITEM_LENGTH);
+    ows_require(hashSpecId.length == HASH_SPEC_LENGTH);
+    ows_require(cipherSpecId.length == CIPHER_SPEC_LENGTH);
+    ows_require(authSpecId.length == AUTH_SPEC_LENGTH);
+    ows_require(agreeSpecId.length == AGREE_SPEC_LENGTH);
+    ows_require(sasSpecId.length == SAS_SPEC_LENGTH);
     
     CommitPacket* p = [CommitPacket new];
     
@@ -90,7 +90,7 @@
 }
 -(HandshakePacket*) embedInHandshakePacketAuthenticatedWith:(NSData*)hmacKey {
     
-    require(hmacKey != nil);
+    ows_require(hmacKey != nil);
     requireState(h2.length == HASH_CHAIN_ITEM_LENGTH);
     requireState(hashSpecId.length == HASH_SPEC_LENGTH);
     requireState(cipherSpecId.length == CIPHER_SPEC_LENGTH);
@@ -112,8 +112,8 @@
     return [[HandshakePacket handshakePacketWithTypeId:HANDSHAKE_TYPE_COMMIT andPayload:payload] withHmacAppended:hmacKey];
 }
 -(void) verifyCommitmentAgainstHello:(HelloPacket*)hello andDhPart2:(DhPacket*)dhPart2 {
-    require(hello != nil);
-    require(dhPart2 != nil);
+    ows_require(hello != nil);
+    ows_require(dhPart2 != nil);
     
     NSData* expected = [[@[
                          [[dhPart2 embeddedIntoHandshakePacket] dataUsedForAuthentication],
@@ -151,7 +151,7 @@
     return [payload subdataWithRange:NSMakeRange(COMMIT_OFFSET, COMMIT_LENGTH)];
 }
 +(CommitPacket*) commitPacketParsedFromHandshakePacket:(HandshakePacket*)handshakePacket {
-    require(handshakePacket != nil);
+    ows_require(handshakePacket != nil);
     checkOperation([[handshakePacket typeId] isEqualToData:HANDSHAKE_TYPE_COMMIT]);
     NSData* payload = [handshakePacket payload];
     checkOperation(payload.length == COMMIT_OFFSET + COMMIT_LENGTH + HANDSHAKE_TRUNCATED_HMAC_LENGTH);

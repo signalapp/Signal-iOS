@@ -19,9 +19,9 @@
 @synthesize payload, typeId;
 
 +(HandshakePacket*) handshakePacketWithTypeId:(NSData*)typeId andPayload:(NSData*)payload {
-    require(typeId != nil);
-    require(payload != nil);
-    require(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
+    ows_require(typeId != nil);
+    ows_require(payload != nil);
+    ows_require(typeId.length == HANDSHAKE_TYPE_ID_LENGTH);
     
     HandshakePacket* p = [HandshakePacket new];
     p->typeId = typeId;
@@ -39,7 +39,7 @@
     return [[[rtpPacket extensionHeaderData] takeLast:HANDSHAKE_CRC_LENGTH] bigEndianUInt32At:0];
 }
 +(HandshakePacket*) handshakePacketParsedFromRtpPacket:(RtpPacket*)rtpPacket {
-    require(rtpPacket != nil);
+    ows_require(rtpPacket != nil);
     checkOperation([rtpPacket timeStamp] == HANDSHAKE_PACKET_TIMESTAMP_COOKIE);
     checkOperation([rtpPacket version] == 0);
     checkOperation(rtpPacket.hasExtensionHeader);
@@ -61,13 +61,13 @@
 }
 
 -(HandshakePacket*) withHmacAppended:(NSData*)macKey {
-    require(macKey != nil);
+    ows_require(macKey != nil);
     NSData* digest = [[[self rtpExtensionPayloadUsedForHmacBeforeHmacAppended] hmacWithSha256WithKey:macKey] take:HANDSHAKE_TRUNCATED_HMAC_LENGTH];
     NSData* authenticatedPayload = [@[payload, digest] ows_concatDatas];
     return [HandshakePacket handshakePacketWithTypeId:typeId andPayload:authenticatedPayload];
 }
 -(HandshakePacket*) withHmacVerifiedAndRemoved:(NSData*)macKey {
-    require(macKey != nil);
+    ows_require(macKey != nil);
     
     NSData* authenticatedData = [self rtpExtensionHeaderAndPayloadExceptCrc];
     

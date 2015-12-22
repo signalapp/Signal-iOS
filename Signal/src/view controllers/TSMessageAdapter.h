@@ -9,15 +9,15 @@
 #import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQMessageData.h>
 
-#import "TSMessageAdapter.h"
 #import "TSInteraction.h"
+#import "TSMessageAdapter.h"
 #import "TSThread.h"
 
 #define ME_MESSAGE_IDENTIFIER @"Me";
 
 @interface TSMessageAdapter : NSObject <JSQMessageData>
 
-+ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread;
++ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
 
 @property TSMessageAdapterType messageType;
 

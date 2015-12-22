@@ -18,7 +18,7 @@
 
 @property (nonatomic, strong) IBOutlet UIView *safeWordsView;
 @property (nonatomic, strong) IBOutlet UILabel *authenicationStringLabel;
-@property (nonatomic, strong) IBOutlet UILabel* explainAuthenticationStringLabel;
+@property (nonatomic, strong) IBOutlet UILabel *explainAuthenticationStringLabel;
 
 
 @property (nonatomic, strong) IBOutlet UIView *activeOrIncomingButtonsView;
@@ -38,15 +38,11 @@
 @property (nonatomic, readonly) CallState *callState;
 @property (nonatomic, readonly) Contact *potentiallyKnownContact;
 
-typedef NS_ENUM(NSInteger, PushAcceptState){
-    PushDidAcceptState,
-    PushDidDeclineState,
-    PushNotSetState
-};
+typedef NS_ENUM(NSInteger, PushAcceptState) { PushDidAcceptState, PushDidDeclineState, PushNotSetState };
 
 @property (nonatomic, readonly) PushAcceptState callPushState;
 
--(void)configureWithLatestCall:(CallState*)callState;
+- (void)configureWithLatestCall:(CallState *)callState;
 
 - (IBAction)endCallTapped;
 - (IBAction)muteButtonTapped;

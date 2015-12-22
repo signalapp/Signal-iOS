@@ -19,13 +19,12 @@ typedef enum {
 
 @property (nonatomic) SoundInstanceType instanceType;
 
-+(SoundInstance*) soundInstanceForFile:(NSString*) audioFile;
--(NSString*) getId;
++ (SoundInstance *)soundInstanceForFile:(NSString *)audioFile;
+- (NSString *)getId;
 
--(void) setAudioToLoopIndefinitely;
--(void) setAudioLoopCount:(NSInteger) loopCount;
--(void) setCompeletionBlock:(void (^)(SoundInstance*)) block;
+- (void)setAudioToLoopIndefinitely;
+- (void)setAudioLoopCount:(NSInteger)loopCount;
+- (void)setCompeletionBlock:(void (^)(SoundInstance *))block;
 
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
-                       successfully:(BOOL)flag;
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag;
 @end

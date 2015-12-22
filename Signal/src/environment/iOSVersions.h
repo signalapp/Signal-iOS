@@ -100,21 +100,3 @@
 #ifdef NSFoundationVersionNumber_iOS_9
 #define _iOS_9 NSFoundationVersionNumber_iOS_9
 #endif
-
-/**
- Add a Singelton implementation to the .m File
- */
-
-#define MacrosSingletonImplemention \
-+ (instancetype)sharedInstance { \
-\
-static dispatch_once_t onceToken; \
-static id sharedInstance = nil; \
-dispatch_once(&onceToken, ^{ \
-sharedInstance = [self.class new]; \
-}); \
-\
-return sharedInstance; \
-}
-
-#define MacrosSingletonInterface + (instancetype)sharedInstance;

@@ -9,12 +9,12 @@
 @implementation NetworkStream
 
 +(NetworkStream*) networkStreamToEndPoint:(id<NetworkEndPoint>)remoteEndPoint {
-    require(remoteEndPoint != nil);
+    ows_require(remoteEndPoint != nil);
     
     // all connections must be secure, unless testing
     bool isSecureEndPoint = [remoteEndPoint isKindOfClass:SecureEndPoint.class];
     bool allowTestNonSecure = [Environment hasEnabledTestingOrLegacyOption:ENVIRONMENT_TESTING_OPTION_ALLOW_NETWORK_STREAM_TO_NON_SECURE_END_POINTS];
-    require(allowTestNonSecure || isSecureEndPoint);
+    ows_require(allowTestNonSecure || isSecureEndPoint);
     
     StreamPair* streams = [remoteEndPoint createStreamPair];
     
@@ -57,7 +57,7 @@
     }
 }
 -(void) send:(NSData*)data {
-    require(data != nil);
+    ows_require(data != nil);
     requireState(rawDataHandler != nil);
     @synchronized(self) {
         [writeBuffer enqueueData:data];
@@ -97,7 +97,7 @@
     }
 }
 -(void) startWithHandler:(PacketHandler*)handler {
-    require(handler != nil);
+    ows_require(handler != nil);
     requireState(rawDataHandler == nil);
     @synchronized(self) {
         rawDataHandler = handler;
@@ -113,7 +113,6 @@
         [outputStream open];
     }
 }
-
 
 -(void) onNetworkFailure:(id)error {
     @synchronized(self) {

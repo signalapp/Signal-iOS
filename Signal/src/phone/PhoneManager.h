@@ -1,14 +1,14 @@
 #import <Foundation/Foundation.h>
-#import "PhoneNumber.h"
-#import "InitiatorSessionDescriptor.h"
-#import "Environment.h"
-#import "Terminable.h"
-#import "Logging.h"
-#import "ResponderSessionDescriptor.h"
 #import "CallAudioManager.h"
 #import "CallConnectUtil.h"
 #import "CallController.h"
 #import "Contact.h"
+#import "Environment.h"
+#import "InitiatorSessionDescriptor.h"
+#import "Logging.h"
+#import "PhoneNumber.h"
+#import "ResponderSessionDescriptor.h"
+#import "Terminable.h"
 
 /**
  *
@@ -17,24 +17,27 @@
  * User actions like 'make a call' should roughly translate one-to-one with the exposed methods.
  *
  */
-@interface PhoneManager : NSObject<Terminable> {
-@private ObservableValueController* currentCallControllerObservable;
-@private ObservableValueController* currentCallStateObservable;
-@private int64_t lastIncomingSessionId;
+@interface PhoneManager : NSObject <Terminable> {
+   @private
+    ObservableValueController *currentCallControllerObservable;
+   @private
+    ObservableValueController *currentCallStateObservable;
+   @private
+    int64_t lastIncomingSessionId;
 }
 
-@property (readonly,nonatomic,copy) ErrorHandlerBlock errorHandler;
+@property (readonly, nonatomic, copy) ErrorHandlerBlock errorHandler;
 
--(void) initiateOutgoingCallToRemoteNumber:(PhoneNumber*)remoteNumber;
--(void) initiateOutgoingCallToContact:(Contact*)contact atRemoteNumber:(PhoneNumber*)remoteNumber;
--(void) incomingCallWithSession:(ResponderSessionDescriptor*)session;
--(void) hangupOrDenyCall;
--(void) answerCall;
--(BOOL) toggleMute;
--(void) backgroundTimeExpired;
+- (void)initiateOutgoingCallToRemoteNumber:(PhoneNumber *)remoteNumber;
+- (void)initiateOutgoingCallToContact:(Contact *)contact atRemoteNumber:(PhoneNumber *)remoteNumber;
+- (void)incomingCallWithSession:(ResponderSessionDescriptor *)session;
+- (void)hangupOrDenyCall;
+- (void)answerCall;
+- (BOOL)toggleMute;
+- (void)backgroundTimeExpired;
 
--(ObservableValue*) currentCallObservable;
+- (ObservableValue *)currentCallObservable;
 
-+(PhoneManager*) phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler;
++ (PhoneManager *)phoneManagerWithErrorHandler:(ErrorHandlerBlock)errorHandler;
 
 @end

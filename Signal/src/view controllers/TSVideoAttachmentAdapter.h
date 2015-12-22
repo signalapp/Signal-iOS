@@ -6,18 +6,18 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQVideoMediaItem.h>
 #import "TSAttachmentStream.h"
-#import <Foundation/Foundation.h>
 
 @interface TSVideoAttachmentAdapter : JSQVideoMediaItem
 
 @property NSString *attachmentId;
-@property (nonatomic,strong) NSString* contentType;
+@property (nonatomic, strong) NSString *contentType;
 @property (nonatomic) BOOL isAudioPlaying;
 @property (nonatomic) BOOL isPaused;
 
-- (instancetype)initWithAttachment:(TSAttachmentStream*)attachment incoming:(BOOL)incoming;
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
 - (BOOL)isImage;
 - (BOOL)isAudio;

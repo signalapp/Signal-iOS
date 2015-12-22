@@ -2,55 +2,51 @@
 
 @implementation Operation
 
-+(Operation*) operation:(Action)block {
-    require(block != NULL);
-    Operation* a = [Operation new];
++ (Operation *)operation:(Action)block {
+    ows_require(block != NULL);
+    Operation *a = [Operation new];
     a->_callback = block;
     return a;
 }
 
-+(void) asyncRun:(Action)action
-        onThread:(NSThread*)thread {
-    
-    require(action != nil);
-    require(thread != nil);
-    
++ (void)asyncRun:(Action)action onThread:(NSThread *)thread {
+    ows_require(action != nil);
+    ows_require(thread != nil);
+
     [[Operation operation:action] performOnThread:thread];
 }
 
-+(void) asyncRunAndWaitUntilDone:(Action)action
-                        onThread:(NSThread*)thread {
-    
-    require(action != nil);
-    require(thread != nil);
-    
++ (void)asyncRunAndWaitUntilDone:(Action)action onThread:(NSThread *)thread {
+    ows_require(action != nil);
+    ows_require(thread != nil);
+
     [[Operation operation:action] performOnThreadAndWaitUntilDone:thread];
 }
 
-+(void) asyncRunOnNewThread:(Action)action {
-    require(action != nil);
++ (void)asyncRunOnNewThread:(Action)action {
+    ows_require(action != nil);
     [[Operation operation:action] performOnNewThread];
 }
 
--(SEL) selectorToRun {
+- (SEL)selectorToRun {
     return @selector(run);
 }
 
--(void) performOnThread:(NSThread*)thread {
-    require(thread != nil);
+- (void)performOnThread:(NSThread *)thread {
+    ows_require(thread != nil);
     [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:thread == NSThread.currentThread];
 }
 
--(void) performOnThreadAndWaitUntilDone:(NSThread*)thread {
-    require(thread != nil);
+- (void)performOnThreadAndWaitUntilDone:(NSThread *)thread {
+    ows_require(thread != nil);
     [self performSelector:@selector(run) onThread:thread withObject:nil waitUntilDone:true];
 }
 
--(void) performOnNewThread {
+- (void)performOnNewThread {
     [NSThread detachNewThreadSelector:[self selectorToRun] toTarget:self withObject:nil];
 }
 
--(void) run {
+- (void)run {
     _callback();
 }
 

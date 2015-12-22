@@ -4,7 +4,7 @@
 
 @interface EvpMessageDigest : NSObject
 
-+(NSData*) hashWithSha256:(NSData*) data;
-+(NSData*) hmacUsingSha1Data:(NSData*) data withKey:(NSData*) key;
-+(NSData*) hmacUsingSha256Data:(NSData*) data withKey:(NSData*) key;
++ (NSData *)hashWithSha256:(NSData *)data;
++ (NSData *)hmacUsingSha1Data:(NSData *)data withKey:(NSData *)key;
++ (NSData *)hmacUsingSha256Data:(NSData *)data withKey:(NSData *)key;
 @end

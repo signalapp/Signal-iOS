@@ -10,6 +10,6 @@
 
 @interface UIButton (OWS)
 
-+ (UIButton*) ows_blueButtonWithTitle:(NSString*)title;
++ (UIButton *)ows_blueButtonWithTitle:(NSString *)title;
 
 @end

@@ -7,8 +7,8 @@
 +(SecureEndPoint*) secureEndPointForHost:(HostNameEndPoint*)host
                  identifiedByCertificate:(Certificate*)certificate {
     
-    require(host != nil);
-    require(certificate != nil);
+    ows_require(host != nil);
+    ows_require(certificate != nil);
     
     return [self secureEndPointForHost:host
                identifiedByCertificate:certificate
@@ -19,8 +19,8 @@
                  identifiedByCertificate:(Certificate*)certificate
         withOptionalMoreSpecificEndPoint:(id<NetworkEndPoint>)optionalMoreSpecificEndPoint {
     
-    require(host != nil);
-    require(certificate != nil);
+    ows_require(host != nil);
+    ows_require(certificate != nil);
     
     SecureEndPoint* s = [SecureEndPoint new];
     s->hostNameEndPoint = host;
@@ -74,7 +74,7 @@
 }
 
 -(TOCFuture*)asyncHandleStreamsConnected:(StreamPair *)streamPair {
-    require(streamPair != nil);
+    ows_require(streamPair != nil);
     
     @try {
         [self authenticateSslStream:streamPair];

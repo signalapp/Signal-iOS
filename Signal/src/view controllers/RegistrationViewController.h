@@ -10,20 +10,20 @@
 #import "CountryCodeViewController.h"
 
 
-@interface RegistrationViewController : UIViewController<UITextFieldDelegate>
+@interface RegistrationViewController : UIViewController <UITextFieldDelegate>
 
 // Country code
-@property (nonatomic, strong) IBOutlet UIButton* countryNameButton;
-@property (nonatomic, strong) IBOutlet UIButton* countryCodeButton;
+@property (nonatomic, strong) IBOutlet UIButton *countryNameButton;
+@property (nonatomic, strong) IBOutlet UIButton *countryCodeButton;
 
-//Phone number
-@property(nonatomic, strong) IBOutlet UITextField* phoneNumberTextField;
-@property(nonatomic, strong) IBOutlet UIButton *phoneNumberButton;
-@property(nonatomic, strong) IBOutlet UILabel* titleLabel;
-//Button
-@property(nonatomic, strong) IBOutlet UIButton* sendCodeButton;
+// Phone number
+@property (nonatomic, strong) IBOutlet UITextField *phoneNumberTextField;
+@property (nonatomic, strong) IBOutlet UIButton *phoneNumberButton;
+@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
+// Button
+@property (nonatomic, strong) IBOutlet UIButton *sendCodeButton;
 
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinnerView;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *spinnerView;
 @property (nonatomic) IBOutlet UIImageView *signalLogo;
 @property (nonatomic) IBOutlet UIView *registrationHeader;
 

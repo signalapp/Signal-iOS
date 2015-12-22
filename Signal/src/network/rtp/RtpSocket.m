@@ -5,8 +5,8 @@
 @implementation RtpSocket
 
 +(RtpSocket*) rtpSocketOverUdp:(UdpSocket*)udpSocket interopOptions:(NSArray*)interopOptions {
-    require(udpSocket != nil);
-    require(interopOptions != nil);
+    ows_require(udpSocket != nil);
+    ows_require(interopOptions != nil);
     
     RtpSocket* s = [RtpSocket new];
     s->udpSocket = udpSocket;
@@ -15,7 +15,7 @@
 }
 
 -(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(handler != nil);
+    ows_require(handler != nil);
     @synchronized(self) {
         bool isFirstTime = currentHandler == nil;
         currentHandler = handler;
@@ -23,8 +23,8 @@
     }
     
     PacketHandlerBlock valueHandler = ^(id packet) {
-        require(packet != nil);
-        require([packet isKindOfClass:NSData.class]);
+        ows_require(packet != nil);
+        ows_require([packet isKindOfClass:NSData.class]);
         NSData* data = packet;
         RtpPacket* rtpPacket = [RtpPacket rtpPacketParsedFromPacketData:data];
 
@@ -64,7 +64,7 @@
 }
 
 -(void) send:(RtpPacket*)packet {
-    require(packet != nil);
+    ows_require(packet != nil);
     
     [udpSocket send:[packet rawPacketDataUsingInteropOptions:interopOptions]];
 }

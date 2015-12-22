@@ -8,7 +8,7 @@
 +(TOCFuture*) asyncLowLatencyConnectToEndPoint:(id<NetworkEndPoint>)endPoint
                                 untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
-    require(endPoint != nil);
+    ows_require(endPoint != nil);
     
     TOCFuture* futureSpecificEndPoints = [endPoint asyncResolveToSpecificEndPointsUnlessCancelled:untilCancelledToken];
     
@@ -21,7 +21,7 @@
 +(TOCFuture*) startConnectingToAll:(NSArray*)specificEndPoints
                     untilCancelled:(TOCCancelToken*)untilCancelledToken {
     
-    require(specificEndPoints != nil);
+    ows_require(specificEndPoints != nil);
     
     NSArray* candidates = [specificEndPoints map:^id(id<NetworkEndPoint> endPoint) {
         return [LowLatencyCandidate lowLatencyCandidateToRemoteEndPoint:endPoint];

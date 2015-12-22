@@ -3,7 +3,7 @@
 @implementation ZrtpHandshakeSocket
 
 +(ZrtpHandshakeSocket*) zrtpHandshakeSocketOverRtp:(RtpSocket*)rtpSocket {
-    require(rtpSocket != nil);
+    ows_require(rtpSocket != nil);
     
     ZrtpHandshakeSocket* z = [ZrtpHandshakeSocket new];
     z->rtpSocket = rtpSocket;
@@ -12,7 +12,7 @@
     return z;
 }
 -(void) send:(HandshakePacket*)packet {
-    require(packet != nil);
+    ows_require(packet != nil);
     uint16_t sequenceNumber = nextPacketSequenceNumber;
     nextPacketSequenceNumber += 1;
     [sentPacketsLogger markOccurrence:packet];
@@ -20,14 +20,14 @@
                                                 usingInteropOptions:rtpSocket->interopOptions]];
 }
 -(void) startWithHandler:(PacketHandler*)handler untilCancelled:(TOCCancelToken*)untilCancelledToken {
-    require(handler != nil);
+    ows_require(handler != nil);
     requireState(handshakePacketHandler == nil);
     
     handshakePacketHandler = handler;
     
     PacketHandlerBlock packetHandler = ^(id packet) {
-        require(packet != nil);
-        require([packet isKindOfClass:RtpPacket.class]);
+        ows_require(packet != nil);
+        ows_require([packet isKindOfClass:RtpPacket.class]);
         RtpPacket* rtpPacket = packet;
         
         HandshakePacket* handshakePacket = nil;

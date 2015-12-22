@@ -7,16 +7,13 @@
 //
 
 #import "JSQCall.h"
-
-#import "TSMessageAdapter.h"
-#import "TSIncomingMessage.h"
-#import "TSOutgoingMessage.h"
-#import "TSCall.h"
-#import "TSInfoMessage.h"
-#import "TSErrorMessage.h"
 #import "TSAttachmentPointer.h"
-#import "TSVideoAttachmentAdapter.h"
-#import "TSAnimatedAdapter.h"
+#import "TSCall.h"
+#import "TSContentAdapters.h"
+#import "TSErrorMessage.h"
+#import "TSIncomingMessage.h"
+#import "TSInfoMessage.h"
+#import "TSOutgoingMessage.h"
 
 
 @interface TSMessageAdapter ()
@@ -48,7 +45,7 @@
 
 // ---
 
-@property (nonatomic, copy)   NSDate   *messageDate;
+@property (nonatomic, copy) NSDate *messageDate;
 @property (nonatomic, retain) NSString *messageBody;
 
 @property NSUInteger identifier;
@@ -58,68 +55,69 @@
 
 @implementation TSMessageAdapter
 
-+ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction*)interaction inThread:(TSThread*)thread{
-    
++ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.messageDate       = interaction.date;
     adapter.identifier        = (NSUInteger)interaction.uniqueId;
-    
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        adapter.thread = (TSContactThread*)thread;
+        adapter.thread = (TSContactThread *)thread;
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-            NSString *contactId       = ((TSContactThread*)thread).contactIdentifier;
+            NSString *contactId       = ((TSContactThread *)thread).contactIdentifier;
             adapter.senderId          = contactId;
             adapter.senderDisplayName = contactId;
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
-            adapter.senderId   = ME_MESSAGE_IDENTIFIER;
+            adapter.senderId          = ME_MESSAGE_IDENTIFIER;
             adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
-            adapter.messageType = TSOutgoingMessageAdapter;
+            adapter.messageType       = TSOutgoingMessageAdapter;
         }
-    } else if ([thread isKindOfClass:[TSGroupThread class]]){
+    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *message = (TSIncomingMessage*)interaction;
-            adapter.senderId   = message.authorId;
-            adapter.senderDisplayName = message.authorId;
-            adapter.messageType       = TSIncomingMessageAdapter;
+            TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+            adapter.senderId           = message.authorId;
+            adapter.senderDisplayName  = message.authorId;
+            adapter.messageType        = TSIncomingMessageAdapter;
         } else {
-            adapter.senderId   = ME_MESSAGE_IDENTIFIER;
-            adapter.senderDisplayName =  NSLocalizedString(@"ME_STRING", @"");
-            adapter.messageType = TSOutgoingMessageAdapter;
+            adapter.senderId          = ME_MESSAGE_IDENTIFIER;
+            adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
+            adapter.messageType       = TSOutgoingMessageAdapter;
         }
     }
-    
-    if ([interaction isKindOfClass:[TSIncomingMessage class]] || [interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        TSMessage *message = (TSMessage*)interaction;
+
+    if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
+        [interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSMessage *message  = (TSMessage *)interaction;
         adapter.messageBody = message.body;
-        
+
         if ([message.attachments count] > 0) {
-            
             for (NSString *attachmentID in message.attachments) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
-                
+
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    TSAttachmentStream *stream = (TSAttachmentStream*)attachment;
+                    TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
                     if ([stream isAnimated]) {
                         adapter.mediaItem = [[TSAnimatedAdapter alloc] initWithAttachment:stream];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
+                            [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
-                    }
-                    else if ([stream isImage]) {
+                    } else if ([stream isImage]) {
                         adapter.mediaItem = [[TSPhotoAdapter alloc] initWithAttachment:stream];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
+                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
+                    } else {
+                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc]
+                            initWithAttachment:stream
+                                      incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
+                            [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
                     }
-                    else {
-                        adapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:stream incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = [interaction isKindOfClass:[TSOutgoingMessage class]];
-                        break;
-                    }
-                }
-                else if ([attachment isKindOfClass:[TSAttachmentPointer class]]){
-                    TSAttachmentPointer *pointer = (TSAttachmentPointer*)attachment;
-                    adapter.messageType = TSInfoMessageAdapter;
-                    
+                } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                    TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
+                    adapter.messageType          = TSInfoMessageAdapter;
+
                     if (pointer.isDownloading) {
                         adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
                     } else {
@@ -129,56 +127,60 @@
                             adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
                         }
                     }
-                    
                 } else {
-                    DDLogError(@"We retrieved an attachment that doesn't have a known type : %@", NSStringFromClass([attachment class]));
+                    DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
+                               NSStringFromClass([attachment class]));
                 }
             }
         }
-        
-    } else if ([interaction isKindOfClass:[TSCall class]]){
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
-        JSQCall *call =  [self jsqCallForTSCall:(TSCall*)interaction thread:(TSContactThread*)thread];
-        call.useThumbnail = NO; // disables use of iconography to represent group update actions
+        JSQCall *call       = [self jsqCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
+        call.useThumbnail   = NO; // disables use of iconography to represent group update actions
         return call;
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]){
-        TSInfoMessage * infoMessage = (TSInfoMessage*)interaction;
-        adapter.infoMessageType = infoMessage.messageType;
-        adapter.messageBody = infoMessage.description;
-        adapter.messageType = TSInfoMessageAdapter;
-        if(adapter.infoMessageType == TSInfoMessageTypeGroupQuit || adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
-            // repurposing call display for info message stuff for group updates, ! adapter will know because the date is nil
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
+        adapter.infoMessageType    = infoMessage.messageType;
+        adapter.messageBody        = infoMessage.description;
+        adapter.messageType        = TSInfoMessageAdapter;
+        if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit ||
+            adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
+            // repurposing call display for info message stuff for group updates, ! adapter will know because the date
+            // is nil
             CallStatus status = 0;
-            if(adapter.infoMessageType==TSInfoMessageTypeGroupQuit) {
+            if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit) {
                 status = kGroupUpdateLeft;
-            }
-            else if(adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
+            } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            JSQCall* call = [[JSQCall alloc] initWithCallerId:@"" callerDisplayName:adapter.messageBody date:nil status:status displayString:@""];
+            JSQCall *call = [[JSQCall alloc] initWithCallerId:@""
+                                            callerDisplayName:adapter.messageBody
+                                                         date:nil
+                                                       status:status
+                                                displayString:@""];
             call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
     } else {
-        TSErrorMessage * errorMessage = (TSErrorMessage*)interaction;
-        adapter.infoMessageType = errorMessage.errorType;
-        adapter.messageBody = errorMessage.description;
-        adapter.messageType = TSErrorMessageAdapter;
+        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
+        adapter.infoMessageType      = errorMessage.errorType;
+        adapter.messageBody          = errorMessage.description;
+        adapter.messageType          = TSErrorMessageAdapter;
     }
-    
+
     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        adapter.outgoingMessageStatus = ((TSOutgoingMessage*)interaction).messageState;
+        adapter.outgoingMessageStatus = ((TSOutgoingMessage *)interaction).messageState;
     }
-    
+
     return adapter;
 }
 
-+ (JSQCall*)jsqCallForTSCall:(TSCall*)call thread:(TSContactThread*)thread{
-    CallStatus status = 0;
-    NSString *name = thread.name;
++ (JSQCall *)jsqCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
+    CallStatus status      = 0;
+    NSString *name         = thread.name;
     NSString *detailString = @"";
-    
+
     switch (call.callType) {
         case RPRecentCallTypeOutgoing:
             status = kCallOutgoing;
@@ -193,7 +195,7 @@
             status = kCallIncoming;
             break;
     }
-    
+
     switch (status) {
         case kCallMissed:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
@@ -207,7 +209,7 @@
         default:
             break;
     }
-    
+
     JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier
                                        callerDisplayName:thread.name
                                                     date:call.date
@@ -216,43 +218,42 @@
     return jsqCall;
 }
 
-- (NSString*)senderId{
+- (NSString *)senderId {
     if (_senderId) {
         return _senderId;
-    }
-    else{
+    } else {
         return ME_MESSAGE_IDENTIFIER;
     }
 }
 
-- (NSString *)senderDisplayName{
+- (NSString *)senderDisplayName {
     if (self.thread) {
         return _thread.name;
     }
     return self.senderDisplayName;
 }
 
-- (NSDate *)date{
+- (NSDate *)date {
     return self.messageDate;
 }
 
-- (BOOL)isMediaMessage{
-    return _mediaItem?YES:NO;
+- (BOOL)isMediaMessage {
+    return _mediaItem ? YES : NO;
 }
 
-- (id<JSQMessageMediaData>)media{
+- (id<JSQMessageMediaData>)media {
     return _mediaItem;
 }
 
-- (NSString *)text{
+- (NSString *)text {
     return self.messageBody;
 }
 
-- (NSUInteger)messageHash{
+- (NSUInteger)messageHash {
     return self.identifier;
 }
 
-- (NSInteger)messageState{
+- (NSInteger)messageState {
     return self.outgoingMessageStatus;
 }
 

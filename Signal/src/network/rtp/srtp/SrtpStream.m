@@ -8,10 +8,10 @@
 @implementation SrtpStream
 
 +(SrtpStream*) srtpStreamWithCipherKey:(NSData*)cipherKey andMacKey:(NSData*)macKey andCipherIvSalt:(NSData*)cipherIvSalt {
-    require(cipherKey != nil);
-    require(macKey != nil);
-    require(cipherIvSalt != nil);
-    require(cipherIvSalt.length == IV_SALT_LENGTH);
+    ows_require(cipherKey != nil);
+    ows_require(macKey != nil);
+    ows_require(cipherIvSalt != nil);
+    ows_require(cipherIvSalt.length == IV_SALT_LENGTH);
 
     SrtpStream* s = [SrtpStream new];
     s->cipherIvSalt = cipherIvSalt;
@@ -22,7 +22,7 @@
 }
 
 -(RtpPacket*) encryptAndAuthenticateNormalRtpPacket:(RtpPacket*)normalRtpPacket {
-    require(normalRtpPacket != nil);
+    ows_require(normalRtpPacket != nil);
     NSData* payload = [normalRtpPacket payload];
 
     NSData* iv = [self getIvForSequenceNumber:[normalRtpPacket sequenceNumber] andSynchronizationSourceIdentifier:[normalRtpPacket synchronizationSourceIdentifier]];
@@ -36,7 +36,7 @@
 }
 
 -(RtpPacket*) verifyAuthenticationAndDecryptSecuredRtpPacket:(RtpPacket*)securedRtpPacket {
-    require(securedRtpPacket != nil);
+    ows_require(securedRtpPacket != nil);
     checkOperationDescribe([[securedRtpPacket payload] length] >= HMAC_LENGTH, @"Payload not long enough to include hmac");
 
     NSData* authenticatedData = [securedRtpPacket rawPacketDataUsingInteropOptions:nil];

@@ -12,7 +12,7 @@
 
 @interface DebugLogger : NSObject
 
-MacrosSingletonInterface
++ (instancetype)sharedLogger;
 
 - (void)enableFileLogging;
 
@@ -22,7 +22,7 @@ MacrosSingletonInterface
 
 - (void)wipeLogs;
 
-- (NSString*)logsDirectory;
+- (NSString *)logsDirectory;
 
 @property (nonatomic) DDFileLogger *fileLogger;
 

@@ -3,14 +3,14 @@
 
 @implementation AnonymousValueLogger
 
-+(AnonymousValueLogger*) anonymousValueLogger:(void(^)(double value))logValue {
-    require(logValue != nil);
-    AnonymousValueLogger* a = [AnonymousValueLogger new];
-    a->_logValueBlock = logValue;
++ (AnonymousValueLogger *)anonymousValueLogger:(void (^)(double value))logValue {
+    ows_require(logValue != nil);
+    AnonymousValueLogger *a = [AnonymousValueLogger new];
+    a->_logValueBlock       = logValue;
     return a;
 }
 
--(void) logValue:(double)value {
+- (void)logValue:(double)value {
     _logValueBlock(value);
 }
 

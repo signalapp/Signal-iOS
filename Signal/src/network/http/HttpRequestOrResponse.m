@@ -5,11 +5,11 @@
 @implementation HttpRequestOrResponse
 
 +(HttpRequestOrResponse*) httpRequestOrResponse:(id)requestOrResponse {
-    require(requestOrResponse != nil);
+    ows_require(requestOrResponse != nil);
     
     HttpRequestOrResponse* h = [HttpRequestOrResponse new];
     h->requestOrResponse = requestOrResponse;
-    require(h.isResponse || h.isRequest);
+    ows_require(h.isResponse || h.isRequest);
     return h;
 }
 -(bool) isRequest {
@@ -31,7 +31,7 @@
 }
 
 +(HttpRequestOrResponse*) tryExtractFromPartialData:(NSData*)data usedLengthOut:(NSUInteger*)usedLengthPtr {
-    require(data != nil);
+    ows_require(data != nil);
 
     // first line should contain HTTP
     checkOperation([data tryFindIndexOf:@"\r\n".encodedAsAscii] == nil || [data tryFindIndexOf:@"HTTP".encodedAsAscii] != nil);

@@ -17,8 +17,7 @@
 @interface CallConnectUtil_Initiator : NSObject
 
 /// Result has type Future*(CallConnectResult)
-+(TOCFuture*) asyncConnectCallToRemoteNumber:(PhoneNumber*)remoteNumber
-                          withCallController:(CallController*)callController;
++ (TOCFuture *)asyncConnectCallToRemoteNumber:(PhoneNumber *)remoteNumber
+                           withCallController:(CallController *)callController;
 
 @end
-

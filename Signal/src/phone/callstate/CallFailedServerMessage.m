@@ -5,11 +5,11 @@
 
 @synthesize text;
 
-+(CallFailedServerMessage*) callFailedServerMessageWithText:(NSString*)text {
-    require(text != nil);
-    
-    CallFailedServerMessage* instance = [CallFailedServerMessage new];
-    instance->text = text;
++ (CallFailedServerMessage *)callFailedServerMessageWithText:(NSString *)text {
+    ows_require(text != nil);
+
+    CallFailedServerMessage *instance = [CallFailedServerMessage new];
+    instance->text                    = text;
     return instance;
 }
 

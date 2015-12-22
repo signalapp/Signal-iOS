@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface PresentIdentityQRCodeViewController : UIViewController
-@property(nonatomic,strong) IBOutlet UIImageView* qrCodeView;
-@property(nonatomic,strong) IBOutlet UILabel *yourFingerprintLabel;
-@property(nonatomic,strong) NSData* identityKey;
+@property (nonatomic, strong) IBOutlet UIImageView *qrCodeView;
+@property (nonatomic, strong) IBOutlet UILabel *yourFingerprintLabel;
+@property (nonatomic, strong) NSData *identityKey;
 
 @end

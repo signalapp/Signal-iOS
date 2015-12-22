@@ -12,15 +12,20 @@
  **/
 
 @interface StretchFactorController : NSObject {
-@private int currentStretchMode;
-@private id<BufferDepthMeasure> bufferDepthMeasure;
-@private DesiredBufferDepthController* desiredBufferDepthController;
-@private DecayingSampleEstimator* decayingBufferDepthMeasure;
-@private id<ValueLogger> stretchModeChangeLogger;
+   @private
+    int currentStretchMode;
+   @private
+    id<BufferDepthMeasure> bufferDepthMeasure;
+   @private
+    DesiredBufferDepthController *desiredBufferDepthController;
+   @private
+    DecayingSampleEstimator *decayingBufferDepthMeasure;
+   @private
+    id<ValueLogger> stretchModeChangeLogger;
 }
 
-+(StretchFactorController*) stretchFactorControllerForJitterQueue:(JitterQueue*)jitterQueue;
++ (StretchFactorController *)stretchFactorControllerForJitterQueue:(JitterQueue *)jitterQueue;
 
--(double) getAndUpdateDesiredStretchFactor;
+- (double)getAndUpdateDesiredStretchFactor;
 
 @end

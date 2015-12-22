@@ -10,10 +10,10 @@
 
 @interface SettingsTableViewCell : UITableViewCell
 
--(void)updateImageQualityLabel;
+- (void)updateImageQualityLabel;
 
-//Optionals
-@property(nonatomic, strong) IBOutlet UISwitch* toggle;
-@property(nonatomic,strong) IBOutlet UILabel* detailLabel;
+// Optionals
+@property (nonatomic, strong) IBOutlet UISwitch *toggle;
+@property (nonatomic, strong) IBOutlet UILabel *detailLabel;
 
 @end

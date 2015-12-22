@@ -10,6 +10,6 @@
 
 @interface NSData (ows_StripToken)
 
-- (NSString*)ows_tripToken;
+- (NSString *)ows_tripToken;
 
 @end

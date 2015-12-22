@@ -10,10 +10,11 @@
 
 @implementation NSData (ows_StripToken)
 
-- (NSString*)ows_tripToken {
+- (NSString *)ows_tripToken {
     return [[[NSString stringWithFormat:@"%@", self]
-            stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]]
-            stringByReplacingOccurrencesOfString:@" " withString:@""];
+        stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]]
+        stringByReplacingOccurrencesOfString:@" "
+                                  withString:@""];
 }
 
 @end

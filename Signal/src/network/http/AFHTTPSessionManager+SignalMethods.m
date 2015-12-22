@@ -23,27 +23,24 @@
 - (NSURLSessionDataTask *)BUSY:(NSString *)URLString
                     parameters:(id)parameters
                        success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-                       failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
-    
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"BUSY" URLString:URLString parameters:parameters success:success failure:failure];
+                       failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSURLSessionDataTask *dataTask =
+        [self dataTaskWithHTTPMethod:@"BUSY" URLString:URLString parameters:parameters success:success failure:failure];
     [dataTask resume];
-    
+
     return dataTask;
-    
 }
 
 - (NSURLSessionDataTask *)RING:(NSString *)URLString
                     parameters:(id)parameters
                        success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-                       failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure{
-    
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"RING" URLString:URLString parameters:parameters success:success failure:failure];
+                       failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSURLSessionDataTask *dataTask =
+        [self dataTaskWithHTTPMethod:@"RING" URLString:URLString parameters:parameters success:success failure:failure];
     [dataTask resume];
-    
-    return dataTask;
-    
-}
 
+    return dataTask;
+}
 
 
 @end

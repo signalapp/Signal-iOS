@@ -10,18 +10,18 @@
 
 @class TSMessageAdapter;
 
-@interface TSAdapterCacheManager : NSObject  {
-    NSCache * messageAdaptersCache;
+@interface TSAdapterCacheManager : NSObject {
+    NSCache *messageAdaptersCache;
 }
 
 @property (nonatomic, retain) NSCache *messageAdaptersCache;
 
 + (id)sharedManager;
 
-- (void)cacheAdapter:(TSMessageAdapter*)adapter forInteractionId:(NSString*)identifier;
-- (void)clearCacheEntryForInteractionId:(NSString*)identifier;
-- (TSMessageAdapter*)adapterForInteractionId:(NSString*)identifier;
-- (BOOL)containsCacheEntryForInteractionId:(NSString*)identifier;
+- (void)cacheAdapter:(TSMessageAdapter *)adapter forInteractionId:(NSString *)identifier;
+- (void)clearCacheEntryForInteractionId:(NSString *)identifier;
+- (TSMessageAdapter *)adapterForInteractionId:(NSString *)identifier;
+- (BOOL)containsCacheEntryForInteractionId:(NSString *)identifier;
 
 
 @end

@@ -9,9 +9,9 @@
                                  andHeaders:(NSDictionary*)headers
                         andOptionalBodyText:(NSString*)optionalBody {
     
-    require(headers != nil);
-    require(statusText != nil);
-    require(headers != nil);
+    ows_require(headers != nil);
+    ows_require(statusText != nil);
+    ows_require(headers != nil);
     
     HttpResponse* s = [HttpResponse new];
     s->statusCode = statusCode;
@@ -25,9 +25,9 @@
                                  andHeaders:(NSDictionary*)headers
                         andOptionalBodyData:(NSData*)optionalBody {
     
-    require(headers != nil);
-    require(statusText != nil);
-    require(headers != nil);
+    ows_require(headers != nil);
+    ows_require(statusText != nil);
+    ows_require(headers != nil);
     
     HttpResponse* s = [HttpResponse new];
     s->statusCode = statusCode;
@@ -37,7 +37,7 @@
     return s;
 }
 +(HttpResponse*) httpResponseFromData:(NSData*)data {
-    require(data != nil);
+    ows_require(data != nil);
     NSUInteger responseSize;
     HttpRequestOrResponse* http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&responseSize];
     checkOperation(http.isResponse && responseSize == data.length);

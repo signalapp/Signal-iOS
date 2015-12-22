@@ -11,7 +11,7 @@
 
 /**
  *
- * AudioProcessor is responsible for transforming audio as it travels between 
+ * AudioProcessor is responsible for transforming audio as it travels between
  * the network and the hardware.
  *
  * Processing involves:
@@ -24,19 +24,24 @@
  **/
 
 @interface AudioProcessor : NSObject {
-@private StretchFactorController* stretchFactorController;
-@private AudioStretcher* audioStretcher;
-@private AudioPacker* audioPacker;
-@private JitterQueue* jitterQueue;
-@private bool haveReceivedDataYet;
+   @private
+    StretchFactorController *stretchFactorController;
+   @private
+    AudioStretcher *audioStretcher;
+   @private
+    AudioPacker *audioPacker;
+   @private
+    JitterQueue *jitterQueue;
+   @private
+    bool haveReceivedDataYet;
 }
 
-@property (nonatomic,readonly) SpeexCodec* codec;
+@property (nonatomic, readonly) SpeexCodec *codec;
 
-+(AudioProcessor*) audioProcessor;
++ (AudioProcessor *)audioProcessor;
 
--(void) receivedPacket:(EncodedAudioPacket*)packet;
--(NSArray*) encodeAudioPacketsFromBuffer:(CyclicalBuffer*) buffer;
--(NSData*) tryDecodeOrInferFrame;
+- (void)receivedPacket:(EncodedAudioPacket *)packet;
+- (NSArray *)encodeAudioPacketsFromBuffer:(CyclicalBuffer *)buffer;
+- (NSData *)tryDecodeOrInferFrame;
 
 @end
