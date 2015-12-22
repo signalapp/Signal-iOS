@@ -49,11 +49,15 @@
             }
 
             UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.category             = Signal_CallBack_Category;
-            notification.userInfo             = @{Signal_Call_UserInfo_Key : cThread.contactIdentifier};
             notification.soundName            = @"NewMessage.aifc";
-            notification.alertBody =
-                [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
+            if ([[Environment preferences] notificationPreviewType] == NotificationNoNameNoPreview) {
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"MISSED_CALL", nil)];
+            } else {
+                notification.userInfo = @{Signal_Call_UserInfo_Key : cThread.contactIdentifier};
+                notification.category = Signal_CallBack_Category;
+                notification.alertBody =
+                    [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
+            }
 
             [[PushManager sharedManager] presentNotification:notification];
         }
