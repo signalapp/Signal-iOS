@@ -8,7 +8,6 @@
 
 #import "TSMessagesManager.h"
 
-#import <AudioToolbox/AudioToolbox.h>
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <TextSecureKit/TSAccountManager.h>
@@ -25,8 +24,6 @@
 
 
 @interface TSMessagesManager ()
-
-@property SystemSoundID newMessageSound;
 
 @end
 
@@ -46,9 +43,6 @@
 
     if (self) {
         _dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        NSURL *newMessageSound =
-            [NSURL URLWithString:[[NSBundle mainBundle] pathForResource:@"NewMessage" ofType:@"aifc"]];
-        AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageSound, &_newMessageSound);
     }
 
     return self;
@@ -451,10 +445,6 @@
       numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
     }];
     return numberOfItems;
-}
-
-- (void)dealloc {
-    AudioServicesDisposeSystemSoundID(_newMessageSound);
 }
 
 @end

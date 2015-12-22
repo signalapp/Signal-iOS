@@ -14,10 +14,10 @@
 
 @protocol NotificationsProtocol <NSObject>
 
-+ (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
+- (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                                 from:(NSString *)name
                             inThread:(TSThread *)thread;
 
-+ (void)notifyUserForErrorMessage:(TSErrorMessage *)error inThread:(TSThread *)thread;
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)error inThread:(TSThread *)thread;
 
 @end
