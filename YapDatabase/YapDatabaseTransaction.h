@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Provides access to the metadata.
  * This fetches directly from the metadata dictionary stored in memory, and thus never hits the disk.
 **/
-- (id)metadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (nullable id)metadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 #pragma mark Primitive
 
@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  * @see objectForKey:inCollection:
 **/
-- (NSData *)serializedObjectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (nullable NSData *)serializedObjectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Primitive access.
@@ -162,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @see metadataForKey:inCollection:
 **/
-- (NSData *)serializedMetadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (nullable NSData *)serializedMetadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Primitive access.
@@ -483,7 +483,7 @@ NS_ASSUME_NONNULL_BEGIN
  * For more information, and code samples, please see the wiki article:
  * https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification
 **/
-@property (nonatomic, strong, readwrite) id yapDatabaseModifiedNotificationCustomObject;
+@property (nonatomic, strong, readwrite, nullable) id yapDatabaseModifiedNotificationCustomObject;
 
 #pragma mark Object & Metadata
 
