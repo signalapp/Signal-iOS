@@ -1518,6 +1518,18 @@ static void yapNotifyDidRead(yap_file *file)
 	}
 #endif
 	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		//
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		NSAssert(NO, @"Deadlock ahead !");
+	}
+#endif
+	
 	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
 		
 		if (longLivedReadTransaction)
@@ -1554,6 +1566,19 @@ static void yapNotifyDidRead(yap_file *file)
 	if (!(flags & YDB_SyncReadWriteTransaction))
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadWriteTransaction];
+	}
+#endif
+	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey) ||
+	    dispatch_get_specific(database->IsOnWriteQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		//
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		NSAssert(NO, @"Deadlock ahead !");
 	}
 #endif
 	
