@@ -1766,37 +1766,20 @@ typedef enum : NSUInteger {
 - (void)didPressAccessoryButton:(UIButton *)sender {
     [self dismissKeyBoard];
 
-    UIView *presenter = self.parentViewController.view;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NULL message:NULL preferredStyle: UIAlertControllerStyleAlert];
+    
+    UIAlertAction *takeMedia = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_MEDIA_BUTTON", @"") style:UIAlertControllerStyleAlert handler:^(UIAlertAction * _Nonnull action) {
+        [self takePictureOrVideo];
+    }];
 
-    [DJWActionSheet showInView:presenter
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[
-                 NSLocalizedString(@"TAKE_MEDIA_BUTTON", @""),
-                 NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
-             ] //,@"Record audio"]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogVerbose(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            DDLogVerbose(@"Destructive button tapped");
-                        } else {
-                            switch (tappedButtonIndex) {
-                                case 0:
-                                    [self takePictureOrVideo];
-                                    break;
-                                case 1:
-                                    [self chooseFromLibrary];
-                                    break;
-                                case 2:
-                                    [self recordAudio];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                      }];
+    UIAlertAction *chooseMedia = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"") style:UIAlertControllerStyleAlert handler:^(UIAlertAction * _Nonnull action) {
+        [self chooseFromLibrary];
+    }];
+    
+    [alertController addAction:takeMedia];
+    [alertController addAction:chooseMedia];
+    
+    [self presentViewController:alertController animated:true completion:nil];
 }
 
 - (void)markAllMessagesAsRead {

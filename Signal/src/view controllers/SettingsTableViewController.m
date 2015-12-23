@@ -156,6 +156,9 @@ typedef enum {
         }
 
         case kNetworkStatusSection: {
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            [cell setSelectionStyle: UITableViewCellSelectionStyleNone];
+            
             break;
         }
 
