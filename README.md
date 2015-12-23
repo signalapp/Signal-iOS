@@ -1,17 +1,13 @@
 # Signal for iOS [![Build Status](https://travis-ci.org/WhisperSystems/Signal-iOS.svg?branch=master)](https://travis-ci.org/WhisperSystems/Signal-iOS)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/WhisperSystems/Signal-iOS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Signal allows you to make private phone calls ([RedPhone protocol](https://github.com/WhisperSystems/RedPhone/wiki)) and private text messaging ([TextSecure protocol](https://github.com/WhisperSystems/TextSecure/wiki)).
+Signal is a messaging app for simple private communication with friends.
 
 [![Available on the AppStore](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/app/id874139669)
 
 ## Translation
 
-Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/projects/p/signal-ios/)
-
-## Interoperability 
-
-Signal works with [RedPhone](https://github.com/WhisperSystems/Redphone) and [TextSecure](https://github.com/WhisperSystems/TextSecure) on Android.
+Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/open-whisper-systems/signal-ios/)
 
 ## Contributing Code
 Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md).
