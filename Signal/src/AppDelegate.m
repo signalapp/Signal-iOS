@@ -169,6 +169,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    if (getenv("runningTests_dontStartApp")) {
+        return;
+    }
+
     if ([TSAccountManager isRegistered]) {
         // We're double checking that the app is active, to be sure since we can't verify in production env due to code
         // signing.

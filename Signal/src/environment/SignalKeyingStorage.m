@@ -52,14 +52,7 @@
 }
 
 + (NSString *)serverAuthPassword {
-    NSString *password = [self stringForKey:SAVED_PASSWORD_KEY];
-    NSData *data       = [password decodedAsBase64Data];
-    if (data.length != SAVED_PASSWORD_LENGTH) {
-        DDLogError(@"The server password has incorrect length. Is %lu but should be %d",
-                   (unsigned long)data.length,
-                   SAVED_PASSWORD_LENGTH);
-    }
-    return password;
+    return [self stringForKey:SAVED_PASSWORD_KEY];
 }
 
 #pragma mark Keychain wrapper methods
