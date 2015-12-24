@@ -7,7 +7,6 @@ pod 'OpenSSL',                    '~> 1.0.205'
 pod 'PastelogKit',                '~> 1.3'
 pod 'FFCircularProgressView',     '~> 0.5'
 pod 'SCWaveformView',             '~> 1.0'
-pod 'iRate',                      '~> 1.11'
 pod 'DJWActionSheet'
 
 pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :commit => 'e5582fef8a6b3e35f8070361ef37237222da712b'

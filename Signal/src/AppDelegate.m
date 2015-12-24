@@ -31,10 +31,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 #pragma mark Detect updates - perform migrations
 
-+ (void)initialize {
-    [AppStoreRating setupRatingLibrary];
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
@@ -111,6 +107,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[PushManager sharedManager] validateUserNotificationSettings];
         [TSPreKeyManager refreshPreKeys];
     }
+
+    [AppStoreRating setupRatingLibrary];
 
     return YES;
 }
@@ -206,18 +204,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
     if ([TSAccountManager isRegistered]) {
         [[Environment getCurrent].signalsViewController composeNew];
-    } else {
-        UIAlertController *controller = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                             message:
-                                 @"Someone's exited to send his first message! Register now to send your first message."
-                      preferredStyle:UIAlertControllerStyleAlert];
         completionHandler(YES);
-        [self.window.rootViewController presentViewController:controller
-                                                     animated:YES
-                                                   completion:^{
-                                                     completionHandler(NO);
-                                                   }];
+    } else {
+        UIAlertController *controller =
+            [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
+                                         preferredStyle:UIAlertControllerStyleAlert];
+
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *_Nonnull action){
+
+                                                     }]];
+        [[Environment getCurrent]
+                .signalsViewController.presentedViewController presentViewController:controller
+                                                                            animated:YES
+                                                                          completion:^{
+                                                                            completionHandler(NO);
+                                                                          }];
     }
 }
 

@@ -6,14 +6,15 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import <iRate/iRate.h>
 #import "AppStoreRating.h"
+#import "iRate.h"
 
 @implementation AppStoreRating
 
 + (void)setupRatingLibrary {
     iRate *rate                         = [iRate sharedInstance];
     rate.appStoreID                     = 874139669;
+    rate.appStoreGenreID                = 6005;
     rate.daysUntilPrompt                = 15;
     rate.usesUntilPrompt                = 10;
     rate.remindPeriod                   = 20;

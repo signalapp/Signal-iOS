@@ -25,14 +25,6 @@
 
 #pragma mark - View Controller Titles
 #define SETTINGS_NAV_BAR_TITLE NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for recent calls view controller")
-#define FAVOURITES_NAV_BAR_TITLE NSLocalizedString(@"FAVOURITES_NAV_BAR_TITLE", @"Title for favourites view controller")
-
-#pragma mark - Contact Detail Communication Types
-
-#define CONTACT_DETAIL_COMM_TYPE_EMAIL NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_EMAIL", @"")
-#define CONTACT_DETAIL_COMM_TYPE_SECURE NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_SECURE", @"")
-#define CONTACT_DETAIL_COMM_TYPE_INSECURE NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", @"")
-#define CONTACT_DETAIL_COMM_TYPE_NOTES NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_NOTES", @"")
 
 #define DIALER_CALL_BUTTON_TITLE NSLocalizedString(@"DIALER_CALL_BUTTON_TITLE", @"")
 
@@ -41,7 +33,6 @@
 #define TXT_CANCEL_TITLE NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
 #define TXT_SEARCH_PLACEHOLDER_TEXT NSLocalizedString(@"TXT_SEARCH_PLACEHOLDER_TEXT", @"")
 #define UNKNOWN_CONTACT_NAME NSLocalizedString(@"UNKNOWN_CONTACT_NAME", @"")
-#define TXT_DATESTRING_TODAY NSLocalizedString(@"DATESTRING_TODAY", @"")
 
 #pragma mark - Inbox View
 
@@ -76,9 +67,6 @@
 #define REGISTER_CC_ERR_ALERT_VIEW_TITLE NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
 #define REGISTER_CC_ERR_ALERT_VIEW_MESSAGE NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
 #define REGISTER_CC_ERR_ALERT_VIEW_DISMISS NSLocalizedString(@"OK", @"")
-#define CONTINUE_TO_WHISPER_TITLE NSLocalizedString(@"CONTINUE_TO_WHISPER_TITLE", @"")
-
-#define CHALLENGE_CODE_BUTTON_TITLE NSLocalizedString(@"CHALLENGE_CODE_BUTTON_TITLE", @"")
 
 #define END_CALL_BUTTON_TITLE NSLocalizedString(@"END_CALL_BUTTON_TITLE", @"")
 #define ANSWER_CALL_BUTTON_TITLE NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"")
