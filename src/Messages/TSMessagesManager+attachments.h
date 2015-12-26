@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSMessagesManager+sendMessages.h"
 #import "TSMessagesManager.h"
 
 @class TSAttachment;
@@ -18,7 +19,9 @@
 - (void)sendAttachment:(NSData *)attachmentData
            contentType:(NSString *)contentType
              inMessage:(TSOutgoingMessage *)outgoingMessage
-                thread:(TSThread *)thread;
+                thread:(TSThread *)thread
+               success:(successSendingCompletionBlock)successCompletionBlock
+               failure:(failedSendingCompletionBlock)failedCompletionBlock;
 
 - (void)retrieveAttachment:(TSAttachmentPointer *)attachment messageId:(NSString *)messageId;
 

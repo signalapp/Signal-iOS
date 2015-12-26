@@ -13,7 +13,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+attachments.h"
-#import "TSMessagesManager+sendMessages.h"
 #import "TSNetworkManager.h"
 
 @interface TSMessagesManager ()
@@ -95,7 +94,9 @@ dispatch_queue_t attachmentsQueue() {
 - (void)sendAttachment:(NSData *)attachmentData
            contentType:(NSString *)contentType
              inMessage:(TSOutgoingMessage *)outgoingMessage
-                thread:(TSThread *)thread {
+                thread:(TSThread *)thread
+               success:(successSendingCompletionBlock)successCompletionBlock
+               failure:(failedSendingCompletionBlock)failedCompletionBlock {
     TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
     [[TSNetworkManager sharedManager] makeRequest:allocateAttachment
         success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -126,26 +127,55 @@ dispatch_queue_t attachmentsQueue() {
                       result.pointer.isDownloaded = YES;
                       [result.pointer saveWithTransaction:transaction];
                     }];
-                    [self sendMessage:outgoingMessage inThread:thread success:nil failure:nil];
+                    [self sendMessage:outgoingMessage
+                        inThread:thread
+                        success:^{
+                          if (successCompletionBlock) {
+                              successCompletionBlock();
+                          }
+                        }
+                        failure:^{
+                          if (failedCompletionBlock) {
+                              failedCompletionBlock();
+                          }
+                        }];
                 } else {
+                    if (failedCompletionBlock) {
+                        failedCompletionBlock();
+                    }
                     DDLogWarn(@"Failed to upload attachment");
                 }
             } else {
+                if (failedCompletionBlock) {
+                    failedCompletionBlock();
+                }
                 DDLogError(@"The server didn't returned an empty responseObject");
             }
           });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+          if (failedCompletionBlock) {
+              failedCompletionBlock();
+          }
           DDLogError(@"Failed to get attachment allocated: %@", error);
         }];
 }
 
-- (void)sendAttachment:(NSData *)attachmentData contentType:(NSString *)contentType thread:(TSThread *)thread {
+- (void)sendAttachment:(NSData *)attachmentData
+           contentType:(NSString *)contentType
+                thread:(TSThread *)thread
+               success:(successSendingCompletionBlock)successCompletionBlock
+               failure:(failedSendingCompletionBlock)failedCompletionBlock {
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:thread
                                                                   messageBody:nil
                                                                   attachments:[[NSMutableArray alloc] init]];
-    [self sendAttachment:attachmentData contentType:contentType inMessage:message thread:thread];
+    [self sendAttachment:attachmentData
+             contentType:contentType
+               inMessage:message
+                  thread:thread
+                 success:successCompletionBlock
+                 failure:failedCompletionBlock];
 }
 
 - (void)retrieveAttachment:(TSAttachmentPointer *)attachment messageId:(NSString *)messageId {
