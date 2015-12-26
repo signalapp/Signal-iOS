@@ -7,7 +7,10 @@
 //
 
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <TextSecureKit/NSDate+millisecondTimeStamp.h>
 #import <TextSecureKit/TSAccountManager.h>
+#import <TextSecureKit/TSMessagesManager+attachments.h>
+#import <TextSecureKit/TSMessagesManager+sendMessages.h>
 #import "ContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
@@ -16,6 +19,7 @@
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
+#import "TSOutgoingMessage.h"
 #import "UIImage+normalizeImage.h"
 #import "UIUtil.h"
 
@@ -116,7 +120,87 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 #pragma mark - Actions
 - (void)createGroup {
     TSGroupModel *model = [self makeGroup];
-    [Environment messageGroupModel:model withCompose:YES];
+
+    [[TSStorageManager sharedManager]
+            .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+      self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+    }];
+
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"GROUP_CREATING", nil)
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [self
+        presentViewController:alertController
+                     animated:YES
+                   completion:^{
+                     TSOutgoingMessage *message =
+                         [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                             inThread:self.thread
+                                                          messageBody:@""
+                                                          attachments:[[NSMutableArray alloc] init]];
+                     message.groupMetaMessage = TSGroupMessageNew;
+                     if (model.groupImage != nil) {
+                         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
+                             contentType:@"image/png"
+                             inMessage:message
+                             thread:self.thread
+                             success:^{
+                               [self dismissViewControllerAnimated:YES
+                                                        completion:^{
+                                                          [Environment messageGroup:self.thread];
+                                                        }];
+                             }
+
+                             failure:^{
+                               [self
+                                   dismissViewControllerAnimated:YES
+                                                      completion:^{
+
+                                                        [[TSStorageManager sharedManager]
+                                                                .dbConnection
+                                                            readWriteWithBlock:^(
+                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                                              [self.thread removeWithTransaction:transaction];
+                                                            }];
+
+                                                        SignalAlertView(
+                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                      }];
+
+                             }];
+                     } else {
+                         [[TSMessagesManager sharedManager] sendMessage:message
+                             inThread:self.thread
+                             success:^{
+                               [self dismissViewControllerAnimated:YES
+                                                        completion:^{
+                                                          [Environment messageGroup:self.thread];
+                                                        }];
+                             }
+
+                             failure:^{
+                               [self
+                                   dismissViewControllerAnimated:YES
+                                                      completion:^{
+
+                                                        [[TSStorageManager sharedManager]
+                                                                .dbConnection
+                                                            readWriteWithBlock:^(
+                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                                              [self.thread removeWithTransaction:transaction];
+                                                            }];
+
+                                                        SignalAlertView(
+                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                      }];
+
+
+                             }];
+                     }
+                   }];
 }
 
 

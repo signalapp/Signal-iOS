@@ -27,18 +27,18 @@
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
-static NSString *const kSegueIndentifier    = @"showSegue";
 static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
 
+@property (nonatomic, strong) MessagesViewController *mvc;
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) CellState viewingThreadsIn;
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
-@property (nonatomic) NSArray<id<UIPreviewActionItem>> *previewActions;
+@property (nonatomic, strong) id previewingContext;
 
 @end
 
@@ -82,9 +82,10 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     self.navigationItem.titleView = self.segmentedControl;
     [self.segmentedControl setSelectedSegmentIndex:0];
 
+
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
-        [self registerForPreviewingWithDelegate:self sourceView:self.view];
+        [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
 }
 
@@ -92,12 +93,18 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
               viewControllerForLocation:(CGPoint)location {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
-    MessagesViewController *vc = [[MessagesViewController alloc] initWithNibName:nil bundle:nil];
-    TSThread *thread           = [self threadForIndexPath:indexPath];
-    [vc setupWithThread:thread];
-    [vc peekSetup];
+    if (indexPath) {
+        [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
-    return vc;
+        MessagesViewController *vc = [[MessagesViewController alloc] initWithNibName:nil bundle:nil];
+        TSThread *thread           = [self threadForIndexPath:indexPath];
+        [vc configureForThread:thread keyboardOnViewAppearing:NO];
+        [vc peekSetup];
+
+        return vc;
+    } else {
+        return nil;
+    }
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -106,23 +113,6 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     [vc popped];
 
     [self.navigationController pushViewController:vc animated:NO];
-}
-
-- (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
-    return self.previewActions;
-}
-
-- (NSArray<id<UIPreviewActionItem>> *)previewActions {
-    if (_previewActions == nil) {
-        UIPreviewAction *printAction = [UIPreviewAction
-            actionWithTitle:@"Print"
-                      style:UIPreviewActionStyleDefault
-                    handler:^(UIPreviewAction *_Nonnull action, UIViewController *_Nonnull previewViewController){
-                        // ... code to handle action here
-                    }];
-        _previewActions = @[ printAction ];
-    }
-    return _previewActions;
 }
 
 - (void)composeNew {
@@ -176,13 +166,11 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     TSThread *thread = [self threadForIndexPath:indexPath];
 
     if (!cell) {
-        cell          = [InboxTableViewCell inboxTableViewCell];
-        cell.delegate = self;
+        cell = [InboxTableViewCell inboxTableViewCell];
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       [cell configureWithThread:thread];
-      [cell configureForState:self.viewingThreadsIn == kInboxState ? kInboxState : kArchiveState];
     });
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
@@ -216,21 +204,34 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // add the ability to delete the cell
     UITableViewRowAction *deleteAction =
         [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
-                                           title:@"           "
+                                           title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
                                          handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
-
                                            [self tableViewCellTappedDelete:swipedIndexPath];
                                          }];
 
+    UITableViewRowAction *archiveAction;
+    if (self.viewingThreadsIn == kInboxState) {
+        archiveAction = [UITableViewRowAction
+            rowActionWithStyle:UITableViewRowActionStyleNormal
+                         title:NSLocalizedString(@"ARCHIVE_ACTION", nil)
+                       handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                         [self archiveIndexPath:tappedIndexPath];
+                         [Environment.preferences setHasArchivedAMessage:YES];
+                       }];
 
-    UIImage *buttonImage = [[UIImage imageNamed:@"cellBtnDelete"] resizedImageToSize:CGSizeMake(82.0f, 72.0f)];
+    } else {
+        archiveAction = [UITableViewRowAction
+            rowActionWithStyle:UITableViewRowActionStyleNormal
+                         title:@"Unarchive"
+                       handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                         [self archiveIndexPath:tappedIndexPath];
+                       }];
+    }
 
-    deleteAction.backgroundColor = [[UIColor alloc] initWithPatternImage:buttonImage];
 
-    return @[ deleteAction ];
+    return @[ deleteAction, archiveAction ];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -242,23 +243,49 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath {
     TSThread *thread = [self threadForIndexPath:indexPath];
     if ([thread isKindOfClass:[TSGroupThread class]]) {
+        UIAlertController *removingFromGroup = [UIAlertController
+            alertControllerWithTitle:[NSString
+                                         stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
+                             message:nil
+                      preferredStyle:UIAlertControllerStyleAlert];
+        [self presentViewController:removingFromGroup animated:YES completion:nil];
+
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:thread
                                                                       messageBody:@""
                                                                       attachments:[[NSMutableArray alloc] init]];
         message.groupMetaMessage = TSGroupMessageQuit;
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:thread success:nil failure:nil];
+        [[TSMessagesManager sharedManager] sendMessage:message
+            inThread:thread
+            success:^{
+              [self dismissViewControllerAnimated:YES
+                                       completion:^{
+                                         [self deleteThread:thread];
+                                       }];
+            }
+            failure:^{
+              [self dismissViewControllerAnimated:YES
+                                       completion:^{
+                                         SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
+                                                         NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                       }];
+            }];
+    } else {
+        [self deleteThread:thread];
     }
+}
+
+- (void)deleteThread:(TSThread *)thread {
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       [thread removeWithTransaction:transaction];
     }];
+
     _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
     [self checkIfEmptyView];
 }
 
-- (void)tableViewCellTappedArchive:(InboxTableViewCell *)cell {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    TSThread *thread       = [self threadForIndexPath:indexPath];
+- (void)archiveIndexPath:(NSIndexPath *)indexPath {
+    TSThread *thread = [self threadForIndexPath:indexPath];
 
     BOOL viewingThreadsIn = self.viewingThreadsIn;
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -287,35 +314,33 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self performSegueWithIdentifier:kSegueIndentifier sender:self];
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    TSThread *thread = [self threadForIndexPath:indexPath];
+    [self presentThread:thread keyboardOnViewAppearing:NO];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+
+- (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (!_mvc) {
+          _mvc = [[UIStoryboard storyboardWithName:@"Storyboard" bundle:NULL]
+              instantiateViewControllerWithIdentifier:@"MessagesViewController"];
+      }
+
+      if (self.presentedViewController) {
+          [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+      }
+      [self.navigationController popToRootViewControllerAnimated:YES];
+
+      [_mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
+      [self.navigationController pushViewController:_mvc animated:YES];
+    });
 }
 
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:kSegueIndentifier]) {
-        MessagesViewController *vc     = [segue destinationViewController];
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        TSThread *thread               = [self threadForIndexPath:selectedIndexPath];
-        if (self.contactIdentifierFromCompose) {
-            [vc setupWithTSIdentifier:self.contactIdentifierFromCompose];
-            [vc setComposeOnOpen:self.composeMessage];
-            self.contactIdentifierFromCompose = nil;
-            self.composeMessage               = NO;
-        } else if (self.groupFromCompose) {
-            [vc setupWithTSGroup:self.groupFromCompose];
-            [vc setComposeOnOpen:self.composeMessage];
-            self.groupFromCompose = nil;
-            self.composeMessage   = NO;
-        } else if (thread) {
-            [vc setupWithThread:thread];
-            [vc setComposeOnOpen:NO];
-        } else if ([sender isKindOfClass:[TSGroupThread class]]) {
-            [vc setupWithThread:sender];
-            [vc setComposeOnOpen:YES];
-        }
-    } else if ([segue.identifier isEqualToString:kCallSegue]) {
+    if ([segue.identifier isEqualToString:kCallSegue]) {
         InCallViewController *vc = [segue destinationViewController];
         [vc configureWithLatestCall:_latestCall];
         _latestCall = nil;

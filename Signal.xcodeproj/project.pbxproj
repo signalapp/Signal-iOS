@@ -109,7 +109,6 @@
 		76EB064618170B33006006FC /* TimeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FA18170B33006006FC /* TimeUtil.m */; };
 		76EB064818170B33006006FC /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
 		76EB065618170B34006006FC /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB050C18170B33006006FC /* InCallViewController.m */; };
-		76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB051018170B33006006FC /* NextResponderScrollView.m */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -349,7 +348,6 @@
 		B660F78A1C29988E00687D6E /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B660F78B1C29988E00687D6E /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
 		B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
-		B660F78D1C29988E00687D6E /* TSAdapterCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */; };
 		B66B9F721AEA6D1100E2E609 /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F711AEA6D1100E2E609 /* NotificationSettingsViewController.m */; };
 		B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
@@ -431,7 +429,6 @@
 		FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
-		FC7C7A961A581AF40091823B /* TSAdapterCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */; };
 		FC9120411A39EFB70074545C /* qr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203F1A39EFB70074545C /* qr@2x.png */; };
 		FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */; };
 		FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */; };
@@ -696,8 +693,6 @@
 		76EB04FD18170B33006006FC /* Zid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zid.m; sourceTree = "<group>"; };
 		76EB050B18170B33006006FC /* InCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InCallViewController.h; sourceTree = "<group>"; };
 		76EB050C18170B33006006FC /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
-		76EB050F18170B33006006FC /* NextResponderScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextResponderScrollView.h; sourceTree = "<group>"; };
-		76EB051018170B33006006FC /* NextResponderScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NextResponderScrollView.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -987,8 +982,6 @@
 		FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
 		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
-		FC7C7A941A581AF40091823B /* TSAdapterCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAdapterCacheManager.h; sourceTree = "<group>"; };
-		FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAdapterCacheManager.m; sourceTree = "<group>"; };
 		FC91203F1A39EFB70074545C /* qr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr@2x.png"; sourceTree = "<group>"; };
 		FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalsViewController.h; path = UITests/SignalsViewController.h; sourceTree = "<group>"; };
 		FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalsViewController.m; path = UITests/SignalsViewController.m; sourceTree = "<group>"; };
@@ -1567,8 +1560,6 @@
 				76EB04FD18170B33006006FC /* Zid.m */,
 				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
 				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
-				FC7C7A941A581AF40091823B /* TSAdapterCacheManager.h */,
-				FC7C7A951A581AF40091823B /* TSAdapterCacheManager.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 			);
@@ -1618,8 +1609,6 @@
 				FC3196311A08141D0094C78E /* Settings */,
 				76EB050B18170B33006006FC /* InCallViewController.h */,
 				76EB050C18170B33006006FC /* InCallViewController.m */,
-				76EB050F18170B33006006FC /* NextResponderScrollView.h */,
-				76EB051018170B33006006FC /* NextResponderScrollView.m */,
 			);
 			path = "view controllers";
 			sourceTree = "<group>";
@@ -2569,7 +2558,6 @@
 				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
 				A547DD741A70A87800103EC7 /* DJWActionSheet+OWS.m in Sources */,
-				76EB065A18170B34006006FC /* NextResponderScrollView.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
@@ -2630,7 +2618,6 @@
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
 				76EB058C18170B33006006FC /* DnsManager.m in Sources */,
 				B671B2461A93B238002BBD9D /* GroupContactsResult.m in Sources */,
-				FC7C7A961A581AF40091823B /* TSAdapterCacheManager.m in Sources */,
 				B66B9F721AEA6D1100E2E609 /* NotificationSettingsViewController.m in Sources */,
 				76EB059018170B33006006FC /* IgnoredPacketFailure.m in Sources */,
 				76EB05D418170B33006006FC /* ZrtpManager.m in Sources */,
@@ -2840,7 +2827,6 @@
 				B660F78A1C29988E00687D6E /* UIUtil.m in Sources */,
 				B660F78B1C29988E00687D6E /* Zid.m in Sources */,
 				B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */,
-				B660F78D1C29988E00687D6E /* TSAdapterCacheManager.m in Sources */,
 				B660F6C31C29868000687D6E /* EC25AgreerTest.m in Sources */,
 				B660F6B91C29868000687D6E /* SpeexCodecTest.m in Sources */,
 				B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */,

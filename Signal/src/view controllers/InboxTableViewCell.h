@@ -7,18 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NextResponderScrollView.h"
 #import "TSThread.h"
 
 typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
-
-
-@class InboxTableViewCell;
-@protocol TableViewCellDelegate <NSObject>
-
-- (void)tableViewCellTappedArchive:(InboxTableViewCell *)cell;
-
-@end
 
 @interface InboxTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
@@ -26,18 +17,12 @@ typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
 @property (nonatomic, strong) IBOutlet UILabel *snippetLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
 @property (nonatomic, strong) IBOutlet UILabel *timeLabel;
-@property (nonatomic, strong) IBOutlet NextResponderScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIView *contentContainerView;
-
-@property (nonatomic, strong) IBOutlet UIView *archiveView;
-@property (nonatomic, strong) IBOutlet UIImageView *archiveImageView;
 @property (nonatomic, retain) IBOutlet UIView *messageCounter;
-@property (nonatomic, assign) id<TableViewCellDelegate> delegate;
 @property (nonatomic, retain) NSString *threadId;
 
 + (instancetype)inboxTableViewCell;
 - (void)configureWithThread:(TSThread *)thread;
-- (void)configureForState:(CellState)state;
 - (void)animateDisappear;
 
 @end

@@ -89,7 +89,7 @@ CHECKOUT OPTIONS:
     :commit: e5582fef8a6b3e35f8070361ef37237222da712b
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   TextSecureKit:
-    :commit: 8d6ce0b57c2d7de63d4e22f205ea87622432088e
+    :commit: f6f6133498661a7c406097970d152b4acea9099e
     :git: https://github.com/WhisperSystems/TextSecureKit
 
 SPEC CHECKSUMS:

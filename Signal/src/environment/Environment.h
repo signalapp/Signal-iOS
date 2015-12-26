@@ -28,6 +28,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @class ContactsManager;
 @class PhoneManager;
 @class SignalsViewController;
+@class TSGroupThread;
 
 @interface Environment : NSObject
 @property (nonatomic, readonly) in_port_t serverPort;
@@ -86,5 +87,6 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 
 + (void)messageThreadId:(NSString *)threadId;
 + (void)messageIdentifier:(NSString *)identifier withCompose:(BOOL)compose;
-+ (void)messageGroupModel:(TSGroupModel *)model withCompose:(BOOL)compose;
++ (void)messageGroup:(TSGroupThread *)groupThread;
+
 @end

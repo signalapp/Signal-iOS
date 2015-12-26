@@ -27,7 +27,6 @@
 #import "PreferencesUtil.h"
 #import "ShowGroupMembersViewController.h"
 #import "SignalKeyingStorage.h"
-#import "TSAdapterCacheManager.h"
 #import "TSAttachmentPointer.h"
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
@@ -37,6 +36,7 @@
 #import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "UIButton+OWS.h"
+#import "UIFont+OWS.h"
 #import "UIUtil.h"
 
 #define kYapDatabaseRangeLength 50
@@ -66,8 +66,8 @@ typedef enum : NSUInteger {
     NSUInteger _unreadCount;
 }
 
+@property (nonatomic, readwrite) TSThread *thread;
 @property (nonatomic, weak) UIView *navView;
-@property (nonatomic, retain) TSThread *thread;
 @property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
@@ -88,8 +88,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL displayPhoneAsTitle;
 
 @property NSUInteger page;
-
-@property BOOL isVisible;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
@@ -102,33 +100,6 @@ typedef enum : NSUInteger {
 
 @implementation MessagesViewController
 
-- (void)setupWithTSIdentifier:(NSString *)identifier {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      self.thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
-    }];
-}
-
-- (void)setupWithTSGroup:(TSGroupModel *)model {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      self.thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-    }];
-
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:self.thread
-                                                                  messageBody:@""
-                                                                  attachments:[[NSMutableArray alloc] init]];
-    message.groupMetaMessage = TSGroupMessageNew;
-    if (model.groupImage != nil) {
-        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
-                                              contentType:@"image/png"
-                                                inMessage:message
-                                                   thread:self.thread];
-    } else {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
-    }
-    isGroupConversation = YES;
-}
-
 - (void)peekSetup {
     _peek = YES;
     [self setComposeOnOpen:NO];
@@ -139,17 +110,22 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)setComposeOnOpen:(BOOL)compose {
-    _composeOnOpen = compose;
-}
+- (void)configureForThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardAppearing {
+    _thread                        = thread;
+    isGroupConversation            = [self.thread isKindOfClass:[TSGroupThread class]];
+    _composeOnOpen                 = keyboardAppearing;
+    _lastDeliveredMessageIndexPath = nil;
 
-- (void)setupWithThread:(TSThread *)thread {
-    self.thread         = thread;
-    isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
-}
-
-- (TSThread *)thread {
-    return _thread;
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    self.messageMappings =
+        [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+      [self.messageMappings updateWithTransaction:transaction];
+      self.page = 0;
+      [self updateRangeOptionsForPage:self.page];
+      [self markAllMessagesAsRead];
+      [self.collectionView reloadData];
+    }];
 }
 
 - (void)hideInputIfNeeded {
@@ -172,7 +148,6 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _isVisible = NO;
     [self.navigationController.navigationBar setTranslucent:NO];
 
     _showFingerprintDisplay =
@@ -183,7 +158,7 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
     _messageButton         = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
-    _messageButton.enabled = FALSE;
+    _messageButton.enabled = NO;
     _messageButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
     _attachButton = [[UIButton alloc] init];
@@ -195,31 +170,18 @@ typedef enum : NSUInteger {
         UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
 
-    [self markAllMessagesAsRead];
-
     [self initializeBubbles];
     [self initializeTextView];
-    self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.thread.uniqueId ]
-                                                                      view:TSMessageDatabaseViewExtensionName];
-
-    self.page = 0;
-
-    [self updateRangeOptionsForPage:self.page];
-
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      [self.messageMappings updateWithTransaction:transaction];
-      [self.collectionView reloadData];
-    }];
 
     [self initializeCollectionViewLayout];
 
-    self.senderId = ME_MESSAGE_IDENTIFIER self.senderDisplayName = ME_MESSAGE_IDENTIFIER
+    self.senderId          = ME_MESSAGE_IDENTIFIER;
+    self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(startReadTimer)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startReadTimer)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification
@@ -230,7 +192,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)initializeTextView {
-    [self.inputToolbar.contentView.textView setFont:[UIFont ows_regularFontWithSize:17.f]];
+    [self.inputToolbar.contentView.textView setFont:[UIFont ows_dynamicTypeBodyFont]];
     self.inputToolbar.contentView.leftBarButtonItem           = _attachButton;
     self.inputToolbar.contentView.rightBarButtonItem          = _messageButton;
     self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
@@ -247,7 +209,6 @@ typedef enum : NSUInteger {
     [super viewWillAppear:animated];
     [self initializeToolbars];
 
-    [self.collectionView reloadData];
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 
     if (numberOfMessages > 0) {
@@ -272,13 +233,16 @@ typedef enum : NSUInteger {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self markAllMessagesAsRead];
+    [self dismissKeyBoard];
     [self startReadTimer];
-    _isVisible = YES;
+
     [self initializeTitleLabelGestureRecognizer];
 
     [self updateBackButtonAsync];
 
+    [self.inputToolbar.contentView.textView endEditing:YES];
+
+    self.inputToolbar.contentView.textView.editable = YES;
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
@@ -296,11 +260,13 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
     if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
         // back button was pressed.
         [self.navController hideDropDown:self];
     }
-    [super viewWillDisappear:animated];
+
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
 
@@ -332,7 +298,8 @@ typedef enum : NSUInteger {
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-    _isVisible = NO;
+    [super viewDidDisappear:animated];
+    self.inputToolbar.contentView.textView.editable = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -453,6 +420,13 @@ typedef enum : NSUInteger {
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     } else if (!_thread.isGroupThread) {
         self.navigationItem.rightBarButtonItem = nil;
+    } else {
+        self.navigationItem.rightBarButtonItem =
+            [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-options-action"]
+                                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                                             style:UIBarButtonItemStylePlain
+                                            target:self
+                                            action:@selector(didSelectShow:)];
     }
 
     [self hideInputIfNeeded];
@@ -515,7 +489,7 @@ typedef enum : NSUInteger {
 
 - (void)initializeCollectionViewLayout {
     if (self.collectionView) {
-        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_regularFontWithSize:15.0f]];
+        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
         self.collectionView.showsVerticalScrollIndicator   = NO;
         self.collectionView.showsHorizontalScrollIndicator = NO;
@@ -621,7 +595,6 @@ typedef enum : NSUInteger {
     [self.navController hideDropDown:self];
     [self performSegueWithIdentifier:kShowGroupMembersSegue sender:self];
 }
-
 
 #pragma mark - Calls
 
@@ -1262,7 +1235,6 @@ typedef enum : NSUInteger {
 - (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-      [[TSAdapterCacheManager sharedManager] clearCacheEntryForInteractionId:interaction.uniqueId];
       [interaction removeWithTransaction:transaction];
     }];
 }
@@ -1452,7 +1424,9 @@ typedef enum : NSUInteger {
                                [[TSMessagesManager sharedManager] sendAttachment:attachmentData
                                                                      contentType:attachmentType
                                                                        inMessage:message
-                                                                          thread:self.thread];
+                                                                          thread:self.thread
+                                                                         success:nil
+                                                                         failure:nil];
                              }];
 }
 
@@ -1582,7 +1556,10 @@ typedef enum : NSUInteger {
     if (isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
           TSGroupThread *gThread = (TSGroupThread *)self.thread;
-          self.thread            = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
+
+          if (gThread.groupModel) {
+              self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
+          }
         }];
     }
 
@@ -1590,15 +1567,6 @@ typedef enum : NSUInteger {
 
     if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName]
             hasChangesForNotifications:notifications]) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-          [self.messageMappings updateWithTransaction:transaction];
-        }];
-        return;
-    }
-
-    if (!_isVisible) {
-        // Since we moved our databaseConnection to a new commit,
-        // we need to update the mappings too.
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
           [self.messageMappings updateWithTransaction:transaction];
         }];
@@ -1628,11 +1596,6 @@ typedef enum : NSUInteger {
                   break;
               }
               case YapDatabaseViewChangeInsert: {
-                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
-                  [[TSAdapterCacheManager sharedManager]
-                          cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction
-                                                                               inThread:self.thread]
-                      forInteractionId:interaction.uniqueId];
                   [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                   scrollToBottom = YES;
                   break;
@@ -1647,14 +1610,6 @@ typedef enum : NSUInteger {
 
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
-                  }
-
-                  for (NSIndexPath *indexPath in rowsToUpdate) {
-                      TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-                      [[TSAdapterCacheManager sharedManager]
-                              cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction
-                                                                                   inThread:self.thread]
-                          forInteractionId:interaction.uniqueId];
                   }
 
                   [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
@@ -1707,17 +1662,9 @@ typedef enum : NSUInteger {
 }
 
 - (TSMessageAdapter *)messageAtIndexPath:(NSIndexPath *)indexPath {
-    TSInteraction *interaction     = [self interactionAtIndexPath:indexPath];
-    TSAdapterCacheManager *manager = [TSAdapterCacheManager sharedManager];
-
-    if (![manager containsCacheEntryForInteractionId:interaction.uniqueId]) {
-        [manager cacheAdapter:[TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread]
-             forInteractionId:interaction.uniqueId];
-    }
-
-    return [manager adapterForInteractionId:interaction.uniqueId];
+    TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
 }
-
 
 #pragma mark group action view
 
@@ -1807,7 +1754,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)markAllMessagesAsRead {
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       [self.thread markAllAsReadWithTransaction:transaction];
     }];
 }
@@ -1879,7 +1826,9 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
                                               contentType:@"image/png"
                                                 inMessage:message
-                                                   thread:groupThread];
+                                                   thread:groupThread
+                                                  success:nil
+                                                  failure:nil];
     } else {
         [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread success:nil failure:nil];
     }
@@ -1991,5 +1940,12 @@ typedef enum : NSUInteger {
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark 3D Touch Preview Actions
+
+- (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
+    return @[];
+}
+
 
 @end

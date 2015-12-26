@@ -41,12 +41,6 @@
 }
 
 - (void)initializeLayout {
-    _scrollView.contentSize =
-        CGSizeMake(CGRectGetWidth(_contentContainerView.bounds), CGRectGetHeight(_scrollView.frame));
-
-    _scrollView.contentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
-    _archiveImageView.image   = [_archiveImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-
     self.selectionStyle = UITableViewCellSelectionStyleDefault;
 }
 
@@ -130,20 +124,6 @@
     });
 }
 
-- (void)configureForState:(CellState)state {
-    switch (state) {
-        case kArchiveState:
-            _archiveImageView.image = [[UIImage imageNamed:@"cellBtnMoveToInbox--blue"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-            break;
-        case kInboxState:
-            break;
-
-        default:
-            break;
-    }
-}
-
 - (void)updateCellForUnreadMessage {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
     _nameLabel.textColor    = [UIColor ows_blackColor];
@@ -184,27 +164,6 @@
 
 
     return attributedString;
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (_scrollView.contentOffset.x < 0) {
-        _archiveImageView.image  = [_archiveImageView.image jsq_imageMaskedWithColor:[UIColor ows_materialBlueColor]];
-        _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
-                                              _archiveImageView.bounds.origin.y,
-                                              ARCHIVE_IMAGE_VIEW_WIDTH,
-                                              _archiveImageView.bounds.size.height);
-    } else {
-        _archiveImageView.image = [_archiveImageView.image jsq_imageMaskedWithColor:[UIColor ows_darkGrayColor]];
-        double ratio            = (_archiveView.frame.size.width / 2.0f - _scrollView.contentOffset.x) /
-                       (_archiveView.frame.size.width / 2.0f);
-        double newWidth          = ARCHIVE_IMAGE_VIEW_WIDTH / 2.0f + (ARCHIVE_IMAGE_VIEW_WIDTH * ratio) / 2.0f;
-        _archiveImageView.bounds = CGRectMake(_archiveImageView.bounds.origin.x,
-                                              _archiveImageView.bounds.origin.y,
-                                              (CGFloat)newWidth,
-                                              _archiveImageView.bounds.size.height);
-    }
 }
 
 - (void)setUnreadMsgCount:(NSUInteger)unreadMessages {
@@ -254,19 +213,6 @@
         } else {
             _messageCounter.hidden = YES;
         }
-    }
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint *)targetContentOffset {
-    if (_scrollView.contentOffset.x < SWIPE_ARCHIVE_OFFSET) {
-        // archive the thread
-        [_delegate tableViewCellTappedArchive:self];
-        [Environment.preferences setHasArchivedAMessage:YES];
-    } else {
-        // don't do anything
-        *targetContentOffset = CGPointMake(CGRectGetWidth(_archiveView.frame), 0);
     }
 }
 

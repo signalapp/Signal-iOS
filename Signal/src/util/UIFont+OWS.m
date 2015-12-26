@@ -22,13 +22,18 @@
     return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
 }
 
-
 + (UIFont *)ows_mediumFontWithSize:(CGFloat)size {
     return [UIFont systemFontOfSize:size weight:UIFontWeightMedium];
 }
 
 + (UIFont *)ows_boldFontWithSize:(CGFloat)size {
     return [UIFont boldSystemFontOfSize:size];
+}
+
+#pragma mark Dynamic Type
+
++ (UIFont *)ows_dynamicTypeBodyFont {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 @end

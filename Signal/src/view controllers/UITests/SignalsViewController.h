@@ -13,20 +13,15 @@
 #import "Contact.h"
 #import "TSGroupModel.h"
 
-@interface SignalsViewController : UIViewController <UITableViewDelegate,
-                                                     UITableViewDataSource,
-                                                     TableViewCellDelegate,
-                                                     UIViewControllerPreviewingDelegate>
-
-@property (nonatomic) NSString *contactIdentifierFromCompose;
-@property (nonatomic) TSGroupModel *groupFromCompose;
-@property (nonatomic) BOOL composeMessage;
+@interface SignalsViewController
+    : UIViewController <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
 
 @property (nonatomic, retain) CallState *latestCall;
 
+- (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing;
 - (NSNumber *)updateInboxCountLabel;
 - (void)composeNew;
 

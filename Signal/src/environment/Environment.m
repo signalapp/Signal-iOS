@@ -189,40 +189,19 @@ static Environment *environment = nil;
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
 
-    if (vc.presentedViewController) {
-        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    }
+    [[TSStorageManager sharedManager]
+            .dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+      TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
+      [vc presentThread:thread keyboardOnViewAppearing:YES];
 
-    [vc.navigationController popToRootViewControllerAnimated:NO];
-    vc.contactIdentifierFromCompose = identifier;
-    vc.composeMessage               = compose;
-    [vc performSegueWithIdentifier:@"showSegue" sender:nil];
+    }];
 }
 
 + (void)messageGroup:(TSGroupThread *)groupThread {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
 
-    if (vc.presentedViewController) {
-        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    }
-
-    [vc.navigationController popToRootViewControllerAnimated:NO];
-    [vc performSegueWithIdentifier:@"showSegue" sender:groupThread];
-}
-
-+ (void)messageGroupModel:(TSGroupModel *)model withCompose:(BOOL)compose {
-    Environment *env          = [self getCurrent];
-    SignalsViewController *vc = env.signalsViewController;
-
-    if (vc.presentedViewController) {
-        [vc.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    }
-
-    [vc.navigationController popToRootViewControllerAnimated:NO];
-    vc.groupFromCompose = model;
-    vc.composeMessage   = compose;
-    [vc performSegueWithIdentifier:@"showSegue" sender:nil];
+    [vc presentThread:groupThread keyboardOnViewAppearing:YES];
 }
 
 + (void)resetAppData {

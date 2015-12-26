@@ -20,4 +20,9 @@
 
 + (UIFont *)ows_boldFontWithSize:(CGFloat)size;
 
+
+#pragma mark Dynamic Type
+
++ (UIFont *)ows_dynamicTypeBodyFont;
+
 @end
