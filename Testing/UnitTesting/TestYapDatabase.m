@@ -838,9 +838,10 @@
 	}];
 }
 
-#if YapDatabaseEnforcePermittedTransactions
 - (void)testPermittedTransactions
 {
+#if YapDatabaseEnforcePermittedTransactions
+	
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
 	
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
@@ -927,8 +928,8 @@
 		
 		dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 	}
-}
 #endif
+}
 
 - (void)testBackup_synchronous
 {
@@ -1132,6 +1133,43 @@
 	
 	dispatch_semaphore_wait(semaphore1, DISPATCH_TIME_FOREVER);
 	dispatch_semaphore_wait(semaphore2, DISPATCH_TIME_FOREVER);
+}
+
+- (void)testDeadlockDetection
+{
+#ifndef NS_BLOCK_ASSERTIONS
+	
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database);
+	
+	YapDatabaseConnection *connection1 = [database newConnection];
+	YapDatabaseConnection *connection2 = [database newConnection];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		XCTAssertThrows([connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){}]);
+	}];
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){
+		
+		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+	}];
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+		
+		XCTAssertThrows([connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+	}];
+
+#endif
 }
 
 @end

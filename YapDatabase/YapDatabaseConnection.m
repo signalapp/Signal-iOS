@@ -1518,6 +1518,19 @@ static void yapNotifyDidRead(yap_file *file)
 	}
 #endif
 	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		// This will result in deadlock.
+		// 
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		@throw [self deadlockDetectionException];
+	}
+#endif
+	
 	dispatch_sync(connectionQueue, ^{ @autoreleasepool {
 		
 		if (longLivedReadTransaction)
@@ -1554,6 +1567,20 @@ static void yapNotifyDidRead(yap_file *file)
 	if (!(flags & YDB_SyncReadWriteTransaction))
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadWriteTransaction];
+	}
+#endif
+	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey) ||
+	    dispatch_get_specific(database->IsOnWriteQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		// This will result in deadlock.
+		//
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		@throw [self deadlockDetectionException];
 	}
 #endif
 	
@@ -5367,6 +5394,25 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	    [permittedComponents componentsJoinedByString:@", "]];
 	
 	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey: suggestion };
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+#endif
+
+#ifndef NS_BLOCK_ASSERTIONS
+- (NSException *)deadlockDetectionException
+{
+	NSString *connectionName = self.name;
+	NSString *nameInfo = ([connectionName length] > 0) ? [NSString stringWithFormat:@" <%@>", connectionName] : @"";
+	
+	NSString *reason = [NSString stringWithFormat:
+	    @"YapDatabaseConnection[%p]%@ - deadlock detection",
+	    self, nameInfo];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		@"You are attempting to execute a transaction within a transaction. This will result in deadlock."
+		@" For more information, see the \"Thread Safety\" wiki page:"
+		@" https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock"};
 	
 	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
