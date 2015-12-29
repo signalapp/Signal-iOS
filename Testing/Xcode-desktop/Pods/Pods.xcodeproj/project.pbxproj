@@ -194,6 +194,8 @@
 		D9D7FE5D7994204382EFC796141CF126 /* YapTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = E739CB5A7D66E349A8F1218674AC8E5D /* YapTouch.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		D9E1B34E9F3B29871237756EF77F3C77 /* YapDatabaseFullTextSearchSnippetOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F528815FCAEAAC30310788579011313 /* YapDatabaseFullTextSearchSnippetOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D9EC99F3DD12C8C2554BDAF1A30235F0 /* YapDatabaseSearchResultsView.h in Headers */ = {isa = PBXBuildFile; fileRef = E5F8703F9C0AECB8F375696FD131EB75 /* YapDatabaseSearchResultsView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DC19CD771C31C25200C7A93D /* YapEnumerateStatement.h in Headers */ = {isa = PBXBuildFile; fileRef = DC19CD751C31C25200C7A93D /* YapEnumerateStatement.h */; };
+		DC19CD781C31C25200C7A93D /* YapEnumerateStatement.m in Sources */ = {isa = PBXBuildFile; fileRef = DC19CD761C31C25200C7A93D /* YapEnumerateStatement.m */; };
 		DC9350221C18AF23005468AA /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DC9350201C18AF23005468AA /* YapDatabaseConnectionProxy.h */; };
 		DC9350231C18AF23005468AA /* YapDatabaseConnectionProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = DC9350211C18AF23005468AA /* YapDatabaseConnectionProxy.m */; };
 		DCB1D4EA1BE3DB65007BFCCB /* yap_vfs_shim.c in Sources */ = {isa = PBXBuildFile; fileRef = DCB1D4E81BE3DB65007BFCCB /* yap_vfs_shim.c */; };
@@ -453,6 +455,8 @@
 		DA4AD99FCDF845B442B1B3F570D940FE /* DDASLLogger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DDASLLogger.m; path = Classes/DDASLLogger.m; sourceTree = "<group>"; };
 		DA5C1B4B68B1325A72CC972DC99F2454 /* YapDatabaseSearchQueue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseSearchQueue.m; sourceTree = "<group>"; };
 		DA73D32B2F87D5C57A24FF24F35D2644 /* YapMutationStack.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = YapMutationStack.m; sourceTree = "<group>"; };
+		DC19CD751C31C25200C7A93D /* YapEnumerateStatement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapEnumerateStatement.h; sourceTree = "<group>"; };
+		DC19CD761C31C25200C7A93D /* YapEnumerateStatement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapEnumerateStatement.m; sourceTree = "<group>"; };
 		DC9350201C18AF23005468AA /* YapDatabaseConnectionProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionProxy.h; sourceTree = "<group>"; };
 		DC9350211C18AF23005468AA /* YapDatabaseConnectionProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnectionProxy.m; sourceTree = "<group>"; };
 		DCB1D4E81BE3DB65007BFCCB /* yap_vfs_shim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yap_vfs_shim.c; sourceTree = "<group>"; };
@@ -604,6 +608,8 @@
 				EBCDC6F15C1C42F65EF12ECE9FE4F865 /* YapTouch.m */,
 				DCB1D4E91BE3DB65007BFCCB /* yap_vfs_shim.h */,
 				DCB1D4E81BE3DB65007BFCCB /* yap_vfs_shim.c */,
+				DC19CD751C31C25200C7A93D /* YapEnumerateStatement.h */,
+				DC19CD761C31C25200C7A93D /* YapEnumerateStatement.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -1216,6 +1222,7 @@
 				7DD4EFDD4A2C173C4D91D953C8D75D29 /* YapMurmurHash.h in Headers */,
 				5263C0992A007DB20CD5CE04F33F8852 /* YapMutationStack.h in Headers */,
 				C99A43D87150B060AF1F52D16FC5267A /* YapNull.h in Headers */,
+				DC19CD771C31C25200C7A93D /* YapEnumerateStatement.h in Headers */,
 				8376DBAB103A6547C0CC9C7EAF44A45B /* YapProxyObject.h in Headers */,
 				CDC58BF93062D93A5397F6E416017CB6 /* YapProxyObjectPrivate.h in Headers */,
 				7C6205454FA86A4FDDAC53A870A1817F /* YapRowidSet.h in Headers */,
@@ -1435,6 +1442,7 @@
 				C53C676181F4BEAE48621854DF0E2696 /* YDBCKRecord.m in Sources */,
 				7F68F0C4103A1B62FA489802019574C9 /* YDBCKRecordInfo.m in Sources */,
 				42687A4C9AD600844E744E3294E790D8 /* YDBCKRecordTableInfo.m in Sources */,
+				DC19CD781C31C25200C7A93D /* YapEnumerateStatement.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

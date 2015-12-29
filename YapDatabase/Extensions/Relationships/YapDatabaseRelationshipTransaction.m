@@ -1127,7 +1127,10 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (void)enumerateExistingEdgesWithSource:(int64_t)srcRowid usingBlock:
     (void (^)(int64_t edgeRowid, NSString *name, int64_t dstRowid, NSString *dstFilePath, int rules, BOOL manual))block
 {
-	sqlite3_stmt *statement = [parentConnection enumerateForSrcStatement];
+	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
+	
+	enumStatement = [parentConnection enumerateForSrcStatement];
+	sqlite3_stmt *statement = enumStatement.statement;
 	if (statement == NULL) return;
 	
 	YapDatabaseRelationshipFilePathDecryptor dstFilePathDecryptor =
@@ -1194,8 +1197,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	statement = NULL;
+	enumStatement = nil;
 }
 
 /**
@@ -1205,7 +1208,10 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 - (void)enumerateExistingEdgesWithDestination:(int64_t)dstRowid usingBlock:
                         (void (^)(int64_t edgeRowid, NSString *name, int64_t srcRowid, int rules, BOOL manual))block
 {
-	sqlite3_stmt *statement = [parentConnection enumerateForDstStatement];
+	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
+	
+	enumStatement = [parentConnection enumerateForDstStatement];
+	sqlite3_stmt *statement = enumStatement.statement;
 	if (statement == NULL) return;
 	
 	// SELECT "rowid", "name", "src", "rules", "manual" FROM "tableName" WHERE "dst" = ?;
@@ -1243,8 +1249,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	statement = NULL;
+	enumStatement = nil;
 }
 
 /**
@@ -3413,7 +3419,10 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Enumerate the items already in the database
 	
-	sqlite3_stmt *statement = [parentConnection enumerateForNameStatement];
+	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
+
+	enumStatement = [parentConnection enumerateForNameStatement];
+	sqlite3_stmt *statement = enumStatement.statement;
 	if (statement == NULL)
 		return;
 
@@ -3551,7 +3560,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 		
-	sqlite3_reset(statement);
+	statement = NULL;
+	enumStatement = nil;
 	FreeYapDatabaseString(&_name);
 	
 	if (stop) return;
@@ -3653,12 +3663,14 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	{
 		BOOL hasProtocolChanges = [parentConnection->protocolChanges ydb_containsKey:@(srcRowid)];
 		
+		__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
 		sqlite3_stmt *statement;
 		YapDatabaseString _name;
 		
 		if (name)
 		{
-			statement = [parentConnection enumerateForSrcNameStatement];
+			enumStatement = [parentConnection enumerateForSrcNameStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -3674,7 +3686,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		}
 		else
 		{
-			statement = [parentConnection enumerateForSrcStatement];
+			enumStatement = [parentConnection enumerateForSrcStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -3859,7 +3872,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			            status, sqlite3_errmsg(databaseTransaction->connection->db));
 		}
 		
-		sqlite3_reset(statement);
+		statement = NULL;
+		enumStatement = nil;
 		if (name) {
 			FreeYapDatabaseString(&_name);
 		}
@@ -3947,12 +3961,14 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	// Enumerate the items already in the database
 	if (hasDstRowid)
 	{
+		__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
 		sqlite3_stmt *statement;
 		YapDatabaseString _name;
 		
 		if (name)
 		{
-			statement = [parentConnection enumerateForDstNameStatement];
+			enumStatement = [parentConnection enumerateForDstNameStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -3968,7 +3984,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		}
 		else
 		{
-			statement = [parentConnection enumerateForDstStatement];
+			enumStatement = [parentConnection enumerateForDstStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -4099,7 +4116,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			            status, sqlite3_errmsg(databaseTransaction->connection->db));
 		}
 		
-		sqlite3_reset(statement);
+		statement = NULL;
+		enumStatement = nil;
 		if (name) {
 			FreeYapDatabaseString(&_name);
 		}
@@ -4176,6 +4194,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	// Enumerate the items already in the database
 	
+	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
 	sqlite3_stmt *statement;
 	YapDatabaseString _name;
 	YapDatabaseString _dstFilePath;
@@ -4186,7 +4205,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	
 	if (name)
 	{
-		statement = [parentConnection enumerateForDstNameStatement];
+		enumStatement = [parentConnection enumerateForDstNameStatement];
+		statement = enumStatement.statement;
 		if (statement == NULL)
 			return;
 		
@@ -4215,7 +4235,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	}
 	else
 	{
-		statement = [parentConnection enumerateForDstStatement];
+		enumStatement = [parentConnection enumerateForDstStatement];
+		statement = enumStatement.statement;
 		if (statement == NULL)
 			return;
 		
@@ -4355,7 +4376,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		            status, sqlite3_errmsg(databaseTransaction->connection->db));
 	}
 	
-	sqlite3_reset(statement);
+	statement = NULL;
+	enumStatement = nil;
 	if (name) {
 		FreeYapDatabaseString(&_name);
 	}
@@ -4484,6 +4506,7 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	// Enumerate the items already in the database
 	if (hasSrcRowid && hasDstRowid)
 	{
+		__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
 		sqlite3_stmt *statement;
 		YapDatabaseString _name;
 		
@@ -4491,7 +4514,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		if (name)
 		{
-			statement = [parentConnection enumerateForSrcDstNameStatement];
+			enumStatement = [parentConnection enumerateForSrcDstNameStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -4509,7 +4533,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		}
 		else
 		{
-			statement = [parentConnection enumerateForSrcDstStatement];
+			enumStatement = [parentConnection enumerateForSrcDstStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -4623,7 +4648,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			            status, sqlite3_errmsg(databaseTransaction->connection->db));
 		}
 		
-		sqlite3_reset(statement);
+		statement = NULL;
+		enumStatement = nil;
 		if (name) {
 			FreeYapDatabaseString(&_name);
 		}
@@ -4717,7 +4743,9 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 	// Enumerate the items already in the database
 	if (hasSrcRowid)
 	{
+		__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
 		sqlite3_stmt *statement;
+		
 		YapDatabaseString _name;
 		YapDatabaseString _dstFilePath;
 		__attribute__((objc_precise_lifetime)) NSData *dstBlob = nil;
@@ -4729,7 +4757,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		
 		if (name)
 		{
-			statement = [parentConnection enumerateForSrcDstNameStatement];
+			enumStatement = [parentConnection enumerateForSrcDstNameStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -4760,7 +4789,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 		}
 		else
 		{
-			statement = [parentConnection enumerateForSrcDstStatement];
+			enumStatement = [parentConnection enumerateForSrcDstStatement];
+			statement = enumStatement.statement;
 			if (statement == NULL)
 				return;
 			
@@ -4884,7 +4914,8 @@ NS_INLINE BOOL EdgeMatchesDestination(YapDatabaseRelationshipEdge *edge, int64_t
 			            status, sqlite3_errmsg(databaseTransaction->connection->db));
 		}
 		
-		sqlite3_reset(statement);
+		statement = NULL;
+		enumStatement = nil;
 		if (name) {
 			FreeYapDatabaseString(&_name);
 		}

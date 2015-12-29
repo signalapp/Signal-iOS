@@ -1,17 +1,15 @@
-
 #import "YapDatabaseConnection.h"
-#import "YapDatabaseConnectionState.h"
-#import "YapDatabasePrivate.h"
-#import "YapDatabaseExtensionPrivate.h"
 
-#import "YapCollectionKey.h"
 #import "YapCache.h"
-#import "YapTouch.h"
+#import "YapCollectionKey.h"
+#import "YapDatabaseConnectionState.h"
+#import "YapDatabaseExtensionPrivate.h"
+#import "YapDatabaseLogging.h"
+#import "YapDatabasePrivate.h"
+#import "YapDatabaseString.h"
 #import "YapNull.h"
 #import "YapSet.h"
-
-#import "YapDatabaseString.h"
-#import "YapDatabaseLogging.h"
+#import "YapTouch.h"
 
 #import <objc/runtime.h>
 #import <mach/mach_time.h>
@@ -122,16 +120,17 @@ static void yapNotifyDidRead(yap_file *file)
 	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeCollectionStatement;
 	sqlite3_stmt *removeAllStatement;
-	sqlite3_stmt *enumerateCollectionsStatement;
-	sqlite3_stmt *enumerateCollectionsForKeyStatement;
-	sqlite3_stmt *enumerateKeysInCollectionStatement;
-	sqlite3_stmt *enumerateKeysInAllCollectionsStatement;
-	sqlite3_stmt *enumerateKeysAndMetadataInCollectionStatement;
-	sqlite3_stmt *enumerateKeysAndMetadataInAllCollectionsStatement;
-	sqlite3_stmt *enumerateKeysAndObjectsInCollectionStatement;
-	sqlite3_stmt *enumerateKeysAndObjectsInAllCollectionsStatement;
-	sqlite3_stmt *enumerateRowsInCollectionStatement;
-	sqlite3_stmt *enumerateRowsInAllCollectionsStatement;
+	
+	YapEnumerateStatementFactory *enumerateCollectionsFactory;
+	YapEnumerateStatementFactory *enumerateCollectionsForKeyFactory;
+	YapEnumerateStatementFactory *enumerateKeysInCollectionFactory;
+	YapEnumerateStatementFactory *enumerateKeysInAllCollectionsFactory;
+	YapEnumerateStatementFactory *enumerateKeysAndMetadataInCollectionFactory;
+	YapEnumerateStatementFactory *enumerateKeysAndMetadataInAllCollectionsFactory;
+	YapEnumerateStatementFactory *enumerateKeysAndObjectsInCollectionFactory;
+	YapEnumerateStatementFactory *enumerateKeysAndObjectsInAllCollectionsFactory;
+	YapEnumerateStatementFactory *enumerateRowsInCollectionFactory;
+	YapEnumerateStatementFactory *enumerateRowsInAllCollectionsFactory;
 	
 	OSSpinLock lock;
 	BOOL writeQueueSuspended;
@@ -439,16 +438,17 @@ static void yapNotifyDidRead(yap_file *file)
 	sqlite_finalize_null(&removeForRowidStatement);
 	sqlite_finalize_null(&removeCollectionStatement);
 	sqlite_finalize_null(&removeAllStatement);
-	sqlite_finalize_null(&enumerateCollectionsStatement);
-	sqlite_finalize_null(&enumerateCollectionsForKeyStatement);
-	sqlite_finalize_null(&enumerateKeysInCollectionStatement);
-	sqlite_finalize_null(&enumerateKeysInAllCollectionsStatement);
-	sqlite_finalize_null(&enumerateKeysAndMetadataInCollectionStatement);
-	sqlite_finalize_null(&enumerateKeysAndMetadataInAllCollectionsStatement);
-	sqlite_finalize_null(&enumerateKeysAndObjectsInCollectionStatement);
-	sqlite_finalize_null(&enumerateKeysAndObjectsInAllCollectionsStatement);
-	sqlite_finalize_null(&enumerateRowsInCollectionStatement);
-	sqlite_finalize_null(&enumerateRowsInAllCollectionsStatement);
+	
+	enumerateCollectionsFactory = nil;
+	enumerateCollectionsForKeyFactory = nil;
+	enumerateKeysInCollectionFactory = nil;
+	enumerateKeysInAllCollectionsFactory = nil;
+	enumerateKeysAndMetadataInCollectionFactory = nil;
+	enumerateKeysAndMetadataInAllCollectionsFactory = nil;
+	enumerateKeysAndObjectsInCollectionFactory = nil;
+	enumerateKeysAndObjectsInAllCollectionsFactory = nil;
+	enumerateRowsInCollectionFactory = nil;
+	enumerateRowsInAllCollectionsFactory = nil;
 }
 
 - (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags
@@ -1305,188 +1305,213 @@ static void yapNotifyDidRead(yap_file *file)
 	return *statement;
 }
 
-- (sqlite3_stmt *)enumerateCollectionsStatement
+- (YapEnumerateStatement *)enumerateCollectionsStatement
 {
-	sqlite3_stmt **statement = &enumerateCollectionsStatement;
-	if (*statement == NULL)
+	if (enumerateCollectionsFactory == nil)
 	{
-		const char *stmt = "SELECT DISTINCT \"collection\" FROM \"database2\";";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT DISTINCT \"collection\" FROM \"database2\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateCollectionsFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateCollectionsFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateCollectionsForKeyStatement
+- (YapEnumerateStatement *)enumerateCollectionsForKeyStatement
 {
-	sqlite3_stmt **statement = &enumerateCollectionsForKeyStatement;
-	if (*statement == NULL)
+	if (enumerateCollectionsForKeyFactory == nil)
 	{
-		const char *stmt = "SELECT \"collection\" FROM \"database2\" WHERE \"key\" = ?;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"collection\" FROM \"database2\" WHERE \"key\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateCollectionsForKeyFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateCollectionsForKeyFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysInCollectionStatement
+- (YapEnumerateStatement *)enumerateKeysInCollectionStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysInCollectionStatement;
-	if (*statement == NULL)
+	if (enumerateKeysInCollectionFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ?;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysInCollectionFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+ 	YapEnumerateStatement *statement = [enumerateKeysInCollectionFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement
+- (YapEnumerateStatement *)enumerateKeysInAllCollectionsStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysInAllCollectionsStatement;
-	if (*statement == NULL)
+	if (enumerateKeysInAllCollectionsFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database2\";";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"collection\", \"key\" FROM \"database2\";";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysInAllCollectionsFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateKeysInAllCollectionsFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement
+- (YapEnumerateStatement *)enumerateKeysAndMetadataInCollectionStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysAndMetadataInCollectionStatement;
-	if (*statement == NULL)
+	if (enumerateKeysAndMetadataInCollectionFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\" WHERE collection = ?;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\" WHERE collection = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysAndMetadataInCollectionFactory =
+		  [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateKeysAndMetadataInCollectionFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement
+- (YapEnumerateStatement *)enumerateKeysAndMetadataInAllCollectionsStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysAndMetadataInAllCollectionsStatement;
-	if (*statement == NULL)
+	if (enumerateKeysAndMetadataInAllCollectionsFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
-		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
+		                 @" FROM \"database2\" ORDER BY \"collection\" ASC;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysAndMetadataInAllCollectionsFactory =
+		  [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateKeysAndMetadataInAllCollectionsFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement
+- (YapEnumerateStatement *)enumerateKeysAndObjectsInCollectionStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysAndObjectsInCollectionStatement;
-	if (*statement == NULL)
+	if (enumerateKeysAndObjectsInCollectionFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\" WHERE \"collection\" = ?;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"key\", \"data\" FROM \"database2\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysAndObjectsInCollectionFactory =
+		  [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateKeysAndObjectsInCollectionFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement
+- (YapEnumerateStatement *)enumerateKeysAndObjectsInAllCollectionsStatement
 {
-	sqlite3_stmt **statement = &enumerateKeysAndObjectsInAllCollectionsStatement;
-	if (*statement == NULL)
+	if (enumerateKeysAndObjectsInAllCollectionsFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\""
-		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"collection\", \"key\", \"data\""
+		                 @" FROM \"database2\" ORDER BY \"collection\" ASC;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateKeysAndObjectsInAllCollectionsFactory =
+		  [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateKeysAndObjectsInAllCollectionsFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateRowsInCollectionStatement
+- (YapEnumerateStatement *)enumerateRowsInCollectionStatement
 {
-	sqlite3_stmt **statement = &enumerateRowsInCollectionStatement;
-	if (*statement == NULL)
+	if (enumerateRowsInCollectionFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\""
-		                   " FROM \"database2\" WHERE \"collection\" = ?;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"key\", \"data\", \"metadata\""
+		                 @" FROM \"database2\" WHERE \"collection\" = ?;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateRowsInCollectionFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateRowsInCollectionFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
-- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement
+- (YapEnumerateStatement *)enumerateRowsInAllCollectionsStatement
 {
-	sqlite3_stmt **statement = &enumerateRowsInAllCollectionsStatement;
-	if (*statement == NULL)
+	if (enumerateRowsInAllCollectionsFactory == nil)
 	{
-		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
-		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
-		int stmtLen = (int)strlen(stmt);
+		NSString *stmt = @"SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
+		                 @" FROM \"database2\" ORDER BY \"collection\" ASC;";
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
+		enumerateRowsInAllCollectionsFactory = [[YapEnumerateStatementFactory alloc] initWithDb:db statement:stmt];
 	}
 	
-	return *statement;
+	int status;
+	YapEnumerateStatement *statement = [enumerateRowsInAllCollectionsFactory newStatement:&status];
+	
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+	}
+	
+	return statement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1151,25 +1151,64 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		XCTAssertThrows([connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){}]);
+		XCTAssertThrows([connection1 readWithBlock:^(YapDatabaseReadTransaction *ignore){}]);
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction){
 		
-		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *ignore){}]);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+		XCTAssertThrows([connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *ignore){}]);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
 		
-		XCTAssertThrows([connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){}]);
+		XCTAssertThrows([connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *ignore){}]);
 	}];
 
 #endif
+}
+
+- (void)testDoubleEnumeration
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database);
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"New York Yankees" forKey:@"nyy" inCollection:@"teams"];
+		[transaction setObject:@"Boston Red Sox"   forKey:@"brs" inCollection:@"teams"];
+		
+		[transaction setObject:@"Mickey Mantle" forKey:@"1" inCollection:@"nyy"];
+		[transaction setObject:@"Derek Jeter"   forKey:@"2" inCollection:@"nyy"];
+		
+		[transaction setObject:@"Ted Williams" forKey:@"1" inCollection:@"brs"];
+		[transaction setObject:@"David Ortiz"  forKey:@"2" inCollection:@"brs"];
+	}];
+	
+	__block NSUInteger count = 0;
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		[transaction enumerateKeysInCollection:@"teams" usingBlock:^(NSString *teamName, BOOL *stop) {
+			
+			[transaction enumerateKeysInCollection:teamName usingBlock:^(NSString *player, BOOL *_stop) {
+				
+				count++;
+			}];
+		}];
+	}];
+	
+	XCTAssert(count == 4);
 }
 
 @end

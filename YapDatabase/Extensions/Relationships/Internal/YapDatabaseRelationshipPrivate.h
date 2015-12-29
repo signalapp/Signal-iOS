@@ -85,13 +85,6 @@
 - (sqlite3_stmt *)deleteEdgeStatement;
 - (sqlite3_stmt *)deleteEdgesWithNodeStatement;
 - (sqlite3_stmt *)enumerateAllDstFilePathStatement;
-- (sqlite3_stmt *)enumerateForSrcStatement;
-- (sqlite3_stmt *)enumerateForDstStatement;
-- (sqlite3_stmt *)enumerateForSrcNameStatement;
-- (sqlite3_stmt *)enumerateForDstNameStatement;
-- (sqlite3_stmt *)enumerateForNameStatement;
-- (sqlite3_stmt *)enumerateForSrcDstStatement;
-- (sqlite3_stmt *)enumerateForSrcDstNameStatement;
 - (sqlite3_stmt *)countForSrcNameExcludingDstStatement;
 - (sqlite3_stmt *)countForDstNameExcludingSrcStatement;
 - (sqlite3_stmt *)countForNameStatement;
@@ -103,6 +96,14 @@
 - (sqlite3_stmt *)countForSrcDstNameStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)removeAllProtocolStatement;
+
+- (YapEnumerateStatement *)enumerateForSrcStatement;
+- (YapEnumerateStatement *)enumerateForDstStatement;
+- (YapEnumerateStatement *)enumerateForSrcNameStatement;
+- (YapEnumerateStatement *)enumerateForDstNameStatement;
+- (YapEnumerateStatement *)enumerateForNameStatement;
+- (YapEnumerateStatement *)enumerateForSrcDstStatement;
+- (YapEnumerateStatement *)enumerateForSrcDstNameStatement;
 
 @end
 

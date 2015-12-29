@@ -822,6 +822,7 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};
@@ -846,6 +847,7 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};

@@ -4094,4 +4094,109 @@
 	XCTAssertTrue(!exists2, @"Oops");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testDoubleEnumeration
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database, @"Oops");
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] init];
+	
+	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
+	
+	XCTAssertTrue(registered, @"Error registering extension");
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"Baseball" forKey:@"baseball" inCollection:@"sports"];
+		
+		[transaction setObject:@"New York Yankees" forKey:@"yankees" inCollection:@"teams"];
+		[transaction setObject:@"Boston Red Sox"   forKey:@"redsox" inCollection:@"teams"];
+		
+		[transaction setObject:@"Mickey Mantle" forKey:@"1" inCollection:@"yankees"];
+		[transaction setObject:@"Derek Jeter"   forKey:@"2" inCollection:@"yankees"];
+		
+		[transaction setObject:@"Ted Williams" forKey:@"1" inCollection:@"redsox"];
+		[transaction setObject:@"David Ortiz"  forKey:@"2" inCollection:@"redsox"];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"teams"
+		                                  sourceKey:@"baseball"
+		                                 collection:@"sports"
+		                             destinationKey:@"yankees"
+		                                 collection:@"teams"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"teams"
+		                                  sourceKey:@"baseball"
+		                                 collection:@"sports"
+		                             destinationKey:@"redsox"
+		                                 collection:@"teams"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"yankees"
+		                                 collection:@"teams"
+		                             destinationKey:@"1"
+		                                 collection:@"yankees"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"yankees"
+		                                 collection:@"teams"
+		                             destinationKey:@"2"
+		                                 collection:@"yankees"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"redsox"
+		                                 collection:@"teams"
+		                             destinationKey:@"1"
+		                                 collection:@"redsox"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"redsox"
+		                                 collection:@"teams"
+		                             destinationKey:@"2"
+		                                 collection:@"redsox"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+	}];
+	
+	__block NSUInteger count = 0;
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"teams"
+		                                                sourceKey:@"baseball"
+		                                               collection:@"sports"
+		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
+		{
+			[[transaction ext:@"relationship"] enumerateEdgesWithName:@"players"
+			                                                sourceKey:edge.destinationKey
+			                                               collection:edge.destinationCollection
+			                                               usingBlock:^(YapDatabaseRelationshipEdge *_edge, BOOL *_stop)
+			{
+				count++;
+			}];
+		}];
+	}];
+	
+	XCTAssert(count == 4);
+}
+
 @end

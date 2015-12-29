@@ -7,8 +7,9 @@
 #import "YapDatabaseExtension.h"
 
 #import "YapCache.h"
-#import "YapMemoryTable.h"
 #import "YapCollectionKey.h"
+#import "YapEnumerateStatement.h"
+#import "YapMemoryTable.h"
 #import "YapMutationStack.h"
 
 #import "sqlite3.h"
@@ -243,16 +244,17 @@ static NSString *const ext_key_class = @"class";
 - (sqlite3_stmt *)removeForRowidStatement;
 - (sqlite3_stmt *)removeCollectionStatement;
 - (sqlite3_stmt *)removeAllStatement;
-- (sqlite3_stmt *)enumerateCollectionsStatement;
-- (sqlite3_stmt *)enumerateCollectionsForKeyStatement;
-- (sqlite3_stmt *)enumerateKeysInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateRowsInCollectionStatement;
-- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement;
+
+- (YapEnumerateStatement *)enumerateCollectionsStatement;
+- (YapEnumerateStatement *)enumerateCollectionsForKeyStatement;
+- (YapEnumerateStatement *)enumerateKeysInCollectionStatement;
+- (YapEnumerateStatement *)enumerateKeysInAllCollectionsStatement;
+- (YapEnumerateStatement *)enumerateKeysAndMetadataInCollectionStatement;
+- (YapEnumerateStatement *)enumerateKeysAndMetadataInAllCollectionsStatement;
+- (YapEnumerateStatement *)enumerateKeysAndObjectsInCollectionStatement;
+- (YapEnumerateStatement *)enumerateKeysAndObjectsInAllCollectionsStatement;
+- (YapEnumerateStatement *)enumerateRowsInCollectionStatement;
+- (YapEnumerateStatement *)enumerateRowsInAllCollectionsStatement;
 
 - (void)prepare;
 
