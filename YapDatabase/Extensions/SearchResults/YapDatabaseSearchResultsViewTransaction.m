@@ -1093,13 +1093,13 @@ static NSString *const ext_key_query             = @"query";
 	
 	if (searchResultsView->parentViewName)
 	{
-		// Instead of going to the groupingBlock,
-		// just ask the parentViewTransaction what the last group was.
+		// Since our groupingBlock is the same as the parent's groupingBlock,
+		// just ask the parentViewTransaction for the group (which is cached info).
 		
 		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
-		group = parentViewTransaction->lastHandledGroup;
+		group = [parentViewTransaction groupForRowid:rowid];
 		
 		if (group)
 		{
@@ -1192,15 +1192,11 @@ static NSString *const ext_key_query             = @"query";
 		           object:object
 		         metadata:metadata
 		          inGroup:group withChanges:flags isNew:YES];
-		
-		lastHandledGroup = group;
 	}
 	else
 	{
 		// Not in view (not in parentView, or groupingBlock said NO, or doesn't match query).
 		// This was an insert operation, so we know it wasn't already in the view.
-		
-		lastHandledGroup = nil;
 	}
 }
 
@@ -1229,13 +1225,13 @@ static NSString *const ext_key_query             = @"query";
 	
 	if (searchResultsView->parentViewName)
 	{
-		// Instead of going to the groupingBlock,
-		// just ask the parentViewTransaction what the last group was.
+		// Since our groupingBlock is the same as the parent's groupingBlock,
+		// just ask the parentViewTransaction for the group (which is cached info).
 		
 		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
-		group = parentViewTransaction->lastHandledGroup;
+		group = [parentViewTransaction groupForRowid:rowid];
 		
 		if (group)
 		{
@@ -1330,8 +1326,6 @@ static NSString *const ext_key_query             = @"query";
 		          inGroup:group
 		      withChanges:flags
 		            isNew:NO];
-		
-		lastHandledGroup = group;
 	}
 	else
 	{
@@ -1340,7 +1334,6 @@ static NSString *const ext_key_query             = @"query";
 		// This was an update operation, so it may have previously been in the view.
 		
 		[self removeRowid:rowid collectionKey:collectionKey];
-		lastHandledGroup = nil;
 	}
 }
 
@@ -1376,13 +1369,13 @@ static NSString *const ext_key_query             = @"query";
 		BOOL groupMayHaveChanged = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
 		BOOL sortMayHaveChanged  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
 		
-		// Instead of going to the groupingBlock,
-		// just ask the parentViewTransaction what the last group was.
+		// Since our groupingBlock is the same as the parent's groupingBlock,
+		// just ask the parentViewTransaction for the group (which is cached info).
 		
 		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
-		NSString *group = parentViewTransaction->lastHandledGroup;
+		NSString *group = [parentViewTransaction groupForRowid:rowid];
 		
 		if (group)
 		{
@@ -1410,7 +1403,6 @@ static NSString *const ext_key_query             = @"query";
 				// Thus it wasn't previously in view, and still isn't in the view.
 			}
 			
-			lastHandledGroup = nil;
 			return;
 		}
 		
@@ -1434,7 +1426,6 @@ static NSString *const ext_key_query             = @"query";
 			{
 				// Was previously filtered from this view.
 				// And still filtered from this view.
-				lastHandledGroup = nil;
 			}
 			else
 			{
@@ -1445,8 +1436,6 @@ static NSString *const ext_key_query             = @"query";
 				                                        inGroup:group
 				                                        atIndex:existingIndex
 				                                    withChanges:flags]];
-				
-				lastHandledGroup = group;
 			}
 			
 			return;
@@ -1490,8 +1479,6 @@ static NSString *const ext_key_query             = @"query";
 			          inGroup:group
 			      withChanges:flags
 			            isNew:NO];
-			
-			lastHandledGroup = group;
 		}
 		else
 		{
@@ -1500,7 +1487,6 @@ static NSString *const ext_key_query             = @"query";
 			// This was an update operation, so it may have previously been in the view.
 			
 			[self removeRowid:rowid collectionKey:collectionKey];
-			lastHandledGroup = nil;
 		}
 	}
 	else
@@ -1622,7 +1608,6 @@ static NSString *const ext_key_query             = @"query";
 						                                        atIndex:existingIndex
 						                                    withChanges:flags]];
 						
-						lastHandledGroup = group;
 						return;
 					}
 				}
@@ -1642,8 +1627,6 @@ static NSString *const ext_key_query             = @"query";
 				          inGroup:group withChanges:flags isNew:NO];
 			}
 		}
-		
-		lastHandledGroup = group;
 	}
 }
 
@@ -1678,13 +1661,13 @@ static NSString *const ext_key_query             = @"query";
 		BOOL groupMayHaveChanged = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
 		BOOL sortMayHaveChanged  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
 		
-		// Instead of going to the groupingBlock,
-		// just ask the parentViewTransaction what the last group was.
+		// Since our groupingBlock is the same as the parent's groupingBlock,
+		// just ask the parentViewTransaction for the group (which is cached info).
 		
 		__unsafe_unretained YapDatabaseViewTransaction *parentViewTransaction =
 		  [databaseTransaction ext:searchResultsView->parentViewName];
 		
-		NSString *group = parentViewTransaction->lastHandledGroup;
+		NSString *group = [parentViewTransaction groupForRowid:rowid];
 		
 		if (group)
 		{
@@ -1712,7 +1695,6 @@ static NSString *const ext_key_query             = @"query";
 				// Thus it wasn't previously in view, and still isn't in the view.
 			}
 			
-			lastHandledGroup = nil;
 			return;
 		}
 		
@@ -1736,7 +1718,6 @@ static NSString *const ext_key_query             = @"query";
 			{
 				// Was previously filtered from this view.
 				// And still filtered from this view.
-				lastHandledGroup = nil;
 			}
 			else
 			{
@@ -1747,8 +1728,6 @@ static NSString *const ext_key_query             = @"query";
 				                                        inGroup:group
 				                                        atIndex:existingIndex
 				                                    withChanges:flags]];
-				
-				lastHandledGroup = group;
 			}
 			
 			return;
@@ -1792,8 +1771,6 @@ static NSString *const ext_key_query             = @"query";
 			          inGroup:group
 			      withChanges:flags
 			            isNew:NO];
-			
-			lastHandledGroup = group;
 		}
 		else
 		{
@@ -1802,7 +1779,6 @@ static NSString *const ext_key_query             = @"query";
 			// This was an update operation, so the key may have previously been in the view.
 			
 			[self removeRowid:rowid collectionKey:collectionKey];
-			lastHandledGroup = nil;
 		}
 	}
 	else
@@ -1924,7 +1900,6 @@ static NSString *const ext_key_query             = @"query";
 						                                        atIndex:existingIndex
 						                                    withChanges:flags]];
 						
-						lastHandledGroup = group;
 						return;
 					}
 				}
@@ -1944,8 +1919,6 @@ static NSString *const ext_key_query             = @"query";
 						  inGroup:group withChanges:flags isNew:NO];
 			}
 		}
-		
-		lastHandledGroup = group;
 	}
 }
 

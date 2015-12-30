@@ -199,8 +199,6 @@ static NSString *const changeset_key_changes    = @"changes";
 	__unsafe_unretained YapDatabaseViewConnection *viewConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
 	
-	NSString *lastHandledGroup;
-	
 	BOOL isRepopulate;
 }
 
@@ -253,6 +251,7 @@ static NSString *const changeset_key_changes    = @"changes";
                     usingBlock:(void (^)(int64_t rowid, NSUInteger index, BOOL *stop))block;
 
 - (BOOL)containsRowid:(int64_t)rowid;
+- (NSString *)groupForRowid:(int64_t)rowid;
 
 @end
 

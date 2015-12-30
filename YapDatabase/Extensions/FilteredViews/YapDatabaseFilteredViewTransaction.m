@@ -758,13 +758,13 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	// Instead of going to the groupingBlock,
-	// just ask the parentViewTransaction what the last group was.
+	// Since our groupingBlock is the same as the parent's groupingBlock,
+	// just ask the parentViewTransaction for the group (which is cached info).
 	
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:filteredView->parentViewName];
 	
-	NSString *group = parentViewTransaction->lastHandledGroup;
+	NSString *group = [parentViewTransaction groupForRowid:rowid];
 	
 	if (group == nil)
 	{
@@ -776,7 +776,6 @@
 			[self removeRowid:rowid collectionKey:collectionKey];
 		}
 		
-		lastHandledGroup = nil;
 		return;
 	}
 	
@@ -846,8 +845,6 @@
 				  inGroup:group
 			  withChanges:changesBitMask
 					isNew:NO];
-		
-		lastHandledGroup = group;
 	}
 	else
 	{
@@ -858,8 +855,6 @@
 		{
 			[self removeRowid:rowid collectionKey:collectionKey];
 		}
-		
-		lastHandledGroup = nil;
 	}
 }
 
