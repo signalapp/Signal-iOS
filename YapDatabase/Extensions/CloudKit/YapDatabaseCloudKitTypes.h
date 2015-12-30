@@ -40,11 +40,11 @@ typedef void (^YapDatabaseCloudKitRecordWithObjectBlock)
 
 typedef void (^YapDatabaseCloudKitRecordWithMetadataBlock)
     (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
-     NSString *collection, NSString *key, id metadata);
+     NSString *collection, NSString *key, __nullable id metadata);
 
 typedef void (^YapDatabaseCloudKitRecordWithRowBlock)
     (YapDatabaseReadTransaction *transaction, CKRecord *_Nonnull *_Nullable inOutRecordPtr, YDBCKRecordInfo *recordInfo,
-     NSString *collection, NSString *key, id object, id metadata);
+     NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseCloudKitRecordWithKeyBlock)recordBlock;
 + (instancetype)withObjectBlock:(YapDatabaseCloudKitRecordWithObjectBlock)recordBlock;
