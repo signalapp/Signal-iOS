@@ -24,10 +24,13 @@ typedef id YapDatabaseSecondaryIndexBlock; // One of the YapDatabaseSecondaryInd
 
 typedef void (^YapDatabaseSecondaryIndexWithKeyBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key);
+
 typedef void (^YapDatabaseSecondaryIndexWithObjectBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
+
 typedef void (^YapDatabaseSecondaryIndexWithMetadataBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
+
 typedef void (^YapDatabaseSecondaryIndexWithRowBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
 
