@@ -170,6 +170,22 @@ typedef enum {
 }
 
 
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    switch (indexPath.section) {
+        case kNetworkStatusSection: {
+            return NO;
+        }
+
+        case kUnregisterSection: {
+            return NO;
+        }
+
+        default:
+            return YES;
+    }
+}
+
+
 - (IBAction)unregisterUser:(id)sender {
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
