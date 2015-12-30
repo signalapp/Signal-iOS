@@ -77,6 +77,7 @@
     [self initializeGestureRecognizers];
 
     [self populateImageView:self.image];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
 }
 
 
@@ -235,6 +236,7 @@
 }
 
 - (void)dismiss {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO];
     self.view.userInteractionEnabled = NO;
     [UIView animateWithDuration:0.4f
         delay:0
