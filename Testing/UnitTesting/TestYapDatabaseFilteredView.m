@@ -1588,6 +1588,10 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * https://github.com/yapstudios/YapDatabase/issues/186
+**/
+
 - (void)testIssue186_persistent
 {
 	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
@@ -1633,9 +1637,12 @@
 		        NSString *collection1, NSString *key1, id obj1,
 		        NSString *collection2, NSString *key2, id obj2)
 		{
+			NSParameterAssert(obj1 != nil);
+			NSParameterAssert(obj2 != nil);
+			
 			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
-
+			
 			return [number1 compare:number2];
 		}];
 
@@ -1662,6 +1669,9 @@
 		        NSString *collection1, NSString *key1, id obj1,
 		        NSString *collection2, NSString *key2, id obj2)
 		{
+			NSParameterAssert(obj1 != nil);
+			NSParameterAssert(obj2 != nil);
+			
 			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
 
@@ -1684,6 +1694,8 @@
 		    ^BOOL (YapDatabaseReadTransaction *transaction, NSString *group,
 		             NSString *collection, NSString *key, id object)
 		{
+			NSParameterAssert(object != nil);
+			
 			__unsafe_unretained NSNumber *number = (NSNumber *)object;
 
 			if ([number intValue] % 2 == 0)
@@ -1707,6 +1719,8 @@
 		    ^BOOL (YapDatabaseReadTransaction *transaction, NSString *group,
 		             NSString *collection, NSString *key, id metadata)
 		{
+			NSParameterAssert(metadata != nil);
+			
 			__unsafe_unretained NSNumber *number = (NSNumber *)metadata;
 
 			if ([number intValue] % 2 == 0)
