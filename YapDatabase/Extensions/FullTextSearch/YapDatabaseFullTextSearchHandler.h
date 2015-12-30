@@ -28,10 +28,10 @@ typedef void (^YapDatabaseFullTextSearchWithObjectBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
 
 typedef void (^YapDatabaseFullTextSearchWithMetadataBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id metadata);
+                            (NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
 
 typedef void (^YapDatabaseFullTextSearchWithRowBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, id metadata);
+                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseFullTextSearchWithKeyBlock)block;
 + (instancetype)withObjectBlock:(YapDatabaseFullTextSearchWithObjectBlock)block;

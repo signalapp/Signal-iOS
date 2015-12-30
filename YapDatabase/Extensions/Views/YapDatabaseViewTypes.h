@@ -41,10 +41,10 @@ typedef NSString* _Nullable (^YapDatabaseViewGroupingWithObjectBlock)
              (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object);
 
 typedef NSString* _Nullable (^YapDatabaseViewGroupingWithMetadataBlock)
-             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id metadata);
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, __nullable id metadata);
 
 typedef NSString* _Nullable (^YapDatabaseViewGroupingWithRowBlock)
-             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object, id metadata);
+             (YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewGroupingWithKeyBlock)block;
 + (instancetype)withObjectBlock:(YapDatabaseViewGroupingWithObjectBlock)block;
@@ -210,10 +210,10 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)
                                  (NSString *collection, NSString *key, id object);
 
 typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock)
-                                 (NSString *collection, NSString *key, id metadata);
+                                 (NSString *collection, NSString *key, __nullable id metadata);
 
 typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)
-                                 (NSString *collection, NSString *key, id object, id metadata);
+                                 (NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseViewFindWithKeyBlock)findBlock;
 + (instancetype)withObjectBlock:(YapDatabaseViewFindWithObjectBlock)findBlock;
