@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   # use a builtin version of sqlite3
   s.subspec 'standard' do |ss|
     ss.library = 'sqlite3'
+    ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DYAP_STANDARD_SQLITE' }
     ss.dependency 'CocoaLumberjack', '~> 2'
     ss.source_files = 'YapDatabase/**/*.{h,m,mm,c}'
     ss.private_header_files = 'YapDatabase/**/Internal/*.h'
