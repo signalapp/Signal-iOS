@@ -28,6 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
  * You can even read from the database while writing to it from another connection on another thread.
 **/
 
+#if defined(SQLITE_HAS_CODEC) && defined(YAP_STANDARD_SQLITE)
+
+	#error It seems you're using CocoaPods and you included YapDatabase and YapDatabase/Cipher pods. You just need to use "pod YapDatabase/SQLCipher"
+
+#endif
+
 /**
  * How does YapDatabase store my objects to disk?
  *
