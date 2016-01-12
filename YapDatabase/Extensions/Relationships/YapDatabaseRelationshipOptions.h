@@ -51,7 +51,7 @@ typedef NSURL* _Nullable (^YapDatabaseRelationshipFileURLDeserializer)(YapDataba
  * @param data
  *   The encrypted filePath, generated from a previously configured filePathEncryption block.
 **/
-typedef NSURL* _Nullable (^YapDatabaseRelationshipMigration)(NSString *filePath, NSData *data);
+typedef NSURL* _Nullable (^YapDatabaseRelationshipMigration)(NSString *_Nullable filePath, NSData *_Nullable data);
 
 
 /**

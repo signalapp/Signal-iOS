@@ -7,10 +7,49 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.2.0):
     - CocoaLumberjack/Default
-  - YapDatabase (2.7.3):
-    - YapDatabase/standard (= 2.7.3)
-  - YapDatabase/standard (2.7.3):
+  - YapDatabase (2.7.7):
+    - YapDatabase/Standard (= 2.7.7)
+  - YapDatabase/Standard (2.7.7):
+    - YapDatabase/Standard/Core (= 2.7.7)
+    - YapDatabase/Standard/Extensions (= 2.7.7)
+  - YapDatabase/Standard/Core (2.7.7):
     - CocoaLumberjack (~> 2)
+  - YapDatabase/Standard/Extensions (2.7.7):
+    - YapDatabase/Standard/Core
+    - YapDatabase/Standard/Extensions/CloudKit (= 2.7.7)
+    - YapDatabase/Standard/Extensions/ConnectionProxy (= 2.7.7)
+    - YapDatabase/Standard/Extensions/FilteredViews (= 2.7.7)
+    - YapDatabase/Standard/Extensions/FullTextSearch (= 2.7.7)
+    - YapDatabase/Standard/Extensions/Hooks (= 2.7.7)
+    - YapDatabase/Standard/Extensions/Relationships (= 2.7.7)
+    - YapDatabase/Standard/Extensions/RTreeIndex (= 2.7.7)
+    - YapDatabase/Standard/Extensions/SearchResults (= 2.7.7)
+    - YapDatabase/Standard/Extensions/SecondaryIndex (= 2.7.7)
+    - YapDatabase/Standard/Extensions/SecondaryIndex (= 2.7.7)
+    - YapDatabase/Standard/Extensions/Views (= 2.7.7)
+  - YapDatabase/Standard/Extensions/CloudKit (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/ConnectionProxy (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/FilteredViews (2.7.7):
+    - YapDatabase/Standard/Core
+    - YapDatabase/Standard/Extensions/Views
+  - YapDatabase/Standard/Extensions/FullTextSearch (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/Hooks (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/Relationships (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/RTreeIndex (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/SearchResults (2.7.7):
+    - YapDatabase/Standard/Core
+    - YapDatabase/Standard/Extensions/FullTextSearch
+    - YapDatabase/Standard/Extensions/Views
+  - YapDatabase/Standard/Extensions/SecondaryIndex (2.7.7):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/Views (2.7.7):
+    - YapDatabase/Standard/Core
 
 DEPENDENCIES:
   - YapDatabase (from `../../`)
@@ -21,6 +60,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
-  YapDatabase: 6d6a30e97face6c3158830823c27614afe83e1e0
+  YapDatabase: fefe6e1585907bdb069835147a8b0129427a1e8b
 
 COCOAPODS: 0.39.0

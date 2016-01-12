@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1E15D25851399B5D89307351 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26683EB35E436E50FDE31B26 /* libPods.a */; };
+		DC2B5F6D1C458D2D00319AF5 /* TestRelationshipMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2B5F6C1C458D2D00319AF5 /* TestRelationshipMigration.m */; };
 		DC5F53D01B7AAA12009F4E2F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26683EB35E436E50FDE31B26 /* libPods.a */; };
 		DC84FF8F175130D2003BFBB2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC84FF8E175130D2003BFBB2 /* Cocoa.framework */; };
 		DC84FF99175130D3003BFBB2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC84FF97175130D3003BFBB2 /* InfoPlist.strings */; };
@@ -47,6 +48,8 @@
 		26683EB35E436E50FDE31B26 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA75AA5331268A759ABEDDB /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C664F403092FD32225EA855D /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		DC2B5F6B1C458D2D00319AF5 /* TestRelationshipMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestRelationshipMigration.h; path = ../../Testing/UnitTesting/TestRelationshipMigration.h; sourceTree = "<group>"; };
+		DC2B5F6C1C458D2D00319AF5 /* TestRelationshipMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestRelationshipMigration.m; path = ../../Testing/UnitTesting/TestRelationshipMigration.m; sourceTree = "<group>"; };
 		DC2C988217E3C63700F1E04F /* TestViewMappingsLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewMappingsLogic.m; path = ../../UnitTesting/TestViewMappingsLogic.m; sourceTree = "<group>"; };
 		DC36A6FD1A23F3F000DB95FB /* TestNodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestNodes.h; path = ../../Testing/UnitTesting/TestNodes.h; sourceTree = "<group>"; };
 		DC36A6FE1A23F3F000DB95FB /* TestNodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestNodes.m; path = ../../Testing/UnitTesting/TestNodes.m; sourceTree = "<group>"; };
@@ -121,6 +124,8 @@
 				DC36A6FD1A23F3F000DB95FB /* TestNodes.h */,
 				DC36A6FE1A23F3F000DB95FB /* TestNodes.m */,
 				DC36A6FF1A23F3F000DB95FB /* TestYapDatabaseRelationship.m */,
+				DC2B5F6B1C458D2D00319AF5 /* TestRelationshipMigration.h */,
+				DC2B5F6C1C458D2D00319AF5 /* TestRelationshipMigration.m */,
 			);
 			name = Relationships;
 			path = ../../../YapDatabase/Extensions;
@@ -461,6 +466,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC2B5F6D1C458D2D00319AF5 /* TestRelationshipMigration.m in Sources */,
 				DC84FF9B175130D3003BFBB2 /* main.m in Sources */,
 				DC84FFA2175130D3003BFBB2 /* AppDelegate.m in Sources */,
 				DC84FFEC17513197003BFBB2 /* BenchmarkYapCache.m in Sources */,
@@ -591,6 +597,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLumberjack\"",
+					"\"${PODS_ROOT}/Headers/Public/YapDatabase\"",
+					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
+				);
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.deusty.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -605,6 +618,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YapDatabase/YapDatabase-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/CocoaLumberjack\"",
+					"\"${PODS_ROOT}/Headers/Public/YapDatabase\"",
+					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
+				);
 				INFOPLIST_FILE = "YapDatabase/YapDatabase-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.deusty.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
