@@ -1,33 +1,37 @@
 {
   "name": "YapDatabase",
-  "version": "2.7.3",
+  "version": "2.7.7",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
-  "platforms": {
-    "ios": "6.0",
-    "osx": "10.8"
-  },
   "authors": {
     "Robbie Hanson": "robbiehanson@deusty.com"
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.7.3"
+    "tag": "2.7.7"
   },
-  "module_map": "module.modulemap",
+  "platforms": {
+    "osx": "10.8",
+    "ios": "6.0",
+    "tvos": "9.0"
+  },
+  "module_map": "Framework/module.modulemap",
   "libraries": "c++",
   "default_subspecs": "standard",
   "subspecs": [
     {
       "name": "standard",
       "libraries": "sqlite3",
+      "xcconfig": {
+        "OTHER_CFLAGS": "$(inherited) -DYAP_STANDARD_SQLITE"
+      },
       "dependencies": {
         "CocoaLumberjack": [
           "~> 2"
         ]
       },
-      "source_files": "YapDatabase/**/*.{h,m,mm}",
+      "source_files": "YapDatabase/**/*.{h,m,mm,c}",
       "private_header_files": "YapDatabase/**/Internal/*.h",
       "requires_arc": true
     },
@@ -41,11 +45,11 @@
           "~> 2"
         ]
       },
-      "source_files": "YapDatabase/**/*.{h,m,mm}",
-      "private_header_files": "YapDatabase/**/Internal/*.h",
       "xcconfig": {
         "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
       },
+      "source_files": "YapDatabase/**/*.{h,m,mm,c}",
+      "private_header_files": "YapDatabase/**/Internal/*.h",
       "requires_arc": true
     }
   ]
