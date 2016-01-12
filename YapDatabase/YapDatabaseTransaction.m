@@ -280,10 +280,8 @@
 
 - (NSArray *)allCollections
 {
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
- 
-	enumStatement = [connection enumerateCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return nil;
 	
 	// SELECT DISTINCT "collection" FROM "database2";";
@@ -307,8 +305,7 @@
 		            status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	return result;
 }
@@ -1190,10 +1187,8 @@
 {
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -1221,8 +1216,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -1243,10 +1237,8 @@
 	if (key == nil) return;
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateCollectionsForKeyStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsForKeyStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -1278,8 +1270,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_key);
 	
 	if (!stop && mutation.isMutated)
@@ -2335,10 +2326,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2373,8 +2362,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -2395,10 +2383,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2435,8 +2421,7 @@
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
-		statement = NULL;
-		enumStatement = nil;
+		sqlite_enum_reset(statement, needsFinalize);
 		FreeYapDatabaseString(&_collection);
 		
 		if (!stop && mutation.isMutated)
@@ -2463,10 +2448,8 @@
 {
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysInAllCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2504,8 +2487,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -2544,10 +2526,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndObjectsInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2617,8 +2597,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -2658,10 +2637,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndObjectsInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2749,6 +2726,8 @@
 		}
 		
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -2784,10 +2763,8 @@
 {
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndObjectsInAllCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2850,8 +2827,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -2892,10 +2868,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndMetadataInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2976,8 +2950,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -3019,10 +2992,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndMetadataInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3120,6 +3091,8 @@
 		}
 		
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -3156,10 +3129,8 @@
 {
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateKeysAndMetadataInAllCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3243,8 +3214,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -3283,10 +3253,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateRowsInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3395,8 +3363,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -3436,10 +3403,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateRowsInCollectionStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3566,6 +3531,8 @@
 		}
 	
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -3601,10 +3568,8 @@
 {
 	if (block == NULL) return;
 	
-	__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-	
-	enumStatement = [connection enumerateRowsInAllCollectionsStatement];
-	sqlite3_stmt *statement = enumStatement.statement;
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3696,8 +3661,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	statement = NULL;
-	enumStatement = nil;
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -5514,10 +5478,8 @@
 		
 		if (YES)
 		{
-			__attribute__((objc_precise_lifetime)) YapEnumerateStatement *enumStatement;
-			
-			enumStatement = [connection enumerateKeysInCollectionStatement];
-			sqlite3_stmt *statement = enumStatement.statement;
+			BOOL needsFinalize;
+			sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 			if (statement == NULL) {
 				FreeYapDatabaseString(&_collection);
 				return;
@@ -5555,8 +5517,7 @@
 				YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 			}
 			
-			statement = NULL;
-			enumStatement = nil;
+			sqlite_enum_reset(statement, needsFinalize);
 		}
 		
 		// Now remove all the matching rows

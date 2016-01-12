@@ -8,7 +8,6 @@
 
 #import "YapCache.h"
 #import "YapCollectionKey.h"
-#import "YapEnumerateStatement.h"
 #import "YapMemoryTable.h"
 #import "YapMutationStack.h"
 
@@ -259,16 +258,16 @@ static NSString *const ext_key_class = @"class";
 - (sqlite3_stmt *)removeCollectionStatement;
 - (sqlite3_stmt *)removeAllStatement;
 
-- (YapEnumerateStatement *)enumerateCollectionsStatement;
-- (YapEnumerateStatement *)enumerateCollectionsForKeyStatement;
-- (YapEnumerateStatement *)enumerateKeysInCollectionStatement;
-- (YapEnumerateStatement *)enumerateKeysInAllCollectionsStatement;
-- (YapEnumerateStatement *)enumerateKeysAndMetadataInCollectionStatement;
-- (YapEnumerateStatement *)enumerateKeysAndMetadataInAllCollectionsStatement;
-- (YapEnumerateStatement *)enumerateKeysAndObjectsInCollectionStatement;
-- (YapEnumerateStatement *)enumerateKeysAndObjectsInAllCollectionsStatement;
-- (YapEnumerateStatement *)enumerateRowsInCollectionStatement;
-- (YapEnumerateStatement *)enumerateRowsInAllCollectionsStatement;
+- (sqlite3_stmt *)enumerateCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateCollectionsForKeyStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateRowsInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
 
 - (void)prepare;
 
