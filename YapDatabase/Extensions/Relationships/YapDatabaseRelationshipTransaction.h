@@ -108,17 +108,17 @@ NS_ASSUME_NONNULL_BEGIN
  * You can specify any combination of the following:
  *
  * - name only
- * - destinationFilePath
- * - name + destinationFilePath
+ * - destinationFileURL
+ * - name + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
 **/
 - (void)enumerateEdgesWithName:(nullable NSString *)name
-           destinationFilePath:(nullable NSString *)destinationFilePath
+            destinationFileURL:(nullable NSURL *)destinationFileURL
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 /**
@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateEdgesWithName:(nullable NSString *)name
                      sourceKey:(nullable NSString *)sourceKey
                     collection:(nullable NSString *)sourceCollection
-           destinationFilePath:(nullable NSString *)destinationFilePath
+            destinationFileURL:(nullable NSURL *)destinationFileURL
                     usingBlock:(void (^)(YapDatabaseRelationshipEdge *edge, BOOL *stop))block;
 
 #pragma mark Count
@@ -255,17 +255,17 @@ NS_ASSUME_NONNULL_BEGIN
  * You can specify any combination of the following:
  *
  * - name only
- * - destinationFilePath
- * - name + destinationFilePath
+ * - destinationFileURL
+ * - name + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
 **/
 - (NSUInteger)edgeCountWithName:(nullable NSString *)name
-            destinationFilePath:(nullable NSString *)destinationFilePath;
+             destinationFileURL:(nullable NSURL *)destinationFileURL;
 
 /**
  * Returns a count of every edge that matches any parameters you specify.
@@ -325,8 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @param sourceCollection (optional)
  *   The edge.sourceCollection to match.
  * 
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
@@ -334,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)edgeCountWithName:(nullable NSString *)name
                       sourceKey:(nullable NSString *)sourceKey
                      collection:(nullable NSString *)sourceCollection
-            destinationFilePath:(nullable NSString *)destinationFilePath;
+             destinationFileURL:(nullable NSURL *)destinationFileURL;
 
 @end
 
@@ -426,13 +426,9 @@ NS_ASSUME_NONNULL_BEGIN
  * many of the objects manually at some later point within the transaction block.
  * 
  * However, there may be certain use cases where it is preferable to have the extension execute its rules in advance.
- * I'm struggling to come up with a really good example, so this semi-convoluted one will have to do:
- * 
- * You have a parent object, with a bunch of child objects that have edges to the parent.
- * You need to replace the parent, and for whatever reason the new parent has the same collection/key.
- * So instead of doing a setObject:forKey:inCollection:, you first delete the original parent.
- * At that point you can invoke this flush method, and it will properly delete any child objects.
- * Then you can safely set the new parent, knowing it won't accidentally inherit any children from the old parent.
+ * For example, if you need a cascading delete to complete before continuing your transaction logic,
+ * then you can force the extension processing to occur prior to the end of the readwrite transaction
+ * by invoking this flush method
 **/
 - (void)flush;
 

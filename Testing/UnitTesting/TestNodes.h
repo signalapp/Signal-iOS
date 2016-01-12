@@ -67,30 +67,30 @@
 @end
 
 /**
- * Standard file relationship: (parent)->(filePath)
+ * Standard file relationship: (parent)->(file)
  * nodeDeleteRule = YDB_DeleteDestinationIfSourceDeleted
  * 
  * So the parent node creates the edge which points to the "child" filePath.
  * And the file should get deleted if the parent is deleted.
 **/
-@interface Node_Standard_FilePath : NSObject <NSCoding, YapDatabaseRelationshipNode>
+@interface Node_Standard_FileURL : NSObject <NSCoding, YapDatabaseRelationshipNode>
 
 @property (nonatomic, strong, readonly) NSString *key;
-@property (nonatomic, copy, readwrite) NSString *filePath;
+@property (nonatomic, copy, readwrite) NSURL *fileURL;
 
 @end
 
 /**
- * Retain count file relationship: (parent)->(filePath)
+ * Retain count file relationship: (parent)->(file)
  * nodeDeleteRule = YDB_DeleteDestinationIfAllSourcesDeleted
  *
  * So the retainer node creates the edge which points the the retained file.
  * And there may be multiple retainers pointing to the same retained file.
  * And the file doesn't get deleted unless all the retainers are deleted.
  **/
-@interface Node_RetainCount_FilePath : NSObject <NSCoding, YapDatabaseRelationshipNode>
+@interface Node_RetainCount_FileURL : NSObject <NSCoding, YapDatabaseRelationshipNode>
 
 @property (nonatomic, strong, readonly) NSString *key;
-@property (nonatomic, copy, readwrite) NSString *filePath;
+@property (nonatomic, copy, readwrite) NSURL *fileURL;
 
 @end

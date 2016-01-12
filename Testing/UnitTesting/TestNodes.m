@@ -221,10 +221,10 @@
  * So the parent node creates the edge which points to the "child" filePath.
  * And the file should get deleted if the parent is deleted.
 **/
-@implementation Node_Standard_FilePath
+@implementation Node_Standard_FileURL
 
 @synthesize key = key;
-@synthesize filePath = filePath;
+@synthesize fileURL = fileURL;
 
 - (id)init
 {
@@ -240,7 +240,7 @@
 	if ((self = [super init]))
 	{
 		key = [decoder decodeObjectForKey:@"key"];
-		filePath = [decoder decodeObjectForKey:@"filePath"];
+		fileURL = [decoder decodeObjectForKey:@"fileURL"];
 	}
 	return self;
 }
@@ -248,16 +248,16 @@
 - (void)encodeWithCoder:(NSCoder *)coder
 {
 	[coder encodeObject:key forKey:@"key"];
-	[coder encodeObject:filePath forKey:@"filePath"];
+	[coder encodeObject:fileURL forKey:@"fileURL"];
 }
 
 - (NSArray *)yapDatabaseRelationshipEdges
 {
-	if (filePath == nil) return nil;
+	if (fileURL == nil) return nil;
 	
 	YapDatabaseRelationshipEdge *edge =
 	  [YapDatabaseRelationshipEdge edgeWithName:@"random"
-	                        destinationFilePath:filePath
+	                         destinationFileURL:fileURL
 	                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
 	
 	return @[ edge ];
@@ -277,10 +277,10 @@
  * And there may be multiple retainers pointing to the same retained file.
  * And the file doesn't get deleted unless all the retainers are deleted.
  **/
-@implementation Node_RetainCount_FilePath
+@implementation Node_RetainCount_FileURL
 
 @synthesize key = key;
-@synthesize filePath = filePath;
+@synthesize fileURL = fileURL;
 
 - (id)init
 {
@@ -296,7 +296,7 @@
 	if ((self = [super init]))
 	{
 		key = [decoder decodeObjectForKey:@"key"];
-		filePath = [decoder decodeObjectForKey:@"filePath"];
+		fileURL = [decoder decodeObjectForKey:@"fileURL"];
 	}
 	return self;
 }
@@ -304,16 +304,16 @@
 - (void)encodeWithCoder:(NSCoder *)coder
 {
 	[coder encodeObject:key forKey:@"key"];
-	[coder encodeObject:filePath forKey:@"filePath"];
+	[coder encodeObject:fileURL forKey:@"fileURL"];
 }
 
 - (NSArray *)yapDatabaseRelationshipEdges
 {
-	if (filePath == nil) return nil;
+	if (fileURL == nil) return nil;
 	
 	YapDatabaseRelationshipEdge *edge =
 	  [YapDatabaseRelationshipEdge edgeWithName:@"shared"
-	                        destinationFilePath:filePath
+	                         destinationFileURL:fileURL
 	                            nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
 	
 	return @[ edge ];

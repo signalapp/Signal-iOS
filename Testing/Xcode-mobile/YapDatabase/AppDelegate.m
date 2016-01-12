@@ -38,6 +38,7 @@ static int ddLogLevel = DDLogLevelWarning;
 	//	[self testPragmaPageSize];
 	//	[self debug];
 	//	[self debugOnTheFlyViews];
+		[self testURL];
 		
 	});
 	
@@ -508,6 +509,123 @@ static const NSUInteger STR_LENGTH = 2000;
 		NSUInteger count = [[transaction ext:@"on-the-fly"] numberOfItemsInGroup:@""];
 		
 		NSLog(@"onTheFlyView.count = %lu", (unsigned long)count);
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark NSURL Testing
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSURL *)appSupportFolderURL
+{
+    static NSURL *appSupportFolderURL = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSError *error = nil;
+        NSURL *url = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
+                                                            inDomain:NSUserDomainMask
+                                                   appropriateForURL:nil
+                                                              create:YES
+                                                               error:&error];
+        if (!error)
+		{
+		#if TARGET_OS_IPHONE
+		
+			[[NSFileManager defaultManager] createDirectoryAtURL:url
+			                         withIntermediateDirectories:YES
+			                                          attributes:nil
+			                                               error:&error];
+		
+		#else // Mac OS X
+		
+			url = [url URLByAppendingPathComponent:@"YapDatabaseTesting"];
+            
+			[[NSFileManager defaultManager] createDirectoryAtURL:url
+			                         withIntermediateDirectories:YES
+			                                          attributes:nil
+			                                               error:&error];
+		#endif
+		}
+		
+		appSupportFolderURL = url;
+	});
+	
+	return appSupportFolderURL;
+}
+
+- (NSData *)bookmarkForURL:(NSURL *)url
+{
+	NSError *error = nil;
+	NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationSuitableForBookmarkFile
+	                 includingResourceValuesForKeys:nil
+	                                  relativeToURL:nil
+	                                          error:&error];
+	if (error || (bookmark == nil)) {
+		// Handle any errors.
+		return nil;
+	}
+	return bookmark;
+}
+
+- (NSURL*)urlForBookmark:(NSData*)bookmark {
+	BOOL bookmarkIsStale = NO;
+	NSError* theError = nil;
+	NSURL* bookmarkURL = [NSURL URLByResolvingBookmarkData:bookmark
+												   options:NSURLBookmarkResolutionWithoutUI
+											 relativeToURL:nil
+									   bookmarkDataIsStale:&bookmarkIsStale
+													 error:&theError];
+ 
+	if (bookmarkIsStale || (theError != nil)) {
+		// Handle any errors
+		return nil;
+	}
+	return bookmarkURL;
+}
+
+- (void)testURL
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	NSURL *fileURL = [self appSupportFolderURL];
+	NSString *filePath = [fileURL absoluteString];
+	NSData *bookmarkData = [self bookmarkForURL:fileURL];
+	
+	__block NSURL *_fileURL = nil;
+	__block NSString *_filePath = nil;
+	__block NSData *_bookmarkData = nil;
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		_fileURL = [transaction objectForKey:@"fileURL" inCollection:nil];
+		_filePath = [transaction objectForKey:@"filePath" inCollection:nil];
+		_bookmarkData = [transaction objectForKey:@"bookmarkData" inCollection:nil];
+	}];
+	
+	NSURL *bookmarkURL = [self urlForBookmark:bookmarkData];
+	NSURL *_bookmarkURL = [self urlForBookmark:_bookmarkData];
+	
+	NSLog(@"fileURL : %@", fileURL);
+	NSLog(@"_fileURL: %@\n\n", _fileURL);
+	
+	NSLog(@"filePath : %@", filePath);
+	NSLog(@"_filePath: %@\n\n", _filePath);
+	
+	NSLog(@"bookmarkURL : %@", bookmarkURL);
+	NSLog(@"_bookmarkURL: %@\n\n", _bookmarkURL);
+	
+	NSLog(@"bookmarkURL: %@\n\n", ([bookmarkURL isEqual:_bookmarkURL] ? @"equal" : @"not equal"));
+	
+	NSLog(@"bookmarkData: %@", ([bookmarkData isEqualToData:_bookmarkData] ? @"equal" : @"not equal"));
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		[transaction setObject:fileURL forKey:@"fileURL" inCollection:nil];
+		[transaction setObject:filePath forKey:@"filePath" inCollection:nil];
+		[transaction setObject:bookmarkData forKey:@"bookmarkData" inCollection:nil];
 	}];
 }
 

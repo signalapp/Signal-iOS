@@ -5079,15 +5079,12 @@
 #pragma mark Remove
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+- (void)removeObjectForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 {
-	if (key == nil) return;
-	if (collection == nil) collection = @"";
+	if (cacheKey == nil) return;
 	
 	sqlite3_stmt *statement = [connection removeForRowidStatement];
 	if (statement == NULL) return;
-	
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	// Issue #215
 	//
@@ -5111,8 +5108,7 @@
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'removeForRowidStatement': %d %s, key(%@)",
-		                                                   status, sqlite3_errmsg(connection->db), key);
+		YDBLogError(@"Error executing 'removeForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 		removed = NO;
 	}
 	
@@ -5139,12 +5135,20 @@
 	}
 }
 
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+{
+	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	[self removeObjectForCollectionKey:ck withRowid:rowid];
+}
+
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	int64_t rowid = 0;
 	if ([self getRowid:&rowid forKey:key inCollection:collection])
 	{
-		[self removeObjectForKey:key inCollection:collection withRowid:rowid];
+		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		[self removeObjectForCollectionKey:ck withRowid:rowid];
 	}
 }
 

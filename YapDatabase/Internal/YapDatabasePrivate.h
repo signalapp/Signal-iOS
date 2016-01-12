@@ -20,9 +20,23 @@
 **/
 NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 {
-	if (*stmtPtr) {
+	if (stmtPtr && *stmtPtr)
+	{
 		sqlite3_finalize(*stmtPtr);
 		*stmtPtr = NULL;
+	}
+}
+
+NS_INLINE void sqlite_enum_reset(sqlite3_stmt *stmt, BOOL needsFinalize)
+{
+	if (stmt)
+	{
+		sqlite3_clear_bindings(stmt);
+		sqlite3_reset(stmt);
+		
+		if (needsFinalize) {
+			sqlite3_finalize(stmt);
+		}
 	}
 }
 
@@ -434,6 +448,7 @@ static NSString *const ext_key_class = @"class";
               withRowid:(int64_t)rowid
      serializedMetadata:(NSData *)preSerializedMetadata;
 
+- (void)removeObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 
 - (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTrnsactn withName:(NSString *)extName;
