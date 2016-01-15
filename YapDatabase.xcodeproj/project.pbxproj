@@ -17,11 +17,6 @@
 		DC302B131BE950D9009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC302B171BE9517B009F8C4D /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */; };
 		DC302B181BE9517B009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC302B361BE95218009F8C4D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B2E1BE95218009F8C4D /* AppDelegate.m */; };
-		DC302B371BE95218009F8C4D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC302B2F1BE95218009F8C4D /* Assets.xcassets */; };
-		DC302B381BE95218009F8C4D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC302B301BE95218009F8C4D /* Main.storyboard */; };
-		DC302B3A1BE95218009F8C4D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B331BE95218009F8C4D /* main.m */; };
-		DC302B3B1BE95218009F8C4D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B351BE95218009F8C4D /* ViewController.m */; };
 		DC302B471BE98DAC009F8C4D /* YapMutationStack.h in Headers */ = {isa = PBXBuildFile; fileRef = DC302B451BE98DAC009F8C4D /* YapMutationStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC302B481BE98DAC009F8C4D /* YapMutationStack.h in Headers */ = {isa = PBXBuildFile; fileRef = DC302B451BE98DAC009F8C4D /* YapMutationStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC302B491BE98DAC009F8C4D /* YapMutationStack.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B461BE98DAC009F8C4D /* YapMutationStack.m */; };
@@ -397,6 +392,17 @@
 		DC6521631BCEC77E00188E23 /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC651FEC1BCEC77E00188E23 /* YapDatabaseTransaction.m */; };
 		DC6521641BCEC77E00188E23 /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC651FEC1BCEC77E00188E23 /* YapDatabaseTransaction.m */; };
 		DC8664E71BE94DC0002F7800 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2AE1BCC8E610087ED39 /* YapDatabase.framework */; };
+		DCAF523F1C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DCAF52401C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DCAF52411C48636C00562C92 /* YapDatabaseConnectionProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */; };
+		DCAF52421C48636C00562C92 /* YapDatabaseConnectionProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */; };
+		DCAF52481C4866B700562C92 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF52451C4866B700562C92 /* AppDelegate.m */; };
+		DCAF52491C4866B700562C92 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF52471C4866B700562C92 /* ViewController.m */; };
+		DCAF524D1C4866F500562C92 /* CompileTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524C1C4866F500562C92 /* CompileTest.m */; };
+		DCAF524E1C4866F500562C92 /* CompileTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524C1C4866F500562C92 /* CompileTest.m */; };
+		DCAF52501C4867B000562C92 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524F1C4867B000562C92 /* main.m */; };
+		DCAF52541C48681000562C92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCAF52521C48681000562C92 /* Main.storyboard */; };
+		DCAF52581C48685400562C92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCAF52571C48685400562C92 /* Assets.xcassets */; };
 		DCD881421BE93C6200317214 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2BE1BCC8E870087ED39 /* YapDatabase.framework */; };
 		DCD881441BE941E200317214 /* YapDatabaseSearchQueuePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DCD881431BE941D200317214 /* YapDatabaseSearchQueuePrivate.h */; };
 		DCD881451BE941E300317214 /* YapDatabaseSearchQueuePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DCD881431BE941D200317214 /* YapDatabaseSearchQueuePrivate.h */; };
@@ -455,14 +461,6 @@
 		65580CA41BF36A020055E65C /* yap_vfs_shim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yap_vfs_shim.h; sourceTree = "<group>"; };
 		DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC302B081BE94F31009F8C4D /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.1.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
-		DC302B2D1BE95218009F8C4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		DC302B2E1BE95218009F8C4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		DC302B2F1BE95218009F8C4D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DC302B311BE95218009F8C4D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		DC302B321BE95218009F8C4D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC302B331BE95218009F8C4D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DC302B341BE95218009F8C4D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		DC302B351BE95218009F8C4D /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		DC302B451BE98DAC009F8C4D /* YapMutationStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMutationStack.h; sourceTree = "<group>"; };
 		DC302B461BE98DAC009F8C4D /* YapMutationStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMutationStack.m; sourceTree = "<group>"; };
 		DC651F121BCEC62000188E23 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Framework/module.modulemap; sourceTree = "<group>"; };
@@ -655,6 +653,18 @@
 		DC6521681BCED4D800188E23 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Framework/iOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/Mac/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC65216F1BCED5D100188E23 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionProxy.h; sourceTree = "<group>"; };
+		DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnectionProxy.m; sourceTree = "<group>"; };
+		DCAF52441C4866B700562C92 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "Framework/TestModuleMap-Mac/AppDelegate.h"; sourceTree = "<group>"; };
+		DCAF52451C4866B700562C92 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "Framework/TestModuleMap-Mac/AppDelegate.m"; sourceTree = "<group>"; };
+		DCAF52461C4866B700562C92 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = "Framework/TestModuleMap-Mac/ViewController.h"; sourceTree = "<group>"; };
+		DCAF52471C4866B700562C92 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = "Framework/TestModuleMap-Mac/ViewController.m"; sourceTree = "<group>"; };
+		DCAF524B1C4866F500562C92 /* CompileTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileTest.h; path = "Framework/TestModuleMap-Shared/CompileTest.h"; sourceTree = "<group>"; };
+		DCAF524C1C4866F500562C92 /* CompileTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CompileTest.m; path = "Framework/TestModuleMap-Shared/CompileTest.m"; sourceTree = "<group>"; };
+		DCAF524F1C4867B000562C92 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "Framework/TestModuleMap-Mac/main.m"; sourceTree = "<group>"; };
+		DCAF52531C48681000562C92 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Main.storyboard; sourceTree = "<group>"; };
+		DCAF52551C48683200562C92 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Framework/TestModuleMap-Mac/Info.plist"; sourceTree = "<group>"; };
+		DCAF52571C48685400562C92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "Framework/TestModuleMap-Mac/Assets.xcassets"; sourceTree = "<group>"; };
 		DCD881291BE93C1000317214 /* TestModuleMap-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TestModuleMap-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCD881431BE941D200317214 /* YapDatabaseSearchQueuePrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YapDatabaseSearchQueuePrivate.h; sourceTree = "<group>"; };
 		DCD881471BE94BC400317214 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -718,22 +728,6 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		DC302B2C1BE95218009F8C4D /* TestModuleMap */ = {
-			isa = PBXGroup;
-			children = (
-				DC302B2D1BE95218009F8C4D /* AppDelegate.h */,
-				DC302B2E1BE95218009F8C4D /* AppDelegate.m */,
-				DC302B341BE95218009F8C4D /* ViewController.h */,
-				DC302B351BE95218009F8C4D /* ViewController.m */,
-				DC302B2F1BE95218009F8C4D /* Assets.xcassets */,
-				DC302B301BE95218009F8C4D /* Main.storyboard */,
-				DC302B321BE95218009F8C4D /* Info.plist */,
-				DC302B331BE95218009F8C4D /* main.m */,
-			);
-			name = TestModuleMap;
-			path = Framework/TestModuleMap;
-			sourceTree = "<group>";
-		};
 		DC651F171BCEC77E00188E23 /* YapDatabase */ = {
 			isa = PBXGroup;
 			children = (
@@ -755,6 +749,7 @@
 		DC651F181BCEC77E00188E23 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				DCAF523C1C48636C00562C92 /* ConnectionProxy */,
 				DC651F191BCEC77E00188E23 /* CloudKit */,
 				DC651F391BCEC77E00188E23 /* FilteredViews */,
 				DC651F441BCEC77E00188E23 /* FullTextSearch */,
@@ -1141,6 +1136,39 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		DCAF523C1C48636C00562C92 /* ConnectionProxy */ = {
+			isa = PBXGroup;
+			children = (
+				DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */,
+				DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */,
+			);
+			path = ConnectionProxy;
+			sourceTree = "<group>";
+		};
+		DCAF52431C48669B00562C92 /* TestModuleMap-Mac */ = {
+			isa = PBXGroup;
+			children = (
+				DCAF52441C4866B700562C92 /* AppDelegate.h */,
+				DCAF52451C4866B700562C92 /* AppDelegate.m */,
+				DCAF52461C4866B700562C92 /* ViewController.h */,
+				DCAF52471C4866B700562C92 /* ViewController.m */,
+				DCAF52571C48685400562C92 /* Assets.xcassets */,
+				DCAF52521C48681000562C92 /* Main.storyboard */,
+				DCAF52551C48683200562C92 /* Info.plist */,
+				DCAF524F1C4867B000562C92 /* main.m */,
+			);
+			name = "TestModuleMap-Mac";
+			sourceTree = "<group>";
+		};
+		DCAF524A1C4866CD00562C92 /* TestModuleMap-Shared */ = {
+			isa = PBXGroup;
+			children = (
+				DCAF524B1C4866F500562C92 /* CompileTest.h */,
+				DCAF524C1C4866F500562C92 /* CompileTest.m */,
+			);
+			name = "TestModuleMap-Shared";
+			sourceTree = "<group>";
+		};
 		DCD881461BE94BC400317214 /* TestModuleMap-iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -1163,8 +1191,9 @@
 			children = (
 				DC651F171BCEC77E00188E23 /* YapDatabase */,
 				DCF7C2C81BCEB07D0087ED39 /* Framework */,
-				DC302B2C1BE95218009F8C4D /* TestModuleMap */,
+				DCAF52431C48669B00562C92 /* TestModuleMap-Mac */,
 				DCD881461BE94BC400317214 /* TestModuleMap-iOS */,
+				DCAF524A1C4866CD00562C92 /* TestModuleMap-Shared */,
 				DCF7C2AF1BCC8E610087ED39 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1250,6 +1279,7 @@
 				DC65209D1BCEC77E00188E23 /* YapDatabaseRTreeIndexTransaction.h in Headers */,
 				DC6520CF1BCEC77E00188E23 /* YapDatabaseSecondaryIndexTransaction.h in Headers */,
 				DC65207D1BCEC77E00188E23 /* YapDatabaseRelationshipNode.h in Headers */,
+				DCAF523F1C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */,
 				DC6520751BCEC77E00188E23 /* YapDatabaseRelationshipConnection.h in Headers */,
 				DC6520351BCEC77E00188E23 /* YapDatabaseFilteredViewTypes.h in Headers */,
 				DC6520951BCEC77E00188E23 /* YapDatabaseRTreeIndexOptions.h in Headers */,
@@ -1362,6 +1392,7 @@
 				DC65209E1BCEC77E00188E23 /* YapDatabaseRTreeIndexTransaction.h in Headers */,
 				DC6520D01BCEC77E00188E23 /* YapDatabaseSecondaryIndexTransaction.h in Headers */,
 				DC65207E1BCEC77E00188E23 /* YapDatabaseRelationshipNode.h in Headers */,
+				DCAF52401C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */,
 				DC6520761BCEC77E00188E23 /* YapDatabaseRelationshipConnection.h in Headers */,
 				DC6520361BCEC77E00188E23 /* YapDatabaseFilteredViewTypes.h in Headers */,
 				DC6520961BCEC77E00188E23 /* YapDatabaseRTreeIndexOptions.h in Headers */,
@@ -1573,8 +1604,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC302B371BE95218009F8C4D /* Assets.xcassets in Resources */,
-				DC302B381BE95218009F8C4D /* Main.storyboard in Resources */,
+				DCAF52541C48681000562C92 /* Main.storyboard in Resources */,
+				DCAF52581C48685400562C92 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1600,6 +1631,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCD881581BE94BC400317214 /* ViewController.m in Sources */,
+				DCAF524E1C4866F500562C92 /* CompileTest.m in Sources */,
 				DCD881571BE94BC400317214 /* main.m in Sources */,
 				DCD881521BE94BC400317214 /* AppDelegate.m in Sources */,
 			);
@@ -1609,9 +1641,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC302B3B1BE95218009F8C4D /* ViewController.m in Sources */,
-				DC302B3A1BE95218009F8C4D /* main.m in Sources */,
-				DC302B361BE95218009F8C4D /* AppDelegate.m in Sources */,
+				DCAF52501C4867B000562C92 /* main.m in Sources */,
+				DCAF52481C4866B700562C92 /* AppDelegate.m in Sources */,
+				DCAF524D1C4866F500562C92 /* CompileTest.m in Sources */,
+				DCAF52491C4866B700562C92 /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1643,6 +1676,7 @@
 				DC6520B71BCEC77E00188E23 /* YapDatabaseSearchResultsViewTransaction.m in Sources */,
 				DC6520F51BCEC77E00188E23 /* YapDatabaseView.m in Sources */,
 				DC6521291BCEC77E00188E23 /* YapMemoryTable.m in Sources */,
+				DCAF52411C48636C00562C92 /* YapDatabaseConnectionProxy.m in Sources */,
 				DC302B491BE98DAC009F8C4D /* YapMutationStack.m in Sources */,
 				DC65201D1BCEC77E00188E23 /* YapDatabaseCloudKitOptions.m in Sources */,
 				DC65203D1BCEC77E00188E23 /* YapDatabaseFullTextSearch.m in Sources */,
@@ -1735,6 +1769,7 @@
 				DC6520B81BCEC77E00188E23 /* YapDatabaseSearchResultsViewTransaction.m in Sources */,
 				DC6520F61BCEC77E00188E23 /* YapDatabaseView.m in Sources */,
 				DC65212A1BCEC77E00188E23 /* YapMemoryTable.m in Sources */,
+				DCAF52421C48636C00562C92 /* YapDatabaseConnectionProxy.m in Sources */,
 				DC302B4A1BE98DAC009F8C4D /* YapMutationStack.m in Sources */,
 				DC65201E1BCEC77E00188E23 /* YapDatabaseCloudKitOptions.m in Sources */,
 				DC65203E1BCEC77E00188E23 /* YapDatabaseFullTextSearch.m in Sources */,
@@ -1815,12 +1850,13 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		DC302B301BE95218009F8C4D /* Main.storyboard */ = {
+		DCAF52521C48681000562C92 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				DC302B311BE95218009F8C4D /* Base */,
+				DCAF52531C48681000562C92 /* Base */,
 			);
 			name = Main.storyboard;
+			path = "Framework/TestModuleMap-Mac/Base.lproj";
 			sourceTree = "<group>";
 		};
 		DCD8814A1BE94BC400317214 /* LaunchScreen.storyboard */ = {
@@ -1891,7 +1927,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				INFOPLIST_FILE = Framework/TestModuleMap/Info.plist;
+				INFOPLIST_FILE = "Framework/TestModuleMap-Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.TestModuleMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1908,7 +1944,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				INFOPLIST_FILE = Framework/TestModuleMap/Info.plist;
+				INFOPLIST_FILE = "Framework/TestModuleMap-Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.TestModuleMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";

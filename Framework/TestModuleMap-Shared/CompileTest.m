@@ -1,4 +1,4 @@
-#import "AppDelegate.h"
+#import "CompileTest.h"
 
 @import YapDatabase;
 
@@ -16,11 +16,11 @@
 @import YapDatabase.YapDatabaseHooks;
 @import YapDatabase.YapDatabaseCloudKit;
 @import YapDatabase.YapDatabaseRTreeIndex;
+@import YapDatabase.YapDatabaseConnectionProxy;
 
+@implementation CompileTest
 
-@implementation AppDelegate
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)willItCompile
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused"
@@ -43,6 +43,7 @@
 	YapDatabaseHooks *hooks;
 	YapDatabaseCloudKit *cloudKit;
 	YapDatabaseRTreeIndex *rTreeIndex;
+	YapDatabaseConnectionProxy *connectionProxy;
 	
 #pragma clang diagnostic pop
 }
