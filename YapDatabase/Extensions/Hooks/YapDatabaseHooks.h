@@ -126,16 +126,16 @@ typedef void (^YDBHooks_DidRemoveAllRows)
 
 - (instancetype)init;
 
-@property (atomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (atomic, strong, readwrite, nullable) YapWhitelistBlacklist *allowedCollections;
 
-@property (atomic, strong, readwrite) YDBHooks_WillModifyRow willModifyRow;
-@property (atomic, strong, readwrite) YDBHooks_DidModifyRow   didModifyRow;
+@property (atomic, strong, readwrite, nullable) YDBHooks_WillModifyRow willModifyRow;
+@property (atomic, strong, readwrite, nullable) YDBHooks_DidModifyRow   didModifyRow;
 
-@property (atomic, strong, readwrite) YDBHooks_WillRemoveRow willRemoveRow;
-@property (atomic, strong, readwrite) YDBHooks_DidRemoveRow   didRemoveRow;
+@property (atomic, strong, readwrite, nullable) YDBHooks_WillRemoveRow willRemoveRow;
+@property (atomic, strong, readwrite, nullable) YDBHooks_DidRemoveRow   didRemoveRow;
 
-@property (atomic, strong, readwrite) YDBHooks_WillRemoveAllRows willRemoveAllRows;
-@property (atomic, strong, readwrite) YDBHooks_DidRemoveAllRows didRemoveAllRows;
+@property (atomic, strong, readwrite, nullable) YDBHooks_WillRemoveAllRows willRemoveAllRows;
+@property (atomic, strong, readwrite, nullable) YDBHooks_DidRemoveAllRows didRemoveAllRows;
 
 @end
 

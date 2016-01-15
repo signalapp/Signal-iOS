@@ -249,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Keep in mind that the fetchedCollectionsFilter only applies to how the proxy interacts with the readOnlyConnection.
  * That is, it still allows the proxy to write values to any collection.
 **/
-@property (atomic, strong, readwrite) YapWhitelistBlacklist *fetchedCollectionsFilter;
+@property (atomic, strong, readwrite, nullable) YapWhitelistBlacklist *fetchedCollectionsFilter;
 
 @end
 
