@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseExtensionTypes.h"
 
+@class YapDatabaseReadTransaction;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -23,16 +25,16 @@ NS_ASSUME_NONNULL_BEGIN
 typedef id YapDatabaseSecondaryIndexBlock; // One of the YapDatabaseSecondaryIndexWith_X_Block types below.
 
 typedef void (^YapDatabaseSecondaryIndexWithKeyBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key);
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key);
 
 typedef void (^YapDatabaseSecondaryIndexWithObjectBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
 
 typedef void (^YapDatabaseSecondaryIndexWithMetadataBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
 
 typedef void (^YapDatabaseSecondaryIndexWithRowBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseSecondaryIndexWithKeyBlock)block;
 + (instancetype)withObjectBlock:(YapDatabaseSecondaryIndexWithObjectBlock)block;
