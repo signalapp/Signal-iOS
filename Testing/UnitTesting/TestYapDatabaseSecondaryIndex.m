@@ -54,7 +54,7 @@
 	[setup addColumn:@"someInt" withType:YapDatabaseSecondaryIndexTypeInteger];
 	
 	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
-	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+	    ^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		// If we're storing other types of objects in our database,
 		// then we should check the object before presuming we can cast it.
@@ -290,7 +290,7 @@
 	[setup addColumn:@"str" withType:YapDatabaseSecondaryIndexTypeText];
 	
 	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
-	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
+	    ^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object){
 		
 		// If we're storing other types of objects in our database,
 		// then we should check the object before presuming we can cast it.
@@ -374,7 +374,7 @@
 	[setup addColumn:@"salary" withType:YapDatabaseSecondaryIndexTypeReal];
 	
 	YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:
-	    ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object)
+	    ^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object)
 	{
 		// If we're storing other types of objects in our database,
 		// then we should check the object before presuming we can cast it.

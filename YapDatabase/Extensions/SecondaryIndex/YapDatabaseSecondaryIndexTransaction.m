@@ -299,7 +299,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop) {
 			
-			secondaryIndexBlock(parentConnection->blockDict, collection, key);
+			secondaryIndexBlock(databaseTransaction, parentConnection->blockDict, collection, key);
 			
 			if ([parentConnection->blockDict count] > 0)
 			{
@@ -331,7 +331,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop) {
 			
-			secondaryIndexBlock(parentConnection->blockDict, collection, key, object);
+			secondaryIndexBlock(databaseTransaction, parentConnection->blockDict, collection, key, object);
 			
 			if ([parentConnection->blockDict count] > 0)
 			{
@@ -364,7 +364,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop) {
 			
-			secondaryIndexBlock(parentConnection->blockDict, collection, key, metadata);
+			secondaryIndexBlock(databaseTransaction, parentConnection->blockDict, collection, key, metadata);
 			
 			if ([parentConnection->blockDict count] > 0)
 			{
@@ -397,7 +397,7 @@ static NSString *const ext_key_version_deprecated = @"version";
 		void (^enumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
 		enumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop) {
 			
-			secondaryIndexBlock(parentConnection->blockDict, collection, key, object, metadata);
+			secondaryIndexBlock(databaseTransaction, parentConnection->blockDict, collection, key, object, metadata);
 			
 			if ([parentConnection->blockDict count] > 0)
 			{
@@ -772,28 +772,28 @@ static NSString *const ext_key_version_deprecated = @"version";
 		__unsafe_unretained YapDatabaseSecondaryIndexWithKeyBlock block =
 		    (YapDatabaseSecondaryIndexWithKeyBlock)handler->block;
 		
-		block(parentConnection->blockDict, collection, key);
+		block(databaseTransaction, parentConnection->blockDict, collection, key);
 	}
 	else if (blockType == YapDatabaseBlockTypeWithObject)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithObjectBlock block =
 		    (YapDatabaseSecondaryIndexWithObjectBlock)handler->block;
 		
-		block(parentConnection->blockDict, collection, key, object);
+		block(databaseTransaction, parentConnection->blockDict, collection, key, object);
 	}
 	else if (blockType == YapDatabaseBlockTypeWithMetadata)
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithMetadataBlock block =
 		    (YapDatabaseSecondaryIndexWithMetadataBlock)handler->block;
 		
-		block(parentConnection->blockDict, collection, key, metadata);
+		block(databaseTransaction, parentConnection->blockDict, collection, key, metadata);
 	}
 	else
 	{
 		__unsafe_unretained YapDatabaseSecondaryIndexWithRowBlock block =
 		    (YapDatabaseSecondaryIndexWithRowBlock)handler->block;
 		
-		block(parentConnection->blockDict, collection, key, object, metadata);
+		block(databaseTransaction, parentConnection->blockDict, collection, key, object, metadata);
 	}
 	
 	if ([parentConnection->blockDict count] == 0)
