@@ -323,7 +323,7 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 - (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (!_mvc) {
-          _mvc = [[UIStoryboard storyboardWithName:@"Storyboard" bundle:NULL]
+          _mvc = [[UIStoryboard storyboardWithName:@"Messages" bundle:NULL]
               instantiateViewControllerWithIdentifier:@"MessagesViewController"];
       }
 

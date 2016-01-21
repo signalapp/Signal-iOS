@@ -445,6 +445,11 @@
 		FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */; };
 		FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */; };
 		FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD25811A154B3800F4C644 /* CodeVerificationViewController.m */; };
+		FF95811A1C5050670007B1B5 /* Registration.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF9581191C5050670007B1B5 /* Registration.storyboard */; };
+		FF95811C1C5052D10007B1B5 /* Call.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF95811B1C5052D10007B1B5 /* Call.storyboard */; };
+		FF95811E1C5053090007B1B5 /* Fingerprint.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF95811D1C5053090007B1B5 /* Fingerprint.storyboard */; };
+		FF9581201C50534A0007B1B5 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF95811F1C50534A0007B1B5 /* Settings.storyboard */; };
+		FF9581221C5057210007B1B5 /* Messages.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF9581211C5057210007B1B5 /* Messages.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1012,6 +1017,11 @@
 		FCFD257E1A154B2C00F4C644 /* RegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationViewController.m; sourceTree = "<group>"; };
 		FCFD25801A154B3800F4C644 /* CodeVerificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CodeVerificationViewController.h; sourceTree = "<group>"; };
 		FCFD25811A154B3800F4C644 /* CodeVerificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CodeVerificationViewController.m; sourceTree = "<group>"; };
+		FF9581191C5050670007B1B5 /* Registration.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Registration.storyboard; path = Storyboard/Registration.storyboard; sourceTree = "<group>"; };
+		FF95811B1C5052D10007B1B5 /* Call.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Call.storyboard; path = Storyboard/Call.storyboard; sourceTree = "<group>"; };
+		FF95811D1C5053090007B1B5 /* Fingerprint.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Fingerprint.storyboard; path = Storyboard/Fingerprint.storyboard; sourceTree = "<group>"; };
+		FF95811F1C50534A0007B1B5 /* Settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Settings.storyboard; path = Storyboard/Settings.storyboard; sourceTree = "<group>"; };
+		FF9581211C5057210007B1B5 /* Messages.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Messages.storyboard; path = Storyboard/Messages.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1114,6 +1124,11 @@
 			isa = PBXGroup;
 			children = (
 				A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */,
+				FF9581211C5057210007B1B5 /* Messages.storyboard */,
+				FF95811F1C50534A0007B1B5 /* Settings.storyboard */,
+				FF95811D1C5053090007B1B5 /* Fingerprint.storyboard */,
+				FF95811B1C5052D10007B1B5 /* Call.storyboard */,
+				FF9581191C5050670007B1B5 /* Registration.storyboard */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03D918170B33006006FC /* audio */,
@@ -2248,6 +2263,7 @@
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
+						DevelopmentTeam = 538R2KUTXD;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -2362,6 +2378,7 @@
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				AD41D7B51A6F6F0600241130 /* play_button.png in Resources */,
+				FF9581221C5057210007B1B5 /* Messages.storyboard in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
@@ -2370,6 +2387,7 @@
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				FF9581201C50534A0007B1B5 /* Settings.storyboard in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
@@ -2377,12 +2395,15 @@
 				E1370BE118A0686C00826894 /* completed.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
 				E1370BE318A0686C00826894 /* handshake.mp3 in Resources */,
+				FF95811A1C5050670007B1B5 /* Registration.storyboard in Resources */,
 				B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
+				FF95811C1C5052D10007B1B5 /* Call.storyboard in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
+				FF95811E1C5053090007B1B5 /* Fingerprint.storyboard in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
@@ -3057,6 +3078,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3112,6 +3134,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
