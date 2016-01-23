@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
  * In general, assertions are disabled when you compile for release.
  * But to be precise, the checks are only run if NS_BLOCK_ASSERTIONS is not defined.
 **/
-@property (nonatomic, copy, readwrite) NSSet<Class> *allowedKeyClasses;
-@property (nonatomic, copy, readwrite) NSSet<Class> *allowedObjectClasses;
+@property (nonatomic, copy, readwrite, nullable) NSSet<Class> *allowedKeyClasses;
+@property (nonatomic, copy, readwrite, nullable) NSSet<Class> *allowedObjectClasses;
 
 //
 // The normal cache stuff...
