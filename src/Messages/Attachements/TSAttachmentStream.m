@@ -29,7 +29,7 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 - (NSArray *)yapDatabaseRelationshipEdges {
     YapDatabaseRelationshipEdge *attachmentFileEdge =
         [YapDatabaseRelationshipEdge edgeWithName:TSAttachementFileRelationshipEdge
-                              destinationFilePath:[self filePath]
+                               destinationFileURL:[self mediaURL]
                                   nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
 
     return @[ attachmentFileEdge ];
