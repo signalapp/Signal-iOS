@@ -4357,14 +4357,16 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 
 /**
  * Allows you to enumerate all the changed keys in the given collection, for the given commits.
- * 
+ *
  * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
  * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the key may not be included in the enumeration.
- * You must use didClearCollection:inNotifications: if you need to handle that case.
- * 
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
+ *
  * @see didClearCollection:inNotifications:
+ * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedKeysInCollection:(NSString *)collection
                          inNotifications:(NSArray *)notifications
@@ -4416,17 +4418,35 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 				}
 			}
 		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapDatabaseRemovedKeysKey];
+		for (YapCollectionKey *ck in changeset_removedKeys)
+		{
+			if ([ck.collection isEqualToString:collection])
+			{
+				if (![keys containsObject:ck.key])
+				{
+					block(ck.key, &stop);
+					if (stop) return;
+					
+					[keys addObject:ck.key];
+				}
+			}
+		}
 	}
 }
 
 /**
  * Allows you to enumerate all the changed collection/key tuples for the given commits.
- * 
- * Keep in mind that if [transaction removeAllObjectsInAllCollections] was invoked
+ *
+ * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
+ * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the collection/key tuple may not be included in the enumeration.
- * You must use didClearAllCollectionsInNotifications: if you need to handle that case.
- * 
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
+ *
+ * @see didClearCollection:inNotifications:
  * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedCollectionKeysInNotifications:(NSArray *)notifications
@@ -4462,10 +4482,25 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_metadataChanges = [changeset objectForKey:YapDatabaseMetadataChangesKey];
 		for (YapCollectionKey *ck in changeset_metadataChanges)
 		{
-			block(ck, &stop);
-			if (stop) return;
-			
-			[collectionKeys addObject:ck];
+			if (![collectionKeys containsObject:ck])
+			{
+				block(ck, &stop);
+				if (stop) return;
+				
+				[collectionKeys addObject:ck];
+			}
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapDatabaseRemovedKeysKey];
+		for (YapCollectionKey *ck in changeset_removedKeys)
+		{
+			if (![collectionKeys containsObject:ck])
+			{
+				block(ck, &stop);
+				if (stop) return;
+				
+				[collectionKeys addObject:ck];
+			}
 		}
 	}
 }
