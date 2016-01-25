@@ -4316,6 +4316,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
 	}
 	
 	return NO;
