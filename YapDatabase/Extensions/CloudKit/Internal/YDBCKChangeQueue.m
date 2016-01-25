@@ -993,7 +993,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
 				if (pqPrevChangeSet->deletedRecordIDs == nil)
 				{
-					pqPrevChangeSet->deletedRecordIDs = [mqPrevChangeSet->deletedRecordIDs copy];
+					pqPrevChangeSet->deletedRecordIDs = [mqPrevChangeSet->deletedRecordIDs mutableCopy];
 					pqPrevChangeSet.hasChangesToDeletedRecordIDs = YES;
 				}
 				
@@ -1146,7 +1146,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		YDBCKChangeSet *mqInFlightChangeSet = [masterQueue->oldChangeSets firstObject];
 		
-		pqInFlightChangeSet->deletedRecordIDs = [mqInFlightChangeSet->deletedRecordIDs copy];
+		pqInFlightChangeSet->deletedRecordIDs = [mqInFlightChangeSet->deletedRecordIDs mutableCopy];
 	}
 	
 	NSUInteger index = [pqInFlightChangeSet->deletedRecordIDs indexOfObject:recordID];
