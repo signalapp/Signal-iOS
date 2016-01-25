@@ -773,10 +773,31 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *
  * @param completionBlock (optional)
  *     An optional completion block may be used.
- *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
                          completionQueue:(nullable dispatch_queue_t)completionQueue
+                         completionBlock:(nullable dispatch_block_t)completionBlock;
+
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to an asyncReadwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * @param extensionName (required)
+ *     This is the arbitrary string you assigned to the extension when you registered it.
+ * 
+ * @param connection (optional)
+ *     You may optionally pass your own databaseConnection for this method to use.
+ *     If you pass nil, an internal databaseConnection will automatically be used.
+ *
+ * @param completionBlock (optional)
+ *     An optional completion block may be used.
+ *     The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                              connection:(nullable YapDatabaseConnection *)connection
                          completionBlock:(nullable dispatch_block_t)completionBlock;
 
 /**
@@ -799,7 +820,6 @@ extern NSString *const YapDatabaseAllKeysRemovedKey;
  *
  * @param completionBlock (optional)
  *     An optional completion block may be used.
- *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
                               connection:(nullable YapDatabaseConnection *)connection
