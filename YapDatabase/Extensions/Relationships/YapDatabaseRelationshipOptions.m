@@ -13,6 +13,10 @@
 #endif
 #pragma unused(ydbLogLevel)
 
+static NSString *const kPlistKey_Version        = @"version";
+static NSString *const kPlistKey_BookmarkData   = @"bookmarkData";
+static NSString *const kPlistKey_PathComponents = @"pathComponents";
+
 
 @implementation YapDatabaseRelationshipOptions
 
@@ -81,19 +85,90 @@
  *   Whereas path and file reference URLs are potentially fragile between launches of your app,
  *   a bookmark can usually be used to re-create a URL to a file even in cases where the file was moved or renamed.
  *
+ * The default serializer will attempt to use the bookmark capabilities of NSURL.
+ * If this fails because the file doesn't exist, the serializer will fallback to a hybrid binary plist system.
+ * It will look for a parent directory that does exist, generate a bookmark of that,
+ * and store the remainder as a relative path.
+ *
  * You can use your own serializer/deserializer if you need extra features.
 **/
 + (YapDatabaseRelationshipFileURLSerializer)defaultFileURLSerializer
 {
 	return ^NSData* (YapDatabaseRelationshipEdge *edge){ @autoreleasepool {
 		
-		NSData *data =
-		  [edge.destinationFileURL bookmarkDataWithOptions:NSURLBookmarkCreationSuitableForBookmarkFile
-		                    includingResourceValuesForKeys:nil
-		                                     relativeToURL:nil
-		                                             error:NULL];
+		NSURL *url = edge.destinationFileURL;
+		if (url == nil) return nil;
 		
-		return data;
+		NSData *bookmarkData = [url bookmarkDataWithOptions:NSURLBookmarkCreationSuitableForBookmarkFile
+		                     includingResourceValuesForKeys:nil
+	                                         relativeToURL:nil
+		                                              error:NULL];
+		
+		if (bookmarkData) {
+			return bookmarkData;
+		}
+		
+		// Failed to create bookmark data.
+		// This is usually because the file doesn't exist.
+		// As a backup plan, we're going to get a bookmark of the closest parent directory that does exist.
+		// And combine it with the relative path after that point.
+		
+		if (!url.isFileURL) {
+			return nil;
+		}
+		
+		NSMutableArray *pathComponents = [NSMutableArray arrayWithCapacity:2];
+		
+		NSString *lastPathComponent = nil;
+		NSURL *lastURL = nil;
+		NSURL *parentURL = nil;
+		
+		lastURL = url;
+		
+		lastPathComponent = [lastURL lastPathComponent];
+		if (lastPathComponent)
+			[pathComponents addObject:lastPathComponent];
+		
+		parentURL = [lastURL URLByDeletingLastPathComponent];
+		
+		while (![parentURL isEqual:lastURL])
+		{
+			bookmarkData = [parentURL bookmarkDataWithOptions:NSURLBookmarkCreationSuitableForBookmarkFile
+			                   includingResourceValuesForKeys:nil
+			                                    relativeToURL:nil
+			                                            error:NULL];
+			
+			if (bookmarkData) {
+				break;
+			}
+			else
+			{
+				lastURL = parentURL;
+				
+				lastPathComponent = [lastURL lastPathComponent];
+				if (lastPathComponent)
+					[pathComponents insertObject:lastPathComponent atIndex:0];
+				
+				parentURL = [lastURL URLByDeletingLastPathComponent];
+			}
+		}
+		
+		if (bookmarkData)
+		{
+			NSDictionary *plistDict = @{
+			  kPlistKey_Version: @(1),
+			  kPlistKey_BookmarkData: bookmarkData,
+			  kPlistKey_PathComponents: pathComponents
+			};
+			
+			NSData *plistData = [NSPropertyListSerialization dataWithPropertyList:plistDict
+			                                                               format:NSPropertyListBinaryFormat_v1_0
+			                                                              options:0
+			                                                                error:NULL];
+			return plistData;
+		}
+		
+		return nil;
 	}};
 }
 
@@ -103,14 +178,78 @@
 		
 		if (data.length == 0) return nil;
 		
-		NSURL *fileURL =
-		  [NSURL URLByResolvingBookmarkData:data
-		                            options:NSURLBookmarkResolutionWithoutUI
-		                      relativeToURL:nil
-		                bookmarkDataIsStale:NULL
-		                              error:NULL];
+		const void *bytes = data.bytes;
 		
-		return fileURL;
+		BOOL isBookmarkData = NO;
+		BOOL isPlistData = NO;
+		
+		{
+			NSData *magic = [@"book" dataUsingEncoding:NSASCIIStringEncoding];
+			if (data.length > magic.length)
+			{
+				isBookmarkData = (memcmp(bytes, magic.bytes, magic.length) == 0);
+			}
+		}
+		
+		if (!isBookmarkData)
+		{
+			NSData *magic = [@"bplist" dataUsingEncoding:NSASCIIStringEncoding];
+			if (data.length > magic.length)
+			{
+				isPlistData = (memcmp(bytes, magic.bytes, magic.length) == 0);
+			}
+		}
+		
+		BOOL isUnknown = !isBookmarkData && !isPlistData;
+		
+		if (isBookmarkData || isUnknown)
+		{
+			NSURL *url =
+			  [NSURL URLByResolvingBookmarkData:data
+			                            options:NSURLBookmarkResolutionWithoutUI
+			                      relativeToURL:nil
+			                bookmarkDataIsStale:NULL
+			                              error:NULL];
+			
+			if (url) {
+				return url;
+			}
+		}
+		
+		if (isPlistData || isUnknown)
+		{
+			id plistObj = [NSPropertyListSerialization propertyListWithData:data
+			                                                        options:NSPropertyListImmutable
+			                                                         format:NULL
+			                                                          error:NULL];
+			if ([plistObj isKindOfClass:[NSDictionary class]])
+			{
+				NSDictionary *plistDict = (NSDictionary *)plistObj;
+				
+				id data = plistDict[kPlistKey_BookmarkData];
+				id comp = plistDict[kPlistKey_PathComponents];
+				
+				if ([data isKindOfClass:[NSData class]] && [comp isKindOfClass:[NSArray class]])
+				{
+					NSData *bookmarkData = (NSData *)data;
+					NSArray *pathComponents = (NSArray *)comp;
+					
+					NSURL *url = [NSURL URLByResolvingBookmarkData:bookmarkData
+					                                       options:NSURLBookmarkResolutionWithoutUI
+					                                 relativeToURL:nil
+					                           bookmarkDataIsStale:NULL
+					                                         error:NULL];
+					if (url)
+					{
+						NSString *path = [pathComponents componentsJoinedByString:@"/"];
+						
+						return [[NSURL URLWithString:path relativeToURL:url] absoluteURL];
+					}
+				}
+			}
+		}
+		
+		return nil;
 	}};
 }
 

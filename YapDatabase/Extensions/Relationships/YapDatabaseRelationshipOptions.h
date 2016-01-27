@@ -138,6 +138,11 @@ typedef NSURL* _Nullable (^YapDatabaseRelationshipMigration)(NSString *_Nullable
  *   Whereas path and file reference URLs are potentially fragile between launches of your app,
  *   a bookmark can usually be used to re-create a URL to a file even in cases where the file was moved or renamed.
  * 
+ * The default serializer will attempt to use the bookmark capabilities of NSURL.
+ * If this fails because the file doesn't exist, the serializer will fallback to a hybrid binary plist system.
+ * It will look for a parent directory that does exist, generate a bookmark of that,
+ * and store the remainder as a relative path.
+ *
  * You can use your own serializer/deserializer if you need extra features.
 **/
 + (YapDatabaseRelationshipFileURLSerializer)defaultFileURLSerializer;
