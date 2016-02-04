@@ -226,13 +226,13 @@ static NSString *const kPlistKey_PathComponents = @"pathComponents";
 			{
 				NSDictionary *plistDict = (NSDictionary *)plistObj;
 				
-				id data = plistDict[kPlistKey_BookmarkData];
-				id comp = plistDict[kPlistKey_PathComponents];
-				
-				if ([data isKindOfClass:[NSData class]] && [comp isKindOfClass:[NSArray class]])
+				id plistData = plistDict[kPlistKey_BookmarkData];
+				id plistComp = plistDict[kPlistKey_PathComponents];
+
+				if ([plistData isKindOfClass:[NSData class]] && [plistComp isKindOfClass:[NSArray class]])
 				{
-					NSData *bookmarkData = (NSData *)data;
-					NSArray *pathComponents = (NSArray *)comp;
+					NSData *bookmarkData = (NSData *)plistData;
+					NSArray *pathComponents = (NSArray *)plistComp;
 					
 					NSURL *url = [NSURL URLByResolvingBookmarkData:bookmarkData
 					                                       options:NSURLBookmarkResolutionWithoutUI
