@@ -4,6 +4,7 @@
 #import "BenchmarkYapDatabase.h"
 
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseFilteredView.h>
 
 
 @implementation AppDelegate

@@ -69,7 +69,7 @@
                      options:(YapDatabaseViewOptions *)inOptions
 {
 	NSAssert(inParentViewName != nil, @"Invalid parameter: parentViewName == nil");
-	NSAssert(inFiltering != nil, @"Invalid parameter: filtering == nil");
+	NSAssert([inFiltering isKindOfClass:[YapDatabaseViewFiltering class]], @"Invalid parameter: filtering");
 	
 	if ((self = [super init]))
 	{
