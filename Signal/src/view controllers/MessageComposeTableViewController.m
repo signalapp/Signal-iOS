@@ -51,11 +51,6 @@
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 

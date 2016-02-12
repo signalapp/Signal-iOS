@@ -302,10 +302,6 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.textView.editable = NO;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Initiliazers
 
 

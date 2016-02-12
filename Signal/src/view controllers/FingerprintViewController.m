@@ -67,10 +67,6 @@ static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeVi
                      completion:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)setTheirKeyInformation {
     self.contactFingerprintTitleLabel.text = self.thread.name;
     NSData *identityKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
