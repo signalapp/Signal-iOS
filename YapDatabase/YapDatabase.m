@@ -1328,8 +1328,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 {
 	// Write it to disk (replacing any previous value from last app run)
 	
-    // @robbie: do we still need a transaction here?
-    // ->  should we need to set a busy handler ? the read may fail with BUSY if another process is locking the DB while we are initializing
+    // @Robbie: do we need to set a busy handler somewhere before preparing the database? The read may fail with BUSY if another process is locking the DB while we are initializing
 	[self beginTransaction];
 	{
         snapshot = [self readSnapshot];
@@ -1343,7 +1342,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	}
 	[self commitTransaction];
     
-    // @robbie: do we still need a checkpoint here (checkpoint is read before)
+    // @Robbie: do we need a checkpoint here (last snapshot number is read just before)
 	[self asyncCheckpoint:snapshot];
 }
 
