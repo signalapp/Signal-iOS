@@ -10,10 +10,14 @@
 
 #import "MultiprocessTest.h"
 #import <YapDatabase/YapDatabase.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 @implementation MultiprocessTest
 
 -(void)run {
+    
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    
     YapDatabaseOptions* options = [[YapDatabaseOptions alloc] init];
     options.enableMultiProcessSupport = YES;
     
@@ -24,16 +28,44 @@
     
     YapDatabase* db = [[YapDatabase alloc] initWithPath:filePath options:options];
     
-    YapDatabaseConnection* connection = [db newConnection];
+    YapDatabaseConnection* connection1 = [db newConnection];
+    YapDatabaseConnection* connection2 = [db newConnection];
     
-    [connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         [transaction setObject:@"Hello World" forKey:@"default" inCollection:@"MyCollection"];
     }];
     
-    [connection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        NSString* value = [transaction objectForKey:@"default" inCollection:@"MyCollection"];
-        NSLog(@"%@", value);
+    //[connection2 beginLongLivedReadTransaction];
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        NSString* obj = [transaction objectForKey:@"default" inCollection:@"MyCollection"];
+        NSLog(@"result -> %@", obj);
     }];
+    
+    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [transaction setObject:@"Hello Bob" forKey:@"default" inCollection:@"MyCollection"];
+    }];
+    
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        NSString* obj = [transaction objectForKey:@"default" inCollection:@"MyCollection"];
+        NSLog(@"result -> %@", obj);
+    }];
+    
+    /*
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        NSString* obj = [transaction objectForKey:@"default" inCollection:@"MyCollection"];
+        NSLog(@"result -> %@", obj);
+    }];*/
+    
+    
+    
+    [connection2 beginLongLivedReadTransaction];
+    
+    [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        NSString* obj = [transaction objectForKey:@"default" inCollection:@"MyCollection"];
+        NSLog(@"result -> %@", obj);
+    }];
+    
+    sleep(5);
 }
 
 @end

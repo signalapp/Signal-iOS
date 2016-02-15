@@ -78,6 +78,22 @@
 	sqlite3_reset(statement);
 }
 
+- (void)beginImmediateTransaction
+{
+    sqlite3_stmt *statement = [connection beginImmediateTransactionStatement];
+    if (statement == NULL) return;
+    
+    // BEGIN TRANSACTION;
+    
+    int status = sqlite3_step(statement);
+    if (status != SQLITE_DONE)
+    {
+        YDBLogError(@"Couldn't begin immediate transaction: %d %s", status, sqlite3_errmsg(connection->db));
+    }
+    
+    sqlite3_reset(statement);
+}
+
 - (void)preCommitReadWriteTransaction
 {
 	// Step 1:

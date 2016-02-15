@@ -1326,23 +1326,24 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 **/
 - (void)prepare
 {
-	// Initialize snapshot
-	
-	snapshot = 0;
-	
 	// Write it to disk (replacing any previous value from last app run)
 	
+    // @robbie: do we still need a transaction here?
+    // ->  should we need to set a busy handler ? the read may fail with BUSY if another process is locking the DB while we are initializing
 	[self beginTransaction];
 	{
+        snapshot = [self readSnapshot];
+        
 		sqliteVersion = [YapDatabase sqliteVersionUsing:db];
 		YDBLogVerbose(@"sqlite version = %@", sqliteVersion);
 		
 		pageSize = (uint64_t)[YapDatabase pragma:@"page_size" using:db];
 		
 		[self fetchPreviouslyRegisteredExtensionNames];
-		[self writeSnapshot];
 	}
 	[self commitTransaction];
+    
+    // @robbie: do we still need a checkpoint here (checkpoint is read before)
 	[self asyncCheckpoint:snapshot];
 }
 
@@ -1362,6 +1363,51 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	{
 		YDBLogError(@"Error in '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 	}
+}
+
+- (uint64_t)readSnapshot
+{
+    int status;
+    sqlite3_stmt *statement;
+    
+    const char *stmt = "SELECT \"data\" FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
+    
+    int const bind_idx_extension = SQLITE_BIND_START + 0;
+    int const bind_idx_key       = SQLITE_BIND_START + 1;
+    int const bind_idx_data      = SQLITE_BIND_START + 2;
+    
+    uint64_t result = 0;
+    
+    status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
+    if (status != SQLITE_OK)
+    {
+        YDBLogError(@"%@: Error creating statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+    }
+    else
+    {
+        const char *extension = "";
+        sqlite3_bind_text(statement, bind_idx_extension, extension, (int)strlen(extension), SQLITE_STATIC);
+        
+        const char *key = "snapshot";
+        sqlite3_bind_text(statement, bind_idx_key, key, (int)strlen(key), SQLITE_STATIC);
+        
+        status = sqlite3_step(statement);
+        if (status == SQLITE_ROW)
+        {
+            result = (uint64_t)sqlite3_column_int64(statement, SQLITE_COLUMN_START);
+        }
+        else if (status == SQLITE_ERROR)
+        {
+            YDBLogError(@"Error executing 'readSnapshot': %d %s",
+                        status, sqlite3_errmsg(db));
+        }
+        
+        sqlite3_finalize(statement);
+    }
+    
+    // @robbie: in case of error, what should we do ? zero snapshot may cause errors later
+    
+    return result;
 }
 
 - (void)writeSnapshot
@@ -2630,6 +2676,9 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  * That is, the transaction started before it was able to process changesets from sibling connections.
  *
  * It should fetch the changesets needed and then process them via [connection noteCommittedChangeset:].
+ 
+ * Returns nil if there is a missing changeset in case changes were made in another process. (can happen in multiprocess mode)
+ * In this case we will have to clear caches.
 **/
 - (NSArray *)pendingAndCommittedChangesetsSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot
 {
@@ -2638,6 +2687,8 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	NSUInteger capacity = (NSUInteger)(maxSnapshot - connectionSnapshot);
 	NSMutableArray *relevantChangesets = [NSMutableArray arrayWithCapacity:capacity];
 	
+    NSLog(@"changesets: %@", changesets);
+    
 	for (NSDictionary *changeset in changesets)
 	{
 		uint64_t changesetSnapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
@@ -2647,6 +2698,14 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 			[relevantChangesets addObject:changeset];
 		}
 	}
+    
+    if(self.options.enableMultiProcessSupport) {
+        const uint64_t expectedSnapshotsCount = maxSnapshot - connectionSnapshot;
+        if([relevantChangesets count] != expectedSnapshotsCount) {
+            YDBLogVerbose(@"Expect snapshot count not found: %lu != %lu. Database seems to have been modified from another process. Discarding changeset");
+            return nil;
+        }
+    }
 	
 	return relevantChangesets;
 }

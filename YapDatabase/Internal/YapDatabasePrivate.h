@@ -230,6 +230,7 @@ static NSString *const ext_key_class = @"class";
 - (id)initWithDatabase:(YapDatabase *)database;
 
 - (sqlite3_stmt *)beginTransactionStatement;
+- (sqlite3_stmt *)beginImmediateTransactionStatement;
 - (sqlite3_stmt *)commitTransactionStatement;
 - (sqlite3_stmt *)rollbackTransactionStatement;
 
@@ -313,6 +314,7 @@ static NSString *const ext_key_class = @"class";
 - (id)initWithConnection:(YapDatabaseConnection *)connection isReadWriteTransaction:(BOOL)flag;
 
 - (void)beginTransaction;
+- (void)beginImmediateTransaction;
 - (void)preCommitReadWriteTransaction;
 - (void)commitTransaction;
 - (void)rollbackTransaction;

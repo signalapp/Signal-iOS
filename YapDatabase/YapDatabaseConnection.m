@@ -69,6 +69,18 @@ static void yapNotifyDidRead(yap_file *file)
 }
 
 
+static int connectionBusyHandler(void *ptr, int count) {
+    YapDatabaseConnection* currentConnection = (__bridge YapDatabaseConnection*)ptr;
+    
+    usleep(50*1000); // sleep 50ms
+    
+    if (count % 4 == 1) { // log every 4th attempt but not the first one
+        YDBLogWarn(@"Cannot obtain busy lock on SQLite from connection (%p), is another process locking the database? Retrying in 50ms...", currentConnection);
+    }
+    
+    return 1;
+}
+
 @implementation YapDatabaseConnection {
 @private
 	
@@ -93,6 +105,7 @@ static void yapNotifyDidRead(yap_file *file)
 	id sharedKeySetForExtensions;
 	
 	sqlite3_stmt *beginTransactionStatement;
+    sqlite3_stmt *beginImmediateTransactionStatement;
 	sqlite3_stmt *commitTransactionStatement;
 	sqlite3_stmt *rollbackTransactionStatement;
 	
@@ -310,7 +323,9 @@ static void yapNotifyDidRead(yap_file *file)
 				// Note: I've also tested setting a busy_handler which logs the number of times its called.
 				// And in all my testing, I've only seen the busy_handler called once per db.
 				
-				sqlite3_busy_timeout(db, 50); // milliseconds
+                
+                // @robbie: maybe setup another ownership in case the connection is closed while sqlite is still locking and calling busy handler
+                sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
                 
 #ifdef SQLITE_HAS_CODEC
                 // Configure SQLCipher encryption (if needed)
@@ -852,6 +867,24 @@ static void yapNotifyDidRead(yap_file *file)
 	}
 	
 	return *statement;
+}
+
+- (sqlite3_stmt *)beginImmediateTransactionStatement
+{
+    sqlite3_stmt **statement = &beginImmediateTransactionStatement;
+    if (*statement == NULL)
+    {
+        const char *stmt = "BEGIN IMMEDIATE TRANSACTION;";
+        int stmtLen = (int)strlen(stmt);
+        
+        int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+        if (status != SQLITE_OK)
+        {
+            YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+        }
+    }
+    
+    return *statement;
 }
 
 - (sqlite3_stmt *)commitTransactionStatement
@@ -2121,9 +2154,9 @@ static void yapNotifyDidRead(yap_file *file)
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
-		if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
+		if (database.options.enableMultiProcessSupport || hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
 		{
-			// If there is a write transaction in progress,
+			// If there is a write transaction in progress, (in case of multiple processes accessing the database, we can't know for sure so we make this assumption)
 			// then it's not safe to proceed until we acquire a "sql-level" snapshot.
 			//
 			// If this is for a longLivedReadTransaction,
@@ -2153,10 +2186,17 @@ static void yapNotifyDidRead(yap_file *file)
 				
 				NSArray *changesets = [database pendingAndCommittedChangesetsSince:yapSnapshot until:sqlSnapshot];
 				
-				for (NSDictionary *changeset in changesets)
-				{
-					[self noteCommittedChangeset:changeset];
-				}
+                if (!changesets) // we could not retrieve changeset due to a change from another process.
+                {
+                    [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+                }
+                else
+                {
+                    for (NSDictionary *changeset in changesets)
+                    {
+                        [self noteCommittedChangeset:changeset];
+                    }
+                }
 				
 				// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == sqlSnapshot,
@@ -2189,6 +2229,7 @@ static void yapNotifyDidRead(yap_file *file)
 				
 				NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 				
+                // changeset cannot be nil because we are not supporting multiprocess changes
 				for (NSDictionary *changeset in changesets)
 				{
 					[self noteCommittedChangeset:changeset];
@@ -2397,7 +2438,15 @@ static void yapNotifyDidRead(yap_file *file)
 	// Thus no other transactions can possibly modify the database during our transaction.
 	// Therefore it doesn't matter when we acquire our "sql-level" locks for writing.
 	
-	[transaction beginTransaction];
+    if(database.options.enableMultiProcessSupport) {
+        // when multiprocess support is needed, we need to lock the database for other processes writes at the beginning of the write transaction.
+        [transaction beginImmediateTransaction];
+    } else {
+        [transaction beginTransaction];
+    }
+	
+    
+    
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
@@ -2426,16 +2475,23 @@ static void yapNotifyDidRead(yap_file *file)
 		// Validate our caches based on snapshot numbers
 		
 		uint64_t localSnapshot = snapshot;
-		uint64_t globalSnapshot = [database snapshot];
+        uint64_t globalSnapshot = database.options.enableMultiProcessSupport ? [self readSnapshotFromDatabase] : [database snapshot];// TODO: update YapDatabase.snapshot to either fetch from DB or use current value according to options (when is snapshot updated ? )
 		
 		if (localSnapshot < globalSnapshot)
 		{
 			NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 			
-			for (NSDictionary *changeset in changesets)
-			{
-				[self noteCommittedChangeset:changeset];
-			}
+            if (!changesets) // we could not retrieve changeset due to a change from another process.
+            {
+                [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+            }
+            else
+            {
+                for (NSDictionary *changeset in changesets)
+                {
+                    [self noteCommittedChangeset:changeset];
+                }
+            }
 			
 			// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 			NSAssert(snapshot == globalSnapshot,
