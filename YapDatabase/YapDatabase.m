@@ -1341,8 +1341,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		[self fetchPreviouslyRegisteredExtensionNames];
 	}
 	[self commitTransaction];
-    
-    // @Robbie: do we need a checkpoint here (last snapshot number is read just before)
 	[self asyncCheckpoint:snapshot];
 }
 
@@ -1404,7 +1402,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
         sqlite3_finalize(statement);
     }
     
-    // @robbie: in case of error, what should we do ? zero snapshot may cause errors later
+    // @Robbie: in case of error, what should we do ? zero snapshot may cause errors later
     
     return result;
 }
@@ -2675,9 +2673,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  * That is, the transaction started before it was able to process changesets from sibling connections.
  *
  * It should fetch the changesets needed and then process them via [connection noteCommittedChangeset:].
- 
- * Returns nil if there is a missing changeset in case changes were made in another process. (can happen in multiprocess mode)
- * In this case we will have to clear caches.
+ *
+ * Returns `nil` if the number of changesets found is not the expected one, that is, one for each snapshot increase from `connectionSnapshot` to `maxSnapshot`.
+ * This can only happen in multiprocess mode, if another process has updated the database.
+ * In this case the changesets are invalid, and we need to clear connection and extension caches.
 **/
 - (NSArray *)pendingAndCommittedChangesetsSince:(uint64_t)connectionSnapshot until:(uint64_t)maxSnapshot
 {

@@ -2440,14 +2440,11 @@ static int connectionBusyHandler(void *ptr, int count) {
 	// Therefore it doesn't matter when we acquire our "sql-level" locks for writing.
 	
     if(database.options.enableMultiProcessSupport) {
-        // when multiprocess support is needed, we need to lock the database for other processes writes at the beginning of the write transaction.
+        // In the multiprocess case, we block concurrent read or write connections, so we avoid race-conditions
         [transaction beginImmediateTransaction];
     } else {
         [transaction beginTransaction];
     }
-	
-    
-    
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
@@ -2476,7 +2473,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 		// Validate our caches based on snapshot numbers
 		
 		uint64_t localSnapshot = snapshot;
-        uint64_t globalSnapshot = database.options.enableMultiProcessSupport ? [self readSnapshotFromDatabase] : [database snapshot];// TODO: update YapDatabase.snapshot to either fetch from DB or use current value according to options (when is snapshot updated ? )
+        uint64_t globalSnapshot = database.options.enableMultiProcessSupport ? [self readSnapshotFromDatabase] : [database snapshot];
 		
 		if (localSnapshot < globalSnapshot)
 		{
