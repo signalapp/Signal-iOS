@@ -10,9 +10,12 @@
 #import "MultiprocessTest.h"
 
 int main(int argc, const char * argv[]) {
+    
+    pid_t pid = fork();
+    
     @autoreleasepool {
         MultiprocessTest* test = [[MultiprocessTest alloc] init];
-        [test run];
+        [test runAsParent:(pid == 0)];
     }
     return 0;
 }

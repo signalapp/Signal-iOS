@@ -2189,6 +2189,7 @@ static int connectionBusyHandler(void *ptr, int count) {
                 if (!changesets) // we could not retrieve changeset due to a change from another process.
                 {
                     [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+                    snapshot = sqlSnapshot;
                 }
                 else
                 {
@@ -2484,6 +2485,7 @@ static int connectionBusyHandler(void *ptr, int count) {
             if (!changesets) // we could not retrieve changeset due to a change from another process.
             {
                 [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+                snapshot = globalSnapshot;
             }
             else
             {

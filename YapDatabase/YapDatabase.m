@@ -2686,8 +2686,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	NSUInteger capacity = (NSUInteger)(maxSnapshot - connectionSnapshot);
 	NSMutableArray *relevantChangesets = [NSMutableArray arrayWithCapacity:capacity];
-	
-    NSLog(@"changesets: %@", changesets);
     
 	for (NSDictionary *changeset in changesets)
 	{

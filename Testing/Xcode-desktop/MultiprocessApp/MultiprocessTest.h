@@ -10,6 +10,6 @@
 
 @interface MultiprocessTest : NSObject
 
--(void)run;
+-(void)runAsParent:(BOOL)parent;
 
 @end
