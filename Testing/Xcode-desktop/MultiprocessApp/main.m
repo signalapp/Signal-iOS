@@ -11,11 +11,17 @@
 
 int main(int argc, const char * argv[]) {
     
-    pid_t pid = fork();
+    NSString *name;
+    if (argc <= 1) {
+        name = @"A";
+    }
+    else {
+        name = [NSString stringWithUTF8String:argv[1]];
+    }
     
     @autoreleasepool {
         MultiprocessTest* test = [[MultiprocessTest alloc] init];
-        [test runAsParent:(pid == 0)];
+        [test run:name];
     }
     return 0;
 }

@@ -12,107 +12,42 @@
 #import <YapDatabase/YapDatabase.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
-const int ddLogLevel = DDLogLevelAll;
-
-@interface ParentChildFormatter: NSObject <DDLogFormatter>
-
-+(instancetype)shared;
-
-@end
-
-@implementation ParentChildFormatter
-
-+(instancetype)shared {
-    static dispatch_once_t onceToken;
-    static ParentChildFormatter* instance = nil;
-    dispatch_once(&onceToken, ^{
-        instance = [[self alloc] init];
-    });
-    
-    return instance;
-}
-
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage {
-    static NSString* processName = @"Unknown";
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        pid_t myPid = getpid();
-        processName = (myPid == 0 ? @"PARENT" : @"CHILD");
-    });
-    
-    NSString* msg = [NSString stringWithFormat:@"%@: %@ : %@", processName, logMessage->_timestamp, logMessage->_message];
-    NSLog(msg);
-    return msg;
-}
-
-@end
+static int counter = 1;
 
 @implementation MultiprocessTest
 
--(void)runParent {
+-(void)run:(NSString*)name {
     YapDatabaseOptions* options = [[YapDatabaseOptions alloc] init];
     options.enableMultiProcessSupport = YES;
-    
+
     NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
     NSString* filePath = [currentDir stringByAppendingPathComponent:@"db.yap"];
-    
-    DDLogInfo(@"Initializing with DB in path: %@", filePath);
     
     YapDatabase* db = [[YapDatabase alloc] initWithPath:filePath options:options];
     
     YapDatabaseConnection* connection1 = [db newConnection];
-    
-    DDLogInfo(@"Before Write");
-    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        DDLogInfo(@"Start Write");
-        sleep(5);
-        [transaction setObject:@"Hello World" forKey:@"default" inCollection:@"MyCollection"];
-        
-        DDLogInfo(@"End Write");
-    }];
-    DDLogInfo(@"After Write");
-}
+    YapDatabaseConnection* connection2 = [db newConnection];
 
--(void)runChild {
-    sleep(1);
-    
-    YapDatabaseOptions* options = [[YapDatabaseOptions alloc] init];
-    options.enableMultiProcessSupport = YES;
-    
-    NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
-    NSString* filePath = [currentDir stringByAppendingPathComponent:@"db.yap"];
-    
-    DDLogInfo(@"Initializing with DB in path: %@", filePath);
-    
-    YapDatabase* db = [[YapDatabase alloc] initWithPath:filePath options:options];
-    
-    YapDatabaseConnection* connection1 = [db newConnection];
-    
-    DDLogInfo(@"Before Write");
-    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        DDLogInfo(@"Start Write");
-        sleep(5);
-        [transaction setObject:@"Hello World" forKey:@"default" inCollection:@"MyCollection"];
-        
-        DDLogInfo(@"End Write");
-    }];
-    NSLog(@"After Write");
-}
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        while (true) {
+            NSString *key = [NSString stringWithFormat:@"%@(%d)", name, counter];
+            counter++;
+            [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+                NSLog(@"%@: Writing \"%@\" to database (snapshot %llu)", name, key, connection1.database.snapshot);
+                [transaction setObject:key forKey:@"key" inCollection:@"MyCollection"];
+            }];
+            int n = random() % 5;
+            sleep(n);
+        }
+    });
 
--(void)runAsParent:(BOOL)parent {
-    [[DDTTYLogger sharedInstance] setLogFormatter:[ParentChildFormatter shared]];
-    [[DDASLLogger sharedInstance] setLogFormatter:[ParentChildFormatter shared]];
-    
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    [DDLog addLogger:[DDASLLogger sharedInstance]];
-    
-    if (parent) {
-        [self runParent];
-    } else {
-        [self runChild];
+    while (true) {
+        [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+            NSString *result = (NSString *)[transaction objectForKey:@"key" inCollection:@"MyCollection"];
+            NSLog(@"%@: Got \"%@\" (snapshot %llu)", name, result, connection2.database.snapshot);
+        }];
+        sleep(1);
     }
-    
-    sleep(5);
 }
 
 @end
