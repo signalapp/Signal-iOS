@@ -352,9 +352,15 @@ static NSString *const ext_key_class = @"class";
 - (id)metadataForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 
 - (BOOL)getObject:(id *)objectPtr
-		 metadata:(id *)metadataPtr
+         metadata:(id *)metadataPtr
+           forKey:(NSString *)key
+     inCollection:(NSString *)collection
+        withRowid:(int64_t)rowid;
+
+- (BOOL)getObject:(id *)objectPtr
+         metadata:(id *)metadataPtr
  forCollectionKey:(YapCollectionKey *)collectionKey
-		withRowid:(int64_t)rowid;
+        withRowid:(int64_t)rowid;
 
 - (void)_enumerateKeysInCollection:(NSString *)collection
                         usingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;

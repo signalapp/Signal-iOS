@@ -623,9 +623,20 @@
 }
 
 - (BOOL)getObject:(id *)objectPtr
-		 metadata:(id *)metadataPtr
+         metadata:(id *)metadataPtr
+           forKey:(NSString *)key
+     inCollection:(NSString *)collection
+        withRowid:(int64_t)rowid
+{
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	return [self getObject:objectPtr metadata:metadataPtr forCollectionKey:cacheKey withRowid:rowid];
+}
+
+- (BOOL)getObject:(id *)objectPtr
+         metadata:(id *)metadataPtr
  forCollectionKey:(YapCollectionKey *)collectionKey
-		withRowid:(int64_t)rowid
+        withRowid:(int64_t)rowid
 {
 	id object = [connection->objectCache objectForKey:collectionKey];
 	id metadata = [connection->metadataCache objectForKey:collectionKey];
