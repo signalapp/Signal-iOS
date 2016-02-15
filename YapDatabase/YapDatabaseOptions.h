@@ -266,6 +266,12 @@ typedef NSData *_Nonnull (^YapDatabaseCipherKeyBlock)(void);
 **/
 @property (nonatomic, assign, readwrite) unsigned long long aggressiveWALTruncationSize;
 
+/**
+ Enables Multiprocess access to the database. 
+ This will disable some optimizations and cause some specific behaviors (e.g. lose of changeset in other processes)
+**/
+@property (nonatomic, assign, readwrite) BOOL enableMultiProcessSupport;
+
 @end
 
 NS_ASSUME_NONNULL_END

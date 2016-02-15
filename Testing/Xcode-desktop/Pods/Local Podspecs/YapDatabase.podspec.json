@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.7.7",
+  "version": "2.8.2",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.7.7"
+    "tag": "2.8.2"
   },
   "platforms": {
     "osx": "10.8",
@@ -26,6 +26,9 @@
         {
           "name": "Core",
           "libraries": "sqlite3",
+          "xcconfig": {
+            "OTHER_CFLAGS": "$(inherited) -DYAP_STANDARD_SQLITE"
+          },
           "dependencies": {
             "CocoaLumberjack": [
               "~> 2"
