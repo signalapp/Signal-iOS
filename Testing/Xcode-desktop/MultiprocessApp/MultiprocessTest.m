@@ -36,8 +36,8 @@ static int counter = 1;
                 NSLog(@"%@: Writing \"%@\" to database (snapshot %llu)", name, key, connection1.database.snapshot);
                 [transaction setObject:key forKey:@"key" inCollection:@"MyCollection"];
             }];
-            int n = random() % 5;
-            sleep(n);
+            int n = random() % 5000;
+            usleep(n * 1000);
         }
     });
 
@@ -46,7 +46,8 @@ static int counter = 1;
             NSString *result = (NSString *)[transaction objectForKey:@"key" inCollection:@"MyCollection"];
             NSLog(@"%@: Got \"%@\" (snapshot %llu)", name, result, connection2.database.snapshot);
         }];
-        sleep(1);
+        int n = random() % 1000;
+        usleep(n * 1000);
     }
 }
 
