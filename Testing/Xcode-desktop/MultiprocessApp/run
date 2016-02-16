@@ -6,6 +6,9 @@ pids=()
 rm -f db.yap
 rm -f combined.out
 
+# Run 4 parallel instances of the MultiprocessApp process which write and read from the database concurrently
+# Kill them after 10 seconds, and sort the output to make sure they all see the writes in correct order
+
 for process in $processes
 do
     rm -f $process.out
