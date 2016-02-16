@@ -11,7 +11,6 @@ do
     rm -f $process.out
     (./MultiprocessApp $process 2> $process.out) &
     pids+=$!
-    #sleep 1 # if we remove the sleep it does not work because we need a busy_handler when creating the database
 done;
 
 sleep 10
