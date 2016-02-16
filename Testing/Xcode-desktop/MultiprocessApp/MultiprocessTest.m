@@ -17,7 +17,7 @@ static int counter = 1;
 
 @implementation MultiprocessTest
 
--(void)run:(NSString*)name {
+-(void)_run:(NSString*)name {
     YapDatabaseOptions* options = [[YapDatabaseOptions alloc] init];
     options.enableMultiProcessSupport = YES;
 
@@ -34,7 +34,7 @@ static int counter = 1;
     YapDatabaseConnection* connection1 = [db newConnection];
     YapDatabaseConnection* connection2 = [db newConnection];
 
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
         while (true) {
             NSString *key = [NSString stringWithFormat:@"%@(%d)", name, counter];
             counter++;
@@ -47,14 +47,26 @@ static int counter = 1;
         }
     });
 
-    while (true) {
-        [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-            NSString *result = (NSString *)[transaction objectForKey:@"key" inCollection:@"MyCollection"];
-            NSLog(@"%@: Got \"%@\" (snapshot %llu)", name, result, connection2.database.snapshot);
-        }];
-        int n = random() % 1000;
-        usleep(n * 1000);
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+        while (true) {
+            [connection2 readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+                NSString *result = (NSString *)[transaction objectForKey:@"key" inCollection:@"MyCollection"];
+                NSLog(@"%@: Got \"%@\" (snapshot %llu)", name, result, connection2.database.snapshot);
+            }];
+            int n = random() % 1000;
+            usleep(n * 1000);
+        }
+    });
+}
+
+- (void)run:(NSString *)name {
+    NSRunLoop* runLoop = [NSRunLoop currentRunLoop];
+    
+    [self _run:name];
+    
+    while([runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]) {
     }
+    
 }
 
 - (void)otherProcessDidChange:(NSNotification*)notif {

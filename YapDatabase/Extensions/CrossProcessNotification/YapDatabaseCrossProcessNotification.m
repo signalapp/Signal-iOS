@@ -21,6 +21,15 @@
 #endif
 #pragma unused(ydbLogLevel)
 
+static pid_t currentPid() {
+    static dispatch_once_t onceToken;
+    static pid_t pid;
+    dispatch_once(&onceToken, ^{
+        pid = getpid();
+    });
+    return pid;
+}
+
 @interface YapDatabaseCrossProcessNotification () {
     int notifyToken;
 }
@@ -56,6 +65,7 @@
 }
 
 - (void)dealloc {
+    NSLog(@"DEALLOC!");
     [self stop];
 }
 
@@ -64,14 +74,24 @@
     
     const char* name = [[self channel] cStringUsingEncoding:NSUTF8StringEncoding];
     
+    NSLog(@"register: %s", name);
+    __weak YapDatabaseCrossProcessNotification* wSelf = self;
+    
     notify_register_dispatch(name, &notifyToken, dispatch_get_main_queue(), ^(int token) {
-        NSLog(@"received external change");
-        [[NSNotificationCenter defaultCenter] postNotificationName:YapDatabaseModifiedExternallyNotification object:self.registeredDatabase];
+        uint64_t fromPid;
+        notify_get_state(token, &fromPid);
+        BOOL isExternal = fromPid != currentPid();
+        if (isExternal)
+        {
+            NSLog(@"received external modification from %llu", fromPid);
+            [[NSNotificationCenter defaultCenter] postNotificationName:YapDatabaseModifiedExternallyNotification object:[wSelf registeredDatabase]];
+        }
+        
     });
 }
 
 - (void)stop {
-    if (notifyToken) // my guess is that there is no "zero token"
+    if (notify_is_valid_token(notifyToken))
     {
         notify_cancel(notifyToken);
         notifyToken = 0;
@@ -91,8 +111,10 @@
 }
 
 - (void)notifyChanged {
-    NSLog(@"notify !!!");
+    
     const char* name = [[self channel] cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    notify_set_state(notifyToken, currentPid());
     notify_post(name);
 }
 
