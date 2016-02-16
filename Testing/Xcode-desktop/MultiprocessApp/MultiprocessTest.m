@@ -10,6 +10,7 @@
 
 #import "MultiprocessTest.h"
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
 static int counter = 1;
@@ -24,6 +25,11 @@ static int counter = 1;
     NSString* filePath = [currentDir stringByAppendingPathComponent:@"db.yap"];
     
     YapDatabase* db = [[YapDatabase alloc] initWithPath:filePath options:options];
+    
+    YapDatabaseCrossProcessNotification* cpn = [[YapDatabaseCrossProcessNotification alloc] initWithIdentifier:@"mael"];
+    [db registerExtension:cpn withName:@"cpn"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(otherProcessDidChange:) name:YapDatabaseModifiedExternallyNotification object:nil];
     
     YapDatabaseConnection* connection1 = [db newConnection];
     YapDatabaseConnection* connection2 = [db newConnection];
@@ -49,6 +55,10 @@ static int counter = 1;
         int n = random() % 1000;
         usleep(n * 1000);
     }
+}
+
+- (void)otherProcessDidChange:(NSNotification*)notif {
+    NSLog(@"Database did Change: %@", notif);
 }
 
 @end

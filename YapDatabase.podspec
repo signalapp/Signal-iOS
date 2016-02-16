@@ -49,8 +49,8 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'SecondaryIndex' do |ssee|
-        ssee.source_files = 'YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}'
+      sse.subspec 'CrossProcessNotification' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'Relationships' do |ssee|
@@ -114,8 +114,8 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'SecondaryIndex' do |ssee|
-        ssee.source_files = 'YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}'
+      sse.subspec 'CrossProcessNotification' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'Relationships' do |ssee|

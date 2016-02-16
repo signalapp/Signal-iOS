@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+processes=(A B C D)
+pids=()
+
+rm -f db.yap
+rm -f combined.out
+
+for process in $processes
+do
+    rm -f $process.out
+    (./MultiprocessApp $process 2> $process.out) &
+    pids+=$!
+    #sleep 1 # if we remove the sleep it does not work because we need a busy_handler when creating the database
+done;
+
+sleep 10
+
+for pid in $pids
+do
+    echo "Kill $pid"
+    kill $pid
+done;
+
+cat {A,B,C,D}.out | sort > combined.out

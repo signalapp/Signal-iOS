@@ -36,6 +36,7 @@ NSString *const YapDatabasePathWalKey = @"databasePath_wal";
 NSString *const YapDatabasePathShmKey = @"databasePath_shm";
 
 NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
+NSString *const YapDatabaseModifiedExternallyNotification = @"YapDatabaseModifiedExternallyNotification";
 
 NSString *const YapDatabaseSnapshotKey   = @"snapshot";
 NSString *const YapDatabaseConnectionKey = @"connection";

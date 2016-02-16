@@ -18,6 +18,7 @@ PODS:
     - YapDatabase/Standard/Core
     - YapDatabase/Standard/Extensions/CloudKit (= 2.8.2)
     - YapDatabase/Standard/Extensions/ConnectionProxy (= 2.8.2)
+    - YapDatabase/Standard/Extensions/CrossProcessNotification (= 2.8.2)
     - YapDatabase/Standard/Extensions/FilteredViews (= 2.8.2)
     - YapDatabase/Standard/Extensions/FullTextSearch (= 2.8.2)
     - YapDatabase/Standard/Extensions/Hooks (= 2.8.2)
@@ -25,11 +26,12 @@ PODS:
     - YapDatabase/Standard/Extensions/RTreeIndex (= 2.8.2)
     - YapDatabase/Standard/Extensions/SearchResults (= 2.8.2)
     - YapDatabase/Standard/Extensions/SecondaryIndex (= 2.8.2)
-    - YapDatabase/Standard/Extensions/SecondaryIndex (= 2.8.2)
     - YapDatabase/Standard/Extensions/Views (= 2.8.2)
   - YapDatabase/Standard/Extensions/CloudKit (2.8.2):
     - YapDatabase/Standard/Core
   - YapDatabase/Standard/Extensions/ConnectionProxy (2.8.2):
+    - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/CrossProcessNotification (2.8.2):
     - YapDatabase/Standard/Core
   - YapDatabase/Standard/Extensions/FilteredViews (2.8.2):
     - YapDatabase/Standard/Core
@@ -60,6 +62,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
-  YapDatabase: d97b1a0bfd6856745a7a398045f3ca32cf248fda
+  YapDatabase: 27089098a0e770de286da457e9103553488b675a
 
 COCOAPODS: 0.39.0

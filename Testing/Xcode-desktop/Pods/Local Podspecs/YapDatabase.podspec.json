@@ -58,8 +58,8 @@
               "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
             },
             {
-              "name": "SecondaryIndex",
-              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+              "name": "CrossProcessNotification",
+              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}"
             },
             {
               "name": "Relationships",
@@ -150,8 +150,8 @@
               "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
             },
             {
-              "name": "SecondaryIndex",
-              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+              "name": "CrossProcessNotification",
+              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}"
             },
             {
               "name": "Relationships",

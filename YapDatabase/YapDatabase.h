@@ -161,6 +161,7 @@ extern NSString *const YapDatabasePathShmKey;
  * This notification is always posted to the main thread.
 **/
 extern NSString *const YapDatabaseModifiedNotification;
+extern NSString *const YapDatabaseModifiedExternallyNotification;
 
 extern NSString *const YapDatabaseSnapshotKey;
 extern NSString *const YapDatabaseConnectionKey;
