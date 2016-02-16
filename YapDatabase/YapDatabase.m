@@ -71,6 +71,18 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 #define DEFAULT_CONNECTION_POOL_LIFETIME  90.0 // seconds
 
 
+static int connectionBusyHandler(void *ptr, int count) {
+    YapDatabase* currentDatabase = (__bridge YapDatabase*)ptr;
+    
+    usleep(50*1000); // sleep 50ms
+    
+    if (count % 4 == 1) { // log every 4th attempt but not the first one
+        YDBLogWarn(@"Cannot obtain busy lock on SQLite from database (%p), is another process locking the database? Retrying in 50ms...", currentDatabase);
+    }
+    
+    return 1;
+}
+
 @implementation YapDatabase {
 @private
 	
@@ -637,7 +649,7 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	// as we will be serializing access to the connection externally.
 	
 	int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-	
+    
 	int status = sqlite3_open_v2([databasePath UTF8String], &db, flags, NULL);
 	if (status != SQLITE_OK)
 	{
@@ -655,6 +667,10 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		
 		return NO;
 	}
+    // Add a busy handler if we are in multiprocess mode
+    if (options.enableMultiProcessSupport) {
+        sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
+    }
 	
 	return YES;
 }

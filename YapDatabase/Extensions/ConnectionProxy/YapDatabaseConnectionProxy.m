@@ -143,7 +143,7 @@
                 withObjects:(NSMutableDictionary **)objectBatchPtr
                    metadata:(NSMutableDictionary **)metadataBatchPtr
 {
-	YDBLogTrace(@"%@ %llu", THIS_METHOD, commit);
+	//YDBLogTrace(@"%@ %llu", THIS_METHOD, commit);
 	
 	__block NSMutableDictionary *objectBatch = nil;
 	__block NSMutableDictionary *metadataBatch = nil;
@@ -199,7 +199,7 @@
 
 - (void)dequeueBatchForCommit:(uint64_t)commit
 {
-	YDBLogTrace(@"%@ %llu", THIS_METHOD, commit);
+	//YDBLogTrace(@"%@ %llu", THIS_METHOD, commit);
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
