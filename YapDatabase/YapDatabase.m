@@ -1344,7 +1344,6 @@ static int connectionBusyHandler(void *ptr, int count) {
 {
 	// Write it to disk (replacing any previous value from last app run)
 	
-    // @Robbie: do we need to set a busy handler somewhere before preparing the database? The read may fail with BUSY if another process is locking the DB while we are initializing
 	[self beginTransaction];
 	{
         snapshot = [self readSnapshot];
