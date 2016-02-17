@@ -69,7 +69,7 @@
 #define YapDatabaseLoggingTechnique_Disabled   0 // disabled
 
 #ifndef YapDatabaseLoggingTechnique
-#define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_NSLog
+#define YapDatabaseLoggingTechnique YapDatabaseLoggingTechnique_Lumberjack
 #endif
 
 /**
