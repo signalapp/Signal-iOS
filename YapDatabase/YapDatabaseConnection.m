@@ -324,7 +324,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 				// And in all my testing, I've only seen the busy_handler called once per db.
 				
                 
-                // @robbie: maybe setup another ownership in case the connection is closed while sqlite is still locking and calling busy handler
+                // @Robbie: do you know what is the best way to set ARC ownership in case the connection is closed while sqlite is still locking and calling busy handler?
                 sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
                 
 #ifdef SQLITE_HAS_CODEC
@@ -3726,7 +3726,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
     
     if (changeset_modifiedExternally)
     {
-        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches]; // @Robbie: is this the proper way to do it?
+        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
     }
 	
 	if (changeset_allKeysRemoved)
