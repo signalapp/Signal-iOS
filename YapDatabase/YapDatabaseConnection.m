@@ -4073,13 +4073,11 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	              (unsigned long)changesetSnapshot, self, database);
 	
     if (snapshot == changesetSnapshot - 1) {
-        NSLog(@"-----------------> NORMAL UPDATE");
         snapshot = changesetSnapshot;
         [self processChangeset:changeset];
     }
     else {
         // Snapshot number do not match, there might have been a modification from another process, we should flush cache and process the changeset
-        NSLog(@"=======================================> THERE WAS AN EXTERNAL UPDATE");
         snapshot = changesetSnapshot;
         [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
         [self processChangeset:changeset];
