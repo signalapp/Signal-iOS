@@ -223,6 +223,7 @@ static NSString *const ext_key_class = @"class";
 	NSMutableSet *removedCollections;
 	NSMutableSet *removedRowids;
 	BOOL allKeysRemoved;
+    BOOL externallyModified;
 	
 	YapMutationStack_Bool *mutationStack;
 }

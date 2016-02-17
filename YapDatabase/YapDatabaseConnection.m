@@ -2473,12 +2473,17 @@ static int connectionBusyHandler(void *ptr, int count) {
 		// Validate our caches based on snapshot numbers
 		
 		uint64_t localSnapshot = snapshot;
+        // In multiprocess mode, the snapshot number might have been externally updated
         uint64_t globalSnapshot = database.options.enableMultiProcessSupport ? [self readSnapshotFromDatabase] : [database snapshot];
 		
+        externallyModified = NO;
+        
 		if (localSnapshot < globalSnapshot)
 		{
 			NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 			
+            externallyModified = changesets == nil;
+            
             if (!changesets) // we could not retrieve changeset due to a change from another process.
             {
                 [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
@@ -2616,7 +2621,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 			// If hasDiskChanges is NO, then the database file was not modified.
 			// However, something was "touched" or an in-memory extension was changed.
 			
-			if (hasDiskChanges)
+			if (hasDiskChanges || database.options.enableMultiProcessSupport)
 				snapshot = [self incrementSnapshotInDatabase];
 			else
 				snapshot++;
@@ -2628,6 +2633,10 @@ static int connectionBusyHandler(void *ptr, int count) {
 				userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 			
 			[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
+            
+            if (database.options.enableMultiProcessSupport)
+                [changeset setObject:@(externallyModified) forKey:YapDatabaseModifiedExternallyKey];
+            
 			[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
 			
 			[userInfo setObject:self forKey:YapDatabaseConnectionKey];
@@ -3449,7 +3458,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	          YapDatabaseRemovedKeysKey,
 	          YapDatabaseRemovedCollectionsKey,
 	          YapDatabaseRemovedRowidsKey,
-	          YapDatabaseAllKeysRemovedKey ];
+	          YapDatabaseAllKeysRemovedKey,
+              YapDatabaseModifiedExternallyKey ]; // @Robbie: should we add this key here?
 }
 
 /**
@@ -3468,7 +3478,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	          YapDatabaseMetadataChangesKey,
 	          YapDatabaseRemovedKeysKey,
 	          YapDatabaseRemovedCollectionsKey,
-	          YapDatabaseAllKeysRemovedKey ];
+	          YapDatabaseAllKeysRemovedKey,
+              YapDatabaseModifiedExternallyKey ]; // @Robbie: should we add this key here?
 }
 
 /**
@@ -3617,6 +3628,12 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			internalChangeset[YapDatabaseAllKeysRemovedKey] = @(YES);
 			externalChangeset[YapDatabaseAllKeysRemovedKey] = @(YES);
 		}
+        
+        if (externallyModified)
+        {
+            internalChangeset[YapDatabaseModifiedExternallyKey] = @(YES);
+            externalChangeset[YapDatabaseModifiedExternallyKey] = @(YES);
+        }
 	}
 	
 	*internalChangesetPtr = internalChangeset;
@@ -3697,6 +3714,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	NSSet *changeset_removedKeys        = [changeset objectForKey:YapDatabaseRemovedKeysKey];
 	NSSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 	
+    BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
 	BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 	
 	BOOL hasObjectChanges      = [changeset_objectChanges count] > 0;
@@ -3705,6 +3723,11 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	BOOL hasRemovedCollections = [changeset_removedCollections count] > 0;
 	
 	// Update keyCache
+    
+    if (changeset_modifiedExternally)
+    {
+        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches]; // @Robbie: is this the proper way to do it?
+    }
 	
 	if (changeset_allKeysRemoved)
 	{
@@ -4049,8 +4072,18 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	YDBLogVerbose(@"Processing changeset %lu for connection %@, database %@",
 	              (unsigned long)changesetSnapshot, self, database);
 	
-	snapshot = changesetSnapshot;
-	[self processChangeset:changeset];
+    if (snapshot == changesetSnapshot - 1) {
+        NSLog(@"-----------------> NORMAL UPDATE");
+        snapshot = changesetSnapshot;
+        [self processChangeset:changeset];
+    }
+    else {
+        // Snapshot number do not match, there might have been a modification from another process, we should flush cache and process the changeset
+        NSLog(@"=======================================> THERE WAS AN EXTERNAL UPDATE");
+        snapshot = changesetSnapshot;
+        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+        [self processChangeset:changeset];
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4112,6 +4145,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
 		
+        BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+        if (changeset_modifiedExternally)
+            return YES;
+        
 		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 		if (changeset_allKeysRemoved)
 			return YES;
@@ -4190,6 +4227,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
 		
+        BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+        if (changeset_modifiedExternally)
+            return YES;
+        
 		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 		if (changeset_allKeysRemoved)
 			return YES;
@@ -4298,6 +4339,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
+        
+        BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+        if (changeset_modifiedExternally)
+            return YES;
 		
 		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 		if (changeset_allKeysRemoved)
@@ -4371,6 +4416,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
+        
+        BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+        if (changeset_modifiedExternally)
+            return YES;
 		
 		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 		if (changeset_allKeysRemoved)
@@ -4402,6 +4451,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		
 		NSDictionary *changeset = notification.userInfo;
 		
+        BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+        if (changeset_modifiedExternally)
+            return YES;
+        
 		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 		if (changeset_allKeysRemoved)
 			return YES;

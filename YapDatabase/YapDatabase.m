@@ -49,6 +49,7 @@ NSString *const YapDatabaseRemovedKeysKey        = @"removedKeys";
 NSString *const YapDatabaseRemovedCollectionsKey = @"removedCollections";
 NSString *const YapDatabaseRemovedRowidsKey      = @"removedRowids";
 NSString *const YapDatabaseAllKeysRemovedKey     = @"allKeysRemoved";
+NSString *const YapDatabaseModifiedExternallyKey = @"modifiedExternally";
 
 NSString *const YapDatabaseRegisteredExtensionsKey   = @"registeredExtensions";
 NSString *const YapDatabaseRegisteredMemoryTablesKey = @"registeredMemoryTables";
@@ -2736,14 +2737,16 @@ static int connectionBusyHandler(void *ptr, int count) {
 {
 	NSAssert(dispatch_get_specific(IsOnSnapshotQueueKey), @"Must go through snapshotQueue for atomic access.");
 	NSAssert([changeset objectForKey:YapDatabaseSnapshotKey], @"Missing required change key: snapshot");
-	
+    
 	// The sender has finished the sqlite commit, and all data is now written to disk.
 	
 	// Update the in-memory snapshot,
 	// which represents the most recent snapshot of the last committed readwrite transaction.
 	
 	snapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
-	
+
+    NSLog(@"Database.noteCommitted: %llu", snapshot);
+
 	// Update registeredExtensions, if changed.
 	
 	NSDictionary *newRegisteredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];

@@ -186,6 +186,7 @@ extern NSString *const YapDatabaseMetadataChangesKey;
 extern NSString *const YapDatabaseRemovedKeysKey;
 extern NSString *const YapDatabaseRemovedCollectionsKey;
 extern NSString *const YapDatabaseAllKeysRemovedKey;
+extern NSString *const YapDatabaseModifiedExternallyKey;
 
 
 @interface YapDatabase : NSObject
