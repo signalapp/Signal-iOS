@@ -2745,8 +2745,6 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	snapshot = [[changeset objectForKey:YapDatabaseSnapshotKey] unsignedLongLongValue];
 
-    NSLog(@"Database.noteCommitted: %llu", snapshot);
-
 	// Update registeredExtensions, if changed.
 	
 	NSDictionary *newRegisteredExtensions = [changeset objectForKey:YapDatabaseRegisteredExtensionsKey];
