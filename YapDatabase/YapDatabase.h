@@ -150,6 +150,11 @@ extern NSString *const YapDatabasePathShmKey;
  * The notification object will be the database instance itself.
  * That is, it will be an instance of YapDatabase.
  *
+ * This notification is only posted for internal modifications.
+ * When the `enableMultiprocessSupport` option is set, external modification notifications are made
+ * available by adding a `CrossProcessNotifier` extension to the database, and listening to the
+ * `YapDatabaseModifiedExternallyNotification`.
+ *
  * The userInfo dictionary will look something like this:
  * @{
  *     YapDatabaseSnapshotKey   : <NSNumber of snapshot, incremented per read-write transaction w/modification>,
@@ -161,6 +166,14 @@ extern NSString *const YapDatabasePathShmKey;
  * This notification is always posted to the main thread.
 **/
 extern NSString *const YapDatabaseModifiedNotification;
+
+/**
+ * When the `enableMultiprocessSupport` option is set and a `CrossProcessNotifier` extension has been
+ * added to the database, this notification is posted following a readwrite transaction where the
+ * database was modified in another process.
+ *
+ * This notification is always posted to the main thread.
+ **/
 extern NSString *const YapDatabaseModifiedExternallyNotification;
 
 extern NSString *const YapDatabaseSnapshotKey;
