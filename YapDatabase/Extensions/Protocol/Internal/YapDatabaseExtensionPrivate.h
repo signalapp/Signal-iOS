@@ -32,8 +32,8 @@
 - (NSSet *)dependencies;
 - (BOOL)isPersistent;
 
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
-- (void)didRegisterWithDatabase:(YapDatabase *)database;
+- (BOOL)supportsDatabaseWithRegisteredExtensions:(NSDictionary<NSString*, YapDatabaseExtension*> *)registeredExtensions;
+- (void)didRegisterExtension;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 

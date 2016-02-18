@@ -119,9 +119,9 @@
 #pragma mark Registration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabaseWithRegisteredExtensions:(NSDictionary<NSString*, YapDatabaseExtension*> *)registeredExtensions
 {
-	if (![super supportsDatabase:database withRegisteredExtensions:registeredExtensions])
+	if (![super supportsDatabaseWithRegisteredExtensions:registeredExtensions])
 		return NO;
 	
 	YapDatabaseExtension *ext = [registeredExtensions objectForKey:parentViewName];

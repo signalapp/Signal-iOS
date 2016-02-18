@@ -4597,11 +4597,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
 		[self preReadWriteTransaction:transaction];
 		
-		// Set the registeredName now.
-		// The extension will need this in order to perform the registration tasks such as creating tables, etc.
-		extension.registeredName = extensionName;
-		extension.registeredDatabase = database;
-		
 		YapDatabaseExtensionConnection *extensionConnection;
 		YapDatabaseExtensionTransaction *extensionTransaction;
 		
@@ -4629,9 +4624,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		else
 		{
 			// Registration failed.
-			
-			extension.registeredName = nil;
-			extension.registeredDatabase = nil;
 			
 			[transaction rollback];
 		}
