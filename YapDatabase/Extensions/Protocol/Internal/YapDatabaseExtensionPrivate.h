@@ -36,6 +36,7 @@
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 
 - (void)processChangeset:(NSDictionary *)changeset;
+- (void)noteCommittedChangeset:(NSDictionary *)changeset registeredName:(NSString *)extName;
 
 @end
 

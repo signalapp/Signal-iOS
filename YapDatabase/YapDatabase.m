@@ -2693,20 +2693,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 	
 	// Forward the changeset to all extensions.
 	
-	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
-	if (changeset_extensions)
+	[registeredExtensions enumerateKeysAndObjectsUsingBlock:
+	    ^(NSString *extName, YapDatabaseExtension *ext, BOOL __unused *stop)
 	{
-		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extObj, BOOL __unused *stop) {
-			
-			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
-			if (changeset_extensions_extName)
-			{
-				__unsafe_unretained YapDatabaseExtension *ext = extObj;
-				
-				[ext processChangeset:changeset_extensions_extName];
-			}
-		}];
-	}
+		[ext noteCommittedChangeset:changeset registeredName:extName];
+	}];
 	
 	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.
