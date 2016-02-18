@@ -339,9 +339,9 @@
 	NSArray *dbNotifications = dbModifiedNotification ? @[ dbModifiedNotification ] : nil;
 	NSDate *now = [NSDate date];
 	
-	NSString *viewName = self.registeredName;
-	
 	NSMutableSet *collectionKeysNotChecked = [NSMutableSet setWithArray:actionItemsDict.allKeys];
+	
+	YapDatabaseActionManagerTransaction *extTransaction = [transaction ext:self.registeredName];
 	
 	// STEP 1 of 2
 	//
@@ -352,13 +352,12 @@
 		
 		__block YapCollectionKey *collectionKey;
 		
-		NSUInteger count = [[transaction ext:viewName] numberOfItemsInGroup:@""];
+		NSUInteger count = [extTransaction numberOfItemsInGroup:@""];
 		
-		[[transaction ext:viewName] enumerateKeysAndObjectsInGroup:@""
-		                                               withOptions:0
-		                                                     range:NSMakeRange(0, count)
-		                                                    filter:
-		^BOOL(NSString *collection, NSString *key)
+		[extTransaction enumerateKeysAndObjectsInGroup:@""
+		                                   withOptions:0
+		                                         range:NSMakeRange(0, count)
+		                                        filter: ^BOOL (NSString *collection, NSString *key)
 		{
 			//
 			// Filtering Block (allows us to skip object deserialzation for unneeded rows)
@@ -385,11 +384,7 @@
 			// Processing Block
 			//
 			
-			NSArray *actionItems = nil;
-			if ([object conformsToProtocol:@protocol(YapActionable)])
-			{
-				actionItems = [(id <YapActionable>)object yapActionItems];
-			}
+			NSArray<YapActionItem *> *actionItems = [extTransaction actionItemsForCollectionKey:collectionKey];
 			
 			if ([actionItems count] == 0)
 			{
@@ -445,15 +440,7 @@
 	
 	for (YapCollectionKey *ck in collectionKeysNotChecked)
 	{
-		id object = nil;
-		id metadata = nil;
-		[transaction getObject:&object metadata:&metadata forKey:ck.key inCollection:ck.collection];
-		
-		NSArray *actionItems = nil;
-		if ([object conformsToProtocol:@protocol(YapActionable)])
-		{
-			actionItems = [(id <YapActionable>)object yapActionItems];
-		}
+		NSArray<YapActionItem *> *actionItems = [extTransaction actionItemsForCollectionKey:ck];
 		
 		if ([actionItems count] == 0)
 		{
@@ -484,20 +471,13 @@
 **/
 - (NSArray *)mergeUpdatedActionItems:(NSArray *)inActionItems forCollectionKey:(YapCollectionKey *)collectionKey
 {
-	// Step 1 of 4:
+	// Make COPIES of each YapActionItem.
 	//
-	// Make COPIES of each YapActionItem
+	// Note: The method [YapDatabaseActionManagerTransaction actionItemsForKey:inCollection:] returns
+	// a pre-sorted list of actionItems. So we don't have to worry about sorting them again.
 	
-	NSArray *unsortedActionItems = [[NSArray alloc] initWithArray:inActionItems copyItems:YES];
+	NSArray *newActionItems = [[NSArray alloc] initWithArray:inActionItems copyItems:YES];
 	
-	// Step 2 of 4:
-	//
-	// Sort the actionItems by date.
-	
-	NSArray *newActionItems = [unsortedActionItems sortedArrayUsingSelector:@selector(compare:)];
-	
-	// Step 3 of 4:
-	//
 	// Some of the actionItems may be duplicates of what we already have.
 	// Here's how it works:
 	//
@@ -547,8 +527,6 @@
 		}
 	}
 	
-	// Step 4 of 4:
-	//
 	// Put the actionItems array into the actionItemsDict.
 	
 	[actionItemsDict setObject:newActionItems forKey:collectionKey];
