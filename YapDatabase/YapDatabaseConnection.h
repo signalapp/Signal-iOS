@@ -509,9 +509,11 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
  * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the key may not be included in the enumeration.
- * You must use didClearCollection:inNotifications: if you need to handle that case.
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
  * 
  * @see didClearCollection:inNotifications:
+ * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedKeysInCollection:(NSString *)collection
                          inNotifications:(NSArray<NSNotification *> *)notifications
@@ -520,11 +522,14 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
 /**
  * Allows you to enumerate all the changed collection/key tuples for the given commits.
  * 
- * Keep in mind that if [transaction removeAllObjectsInAllCollections] was invoked
+ * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
+ * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the collection/key tuple may not be included in the enumeration.
- * You must use didClearAllCollectionsInNotifications: if you need to handle that case.
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
  * 
+ * @see didClearCollection:inNotifications:
  * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedCollectionKeysInNotifications:(NSArray<NSNotification *> *)notifications

@@ -32,7 +32,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
     YDB_DeleteDestinationIfAllSourcesDeleted = 1 << 5,
 };
 
-@interface YapDatabaseRelationshipEdge : NSObject <NSCoding, NSCopying>
+@interface YapDatabaseRelationshipEdge : NSObject <NSCopying>
 
 /**
  * Returns an edge with the given name, destination & nodeDeleteRules.
@@ -67,7 +67,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
  * When directly adding an edge, you must fully specify the source node.
 **/
 + (instancetype)edgeWithName:(NSString *)name
-         destinationFilePath:(NSString *)destinationFilePath
+          destinationFileURL:(NSURL *)destinationFileURL
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
@@ -103,7 +103,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 + (instancetype)edgeWithName:(NSString *)name
                    sourceKey:(NSString *)sourceKey
                   collection:(nullable NSString *)sourceCollection
-         destinationFilePath:(NSString *)destinationFilePath
+          destinationFileURL:(NSURL *)destinationFileURL
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 #pragma mark Init
@@ -119,8 +119,8 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 /**
  * For documentation @see edgeWithName:destinationFilePath:nodeDeleteRules:
 **/
-- (id)initWithName:(NSString *)name destinationFilePath:(NSString *)destinationFilePath
-                                        nodeDeleteRules:(YDB_NodeDeleteRules)rules;
+- (id)initWithName:(NSString *)name destinationFileURL:(NSURL *)destinationFileURL
+                                       nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
  * For documentation @see edgeWithName:sourceKey:collection:destinationKey:collection:nodeDeleteRules:
@@ -137,7 +137,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 **/
 - (id)initWithName:(NSString *)name sourceKey:(NSString *)sourceKey
                                    collection:(nullable NSString *)sourceCollection
-                          destinationFilePath:(NSString *)destinationFilePath
+                           destinationFileURL:(NSURL *)destinationFileURL
                               nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 #pragma mark Properties
@@ -150,7 +150,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 @property (nonatomic, copy, readonly) NSString *destinationKey;
 @property (nonatomic, copy, readonly) NSString *destinationCollection;
 
-@property (nonatomic, copy, readonly) NSString *destinationFilePath;
+@property (nonatomic, copy, readonly) NSURL *destinationFileURL;
 
 @property (nonatomic, assign, readonly) YDB_NodeDeleteRules nodeDeleteRules;
 

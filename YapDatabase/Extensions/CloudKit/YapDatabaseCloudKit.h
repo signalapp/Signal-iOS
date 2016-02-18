@@ -156,6 +156,14 @@ extern NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification;
 #pragma mark Change-Sets
 
 /**
+ * Returns the "current" changeSet,
+ * which is either the inFlightChangeSet, or the next changeSet to go inFlight once resumed.
+ *
+ * In other words, the first YDBCKChangeSet in the queue.
+**/
+- (YDBCKChangeSet *)currentChangeSet;
+
+/**
  * Returns an array of YDBCKChangeSet objects, which represent the pending (and in-flight) change-sets.
  * The array is ordered, such that:
  * - the first item in the array is either in-flight or the next to be uploaded

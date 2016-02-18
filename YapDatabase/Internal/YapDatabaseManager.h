@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- * There should only be one YapDatabase or YapCollectionDatabase per file.
+ * There should only be one YapDatabase instance per file.
  *
  * The architecture design is to create a single parent database instance,
  * and then spawn connections to the database as needed from the parent.

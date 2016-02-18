@@ -115,11 +115,16 @@ framework module YapDatabase {
 	
 	explicit module YapDatabaseRTreeIndex {
 		header "YapDatabaseRTreeIndex.h"
-		header "YapDatabaseExtension.h"
 		header "YapDatabaseRTreeIndexSetup.h"
 		header "YapDatabaseRTreeIndexHandler.h"
 		header "YapDatabaseRTreeIndexOptions.h"
 		header "YapDatabaseRTreeIndexConnection.h"
 		header "YapDatabaseRTreeIndexTransaction.h"
+	}
+	
+	// Extension: ConnectionProxy
+	
+	explicit module YapDatabaseConnectionProxy {
+		header "YapDatabaseConnectionProxy.h"
 	}
 }

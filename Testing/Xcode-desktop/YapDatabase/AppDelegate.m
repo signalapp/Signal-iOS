@@ -4,11 +4,10 @@
 #import "BenchmarkYapDatabase.h"
 
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseFilteredView.h>
+
 
 @implementation AppDelegate
-{
-	YapDatabase *database;
-}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -56,17 +55,25 @@
 #pragma mark Debugging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (NSString *)databaseFilePath
+- (NSString *)appName
 {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
-	
 	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
 	if (appName == nil) {
 		appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
 	}
+	if (appName == nil) {
+		appName = @"YapDatabaseTesting";
+	}
 	
-	NSString *appSupportDir = [basePath stringByAppendingPathComponent:appName];
+	return appName;
+}
+
+- (NSString *)appSupportDir
+{
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+	
+	NSString *appSupportDir = [basePath stringByAppendingPathComponent:[self appName]];
 	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
@@ -75,18 +82,13 @@
 		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
 	}
 	
-	NSString *fileName = @"test.sqlite";
-	return [appSupportDir stringByAppendingPathComponent:fileName];
+	return appSupportDir;
 }
 
-- (void)debug
+- (NSString *)databaseFilePath
 {
-	NSString *databaseFilePath = [self databaseFilePath];
-	NSLog(@"databaseFilePath: %@", databaseFilePath);
-	
-	[[NSFileManager defaultManager] removeItemAtPath:databaseFilePath error:NULL];
-	
-	database = [[YapDatabase alloc] initWithPath:databaseFilePath];
+	NSString *fileName = @"test.sqlite";
+	return [[self appSupportDir] stringByAppendingPathComponent:fileName];
 }
 
 @end

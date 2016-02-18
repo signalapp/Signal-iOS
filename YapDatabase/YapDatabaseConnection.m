@@ -1,17 +1,15 @@
-
 #import "YapDatabaseConnection.h"
-#import "YapDatabaseConnectionState.h"
-#import "YapDatabasePrivate.h"
-#import "YapDatabaseExtensionPrivate.h"
 
-#import "YapCollectionKey.h"
 #import "YapCache.h"
-#import "YapTouch.h"
+#import "YapCollectionKey.h"
+#import "YapDatabaseConnectionState.h"
+#import "YapDatabaseExtensionPrivate.h"
+#import "YapDatabaseLogging.h"
+#import "YapDatabasePrivate.h"
+#import "YapDatabaseString.h"
 #import "YapNull.h"
 #import "YapSet.h"
-
-#import "YapDatabaseString.h"
-#import "YapDatabaseLogging.h"
+#import "YapTouch.h"
 
 #import <objc/runtime.h>
 #import <mach/mach_time.h>
@@ -122,6 +120,7 @@ static void yapNotifyDidRead(yap_file *file)
 	sqlite3_stmt *removeForRowidStatement;
 	sqlite3_stmt *removeCollectionStatement;
 	sqlite3_stmt *removeAllStatement;
+	
 	sqlite3_stmt *enumerateCollectionsStatement;
 	sqlite3_stmt *enumerateCollectionsForKeyStatement;
 	sqlite3_stmt *enumerateKeysInCollectionStatement;
@@ -439,6 +438,7 @@ static void yapNotifyDidRead(yap_file *file)
 	sqlite_finalize_null(&removeForRowidStatement);
 	sqlite_finalize_null(&removeCollectionStatement);
 	sqlite_finalize_null(&removeAllStatement);
+	
 	sqlite_finalize_null(&enumerateCollectionsStatement);
 	sqlite_finalize_null(&enumerateCollectionsForKeyStatement);
 	sqlite_finalize_null(&enumerateKeysInCollectionStatement);
@@ -1305,188 +1305,418 @@ static void yapNotifyDidRead(yap_file *file)
 	return *statement;
 }
 
-- (sqlite3_stmt *)enumerateCollectionsStatement
+- (sqlite3_stmt *)enumerateCollectionsStatement:(BOOL *)needsFinalizePtr
 {
 	sqlite3_stmt **statement = &enumerateCollectionsStatement;
-	if (*statement == NULL)
-	{
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT DISTINCT \"collection\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateCollectionsForKeyStatement
-{
-	sqlite3_stmt **statement = &enumerateCollectionsForKeyStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateCollectionsForKeyStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateCollectionsForKeyStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"collection\" FROM \"database2\" WHERE \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysInCollectionStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysInCollectionStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysInCollectionStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysInCollectionStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysInAllCollectionsStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysInAllCollectionsStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysAndMetadataInCollectionStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysAndMetadataInCollectionStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysAndMetadataInAllCollectionsStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysAndMetadataInAllCollectionsStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysAndObjectsInCollectionStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysAndObjectsInCollectionStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement
-{
-	sqlite3_stmt **statement = &enumerateKeysAndObjectsInAllCollectionsStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateKeysAndObjectsInAllCollectionsStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateRowsInCollectionStatement
-{
-	sqlite3_stmt **statement = &enumerateRowsInCollectionStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateRowsInCollectionStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateRowsInCollectionStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\""
 		                   " FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
-	}
+		
+		return result;
+	};
 	
-	return *statement;
-}
-
-- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement
-{
-	sqlite3_stmt **statement = &enumerateRowsInAllCollectionsStatement;
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
 	if (*statement == NULL)
 	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
+	}
+	
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
+}
+
+- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement:(BOOL *)needsFinalizePtr
+{
+	sqlite3_stmt **statement = &enumerateRowsInAllCollectionsStatement;
+	
+	sqlite3_stmt* (^CreateStatement)() = ^{
+		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
 		int stmtLen = (int)strlen(stmt);
 		
-		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
+		sqlite3_stmt *result = NULL;
+		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, &result, NULL);
 		if (status != SQLITE_OK)
 		{
 			YDBLogError(@"Error creating '%@': %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
 		}
+		
+		return result;
+	};
+	
+	BOOL needsFinalize = NO;
+	sqlite3_stmt *result = NULL;
+	
+	if (*statement == NULL)
+	{
+		result = *statement = CreateStatement();
+	}
+	else if (sqlite3_stmt_busy(*statement))
+	{
+		result = CreateStatement();
+		needsFinalize = YES;
+	}
+	else
+	{
+		result = *statement;
 	}
 	
-	return *statement;
+	NSParameterAssert(needsFinalizePtr != NULL);
+	*needsFinalizePtr = needsFinalize;
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1515,6 +1745,19 @@ static void yapNotifyDidRead(yap_file *file)
 	if (!(flags & YDB_SyncReadTransaction))
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadTransaction];
+	}
+#endif
+	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		// This will result in deadlock.
+		// 
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		@throw [self deadlockDetectionException];
 	}
 #endif
 	
@@ -1554,6 +1797,20 @@ static void yapNotifyDidRead(yap_file *file)
 	if (!(flags & YDB_SyncReadWriteTransaction))
 	{
 		@throw [self unpermittedTransactionException:YDB_SyncReadWriteTransaction];
+	}
+#endif
+	
+#ifndef NS_BLOCK_ASSERTIONS
+	if (dispatch_get_specific(IsOnConnectionQueueKey) ||
+	    dispatch_get_specific(database->IsOnWriteQueueKey))
+	{
+		// You are attempting to execute a transaction within a transaction.
+		// This will result in deadlock.
+		//
+		// For more information, see the "Thread Safety" wiki page:
+		// https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock
+		
+		@throw [self deadlockDetectionException];
 	}
 #endif
 	
@@ -1809,7 +2066,7 @@ static void yapNotifyDidRead(yap_file *file)
 **/
 - (void)preReadTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	// Pre-Read-Transaction: Step 1 of 3
+	// Pre-Read-Transaction: Step 1 of 4
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -1823,7 +2080,7 @@ static void yapNotifyDidRead(yap_file *file)
 		
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Read-Transaction: Step 2 of 3
+		// Pre-Read-Transaction: Step 2 of 4
 		//
 		// Update our connection state within the state table.
 		//
@@ -1860,7 +2117,7 @@ static void yapNotifyDidRead(yap_file *file)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Read-Transaction: Step 3 of 3
+		// Pre-Read-Transaction: Step 3 of 4
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
@@ -1951,6 +2208,15 @@ static void yapNotifyDidRead(yap_file *file)
 		myState->lastTransactionTime = mach_absolute_time();
 	}});
 	
+	// Pre-Read-Transaction: Step 4 of 4
+	//
+	// Enable sqlite VFS shim listeners for read notifications (if needed).
+	//
+	// Note: Code above performs the following:
+	//     if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
+	//
+	// So we initialize the 'wal_file' here, if we haven't already.
+	
 	if (main_file == NULL)
 	{
 		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
@@ -1958,7 +2224,7 @@ static void yapNotifyDidRead(yap_file *file)
 			main_file->yap_database_connection = (__bridge void *)self;
 		}
 	}
-	if (wal_file == NULL)
+	if (wal_file == NULL) // <- See note above
 	{
 		wal_file = yap_file_wal_find(main_file);
 		if (wal_file)
@@ -1984,7 +2250,7 @@ static void yapNotifyDidRead(yap_file *file)
 **/
 - (void)postReadTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	// Post-Read-Transaction: Step 1 of 4
+	// Post-Read-Transaction: Step 1 of 5
 	//
 	// 1. Execute "COMMIT TRANSACTION" on database connection.
 	// If we had acquired "sql-level" shared read lock, this will release associated resources.
@@ -1992,12 +2258,23 @@ static void yapNotifyDidRead(yap_file *file)
 	
 	[transaction commitTransaction];
 	
+	// Post-Read-Transaction: Step 2 of 5
+	//
+	// Disable sqlite VFS shim listeners for read notifications (if needed).
+	
+	if (main_file)
+		main_file->xNotifyDidRead = NULL;
+	
+	if (wal_file)
+		wal_file->xNotifyDidRead = NULL;
+	
+	
 	__block uint64_t minSnapshot = 0;
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Post-Read-Transaction: Step 2 of 4
+		// Post-Read-Transaction: Step 3 of 5
 		//
 		// Update our connection state within the state table.
 		//
@@ -2061,7 +2338,7 @@ static void yapNotifyDidRead(yap_file *file)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) completing read-only transaction.", self);
 	}});
 	
-	// Post-Read-Transaction: Step 3 of 4
+	// Post-Read-Transaction: Step 4 of 5
 	//
 	// Check to see if this connection has been holding back the checkpoint process.
 	// That is, was this connection the last active connection on an old snapshot?
@@ -2081,7 +2358,7 @@ static void yapNotifyDidRead(yap_file *file)
 		}];
 	}
 	
-	// Post-Read-Transaction: Step 4 of 4
+	// Post-Read-Transaction: Step 5 of 5
 	//
 	// If we discovered a blocked write transaction,
 	// and it was blocked waiting on us (because we had a "yap-level" snapshot without an "sql-level" snapshot),
@@ -2805,7 +3082,7 @@ static void yapNotifyDidRead(yap_file *file)
 	
 	__block YapDatabaseConnectionState *writeStateToSignal = nil;
 	
-	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
+	dispatch_block_t block = ^{ @autoreleasepool {
 		
 		// Update our connection state within the state table.
 		//
@@ -2847,7 +3124,12 @@ static void yapNotifyDidRead(yap_file *file)
 		{
 			writeStateToSignal = blockedWriteState;
 		}
-	}});
+	}};
+	
+	if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(database->snapshotQueue, block);
 	
 	needsMarkSqlLevelSharedReadLock = NO;
 	
@@ -4034,6 +4316,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 		if ([changeset_removedCollections containsObject:collection])
 			return YES;
+		
+		BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
+		if (changeset_allKeysRemoved)
+			return YES;
 	}
 	
 	return NO;
@@ -4071,14 +4357,16 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 
 /**
  * Allows you to enumerate all the changed keys in the given collection, for the given commits.
- * 
+ *
  * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
  * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the key may not be included in the enumeration.
- * You must use didClearCollection:inNotifications: if you need to handle that case.
- * 
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
+ *
  * @see didClearCollection:inNotifications:
+ * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedKeysInCollection:(NSString *)collection
                          inNotifications:(NSArray *)notifications
@@ -4130,17 +4418,35 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 				}
 			}
 		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapDatabaseRemovedKeysKey];
+		for (YapCollectionKey *ck in changeset_removedKeys)
+		{
+			if ([ck.collection isEqualToString:collection])
+			{
+				if (![keys containsObject:ck.key])
+				{
+					block(ck.key, &stop);
+					if (stop) return;
+					
+					[keys addObject:ck.key];
+				}
+			}
+		}
 	}
 }
 
 /**
  * Allows you to enumerate all the changed collection/key tuples for the given commits.
- * 
- * Keep in mind that if [transaction removeAllObjectsInAllCollections] was invoked
+ *
+ * Keep in mind that if [transaction removeAllObjectsInCollection:] was invoked on the given collection
+ * or [transaction removeAllObjectsInAllCollections] was invoked
  * during any of the commits represented by the given notifications,
  * then the collection/key tuple may not be included in the enumeration.
- * You must use didClearAllCollectionsInNotifications: if you need to handle that case.
- * 
+ * You must use didClearCollection:inNotifications: or didClearAllCollectionsInNotifications:
+ * if you need to handle that case.
+ *
+ * @see didClearCollection:inNotifications:
  * @see didClearAllCollectionsInNotifications:
 **/
 - (void)enumerateChangedCollectionKeysInNotifications:(NSArray *)notifications
@@ -4176,10 +4482,25 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapSet *changeset_metadataChanges = [changeset objectForKey:YapDatabaseMetadataChangesKey];
 		for (YapCollectionKey *ck in changeset_metadataChanges)
 		{
-			block(ck, &stop);
-			if (stop) return;
-			
-			[collectionKeys addObject:ck];
+			if (![collectionKeys containsObject:ck])
+			{
+				block(ck, &stop);
+				if (stop) return;
+				
+				[collectionKeys addObject:ck];
+			}
+		}
+		
+		YapSet *changeset_removedKeys = [changeset objectForKey:YapDatabaseRemovedKeysKey];
+		for (YapCollectionKey *ck in changeset_removedKeys)
+		{
+			if (![collectionKeys containsObject:ck])
+			{
+				block(ck, &stop);
+				if (stop) return;
+				
+				[collectionKeys addObject:ck];
+			}
 		}
 	}
 }
@@ -5342,6 +5663,25 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	    [permittedComponents componentsJoinedByString:@", "]];
 	
 	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey: suggestion };
+	
+	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+}
+#endif
+
+#ifndef NS_BLOCK_ASSERTIONS
+- (NSException *)deadlockDetectionException
+{
+	NSString *connectionName = self.name;
+	NSString *nameInfo = ([connectionName length] > 0) ? [NSString stringWithFormat:@" <%@>", connectionName] : @"";
+	
+	NSString *reason = [NSString stringWithFormat:
+	    @"YapDatabaseConnection[%p]%@ - deadlock detection",
+	    self, nameInfo];
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+		@"You are attempting to execute a transaction within a transaction. This will result in deadlock."
+		@" For more information, see the \"Thread Safety\" wiki page:"
+		@" https://github.com/yapstudios/YapDatabase/wiki/Thread-Safety#connections-queues--deadlock"};
 	
 	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }

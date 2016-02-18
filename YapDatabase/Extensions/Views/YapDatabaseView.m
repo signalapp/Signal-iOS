@@ -182,8 +182,8 @@
                       versionTag:(NSString *)inVersionTag
                          options:(YapDatabaseViewOptions *)inOptions
 {
-	NSAssert(inGrouping != NULL, @"Invalid parameter: grouping == nil");
-	NSAssert(inSorting != NULL, @"Invalid parameter: sorting == nil");
+	NSAssert([inGrouping isKindOfClass:[YapDatabaseViewGrouping class]], @"Invalid parameter: grouping");
+	NSAssert([inSorting isKindOfClass:[YapDatabaseViewSorting class]], @"Invalid parameter: sorting");
 	
 	if ((self = [super init]))
 	{

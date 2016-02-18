@@ -1569,6 +1569,11 @@
 	return ([self pageKeyForRowid:rowid] != nil);
 }
 
+- (NSString *)groupForRowid:(int64_t)rowid
+{
+	return [viewConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Logic
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3369,7 +3374,6 @@
 	
 	if (allowedCollections && ![allowedCollections isAllowed:collection])
 	{
-		lastHandledGroup = nil;
 		return;
 	}
 	
@@ -3410,7 +3414,6 @@
 			                                    withChanges:changesBitMask]];
 		}
 		
-		lastHandledGroup = group;
 		return;
 	}
 	
@@ -3456,7 +3459,6 @@
 				[self removeRowid:rowid collectionKey:collectionKey];
 			}
 			
-			lastHandledGroup = nil;
 			return;
 		}
 		
@@ -3475,7 +3477,6 @@
 				                                        atIndex:existingIndex
 				                                    withChanges:changesBitMask]];
 				
-				lastHandledGroup = group;
 				return;
 			}
 		}
@@ -3493,7 +3494,6 @@
 			// Nothing to do.
 			// The row wasn't previously in the view, and still isn't in the view.
 			
-			lastHandledGroup = nil;
 			return;
 		}
 	}
@@ -3508,8 +3508,6 @@
 	          inGroup:group
 	      withChanges:changesBitMask
 	            isNew:NO];
-	
-	lastHandledGroup = group;
 }
 
 /**

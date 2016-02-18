@@ -758,13 +758,13 @@
 	__unsafe_unretained NSString *collection = collectionKey.collection;
 	__unsafe_unretained NSString *key = collectionKey.key;
 	
-	// Instead of going to the groupingBlock,
-	// just ask the parentViewTransaction what the last group was.
+	// Since our groupingBlock is the same as the parent's groupingBlock,
+	// just ask the parentViewTransaction for the group (which is cached info).
 	
 	YapDatabaseViewTransaction *parentViewTransaction =
 	  [databaseTransaction ext:filteredView->parentViewName];
 	
-	NSString *group = parentViewTransaction->lastHandledGroup;
+	NSString *group = [parentViewTransaction groupForRowid:rowid];
 	
 	if (group == nil)
 	{
@@ -776,7 +776,6 @@
 			[self removeRowid:rowid collectionKey:collectionKey];
 		}
 		
-		lastHandledGroup = nil;
 		return;
 	}
 	
@@ -846,8 +845,6 @@
 				  inGroup:group
 			  withChanges:changesBitMask
 					isNew:NO];
-		
-		lastHandledGroup = group;
 	}
 	else
 	{
@@ -858,8 +855,6 @@
 		{
 			[self removeRowid:rowid collectionKey:collectionKey];
 		}
-		
-		lastHandledGroup = nil;
 	}
 }
 
@@ -951,14 +946,16 @@
 	                            sorting:&sorting
 	                          filtering:&filtering];
 	
-	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
+	// Note: Until we can check every parentView in the stack below us,
+	// we have to assume that grouping and/or sorting may have changed.
+	
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
 	BOOL sortingNeedsMetadata   = (sorting->blockType   & YapDatabaseBlockType_MetadataFlag);
 	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
-	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
+	if (sortingNeedsMetadata || (filteringMayHaveChanged && filteringNeedsMetadata))
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -996,14 +993,16 @@
 	                            sorting:&sorting
 	                          filtering:&filtering];
 	
-	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
+	// Note: Until we can check every parentView in the stack below us,
+	// we have to assume that grouping and/or sorting may have changed.
+	
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
 	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
 	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
-	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
+	if (sortingNeedsObject || (filteringMayHaveChanged && filteringNeedsObject))
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1043,14 +1042,16 @@
 	                            sorting:&sorting
 	                          filtering:&filtering];
 	
-	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
+	// Note: Until we can check every parentView in the stack below us,
+	// we have to assume that grouping and/or sorting may have changed.
+	
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
 	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
 	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
-	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
+	if (sortingNeedsObject || (filteringMayHaveChanged && filteringNeedsObject))
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1059,7 +1060,7 @@
 	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
-	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
+	if (sortingNeedsMetadata || (filteringMayHaveChanged && filteringNeedsMetadata))
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1099,14 +1100,16 @@
 	                            sorting:&sorting
 	                          filtering:&filtering];
 	
-	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
+	// Note: Until we can check every parentView in the stack below us,
+	// we have to assume that grouping and/or sorting may have changed.
+	
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
 	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
 	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
-	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
+	if (sortingNeedsObject || (filteringMayHaveChanged && filteringNeedsObject))
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1115,7 +1118,7 @@
 	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
-	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
+	if (sortingNeedsMetadata || (filteringMayHaveChanged && filteringNeedsMetadata))
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1156,14 +1159,16 @@
 	                            sorting:&sorting
 	                          filtering:&filtering];
 	
-	BOOL sortingMayHaveChanged   = (sorting->blockInvokeOptions   & blockInvokeBitMask);
+	// Note: Until we can check every parentView in the stack below us,
+	// we have to assume that grouping and/or sorting may have changed.
+	
 	BOOL filteringMayHaveChanged = (filtering->blockInvokeOptions & blockInvokeBitMask);
 	
 	BOOL sortingNeedsObject   = (sorting->blockType   & YapDatabaseBlockType_ObjectFlag);
 	BOOL filteringNeedsObject = (filtering->blockType & YapDatabaseBlockType_ObjectFlag);
 	
 	id object = nil;
-	if ((sortingMayHaveChanged && sortingNeedsObject) || (filteringMayHaveChanged && filteringNeedsObject))
+	if (sortingNeedsObject || (filteringMayHaveChanged && filteringNeedsObject))
 	{
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
@@ -1172,7 +1177,7 @@
 	BOOL filteringNeedsMetadata = (filtering->blockType & YapDatabaseBlockType_MetadataFlag);
 	
 	id metadata = nil;
-	if ((sortingMayHaveChanged && sortingNeedsMetadata) || (filteringMayHaveChanged && filteringNeedsMetadata))
+	if (sortingNeedsMetadata || (filteringMayHaveChanged && filteringNeedsMetadata))
 	{
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}

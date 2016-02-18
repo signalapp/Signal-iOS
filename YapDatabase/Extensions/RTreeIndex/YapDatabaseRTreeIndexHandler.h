@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "YapDatabaseExtensionTypes.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The handler block handles extracting the column values for the rtree index.
@@ -28,10 +29,10 @@ typedef void (^YapDatabaseRTreeIndexWithObjectBlock)
                             (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
 
 typedef void (^YapDatabaseRTreeIndexWithMetadataBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id metadata);
+                            (NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
 
 typedef void (^YapDatabaseRTreeIndexWithRowBlock)
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, id metadata);
+                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseRTreeIndexWithKeyBlock)block;
 + (instancetype)withObjectBlock:(YapDatabaseRTreeIndexWithObjectBlock)block;
@@ -48,3 +49,5 @@ typedef void (^YapDatabaseRTreeIndexWithRowBlock)
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke     blockInvokeOptions;
 
 @end
+
+NS_ASSUME_NONNULL_END

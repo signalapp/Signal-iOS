@@ -280,7 +280,8 @@
 
 - (NSArray *)allCollections
 {
-	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return nil;
 	
 	// SELECT DISTINCT "collection" FROM "database2";";
@@ -304,7 +305,7 @@
 		            status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	return result;
 }
@@ -622,9 +623,20 @@
 }
 
 - (BOOL)getObject:(id *)objectPtr
-		 metadata:(id *)metadataPtr
+         metadata:(id *)metadataPtr
+           forKey:(NSString *)key
+     inCollection:(NSString *)collection
+        withRowid:(int64_t)rowid
+{
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	return [self getObject:objectPtr metadata:metadataPtr forCollectionKey:cacheKey withRowid:rowid];
+}
+
+- (BOOL)getObject:(id *)objectPtr
+         metadata:(id *)metadataPtr
  forCollectionKey:(YapCollectionKey *)collectionKey
-		withRowid:(int64_t)rowid
+        withRowid:(int64_t)rowid
 {
 	id object = [connection->objectCache objectForKey:collectionKey];
 	id metadata = [connection->metadataCache objectForKey:collectionKey];
@@ -1186,7 +1198,8 @@
 {
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -1214,7 +1227,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -1235,7 +1248,8 @@
 	if (key == nil) return;
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateCollectionsForKeyStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateCollectionsForKeyStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -1267,8 +1281,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_key);
 	
 	if (!stop && mutation.isMutated)
@@ -2324,7 +2337,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2359,8 +2373,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -2381,7 +2394,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2418,8 +2432,7 @@
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
+		sqlite_enum_reset(statement, needsFinalize);
 		FreeYapDatabaseString(&_collection);
 		
 		if (!stop && mutation.isMutated)
@@ -2446,7 +2459,8 @@
 {
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysInAllCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2484,7 +2498,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -2523,7 +2537,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2593,8 +2608,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -2634,7 +2648,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2707,8 +2722,8 @@
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
+		sqlite3_clear_bindings(statement); // ok: within loop
+		sqlite3_reset(statement);          // ok: within loop
 		FreeYapDatabaseString(&_collection);
 		
 		if (!stop && mutation.isMutated)
@@ -2722,6 +2737,8 @@
 		}
 		
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -2757,7 +2774,8 @@
 {
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInAllCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndObjectsInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2820,8 +2838,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -2862,7 +2879,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -2943,8 +2961,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -2986,7 +3003,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3069,8 +3087,8 @@
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
+		sqlite3_clear_bindings(statement); // ok: within loop
+		sqlite3_reset(statement);          // ok: within loop
 		FreeYapDatabaseString(&_collection);
 		
 		if (!stop && mutation.isMutated)
@@ -3084,6 +3102,8 @@
 		}
 		
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -3120,7 +3140,8 @@
 {
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInAllCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateKeysAndMetadataInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3204,7 +3225,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -3243,7 +3264,8 @@
 	if (block == NULL) return;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3352,8 +3374,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	FreeYapDatabaseString(&_collection);
 	
 	if (!stop && mutation.isMutated)
@@ -3393,7 +3414,8 @@
 	if (block == NULL) return;
 	if ([collections count] == 0) return;
 	
-	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInCollectionStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3505,8 +3527,8 @@
 			YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 		}
 		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
+		sqlite3_clear_bindings(statement); // ok: within loop
+		sqlite3_reset(statement);          // ok: within loop
 		FreeYapDatabaseString(&_collection);
 		
 		if (!stop && mutation.isMutated)
@@ -3520,6 +3542,8 @@
 		}
 	
 	} // end for (NSString *collection in collections)
+	
+	sqlite_enum_reset(statement, needsFinalize);
 }
 
 /**
@@ -3555,7 +3579,8 @@
 {
 	if (block == NULL) return;
 	
-	sqlite3_stmt *statement = [connection enumerateRowsInAllCollectionsStatement];
+	BOOL needsFinalize;
+	sqlite3_stmt *statement = [connection enumerateRowsInAllCollectionsStatement:&needsFinalize];
 	if (statement == NULL) return;
 	
 	YapMutationStackItem_Bool *mutation = [connection->mutationStack push]; // mutation during enumeration protection
@@ -3647,8 +3672,7 @@
 		YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
+	sqlite_enum_reset(statement, needsFinalize);
 	
 	if (!stop && mutation.isMutated)
 	{
@@ -5030,15 +5054,12 @@
 #pragma mark Remove
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+- (void)removeObjectForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 {
-	if (key == nil) return;
-	if (collection == nil) collection = @"";
+	if (cacheKey == nil) return;
 	
 	sqlite3_stmt *statement = [connection removeForRowidStatement];
 	if (statement == NULL) return;
-	
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
 	// Issue #215
 	//
@@ -5062,8 +5083,7 @@
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
 	{
-		YDBLogError(@"Error executing 'removeForRowidStatement': %d %s, key(%@)",
-		                                                   status, sqlite3_errmsg(connection->db), key);
+		YDBLogError(@"Error executing 'removeForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 		removed = NO;
 	}
 	
@@ -5090,12 +5110,20 @@
 	}
 }
 
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid
+{
+	YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	[self removeObjectForCollectionKey:ck withRowid:rowid];
+}
+
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
 	int64_t rowid = 0;
 	if ([self getRowid:&rowid forKey:key inCollection:collection])
 	{
-		[self removeObjectForKey:key inCollection:collection withRowid:rowid];
+		YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+		
+		[self removeObjectForCollectionKey:ck withRowid:rowid];
 	}
 }
 
@@ -5461,7 +5489,8 @@
 		
 		if (YES)
 		{
-			sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement];
+			BOOL needsFinalize;
+			sqlite3_stmt *statement = [connection enumerateKeysInCollectionStatement:&needsFinalize];
 			if (statement == NULL) {
 				FreeYapDatabaseString(&_collection);
 				return;
@@ -5499,8 +5528,7 @@
 				YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD, status, sqlite3_errmsg(connection->db));
 			}
 			
-			sqlite3_clear_bindings(statement);
-			sqlite3_reset(statement);
+			sqlite_enum_reset(statement, needsFinalize);
 		}
 		
 		// Now remove all the matching rows

@@ -234,6 +234,28 @@
 }
 
 /**
+ * Returns the "current" changeSet,
+ * which is either the inFlightChangeSet, or the next changeSet to go inFlight once resumed.
+ *
+ * In other words, the first YDBCKChangeSet in the queue.
+**/
+- (YDBCKChangeSet *)currentChangeSet
+{
+	NSAssert(self.isMasterQueue, @"Method can only be invoked on masterQueue");
+	
+	YDBCKChangeSet *currentChangeSet = nil;
+	
+	// Get lock for access to 'oldChangeSets'
+	[masterQueueLock lock];
+	{
+		currentChangeSet = [[oldChangeSets firstObject] fullCopy];
+	}
+	[masterQueueLock unlock];
+	
+	return currentChangeSet;
+}
+
+/**
  * Each commit that makes one or more changes to a CKRecord (insert/modify/delete)
  * will result in one or more YDBCKChangeSet(s).
  * There is one YDBCKChangeSet per databaseIdentifier.
@@ -971,7 +993,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 				YDBCKChangeSet *pqPrevChangeSet = [pendingQueue->oldChangeSets objectAtIndex:index];
 				if (pqPrevChangeSet->deletedRecordIDs == nil)
 				{
-					pqPrevChangeSet->deletedRecordIDs = [mqPrevChangeSet->deletedRecordIDs copy];
+					pqPrevChangeSet->deletedRecordIDs = [mqPrevChangeSet->deletedRecordIDs mutableCopy];
 					pqPrevChangeSet.hasChangesToDeletedRecordIDs = YES;
 				}
 				
@@ -1124,7 +1146,7 @@ static BOOL CompareDatabaseIdentifiers(NSString *dbid1, NSString *dbid2)
 	{
 		YDBCKChangeSet *mqInFlightChangeSet = [masterQueue->oldChangeSets firstObject];
 		
-		pqInFlightChangeSet->deletedRecordIDs = [mqInFlightChangeSet->deletedRecordIDs copy];
+		pqInFlightChangeSet->deletedRecordIDs = [mqInFlightChangeSet->deletedRecordIDs mutableCopy];
 	}
 	
 	NSUInteger index = [pqInFlightChangeSet->deletedRecordIDs indexOfObject:recordID];

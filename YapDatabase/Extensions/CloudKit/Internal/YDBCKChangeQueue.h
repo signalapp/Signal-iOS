@@ -88,6 +88,14 @@
 - (NSString *)currentChangeSetUUID;
 
 /**
+ * Returns the "current" changeSet,
+ * which is either the inFlightChangeSet, or the next changeSet to go inFlight once resumed.
+ * 
+ * In other words, the first YDBCKChangeSet in the queue.
+**/
+- (YDBCKChangeSet *)currentChangeSet;
+
+/**
  * Each commit that makes one or more changes to a CKRecord (insert/modify/delete)
  * will result in one or more YDBCKChangeSet(s).
  * There is one YDBCKChangeSet per databaseIdentifier.

@@ -1,0 +1,5 @@
+xcodeproj 'YapDatabaseTesting.xcodeproj'
+platform :tvos, '9.0'
+
+pod 'CocoaLumberjack'
+pod "YapDatabase", path: '../../'

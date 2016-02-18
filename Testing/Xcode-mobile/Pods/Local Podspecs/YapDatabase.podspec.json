@@ -1,52 +1,203 @@
 {
   "name": "YapDatabase",
-  "version": "2.7.3",
+  "version": "2.7.7",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
-  "platforms": {
-    "ios": "6.0",
-    "osx": "10.8"
-  },
   "authors": {
     "Robbie Hanson": "robbiehanson@deusty.com"
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.7.3"
+    "tag": "2.7.7"
   },
-  "module_map": "module.modulemap",
+  "platforms": {
+    "osx": "10.8",
+    "ios": "6.0",
+    "tvos": "9.0"
+  },
+  "module_map": "Framework/module.modulemap",
   "libraries": "c++",
-  "default_subspecs": "standard",
+  "default_subspecs": "Standard",
   "subspecs": [
     {
-      "name": "standard",
-      "libraries": "sqlite3",
-      "dependencies": {
-        "CocoaLumberjack": [
-          "~> 2"
-        ]
-      },
-      "source_files": "YapDatabase/**/*.{h,m,mm}",
-      "private_header_files": "YapDatabase/**/Internal/*.h",
-      "requires_arc": true
+      "name": "Standard",
+      "subspecs": [
+        {
+          "name": "Core",
+          "libraries": "sqlite3",
+          "dependencies": {
+            "CocoaLumberjack": [
+              "~> 2"
+            ]
+          },
+          "source_files": [
+            "YapDatabase/*.{h,m,mm,c}",
+            "YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}",
+            "YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}"
+          ],
+          "private_header_files": "YapDatabase/**/Internal/*.h"
+        },
+        {
+          "name": "Extensions",
+          "dependencies": {
+            "YapDatabase/Standard/Core": [
+
+            ]
+          },
+          "subspecs": [
+            {
+              "name": "Views",
+              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SecondaryIndex",
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SecondaryIndex",
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "Relationships",
+              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "FullTextSearch",
+              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "Hooks",
+              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "FilteredViews",
+              "dependencies": {
+                "YapDatabase/Standard/Extensions/Views": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SearchResults",
+              "dependencies": {
+                "YapDatabase/Standard/Extensions/Views": [
+
+                ],
+                "YapDatabase/Standard/Extensions/FullTextSearch": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "CloudKit",
+              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "RTreeIndex",
+              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ConnectionProxy",
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "SQLCipher",
-      "dependencies": {
-        "SQLCipher/fts": [
+      "subspecs": [
+        {
+          "name": "Core",
+          "dependencies": {
+            "SQLCipher/fts": [
 
-        ],
-        "CocoaLumberjack": [
-          "~> 2"
-        ]
-      },
-      "source_files": "YapDatabase/**/*.{h,m,mm}",
-      "private_header_files": "YapDatabase/**/Internal/*.h",
-      "xcconfig": {
-        "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
-      },
-      "requires_arc": true
+            ],
+            "CocoaLumberjack": [
+              "~> 2"
+            ]
+          },
+          "xcconfig": {
+            "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
+          },
+          "source_files": [
+            "YapDatabase/*.{h,m,mm,c}",
+            "YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}",
+            "YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}"
+          ],
+          "private_header_files": "YapDatabase/**/Internal/*.h"
+        },
+        {
+          "name": "Extensions",
+          "dependencies": {
+            "YapDatabase/SQLCipher/Core": [
+
+            ]
+          },
+          "subspecs": [
+            {
+              "name": "Views",
+              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SecondaryIndex",
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SecondaryIndex",
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "Relationships",
+              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "FullTextSearch",
+              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "Hooks",
+              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "FilteredViews",
+              "dependencies": {
+                "YapDatabase/SQLCipher/Extensions/Views": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "SearchResults",
+              "dependencies": {
+                "YapDatabase/SQLCipher/Extensions/Views": [
+
+                ],
+                "YapDatabase/SQLCipher/Extensions/FullTextSearch": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "CloudKit",
+              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "RTreeIndex",
+              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ConnectionProxy",
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

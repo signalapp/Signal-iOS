@@ -12,6 +12,7 @@
 		DC005BC11774C666002E57DE /* TestViewChangeLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = DC005BC01774C666002E57DE /* TestViewChangeLogic.m */; };
 		DC23CFAB1766A17100E103A9 /* TestYapDatabaseView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC23CFAA1766A17100E103A9 /* TestYapDatabaseView.m */; };
 		DC24FBEF1688047700E855DC /* TestYapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC24FBEE1688047700E855DC /* TestYapDatabase.m */; };
+		DC2B5F701C45B62E00319AF5 /* TestRelationshipMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2B5F6F1C45B62E00319AF5 /* TestRelationshipMigration.m */; };
 		DC2EAC3218763C1D00FF4EA8 /* TestYapDatabaseRelationship.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2EAC3118763C1D00FF4EA8 /* TestYapDatabaseRelationship.m */; };
 		DC3D2F2B1673FFEC00DFAFAA /* TestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F261673FFEC00DFAFAA /* TestObject.m */; };
 		DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC3D2F2F1674001600DFAFAA /* BenchmarkYapCache.m */; };
@@ -119,6 +120,8 @@
 		DC005BC01774C666002E57DE /* TestViewChangeLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestViewChangeLogic.m; path = ../../UnitTesting/TestViewChangeLogic.m; sourceTree = "<group>"; };
 		DC23CFAA1766A17100E103A9 /* TestYapDatabaseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseView.m; path = ../../UnitTesting/TestYapDatabaseView.m; sourceTree = "<group>"; };
 		DC24FBEE1688047700E855DC /* TestYapDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabase.m; path = ../../UnitTesting/TestYapDatabase.m; sourceTree = "<group>"; };
+		DC2B5F6E1C45B62E00319AF5 /* TestRelationshipMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestRelationshipMigration.h; path = ../../UnitTesting/TestRelationshipMigration.h; sourceTree = "<group>"; };
+		DC2B5F6F1C45B62E00319AF5 /* TestRelationshipMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestRelationshipMigration.m; path = ../../UnitTesting/TestRelationshipMigration.m; sourceTree = "<group>"; };
 		DC2EAC3118763C1D00FF4EA8 /* TestYapDatabaseRelationship.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestYapDatabaseRelationship.m; path = ../../UnitTesting/TestYapDatabaseRelationship.m; sourceTree = "<group>"; };
 		DC2EAC3318766F5100FF4EA8 /* TestNodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestNodes.h; path = ../../UnitTesting/TestNodes.h; sourceTree = "<group>"; };
 		DC2EAC3418766F5100FF4EA8 /* TestNodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestNodes.m; path = ../../UnitTesting/TestNodes.m; sourceTree = "<group>"; };
@@ -212,6 +215,8 @@
 				DC2EAC3318766F5100FF4EA8 /* TestNodes.h */,
 				DC2EAC3418766F5100FF4EA8 /* TestNodes.m */,
 				DC2EAC3118763C1D00FF4EA8 /* TestYapDatabaseRelationship.m */,
+				DC2B5F6E1C45B62E00319AF5 /* TestRelationshipMigration.h */,
+				DC2B5F6F1C45B62E00319AF5 /* TestRelationshipMigration.m */,
 			);
 			name = Relationships;
 			sourceTree = "<group>";
@@ -585,6 +590,7 @@
 				DCAE51FB1673FE2600395076 /* AppDelegate.m in Sources */,
 				DCAE52041673FE2600395076 /* ViewController.m in Sources */,
 				DCE9DEDF1805DAB100A7057E /* BenchmarkYapDatabase.m in Sources */,
+				DC2B5F701C45B62E00319AF5 /* TestRelationshipMigration.m in Sources */,
 				DC3D2F301674001600DFAFAA /* BenchmarkYapCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -822,6 +828,7 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};
@@ -846,6 +853,7 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = "YapDatabaseTests/YapDatabaseTests-Info.plist";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YapDatabase.app/YapDatabase";
 			};

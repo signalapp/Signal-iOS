@@ -786,7 +786,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		if ([recordTableInfo isKindOfClass:[YDBCKCleanRecordTableInfo class]])
 		{
 			__unsafe_unretained YDBCKCleanRecordTableInfo *cleanRecordTableInfo =
-			  (YDBCKCleanRecordTableInfo *)recordInfo;
+			  (YDBCKCleanRecordTableInfo *)recordTableInfo;
 			
 			record = [cleanRecordTableInfo.record safeCopy];
 		}

@@ -7,8 +7,8 @@
 #import "YapDatabaseExtension.h"
 
 #import "YapCache.h"
-#import "YapMemoryTable.h"
 #import "YapCollectionKey.h"
+#import "YapMemoryTable.h"
 #import "YapMutationStack.h"
 
 #import "sqlite3.h"
@@ -19,9 +19,23 @@
 **/
 NS_INLINE void sqlite_finalize_null(sqlite3_stmt **stmtPtr)
 {
-	if (*stmtPtr) {
+	if (stmtPtr && *stmtPtr)
+	{
 		sqlite3_finalize(*stmtPtr);
 		*stmtPtr = NULL;
+	}
+}
+
+NS_INLINE void sqlite_enum_reset(sqlite3_stmt *stmt, BOOL needsFinalize)
+{
+	if (stmt)
+	{
+		sqlite3_clear_bindings(stmt);
+		sqlite3_reset(stmt);
+		
+		if (needsFinalize) {
+			sqlite3_finalize(stmt);
+		}
 	}
 }
 
@@ -243,16 +257,17 @@ static NSString *const ext_key_class = @"class";
 - (sqlite3_stmt *)removeForRowidStatement;
 - (sqlite3_stmt *)removeCollectionStatement;
 - (sqlite3_stmt *)removeAllStatement;
-- (sqlite3_stmt *)enumerateCollectionsStatement;
-- (sqlite3_stmt *)enumerateCollectionsForKeyStatement;
-- (sqlite3_stmt *)enumerateKeysInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement;
-- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement;
-- (sqlite3_stmt *)enumerateRowsInCollectionStatement;
-- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement;
+
+- (sqlite3_stmt *)enumerateCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateCollectionsForKeyStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndMetadataInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateKeysAndObjectsInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateRowsInCollectionStatement:(BOOL *)needsFinalizePtr;
+- (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
 
 - (void)prepare;
 
@@ -337,9 +352,15 @@ static NSString *const ext_key_class = @"class";
 - (id)metadataForCollectionKey:(YapCollectionKey *)cacheKey withRowid:(int64_t)rowid;
 
 - (BOOL)getObject:(id *)objectPtr
-		 metadata:(id *)metadataPtr
+         metadata:(id *)metadataPtr
+           forKey:(NSString *)key
+     inCollection:(NSString *)collection
+        withRowid:(int64_t)rowid;
+
+- (BOOL)getObject:(id *)objectPtr
+         metadata:(id *)metadataPtr
  forCollectionKey:(YapCollectionKey *)collectionKey
-		withRowid:(int64_t)rowid;
+        withRowid:(int64_t)rowid;
 
 - (void)_enumerateKeysInCollection:(NSString *)collection
                         usingBlock:(void (^)(int64_t rowid, NSString *key, BOOL *stop))block;
@@ -432,6 +453,7 @@ static NSString *const ext_key_class = @"class";
               withRowid:(int64_t)rowid
      serializedMetadata:(NSData *)preSerializedMetadata;
 
+- (void)removeObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid;
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection withRowid:(int64_t)rowid;
 
 - (void)addRegisteredExtensionTransaction:(YapDatabaseExtensionTransaction *)extTrnsactn withName:(NSString *)extName;

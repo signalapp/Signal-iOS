@@ -38,7 +38,6 @@ static int ddLogLevel = DDLogLevelWarning;
 	//	[self testPragmaPageSize];
 	//	[self debug];
 	//	[self debugOnTheFlyViews];
-		
 	});
 	
 	// Normal UI stuff
@@ -58,6 +57,39 @@ static int ddLogLevel = DDLogLevelWarning;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Debugging Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (NSURL *)appSupportFolderURL
+{
+    static NSURL *appSupportFolderURL = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSError *error = nil;
+        NSURL *url = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
+                                                            inDomain:NSUserDomainMask
+                                                   appropriateForURL:nil
+                                                              create:YES
+                                                               error:&error];
+        if (!error)
+		{
+		#if !TARGET_OS_IPHONE
+		
+			url = [url URLByAppendingPathComponent:@"YapDatabaseTesting"];
+			
+		#endif
+			
+			[[NSFileManager defaultManager] createDirectoryAtURL:url
+			                         withIntermediateDirectories:YES
+			                                          attributes:nil
+			                                               error:&error];
+		}
+		
+		appSupportFolderURL = url;
+	});
+	
+	return appSupportFolderURL;
+}
 
 - (NSString *)databasePath:(NSString *)suffix
 {

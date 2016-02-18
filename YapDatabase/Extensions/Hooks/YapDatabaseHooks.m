@@ -31,7 +31,7 @@
 {
 	if ((self = [super init]))
 	{
-		// Nothing to do here
+		// Nothing to do here...
 	}
 	return self;
 }
@@ -68,18 +68,5 @@
 
 @synthesize willRemoveAllRows = willRemoveAllRows;
 @synthesize didRemoveAllRows = didRemoveAllRows;
-
-- (void)willChangeValueForKey:(NSString *)key
-{
-	if (self.registeredName)
-	{
-		NSString *reason =
-		  @"YapDatabaseHooks properties cannot be changed after the extension has been registered.";
-		
-		@throw [NSException exceptionWithName:@"YapDatabaseHooks" reason:reason userInfo:nil];
-	}
-	
-	[super willChangeValueForKey:key];
-}
 
 @end

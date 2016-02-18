@@ -47,7 +47,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -249,8 +249,8 @@
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		
-		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil]);
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 	
 	// Now test adding an edge and deleting it within the same transaction
@@ -265,8 +265,8 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil]);
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 	
 	// Re-add everything
@@ -290,8 +290,8 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil]);
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 }
 
@@ -302,7 +302,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -462,8 +462,8 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil], @"Oops");
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n2.key inCollection:nil]);
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 }
 
@@ -474,7 +474,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -639,7 +639,7 @@
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 }
 
@@ -650,7 +650,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -863,7 +863,7 @@
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 	
 	// Now test adding the edges and deleting them within the same transaction
@@ -879,7 +879,7 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:n3.key inCollection:nil]);
 	}];
 }
 
@@ -894,7 +894,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -929,13 +929,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -944,7 +944,7 @@
 		
 		[[transaction ext:@"relationship"] flush];
 		
-		XCTAssertNil([transaction objectForKey:key2 inCollection:nil], @"Oops");
+		XCTAssertNil([transaction objectForKey:key2 inCollection:nil]);
 	}];
 }
 
@@ -955,7 +955,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -987,13 +987,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1001,13 +1001,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1028,13 +1028,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1042,13 +1042,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1065,13 +1065,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1103,13 +1103,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1130,7 +1130,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
@@ -1167,13 +1167,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1181,13 +1181,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1205,13 +1205,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1255,13 +1255,13 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child"];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" sourceKey:key1 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"child" destinationKey:key2 collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1286,7 +1286,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection = [database newConnection];
 	
@@ -1319,7 +1319,7 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
 		                                                   sourceKey:srcKey
@@ -1346,7 +1346,7 @@
 		NSUInteger count;
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:edgeName
 		                                                   sourceKey:srcKey
@@ -1389,19 +1389,21 @@
 	return result;
 }
 
-- (NSString *)randomFilePath
+- (NSURL *)randomFileURL
 {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+	NSURL *baseURL = [[NSFileManager defaultManager] URLForDirectory:NSCachesDirectory
+	                                                        inDomain:NSUserDomainMask
+	                                               appropriateForURL:nil
+	                                                          create:YES
+	                                                           error:NULL];
 	
 	NSString *fileName = [self randomLetters:16];
-	
-	NSString *filePath = [baseDir stringByAppendingPathComponent:fileName];
+	NSURL *fileURL = [baseURL URLByAppendingPathComponent:fileName isDirectory:NO];
 	
 	// Create the temp file
-	[[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
+	[[NSFileManager defaultManager] createFileAtPath:[fileURL path] contents:nil attributes:nil];
 	
-	return filePath;
+	return fileURL;
 }
 
 - (void)testEncryption1_manual
@@ -1411,19 +1413,23 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseRelationshipOptions *options = [[YapDatabaseRelationshipOptions alloc] init];
-	options.destinationFilePathEncryptor = ^NSData* (NSString *dstFilePath){
+	options.fileURLSerializer = ^NSData* (YapDatabaseRelationshipEdge *edge){
 		
+		NSString *dstFilePath = [edge.destinationFileURL path];
 		return [dstFilePath dataUsingEncoding:NSUTF8StringEncoding];
 	};
-	options.destinationFilePathDecryptor = ^NSString* (NSData *dstBlob){
+	options.fileURLDeserializer = ^NSURL* (YapDatabaseRelationshipEdge *edge, NSData *dstBlob){
 		
-		return [[NSString alloc] initWithBytes:dstBlob.bytes length:dstBlob.length encoding:NSUTF8StringEncoding];
+		NSString *dstFilePath = [[NSString alloc] initWithBytes:dstBlob.bytes
+		                                                 length:dstBlob.length
+		                                               encoding:NSUTF8StringEncoding];
+		return [NSURL fileURLWithPath:dstFilePath];
 	};
 	
 	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] initWithVersionTag:@"1" options:options];
@@ -1433,10 +1439,10 @@
 	XCTAssertTrue(registered, @"Error registering extension");
 	
 	NSString *key1 = @"key1";
-	NSString *filePath1 = [self randomFilePath];
+	NSURL *fileURL1 = [self randomFileURL];
 	
 	NSString *key2 = @"key2";
-	NSString *filePath2 = [self randomFilePath];
+	NSURL *fileURL2 = [self randomFileURL];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
@@ -1447,7 +1453,7 @@
 		  [YapDatabaseRelationshipEdge edgeWithName:@"random"
 		                                  sourceKey:key1
 		                                 collection:nil
-		                        destinationFilePath:filePath1
+		                         destinationFileURL:fileURL1
 		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
 		
 		[[transaction ext:@"relationship"] addEdge:manualEdge];
@@ -1457,7 +1463,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1465,80 +1471,80 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: name & dstFilePath
+		// Query: name & dstFileURL
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: dstFilePath
+		// Query: dstFileURL
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: name & src & dstFilePath
+		// Query: name & src & dstFileURL
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: src & dstFilePath
+		// Query: src & dstFileURL
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1548,14 +1554,14 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -1565,7 +1571,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1576,7 +1582,7 @@
 		  [YapDatabaseRelationshipEdge edgeWithName:@"random"
 		                                  sourceKey:key2
 		                                 collection:nil
-		                        destinationFilePath:filePath2
+		                         destinationFileURL:fileURL2
 		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
 		
 		[[transaction ext:@"relationship"] addEdge:manualEdge];
@@ -1586,7 +1592,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1594,143 +1600,143 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
-		// Query: name & dstFilePath
+		// Query: name & dstFileURL
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: dstFilePath
+		// Query: dstFileURL
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
-		// Query: src & dstFilePath
+		// Query: src & dstFileURL
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1740,7 +1746,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1750,19 +1756,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -1772,7 +1778,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -1782,7 +1788,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1792,7 +1798,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1800,154 +1806,154 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1      // <- Mismatch
 		                                               collection:nil
-		                                      destinationFilePath:filePath2 // <- Mismatch
+		                                       destinationFileURL:fileURL2 // <- Mismatch
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops"); // Zero because of mismatch
+		XCTAssertTrue(count == 0); // Zero because of mismatch
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1957,7 +1963,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -1967,19 +1973,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -1989,7 +1995,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -1999,7 +2005,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2011,11 +2017,11 @@
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:filePath1];
-	XCTAssertTrue(!exists1, @"Oops");
+	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL1 path]];
+	XCTAssertTrue(!exists1);
 	
-	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:filePath2];
-	XCTAssertTrue(!exists2, @"Oops");
+	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL2 path]];
+	XCTAssertTrue(!exists2);
 }
 
 - (void)testEncryption1_protocol
@@ -2025,19 +2031,23 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseRelationshipOptions *options = [[YapDatabaseRelationshipOptions alloc] init];
-	options.destinationFilePathEncryptor = ^NSData* (NSString *dstFilePath){
+	options.fileURLSerializer = ^NSData* (YapDatabaseRelationshipEdge *edge){
 		
+		NSString *dstFilePath = [edge.destinationFileURL path];
 		return [dstFilePath dataUsingEncoding:NSUTF8StringEncoding];
 	};
-	options.destinationFilePathDecryptor = ^NSString* (NSData *dstBlob){
+	options.fileURLDeserializer = ^NSURL* (YapDatabaseRelationshipEdge *edge, NSData *dstBlob){
 		
-		return [[NSString alloc] initWithBytes:dstBlob.bytes length:dstBlob.length encoding:NSUTF8StringEncoding];
+		NSString *dstFilePath = [[NSString alloc] initWithBytes:dstBlob.bytes
+		                                                 length:dstBlob.length
+		                                               encoding:NSUTF8StringEncoding];
+		return [NSURL fileURLWithPath:dstFilePath];
 	};
 	
 	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] initWithVersionTag:@"1" options:options];
@@ -2046,15 +2056,15 @@
 	
 	XCTAssertTrue(registered, @"Error registering extension");
 	
-	Node_Standard_FilePath *node1 = [[Node_Standard_FilePath alloc] init];
-	node1.filePath = [self randomFilePath];
+	Node_Standard_FileURL *node1 = [[Node_Standard_FileURL alloc] init];
+	node1.fileURL = [self randomFileURL];
 	NSString *key1 = node1.key;
-	NSString *filePath1 = node1.filePath;
+	NSURL *fileURL1 = node1.fileURL;
 	
-	Node_Standard_FilePath *node2 = [[Node_Standard_FilePath alloc] init];
-	node2.filePath = [self randomFilePath];
+	Node_Standard_FileURL *node2 = [[Node_Standard_FileURL alloc] init];
+	node2.fileURL = [self randomFileURL];
 	NSString *key2 = node2.key;
-	NSString *filePath2 = node2.filePath;
+	NSURL *fileURL2 = node2.fileURL;
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
@@ -2066,7 +2076,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2074,143 +2084,143 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2220,7 +2230,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2230,19 +2240,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2252,7 +2262,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2262,7 +2272,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -2272,7 +2282,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2280,154 +2290,154 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random" destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
 		                                                sourceKey:key1      // <- Mismatch
 		                                               collection:nil
-		                                      destinationFilePath:filePath2 // <- Mismatch
+		                                       destinationFileURL:fileURL2 // <- Mismatch
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops"); // Zero because of mismatch
+		XCTAssertTrue(count == 0); // Zero because of mismatch
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:filePath1];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL1];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:filePath2];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:fileURL2];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:filePath1
+		                                       destinationFileURL:fileURL1
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:filePath2
+		                                       destinationFileURL:fileURL2
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"random"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2437,7 +2447,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"random"
@@ -2447,19 +2457,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2469,7 +2479,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2479,7 +2489,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2491,11 +2501,11 @@
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:filePath1];
-	XCTAssertTrue(!exists1, @"Oops");
+	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL1 path]];
+	XCTAssertTrue(!exists1);
 	
-	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:filePath2];
-	XCTAssertTrue(!exists2, @"Oops");
+	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL2 path]];
+	XCTAssertTrue(!exists2);
 }
 
 - (void)testEncryption2_manual
@@ -2505,19 +2515,23 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseRelationshipOptions *options = [[YapDatabaseRelationshipOptions alloc] init];
-	options.destinationFilePathEncryptor = ^NSData* (NSString *dstFilePath){
+	options.fileURLSerializer = ^NSData* (YapDatabaseRelationshipEdge *edge){
 		
+		NSString *dstFilePath = [edge.destinationFileURL path];
 		return [dstFilePath dataUsingEncoding:NSUTF8StringEncoding];
 	};
-	options.destinationFilePathDecryptor = ^NSString* (NSData *dstBlob){
+	options.fileURLDeserializer = ^NSURL* (YapDatabaseRelationshipEdge *edge, NSData *dstBlob){
 		
-		return [[NSString alloc] initWithBytes:dstBlob.bytes length:dstBlob.length encoding:NSUTF8StringEncoding];
+		NSString *dstFilePath = [[NSString alloc] initWithBytes:dstBlob.bytes
+		                                                 length:dstBlob.length
+		                                               encoding:NSUTF8StringEncoding];
+		return [NSURL fileURLWithPath:dstFilePath];
 	};
 	
 	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] initWithVersionTag:@"1" options:options];
@@ -2529,7 +2543,7 @@
 	NSString *key1 = @"key1";
 	NSString *key2 = @"key2";
 	
-	NSString *sharedFilePath = [self randomFilePath];
+	NSURL *sharedFileURL = [self randomFileURL];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 		
@@ -2540,14 +2554,14 @@
 		  [YapDatabaseRelationshipEdge edgeWithName:@"shared"
 		                                  sourceKey:key1
 		                                 collection:nil
-		                        destinationFilePath:sharedFilePath
+		                         destinationFileURL:sharedFileURL
 		                            nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
 		
 		YapDatabaseRelationshipEdge *manualEdge2 =
 		  [YapDatabaseRelationshipEdge edgeWithName:@"shared"
 		                                  sourceKey:key2
 		                                 collection:nil
-		                        destinationFilePath:sharedFilePath
+		                         destinationFileURL:sharedFileURL
 		                            nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
 		
 		[[transaction ext:@"relationship"] addEdge:manualEdge1];
@@ -2558,7 +2572,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2566,119 +2580,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2688,7 +2702,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2698,19 +2712,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2720,7 +2734,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2730,7 +2744,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -2740,7 +2754,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2748,119 +2762,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2870,7 +2884,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2880,19 +2894,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2902,7 +2916,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -2912,7 +2926,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2924,7 +2938,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -2932,119 +2946,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3054,7 +3068,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3064,19 +3078,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3086,7 +3100,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3096,15 +3110,15 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	// Make sure the file still exists (was NOT deleted)
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:sharedFilePath];
-	XCTAssertTrue(exists1, @"Oops");
+	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:[sharedFileURL path]];
+	XCTAssertTrue(exists1);
 	
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3114,7 +3128,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3122,119 +3136,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3244,7 +3258,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3254,19 +3268,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3276,7 +3290,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3286,7 +3300,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -3298,8 +3312,8 @@
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:sharedFilePath];
-	XCTAssertTrue(!exists2, @"Oops");
+	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:[sharedFileURL path]];
+	XCTAssertTrue(!exists2);
 }
 
 - (void)testEncryption2_protocol
@@ -3309,19 +3323,23 @@
 	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
 	
-	XCTAssertNotNil(database, @"Oops");
+	XCTAssertNotNil(database);
 	
 	YapDatabaseConnection *connection1 = [database newConnection];
 	YapDatabaseConnection *connection2 = [database newConnection];
 	
 	YapDatabaseRelationshipOptions *options = [[YapDatabaseRelationshipOptions alloc] init];
-	options.destinationFilePathEncryptor = ^NSData* (NSString *dstFilePath){
+	options.fileURLSerializer = ^NSData* (YapDatabaseRelationshipEdge *edge){
 		
+		NSString *dstFilePath = [edge.destinationFileURL path];
 		return [dstFilePath dataUsingEncoding:NSUTF8StringEncoding];
 	};
-	options.destinationFilePathDecryptor = ^NSString* (NSData *dstBlob){
+	options.fileURLDeserializer = ^NSURL* (YapDatabaseRelationshipEdge *edge, NSData *dstBlob){
 		
-		return [[NSString alloc] initWithBytes:dstBlob.bytes length:dstBlob.length encoding:NSUTF8StringEncoding];
+		NSString *dstFilePath = [[NSString alloc] initWithBytes:dstBlob.bytes
+		                                                 length:dstBlob.length
+		                                               encoding:NSUTF8StringEncoding];
+		return [NSURL fileURLWithPath:dstFilePath];
 	};
 	
 	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] initWithVersionTag:@"1" options:options];
@@ -3330,14 +3348,14 @@
 	
 	XCTAssertTrue(registered, @"Error registering extension");
 	
-	NSString *sharedFilePath = [self randomFilePath];
+	NSURL *sharedFileURL = [self randomFileURL];
 	
-	Node_RetainCount_FilePath *node1 = [[Node_RetainCount_FilePath alloc] init];
-	node1.filePath = sharedFilePath;
+	Node_RetainCount_FileURL *node1 = [[Node_RetainCount_FileURL alloc] init];
+	node1.fileURL = sharedFileURL;
 	NSString *key1 = node1.key;
 	
-	Node_RetainCount_FilePath *node2 = [[Node_RetainCount_FilePath alloc] init];
-	node2.filePath = sharedFilePath;
+	Node_RetainCount_FileURL *node2 = [[Node_RetainCount_FileURL alloc] init];
+	node2.fileURL = sharedFileURL;
 	NSString *key2 = node2.key;
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -3350,7 +3368,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3358,119 +3376,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3480,7 +3498,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3490,19 +3508,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3512,7 +3530,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3522,7 +3540,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3532,7 +3550,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3540,119 +3558,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 2, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 2);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 2, @"Oops");
+		XCTAssertTrue(count == 2);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3662,7 +3680,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3672,19 +3690,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3694,7 +3712,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3704,7 +3722,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -3716,7 +3734,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3724,119 +3742,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3846,7 +3864,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3856,19 +3874,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3878,7 +3896,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -3888,15 +3906,15 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	// Make sure the file still exists (was NOT deleted)
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:sharedFilePath];
-	XCTAssertTrue(exists1, @"Oops");
+	BOOL exists1 = [[NSFileManager defaultManager] fileExistsAtPath:[sharedFileURL path]];
+	XCTAssertTrue(exists1);
 	
 	
 	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3906,7 +3924,7 @@
 		// Query: name
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -3914,119 +3932,119 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared" destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: dstFilePath
 		
-		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		count = [[transaction ext:@"relationship"] edgeCountWithName:nil destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		// Query: name & src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src & dstFilePath
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 1, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil
-		                                         destinationFilePath:sharedFilePath];
-		XCTAssertTrue(count == 0, @"Oops");
+		                                          destinationFileURL:sharedFileURL];
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key1
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
 		                                                sourceKey:key2
 		                                               collection:nil
-		                                      destinationFilePath:sharedFilePath
+		                                       destinationFileURL:sharedFileURL
 		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: name & src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:@"shared"
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -4036,7 +4054,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"shared"
@@ -4046,19 +4064,19 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		// Query: src
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key1
 		                                                  collection:nil];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = [[transaction ext:@"relationship"] edgeCountWithName:nil
 		                                                   sourceKey:key2
 		                                                  collection:nil];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -4068,7 +4086,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 1, @"Oops");
+		XCTAssertTrue(count == 1);
 		
 		count = 0;
 		[[transaction ext:@"relationship"] enumerateEdgesWithName:nil
@@ -4078,7 +4096,7 @@
 		{
 			count++;
 		}];
-		XCTAssertTrue(count == 0, @"Oops");
+		XCTAssertTrue(count == 0);
 	}];
 	
 	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4090,8 +4108,113 @@
 	
 	[NSThread sleepForTimeInterval:1.0];
 	
-	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:sharedFilePath];
-	XCTAssertTrue(!exists2, @"Oops");
+	BOOL exists2 = [[NSFileManager defaultManager] fileExistsAtPath:[sharedFileURL path]];
+	XCTAssertTrue(!exists2);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)testDoubleEnumeration
+{
+	NSString *databasePath = [self databasePath:NSStringFromSelector(_cmd)];
+	
+	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	YapDatabase *database = [[YapDatabase alloc] initWithPath:databasePath];
+	
+	XCTAssertNotNil(database);
+	
+	YapDatabaseConnection *connection = [database newConnection];
+	
+	YapDatabaseRelationship *relationship = [[YapDatabaseRelationship alloc] init];
+	
+	BOOL registered = [database registerExtension:relationship withName:@"relationship"];
+	
+	XCTAssertTrue(registered, @"Error registering extension");
+	
+	[connection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+		
+		[transaction setObject:@"Baseball" forKey:@"baseball" inCollection:@"sports"];
+		
+		[transaction setObject:@"New York Yankees" forKey:@"yankees" inCollection:@"teams"];
+		[transaction setObject:@"Boston Red Sox"   forKey:@"redsox" inCollection:@"teams"];
+		
+		[transaction setObject:@"Mickey Mantle" forKey:@"1" inCollection:@"yankees"];
+		[transaction setObject:@"Derek Jeter"   forKey:@"2" inCollection:@"yankees"];
+		
+		[transaction setObject:@"Ted Williams" forKey:@"1" inCollection:@"redsox"];
+		[transaction setObject:@"David Ortiz"  forKey:@"2" inCollection:@"redsox"];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"teams"
+		                                  sourceKey:@"baseball"
+		                                 collection:@"sports"
+		                             destinationKey:@"yankees"
+		                                 collection:@"teams"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"teams"
+		                                  sourceKey:@"baseball"
+		                                 collection:@"sports"
+		                             destinationKey:@"redsox"
+		                                 collection:@"teams"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"yankees"
+		                                 collection:@"teams"
+		                             destinationKey:@"1"
+		                                 collection:@"yankees"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"yankees"
+		                                 collection:@"teams"
+		                             destinationKey:@"2"
+		                                 collection:@"yankees"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"redsox"
+		                                 collection:@"teams"
+		                             destinationKey:@"1"
+		                                 collection:@"redsox"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+		
+		[[transaction ext:@"relationship"] addEdge:
+		  [YapDatabaseRelationshipEdge edgeWithName:@"players"
+		                                  sourceKey:@"redsox"
+		                                 collection:@"teams"
+		                             destinationKey:@"2"
+		                                 collection:@"redsox"
+		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted]];
+	}];
+	
+	__block NSUInteger count = 0;
+	
+	[connection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		[[transaction ext:@"relationship"] enumerateEdgesWithName:@"teams"
+		                                                sourceKey:@"baseball"
+		                                               collection:@"sports"
+		                                               usingBlock:^(YapDatabaseRelationshipEdge *edge, BOOL *stop)
+		{
+			[[transaction ext:@"relationship"] enumerateEdgesWithName:@"players"
+			                                                sourceKey:edge.destinationKey
+			                                               collection:edge.destinationCollection
+			                                               usingBlock:^(YapDatabaseRelationshipEdge *_edge, BOOL *_stop)
+			{
+				count++;
+			}];
+		}];
+	}];
+	
+	XCTAssert(count == 4);
 }
 
 @end

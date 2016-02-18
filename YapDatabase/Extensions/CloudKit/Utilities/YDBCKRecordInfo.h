@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * You MUST check for this property within your recordHandler implementation.
 **/
-@property (nonatomic, strong, readonly) NSArray<NSString *> *keysToRestore;
+@property (nonatomic, strong, readonly, nullable) NSArray<NSString *> *keysToRestore;
 
 /**
  * This property comes directly from the [YapDatabaseCloudKit init...] method.

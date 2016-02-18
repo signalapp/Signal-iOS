@@ -13,10 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)sanitizedCopy;
 
 /**
- * Calling [ckRecord copy] is COMPLETELY BROKEN.
- * This is a MAJOR BUG in Apple's CloudKit framework (as I see it).
+ * There was a bug in early versions of CloudKit:
+ *
+ * Calling [ckRecord copy] was completely broken.
+ * This forced us to use a workaround.
  * 
- * Until this is fixed, we're forced to use this workaround.
+ * The bug was fixed in iOS 9.
 **/
 - (id)safeCopy;
 

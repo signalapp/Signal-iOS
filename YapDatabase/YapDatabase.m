@@ -1853,6 +1853,46 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *     the extension registration code (sometimes important for performance tuning.)
  *     If you pass nil, an internal databaseConnection will automatically be used.
  *
+ * @param completionBlock (optional)
+ *     An optional completion block may be used.
+ *     If the extension registration was successful then the ready parameter will be YES.
+ *     The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+                    connection:(nullable YapDatabaseConnection *)connection
+               completionBlock:(nullable void(^)(BOOL ready))completionBlock
+{
+	[self asyncRegisterExtension:extension
+	                    withName:extensionName
+	                  connection:connection
+	             completionQueue:NULL
+	             completionBlock:completionBlock];
+}
+
+/**
+ * Asynchronoulsy starts the extension registration process.
+ * After registration everything works automatically using just the extension name.
+ *
+ * The registration process is equivalent to an asyncReadwrite transaction.
+ * It involves persisting various information about the extension to the database,
+ * as well as possibly populating the extension by enumerating existing rows in the database.
+ * 
+ * @param extension (required)
+ *     The YapDatabaseExtension subclass instance you wish to register.
+ *     For example, this might be a YapDatabaseView instance.
+ *
+ * @param extensionName (required)
+ *     This is an arbitrary string you assign to the extension.
+ *     Once registered, you will generally access the extension instance via this name.
+ *     For example: [[transaction ext:@"myView"] numberOfGroups];
+ * 
+ * @param connection (optional)
+ *     You may optionally pass your own databaseConnection for this method to use.
+ *     This allows you to control things such as the cache size of the connection that performs
+ *     the extension registration code (sometimes important for performance tuning.)
+ *     If you pass nil, an internal databaseConnection will automatically be used.
+ *
  * @param completionQueue (optional)
  *     The dispatch_queue to invoke the completion block may optionally be specified.
  *     If NULL, dispatch_get_main_queue() is automatically used.
@@ -1982,7 +2022,6 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *
  * @param completionBlock (optional)
  *     An optional completion block may be used.
- *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
                          completionQueue:(dispatch_queue_t)completionQueue
@@ -2008,13 +2047,40 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
  *     You may optionally pass your own databaseConnection for this method to use.
  *     If you pass nil, an internal databaseConnection will automatically be used.
  *
+ * @param completionBlock (optional)
+ *     An optional completion block may be used.
+ *     The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
+**/
+- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
+                              connection:(nullable YapDatabaseConnection *)connection
+                         completionBlock:(nullable dispatch_block_t)completionBlock
+{
+	[self asyncUnregisterExtensionWithName:extensionName
+	                            connection:connection
+	                       completionQueue:NULL
+	                       completionBlock:completionBlock];
+}
+
+/**
+ * Asynchronoulsy starts the extension unregistration process.
+ *
+ * The unregistration process is equivalent to an asyncReadwrite transaction.
+ * It involves deleting various information about the extension from the database,
+ * as well as possibly dropping related tables the extension may have been using.
+ *
+ * @param extensionName (required)
+ *     This is the arbitrary string you assigned to the extension when you registered it.
+ * 
+ * @param connection (optional)
+ *     You may optionally pass your own databaseConnection for this method to use.
+ *     If you pass nil, an internal databaseConnection will automatically be used.
+ *
  * @param completionQueue (optional)
  *     The dispatch_queue to invoke the completion block may optionally be specified.
  *     If NULL, dispatch_get_main_queue() is automatically used.
  *
  * @param completionBlock (optional)
  *     An optional completion block may be used.
- *     If the extension registration was successful then the ready parameter will be YES.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
                               connection:(YapDatabaseConnection *)connection
