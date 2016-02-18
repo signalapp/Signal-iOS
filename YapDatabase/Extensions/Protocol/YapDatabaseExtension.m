@@ -80,6 +80,21 @@
 }
 
 /**
+ * Subclasses may OPTIONALLY implement this method.
+ * 
+ * This is a simple hook method to let the extension now that it's been registered with the database.
+ * This method is invoked after the readWriteTransaction (that registered the extension) has been committed.
+ * 
+ * Important:
+ *   This method is invoked within the writeQueue.
+ *   So either don't do anything expensive/time-consuming in this method, or dispatch_async to do it in another queue.
+**/
+- (void)didRegisterWithDatabase:(YapDatabase __unused *)database
+{
+	// Override me if needed
+}
+
+/**
  * Subclasses MUST implement this method IF they have dependencies.
  * This method is called during the view registration simply to record the needed dependencies.
  * If any of the dependencies are unregistered, this extension will automatically be unregistered.

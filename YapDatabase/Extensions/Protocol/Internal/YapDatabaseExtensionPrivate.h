@@ -29,9 +29,11 @@
 @property (atomic, copy, readwrite) NSString *registeredName;
 @property (atomic, weak, readwrite) YapDatabase *registeredDatabase;
 
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
 - (NSSet *)dependencies;
 - (BOOL)isPersistent;
+
+- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
+- (void)didRegisterWithDatabase:(YapDatabase *)database;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 

@@ -4852,7 +4852,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
 	           extensionName, prevExtensionClassName, extensionClassName);
 	
-    Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
+	Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
 	Class prevExtensionClass = NSClassFromString(prevExtensionClassName);
 	
 	if (prevExtensionClass == NULL)

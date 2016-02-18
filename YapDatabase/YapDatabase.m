@@ -2182,6 +2182,11 @@ NSString *const YapDatabaseNotificationKey           = @"notification";
 		connection = [self registrationConnection];
 	
 	BOOL result = [connection registerExtension:extension withName:extensionName];
+	if (result)
+	{
+		[extension didRegisterWithDatabase:self];
+	}
+	
 	return result;
 }
 
