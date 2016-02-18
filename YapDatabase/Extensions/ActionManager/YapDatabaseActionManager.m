@@ -1,9 +1,7 @@
 #import "YapDatabaseActionManager.h"
-#import "YapActionable.h"
-#import "YapActionItem.h"
-#import "YapActionItemPrivate.h"
 
-#import "YapDatabaseView.h"
+#import "YapActionItemPrivate.h"
+#import "YapDatabaseActionManagerPrivate.h"
 #import "YapDatabaseLogging.h"
 
 #import "NSDate+YapDatabase.h"
@@ -30,24 +28,67 @@
 {
 	YapDatabaseConnection *databaseConnection;
 	
-	YapDatabaseView *view;
-	NSString *viewName;
-	
 	NSMutableDictionary *actionItemsDict;
 	
 	dispatch_source_t timer;
 	dispatch_queue_t timerQueue;
 	BOOL timerSuspended;
-	
-	int isRegistered;
 }
 
 @synthesize reachability = _mustGoThroughAtomicProperty_reachability;
 @synthesize hasInternet = _mustGoThroughAtomicGetter_hasInternet;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Invalid
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)inGrouping
+                         sorting:(YapDatabaseViewSorting __unused *)inSorting
+                      versionTag:(NSString __unused *)inVersionTag
+                         options:(YapDatabaseViewOptions __unused *)inOptions
+{
+	NSString *reason = @"You must use the init method(s) specific to YapDatabaseFilteredView.";
+	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	  @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
+	  @" Thus it needs to know the registeredName of the YapDatabaseView instance you wish to filter."
+	  @" As such, YapDatabaseFilteredView has different init methods you must use."};
+	
+	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+	
+	return nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Init & Dealloc
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - (instancetype)init
 {
-	if ((self = [super init]))
+	return [self initWithOptions:nil];
+}
+
+- (instancetype)initWithOptions:(YapDatabaseViewOptions *)inOptions
+{
+	// Create and configure view
+	
+	YapDatabaseViewGrouping *groupingStub = [YapDatabaseViewGrouping withObjectBlock:
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object)
+	{
+		// Block stub - will be replaced in 'supportsDatabaseWithRegisteredExtensions:'
+		return nil;
+	}];
+	
+	YapDatabaseViewSorting *sortingStub = [YapDatabaseViewSorting withObjectBlock:
+	    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+		    NSString *collection1, NSString *key1, id obj1,
+            NSString *collection2, NSString *key2, id obj2)
+	{
+		// Block stub - will be replaced in 'supportsDatabaseWithRegisteredExtensions:'
+		return NSOrderedSame;
+	}];
+	
+	if ((self = [super initWithGrouping:groupingStub sorting:sortingStub versionTag:nil options:inOptions]))
 	{
 		actionItemsDict = [[NSMutableDictionary alloc] init];
 	}
@@ -60,204 +101,140 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Registration
+#pragma mark YapDatabaseExtension Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)registerWithDatabase:(YapDatabase *)database usingName:(NSString *)name
+/**
+ * YapDatabaseExtension subclasses may OPTIONALLY implement this method.
+ *
+ * This method is called during the extension registration process to enusre the extension (as configured)
+ * will support the given database configuration. This is primarily for extensions with dependecies.
+ *
+ * For example, the YapDatabaseFilteredView is configured with the registered name of a parent View instance.
+ * So that class should implement this method to ensure:
+ * - The parentView actually exists
+ * - The parentView is actually a YapDatabaseView class/subclass
+ *
+ * When this method is invoked, the 'self.registeredName' & 'self.registeredDatabase' properties
+ * will be set and available for inspection.
+ *
+ * @param registeredExtensions
+ *   The current set of registered extensions. (i.e. self.registeredDatabase.registeredExtensions)
+ *
+ * Return YES if the class/instance supports the database configuration.
+**/
+- (BOOL)supportsDatabaseWithRegisteredExtensions:(NSDictionary<NSString*, YapDatabaseExtension*> *)registeredExtensions
 {
-	if (![self _preRegistration:database usingName:name]) return NO;
+	// Only 1 relationship extension is supported at a time.
 	
-	BOOL ready = [database registerExtension:view withName:name connection:databaseConnection];
+	__block BOOL supported = YES;
 	
-	[self _postRegistration:database result:ready];
-	
-	return ready;
-}
-
-- (void)asyncRegisterWithDatabase:(YapDatabase *)database
-                        usingName:(NSString *)name
-                  completionBlock:(void(^)(BOOL ready))completionBlock
-{
-	[self asyncRegisterWithDatabase:database
-	                      usingName:name
-	                completionQueue:NULL
-	                completionBlock:completionBlock];
-}
-
-- (void)asyncRegisterWithDatabase:(YapDatabase *)database
-                        usingName:(NSString *)name
-                  completionQueue:(dispatch_queue_t)completionQueue
-			      completionBlock:(void(^)(BOOL ready))completionBlock
-{
-	if (![self _preRegistration:database usingName:name])
-	{
-		if (completionBlock)
+	[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id __unused key, id obj, BOOL *stop) {
+		
+		if ([obj isKindOfClass:[YapDatabaseActionManager class]])
 		{
-			if (completionQueue == NULL)
-				completionQueue = dispatch_get_main_queue();
+			YDBLogWarn(@"Only 1 YapDatabaseActionManager instance is supported at a time");
 			
-			dispatch_async(completionQueue, ^{ @autoreleasepool {
-				completionBlock(NO);
-			}});
+			supported = NO;
+			*stop = YES;
 		}
-		
-		return;
-	}
-	
-	[database asyncRegisterExtension:view
-							withName:viewName
-						  connection:databaseConnection
-					 completionQueue:completionQueue
-					 completionBlock:^(BOOL ready)
-	{
-		[self _postRegistration:database result:ready];
-		
-		if (completionBlock)
-			completionBlock(ready);
 	}];
-}
-
-- (BOOL)_preRegistration:(YapDatabase *)database usingName:(NSString *)name
-{
-	// Set atomic value.
-	// If already set, then this instance is already registered.
 	
-	int const oldValue = 0;
-	int const newValue = 1;
+	if (!supported) return NO;
 	
-	if (!OSAtomicCompareAndSwapInt(oldValue, newValue, &isRegistered))
-	{
-		return NO;
-	}
+	// Now that we know what the extension name is,
+	// we can replace grouping & sorting "stubs" with the real thing.
 	
-	// Create and configure databaseConnection
+	NSString *extName = self.registeredName;
 	
-	databaseConnection = [database newConnection];
-	databaseConnection.name = @"YapDatabaseActionManager";
-	databaseConnection.metadataCacheEnabled = NO;
-	
-	if (databaseConnection == nil) return NO;
-	
-	// Create and configure view
-	
-	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:
+	grouping = [YapDatabaseViewGrouping withObjectBlock:
 	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object)
 	{
-		if ([object conformsToProtocol:@protocol(YapActionable)])
-		{
-			BOOL hasActionItems = NO;
-			
-			if ([object respondsToSelector:@selector(hasYapActionItems)])
-			{
-				hasActionItems = [(id <YapActionable>)object hasYapActionItems];
-			}
-			else
-			{
-				NSArray<YapActionItem*> *actionItems = [(id <YapActionable>)object yapActionItems];
-				hasActionItems = (actionItems.count > 0);
-			}
-			
-			if (hasActionItems)
-			{
-				return @"";
-			}
-		}
-        
-		return nil; // exclude from view
+		YapDatabaseActionManagerTransaction *ext = [transaction ext:extName];
+		
+		NSArray<YapActionItem*> *actionItems = [ext actionItemsForKey:key inCollection:collection];
+		
+		if (actionItems.count > 0)
+			return @"";
+		else
+			return nil; // exclude from view
 	}];
 	
-	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	sorting = [YapDatabaseViewSorting withObjectBlock:
 	    ^(YapDatabaseReadTransaction *transaction, NSString *group,
 		    NSString *collection1, NSString *key1, id obj1,
             NSString *collection2, NSString *key2, id obj2)
 	{
-		NSDate* (^GetEarliestActionItemDate)(id <YapActionable> item);
-		GetEarliestActionItemDate = ^NSDate *(id <YapActionable> item){
+		YapDatabaseActionManagerTransaction *ext = [transaction ext:extName];
 		
-			NSDate *earliestActionItemDate = nil;
-			
-			if ([item respondsToSelector:@selector(earliestYapActionItemDate)])
-			{
-				earliestActionItemDate = [item earliestYapActionItemDate];
-			}
-			
-			if (earliestActionItemDate == nil)
-			{
-				NSArray<YapActionItem*> *actionItems = [(id <YapActionable>)item yapActionItems];
-				
-				NSArray<YapActionItem*> *sorted = [actionItems sortedArrayUsingSelector:@selector(compare:)];
-				earliestActionItemDate = [[sorted firstObject] date];
-			}
-			
-			if (earliestActionItemDate == nil)
-			{
-				YDBLogWarn(@"Unable to determine earliestActionDate for item: %@", item);
-				earliestActionItemDate = [NSDate dateWithTimeIntervalSinceReferenceDate:0.0];
-			}
-			
-			return earliestActionItemDate;
-		};
+		NSArray<YapActionItem*> *actionItemsSorted1 = [ext actionItemsForKey:key1 inCollection:collection1];
+		NSArray<YapActionItem*> *actionItemsSorted2 = [ext actionItemsForKey:key2 inCollection:collection2];
 		
-		NSDate *actionDate1 = GetEarliestActionItemDate((id <YapActionable>)obj1);
-		NSDate *actionDate2 = GetEarliestActionItemDate((id <YapActionable>)obj2);
+		NSDate *actionDate1 = [[actionItemsSorted1 firstObject] date];
+		NSDate *actionDate2 = [[actionItemsSorted2 firstObject] date];
+		
+		if (actionDate1 == nil)
+		{
+			YDBLogWarn(@"Unable to determine earliest actionItem.date for object: %@", obj1);
+			actionDate1 = [NSDate dateWithTimeIntervalSinceReferenceDate:0.0];
+		}
+		
+		if (actionDate2 == nil)
+		{
+			YDBLogWarn(@"Unable to determine earliest actionItem.date for object: %@", obj2);
+			actionDate2 = [NSDate dateWithTimeIntervalSinceReferenceDate:0.0];
+		}
 		
 		return [actionDate1 compare:actionDate2];
 	}];
 	
-	view = [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                         sorting:sorting
-	                                      versionTag:@"1"];
-	
-	viewName = [name copy];
+	versionTag = @"1";
 	
 	return YES;
 }
 
-- (void)_postRegistration:(YapDatabase *)database result:(BOOL)ready
+/**
+ * YapDatabaseExtension subclasses may OPTIONALLY implement this method.
+ *
+ * This is a simple hook method to let the extension now that it's been registered with the database.
+ * This method is invoked after the readWriteTransaction (that registered the extension) has been committed.
+ *
+ * Important:
+ *   This method is invoked within the writeQueue.
+ *   So either don't do anything expensive/time-consuming in this method, or dispatch_async to do it in another queue.
+**/
+- (void)didRegisterExtension
 {
-	if (ready)
+	Reachability *reachability = self.reachability;
+	if (reachability == nil)
 	{
-		Reachability *reachability = self.reachability;
-		if (reachability == nil)
-		{
-			reachability = [Reachability reachabilityForInternetConnection];
-			self.reachability = reachability;
-		}
-		
-		[reachability startNotifier]; // safe to be called multiple times
-		self.hasInternet = reachability.isReachable;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-		                                         selector:@selector(reachabilityChanged:)
-		                                             name:kReachabilityChangedNotification
-		                                           object:reachability];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-		                                         selector:@selector(databaseModified:)
-		                                             name:YapDatabaseModifiedNotification
-		                                           object:database];
-		
-		// We're all ready to go.
-		// Start the engine !
-		//
-		[self checkForActions_init];
-		
+		reachability = [Reachability reachabilityForInternetConnection];
+		self.reachability = reachability;
 	}
-	else // if (!ready)
-	{
-		// teardown instance variable
-		
-		databaseConnection = nil;
-		view = nil;
-		viewName = nil;
-		
-		// unset registration flag
-		
-		int const oldValue = 1;
-		int const newValue = 0;
-		
-		(void)OSAtomicCompareAndSwapInt(oldValue, newValue, &isRegistered);
-	}
+	
+	[reachability startNotifier]; // safe to be called multiple times
+	self.hasInternet = reachability.isReachable;
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(reachabilityChanged:)
+	                                             name:kReachabilityChangedNotification
+	                                           object:reachability];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+	                                         selector:@selector(databaseModified:)
+	                                             name:YapDatabaseModifiedNotification
+	                                           object:self.registeredDatabase];
+	
+	// We're all ready to go.
+	// Start the engine !
+	//
+	databaseConnection = [self.registeredDatabase newConnection];
+	[self checkForActions_init];
+}
+
+- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)connection
+{
+	return [[YapDatabaseActionManagerConnection alloc] initWithView:self databaseConnection:connection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,6 +245,8 @@
 {
 	// We can check to see if the changes had any impact on our views.
 	// If not we can skip the unnecessary processing.
+	
+	NSString *viewName = self.registeredName;
 	
 	if ([[databaseConnection ext:viewName] hasChangesForNotifications:@[ notification ]])
 	{
@@ -359,6 +338,8 @@
 {
 	NSArray *dbNotifications = dbModifiedNotification ? @[ dbModifiedNotification ] : nil;
 	NSDate *now = [NSDate date];
+	
+	NSString *viewName = self.registeredName;
 	
 	NSMutableSet *collectionKeysNotChecked = [NSMutableSet setWithArray:actionItemsDict.allKeys];
 	

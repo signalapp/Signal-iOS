@@ -1,8 +1,10 @@
 #import <Foundation/Foundation.h>
 
-#import "YapDatabase.h"
 #import "YapActionable.h"
 #import "YapActionItem.h"
+#import "YapDatabaseActionManagerConnection.h"
+#import "YapDatabaseActionManagerTransaction.h"
+#import "YapDatabaseView.h"
 
 #import <Reachability/Reachability.h>
 
@@ -28,9 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
  * - refreshing items when they've become "stale"
  *   e.g.: periodically updating user infromation from the server
 **/
-@interface YapDatabaseActionManager : NSObject
+@interface YapDatabaseActionManager : YapDatabaseView
 
 - (instancetype)init;
+- (instancetype)initWithOptions:(nullable YapDatabaseViewOptions *)options;
 
 /**
  * YapDatabaseActionManager relies on a reachability instance to monitory for internet connectivity.
@@ -40,26 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
  * via [Reachability reachabilityForInternetConnection].
 **/
 @property (atomic, strong, readwrite, nullable) Reachability *reachability;
-
-/**
- * YapDatabaseActionManager isn't technically a plug-in for the database, but rather a utility.
- * 
- * However, it does use a YapDatabaseView internally to sort all the objects that have associated YapActionItems.
- * So this internal view needs to be properly registered.
- * 
- * Once the internal view is registered, YapDatabaseActionManager begins doing its thing.
-**/
-
-- (BOOL)registerWithDatabase:(YapDatabase *)database usingName:(NSString *)name;
-
-- (void)asyncRegisterWithDatabase:(YapDatabase *)database
-                        usingName:(NSString *)name
-                  completionBlock:(nullable void(^)(BOOL ready))completionBlock;
-
-- (void)asyncRegisterWithDatabase:(YapDatabase *)database
-					    usingName:(NSString *)extensionName
-			      completionQueue:(nullable dispatch_queue_t)completionQueue
-			      completionBlock:(nullable void(^)(BOOL ready))completionBlock;
 
 @end
 
