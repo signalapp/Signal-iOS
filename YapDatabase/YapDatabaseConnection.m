@@ -3613,27 +3613,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		registeredMemoryTables = changeset_registeredMemoryTables;
 	}
 	
-	// Allow extensions to process their individual changesets
-	
-	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
-	if (changeset_extensions)
-	{
-		// Use existing extensions (extensions ivar, not [self extensions]).
-		// There's no need to create any new extConnections at this point.
-		
-		[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL __unused *stop) {
-			
-			__unsafe_unretained YapDatabaseExtensionConnection *extConnection = extConnectionObj;
-			
-			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
-			if (changeset_extensions_extName)
-			{
-				[extConnection processChangeset:changeset_extensions_extName];
-			}
-		}];
-	}
-	
-	// Process normal database changset information
+	// Process normal database changeset information
 	
 	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:YapDatabaseObjectChangesKey];
 	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:YapDatabaseMetadataChangesKey];
@@ -3995,7 +3975,19 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	              (unsigned long)changesetSnapshot, self, database);
 	
 	snapshot = changesetSnapshot;
+	
 	[self processChangeset:changeset];
+	
+	// Allow extensions to process their individual changesets
+	//
+	// Use existing extensions (extensions ivar, not [self extensions]).
+	// There's no need to create any new extConnections at this point.
+		
+	[extensions enumerateKeysAndObjectsUsingBlock:
+	    ^(NSString *extName, YapDatabaseExtensionConnection *extConnection, BOOL __unused *stop)
+	{
+		[extConnection noteCommittedChangeset:changeset registeredName:extName];
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

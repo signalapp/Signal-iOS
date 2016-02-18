@@ -134,6 +134,38 @@
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
 
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * The default implementation likely does the right thing for most extensions.
+ * That is, most extensions only need the information they store in the changeset.
+ * However, the full changeset also contains information about what was changed in the main database table:
+ * - YapDatabaseObjectChangesKey
+ * - YapDatabaseMetadataChangesKey
+ * - YapDatabaseRemovedKeysKey
+ * - YapDatabaseRemovedCollectionsKey
+ * - YapDatabaseAllKeysRemovedKey
+ * 
+ * So if the extension needs this information, it's better to re-use what's already available,
+ * rather than have the extension duplicate the same information within its local changeset.
+ * 
+ * @param changeset
+ *   The FULL changeset dictionary, including the core changeset info,
+ *   as well as the changeset info for every registered extension.
+ * 
+ * @param registeredName
+ *   The registeredName of the extension.
+ *   This is the same as parent.registeredName, and is simply passed as a convenience.
+**/
+- (void)noteCommittedChangeset:(NSDictionary *)changeset registeredName:(NSString *)registeredName
+{
+	NSDictionary *ext_changeset = [[changeset objectForKey:YapDatabaseExtensionsKey] objectForKey:registeredName];
+	if (ext_changeset)
+	{
+		[self processChangeset:ext_changeset];
+	}
+}
+
 #pragma mark Generic Accessor
 
 /**

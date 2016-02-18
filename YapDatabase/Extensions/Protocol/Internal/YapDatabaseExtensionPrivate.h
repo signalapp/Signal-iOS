@@ -16,32 +16,25 @@
 
 @interface YapDatabaseExtension ()
 
-// See YapDatabaseExtension.m for discussion of this method
+/**
+ * See YapDatabaseExtension.m for discussion of these methods.
+**/
+
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                       wasPersistent:(BOOL)wasPersistent;
 
-// See YapDatabaseExtension.m for discussion of this method
 + (NSArray *)previousClassNames;
 
-// See YapDatabaseExtension.m for discussion of these method.
-// You should consider them READ-ONLY.
 @property (atomic, copy, readwrite) NSString *registeredName;
 @property (atomic, weak, readwrite) YapDatabase *registeredDatabase;
 
-// See YapDatabaseExtension.m for discussion of this method
 - (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions;
-
-// See YapDatabaseExtension.m for discussion of this method
 - (NSSet *)dependencies;
-
-// See YapDatabaseExtension.m for discussion of this method
 - (BOOL)isPersistent;
 
-// See YapDatabaseExtension.m for discussion of this method
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection;
 
-// See YapDatabaseExtension.m for discussion of this method
 - (void)processChangeset:(NSDictionary *)changeset;
 
 @end
@@ -52,23 +45,24 @@
 
 @interface YapDatabaseExtensionConnection ()
 
-// See YapDatabaseExtensionConnection.m for discussion of this method
+/**
+ * See YapDatabaseExtensionConnection.m for discussion of these methods
+**/
+
 - (YapDatabaseExtension *)extension;
 
-// See YapDatabaseExtensionConnection.m for discussion of this method
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction;
 
-// See YapDatabaseExtensionConnection.m for discussion of this method
 - (void)_flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 
-// See YapDatabaseExtensionConnection.m for discussion of this method
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr
            externalChangeset:(NSMutableDictionary **)externalPtr
               hasDiskChanges:(BOOL *)hasDiskChangesPtr;
 
-// See YapDatabaseExtensionConnection.m for discussion of this method
+
 - (void)processChangeset:(NSDictionary *)changeset;
+- (void)noteCommittedChangeset:(NSDictionary *)changeset registeredName:(NSString *)registeredName;
 
 @end
 
@@ -78,26 +72,20 @@
 
 @interface YapDatabaseExtensionTransaction ()
 
-// See YapDatabaseExtensionTransaction.m for discussion of this method
+/**
+ * See YapDatabaseExtensionTransaction.m for discussion of these methods
+**/
+
 - (YapDatabaseExtensionConnection *)extensionConnection;
 - (YapDatabaseReadTransaction *)databaseTransaction;
 
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (BOOL)createIfNeeded;
-
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (BOOL)prepareIfNeeded;
 
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (BOOL)flushPendingChangesToMainDatabaseTable;
-
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (void)flushPendingChangesToExtensionTables;
 
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (void)didCommitTransaction;
-
-// See YapDatabaseExtensionTransaction.m for discussion of this method
 - (void)didRollbackTransaction;
 
 #pragma mark Hooks
