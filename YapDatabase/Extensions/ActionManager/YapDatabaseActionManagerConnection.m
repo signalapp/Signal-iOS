@@ -80,7 +80,7 @@
 	}
 	else
 	{
-		for (YapCollectionKey *ck in [objectChanges objectEnumerator])
+		for (YapCollectionKey *ck in [objectChanges keyEnumerator])
 		{
 			[actionItemsCache removeObjectForKey:ck];
 		}
