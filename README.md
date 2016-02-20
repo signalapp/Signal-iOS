@@ -14,11 +14,14 @@ Instructions on how to setup your development environment and build Signal-iOS c
 
 If you're new to the Signal-iOS codebase, we recommend going through our issues and picking out a simple bug to fix (check the "easy" label in our issues) in order to get yourself familiar.
 
-For larger changes and feature ideas, we ask that you propose it on the mailing list for a high-level discussion before implementation.
+For larger changes and feature ideas, we ask that you propose it on the [unofficial Community Forum](https://whispersystems.discoursehosting.net) for a high-level discussion with the wider community before implementation.
 
 This repository is set up with [BitHub](https://whispersystems.org/blog/bithub/), so you can make money for committing to Signal-iOS. The current BitHub price for an accepted pull request is:
 
 [![Current BitHub Price](https://bithub.herokuapp.com/v1/status/payment/commit/)](https://whispersystems.org/blog/bithub/)
+
+## Contributing Ideas
+Have something you want to say about Open Whisper Systems projects or want to be part of the conversation? Get involved in the [community forum](https://whispersystems.discoursehosting.net).
 
 ## Cryptography Notice
 
@@ -31,6 +34,6 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Copyright 2014 Open Whisper Systems
+Copyright 2014-2016 Open Whisper Systems
 
 Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
