@@ -92,10 +92,46 @@ typedef NS_ENUM(NSInteger, YDB_NotifyReason) {
  * and the edge has a notify rule associated with it (YDB_NotifyIfSourceDeleted or YDB_NotifyIfDestinationDeleted),
  * then this method may be invoked on the remaining node.
  * 
- * It doesn't matter which side created the edge (the source or destination side).
- * If the rule exists, and the remaining side implements this particular
+ * For example, if YDB_NotifyIfDestinationDeleted is specified, and the destination node is deleted,
+ * and the source node implements this method, then this method will be invoked on the remaining source node.
+ * 
+ * This method is designed to support "weak" references.
+ * For example:
+ * 
+ *   A source node might contain a property named "cachedServerResponse", which points to a cached response object
+ *   that's stored in the database. However, this cached object may be deleted at any time for various reasones
+ *   (e.g. becomes stale, access token expiration, user logout). The desire is for the sourceNode.cachedServerResponse
+ *   property to be automatically set to nil if/when the "cachedServerResponse" object is deleted from the database.
+ *   This method helps automate that.
+ * 
+ *   Simply create a relationship between the source node and the "cachedServerResponse" object, and set the
+ *   YDB_NotifyIfDestinationDeleted flag on the edge. Then, when the "cachedServerResponse" object is deleted,
+ *   this method is automatically invoked on the source node. At that point, the source node simply sets its
+ *   "cachedServerResponse" property to nil, and return self.
+ * 
+ * @return
+ *   If you return an object, that object automatically replaces the previous object in the database.
+ *   Specifically, the code invokes 'replaceObject:forKey:inCollection:'.
+ *   I.E. the object is replaced, but any existing metadata remains as is.
+ *   
+ *   If you return nil, then nothing happens.
+ * 
+ * The recommended way of implementing this method is typically something like this:
+ * 
+ * - (id)yapDatabaseRelationshipEdgeDeleted:(YapDatabaseRelationshipEdge *)edge withReason:(YDB_NotifyReason)reason
+ * {
+ *     if ([edge.name isEqualToString:@"cachedServerResponse"])
+ *     {
+ *         id copy = [self copy];
+ *         copy.cachedServerResponse = nil;
+ *         return copy;
+ *     }
+ *
+ *     return nil;
+ * }
 **/
-- (id)yapDatabaseRelationshipEdgeDeleted:(YapDatabaseRelationshipEdge *)edge withReason:(YDB_NotifyReason)reason;
+- (nullable id)yapDatabaseRelationshipEdgeDeleted:(YapDatabaseRelationshipEdge *)edge
+                                       withReason:(YDB_NotifyReason)reason;
 
 @end
 
