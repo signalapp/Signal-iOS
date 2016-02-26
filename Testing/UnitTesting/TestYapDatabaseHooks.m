@@ -181,6 +181,7 @@
 	hooks.didRemoveRow = didRemoveRow;
 	hooks.willRemoveAllRows = willRemoveAllRows;
 	hooks.didRemoveAllRows = didRemoveAllRows;
+	hooks.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObjects:@"+", @"-", nil]];
 	
 	BOOL result = [database registerExtension:hooks withName:@"hooks"];
 	XCTAssert(result, @"Bad registration");
@@ -196,6 +197,8 @@
 		[transaction setObject:@"2" forKey:@"2" inCollection:@"+"  withMetadata:@"2"];
 		[transaction setObject:@"3" forKey:@"3" inCollection:@"+"  withMetadata:@"3"];
 		[transaction setObject:@"4" forKey:@"4" inCollection:@"-" withMetadata:@"4"];
+		// Insert row for collection not in whitelist
+		[transaction setObject:@"5" forKey:@"5" inCollection:@"x" withMetadata:@"5"];
 		
 		// Modify 3 rows
 		
@@ -204,12 +207,16 @@
 		[transaction setObject:@"0b" forKey:@"0" inCollection:@"+" withMetadata:@"0b"];
 		[transaction setObject:@"1b" forKey:@"1" inCollection:@"+" withMetadata:@"1b"];
 		[transaction setObject:@"2b" forKey:@"2" inCollection:@"+" withMetadata:@"2b"];
+		// Modify row for collection not in whitelist
+		[transaction setObject:@"5b" forKey:@"5" inCollection:@"x" withMetadata:@"5b"];
 		
 		// Modify object only
 		
 		expectedFlags = YapDatabaseHooksUpdatedRow | YapDatabaseHooksChangedObject;
 		
 		[transaction replaceObject:@"3" forKey:@"3" inCollection:@"+"];
+		// Modify object for collection not in whitelist
+		[transaction setObject:@"5b" forKey:@"5" inCollection:@"x"];
 		
 		// Modify metadata only
 		
@@ -217,9 +224,15 @@
 		
 		[transaction replaceMetadata:@"4b" forKey:@"4" inCollection:@"-"];
 		
+		// Modify metadata for collection not in whitelist
+		[transaction replaceMetadata:@"5b" forKey:@"5" inCollection:@"x"];
+		
 		// Remove 1 row
 		
 		[transaction removeObjectForKey:@"0" inCollection:nil];
+		
+		// Remove row in collection not in whitelist
+		[transaction removeObjectForKey:@"5" inCollection:@"x"];
 		
 		// Remove 2 more rows
 		
