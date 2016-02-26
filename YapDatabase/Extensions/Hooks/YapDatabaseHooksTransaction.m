@@ -102,6 +102,13 @@
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -143,6 +150,13 @@
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -182,6 +196,13 @@
            forCollectionKey:(YapCollectionKey *)ck
                   withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -220,6 +241,13 @@
              forCollectionKey:(YapCollectionKey *)ck
                     withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -253,6 +281,13 @@
 **/
 - (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -286,6 +321,13 @@
 **/
 - (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -319,6 +361,13 @@
 **/
 - (void)handleTouchRowForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidModifyRow didModifyRow = parentConnection->parent.didModifyRow;
 	if (didModifyRow)
 	{
@@ -352,6 +401,13 @@
 **/
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidRemoveRow didRemoveRow = parentConnection->parent.didRemoveRow;
 	if (didRemoveRow)
 	{
@@ -379,6 +435,13 @@
 **/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
+	{
+		return;
+	}
+	
 	YDBHooks_DidRemoveRow didRemoveRow = parentConnection->parent.didRemoveRow;
 	if (didRemoveRow)
 	{
@@ -429,6 +492,13 @@
               forCollectionKey:(YapCollectionKey *)ck
                   withMetadata:(id)metadata
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillModifyRow willModifyRow = parentConnection->parent.willModifyRow;
 	if (willModifyRow)
 	{
@@ -470,6 +540,13 @@
                   withMetadata:(id)metadata
                          rowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillModifyRow willModifyRow = parentConnection->parent.willModifyRow;
 	if (willModifyRow)
 	{
@@ -509,6 +586,13 @@
                forCollectionKey:(YapCollectionKey *)ck
                       withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillModifyRow willModifyRow = parentConnection->parent.willModifyRow;
 	if (willModifyRow)
 	{
@@ -548,6 +632,13 @@
                  forCollectionKey:(YapCollectionKey *)ck
                         withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillModifyRow willModifyRow = parentConnection->parent.willModifyRow;
 	if (willModifyRow)
 	{
@@ -582,6 +673,13 @@
 **/
 - (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillRemoveRow willRemoveRow = parentConnection->parent.willRemoveRow;
 	if (willRemoveRow)
 	{
@@ -609,6 +707,13 @@
 **/
 - (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
+	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
+	{
+		return;
+	}
+	
 	YDBHooks_WillRemoveRow willRemoveRow = parentConnection->parent.willRemoveRow;
 	if (willRemoveRow)
 	{
