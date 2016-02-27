@@ -6,7 +6,7 @@ pids=()
 rm -f db.yap
 rm -f combined.out
 
-# Run 4 parallel instances of the MultiprocessApp process which write and read from the database concurrently
+# Run instances of the MultiprocessApp process which write and read from the database concurrently
 # Kill them after 10 seconds, and sort the output to make sure they all see the writes in correct order
 
 for process in $processes
@@ -14,6 +14,7 @@ do
     rm -f $process.out
     if [[ "A" == $process ]]
     then
+# Instance "A" has the special flag
         (./MultiprocessApp $process --special 2> $process.out) &
     else
         (./MultiprocessApp $process 2> $process.out) &
@@ -29,4 +30,4 @@ do
     kill $pid
 done;
 
-cat {A,B}.out | sort > combined.out
+cat `python -c "import sys,re;[sys.stdout.write(re.sub('$', '.out ', line)) for line in sys.argv[1:]]" $processes` | sort > combined.out
