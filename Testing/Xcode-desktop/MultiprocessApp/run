@@ -34,7 +34,6 @@ done;
 cat `python -c "import sys,re;[sys.stdout.write(re.sub('$', '.out ', line)) for line in sys.argv[1:]]" $processes` | sort > combined.out
 cat <<EOS > script.py
 import sys, re
-print sys.argv
 process_names = sys.argv[1].split(" ")
 process_pids = sys.argv[2].split(" ")
 process_by_pid = dict(zip(process_pids, process_names))
@@ -43,4 +42,4 @@ for line in open("combined.out"):
         line = re.sub('\\[{}:'.format(pid), '[{}:'.format(name), line)
     print(line)
 EOS
-python script.py "$processes" "$pids" > combined.out
+python script.py "$processes" "$pids" > combined_renamed.out
