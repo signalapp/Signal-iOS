@@ -12,11 +12,11 @@ rm -f combined.out
 for process in $processes
 do
     rm -f $process.out
-    if [[ process -eq "A" ]]
+    if [[ "A" == $process ]]
     then
         (./MultiprocessApp $process --special 2> $process.out) &
     else
-        (./MultiprocessApp $process --special 2> $process.out) &
+        (./MultiprocessApp $process 2> $process.out) &
     fi
     pids+=$!
 done;
@@ -29,4 +29,4 @@ do
     kill $pid
 done;
 
-cat {A,B,C,D}.out | sort > combined.out
+cat {A,B}.out | sort > combined.out
