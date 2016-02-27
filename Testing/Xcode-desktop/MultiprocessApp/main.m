@@ -22,7 +22,7 @@ int main(int argc, const char * argv[]) {
     }
     
     if (argc == 3) {
-        NSLog(@"Special flag");
+        NSLog(@"Special flag set");
         specialBehavior = true;
     }
     
