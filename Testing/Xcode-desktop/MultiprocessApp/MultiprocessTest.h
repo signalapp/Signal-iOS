@@ -10,6 +10,6 @@
 
 @interface MultiprocessTest : NSObject
 
--(void)run:(NSString*)name;
+-(void)run:(NSString*)name specialBehavior:(BOOL)specialBehavior;
 
 @end

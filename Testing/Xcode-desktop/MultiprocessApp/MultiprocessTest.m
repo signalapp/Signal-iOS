@@ -55,8 +55,8 @@ static int counter = 1;
     
     YapDatabaseConnection* connection1 = [db newConnection];
     YapDatabaseConnection* connection2 = [db newConnection];
-    YapDatabaseConnection* connection3 = [db newConnection];
-    YapDatabaseConnection* connection4 = [db newConnection];
+    //YapDatabaseConnection* connection3 = [db newConnection];
+    //YapDatabaseConnection* connection4 = [db newConnection];
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
         while (true) {
@@ -136,10 +136,10 @@ static int counter = 1;
 }
 
 
-- (void)run:(NSString *)name {
+- (void)run:(NSString *)name specialBehavior:(BOOL)specialBehavior {
     NSRunLoop* runLoop = [NSRunLoop currentRunLoop];
     
-    [self _run:name];
+    [self _run:name specialBehavior:specialBehavior];
     
     while([runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]) {
     }
