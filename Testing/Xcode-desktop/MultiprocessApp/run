@@ -43,4 +43,4 @@ for line in open("combined.out"):
         line = re.sub('\\[{}:'.format(pid), '[{}:'.format(name), line)
     print(line)
 EOS
-python script.py "$processes" "$pids"
+python script.py "$processes" "$pids" > combined.out
