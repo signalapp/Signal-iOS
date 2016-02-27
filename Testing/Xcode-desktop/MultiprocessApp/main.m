@@ -12,6 +12,8 @@
 int main(int argc, const char * argv[]) {
     
     NSString *name;
+    BOOL specialBehavior = false;
+    
     if (argc <= 1) {
         name = @"A";
     }
@@ -19,9 +21,13 @@ int main(int argc, const char * argv[]) {
         name = [NSString stringWithUTF8String:argv[1]];
     }
     
+    if (argc == 3) {
+        specialBehavior = true;
+    }
+    
     @autoreleasepool {
         MultiprocessTest* test = [[MultiprocessTest alloc] init];
-        [test run:name];
+        [test run:name specialBehavior:specialBehavior];
     }
     return 0;
 }
