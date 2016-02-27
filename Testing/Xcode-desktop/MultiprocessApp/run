@@ -40,6 +40,6 @@ process_by_pid = dict(zip(process_pids, process_names))
 for line in open("combined.out"):
     for pid, name in process_by_pid.iteritems():
         line = re.sub('\\[{}:'.format(pid), '[{}:'.format(name), line)
-    print(line)
+    print(line.strip())
 EOS
 python script.py "$processes" "$pids" > combined_renamed.out
