@@ -22,7 +22,7 @@ do
     pids+=$!
 done;
 
-sleep 2
+sleep 10
 
 for pid in $pids
 do
