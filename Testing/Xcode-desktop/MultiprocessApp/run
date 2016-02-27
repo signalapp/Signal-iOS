@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-processes=(A B C D)
+processes=(A B)
 pids=()
 
 rm -f db.yap
@@ -12,7 +12,12 @@ rm -f combined.out
 for process in $processes
 do
     rm -f $process.out
-    (./MultiprocessApp $process 2> $process.out) &
+    if [[ process -eq "A" ]]
+    then
+        (./MultiprocessApp $process --special 2> $process.out) &
+    else
+        (./MultiprocessApp $process --special 2> $process.out) &
+    fi
     pids+=$!
 done;
 
