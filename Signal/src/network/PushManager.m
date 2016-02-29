@@ -359,7 +359,7 @@
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
     messageCategory.identifier                         = Signal_Full_New_Message_Category;
     [messageCategory setActions:@[ action_markRead, action_reply ] forContext:UIUserNotificationActionContextMinimal];
-    [messageCategory setActions:@[] forContext:UIUserNotificationActionContextDefault];
+    [messageCategory setActions:@[ action_markRead, action_reply ] forContext:UIUserNotificationActionContextDefault];
 
     return messageCategory;
 }
