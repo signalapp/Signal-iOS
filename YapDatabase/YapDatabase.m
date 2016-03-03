@@ -1385,10 +1385,10 @@ static int connectionBusyHandler(void *ptr, int count) {
     sqlite3_stmt *statement;
     
     const char *stmt = "SELECT \"data\" FROM \"yap2\" WHERE \"extension\" = ? AND \"key\" = ?;";
-    
+	
+    int const column_idx_data    = SQLITE_COLUMN_START;
     int const bind_idx_extension = SQLITE_BIND_START + 0;
     int const bind_idx_key       = SQLITE_BIND_START + 1;
-    int const bind_idx_data      = SQLITE_BIND_START + 2;
     
     uint64_t result = 0;
     
@@ -1408,7 +1408,7 @@ static int connectionBusyHandler(void *ptr, int count) {
         status = sqlite3_step(statement);
         if (status == SQLITE_ROW)
         {
-            result = (uint64_t)sqlite3_column_int64(statement, SQLITE_COLUMN_START);
+            result = (uint64_t)sqlite3_column_int64(statement, column_idx_data);
         }
         else if (status == SQLITE_ERROR)
         {
@@ -1418,8 +1418,6 @@ static int connectionBusyHandler(void *ptr, int count) {
         
         sqlite3_finalize(statement);
     }
-    
-    // @Robbie: in case of error, what should we do ? zero snapshot may cause errors later
     
     return result;
 }

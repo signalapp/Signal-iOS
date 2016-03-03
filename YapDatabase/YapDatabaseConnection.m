@@ -69,16 +69,21 @@ static void yapNotifyDidRead(yap_file *file)
 }
 
 
-static int connectionBusyHandler(void *ptr, int count) {
-    YapDatabaseConnection* currentConnection = (__bridge YapDatabaseConnection*)ptr;
-    
-    usleep(50*1000); // sleep 50ms
-    
-    if (count % 4 == 1) { // log every 4th attempt but not the first one
-        YDBLogWarn(@"Cannot obtain busy lock on SQLite from connection (%p), is another process locking the database? Retrying in 50ms...", currentConnection);
-    }
-    
-    return 1;
+static int connectionBusyHandler(void *ptr, int count)
+{
+	__unsafe_unretained YapDatabaseConnection *connection = (__bridge YapDatabaseConnection *)ptr;
+	
+	// sleep 50 milliseconds
+	int millis = 50;
+	usleep(millis * 1000);
+	
+	// log every 250 milliseconds
+	if ((count >= 4) && (count % 4 == 0)) {
+   	YDBLogWarn(@"Delay obtaining SQLite lock on connection (%p): %d milliseconds."
+		           @" Is another process locking the database?", connection, (millis * (count+1)));
+	}
+	
+	return 1;
 }
 
 @implementation YapDatabaseConnection {
@@ -310,22 +315,28 @@ static int connectionBusyHandler(void *ptr, int count) {
 				
 				sqlite3_wal_autocheckpoint(db, 0);
 				
-				// Edge case workaround.
+				// Install busy handler.
 				//
-				// If there's an active checkpoint operation,
-				// then the very first time we call sqlite3_prepare_v2 on this db,
-				// we sometimes get a SQLITE_BUSY error.
+				// When multi-process support is ENABLED:
 				//
-				// This only seems to happen once, and only during the very first use of the db instance.
-				// I'm still tyring to figure out exactly why this is.
-				// For now I'm setting a busy timeout as a temporary workaround.
+				//   This allows us to warn the developer (via log statements) when another process
+				//   may be holding the write lock for too long.
 				//
-				// Note: I've also tested setting a busy_handler which logs the number of times its called.
-				// And in all my testing, I've only seen the busy_handler called once per db.
-				
+				// When multi-process support is DISABLED:
+				//
+				//   The busy handler acts as a potential edge case workaround.
+				//
+				//   If there's an active checkpoint operation,
+				//   then the very first time we call sqlite3_prepare_v2 on this db,
+				//   we sometimes get a SQLITE_BUSY error.
+				//
+				//   This only seems to happen once, and only during the very first use of the db instance.
+				//   I'm still tyring to figure out exactly why this is. (sqlite bug ?)
+				//   For now I'm setting a busy timeout as a temporary workaround.
+				//
+				//   Note: In all my testing, I've only seen the busy_handler called once per db.
                 
-                // @Robbie: do you know what is the best way to set ARC ownership in case the connection is closed while sqlite is still locking and calling busy handler?
-                sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
+				sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
                 
 #ifdef SQLITE_HAS_CODEC
                 // Configure SQLCipher encryption (if needed)
@@ -3459,7 +3470,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	          YapDatabaseRemovedCollectionsKey,
 	          YapDatabaseRemovedRowidsKey,
 	          YapDatabaseAllKeysRemovedKey,
-              YapDatabaseModifiedExternallyKey ]; // @Robbie: should we add this key here?
+	          YapDatabaseModifiedExternallyKey ];
 }
 
 /**
@@ -3479,7 +3490,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	          YapDatabaseRemovedKeysKey,
 	          YapDatabaseRemovedCollectionsKey,
 	          YapDatabaseAllKeysRemovedKey,
-              YapDatabaseModifiedExternallyKey ]; // @Robbie: should we add this key here?
+	          YapDatabaseModifiedExternallyKey ];
 }
 
 /**
