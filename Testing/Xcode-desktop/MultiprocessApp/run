@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+processes=(A B)
+pids=()
+
+rm -f db.yap
+rm -f combined.out
+
+# Run instances of the MultiprocessApp process which write and read from the database concurrently
+# Kill them after 10 seconds, and sort the output to make sure they all see the writes in correct order
+
+for process in $processes
+do
+    rm -f $process.out
+    if [[ "A" == $process ]]
+    then
+# Instance "A" has the special flag
+        (./MultiprocessApp $process --special 2> $process.out) &
+    else
+        (./MultiprocessApp $process 2> $process.out) &
+    fi
+    pids+=$!
+done;
+
+sleep 10
+
+for pid in $pids
+do
+    echo "Kill $pid"
+    kill $pid
+done;
+
+# Don't know how to create the string "A.out B.out" from the array $processes in zsh, so I'm using python
+cat `python -c "import sys,re;[sys.stdout.write(re.sub('$', '.out ', line)) for line in sys.argv[1:]]" $processes` | sort > combined.out
+cat <<EOS > script.py
+import sys, re
+process_names = sys.argv[1].split(" ")
+process_pids = sys.argv[2].split(" ")
+process_by_pid = dict(zip(process_pids, process_names))
+for line in open("combined.out"):
+    for pid, name in process_by_pid.iteritems():
+        line = re.sub('\\[{}:'.format(pid), '[{}:'.format(name), line)
+    print(line.strip())
+EOS
+python script.py "$processes" "$pids" > combined_renamed.out

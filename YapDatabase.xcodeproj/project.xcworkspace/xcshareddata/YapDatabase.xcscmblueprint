@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DAAB2C887EFA8AB12BAB622BBAFD20531F9A3784",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "AB0A48DD995E26A187DED71E830FA3DB4DD771C9" : 0,
+    "DAAB2C887EFA8AB12BAB622BBAFD20531F9A3784" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5A8D644F-D1EC-4817-AFE4-4AA28ABCE0CB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "AB0A48DD995E26A187DED71E830FA3DB4DD771C9" : "Carthage\/",
+    "DAAB2C887EFA8AB12BAB622BBAFD20531F9A3784" : "YapDatabase\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "YapDatabase",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "YapDatabase.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jeremiegirault\/Carthage",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "AB0A48DD995E26A187DED71E830FA3DB4DD771C9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/yapstudios\/YapDatabase.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DAAB2C887EFA8AB12BAB622BBAFD20531F9A3784"
+    }
+  ]
+}

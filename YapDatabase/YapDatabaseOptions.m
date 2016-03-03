@@ -26,6 +26,7 @@
 @synthesize cipherPageSize = cipherPageSize;
 #endif
 @synthesize aggressiveWALTruncationSize = aggressiveWALTruncationSize;
+@synthesize enableMultiProcessSupport = enableMultiProcessSupport;
 
 - (id)init
 {
@@ -37,6 +38,7 @@
 		pragmaPageSize = 0;
 		pragmaMMapSize = 0;
 		aggressiveWALTruncationSize = (1024 * 1024); // 1 MB
+        enableMultiProcessSupport = NO;
 	}
 	return self;
 }
@@ -56,6 +58,7 @@
     copy->cipherPageSize = cipherPageSize;
 #endif
 	copy->aggressiveWALTruncationSize = aggressiveWALTruncationSize;
+    copy->enableMultiProcessSupport = enableMultiProcessSupport;
 	
 	return copy;
 }
