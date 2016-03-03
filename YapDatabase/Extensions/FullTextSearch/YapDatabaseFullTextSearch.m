@@ -57,8 +57,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize block = block;
-@synthesize blockType = blockType;
+@synthesize handler = handler;
 @synthesize versionTag = versionTag;
 
 - (id)initWithColumnNames:(NSArray *)inColumnNames
@@ -113,8 +112,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 		
 		options = [inOptions copy];
 		
-		block = inHandler.block;
-		blockType = inHandler.blockType;
+		handler = inHandler;
 		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 	}
@@ -123,7 +121,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseFullTextSearchConnection alloc] initWithFTS:self databaseConnection:databaseConnection];
+	return [[YapDatabaseFullTextSearchConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

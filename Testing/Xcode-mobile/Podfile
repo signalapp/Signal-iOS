@@ -1,0 +1,4 @@
+xcodeproj 'YapDatabaseTesting.xcodeproj'
+platform :ios, '8.1'
+
+pod "YapDatabase", path: '../../'

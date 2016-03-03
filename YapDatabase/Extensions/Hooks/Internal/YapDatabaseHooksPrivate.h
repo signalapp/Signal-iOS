@@ -13,27 +13,6 @@
 @public
 	
 	YapWhitelistBlacklist *allowedCollections;
-
-	YDBHooks_WillInsertObject willInsertObject;
-	YDBHooks_DidInsertObject   didInsertObject;
-
-	YDBHooks_WillUpdateObject willUpdateObject;
-	YDBHooks_DidInsertObject   didUpdateObject;
-
-	YDBHooks_WillReplaceObject willReplaceObject;
-	YDBHooks_DidReplaceObject   didReplaceObject;
-
-	YDBHooks_WillReplaceMetadata willReplaceMetadata;
-	YDBHooks_DidReplaceMetadata   didReplaceMetadata;
-
-	YDBHooks_WillRemoveObject willRemoveObject;
-	YDBHooks_DidRemoveObject   didRemoveObject;
-
-	YDBHooks_WillRemoveObjects willRemoveObjects;
-	YDBHooks_DidRemoveObjects   didRemoveObjects;
-
-	YDBHooks_WillRemoveAllObjectsInAllCollections willRemoveAllObjectsInAllCollections;
-	YDBHooks_DidRemoveAllObjectsInAllCollections didRemoveAllObjectsInAllCollections;
 }
 
 @end
@@ -62,6 +41,9 @@
 	
 	__unsafe_unretained YapDatabaseHooksConnection *parentConnection;
 	__unsafe_unretained YapDatabaseReadTransaction *databaseTransaction;
+	
+	YapProxyObject *proxyObject;
+	YapProxyObject *proxyMetadata;
 }
 
 - (id)initWithParentConnection:(YapDatabaseHooksConnection *)parentConnection

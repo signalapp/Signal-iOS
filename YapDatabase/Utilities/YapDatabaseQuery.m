@@ -45,10 +45,8 @@
  * query = [YapDatabaseQuery queryWithFormat:@"WHERE title = ? AND department IN (?)", @"manager", departments];
 **/
 @implementation YapDatabaseQuery
-{
-	NSString *queryString;
-	NSArray *queryParameters;
-}
+
+#pragma mark Standard Queries
 
 /**
  * A YapDatabaseQuery is everything after the SELECT clause of a query.
@@ -85,6 +83,124 @@
 {
 	if (format == nil) return nil;
 	
+	NSArray *parameters = nil;
+	NSArray *paramLocations = nil;
+	
+	[self getParameters:&parameters paramLocations:&paramLocations fromFormat:format args:args];
+	
+	return [self queryWithAggregateFunction:nil
+	                            queryString:format
+	                             parameters:parameters
+	                         paramLocations:paramLocations];
+}
+
+/**
+ * Alternative initializer - generally preferred for Swift code.
+**/
++ (instancetype)queryWithString:(NSString *)queryString parameters:(NSArray *)queryParameters
+{
+	if (queryString == nil) return nil;
+	
+	return [self queryWithAggregateFunction:nil
+	                            queryString:queryString
+	                             parameters:queryParameters
+	                         paramLocations:nil];
+}
+
+/**
+ * Shorthand for a query with no 'WHERE' clause.
+ * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
+**/
++ (instancetype)queryMatchingAll
+{
+	return [[YapDatabaseQuery alloc] initWithAggregateFunction:nil queryString:@"" queryParameters:nil];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Aggregate Queries
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction format:(NSString *)format, ...
+{
+	va_list arguments;
+	va_start(arguments, format);
+	id query = [self queryWithAggregateFunction:aggregateFunction format:format arguments:arguments];
+	va_end(arguments);
+	return query;
+}
+
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction
+                                    format:(NSString *)format
+                                 arguments:(va_list)args
+{
+	if (format == nil) return nil;
+	
+	NSArray *parameters = nil;
+	NSArray *paramLocations = nil;
+	
+	[self getParameters:&parameters paramLocations:&paramLocations fromFormat:format args:args];
+	
+	return [self queryWithAggregateFunction:aggregateFunction
+	                            queryString:format
+	                             parameters:parameters
+	                         paramLocations:paramLocations];
+}
+
+/**
+ * Alternative initializer - generally preferred for Swift code.
+**/
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction
+                                    string:(NSString *)queryString
+                                parameters:(NSArray *)queryParameters
+{
+	if (queryString == nil) return nil;
+	
+	return [self queryWithAggregateFunction:aggregateFunction
+	                            queryString:queryString
+	                             parameters:queryParameters
+	                         paramLocations:nil];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Private API
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Utility method to find all the '?' locations in a queryString.
+**/
++ (NSArray *)findParamLocations:(NSString *)queryString
+{
+	NSMutableArray *paramLocations = [NSMutableArray array];
+	
+	NSUInteger paramCount = 0;
+	NSUInteger queryStringLength = [queryString length];
+	
+	NSRange searchRange = NSMakeRange(0, queryStringLength);
+	NSRange paramRange = [queryString rangeOfString:@"?" options:0 range:searchRange];
+	
+	while (paramRange.location != NSNotFound)
+	{
+		paramCount++;
+		
+		[paramLocations addObject:@(paramRange.location)];
+		
+		searchRange.location = paramRange.location + 1;
+		searchRange.length = queryStringLength - searchRange.location;
+		
+		paramRange = [queryString rangeOfString:@"?" options:0 range:searchRange];
+	}
+	
+	return paramLocations;
+}
+
+/**
+ * Utility method to parse format & args.
+**/
++ (void)getParameters:(NSArray **)parametersPtr
+       paramLocations:(NSArray **)paramLocationsPtr
+           fromFormat:(NSString *)format
+                 args:(va_list)args
+{
 	NSArray *paramLocations = [self findParamLocations:format];
 	NSUInteger paramCount = [paramLocations count];
 	
@@ -111,25 +227,17 @@
 		queryParameters = nil;
 	}
 	
-	return [self queryWithString:format parameters:queryParameters paramLocations:paramLocations];
-}
-
-/**
- * Alternative initializer - generally preferred for Swift code.
-**/
-+ (instancetype)queryWithString:(NSString *)queryString parameters:(NSArray *)queryParameters
-{
-	if (queryString == nil) return nil;
-	
-	return [self queryWithString:queryString parameters:queryParameters paramLocations:nil];
+	if (parametersPtr) *parametersPtr = queryParameters;
+	if (paramLocationsPtr) *paramLocationsPtr = paramLocations;
 }
 
 /**
  * Private API - handles expanding arrays in the given queryParameters
 **/
-+ (instancetype)queryWithString:(NSString *)inQueryString
-                     parameters:(NSArray *)inQueryParameters
-                 paramLocations:(NSArray *)inParamLocations
++ (instancetype)queryWithAggregateFunction:(NSString *)inAggregateFunction
+                               queryString:(NSString *)inQueryString
+                                parameters:(NSArray *)inQueryParameters
+                            paramLocations:(NSArray *)inParamLocations
 {
 	NSParameterAssert(inQueryString != nil);
 	
@@ -178,7 +286,7 @@
 		// - outQueryParmas: @[ @(0), @(1), @(2) ]
 		
 		__block NSUInteger unpackingOffset = 0;
-			
+		
 		[paramIndexToArrayCountMap enumerateKeysAndObjectsUsingBlock:
 		    ^(NSNumber *paramIndexNum, NSNumber *arrayCountNum, BOOL *stop)
 		{
@@ -203,62 +311,44 @@
 			
 		}];
 		
-		return [[YapDatabaseQuery alloc] initWithQueryString:queryString queryParameters:queryParameters];
+		return [[YapDatabaseQuery alloc] initWithAggregateFunction:inAggregateFunction
+		                                               queryString:queryString
+		                                           queryParameters:queryParameters];
 	}
 	else
 	{
-		return [[YapDatabaseQuery alloc] initWithQueryString:inQueryString queryParameters:queryParameters];
+		return [[YapDatabaseQuery alloc] initWithAggregateFunction:inAggregateFunction
+		                                               queryString:inQueryString
+		                                           queryParameters:queryParameters];
 	}
 }
 
-/**
- * Shorthand for a query with no 'WHERE' clause.
- * Equivalent to [YapDatabaseQuery queryWithFormat:@""].
- **/
-+ (instancetype)queryMatchingAll
-{
-	return [[YapDatabaseQuery alloc] initWithQueryString:@"" queryParameters:nil];
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Instance
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Utility method to find all the '?' locations in a queryString.
-**/
-+ (NSArray *)findParamLocations:(NSString *)queryString
-{
-	NSMutableArray *paramLocations = [NSMutableArray array];
-	
-	NSUInteger paramCount = 0;
-	NSUInteger queryStringLength = [queryString length];
-	
-	NSRange searchRange = NSMakeRange(0, queryStringLength);
-	NSRange paramRange = [queryString rangeOfString:@"?" options:0 range:searchRange];
-	
-	while (paramRange.location != NSNotFound)
-	{
-		paramCount++;
-		
-		[paramLocations addObject:@(paramRange.location)];
-		
-		searchRange.location = paramRange.location + 1;
-		searchRange.length = queryStringLength - searchRange.location;
-		
-		paramRange = [queryString rangeOfString:@"?" options:0 range:searchRange];
-	}
-	
-	return paramLocations;
-}
+@synthesize aggregateFunction = aggregateFunction;
+@synthesize queryString = queryString;
+@synthesize queryParameters = queryParameters;
 
-- (id)initWithQueryString:(NSString *)inQueryString queryParameters:(NSArray *)inQueryParameters
+@dynamic isAggregateQuery;
+
+- (id)initWithAggregateFunction:(NSString *)inAggregateFunction
+                    queryString:(NSString *)inQueryString
+                queryParameters:(NSArray *)inQueryParameters
 {
 	if ((self = [super init]))
 	{
+		aggregateFunction = [inAggregateFunction copy];
 		queryString = [inQueryString copy];
 		queryParameters = [inQueryParameters copy];
 	}
 	return self;
 }
 
-@synthesize queryString;
-@synthesize queryParameters;
+- (BOOL)isAggregateQuery
+{
+	return (aggregateFunction != nil);
+}
 
 @end

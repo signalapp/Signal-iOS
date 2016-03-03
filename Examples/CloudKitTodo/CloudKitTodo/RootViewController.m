@@ -5,13 +5,13 @@
 #import "CloudKitManager.h"
 #import "MyTodo.h"
 
-#import "DDLog.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 // Log Levels: off, error, warn, info, verbose
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #endif
 
 static NSString *const TodoCellIdentifier = @"Todo";

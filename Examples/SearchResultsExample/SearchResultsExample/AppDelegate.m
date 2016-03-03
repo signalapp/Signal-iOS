@@ -1,14 +1,14 @@
 #import "AppDelegate.h"
 #import "Person.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 // Per-file log level for CocoaLumbejack (logging framework)
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+  static const int ddLogLevel = DDLogLevelVerbose;
 #else
-  static const int ddLogLevel = LOG_LEVEL_WARN;
+  static const int ddLogLevel = DDLogLevelWarn;
 #endif
 
 AppDelegate *TheAppDelegate;
@@ -84,7 +84,9 @@ AppDelegate *TheAppDelegate;
 	
 	DDLogVerbose(@"Creating view...");
 
-    YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:^NSString *(NSString *collection, NSString *key) {
+	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
+	{
         // The grouping block is used to:
         // - filter items that we don't want in the view
         // - place items into specific groups (which can be used as sections in a tableView, for example)
@@ -95,10 +97,12 @@ AppDelegate *TheAppDelegate;
         return @"all";
     }];
 
-    YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(NSString *group,
-            NSString *collection1, NSString *key1, id object1,
-            NSString *collection2, NSString *key2, id object2) {
-        // The sorting block is used to sort items within their group/section.
+	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
+	    ^NSComparisonResult(YapDatabaseReadTransaction *transaction, NSString *group,
+	                        NSString *collection1, NSString *key1, id object1,
+	                        NSString *collection2, NSString *key2, id object2)
+	{
+		// The sorting block is used to sort items within their group/section.
 
         __unsafe_unretained Person *person1 = (Person *)object1;
         __unsafe_unretained Person *person2 = (Person *)object2;

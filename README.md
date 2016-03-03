@@ -1,6 +1,10 @@
 YapDatabase
 ===========
 
+[![Build Status](https://travis-ci.org/yapstudios/YapDatabase.svg?branch=master)](https://travis-ci.org/yapstudios/YapDatabase)
+[![Pod Version](https://img.shields.io/cocoapods/v/YapDatabase.svg?style=flat)](https://cocoapods.org/pods/YapDatabase)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 YapDatabase is a "**key/value store and MUCH MORE**" built atop sqlite for iOS & Mac.
 It has the following features:
 
@@ -30,5 +34,5 @@ It has the following features:
 
 <br/>
 
-**[See what the API looks like in "hello world" for YapDatabase](https://github.com/yaptv/YapDatabase/wiki/Hello-World)**<br/>
+**[See what the API looks like in "hello world" for YapDatabase](https://github.com/yapstudios/YapDatabase/wiki/Hello-World)**<br/>
 **[Learn more by visiting the wiki](https://github.com/yaptv/YapDatabase/wiki)**<br/>

@@ -5,16 +5,15 @@
 #import "MyDatabaseObject.h"
 #import "MyTodo.h"
 
-#import "DDLog.h"
-
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
 
 // Log Levels: off, error, warn, info, verbose
 // Log Flags : trace
 #if DEBUG
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-  static const int ddLogLevel = LOG_LEVEL_ALL;
+  static const NSUInteger ddLogLevel = DDLogLevelAll;
 #endif
 
 NSString *const UIDatabaseConnectionWillUpdateNotification = @"UIDatabaseConnectionWillUpdateNotification";
@@ -225,7 +224,7 @@ DatabaseManager *MyDatabaseManager;
 	//
 	
 	YapDatabaseViewGrouping *orderGrouping = [YapDatabaseViewGrouping withObjectBlock:
-	    ^NSString *(NSString *collection, NSString *key, id object)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object)
 	{
 		if ([object isKindOfClass:[MyTodo class]])
 		{
@@ -236,8 +235,9 @@ DatabaseManager *MyDatabaseManager;
 	}];
 	
 	YapDatabaseViewSorting *orderSorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, MyTodo *todo1,
-	                       NSString *collection2, NSString *key2, MyTodo *todo2)
+	    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+	          NSString *collection1, NSString *key1, MyTodo *todo1,
+	          NSString *collection2, NSString *key2, MyTodo *todo2)
 	{
 		// We want:
 		// - Most recently created Todo at index 0.
@@ -268,8 +268,8 @@ DatabaseManager *MyDatabaseManager;
 - (void)setupCloudKitExtension
 {
 	YapDatabaseCloudKitRecordHandler *recordHandler = [YapDatabaseCloudKitRecordHandler withObjectBlock:
-	    ^(CKRecord *__autoreleasing *inOutRecordPtr, YDBCKRecordInfo *recordInfo,
-		  NSString *collection, NSString *key, MyTodo *todo)
+	    ^(YapDatabaseReadTransaction *transaction, CKRecord *__autoreleasing *inOutRecordPtr,
+	      YDBCKRecordInfo *recordInfo, NSString *collection, NSString *key, MyTodo *todo)
 	{
 		CKRecord *record = inOutRecordPtr ? *inOutRecordPtr : nil;
 		if (record                          && // not a newly inserted object

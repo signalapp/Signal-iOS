@@ -6,8 +6,8 @@
 #import "YapDatabaseSearchResultsView.h"
 #import "YapCollectionKey.h"
 
-#import "DDLog.h"
-#import "DDTTYLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 
 
 @interface TestYapDatabaseSearchResultsView : XCTestCase
@@ -47,7 +47,7 @@
 	dispatch_block_t exceptionBlock = ^{
 		
 		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-		    ^NSString *(NSString *collection, NSString *key)
+		    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 		{
 			if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
 				return nil;
@@ -56,8 +56,9 @@
 		}];
 		
 		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-		    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-		                       NSString *collection2, NSString *key2, id obj2)
+		    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+		        NSString *collection1, NSString *key1, id obj1,
+		        NSString *collection2, NSString *key2, id obj2)
 		{
 			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
 			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
@@ -137,14 +138,15 @@
 	// Setup ParentView
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+	    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+	        NSString *collection1, NSString *key1, id obj1,
+	        NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSString *str1 = (NSString *)obj1;
 		__unsafe_unretained NSString *str2 = (NSString *)obj2;
@@ -273,14 +275,15 @@
 	// Setup SearchResultsView
 	
 	YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-	    ^NSString *(NSString *collection, NSString *key)
+	    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
 	{
 		return @"";
 	}];
 	
 	YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-	    ^(NSString *group, NSString *collection1, NSString *key1, id obj1,
-	                       NSString *collection2, NSString *key2, id obj2)
+	    ^(YapDatabaseReadTransaction *transaction, NSString *group,
+	        NSString *collection1, NSString *key1, id obj1,
+	        NSString *collection2, NSString *key2, id obj2)
 	{
 		__unsafe_unretained NSString *str1 = (NSString *)obj1;
 		__unsafe_unretained NSString *str2 = (NSString *)obj2;

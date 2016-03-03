@@ -1,16 +1,9 @@
 #import <Foundation/Foundation.h>
+#import "YapDatabaseExtensionTypes.h"
 
+@class YapDatabaseReadTransaction;
 
-/**
- * Specifies the kind of block being used.
-**/
-typedef NS_ENUM(NSInteger, YapDatabaseSecondaryIndexBlockType) {
-	YapDatabaseSecondaryIndexBlockTypeWithKey       = 1031,
-	YapDatabaseSecondaryIndexBlockTypeWithObject    = 1032,
-	YapDatabaseSecondaryIndexBlockTypeWithMetadata  = 1033,
-	YapDatabaseSecondaryIndexBlockTypeWithRow       = 1034
-};
-
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The handler block handles extracting the column values for the secondary indexes.
@@ -31,21 +24,32 @@ typedef NS_ENUM(NSInteger, YapDatabaseSecondaryIndexBlockType) {
 
 typedef id YapDatabaseSecondaryIndexBlock; // One of the YapDatabaseSecondaryIndexWith_X_Block types below.
 
-typedef void (^YapDatabaseSecondaryIndexWithKeyBlock)      \
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key);
-typedef void (^YapDatabaseSecondaryIndexWithObjectBlock)   \
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
-typedef void (^YapDatabaseSecondaryIndexWithMetadataBlock) \
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id metadata);
-typedef void (^YapDatabaseSecondaryIndexWithRowBlock)      \
-                            (NSMutableDictionary *dict, NSString *collection, NSString *key, id object, id metadata);
+typedef void (^YapDatabaseSecondaryIndexWithKeyBlock)
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key);
+
+typedef void (^YapDatabaseSecondaryIndexWithObjectBlock)
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object);
+
+typedef void (^YapDatabaseSecondaryIndexWithMetadataBlock)
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, __nullable id metadata);
+
+typedef void (^YapDatabaseSecondaryIndexWithRowBlock)
+                            (YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object, __nullable id metadata);
 
 + (instancetype)withKeyBlock:(YapDatabaseSecondaryIndexWithKeyBlock)block;
 + (instancetype)withObjectBlock:(YapDatabaseSecondaryIndexWithObjectBlock)block;
 + (instancetype)withMetadataBlock:(YapDatabaseSecondaryIndexWithMetadataBlock)block;
 + (instancetype)withRowBlock:(YapDatabaseSecondaryIndexWithRowBlock)block;
 
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops keyBlock:(YapDatabaseSecondaryIndexWithKeyBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops objectBlock:(YapDatabaseSecondaryIndexWithObjectBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops metadataBlock:(YapDatabaseSecondaryIndexWithMetadataBlock)block;
++ (instancetype)withOptions:(YapDatabaseBlockInvoke)ops rowBlock:(YapDatabaseSecondaryIndexWithRowBlock)block;
+
 @property (nonatomic, strong, readonly) YapDatabaseSecondaryIndexBlock block;
-@property (nonatomic, assign, readonly) YapDatabaseSecondaryIndexBlockType blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockType           blockType;
+@property (nonatomic, assign, readonly) YapDatabaseBlockInvoke         blockInvokeOptions;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -54,6 +54,14 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+@dynamic setup;
+
+- (YapDatabaseRTreeIndexSetup *)setup
+{
+	return [setup copy]; // Our instance must remain immutable
+}
+
+@synthesize handler = handler;
 @synthesize versionTag = versionTag;
 
 - (id)init
@@ -110,10 +118,8 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
     if ((self = [super init]))
     {
+		handler = inHandler;
         setup = [inSetup copy];
-
-        block = inHandler.block;
-        blockType = inHandler.blockType;
 
         columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
 
@@ -126,9 +132,7 @@ static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-    return [[YapDatabaseRTreeIndexConnection alloc]
-	           initWithRTreeIndex:self
-            databaseConnection:databaseConnection];
+    return [[YapDatabaseRTreeIndexConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

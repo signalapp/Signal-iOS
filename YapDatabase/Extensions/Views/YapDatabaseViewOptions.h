@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "YapWhitelistBlacklist.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -59,7 +61,7 @@
  *
  * The default value is nil.
 **/
-@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (nonatomic, strong, readwrite, nullable) YapWhitelistBlacklist *allowedCollections;
 
 /**
  * You can configure the view to skip the initial view population.
@@ -69,3 +71,5 @@
 @property (nonatomic, assign, readwrite) BOOL skipInitialViewPopulation;
 
 @end
+
+NS_ASSUME_NONNULL_END

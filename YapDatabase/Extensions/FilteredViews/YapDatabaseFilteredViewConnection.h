@@ -3,6 +3,7 @@
 
 @class YapDatabaseFilteredView;
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseFilteredViewConnection : YapDatabaseViewConnection
 
@@ -10,3 +11,5 @@
 @property (nonatomic, strong, readonly) YapDatabaseFilteredView *filteredView;
 
 @end
+
+NS_ASSUME_NONNULL_END

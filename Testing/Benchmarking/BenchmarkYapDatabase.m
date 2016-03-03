@@ -243,6 +243,8 @@ static NSMutableArray *keys;
 //	options.pragmaSynchronous = YapDatabasePragmaSynchronous_Normal; // Use for faster speed
 //	options.pragmaSynchronous = YapDatabasePragmaSynchronous_Off;    // Use for fastest speed
 
+	options.pragmaMMapSize = (1024 * 1024 * 25); // full file size, with max of 25 MB
+	
 	database = [[YapDatabase alloc] initWithPath:databasePath
 	                                  serializer:NULL
 	                                deserializer:NULL
@@ -259,8 +261,20 @@ static NSMutableArray *keys;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		NSString *pragmaSynchronousStr;
+		switch(options.pragmaSynchronous)
+		{
+			case YapDatabasePragmaSynchronous_Off    : pragmaSynchronousStr = @"Off";     break;
+			case YapDatabasePragmaSynchronous_Normal : pragmaSynchronousStr = @"Normal";  break;
+			case YapDatabasePragmaSynchronous_Full   : pragmaSynchronousStr = @"Full";    break;
+			default                                  : pragmaSynchronousStr = @"Unknown"; break;
+		}
+		
 		NSLog(@" \n\n\n ");
-		NSLog(@"YapDatabase Benchmarks: (sqlite %@)", database.sqliteVersion);
+		NSLog(@"YapDatabase Benchmarks:");
+		NSLog(@" - sqlite version     = %@", database.sqliteVersion);
+		NSLog(@" - pragma synchronous = %@", pragmaSynchronousStr);
+		NSLog(@" - pragma mmap_size   = %ld", (long)[connection pragmaMMapSize]);
 		NSLog(@"====================================================");
 		NSLog(@"POPULATE DATABASE");
 		
@@ -310,6 +324,7 @@ static NSMutableArray *keys;
 		
 		database = nil;
 		connection = nil;
+		keys = nil;
 		
 		completionBlock();
 	});

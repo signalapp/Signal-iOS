@@ -1,4 +1,6 @@
 #import "YapDatabaseSearchQueue.h"
+#import "YapDatabaseSearchQueuePrivate.h"
+
 #import <libkern/OSAtomic.h>
 
 @interface YapDatabaseSearchQueueControl : NSObject

@@ -112,9 +112,7 @@
 	if ((self = [super init]))
 	{
 		setup = [inSetup copy];
-		
-		block = inHandler.block;
-		blockType = inHandler.blockType;
+		handler = inHandler;
 		
 		columnNamesSharedKeySet = [NSDictionary sharedKeySetForKeys:[setup columnNames]];
 		
@@ -127,9 +125,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseSecondaryIndexConnection alloc]
-	           initWithSecondaryIndex:self
-	               databaseConnection:databaseConnection];
+	return [[YapDatabaseSecondaryIndexConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 - (NSString *)tableName

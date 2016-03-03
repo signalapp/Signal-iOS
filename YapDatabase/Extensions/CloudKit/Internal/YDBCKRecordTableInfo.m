@@ -8,10 +8,19 @@
 @synthesize ownerCount = ownerCount;
 @synthesize record = record;
 
+- (instancetype)init
+{
+	NSAssert(NO, @"Invalid init method used");
+	return nil;
+}
+
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                 ownerCount:(int64_t)inOwnerCount
                                     record:(CKRecord *)inRecord
 {
+	NSAssert(inRecord != nil, @"Invalid record");
+	NSAssert(inRecord.recordID != nil, @"Invalid recordID");
+	
 	if ((self = [super init]))
 	{
 		databaseIdentifier = inDatabaseIdentifier;
@@ -35,12 +44,9 @@
 
 - (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)newRecord
 {
-	YDBCKCleanRecordTableInfo *copy = [[YDBCKCleanRecordTableInfo alloc] init];
-	copy->databaseIdentifier = databaseIdentifier;
-	copy->ownerCount = ownerCount;
-	copy->record = newRecord;
-	
-	return copy;
+	return [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+	                                                          ownerCount:ownerCount
+	                                                              record:newRecord];
 }
 
 - (CKRecord *)current_record {
@@ -72,10 +78,18 @@
 
 @synthesize originalValues = originalValues;
 
+- (instancetype)init
+{
+	NSAssert(NO, @"Invalid init method used");
+	return nil;
+}
+
 - (instancetype)initWithDatabaseIdentifier:(NSString *)inDatabaseIdentifier
                                   recordID:(CKRecordID *)inRecordID
                                 ownerCount:(int64_t)in_ownerCount
 {
+	NSAssert(inRecordID != nil, @"Invalid recordID - nil");
+	
 	if ((self = [super init]))
 	{
 		databaseIdentifier = [inDatabaseIdentifier copy];
@@ -85,6 +99,15 @@
 		dirty_ownerCount = in_ownerCount;
 	}
 	return self;
+}
+
+- (void)setDirty_record:(CKRecord *)new_dirty_record
+{
+	if (new_dirty_record) {
+		NSAssert([new_dirty_record.recordID isEqual:recordID], @"Invalid recordID - mismatch");
+	}
+	
+	dirty_record = new_dirty_record;
 }
 
 - (CKRecord *)current_record {
@@ -153,11 +176,11 @@
 
 - (YDBCKCleanRecordTableInfo *)cleanCopyWithSanitizedRecord:(CKRecord *)newRecord
 {
-	YDBCKCleanRecordTableInfo *cleanCopy =
-	  [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
-	                                                     ownerCount:dirty_ownerCount
-	                                                         record:newRecord];
-	return cleanCopy;
+	NSAssert([newRecord.recordID isEqual:recordID], @"Invalid sanitizedRecord - recordID mismatch");
+	
+	return [[YDBCKCleanRecordTableInfo alloc] initWithDatabaseIdentifier:databaseIdentifier
+	                                                          ownerCount:dirty_ownerCount
+	                                                              record:newRecord];
 }
 
 @end

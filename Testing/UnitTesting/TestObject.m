@@ -93,6 +93,11 @@
 	return self;
 }
 
+//- (void)dealloc
+//{
+//	NSLog(@"Uncomment to add breakpoint here");
+//}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
 	[coder encodeObject:someString forKey:@"someString"];

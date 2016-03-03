@@ -19,8 +19,21 @@ static NSString *const ext_key_parentViewName = @"parentViewName";
 /**
  * Changeset keys (for changeset notification dictionary)
 **/
-static NSString *const changeset_key_filteringBlock     = @"filteringBlock";
-static NSString *const changeset_key_filteringBlockType = @"filteringBlockType";
+static NSString *const changeset_key_filtering = @"filtering";
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface YapDatabaseViewFiltering () {
+@public
+	
+	YapDatabaseViewFilteringBlock block;
+	YapDatabaseBlockType          blockType;
+	YapDatabaseBlockInvoke        blockInvokeOptions;
+}
+
+@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
@@ -29,8 +42,7 @@ static NSString *const changeset_key_filteringBlockType = @"filteringBlockType";
 @interface YapDatabaseFilteredView () {
 @private
 	
-	YapDatabaseViewFilteringBlock filteringBlock;
-	YapDatabaseViewBlockType filteringBlockType;
+	YapDatabaseViewFiltering *filtering;
 	
 @public
 	
@@ -46,29 +58,20 @@ static NSString *const changeset_key_filteringBlockType = @"filteringBlockType";
 @interface YapDatabaseFilteredViewConnection () {
 @protected
 	
-	YapDatabaseViewFilteringBlock filteringBlock;
-	YapDatabaseViewBlockType filteringBlockType;
-	
-	BOOL filteringBlockChanged;
+	YapDatabaseViewFiltering *filtering;
+	BOOL filteringChanged;
 }
 
-- (void)setGroupingBlock:(YapDatabaseViewGroupingBlock)newGroupingBlock
-       groupingBlockType:(YapDatabaseViewBlockType)newGroupingBlockType
-            sortingBlock:(YapDatabaseViewSortingBlock)newSortingBlock
-        sortingBlockType:(YapDatabaseViewBlockType)newSortingBlockType;
+- (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
+            sorting:(YapDatabaseViewSorting *)newSorting;
 
-- (void)setFilteringBlock:(YapDatabaseViewFilteringBlock)newFilteringBlock
-	   filteringBlockType:(YapDatabaseViewBlockType)newFilteringBlockType
-               versionTag:(NSString *)newVersionTag;
+- (void)setFiltering:(YapDatabaseViewFiltering *)newFiltering
+          versionTag:(NSString *)newVersionTag;
 
-- (void)getGroupingBlock:(YapDatabaseViewGroupingBlock *)groupingBlockPtr
-	   groupingBlockType:(YapDatabaseViewBlockType *)groupingBlockTypePtr
-			sortingBlock:(YapDatabaseViewSortingBlock *)sortingBlockPtr
-		sortingBlockType:(YapDatabaseViewBlockType *)sortingBlockTypePtr
-          filteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-      filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr;
+- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
+			sorting:(YapDatabaseViewSorting **)sortingPtr
+          filtering:(YapDatabaseViewFiltering **)filteringPtr;
 
-- (void)getFilteringBlock:(YapDatabaseViewFilteringBlock *)filteringBlockPtr
-       filteringBlockType:(YapDatabaseViewBlockType *)filteringBlockTypePtr;
+- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr;
 
 @end

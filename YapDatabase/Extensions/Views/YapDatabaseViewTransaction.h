@@ -4,6 +4,8 @@
 #import "YapDatabaseViewTypes.h"
 #import "YapDatabaseViewMappings.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Welcome to YapDatabase!
  *
@@ -32,6 +34,7 @@
  * Keep in mind that the YapDatabaseViewTransaction object is linked to the YapDatabaseReadTransaction object.
  * So don't try to use it outside the transaction block (cause it won't work).
 **/
+
 @interface YapDatabaseViewTransaction : YapDatabaseExtensionTransaction
 
 #pragma mark Groups
@@ -48,7 +51,7 @@
  *
  * @see YapDatabaseView - groupingBlock
 **/
-- (NSArray *)allGroups;
+- (NSArray<NSString *> *)allGroups;
 
 /**
  * Returns YES if there are any keys in the given group.
@@ -87,20 +90,20 @@
  * Returns the key & collection at the given index within the given group.
  * Returns nil if the group doesn't exist, or if the index is out of bounds.
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nullable * _Nullable)keyPtr
+    collection:(NSString * _Nullable * _Nullable)collectionPtr
        atIndex:(NSUInteger)index
        inGroup:(NSString *)group;
 
 /**
  * Shortcut for: [view getKey:&key collection:&collection atIndex:0 inGroup:group]
 **/
-- (BOOL)getFirstKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+- (BOOL)getFirstKey:(NSString * _Nonnull * _Nullable)keyPtr collection:(NSString * _Nonnull * _Nullable)collectionPtr inGroup:(NSString *)group;
 
 /**
  * Shortcut for: [view getKey:&key collection:&collection atIndex:(numberOfItemsInGroup-1) inGroup:group]
 **/
-- (BOOL)getLastKey:(NSString **)keyPtr collection:(NSString **)collectionPtr inGroup:(NSString *)group;
+- (BOOL)getLastKey:(NSString * _Nonnull * _Nullable)keyPtr collection:(NSString * _Nonnull * _Nullable)collectionPtr inGroup:(NSString *)group;
 
 /**
  * Shortcut for fetching just the collection at the given index.
@@ -117,7 +120,7 @@
  * If the given {collection, key} are included in the view, then returns the associated group.
  * If the {collection, key} isn't in the view, then returns nil.
 **/
-- (NSString *)groupForKey:(NSString *)key inCollection:(NSString *)collection;
+- (NSString *)groupForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Fetches both the group and the index within the group for the given {collection, key}.
@@ -125,10 +128,10 @@
  * Returns YES if the {collection, key} is included in the view.
  * Otherwise returns NO, and sets the parameters to nil & zero.
 **/
-- (BOOL)getGroup:(NSString **)groupPtr
-           index:(NSUInteger *)indexPtr
+- (BOOL)getGroup:(NSString * _Nonnull * _Nullable)groupPtr
+           index:(nullable NSUInteger *)indexPtr
           forKey:(NSString *)key
-    inCollection:(NSString *)collection;
+    inCollection:(nullable NSString *)collection;
 
 /**
  * Returns the versionTag in effect for this transaction.
@@ -144,17 +147,6 @@
 
 #pragma mark Finding
 
-typedef id YapDatabaseViewFindBlock; // One of the YapDatabaseViewFindX types below.
-
-typedef NSComparisonResult (^YapDatabaseViewFindWithKeyBlock)      \
-                                                        (NSString *collection, NSString *key);
-typedef NSComparisonResult (^YapDatabaseViewFindWithObjectBlock)   \
-                                                        (NSString *collection, NSString *key, id object);
-typedef NSComparisonResult (^YapDatabaseViewFindWithMetadataBlock) \
-                                                        (NSString *collection, NSString *key, id metadata);
-typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
-                                                        (NSString *collection, NSString *key, id object, id metadata);
-
 /**
  * This method uses a binary search algorithm to find a range of items within the view that match the given criteria.
  * For example:
@@ -166,8 +158,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * NSDate *beginningOfMonday = ...   // Monday at 12:00 AM
  * NSDate *beginningOfTuesday =  ... // Tuesday at 12:00 AM
  *
- * YapDatabaseViewBlockType blockType = YapDatabaseViewBlockTypeWithObject;
- * YapDatabaseViewFindWithObjectBlock block = ^(NSString *key, id object){
+ * YapDatabaseViewFindWithObjectBlock block = ^(NSString *collection, NSString *key, id object){
  *
  *     Purchase *purchase = (Purchase *)object;
  *
@@ -234,20 +225,32 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * @param group
  *     The group within the view to search.
  * 
- * @param block
- *     One of the YapDatabaseViewFindWithXBlock types.
- * 
- * @param blockType
- *     The proper YapDatabaseViewBlockTypeWithX type that matches the given block.
+ * @param find
+ *     Instance of YapDatabaseViewFind. (See YapDatabaseViewTypes.h)
  * 
  * @return
  *     If found, the range that matches the items within the desired range.
  *     That is, is these items were passed to the given block, the block would return NSOrderedSame.
  *     If not found, returns NSMakeRange(NSNotFound, 0).
 **/
-- (NSRange)findRangeInGroup:(NSString *)group
-                 usingBlock:(YapDatabaseViewFindBlock)block
-                  blockType:(YapDatabaseViewBlockType)blockType;
+- (NSRange)findRangeInGroup:(NSString *)group using:(YapDatabaseViewFind *)find;
+
+/**
+ * This method uses a binary search algorithm to find an item within the view that matches the given criteria.
+ * 
+ * It works similarly to findRangeInGroup:using:, but immediately returns once a single match has been found.
+ * This makes it more efficient when you only care about the existence of a match,
+ * or you know there will never be more than a single match.
+ *
+ * See the documentation for findRangeInGroup:using: for more information.
+ * @see findRangeInGroup:using:
+ *
+ * @return
+ *   If found, the index of the first match discovered.
+ *   That is, an item where the find block returned NSOrderedSame.
+ *   If not found, returns NSNotFound.
+**/
+- (NSUInteger)findFirstMatchInGroup:(NSString *)group using:(YapDatabaseViewFind *)find;
 
 #pragma mark Enumerating
 
@@ -335,9 +338,9 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * In all other cases, the view will properly reflect a corresponding change in the notification that's posted.
 **/
 
-- (void)touchRowForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)touchObjectForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)touchMetadataForKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)touchRowForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)touchObjectForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (void)touchMetadataForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * This method allows you to change the grouping and/or sorting on-the-fly.
@@ -347,7 +350,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
 **/
 - (void)setGrouping:(YapDatabaseViewGrouping *)grouping
             sorting:(YapDatabaseViewSorting *)sorting
-         versionTag:(NSString *)versionTag;
+         versionTag:(nullable NSString *)versionTag;
 
 @end
 
@@ -371,7 +374,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+- (nullable id)metadataAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -381,7 +384,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
+- (nullable id)objectAtIndex:(NSUInteger)keyIndex inGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -391,7 +394,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)firstObjectInGroup:(NSString *)group;
+- (nullable id)firstObjectInGroup:(NSString *)group;
 
 /**
  * Equivalent to invoking:
@@ -401,7 +404,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)lastObjectInGroup:(NSString *)group;
+- (nullable id)lastObjectInGroup:(NSString *)group;
 
 /**
  * The following methods are similar to invoking the enumerateKeysInGroup:... methods,
@@ -529,8 +532,8 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * Returns NO if the indexPath is invalid, or the mappings aren't initialized.
  * Otherwise returns YES, and sets the key & collection ptr (both optional).
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nonnull * _Nullable)keyPtr
+    collection:(NSString * _Nonnull * _Nullable)collectionPtr
    atIndexPath:(NSIndexPath *)indexPath
   withMappings:(YapDatabaseViewMappings *)mappings;
 
@@ -539,8 +542,8 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * Returns NO if the row or section is invalid, or the mappings aren't initialized.
  * Otherwise returns YES, and sets the key & collection ptr (both optional).
 **/
-- (BOOL)getKey:(NSString **)keyPtr
-    collection:(NSString **)collectionPtr
+- (BOOL)getKey:(NSString * _Nonnull * _Nullable)keyPtr
+    collection:(NSString * _Nonnull * _Nullable)collectionPtr
         forRow:(NSUInteger)row
      inSection:(NSUInteger)section
   withMappings:(YapDatabaseViewMappings *)mappings;
@@ -550,7 +553,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
 - (NSIndexPath *)indexPathForKey:(NSString *)key
-                    inCollection:(NSString *)collection
+                    inCollection:(nullable NSString *)collection
                     withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
@@ -558,10 +561,10 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  * Returns NO if the {collection, key} tuple isn't included in the view + mappings.
  * Otherwise returns YES, and sets the row & section (both optional).
 **/
-- (BOOL)getRow:(NSUInteger *)rowPtr
-       section:(NSUInteger *)sectionPtr
+- (BOOL)getRow:(nullable NSUInteger *)rowPtr
+       section:(nullable NSUInteger *)sectionPtr
         forKey:(NSString *)key
-  inCollection:(NSString *)collection
+  inCollection:(nullable NSString *)collection
   withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
@@ -574,7 +577,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)objectAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the object at the given indexPath, assuming the given mappings are being used.
@@ -590,7 +593,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     object = [transaction objectForKey:key inCollection:collection];
  * }
 **/
-- (id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)objectAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the metadata at the given indexPath, assuming the given mappings are being used.
@@ -602,7 +605,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)metadataAtIndexPath:(NSIndexPath *)indexPath withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Gets the object at the given indexPath, assuming the given mappings are being used.
@@ -618,6 +621,8 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)      \
  *     metadata = [transaction metadataForKey:key inCollection:collection];
  * }
 **/
-- (id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable id)metadataAtRow:(NSUInteger)row inSection:(NSUInteger)section withMappings:(YapDatabaseViewMappings *)mappings;
 
 @end
+
+NS_ASSUME_NONNULL_END

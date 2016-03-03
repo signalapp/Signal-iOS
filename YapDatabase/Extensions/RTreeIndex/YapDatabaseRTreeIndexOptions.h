@@ -36,6 +36,6 @@
  *
  * The default value is nil.
 **/
-@property (nonatomic, strong, readwrite) YapWhitelistBlacklist *allowedCollections;
+@property (nonatomic, strong, readwrite, nullable) YapWhitelistBlacklist *allowedCollections;
 
 @end

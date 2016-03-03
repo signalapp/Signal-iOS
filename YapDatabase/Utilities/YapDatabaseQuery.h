@@ -1,37 +1,37 @@
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A YapDatabaseQuery is used to pass SQL style queries into various extension classes.
- * The query that you pass represents everything after the SELECT clause of a query.
+ * The query is generally a subset of a full SQL query, as the system can handle various details automatically.
  * 
  * For example:
+ *
  * query = [YapDatabaseQuery queryWithFormat:@"WHERE department = ? AND salary >= ?", deptStr, @(minSalary)];
  * [secondaryIndex enumerateKeysAndObjectsMatchingQuery:query
  *                                           usingBlock:^(NSString *collection, NSString *key, id object, BOOL *stop){
  *     ...
  * }];
  *
- * Methods that take YapDatabaseQuery parameters will automatically prefix your query string with
- * the proper 'SELECT' clause. So it may get expanded to something like this:
- *
- * @"SELECT rowid FROM 'database' WHERE department = ? AND salary >= ?"
- *
  * YapDatabaseQuery supports the following types as query parameters:
  * - NSNumber
  * - NSDate    (automatically converted to double via timeIntervalSinceReferenceDate)
  * - NSString
+ * - NSData
  * - NSArray   (of any regular type above)
  * 
- * Example 2:
+ * Array example:
  * 
  * NSArray *departments = [self engineeringDepartments];
  * query = [YapDatabaseQuery queryWithFormat:@"WHERE title = ? AND department IN (?)", @"manager", departments];
 **/
 @interface YapDatabaseQuery : NSObject
 
+#pragma mark Standard Queries
+
 /**
- * A YapDatabaseQuery is everything after the SELECT clause of a query.
+ * A "standard" YapDatabaseQuery is everything after the SELECT clause of a query.
  * Thus they generally start with "WHERE ...".
  * 
  * Please note that you can ONLY pass objects as parameters.
@@ -67,7 +67,41 @@
 **/
 + (instancetype)queryMatchingAll;
 
-@property (nonatomic, strong, readonly) NSString *queryString;
-@property (nonatomic, strong, readonly) NSArray *queryParameters;
+#pragma mark Aggregate Queries
+
+/**
+ * Aggregate Queries (avg, max, min, sum, ...)
+ * 
+ * For example:
+ *
+ * // Figure out how much the "dev" department costs the business via salaries.
+ * // We do this by asking the database to sum the salary column(s) matching the given query.
+ *
+ * YapDatabaseQuery *query = [YapDatabaseQuery queryWithAggregateFunction:@"SUM(salary)"
+ *                                                                 format:@"WHERE department = ?", @"dev"];
+ *
+ * For more inforation, see the sqlite docs on "Aggregate Functions":
+ * https://www.sqlite.org/lang_aggfunc.html
+**/
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction format:(NSString *)format, ...;
+
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction
+                                    format:(NSString *)format
+                                 arguments:(va_list)arguments;
+
++ (instancetype)queryWithAggregateFunction:(NSString *)aggregateFunction
+                                    string:(NSString *)queryString
+                                parameters:(NSArray *)queryParameters;
+
+
+#pragma mark Properties
+
+@property (nonatomic, copy, readonly) NSString *aggregateFunction;
+@property (nonatomic, copy, readonly) NSString *queryString;
+@property (nonatomic, copy, readonly) NSArray *queryParameters;
+
+@property (nonatomic, readonly) BOOL isAggregateQuery;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -3,6 +3,7 @@
 
 @class YapDatabaseSecondaryIndex;
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseSecondaryIndexConnection : YapDatabaseExtensionConnection
 
@@ -31,3 +32,5 @@
 @property (atomic, assign, readwrite) NSUInteger queryCacheLimit;
 
 @end
+
+NS_ASSUME_NONNULL_END

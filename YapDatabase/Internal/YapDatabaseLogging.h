@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 /**
  * Logging plays a very important role in open-source libraries.
  * 
@@ -98,12 +100,12 @@ NSString *YDBExtractFileNameWithoutExtension(const char *filePath);
 // There is a TON of documentation available from the project page:
 // https://github.com/robbiehanson/CocoaLumberjack
 
-#import "DDLog.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 #define YDBLogAsync   NO
 #define YDBLogContext 27017
 
-#define YDBLogMaybe(flg, frmt, ...) LOG_OBJC_MAYBE(YDBLogAsync, ydbLogLevel, flg, YDBLogContext, frmt, ##__VA_ARGS__)
+#define YDBLogMaybe(flg,frmt, ...)   LOG_MAYBE(YDBLogAsync, (DDLogLevel)ydbLogLevel, (DDLogFlag)flg, YDBLogContext, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
 
 #define YDBLogError(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_ERROR,   (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 #define YDBLogWarn(frmt, ...)      YDBLogMaybe(YDB_LOG_FLAG_WARN,    (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
