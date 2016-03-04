@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 
-typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id object, id metadata);
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id object, _Nullable id metadata);
 
 /**
  * This class is used by the YapDatabaseActionManager,
@@ -15,7 +17,7 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
  * See the description for each individual property below.
 **/
 - (instancetype)initWithIdentifier:(NSString *)identifier
-                              date:(NSDate *)date
+                              date:(nullable NSDate *)date
                       retryTimeout:(NSTimeInterval)retryTimeout
                   requiresInternet:(BOOL)requiresInternet
                              block:(YapActionItemBlock)block;
@@ -81,10 +83,17 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
 
 
 /**
- * Simple date comparison routines.
+ * Compares self.date with the atDate parameter.
+ * 
+ * @param atDate
+ *   The date to compare with.
+ *   If nil, the current date is automatically used.
+ * 
+ * @return
+ *   Returns NO if self.date is after atDate (comparitively in the future).
+ *   Returns YES otherwise (comparitively in the past or present).
 **/
-- (BOOL)isReadyToStartAtDate:(NSDate *)atDate;
-- (BOOL)isReadyToRetryAtDate:(NSDate *)atDate;
+- (BOOL)isReadyToStartAtDate:(nullable NSDate *)atDate;
 
 /**
  * Two YapActionItems are considered to be the same if they have the same identifier & date.
@@ -108,3 +117,6 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
 - (NSComparisonResult)compare:(YapActionItem *)another;
 
 @end
+
+NS_ASSUME_NONNULL_END
+

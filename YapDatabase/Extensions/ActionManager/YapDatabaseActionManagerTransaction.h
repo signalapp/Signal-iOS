@@ -4,5 +4,4 @@
 
 @interface YapDatabaseActionManagerTransaction : YapDatabaseViewTransaction
 
-
 @end

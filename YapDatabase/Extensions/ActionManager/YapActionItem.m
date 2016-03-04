@@ -51,14 +51,39 @@
 	return copy;
 }
 
+/**
+ * Compares self.date with the atDate parameter.
+ *
+ * @param atDate
+ *   The date to compare with.
+ *   If nil, the current date is automatically used.
+ *
+ * @return
+ *   Returns NO if self.date is after atDate (comparitively in the future).
+ *   Returns YES otherwise (comparitively in the past or present).
+**/
 - (BOOL)isReadyToStartAtDate:(NSDate *)atDate
 {
 	if (atDate == nil)
 		atDate = [NSDate date];
 	
+	// if (date <= atDate) -> date is in past   -> ready
+	// if (date  > atDate) -> date is in future -> not ready
+	//
 	return [date isBeforeOrEqual:atDate];
 }
 
+/**
+ * Compares self.nextRetry with the atDate parameter.
+ *
+ * @param atDate
+ *   The date to compare with.
+ *   If nil, the current date is automatically used.
+ *
+ * @return
+ *   Returns NO if self.nextRetry is after atDate (comparitively in the future).
+ *   Returns YES otherwise (comparitively in the past or present).
+**/
 - (BOOL)isReadyToRetryAtDate:(NSDate *)atDate
 {
 	if (nextRetry == nil)
@@ -70,6 +95,9 @@
 		if (atDate == nil)
 			atDate = [NSDate date];
 		
+		// if (nextRetry <= atDate) -> nextRetry is in past   -> ready
+		// if (nextRetry  > atDate) -> nextRetry is in future -> not ready
+		//
 		return [nextRetry isBeforeOrEqual:atDate];
 	}
 }
@@ -87,6 +115,8 @@
 **/
 - (NSComparisonResult)compare:(YapActionItem *)another
 {
+	NSAssert(another != nil, @"Attempting to compare with nil !");
+	
 	NSComparisonResult result = [date compare:another->date];
 	
 	if (result != NSOrderedSame)
