@@ -10,6 +10,7 @@
 @synthesize date = date;
 @synthesize retryTimeout = retryTimeout;
 @synthesize requiresInternet = requiresInternet;
+@synthesize queue = queue;
 @synthesize block = block;
 
 @synthesize isStarted = isStarted;
@@ -22,6 +23,21 @@
                   requiresInternet:(BOOL)inRequiresInternet
                              block:(YapActionItemBlock)inBlock
 {
+	return [self initWithIdentifier:inIdentifier
+	                           date:inDate
+	                   retryTimeout:inRetryTimeout
+	               requiresInternet:inRequiresInternet
+	                          queue:nil
+	                           block:inBlock];
+}
+
+- (instancetype)initWithIdentifier:(NSString *)inIdentifier
+                              date:(nullable NSDate *)inDate
+                      retryTimeout:(NSTimeInterval)inRetryTimeout
+                  requiresInternet:(BOOL)inRequiresInternet
+                             queue:(nullable dispatch_queue_t)inQueue
+                             block:(YapActionItemBlock)inBlock
+{
 	NSAssert(inIdentifier != nil, @"YapActionItem: %@ - identifier cannot be nil !", NSStringFromSelector(_cmd));
 	
 	if ((self = [super init]))
@@ -30,6 +46,7 @@
 		date = inDate ? inDate : [NSDate dateWithTimeIntervalSinceReferenceDate:0.0];
 		retryTimeout = inRetryTimeout;
 		requiresInternet = inRequiresInternet;
+		queue = inQueue;
 		block = inBlock;
 	}
 	return self;
@@ -42,6 +59,7 @@
 	copy->date = date;
 	copy->retryTimeout = retryTimeout;
 	copy->requiresInternet = requiresInternet;
+	copy->queue = queue;
 	copy->block = block;
 	
 	copy->isStarted = isStarted;

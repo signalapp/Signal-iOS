@@ -16,10 +16,18 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
 /**
  * See the description for each individual property below.
 **/
+
 - (instancetype)initWithIdentifier:(NSString *)identifier
                               date:(nullable NSDate *)date
                       retryTimeout:(NSTimeInterval)retryTimeout
                   requiresInternet:(BOOL)requiresInternet
+                             block:(YapActionItemBlock)block;
+
+- (instancetype)initWithIdentifier:(NSString *)identifier
+                              date:(nullable NSDate *)date
+                      retryTimeout:(NSTimeInterval)retryTimeout
+                  requiresInternet:(BOOL)requiresInternet
+                             queue:(nullable dispatch_queue_t)queue
                              block:(YapActionItemBlock)block;
 
 /**
@@ -74,10 +82,21 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
 @property (nonatomic, assign, readonly) BOOL requiresInternet;
 
 /**
+ * The YapActionItemBlock will be executed on this queue via dispatch_async.
+ * 
+ * If no queue is specified, a global queue is automatically used.
+ * Specifically: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+**/
+@property (nonatomic, strong, readonly, nullable) dispatch_queue_t queue;
+
+/**
  * The block that gets executed (at the proper time).
+ * The block will be executed (via dispatch_async) on the designated 'queue'.
  * 
  * Important: This block should NOT retain 'self'.
  * The block should rely upon the various parameters in order to get its information.
+ * 
+ * @see queue
 **/
 @property (nonatomic, strong, readonly) YapActionItemBlock block;
 

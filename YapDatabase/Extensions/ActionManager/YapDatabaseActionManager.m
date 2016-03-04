@@ -631,11 +631,14 @@
 				}
 				else
 				{
-					dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-					dispatch_async(bgQueue, ^{
+					dispatch_queue_t actionQueue = actionItem.queue;
+					if (actionQueue == nil)
+						actionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+					
+					dispatch_async(actionQueue, ^{ @autoreleasepool {
 						
 						actionItem.block(ck.collection, ck.key, object, metadata);
-					});
+					}});
 					
 					actionItem.isStarted = YES;
 					actionItem.isPendingInternet = NO;
