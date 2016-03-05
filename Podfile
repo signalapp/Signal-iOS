@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 link_with ["Signal", "SignalTests"]
 
 pod 'TextSecureKit',              :git => 'https://github.com/WhisperSystems/TextSecureKit', :branch => 'master'
-pod 'OpenSSL',                    '~> 1.0.205'
+pod 'OpenSSL',                    '~> 1.0.207'
 pod 'PastelogKit',                '~> 1.3'
 pod 'FFCircularProgressView',     '~> 0.5'
 pod 'SCWaveformView',             '~> 1.0'
