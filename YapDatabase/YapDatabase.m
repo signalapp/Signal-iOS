@@ -2725,13 +2725,17 @@ static int connectionBusyHandler(void *ptr, int count) {
 		}
 	}
     
-    if(self.options.enableMultiProcessSupport) {
-        const uint64_t expectedSnapshotsCount = maxSnapshot - connectionSnapshot;
-        if([relevantChangesets count] != expectedSnapshotsCount) {
-            YDBLogVerbose(@"Expect snapshot count not found: %lu != %lu. Database seems to have been modified from another process. Discarding changeset");
-            return nil;
-        }
-    }
+	if (self.options.enableMultiProcessSupport)
+	{
+		const uint64_t expectedSnapshotsCount = maxSnapshot - connectionSnapshot;
+		if (expectedSnapshotsCount != relevantChangesets.count)
+		{
+			YDBLogVerbose(@"Expected snapshot count not found: expected(%llu) != found(%llu)."
+			              @" Database seems to have been modified from another process. Discarding changeset.",
+			              expectedSnapshotsCount, (uint64_t)relevantChangesets.count);
+			return nil;
+		}
+	}
 	
 	return relevantChangesets;
 }
