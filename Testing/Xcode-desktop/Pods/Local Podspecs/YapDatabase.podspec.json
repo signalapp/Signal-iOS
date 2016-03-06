@@ -105,6 +105,15 @@
             {
               "name": "ConnectionProxy",
               "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ActionManager",
+              "dependencies": {
+                "Reachability": [
+                  "~> 3"
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}"
             }
           ]
         }
@@ -197,6 +206,15 @@
             {
               "name": "ConnectionProxy",
               "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ActionManager",
+              "dependencies": {
+                "Reachability": [
+                  "~> 3"
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}"
             }
           ]
         }

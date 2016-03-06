@@ -2226,20 +2226,35 @@ static int connectionBusyHandler(void *ptr, int count) {
 		return NO;
 	}
 	
-	// Make sure the extension can be supported
-	
-	if (![extension supportsDatabase:self withRegisteredExtensions:_registeredExtensions])
-	{
-		YDBLogError(@"Error registering extension: extension doesn't support database configuration");
-		return NO;
-	}
-	
 	// Attempt registration
 	
-	if (connection == nil)
-		connection = [self registrationConnection];
+	extension.registeredName = extensionName;
+	extension.registeredDatabase = self;
 	
-	BOOL result = [connection registerExtension:extension withName:extensionName];
+	BOOL result = [extension supportsDatabaseWithRegisteredExtensions:_registeredExtensions];
+	if (!result)
+	{
+		YDBLogError(@"Error registering extension: extension doesn't support database configuration");
+	}
+	else
+	{
+		if (connection == nil)
+			connection = [self registrationConnection];
+		
+		result = [connection registerExtension:extension withName:extensionName];
+	}
+	
+	if (result)
+	{
+		[extension didRegisterExtension];
+	}
+	else
+	{
+		extension.registeredName = nil;
+		extension.registeredDatabase = nil;
+	}
+	
+	
 	return result;
 }
 
@@ -2763,20 +2778,11 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	// Forward the changeset to all extensions.
 	
-	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
-	if (changeset_extensions)
+	[registeredExtensions enumerateKeysAndObjectsUsingBlock:
+	    ^(NSString *extName, YapDatabaseExtension *ext, BOOL __unused *stop)
 	{
-		[registeredExtensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extObj, BOOL __unused *stop) {
-			
-			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
-			if (changeset_extensions_extName)
-			{
-				__unsafe_unretained YapDatabaseExtension *ext = extObj;
-				
-				[ext processChangeset:changeset_extensions_extName];
-			}
-		}];
-	}
+		[ext noteCommittedChangeset:changeset registeredName:extName];
+	}];
 	
 	// Forward the changeset to all other connections so they can perform any needed updates.
 	// Generally this means updating the in-memory components such as the cache.

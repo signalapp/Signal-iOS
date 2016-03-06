@@ -37,9 +37,9 @@
 	NSString *reason = @"You must use the init method(s) specific to YapDatabaseFilteredView.";
 	
 	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
-	    @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
-		@" Thus it needs to know the registeredName of the YapDatabaseView instance you wish to filter."
-		@" As such, YapDatabaseFilteredView has different init methods you must use."};
+	  @"YapDatabaseFilteredView is designed to filter an existing YapDatabaseView instance."
+	  @" Thus it needs to know the registeredName of the YapDatabaseView instance you wish to filter."
+	  @" As such, YapDatabaseFilteredView has different init methods you must use."};
 	
 	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	
@@ -119,9 +119,9 @@
 #pragma mark Registration
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)supportsDatabase:(YapDatabase *)database withRegisteredExtensions:(NSDictionary *)registeredExtensions
+- (BOOL)supportsDatabaseWithRegisteredExtensions:(NSDictionary<NSString*, YapDatabaseExtension*> *)registeredExtensions
 {
-	if (![super supportsDatabase:database withRegisteredExtensions:registeredExtensions])
+	if (![super supportsDatabaseWithRegisteredExtensions:registeredExtensions])
 		return NO;
 	
 	YapDatabaseExtension *ext = [registeredExtensions objectForKey:parentViewName];

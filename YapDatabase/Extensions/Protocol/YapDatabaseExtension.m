@@ -66,17 +66,38 @@
  * Subclasses may OPTIONALLY implement this method.
  * This method is called during the extension registration process to enusre the extension (as configured)
  * will support the given database configuration. This is primarily for extensions with dependecies.
- * 
+ *
  * For example, the YapDatabaseFilteredView is configured with the registered name of a parent View instance.
  * So that class should implement this method to ensure:
  * - The parentView actually exists
  * - The parentView is actually a YapDatabaseView class/subclass
  * 
+ * When this method is invoked, the 'self.registeredName' & 'self.registeredDatabase' properties
+ * will be set and available for inspection.
+ * 
+ * @param registeredExtensions
+ *   The current set of registered extensions. (i.e. self.registeredDatabase.registeredExtensions)
+ * 
  * Return YES if the class/instance supports the database configuration.
 **/
-- (BOOL)supportsDatabase:(YapDatabase __unused *)database withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
+- (BOOL)supportsDatabaseWithRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 {
 	return YES;
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ * 
+ * This is a simple hook method to let the extension now that it's been registered with the database.
+ * This method is invoked after the readWriteTransaction (that registered the extension) has been committed.
+ * 
+ * Important:
+ *   This method is invoked within the writeQueue.
+ *   So either don't do anything expensive/time-consuming in this method, or dispatch_async to do it in another queue.
+**/
+- (void)didRegisterExtension
+{
+	// Override me if needed
 }
 
 /**
@@ -128,6 +149,38 @@
 - (void)processChangeset:(NSDictionary __unused *)changeset
 {
 	// Override me if needed (for optimizations)
+}
+
+/**
+ * Subclasses may OPTIONALLY implement this method.
+ *
+ * The default implementation likely does the right thing for most extensions.
+ * That is, most extensions only need the information they store in the changeset.
+ * However, the full changeset also contains information about what was changed in the main database table:
+ * - YapDatabaseObjectChangesKey
+ * - YapDatabaseMetadataChangesKey
+ * - YapDatabaseRemovedKeysKey
+ * - YapDatabaseRemovedCollectionsKey
+ * - YapDatabaseAllKeysRemovedKey
+ *
+ * So if the extension needs this information, it's better to re-use what's already available,
+ * rather than have the extension duplicate the same information within its local changeset.
+ *
+ * @param changeset
+ *   The FULL changeset dictionary, including the core changeset info,
+ *   as well as the changeset info for every registered extension.
+ *
+ * @param registeredName
+ *   The registeredName of the extension.
+ *   This is the same as self.registeredName, and is simply passed as a convenience.
+**/
+- (void)noteCommittedChangeset:(NSDictionary *)changeset registeredName:(NSString *)extName
+{
+	NSDictionary *ext_changeset = [[changeset objectForKey:YapDatabaseExtensionsKey] objectForKey:extName];
+	if (ext_changeset)
+	{
+		[self processChangeset:ext_changeset];
+	}
 }
 
 @end

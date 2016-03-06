@@ -3696,27 +3696,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		registeredMemoryTables = changeset_registeredMemoryTables;
 	}
 	
-	// Allow extensions to process their individual changesets
-	
-	NSDictionary *changeset_extensions = [changeset objectForKey:YapDatabaseExtensionsKey];
-	if (changeset_extensions)
-	{
-		// Use existing extensions (extensions ivar, not [self extensions]).
-		// There's no need to create any new extConnections at this point.
-		
-		[extensions enumerateKeysAndObjectsUsingBlock:^(id extName, id extConnectionObj, BOOL __unused *stop) {
-			
-			__unsafe_unretained YapDatabaseExtensionConnection *extConnection = extConnectionObj;
-			
-			NSDictionary *changeset_extensions_extName = [changeset_extensions objectForKey:extName];
-			if (changeset_extensions_extName)
-			{
-				[extConnection processChangeset:changeset_extensions_extName];
-			}
-		}];
-	}
-	
-	// Process normal database changset information
+	// Process normal database changeset information
 	
 	NSDictionary *changeset_objectChanges   =  [changeset objectForKey:YapDatabaseObjectChangesKey];
 	NSDictionary *changeset_metadataChanges =  [changeset objectForKey:YapDatabaseMetadataChangesKey];
@@ -4083,16 +4063,32 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	YDBLogVerbose(@"Processing changeset %lu for connection %@, database %@",
 	              (unsigned long)changesetSnapshot, self, database);
 	
-    if (snapshot == changesetSnapshot - 1) {
-        snapshot = changesetSnapshot;
-        [self processChangeset:changeset];
-    }
-    else {
-        // Snapshot number do not match, there might have been a modification from another process, we should flush cache and process the changeset
-        snapshot = changesetSnapshot;
-        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
-        [self processChangeset:changeset];
-    }
+	if (snapshot == changesetSnapshot - 1)
+	{
+		snapshot = changesetSnapshot;
+		[self processChangeset:changeset];
+	}
+	else
+	{
+		// Snapshot numbers do not match: there might have been a modification from another process.
+		// We should flush cache and then process the changeset.
+		
+		snapshot = changesetSnapshot;
+		
+		[self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+		[self processChangeset:changeset];
+	}
+	
+	// Allow extensions to process their individual changesets
+	//
+	// Use existing extensions (extensions ivar, not [self extensions]).
+	// There's no need to create any new extConnections at this point.
+		
+	[extensions enumerateKeysAndObjectsUsingBlock:
+	    ^(NSString *extName, YapDatabaseExtensionConnection *extConnection, BOOL __unused *stop)
+	{
+		[extConnection noteCommittedChangeset:changeset registeredName:extName];
+	}];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4722,11 +4718,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
 		[self preReadWriteTransaction:transaction];
 		
-		// Set the registeredName now.
-		// The extension will need this in order to perform the registration tasks such as creating tables, etc.
-		extension.registeredName = extensionName;
-		extension.registeredDatabase = database;
-		
 		YapDatabaseExtensionConnection *extensionConnection;
 		YapDatabaseExtensionTransaction *extensionTransaction;
 		
@@ -4754,9 +4745,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		else
 		{
 			// Registration failed.
-			
-			extension.registeredName = nil;
-			extension.registeredDatabase = nil;
 			
 			[transaction rollback];
 		}
@@ -4977,7 +4965,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	YDBLogWarn(@"Dropping tables for previously registered extension with name(%@), class(%@) for new class(%@)",
 	           extensionName, prevExtensionClassName, extensionClassName);
 	
-    Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
+	Class abstractExtClass = NSClassFromString(@"YapDatabaseExtension");
 	Class prevExtensionClass = NSClassFromString(prevExtensionClassName);
 	
 	if (prevExtensionClass == NULL)
