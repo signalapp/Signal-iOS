@@ -123,12 +123,12 @@ NSString *YDBExtractFileNameWithoutExtension(const char *filePath);
 // Logging uses plain old NSLog. (slower)
 
 #define YDBLogMaybe(flg, frmt, ...) \
-    do{ if(ydbLogLevel & flg) NSLog((@"%@: " frmt), THIS_FILE, ##__VA_ARGS__); } while(0)
+    do{ if(ydbLogLevel & flg) NSLog(frmt, ##__VA_ARGS__); } while(0)
 
-#define YDBLogError(frmt, ...)    YDBLogMaybe(YDB_LOG_FLAG_ERROR,   frmt, ##__VA_ARGS__)
-#define YDBLogWarn(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_WARN,    frmt, ##__VA_ARGS__)
-#define YDBLogInfo(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_INFO,    frmt, ##__VA_ARGS__)
-#define YDBLogVerbose(frmt, ...)  YDBLogMaybe(YDB_LOG_FLAG_VERBOSE, frmt, ##__VA_ARGS__)
+#define YDBLogError(frmt, ...)    YDBLogMaybe(YDB_LOG_FLAG_ERROR,   (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
+#define YDBLogWarn(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_WARN,    (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
+#define YDBLogInfo(frmt, ...)     YDBLogMaybe(YDB_LOG_FLAG_INFO,    (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
+#define YDBLogVerbose(frmt, ...)  YDBLogMaybe(YDB_LOG_FLAG_VERBOSE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 
 #define YDBLogTrace(frmt, ...) YDBLogMaybe(YDB_LOG_FLAG_TRACE, (@"%@: " frmt), THIS_FILE, ##__VA_ARGS__)
 #define YDBLogAutoTrace()      YDBLogMaybe(YDB_LOG_FLAG_TRACE,  @"%@: %@",     THIS_FILE, THIS_METHOD)
