@@ -104,12 +104,13 @@
 **/
 - (void)didCommitTransaction
 {
-    
-    if(self.anyChange)
-    {
-        YapDatabaseCrossProcessNotification* ext = self.parentConnection.extension;
-        [ext notifyChanged];
-    }
+	if (self.anyChange)
+	{
+		YapDatabaseCrossProcessNotification *ext =
+		  (YapDatabaseCrossProcessNotification *)self.parentConnection.extension;
+		
+		[ext notifyChanged];
+	}
     
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
