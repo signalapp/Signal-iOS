@@ -7,6 +7,8 @@
 	NSSet *set;
 }
 
+@dynamic count;
+
 - (id)initWithSet:(NSMutableSet *)inSet
 {
 	if ((self = [super init]))
@@ -26,6 +28,14 @@
 }
 
 // NSSet methods
+
+- (NSUInteger)count
+{
+	if (set)
+		return set.count;
+	else
+		return dictionary.count;
+}
 
 - (BOOL)containsObject:(id)object
 {

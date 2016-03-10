@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // NSSet methods
 
+@property (nonatomic, readonly) NSUInteger count;
+
 - (BOOL)containsObject:(id)anObject;
 - (BOOL)intersectsSet:(NSSet *)otherSet;
 
