@@ -919,13 +919,11 @@ typedef enum : NSUInteger {
 
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter:
-            if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
-                [self handleUnsentMessageTap:(TSOutgoingMessage *)interaction];
-            }
         case TSIncomingMessageAdapter: {
             BOOL isMediaMessage = [messageItem isMediaMessage];
-
-            if (isMediaMessage) {
+            if (!isMediaMessage) {
+                [self handleTapNonMediaMessage:(TSMessage *)interaction withAdapter:messageItem];
+            } else {
                 if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
@@ -1207,29 +1205,45 @@ typedef enum : NSUInteger {
 
 #pragma mark Bubble User Actions
 
-- (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
+- (void)handleTapNonMediaMessage:(TSMessage *)message withAdapter:(TSMessageAdapter *)adapter {
     [self dismissKeyBoard];
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-             otherButtonTitles:@[ NSLocalizedString(@"SEND_AGAIN_BUTTON", @"") ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogDebug(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            [self.editingDatabaseConnection
-                                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                  [message removeWithTransaction:transaction];
-                                }];
-                        } else {
-                            [[TSMessagesManager sharedManager] sendMessage:message
-                                                                  inThread:self.thread
-                                                                   success:nil
-                                                                   failure:nil];
-                            [self finishSendingMessage];
-                        }
-                      }];
+
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NULL
+                                                                             message:NULL
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * _Nonnull action) { /*no-op*/ } ];
+
+    void (^deleteMessage)() = ^() {
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+             [message removeWithTransaction:transaction];
+         }];
+    };
+    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                  style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction * _Nonnull action) { deleteMessage(); } ];
+
+    [alertController addAction:cancelAction];
+    [alertController addAction:deleteMessageAction];
+
+    if (adapter.messageState == TSOutgoingMessageStateUnsent) {
+        void (^resendMessage)() = ^() {
+            [[TSMessagesManager sharedManager] sendMessage:(TSOutgoingMessage *)message
+                                                  inThread:self.thread
+                                                   success:nil
+                                                   failure:nil];
+            [self finishSendingMessage];
+        };
+        UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:^(UIAlertAction * _Nonnull action) { resendMessage(); } ];
+        [alertController addAction:resendMessageAction];
+    }
+
+
+    [self presentViewController:alertController animated:true completion:nil];
 }
 
 - (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
