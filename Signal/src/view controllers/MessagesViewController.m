@@ -173,6 +173,8 @@ typedef enum : NSUInteger {
     [self initializeBubbles];
     [self initializeTextView];
 
+    [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
+
     [self initializeCollectionViewLayout];
 
     self.senderId          = ME_MESSAGE_IDENTIFIER;
