@@ -1766,23 +1766,33 @@ typedef enum : NSUInteger {
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
     [self dismissKeyBoard];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NULL message:NULL preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction *takeMedia = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_MEDIA_BUTTON", @"") style:UIAlertControllerStyleAlert handler:^(UIAlertAction * _Nonnull action) {
-        [self takePictureOrVideo];
-    }];
-    
-    UIAlertAction *chooseMedia = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"") style:UIAlertControllerStyleAlert handler:^(UIAlertAction * _Nonnull action) {
-        [self chooseFromLibrary];
-    }];
-    
-    [alertController addAction:takeMedia];
-    [alertController addAction:chooseMedia];
-    
-    [self presentViewController:alertController animated:true completion:nil];
-    
-  }
+
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * _Nonnull action) { }];
+    [actionSheetController addAction:cancelAction];
+
+
+    UIAlertAction *takeMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_MEDIA_BUTTON", @"")
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * _Nonnull action) {
+                                                          [self takePictureOrVideo];
+                                                      }];
+    [actionSheetController addAction:takeMediaAction];
+
+    UIAlertAction *chooseMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * _Nonnull action) {
+                                                            [self chooseFromLibrary];
+                                                        }];
+    [actionSheetController addAction:chooseMediaAction];
+
+    [self presentViewController:actionSheetController animated:true completion:nil];
+}
 
 - (void)markAllMessagesAsRead {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
