@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQMessageData.h>
-#import "TSInteraction.h"
-#import "TSMessageAdapter.h"
-#import "TSThread.h"
+
+@class TSInteraction;
+@class TSThread;
 
 #define ME_MESSAGE_IDENTIFIER @"Me";
 
@@ -24,10 +24,11 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
     TSGenericTextMessageAdapter, // Used when message direction is unknown (outgoing or incoming)
 };
 
-@interface TSMessageAdapter : NSObject <JSQMessageData>
+@interface TSMessageAdapter : NSObject <JSQMessageData, OWSMessageEditing>
 
 + (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
 
+@property TSInteraction *interaction;
 @property TSMessageAdapterType messageType;
 
 @end

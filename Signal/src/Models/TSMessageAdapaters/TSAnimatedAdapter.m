@@ -8,13 +8,15 @@
 
 #import "TSAnimatedAdapter.h"
 #import "FLAnimatedImage.h"
+#import "TSAttachmentStream.h"
 #import "UIDevice+TSHardwareVersion.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @interface TSAnimatedAdapter ()
 
 @property (strong, nonatomic) UIImageView *cachedImageView;
-@property (strong, nonatomic) NSData *fileData;
 @property (strong, nonatomic) UIImage *image;
 @property (strong, nonatomic) TSAttachmentStream *attachment;
 
@@ -91,6 +93,36 @@
 - (BOOL)isVideo {
     return NO;
 }
+
+#pragma mark - OWSMessageEditing Protocol
+
+- (BOOL)canPerformEditingAction:(SEL)action
+{
+    return (action == @selector(copy:) || action == NSSelectorFromString(@"save:"));
+}
+
+- (void)performEditingAction:(SEL)action
+{
+    if (action == @selector(copy:)) {
+        UIPasteboard *pasteBoard = UIPasteboard.generalPasteboard;
+        [pasteBoard setData:self.fileData forPasteboardType:(__bridge NSString *)kUTTypeGIF];
+    } else if (action == NSSelectorFromString(@"save:")) {
+        NSData *photoData = self.fileData;
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        [library writeImageDataToSavedPhotosAlbum:photoData
+                                         metadata:nil
+                                  completionBlock:^(NSURL *assetURL, NSError *error) {
+                                      if (error) {
+                                          DDLogWarn(@"Error Saving image to photo album: %@", error);
+                                      }
+                                  }];
+    } else {
+        // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
+        NSString *actionString = NSStringFromSelector(action);
+        DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, [self class], self.attachmentId);
+    }
+}
+
 
 #pragma mark - Utility
 

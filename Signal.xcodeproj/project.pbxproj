@@ -17,6 +17,7 @@
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
+		459C3F0D1C9B3A1B003ACF51 /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */; };
 		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
 		45C681B81D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
 		45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */; };
@@ -503,6 +504,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		453D28AF1D32B87100D523F0 /* OWSErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSErrorMessage.h; sourceTree = "<group>"; };
 		453D28B01D32B87100D523F0 /* OWSErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSErrorMessage.m; sourceTree = "<group>"; };
@@ -516,6 +518,7 @@
 		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
 		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
 		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
+		459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageAdapterTest.m; path = "view controllers/Signals/TSMessageAdapters/TSMessageAdapterTest.m"; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
 		45C681B61D305A580050903A /* OWSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCall.m; sourceTree = "<group>"; };
 		45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCallCollectionViewCell.h; sourceTree = "<group>"; };
@@ -1135,6 +1138,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */ = {
+			isa = PBXGroup;
+			children = (
+				459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */,
+			);
+			name = TSMessageAdapters;
+			sourceTree = "<group>";
+		};
 		70B8009F190C529C0042E3F0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1736,6 +1747,7 @@
 				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
 				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
 				B6D3CBCE1C1376BE00C039DF /* TSContentAdapters.h */,
+				4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */,
 			);
 			name = TSMessageAdapters;
 			path = TSMessageAdapaters;
@@ -1794,6 +1806,7 @@
 			isa = PBXGroup;
 			children = (
 				457F3AB01D1470CF00C51351 /* view controllers */,
+				459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */,
 				B660F66D1C29867F00687D6E /* audio */,
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
@@ -2789,6 +2802,7 @@
 				B660F7051C29988E00687D6E /* EncodedAudioFrame.m in Sources */,
 				B660F7061C29988E00687D6E /* EncodedAudioPacket.m in Sources */,
 				B660F7071C29988E00687D6E /* AudioProcessor.m in Sources */,
+				459C3F0D1C9B3A1B003ACF51 /* TSMessageAdapterTest.m in Sources */,
 				B660F7081C29988E00687D6E /* AudioStretcher.m in Sources */,
 				B660F7091C29988E00687D6E /* DesiredBufferDepthController.m in Sources */,
 				B660F70A1C29988E00687D6E /* DropoutTracker.m in Sources */,
@@ -3298,7 +3312,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
-					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -3351,7 +3364,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
-					"$(PROJECT_DIR)/build/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",

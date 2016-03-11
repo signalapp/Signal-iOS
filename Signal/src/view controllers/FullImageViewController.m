@@ -7,7 +7,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <AssetsLibrary/AssetsLibrary.h>
 #import "DJWActionSheet+OWS.h"
 #import "FLAnimatedImage.h"
 #import "FullImageViewController.h"
@@ -143,18 +142,6 @@
     [self.view addGestureRecognizer:self.doubleTap];
 }
 
-- (void)initializeShareButton {
-    CGFloat buttonRadius = 50.0f;
-    CGFloat x            = 14.0f;
-    CGFloat y            = self.view.bounds.size.height - buttonRadius - 10.0f;
-
-    self.shareButton = [[UIButton alloc] initWithFrame:CGRectMake(x, y, buttonRadius, buttonRadius)];
-    [self.shareButton addTarget:self action:@selector(shareButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self.shareButton setImage:[UIImage imageNamed:@"savephoto"] forState:UIControlStateNormal];
-
-    [self.view addSubview:self.shareButton];
-}
-
 #pragma mark - Gesture Recognizers
 
 - (void)imageDoubleTapped:(UITapGestureRecognizer *)doubleTap {
@@ -220,7 +207,6 @@
                            self.scrollView.frame = self.view.bounds;
                            [self.scrollView addSubview:self.imageView];
                            [self updateLayouts];
-                           [self initializeShareButton];
                            self.view.userInteractionEnabled = YES;
                            _isPresenting                    = NO;
                          }];
@@ -365,52 +351,6 @@
     return size.height / size.width;
 }
 
-#pragma mark - Actions
-
-- (void)shareButtonTapped:(UIButton *)sender {
-    [DJWActionSheet showInView:self.view
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-             otherButtonTitles:@[
-                 NSLocalizedString(@"CAMERA_ROLL_SAVE_BUTTON", @""),
-                 NSLocalizedString(@"CAMERA_ROLL_COPY_BUTTON", @"")
-             ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            __block TSInteraction *interaction = [self interaction];
-                            [self dismissViewControllerAnimated:YES
-                                                     completion:^{
-                                                       [interaction remove];
-                                                     }];
-
-                        } else {
-                            switch (tappedButtonIndex) {
-                                case 0: {
-                                    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-                                    [library writeImageDataToSavedPhotosAlbum:self.fileData
-                                                                     metadata:nil
-                                                              completionBlock:^(NSURL *assetURL, NSError *error) {
-                                                                if (error) {
-                                                                    DDLogWarn(@"Error Saving image to photo album: %@",
-                                                                              error);
-                                                                }
-                                                              }];
-                                    break;
-                                }
-                                case 1:
-                                    [[UIPasteboard generalPasteboard] setImage:self.image];
-                                    break;
-                                default:
-                                    DDLogWarn(@"Illegal Action sheet field #%ld <%s>",
-                                              (long)tappedButtonIndex,
-                                              __PRETTY_FUNCTION__);
-                                    break;
-                            }
-                        }
-                      }];
-}
 
 #pragma mark - Saving images to Camera Roll
 

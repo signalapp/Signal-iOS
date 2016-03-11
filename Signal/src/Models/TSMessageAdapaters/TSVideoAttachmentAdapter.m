@@ -3,10 +3,12 @@
 
 #import "TSVideoAttachmentAdapter.h"
 #import "MIMETypeUtil.h"
+#import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import <FFCircularProgressView.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <SCWaveformView.h>
 #define AUDIO_BAR_HEIGHT 36
 
@@ -240,6 +242,64 @@
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {
     [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
     _cachedImageView = nil;
+}
+
+#pragma mark - OWSMessageEditing Protocol
+
+- (BOOL)canPerformEditingAction:(SEL)action
+{
+    if ([self isVideo]) {
+        return (action == @selector(copy:) || action == NSSelectorFromString(@"save:"));
+    } else if ([self isAudio]) {
+        return (action == @selector(copy:));
+    }
+
+    NSString *actionString = NSStringFromSelector(action);
+    DDLogError(
+        @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
+    return NO;
+}
+
+- (void)performEditingAction:(SEL)action
+{
+    if ([self isVideo]) {
+        if (action == @selector(copy:)) {
+            NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4];
+            return;
+        } else if (action == NSSelectorFromString(@"save:")) {
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.fileURL.path)) {
+                UISaveVideoAtPathToSavedPhotosAlbum(self.fileURL.path, self, nil, nil);
+            } else {
+                DDLogWarn(@"cowardly refusing to save incompatible video attachment");
+            }
+        }
+    } else if ([self isAudio]) {
+        if (action == @selector(copy:)) {
+            NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+
+            NSString *pasteboardType = [MIMETypeUtil getSupportedExtensionFromAudioMIMEType:self.contentType];
+            [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)UIPasteboardNameGeneral];
+
+            if ([pasteboardType isEqualToString:@"mp3"]) {
+                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMP3];
+            } else if ([pasteboardType isEqualToString:@"aiff"]) {
+                [UIPasteboard.generalPasteboard setData:data
+                                      forPasteboardType:(NSString *)kUTTypeAudioInterchangeFileFormat];
+            } else if ([pasteboardType isEqualToString:@"m4a"]) {
+                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4Audio];
+            } else if ([pasteboardType isEqualToString:@"amr"]) {
+                [UIPasteboard.generalPasteboard setData:data forPasteboardType:@"org.3gpp.adaptive-multi-rate-audio"];
+            } else {
+                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeAudio];
+            }
+        }
+    } else {
+        // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
+        NSString *actionString = NSStringFromSelector(action);
+        DDLogError(
+            @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
+    }
 }
 
 @end
