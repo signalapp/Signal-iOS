@@ -119,12 +119,25 @@ static void MergeInfoBetweenMatchingEdges(YapDatabaseRelationshipEdge *edge1, Ya
 
 NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 {
-	if (!url1 || !url2) return NO;
-	
 	NSString *str1 = [url1 absoluteString];
 	NSString *str2 = [url2 absoluteString];
 	
-	return [str1 isEqualToString:str2];
+	if (!str1 || !str2) return NO;
+	
+	if ([str1 isEqualToString:str2])
+	{
+		// Common case
+		return YES;
+	}
+	
+	NSError *error = nil;
+	id iNode1 = nil;
+	id iNode2 = nil;
+ 
+	[url1 getResourceValue:&iNode1 forKey:NSURLFileResourceIdentifierKey error:&error];
+	[url2 getResourceValue:&iNode2 forKey:NSURLFileResourceIdentifierKey error:&error];
+ 
+	return [iNode1 isEqual:iNode2];
 }
 
 @implementation YapDatabaseRelationshipTransaction
