@@ -1233,27 +1233,41 @@ typedef enum : NSUInteger {
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
     [self dismissKeyBoard];
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-             otherButtonTitles:@[ NSLocalizedString(@"SEND_AGAIN_BUTTON", @"") ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogDebug(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            [self.editingDatabaseConnection
-                                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                  [message removeWithTransaction:transaction];
-                                }];
-                        } else {
-                            [[TSMessagesManager sharedManager] sendMessage:message
-                                                                  inThread:self.thread
-                                                                   success:nil
-                                                                   failure:nil];
-                            [self finishSendingMessage];
-                        }
-                      }];
+
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * _Nonnull action) { /*no-op*/ } ];
+    [actionSheetController addAction:dismissAction];
+
+    void (^deleteMessage)() = ^() {
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message removeWithTransaction:transaction];
+        }];
+    };
+    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                  style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction * _Nonnull action) { deleteMessage(); } ];
+    [actionSheetController addAction:deleteMessageAction];
+
+
+    void (^resendMessage)() = ^() {
+        [[TSMessagesManager sharedManager] sendMessage:(TSOutgoingMessage *)message
+                                              inThread:self.thread
+                                               success:nil
+                                               failure:nil];
+        [self finishSendingMessage];
+    };
+    UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * _Nonnull action) { resendMessage(); } ];
+    [actionSheetController addAction:resendMessageAction];
+
+    [self presentViewController:actionSheetController animated:true completion:nil];
+
 }
 
 - (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
