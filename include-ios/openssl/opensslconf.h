@@ -35,11 +35,17 @@ extern "C" {
 #ifndef OPENSSL_NO_SCTP
 # define OPENSSL_NO_SCTP
 #endif
+#ifndef OPENSSL_NO_SSL2
+# define OPENSSL_NO_SSL2
+#endif
 #ifndef OPENSSL_NO_STORE
 # define OPENSSL_NO_STORE
 #endif
 #ifndef OPENSSL_NO_UNIT_TEST
 # define OPENSSL_NO_UNIT_TEST
+#endif
+#ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
+# define OPENSSL_NO_WEAK_SSL_CIPHERS
 #endif
 
 #endif /* OPENSSL_DOING_MAKEDEPEND */
@@ -83,11 +89,17 @@ extern "C" {
 # if defined(OPENSSL_NO_SCTP) && !defined(NO_SCTP)
 #  define NO_SCTP
 # endif
+# if defined(OPENSSL_NO_SSL2) && !defined(NO_SSL2)
+#  define NO_SSL2
+# endif
 # if defined(OPENSSL_NO_STORE) && !defined(NO_STORE)
 #  define NO_STORE
 # endif
 # if defined(OPENSSL_NO_UNIT_TEST) && !defined(NO_UNIT_TEST)
 #  define NO_UNIT_TEST
+# endif
+# if defined(OPENSSL_NO_WEAK_SSL_CIPHERS) && !defined(NO_WEAK_SSL_CIPHERS)
+#  define NO_WEAK_SSL_CIPHERS
 # endif
 #endif
 
@@ -98,8 +110,8 @@ extern "C" {
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "/tmp/openssl-1.0.1r-arm64/lib/engines"
-#define OPENSSLDIR "/tmp/openssl-1.0.1r-arm64"
+#define ENGINESDIR "/tmp/openssl-1.0.1s-arm64/lib/engines"
+#define OPENSSLDIR "/tmp/openssl-1.0.1s-arm64"
 #endif
 #endif
 
