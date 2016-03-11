@@ -15,7 +15,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 #import "ContactsManager.h"
-#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -1289,42 +1288,44 @@ typedef enum : NSUInteger {
         } else {
             keyOwner = [self.thread name];
         }
-
-        NSString *messageString = [NSString
-            stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
-        NSArray *actions = @[
-            NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""),
-            NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")
-        ];
+        NSString *alertTitle = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
 
         [self dismissKeyBoard];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                                 message:nil
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
 
-        [DJWActionSheet showInView:self.parentViewController.view
-                         withTitle:messageString
-                 cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-            destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                 otherButtonTitles:actions
-                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                DDLogDebug(@"User Cancelled");
-                            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                [self.editingDatabaseConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                      [message removeWithTransaction:transaction];
-                                    }];
-                            } else {
-                                switch (tappedButtonIndex) {
-                                    case 0:
-                                        [errorMessage acceptNewIdentityKey];
-                                        break;
-                                    case 1:
-                                        [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                          }];
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:^(UIAlertAction * _Nonnull action) { /*no-op*/ } ];
+        [alertController addAction:dismissAction];
+
+        void (^deleteMessage)() = ^() {
+            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [message removeWithTransaction:transaction];
+            }];
+        };
+        UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                      style:UIAlertActionStyleDestructive
+                                                                    handler:^(UIAlertAction * _Nonnull action) { deleteMessage(); } ];
+        [alertController addAction:deleteMessageAction];
+
+
+        UIAlertAction *acceptIdentityKeyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:^(UIAlertAction * _Nonnull action) {
+                                                                        [errorMessage acceptNewIdentityKey];
+                                                                    }];
+        [alertController addAction:acceptIdentityKeyAction];
+
+        UIAlertAction *copyIdentityKeyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")
+                                                                          style:UIAlertActionStyleDefault
+                                                                        handler:^(UIAlertAction * _Nonnull action) {
+                                                                            [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
+                                                                        }];
+        [alertController addAction:copyIdentityKeyAction];
+
+        [self presentViewController:alertController animated:true completion:nil];
     }
 }
 
