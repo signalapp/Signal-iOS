@@ -10,7 +10,6 @@
 
 #import <25519/Curve25519.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
-#import "DJWActionSheet+OWS.h"
 #import "PresentIdentityQRCodeViewController.h"
 #import "ScanIdentityBarcodeViewController.h"
 #import "SignalsNavigationController.h"
@@ -103,30 +102,24 @@ static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeVi
 
 
 - (IBAction)shredAndDelete:(id)sender {
-    if (!_isPresentingDialog) {
-        _isPresentingDialog = YES;
-        [DJWActionSheet showInView:self.view
-                         withTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"")
-                 cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-            destructiveButtonTitle:nil
-                 otherButtonTitles:@[ NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"") ]
-                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                            _isPresentingDialog = NO;
-                            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                DDLogDebug(@"User Cancelled");
-                            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                DDLogDebug(@"Destructive button tapped");
-                            } else {
-                                switch (tappedButtonIndex) {
-                                    case 0:
-                                        [self shredKeyingMaterial];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                          }];
-    }
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"IRREVERSIBLE_ACTION_TITLE", @"")
+                                                                             message:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"")
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction * _Nonnull action) { }];
+    [alertController addAction:dismissAction];
+
+    UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
+                                                           style:UIAlertActionStyleDestructive
+                                                         handler:^(UIAlertAction * _Nonnull action) {
+                                                             [self shredKeyingMaterial];
+                                                         }];
+    [alertController addAction:deleteAction];
+
+    [self presentViewController:alertController animated:true completion:nil];
+
 }
 
 
