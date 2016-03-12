@@ -1231,7 +1231,6 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
-    [self dismissKeyBoard];
 
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                              message:nil
@@ -1290,7 +1289,6 @@ typedef enum : NSUInteger {
         }
         NSString *alertTitle = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
 
-        [self dismissKeyBoard];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
                                                                                  message:nil
                                                                           preferredStyle:UIAlertControllerStyleActionSheet];
@@ -1780,8 +1778,6 @@ typedef enum : NSUInteger {
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
-    [self dismissKeyBoard];
-
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                                    message:nil
                                                                             preferredStyle:UIAlertControllerStyleActionSheet];
