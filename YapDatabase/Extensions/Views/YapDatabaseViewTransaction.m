@@ -660,7 +660,8 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithKeyBlock)grouping->block;
 			
-			return groupingBlock(databaseTransaction, collection, key);
+			NSString *group = groupingBlock(databaseTransaction, collection, key);
+			return [group copy]; // mutable string protection
 		};
 	}
 	else if (grouping->blockType == YapDatabaseBlockTypeWithObject)
@@ -670,7 +671,8 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithObjectBlock)grouping->block;
 			
-			return groupingBlock(databaseTransaction, collection, key, object);
+			NSString *group = groupingBlock(databaseTransaction, collection, key, object);
+			return [group copy]; // mutable string protection
 		};
 	}
 	else if (grouping->blockType == YapDatabaseBlockTypeWithMetadata)
@@ -680,7 +682,8 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithMetadataBlock)grouping->block;
 			
-			return groupingBlock(databaseTransaction, collection, key, metadata);
+			NSString *group = groupingBlock(databaseTransaction, collection, key, metadata);
+			return [group copy]; // mutable string protection
 		};
 	}
 	else
@@ -690,7 +693,8 @@
 			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
 		        (YapDatabaseViewGroupingWithRowBlock)grouping->block;
 			
-			return groupingBlock(databaseTransaction, collection, key, object, metadata);
+			NSString *group = groupingBlock(databaseTransaction, collection, key, object, metadata);
+			return [group copy]; // mutable string protection
 		};
 	}
 	
@@ -3427,6 +3431,7 @@
 			    (YapDatabaseViewGroupingWithKeyBlock)grouping->block;
 			
 			group = groupingBlock(databaseTransaction, collection, key);
+			group = [group copy]; // mutable string protection
 		}
 		else if (grouping->blockType == YapDatabaseBlockTypeWithObject)
 		{
@@ -3434,6 +3439,7 @@
 			    (YapDatabaseViewGroupingWithObjectBlock)grouping->block;
 			
 			group = groupingBlock(databaseTransaction, collection, key, object);
+			group = [group copy]; // mutable string protection
 		}
 		else if (grouping->blockType == YapDatabaseBlockTypeWithMetadata)
 		{
@@ -3441,6 +3447,7 @@
 			    (YapDatabaseViewGroupingWithMetadataBlock)grouping->block;
 			
 			group = groupingBlock(databaseTransaction, collection, key, metadata);
+			group = [group copy]; // mutable string protection
 		}
 		else
 		{
@@ -3448,6 +3455,7 @@
 			    (YapDatabaseViewGroupingWithRowBlock)grouping->block;
 			
 			group = groupingBlock(databaseTransaction, collection, key, object, metadata);
+			group = [group copy]; // mutable string protection
 		}
 		
 		if (group == nil)

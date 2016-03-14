@@ -2,7 +2,7 @@
 #import "YapDatabaseViewPageMetadata.h"
 
 
-@interface YapDatabaseViewState : NSObject //<NSCopying, NSMutableCopying>
+@interface YapDatabaseViewState : NSObject <NSCopying, NSMutableCopying>
 
 @property (nonatomic, readonly) BOOL isImmutable;
 

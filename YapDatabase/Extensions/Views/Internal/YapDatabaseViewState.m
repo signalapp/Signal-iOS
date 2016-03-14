@@ -4,8 +4,11 @@
 
 @implementation YapDatabaseViewState
 {
-	NSMutableDictionary *group_pagesMetadata_dict; // (NSString *)group -> @[ YapDatabaseViewPageMetadata, ... ]
-	NSMutableDictionary *pageKey_group_dict;       // (NSString *)pageKey -> (NSString *)group
+	NSMutableDictionary<NSString *, NSMutableArray *> *group_pagesMetadata_dict;
+	NSMutableDictionary<NSString *, NSString *> *pageKey_group_dict;
+	
+	// - group_pagesMetadata_dict : group -> @[ YapDatabaseViewPageMetadata, ... ]
+	// - pageKey_group_dict       : pageKey -> group
 }
 
 @synthesize isImmutable = isImmutable;
