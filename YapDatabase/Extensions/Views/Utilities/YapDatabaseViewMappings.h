@@ -187,7 +187,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  * @param registeredViewName
  *     This is the name of the view, as you registered it with the database system.
 **/
-+ (instancetype)mappingsWithGroups:(NSArray<NSString *> *)allGroups view:(nullable NSString *)registeredViewName;
++ (instancetype)mappingsWithGroups:(NSArray<NSString *> *)allGroups view:(NSString *)registeredViewName;
 
 
 
@@ -203,7 +203,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
  *     This is the name of the view, as you registered it with the database system.
 **/
 - (id)initWithGroups:(NSArray<NSString *> *)allGroups
-				view:(nullable NSString *)registeredViewName;
+				view:(NSString *)registeredViewName;
 
 
 /**
@@ -218,7 +218,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 **/
 - (id)initWithGroupFilterBlock:(YapDatabaseViewMappingGroupFilter)filterBlock
                      sortBlock:(YapDatabaseViewMappingGroupSort)sortBlock
-                          view:(nullable NSString *)registeredViewName;
+                          view:(NSString *)registeredViewName;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Accessors
