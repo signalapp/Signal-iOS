@@ -364,7 +364,7 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 	}
 }
 
-- (void)removeObjectsForKeys:(NSArray *)keys
+- (void)removeObjectsForKeys:(id <NSFastEnumeration>)keys
 {
 	for (id key in keys)
 	{

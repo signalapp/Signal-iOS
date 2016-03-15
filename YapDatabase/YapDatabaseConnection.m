@@ -3705,7 +3705,7 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	NSSet *changeset_removedKeys        = [changeset objectForKey:YapDatabaseRemovedKeysKey];
 	NSSet *changeset_removedCollections = [changeset objectForKey:YapDatabaseRemovedCollectionsKey];
 	
-    BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
+	BOOL changeset_modifiedExternally = [[changeset objectForKey:YapDatabaseModifiedExternallyKey] boolValue];
 	BOOL changeset_allKeysRemoved = [[changeset objectForKey:YapDatabaseAllKeysRemovedKey] boolValue];
 	
 	BOOL hasObjectChanges      = [changeset_objectChanges count] > 0;
@@ -3728,6 +3728,11 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	}
 	else
 	{
+		if (changeset_removedRowids)
+		{
+			[keyCache removeObjectsForKeys:changeset_removedRowids];
+		}
+		
 		if (hasRemovedCollections)
 		{
 			__block NSMutableArray *toRemove = nil;
@@ -3746,14 +3751,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}];
 			
 			[keyCache removeObjectsForKeys:toRemove];
-		}
-		
-		if (changeset_removedRowids)
-		{
-			[changeset_removedRowids enumerateObjectsUsingBlock:^(id obj, BOOL __unused *stop) {
-				
-				[keyCache removeObjectForKey:obj];
-			}];
 		}
 	}
 	

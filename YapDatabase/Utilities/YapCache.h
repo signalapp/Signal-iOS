@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeAllObjects;
 - (void)removeObjectForKey:(KeyType)key;
-- (void)removeObjectsForKeys:(NSArray<KeyType> *)keys;
+- (void)removeObjectsForKeys:(id <NSFastEnumeration>)keys;
 
 - (void)enumerateKeysWithBlock:(void (^)(KeyType key, BOOL *stop))block;
 - (void)enumerateKeysAndObjectsWithBlock:(void (^)(KeyType key, ObjectType obj, BOOL *stop))block;
