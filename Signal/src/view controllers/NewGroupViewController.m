@@ -142,59 +142,56 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                              inMessage:message
                              thread:self.thread
                              success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [Environment messageGroup:self.thread];
+                                                              }];
+
+                                 });
                              }
-
                              failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                       [self.thread removeWithTransaction:transaction];
+                                                                   }];
 
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
-
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-                             }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }
+                                      ];
+                                 });
+                             }
+                          ];
                      } else {
                          [[TSMessagesManager sharedManager] sendMessage:message
                              inThread:self.thread
                              success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [Environment messageGroup:self.thread];
+                                                              }
+                                      ];
+                                 });
                              }
-
                              failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                      [self.thread removeWithTransaction:transaction];
+                                                                  }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }
+                                      ];
+                                 });
 
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
-
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-
-                             }];
+                             }
+                          ];
                      }
                    }];
 }
