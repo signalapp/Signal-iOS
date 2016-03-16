@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
-#ifndef YAP_CACHE_STATISTICS
-#define YAP_CACHE_STATISTICS 0
+#ifndef YapCache_Enable_Statistics
+  #define YapCache_Enable_Statistics 0
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
  * And thus performing this action (if desired) is up to you.
  * The various YapDatabase classes which use it do this themselves.
 **/
-
 @interface YapCache<KeyType, ObjectType> : NSObject
 
 /**
@@ -124,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Some debugging stuff that gets compiled out
 //
 
-#if YAP_CACHE_STATISTICS
+#if YapCache_Enable_Statistics
 
 /**
  * When querying the cache for an object via objectForKey,

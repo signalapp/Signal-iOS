@@ -63,18 +63,12 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 	__unsafe_unretained YapCacheItem *leastRecentCacheItem;
 	
 	__strong YapCacheItem *evictedCacheItem;
-	
-#if YAP_CACHE_STATISTICS
-	NSUInteger hitCount;
-	NSUInteger missCount;
-	NSUInteger evictionCount;
-#endif
 }
 
 @synthesize allowedKeyClasses = allowedKeyClasses;
 @synthesize allowedObjectClasses = allowedObjectClasses;
 
-#if YAP_CACHE_STATISTICS
+#if YapCache_Enable_Statistics
 @synthesize hitCount = hitCount;
 @synthesize missCount = missCount;
 @synthesize evictionCount = evictionCount;
@@ -138,7 +132,7 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 				evictedCacheItem->key = nil;
 				evictedCacheItem->value = nil;
 				
-				#if YAP_CACHE_STATISTICS
+				#if YapCache_Enable_Statistics
 				evictionCount++;
 				#endif
 			}
@@ -180,14 +174,14 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 			mostRecentCacheItem = item;
 		}
 		
-		#if YAP_CACHE_STATISTICS
+		#if YapCache_Enable_Statistics
 		hitCount++;
 		#endif
 		return item->value;
 	}
 	else
 	{
-		#if YAP_CACHE_STATISTICS
+		#if YapCache_Enable_Statistics
 		missCount++;
 		#endif
 		return nil;
@@ -294,7 +288,7 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 			evictedCacheItem->key = nil;
 			evictedCacheItem->value = nil;
 			
-			#if YAP_CACHE_STATISTICS
+			#if YapCache_Enable_Statistics
 			evictionCount++;
 			#endif
 		}
