@@ -24,12 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqual:(id)anObject;
 - (NSUInteger)hash;
 
-// For optimizing usage in YapCache
-+ (CFDictionaryKeyCallBacks)keyCallbacks;
+// C versions for low-level optimizations:
 
-// Super optimized (c function call faster than obj-c method invocation):
 BOOL YapCollectionKeyEqual(const __unsafe_unretained YapCollectionKey *ck1,
                            const __unsafe_unretained YapCollectionKey *ck2);
+
+CFHashCode YapCollectionKeyHash(const __unsafe_unretained YapCollectionKey *ck);
+
+// For optimizing usage in YapCache
++ (CFDictionaryKeyCallBacks)keyCallbacks;
 
 @end
 
