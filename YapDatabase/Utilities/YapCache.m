@@ -15,7 +15,7 @@
 /**
  * Default countLimit, as specified in header file.
 **/
-static const NSUInteger YapCacheDefaultCountLimit = 40;
+static const NSUInteger YapCache_Default_CountLimit = 40;
 
 
 @interface YapCacheItem : NSObject {
@@ -76,7 +76,7 @@ static const NSUInteger YapCacheDefaultCountLimit = 40;
 
 - (instancetype)init
 {
-	return [self initWithCountLimit:YapCacheDefaultCountLimit
+	return [self initWithCountLimit:YapCache_Default_CountLimit
 	                   keyCallbacks:kCFTypeDictionaryKeyCallBacks];
 }
 
