@@ -3,6 +3,13 @@
 
 static NSUInteger const YapBidirectionalCache_Default_CountLimit = 40;
 
+const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (YapBidirectionalCacheCallBacks){
+	.version = 0,
+	.shouldCopy = YES,
+	.equal = CFEqual,
+	.hash = CFHash
+};
+
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.

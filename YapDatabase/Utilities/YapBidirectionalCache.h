@@ -14,6 +14,8 @@ struct YapBidirectionalCacheCallBacks {
 };
 typedef struct YapBidirectionalCacheCallBacks YapBidirectionalCacheCallBacks;
 
+extern const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks;
+
 /**
  * A bidirectional cache has the following features:
  *
