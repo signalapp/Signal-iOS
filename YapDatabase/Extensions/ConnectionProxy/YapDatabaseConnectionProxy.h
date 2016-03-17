@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   - automatically checking expiration dates & refreshing items as needed
  *   - automatically deleting unused expired items
  * 
- *   You'll notice the manager class is the ONLY class that hanles reading/writing certain values in the database.
+ *   You'll notice the manager class is the ONLY class that handles reading/writing certain values in the database.
  *   And it doesn't matter if a value doesn't get written to disk, as it can simply be re-downloaed.
  * 
  * Example #2 : NSUserDefaults replacement
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
  * [connectionProxy abortAndReset:whitelist];
  * 
  * // Then actually clear the db - but asynchronously
- * [connectionProxy.readWriteTransaction asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ * [connectionProxy.readWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
  * 
  *     [transaction removeAllObjectsInAllCollections];
  *
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
  * YapWhitelistBlacklist *blacklist = [[YapWhitelistBlacklist alloc] initWithBlacklist:set];
  * connectionProxy.fetchedCollectionsFilter = blacklist;
  * 
- * [connectionProxy.readWriteTransaction asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
+ * [connectionProxy.readWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
  *
  *     [transaction removeAllObjectsInCollection:@"foobar"];
  *
