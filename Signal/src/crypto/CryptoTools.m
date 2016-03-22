@@ -10,11 +10,11 @@
 
 + (NSData *)generateSecureRandomData:(NSUInteger)length {
     NSMutableData *d = [NSMutableData dataWithLength:length];
-    int err          = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
-    if (err != 0) {
+    OSStatus status  = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    if (status != noErr) {
         [SecurityFailure raise:@"SecRandomCopyBytes failed"];
     }
-    return d;
+    return [d copy];
 }
 
 + (uint16_t)generateSecureRandomUInt16 {
