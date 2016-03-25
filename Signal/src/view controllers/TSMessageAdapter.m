@@ -158,7 +158,7 @@
                                             callerDisplayName:adapter.messageBody
                                                          date:nil
                                                        status:status
-                                                displayString:@""];
+                                                 detailString:@""];
             call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
@@ -214,7 +214,7 @@
                                        callerDisplayName:thread.name
                                                     date:call.date
                                                   status:status
-                                           displayString:detailString];
+                                            detailString:detailString];
     return jsqCall;
 }
 
