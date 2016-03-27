@@ -4629,7 +4629,7 @@
 	{
 		connection->database->objectPostSanitizer(collection, key, object);
 	}
-	if (metadata && connection->database->metadataPreSanitizer)
+	if (metadata && connection->database->metadataPostSanitizer)
 	{
 		connection->database->metadataPostSanitizer(collection, key, metadata);
 	}
