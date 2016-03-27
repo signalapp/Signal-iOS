@@ -19,7 +19,7 @@
     [setup addColumn:TSTimeStampSQLiteIndex withType:YapDatabaseSecondaryIndexTypeReal];
 
     YapDatabaseSecondaryIndexWithObjectBlock block =
-        ^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
+        ^(YapDatabaseReadTransaction *transaction, NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
 
           if ([object isKindOfClass:[TSInteraction class]]) {
               TSInteraction *interaction = (TSInteraction *)object;
