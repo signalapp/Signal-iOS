@@ -2197,18 +2197,21 @@ static int connectionBusyHandler(void *ptr, int count)
 				
 				NSArray *changesets = [database pendingAndCommittedChangesetsSince:yapSnapshot until:sqlSnapshot];
 				
-                if (!changesets) // we could not retrieve changeset due to a change from another process.
-                {
-                    [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
-                    snapshot = sqlSnapshot;
-                }
-                else
-                {
-                    for (NSDictionary *changeset in changesets)
-                    {
-                        [self noteCommittedChangeset:changeset];
-                    }
-                }
+				if (!changesets) // we could not retrieve changeset due to a change from another process.
+				{
+					NSUInteger flags = YapDatabaseConnectionFlushMemoryFlags_Caches |
+					                   YapDatabaseConnectionFlushMemoryFlags_Extension_State;
+					
+					[self _flushMemoryWithFlags:flags];
+					snapshot = sqlSnapshot;
+				}
+				else
+				{
+					for (NSDictionary *changeset in changesets)
+					{
+						[self noteCommittedChangeset:changeset];
+					}
+				}
 				
 				// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 				NSAssert(snapshot == sqlSnapshot,
@@ -2241,7 +2244,7 @@ static int connectionBusyHandler(void *ptr, int count)
 				
 				NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 				
-                // changeset cannot be nil because we are not supporting multiprocess changes
+				// changeset cannot be nil because we are not supporting multiprocess changes
 				for (NSDictionary *changeset in changesets)
 				{
 					[self noteCommittedChangeset:changeset];
@@ -2484,34 +2487,44 @@ static int connectionBusyHandler(void *ptr, int count)
 		// Validate our caches based on snapshot numbers
 		
 		uint64_t localSnapshot = snapshot;
-        // In multiprocess mode, the snapshot number might have been externally updated
-        uint64_t globalSnapshot = database.options.enableMultiProcessSupport ? [self readSnapshotFromDatabase] : [database snapshot];
+		uint64_t globalSnapshot = 0;
 		
-        externallyModified = NO;
+		// In multiprocess mode, the snapshot number might have been externally updated
+		if (database.options.enableMultiProcessSupport)
+			globalSnapshot = [self readSnapshotFromDatabase];
+		else
+			globalSnapshot = [database snapshot];
         
 		if (localSnapshot < globalSnapshot)
 		{
 			NSArray *changesets = [database pendingAndCommittedChangesetsSince:localSnapshot until:globalSnapshot];
 			
-            externallyModified = changesets == nil;
-            
-            if (!changesets) // we could not retrieve changeset due to a change from another process.
-            {
-                [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
-                snapshot = globalSnapshot;
-            }
-            else
-            {
-                for (NSDictionary *changeset in changesets)
-                {
-                    [self noteCommittedChangeset:changeset];
-                }
-            }
+			externallyModified = (changesets == nil);
 			
-			// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
-			NSAssert(snapshot == globalSnapshot,
-			         @"Invalid connection state in preReadWriteTransaction: snapshot(%llu) != globalSnapshot(%llu)",
-			         snapshot, globalSnapshot);
+			if (!changesets) // we could not retrieve changeset due to a change from another process.
+			{
+				NSUInteger flags = YapDatabaseConnectionFlushMemoryFlags_Caches |
+				                   YapDatabaseConnectionFlushMemoryFlags_Extension_State;
+				
+				[self _flushMemoryWithFlags:flags];
+				snapshot = globalSnapshot;
+			}
+			else
+			{
+				for (NSDictionary *changeset in changesets)
+				{
+					[self noteCommittedChangeset:changeset];
+				}
+				
+				// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
+				NSAssert(snapshot == globalSnapshot,
+				         @"Invalid connection state in preReadWriteTransaction: snapshot(%llu) != globalSnapshot(%llu)",
+				         snapshot, globalSnapshot);
+			}
+		}
+		else
+		{
+			externallyModified = NO;
 		}
 		
 		myState->lastTransactionSnapshot = snapshot;
@@ -2644,14 +2657,13 @@ static int connectionBusyHandler(void *ptr, int count)
 				userInfo = [NSMutableDictionary dictionaryWithSharedKeySet:sharedKeySetForExternalChangeset];
 			
 			[changeset setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
-            
-            if (database.options.enableMultiProcessSupport)
-                [changeset setObject:@(externallyModified) forKey:YapDatabaseModifiedExternallyKey];
-            
 			[userInfo setObject:@(snapshot) forKey:YapDatabaseSnapshotKey];
 			
 			[userInfo setObject:self forKey:YapDatabaseConnectionKey];
 		
+			if (externallyModified)
+				[changeset setObject:@(externallyModified) forKey:YapDatabaseModifiedExternallyKey];
+			
 			if (transaction->customObjectForNotification)
 				[userInfo setObject:transaction->customObjectForNotification forKey:YapDatabaseCustomKey];
 			
@@ -3713,12 +3725,17 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	BOOL hasRemovedKeys        = [changeset_removedKeys count] > 0;
 	BOOL hasRemovedCollections = [changeset_removedCollections count] > 0;
 	
+	// Check for external modification (special case)
+	
+	if (changeset_modifiedExternally)
+	{
+		NSUInteger flags = YapDatabaseConnectionFlushMemoryFlags_Caches |
+		                   YapDatabaseConnectionFlushMemoryFlags_Extension_State;
+		
+		[self _flushMemoryWithFlags:flags];
+	}
+	
 	// Update keyCache
-    
-    if (changeset_modifiedExternally)
-    {
-        [self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
-    }
 	
 	if (changeset_allKeysRemoved)
 	{
@@ -4072,7 +4089,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 		
 		snapshot = changesetSnapshot;
 		
-		[self _flushMemoryWithFlags:YapDatabaseConnectionFlushMemoryFlags_Caches];
+		NSUInteger flags = YapDatabaseConnectionFlushMemoryFlags_Caches |
+		                   YapDatabaseConnectionFlushMemoryFlags_Extension_State;
+		
+		[self _flushMemoryWithFlags:flags];
 		[self processChangeset:changeset];
 	}
 	

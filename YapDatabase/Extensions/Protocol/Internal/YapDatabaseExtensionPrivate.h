@@ -14,6 +14,19 @@
 #import "sqlite3.h"
 
 
+typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags_Extension) {
+//	YapDatabaseConnectionFlushMemoryFlags_None       = 0,
+//	YapDatabaseConnectionFlushMemoryFlags_Caches     = 1 << 0,
+//	YapDatabaseConnectionFlushMemoryFlags_Statements = 1 << 1,
+//	YapDatabaseConnectionFlushMemoryFlags_Internal   = 1 << 2,
+//	YapDatabaseConnectionFlushMemoryFlags_All        = (YapDatabaseConnectionFlushMemoryFlags_Caches     |
+//																		 YapDatabaseConnectionFlushMemoryFlags_Statements |
+//																		 YapDatabaseConnectionFlushMemoryFlags_Internal   ),
+	
+	YapDatabaseConnectionFlushMemoryFlags_Extension_State = 1 << 3,
+};
+
+
 @interface YapDatabaseExtension ()
 
 /**
