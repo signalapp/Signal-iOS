@@ -214,6 +214,10 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		extensions = [[NSMutableDictionary alloc] init];
 		
+		YapDatabaseOptions *options = database.options;
+		
+		enableMultiProcessSupport = options.enableMultiProcessSupport;
+		
 		YapDatabaseConnectionDefaults *defaults = [database connectionDefaults];
 		
 		objectCacheLimit = defaults.objectCacheLimit;
@@ -271,8 +275,6 @@ static int connectionBusyHandler(void *ptr, int count)
 			else
 			{
 				// Set configurable pragmas
-				
-				YapDatabaseOptions *options = database.options;
 				
 				YapDatabasePragmaSynchronous pragmaSynchronous = options.pragmaSynchronous;
 				
@@ -339,8 +341,8 @@ static int connectionBusyHandler(void *ptr, int count)
 				sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
                 
 #ifdef SQLITE_HAS_CODEC
-                // Configure SQLCipher encryption (if needed)
-                [database configureEncryptionForDatabase:db];
+				// Configure SQLCipher encryption (if needed)
+				[database configureEncryptionForDatabase:db];
 #endif
 			}
 		}
@@ -2165,7 +2167,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		//
 		// Update our in-memory data (caches, etc) if needed.
 		
-		if (database.options.enableMultiProcessSupport || hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
+		if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL || enableMultiProcessSupport)
 		{
 			// If there is a write transaction in progress, (in case of multiple processes accessing the database, we can't know for sure so we make this assumption)
 			// then it's not safe to proceed until we acquire a "sql-level" snapshot.
@@ -2453,12 +2455,12 @@ static int connectionBusyHandler(void *ptr, int count)
 	// Thus no other transactions can possibly modify the database during our transaction.
 	// Therefore it doesn't matter when we acquire our "sql-level" locks for writing.
 	
-    if(database.options.enableMultiProcessSupport) {
-        // In the multiprocess case, we block concurrent read or write connections, so we avoid race-conditions
-        [transaction beginImmediateTransaction];
-    } else {
-        [transaction beginTransaction];
-    }
+	if (enableMultiProcessSupport) {
+		// In the multiprocess case, we don't use a deferred transaction in order to avoid race conditions
+		[transaction beginImmediateTransaction];
+	} else {
+		[transaction beginTransaction];
+	}
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
@@ -2490,7 +2492,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		uint64_t globalSnapshot = 0;
 		
 		// In multiprocess mode, the snapshot number might have been externally updated
-		if (database.options.enableMultiProcessSupport)
+		if (enableMultiProcessSupport)
 			globalSnapshot = [self readSnapshotFromDatabase];
 		else
 			globalSnapshot = [database snapshot];
@@ -2645,7 +2647,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			// If hasDiskChanges is NO, then the database file was not modified.
 			// However, something was "touched" or an in-memory extension was changed.
 			
-			if (hasDiskChanges || database.options.enableMultiProcessSupport)
+			if (hasDiskChanges || enableMultiProcessSupport)
 				snapshot = [self incrementSnapshotInDatabase];
 			else
 				snapshot++;

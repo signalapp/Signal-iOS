@@ -201,6 +201,7 @@ static NSString *const ext_key_class = @"class";
 	NSDictionary *extensionDependencies;  // Read-only for YapDatabaseExtensionTransaction subclasses
 	
 	BOOL hasDiskChanges;
+	BOOL enableMultiProcessSupport;
 	
 	YapCache<NSNumber *, YapCollectionKey *> *keyCache;
 	YapCache<YapCollectionKey *, id> *objectCache;
@@ -223,7 +224,7 @@ static NSString *const ext_key_class = @"class";
 	NSMutableSet *removedCollections;
 	NSMutableSet *removedRowids;
 	BOOL allKeysRemoved;
-    BOOL externallyModified;
+	BOOL externallyModified;
 	
 	YapMutationStack_Bool *mutationStack;
 }

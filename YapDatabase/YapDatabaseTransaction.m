@@ -83,7 +83,7 @@
     sqlite3_stmt *statement = [connection beginImmediateTransactionStatement];
     if (statement == NULL) return;
     
-    // BEGIN TRANSACTION;
+    // BEGIN IMMEDIATE TRANSACTION;
     
     int status = sqlite3_step(statement);
     if (status != SQLITE_DONE)

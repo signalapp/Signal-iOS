@@ -2725,7 +2725,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 		}
 	}
     
-	if (self.options.enableMultiProcessSupport)
+	if (options.enableMultiProcessSupport)
 	{
 		const uint64_t expectedSnapshotsCount = maxSnapshot - connectionSnapshot;
 		if (expectedSnapshotsCount != relevantChangesets.count)
