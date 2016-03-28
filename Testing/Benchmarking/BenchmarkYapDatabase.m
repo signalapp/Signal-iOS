@@ -171,8 +171,11 @@ static NSMutableArray *keys;
 	
 	NSTimeInterval elapsed = [start timeIntervalSinceNow] * -1.0;
 	
-	NSLog(@"Fetch %lu random objs: total time: %.6f, average time per obj: %.6f (cache hit %%: %.2f)",
-		  (unsigned long)loopCount, elapsed, (elapsed / loopCount), hitPercentage);
+	double avg = (elapsed / loopCount);
+	double perSec = 1.0 / avg;
+	
+	NSLog(@"Fetch %lu random objs (cache hit %%: %.2f): total time: %.6f, avg time per obj: %.6f, obj per sec: %.0f",
+		  (unsigned long)loopCount, hitPercentage, elapsed, avg, perSec);
 }
 
 + (void)readTransactionOverhead:(NSUInteger)loopCount withLongLivedReadTransaction:(BOOL)useLongLivedReadTransaction
