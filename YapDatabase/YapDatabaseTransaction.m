@@ -508,6 +508,9 @@
 
 - (BOOL)hasRowid:(int64_t)rowid
 {
+	if ([connection->keyCache containsKey:@(rowid)])
+		return YES;
+	
 	sqlite3_stmt *statement = [connection getCountForRowidStatement];
 	if (statement == NULL) return NO;
 	
