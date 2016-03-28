@@ -2,4 +2,5 @@ xcodeproj 'YapDatabaseTesting.xcodeproj'
 platform :tvos, '9.0'
 
 pod 'CocoaLumberjack'
+pod 'Reachability',  :git => 'https://github.com/tonymillion/Reachability.git', :commit => 'c4d225a479379f9998dbd5b55070427373d20574'
 pod "YapDatabase", path: '../../'
