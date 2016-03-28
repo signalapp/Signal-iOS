@@ -722,7 +722,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getKeyForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+		YDBLogError(@"Error executing 'getAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 	}
 	
 	sqlite3_clear_bindings(statement);
@@ -1106,7 +1106,7 @@
 	}
 	else if (status == SQLITE_ERROR)
 	{
-		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
+		YDBLogError(@"Error executing 'getMetadataForKeyStatement': %d %s, key(%@)",
 					status, sqlite3_errmsg(connection->db), key);
 	}
 	
