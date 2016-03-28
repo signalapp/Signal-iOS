@@ -6,6 +6,7 @@
 #import "YapDatabaseTransaction.h"
 #import "YapDatabaseExtension.h"
 
+#import "YapBidirectionalCache.h"
 #import "YapCache.h"
 #import "YapCollectionKey.h"
 #import "YapMemoryTable.h"
@@ -203,7 +204,7 @@ static NSString *const ext_key_class = @"class";
 	BOOL hasDiskChanges;
 	BOOL enableMultiProcessSupport;
 	
-	YapCache<NSNumber *, YapCollectionKey *> *keyCache;
+	YapBidirectionalCache<NSNumber *, YapCollectionKey *> *keyCache;
 	YapCache<YapCollectionKey *, id> *objectCache;
 	YapCache<YapCollectionKey *, id> *metadataCache;
 	
@@ -335,6 +336,7 @@ static NSString *const ext_key_class = @"class";
 
 - (NSException *)mutationDuringEnumerationException;
 
+- (BOOL)getRowid:(int64_t *)rowidPtr forCollectionKey:(YapCollectionKey *)collectionKey;
 - (BOOL)getRowid:(int64_t *)rowidPtr forKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (YapCollectionKey *)collectionKeyForRowid:(int64_t)rowid;

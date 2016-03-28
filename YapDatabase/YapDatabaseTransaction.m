@@ -343,13 +343,19 @@
 #pragma mark Internal (using rowid)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)getRowid:(int64_t *)rowidPtr forKey:(NSString *)key inCollection:(NSString *)collection
+- (BOOL)getRowid:(int64_t *)rowidPtr forCollectionKey:(YapCollectionKey *)cacheKey
 {
-	if (key == nil) {
+	if (cacheKey == nil) {
 		if (rowidPtr) *rowidPtr = 0;
 		return NO;
 	}
-	if (collection == nil) collection = @"";
+	
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
+	{
+		if (rowidPtr) *rowidPtr = [cachedRowid longLongValue];
+		return YES;
+	}
 	
 	sqlite3_stmt *statement = [connection getRowidForKeyStatement];
 	if (statement == NULL) {
@@ -363,10 +369,10 @@
 	int const bind_idx_collection = SQLITE_BIND_START + 0;
 	int const bind_idx_key        = SQLITE_BIND_START + 1;
 	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, cacheKey.collection);
 	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
 	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, cacheKey.key);
 	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length,  SQLITE_STATIC);
 	
 	int64_t rowid = 0;
@@ -388,8 +394,18 @@
 	FreeYapDatabaseString(&_collection);
 	FreeYapDatabaseString(&_key);
 	
+	if (result) {
+		[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+	}
+	
 	if (rowidPtr) *rowidPtr = rowid;
 	return result;
+}
+
+- (BOOL)getRowid:(int64_t *)rowidPtr forKey:(NSString *)key inCollection:(NSString *)collection
+{
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	return [self getRowid:rowidPtr forCollectionKey:cacheKey];
 }
 
 - (YapCollectionKey *)collectionKeyForRowid:(int64_t)rowid
@@ -664,91 +680,124 @@
 
 - (BOOL)getObject:(id *)objectPtr
          metadata:(id *)metadataPtr
- forCollectionKey:(YapCollectionKey *)collectionKey
+ forCollectionKey:(YapCollectionKey *)cacheKey
         withRowid:(int64_t)rowid
 {
-	id object = [connection->objectCache objectForKey:collectionKey];
-	id metadata = [connection->metadataCache objectForKey:collectionKey];
+	BOOL found = NO;
+	
+	id object = [connection->objectCache objectForKey:cacheKey];
+	id metadata = [connection->metadataCache objectForKey:cacheKey];
 	
 	if (object || metadata)
 	{
-		if (object == nil)
+		if (objectPtr && !object)
 		{
-			object = [self objectForCollectionKey:collectionKey withRowid:rowid];
-		}
-		else if (metadata == nil)
-		{
-			metadata = [self metadataForCollectionKey:collectionKey withRowid:rowid];
+			object = [self objectForCollectionKey:cacheKey withRowid:rowid];
 		}
 		
-		if (objectPtr) *objectPtr = object;
-		if (metadataPtr) *metadataPtr = metadata;
-		return YES;
+		if (metadataPtr && !metadata)
+		{
+			metadata = [self metadataForCollectionKey:cacheKey withRowid:rowid];
+		}
+		
+		if (metadata == [YapNull null])
+			metadata = nil;
+		
+		found = YES;
 	}
-	
-	sqlite3_stmt *statement = [connection getAllForRowidStatement];
-	if (statement == NULL) {
-		if (objectPtr) *objectPtr = nil;
-		if (metadataPtr) *metadataPtr = nil;
-		return NO;
-	}
-	
-	// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
-	
-	int const column_idx_data     = SQLITE_COLUMN_START + 0;
-	int const column_idx_metadata = SQLITE_COLUMN_START + 1;
-	int const bind_idx_rowid      = SQLITE_BIND_START;
-	
-	sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	else
 	{
-		const void *blob = sqlite3_column_blob(statement, column_idx_data);
-		int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+		sqlite3_stmt *statement = [connection getAllForRowidStatement];
+		if (statement == NULL) {
+			if (objectPtr) *objectPtr = nil;
+			if (metadataPtr) *metadataPtr = nil;
+			return NO;
+		}
 		
-		// Performance tuning:
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+		// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
 		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(collectionKey.collection, collectionKey.key, data);
+		int const column_idx_data     = SQLITE_COLUMN_START + 0;
+		int const column_idx_metadata = SQLITE_COLUMN_START + 1;
+		int const bind_idx_rowid      = SQLITE_BIND_START;
 		
-		if (object)
-			[connection->objectCache setObject:object forKey:collectionKey];
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
 		
-		const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
-		int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
-		
-		if (mBlobSize > 0)
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
 		{
-			// Performance tuning:
-			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			if (objectPtr)
+			{
+				const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
+				int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+				
+				// Performance tuning:
+				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+				
+				NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+				object = connection->database->objectDeserializer(cacheKey.collection, cacheKey.key, oData);
+				
+				if (object)
+					[connection->objectCache setObject:object forKey:cacheKey];
+			}
 			
-			NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-			metadata = connection->database->metadataDeserializer(collectionKey.collection, collectionKey.key, mData);
+			if (metadataPtr)
+			{
+				const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
+				int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+				
+				if (mBlobSize > 0)
+				{
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+					
+					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+					metadata = connection->database->metadataDeserializer(cacheKey.collection, cacheKey.key, mData);
+				}
+				
+				if (metadata)
+					[connection->metadataCache setObject:metadata forKey:cacheKey];
+				else
+					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+			}
+			
+			found = YES;
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 		}
 		
-		if (metadata)
-			[connection->metadataCache setObject:metadata forKey:collectionKey];
-		else
-			[connection->metadataCache setObject:[YapNull null] forKey:collectionKey];
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'getAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
 	
 	if (objectPtr) *objectPtr = object;
 	if (metadataPtr) *metadataPtr = metadata;
-	return YES;
+		
+	return found;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Object & Metadata
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+	if (key == nil) return NO;
+	if (collection == nil) collection = @"";
+	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	
+	// Shortcut:
+	// We may not need to query the database if we have the key in any of our caches.
+	
+	if ([connection->objectCache containsKey:cacheKey]) return YES;
+	if ([connection->metadataCache containsKey:cacheKey]) return YES;
+	
+	// The normal way (checks keyCache first, and then falls back to SQL query)
+	
+	return [self getRowid:NULL forCollectionKey:cacheKey];
+}
 
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection
 {
@@ -761,67 +810,217 @@
 	if (object)
 		return object;
 	
-	sqlite3_stmt *statement = [connection getDataForKeyStatement];
-	if (statement == NULL) return nil;
-	
-	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
-	
-	int const column_idx_data     = SQLITE_COLUMN_START;
-	int const bind_idx_collection = SQLITE_BIND_START + 0;
-	int const bind_idx_key        = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
 	{
-		const void *blob = sqlite3_column_blob(statement, column_idx_data);
-		int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+		int64_t rowid = [cachedRowid longLongValue];
 		
-		// Performance tuning:
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-		// Be sure not to call sqlite3_reset until we're done with the data.
+		sqlite3_stmt *statement = [connection getDataForRowidStatement];
+		if (statement == NULL) return nil;
 		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		object = connection->database->objectDeserializer(collection, key, data);
+		// SELECT "data" FROM "database2" WHERE "rowid" = ?;
+		
+		int const column_idx_data = SQLITE_COLUMN_START;
+		int const bind_idx_rowid  = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+			
+			// Performance tuning:
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			object = connection->database->objectDeserializer(cacheKey.collection, cacheKey.key, data);
+			
+			if (object)
+				[connection->objectCache setObject:object forKey:cacheKey];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getDataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
-	else if (status == SQLITE_ERROR)
+	else
 	{
-		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
-		                                                    status, sqlite3_errmsg(connection->db), key);
+		sqlite3_stmt *statement = [connection getDataForKeyStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "rowid", "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
+		
+		int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+		int const column_idx_data     = SQLITE_COLUMN_START + 1;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			const void *blob = sqlite3_column_blob(statement, column_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+			
+			// Performance tuning:
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			object = connection->database->objectDeserializer(collection, key, data);
+			
+			// Update caches
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+			
+			if (object) {
+				[connection->objectCache setObject:object forKey:cacheKey];
+			}
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
+			                                                    status, sqlite3_errmsg(connection->db), key);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
 	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
-	
-	if (object)
-		[connection->objectCache setObject:object forKey:cacheKey];
 	
 	return object;
 }
 
-- (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection
+- (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection
 {
-	if (key == nil) return NO;
+	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
-	
-	// Shortcut:
-	// We may not need to query the database if we have the key in any of our caches.
 	
 	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	if ([connection->objectCache objectForKey:cacheKey]) return YES;
-	if ([connection->metadataCache objectForKey:cacheKey]) return YES;
+	id metadata = [connection->metadataCache objectForKey:cacheKey];
+	if (metadata)
+	{
+		if (metadata == [YapNull null])
+			return nil;
+		else
+			return metadata;
+	}
 	
-	// The normal SQL way
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
+	{
+		int64_t rowid = [cachedRowid longLongValue];
+		
+		sqlite3_stmt *statement = [connection getMetadataForRowidStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "metadata" FROM "database2" WHERE "rowid" = ?;
+		
+		int const column_idx_metadata = SQLITE_COLUMN_START;
+		int const bind_idx_rowid      = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+			
+			if (blobSize > 0)
+			{
+				// Performance tuning:
+				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+				
+				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				metadata = connection->database->metadataDeserializer(cacheKey.collection, cacheKey.key, data);
+			}
+			
+			// Update cache
+			
+			if (metadata)
+				[connection->metadataCache setObject:metadata forKey:cacheKey];
+			else
+				[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getMetadataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+	}
+	else
+	{
+		sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "rowid", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+		
+		int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+		int const column_idx_metadata = SQLITE_COLUMN_START + 1;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+			
+			if (blobSize > 0)
+			{
+				// Performance tuning:
+				// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+				
+				NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+				metadata = connection->database->metadataDeserializer(collection, key, data);
+			}
+			
+			// Update caches
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+			
+			if (metadata)
+				[connection->metadataCache setObject:metadata forKey:cacheKey];
+			else
+				[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getMetadataForKeyStatement': %d %s",
+			                                                        status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
+	}
 	
-	return [self getRowid:NULL forKey:key inCollection:collection];
+	return metadata;
 }
 
 - (BOOL)getObject:(id *)objectPtr metadata:(id *)metadataPtr forKey:(NSString *)key inCollection:(NSString *)collection
@@ -842,49 +1041,110 @@
 	
 	BOOL found = NO;
 	
-	if (object && metadata)
+	if (object || metadata)
 	{
-		// Both object and metadata were in cache.
-		found = YES;
-		
-		// Need to check for empty metadata placeholder from cache.
-		if (metadata == [YapNull null])
-			metadata = nil;
-	}
-	else if (!object && metadata)
-	{
-		// Metadata was in cache.
-		found = YES;
-		
-		// Need to check for empty metadata placeholder from cache.
-		if (metadata == [YapNull null])
-			metadata = nil;
-		
-		// Missing object. Fetch individually if requested.
-		if (objectPtr)
+		if (objectPtr && !object)
+		{
 			object = [self objectForKey:key inCollection:collection];
-	}
-	else if (object && !metadata)
-	{
-		// Object was in cache.
-		found = YES;
+		}
 		
-		// Missing metadata. Fetch individually if requested.
-		if (metadataPtr)
+		if (metadataPtr && !metadata)
+		{
 			metadata = [self metadataForKey:key inCollection:collection];
+		}
+		
+		if (metadata == [YapNull null])
+			metadata = nil;
+		
+		found = YES;
 	}
 	else // (!object && !metadata)
 	{
 		// Both object and metadata are missing.
 		// Fetch via query.
 		
-		sqlite3_stmt *statement = [connection getAllForKeyStatement];
-		if (statement)
+		NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+		if (cachedRowid)
 		{
-			// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+			int64_t rowid = [cachedRowid longLongValue];
+			
+			sqlite3_stmt *statement = [connection getAllForRowidStatement];
+			if (statement == NULL) {
+				if (objectPtr) *objectPtr = nil;
+				if (metadataPtr) *metadataPtr = nil;
+				return NO;
+			}
+			
+			// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
 			
 			int const column_idx_data     = SQLITE_COLUMN_START + 0;
 			int const column_idx_metadata = SQLITE_COLUMN_START + 1;
+			int const bind_idx_rowid      = SQLITE_BIND_START;
+			
+			sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+			
+			int status = sqlite3_step(statement);
+			if (status == SQLITE_ROW)
+			{
+				if (objectPtr)
+				{
+					const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+					
+					// Performance tuning:
+					// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+					
+					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
+					object = connection->database->objectDeserializer(cacheKey.collection, cacheKey.key, oData);
+					
+					if (object)
+						[connection->objectCache setObject:object forKey:cacheKey];
+				}
+				
+				if (metadataPtr)
+				{
+					const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+					
+					if (mBlobSize > 0)
+					{
+						// Performance tuning:
+						// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+						
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(cacheKey.collection, cacheKey.key, mData);
+					}
+					
+					if (metadata)
+						[connection->metadataCache setObject:metadata forKey:cacheKey];
+					else
+						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
+				}
+				
+				found = YES;
+			}
+			else if (status == SQLITE_ERROR)
+			{
+				YDBLogError(@"Error executing 'getAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+		}
+		else
+		{
+			sqlite3_stmt *statement = [connection getAllForKeyStatement];
+			if (statement == NULL) {
+				if (objectPtr) *objectPtr = object;
+				if (metadataPtr) *metadataPtr = metadata;
+				return NO;
+			}
+			
+			// SELECT "rowid", "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+			
+			int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+			int const column_idx_data     = SQLITE_COLUMN_START + 1;
+			int const column_idx_metadata = SQLITE_COLUMN_START + 2;
 			int const bind_idx_collection = SQLITE_BIND_START + 0;
 			int const bind_idx_key        = SQLITE_BIND_START + 1;
 			
@@ -897,22 +1157,37 @@
 			int status = sqlite3_step(statement);
 			if (status == SQLITE_ROW)
 			{
-				const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
-				int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+				int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
 				
-				const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
-				int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+				[connection->keyCache setObject:cacheKey forKey:@(rowid)];
 				
 				if (objectPtr)
 				{
+					const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
+					int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+				
 					NSData *oData = [NSData dataWithBytesNoCopy:(void *)oBlob length:oBlobSize freeWhenDone:NO];
 					object = connection->database->objectDeserializer(collection, key, oData);
+					
+					if (object)
+						[connection->objectCache setObject:object forKey:cacheKey];
 				}
 				
-				if (metadataPtr && mBlobSize > 0)
+				if (metadataPtr)
 				{
-					NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
-					metadata = connection->database->metadataDeserializer(collection, key, mData);
+					const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
+					int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+				
+					if (mBlobSize > 0)
+					{
+						NSData *mData = [NSData dataWithBytesNoCopy:(void *)mBlob length:mBlobSize freeWhenDone:NO];
+						metadata = connection->database->metadataDeserializer(collection, key, mData);
+					}
+					
+					if (metadata)
+						[connection->metadataCache setObject:metadata forKey:cacheKey];
+					else
+						[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 				}
 				
 				found = YES;
@@ -921,16 +1196,6 @@
 			{
 				YDBLogError(@"Error executing 'getAllForKeyStatement': %d %s",
 				                                                   status, sqlite3_errmsg(connection->db));
-			}
-			
-			if (object)
-			{
-				[connection->objectCache setObject:object forKey:cacheKey];
-				
-				if (metadata)
-					[connection->metadataCache setObject:metadata forKey:cacheKey];
-				else
-					[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 			}
 			
 			sqlite3_clear_bindings(statement);
@@ -944,81 +1209,6 @@
 	if (metadataPtr) *metadataPtr = metadata;
 	
 	return found;
-}
-
-- (id)metadataForKey:(NSString *)key inCollection:(NSString *)collection
-{
-	if (key == nil) return nil;
-	if (collection == nil) collection = @"";
-	
-	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-	
-	id metadata = [connection->metadataCache objectForKey:cacheKey];
-	if (metadata)
-	{
-		if (metadata == [YapNull null])
-			return nil;
-		else
-			return metadata;
-	}
-	
-	sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
-	if (statement == NULL) return nil;
-	
-	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
-	
-	int const column_idx_metadata = SQLITE_COLUMN_START;
-	int const bind_idx_collection = SQLITE_BIND_START + 0;
-	int const bind_idx_key        = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
-	
-	BOOL found = NO;
-	NSData *metadataData = nil;
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		found = YES;
-		
-		const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
-		int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
-		
-		// Performance tuning:
-		//
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-		// But be sure not to call sqlite3_reset until we're done with the data.
-		
-		if (blobSize > 0)
-			metadataData = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'getMetadataForKeyStatement': %d %s",
-		                                                        status, sqlite3_errmsg(connection->db));
-	}
-	
-	if (found)
-	{
-		if (metadataData)
-			metadata = connection->database->metadataDeserializer(collection, key, metadataData);
-		
-		if (metadata)
-			[connection->metadataCache setObject:metadata forKey:cacheKey];
-		else
-			[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
-	
-	return metadata;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1039,42 +1229,84 @@
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection getDataForKeyStatement];
-	if (statement == NULL) return nil;
-	
 	NSData *result = nil;
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	// SELECT "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
-	
-	int const column_idx_data     = SQLITE_COLUMN_START;
-	int const bind_idx_collection = SQLITE_BIND_START + 0;
-	int const bind_idx_key        = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length,  SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
 	{
-		const void *blob = sqlite3_column_blob(statement, column_idx_data);
-		int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+		int64_t rowid = [cachedRowid longLongValue];
 		
-		result = [[NSData alloc] initWithBytes:blob length:blobSize];
+		sqlite3_stmt *statement = [connection getDataForRowidStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "data" FROM "database2" WHERE "rowid" = ?;
+		
+		int const column_idx_data = SQLITE_COLUMN_START;
+		int const bind_idx_rowid  = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+			
+			result = [[NSData alloc] initWithBytes:blob length:blobSize];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getDataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
-	else if (status == SQLITE_ERROR)
+	else
 	{
-		YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
-		                                                    status, sqlite3_errmsg(connection->db), key);
+		sqlite3_stmt *statement = [connection getDataForKeyStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "rowid", "data" FROM "database2" WHERE "collection" = ? AND "key" = ?;
+		
+		int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+		int const column_idx_data     = SQLITE_COLUMN_START + 1;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length,  SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			const void *blob = sqlite3_column_blob(statement, column_idx_data);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_data);
+			
+			result = [[NSData alloc] initWithBytes:blob length:blobSize];
+			
+			// Update cache
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getDataForKeyStatement': %d %s, key(%@)",
+			                                                    status, sqlite3_errmsg(connection->db), key);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
 	}
 	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
-
 	return result;
 }
 
@@ -1092,41 +1324,83 @@
 	if (key == nil) return nil;
 	if (collection == nil) collection = @"";
 	
-	sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
-	if (statement == NULL) return nil;
-	
-	// SELECT "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
-	
-	int const column_idx_metadata = SQLITE_COLUMN_START;
-	int const bind_idx_collection = SQLITE_BIND_START + 0;
-	int const bind_idx_key        = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-	
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
-	
 	NSData *result = nil;
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
 	{
-		const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
-		int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+		int64_t rowid = [cachedRowid longLongValue];
 		
-		result = [[NSData alloc] initWithBytes:blob length:blobSize];
+		sqlite3_stmt *statement = [connection getMetadataForRowidStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "metadata" FROM "database2" WHERE "rowid" = ?;
+		
+		int const column_idx_metadata = SQLITE_COLUMN_START;
+		int const bind_idx_rowid      = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+			
+			result = [[NSData alloc] initWithBytes:blob length:blobSize];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getMetadataForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
-	else if (status == SQLITE_ERROR)
+	else
 	{
-		YDBLogError(@"Error executing 'getMetadataForKeyStatement': %d %s, key(%@)",
-					status, sqlite3_errmsg(connection->db), key);
+		sqlite3_stmt *statement = [connection getMetadataForKeyStatement];
+		if (statement == NULL) return nil;
+		
+		// SELECT "rowid", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+		
+		int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+		int const column_idx_metadata = SQLITE_COLUMN_START + 1;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+			
+			result = [[NSData alloc] initWithBytes:blob length:blobSize];
+			
+			// Update cache
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getMetadataForKeyStatement': %d %s, key(%@)",
+						status, sqlite3_errmsg(connection->db), key);
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
 	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
 	
 	return result;
 }
@@ -1151,61 +1425,124 @@
 		return NO;
 	}
 	if (collection == nil) collection = @"";
-		
-	sqlite3_stmt *statement = [connection getAllForKeyStatement];
-	if (statement == NULL) {
-		if (serializedObjectPtr) *serializedObjectPtr = nil;
-		if (serializedMetadataPtr) *serializedMetadataPtr = nil;
-		return NO;
-	}
 	
 	NSData *serializedObject = nil;
 	NSData *serializedMetadata = nil;
 	
 	BOOL found = NO;
 	
-	// SELECT "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	int const column_idx_data     = SQLITE_COLUMN_START + 0;
-	int const column_idx_metadata = SQLITE_COLUMN_START + 1;
-	int const bind_idx_collection = SQLITE_BIND_START + 0;
-	int const bind_idx_key        = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-		
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
-		
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
+	NSNumber *cachedRowid = [connection->keyCache keyForObject:cacheKey];
+	if (cachedRowid)
 	{
-		const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
-		int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+		int64_t rowid = [cachedRowid longLongValue];
 		
-		const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
-		int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
-		
-		if (serializedObjectPtr) {
-			serializedObject = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
+		sqlite3_stmt *statement = [connection getAllForRowidStatement];
+		if (statement == NULL) {
+			if (serializedObjectPtr) *serializedObjectPtr = nil;
+			if (serializedMetadataPtr) *serializedMetadataPtr = nil;
+			return NO;
 		}
 		
-		if (serializedMetadataPtr) {
-			serializedMetadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+		// SELECT "data", "metadata" FROM "database2" WHERE "rowid" = ?;
+		
+		int const column_idx_data     = SQLITE_COLUMN_START + 0;
+		int const column_idx_metadata = SQLITE_COLUMN_START + 1;
+		int const bind_idx_rowid      = SQLITE_BIND_START;
+		
+		sqlite3_bind_int64(statement, bind_idx_rowid, rowid);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			if (serializedObjectPtr)
+			{
+				const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
+				int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+				
+				serializedObject = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
+			}
+			
+			if (serializedMetadataPtr)
+			{
+				const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
+				int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+				
+				serializedMetadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+			}
+			
+			found = YES;
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getAllForRowidStatement': %d %s", status, sqlite3_errmsg(connection->db));
 		}
 		
-		found = YES;
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
 	}
-	else if (status == SQLITE_ERROR)
+	else
 	{
-		YDBLogError(@"Error executing 'getAllForKeyStatement': %d %s",
-		                                                   status, sqlite3_errmsg(connection->db));
+		sqlite3_stmt *statement = [connection getAllForKeyStatement];
+		if (statement == NULL) {
+			if (serializedObjectPtr) *serializedObjectPtr = nil;
+			if (serializedMetadataPtr) *serializedMetadataPtr = nil;
+			return NO;
+		}
+		
+		// SELECT "rowid", "data", "metadata" FROM "database2" WHERE "collection" = ? AND "key" = ? ;
+		
+		int const column_idx_rowid    = SQLITE_COLUMN_START + 0;
+		int const column_idx_data     = SQLITE_COLUMN_START + 1;
+		int const column_idx_metadata = SQLITE_COLUMN_START + 2;
+		int const bind_idx_collection = SQLITE_BIND_START + 0;
+		int const bind_idx_key        = SQLITE_BIND_START + 1;
+		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
+		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+		
+		int status = sqlite3_step(statement);
+		if (status == SQLITE_ROW)
+		{
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			if (serializedObjectPtr)
+			{
+				const void *oBlob = sqlite3_column_blob(statement, column_idx_data);
+				int oBlobSize = sqlite3_column_bytes(statement, column_idx_data);
+				
+				serializedObject = [NSData dataWithBytes:(void *)oBlob length:oBlobSize];
+			}
+			
+			if (serializedMetadataPtr)
+			{
+				const void *mBlob = sqlite3_column_blob(statement, column_idx_metadata);
+				int mBlobSize = sqlite3_column_bytes(statement, column_idx_metadata);
+				
+				serializedMetadata = [NSData dataWithBytes:(void *)mBlob length:mBlobSize];
+			}
+			
+			found = YES;
+			
+			// Update cache
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
+		}
+		else if (status == SQLITE_ERROR)
+		{
+			YDBLogError(@"Error executing 'getAllForKeyStatement': %d %s",
+			                                                   status, sqlite3_errmsg(connection->db));
+		}
+		
+		sqlite3_clear_bindings(statement);
+		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
 	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
 	
 	if (serializedObjectPtr) *serializedObjectPtr = serializedObject;
 	if (serializedMetadataPtr) *serializedMetadataPtr = serializedMetadata;
@@ -4438,71 +4775,32 @@
 			serializedMetadata = connection->database->metadataSerializer(collection, key, metadata);
 	}
 	
+	YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 	
-	BOOL found = NO;
+	// Fetch rowid for <collection, key> tuple
+	
 	int64_t rowid = 0;
-	
-	YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
-	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
-	
-	if (YES) // fetch rowid for key
+	BOOL found = [self getRowid:&rowid forCollectionKey:cacheKey];
+    
+	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		sqlite3_stmt *statement = [connection getRowidForKeyStatement];
-		if (statement == NULL) {
-			FreeYapDatabaseString(&_collection);
-			FreeYapDatabaseString(&_key);
-			return;
-		}
-		
-		// SELECT "rowid" FROM "database2" WHERE "collection" = ? AND "key" = ?;
-		
-		int const column_idx_rowid    = SQLITE_COLUMN_START;
-		int const bind_idx_collection = SQLITE_BIND_START + 0;
-		int const bind_idx_key        = SQLITE_BIND_START + 1;
-		
-		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
-		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
-		
-		int status = sqlite3_step(statement);
-		if (status == SQLITE_ROW)
-		{
-			rowid = sqlite3_column_int64(statement, column_idx_rowid);
-			found = YES;
-		}
-		else if (status == SQLITE_ERROR)
-		{
-			YDBLogError(@"Error executing 'getRowidForKeyStatement': %d %s, key(%@)",
-			            status, sqlite3_errmsg(connection->db), key);
-		}
-		
-		sqlite3_clear_bindings(statement);
-		sqlite3_reset(statement);
+		if (found)
+			[extTransaction handleWillUpdateObject:object
+			                      forCollectionKey:cacheKey
+			                          withMetadata:metadata
+			                                 rowid:rowid];
+		else
+			[extTransaction handleWillInsertObject:object
+			                      forCollectionKey:cacheKey
+			                          withMetadata:metadata];
 	}
 	
 	BOOL set = YES;
-    YapCollectionKey *cacheKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-    
-    for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
-    {
-        if (found)
-            [extTransaction handleWillUpdateObject:object
-                                  forCollectionKey:cacheKey
-                                      withMetadata:metadata
-                                             rowid:rowid];
-        else
-            [extTransaction handleWillInsertObject:object
-                                  forCollectionKey:cacheKey
-                                      withMetadata:metadata];
-    }
-    
-    
 	
 	if (found) // update data for key
 	{
 		sqlite3_stmt *statement = [connection updateAllForRowidStatement];
 		if (statement == NULL) {
-			FreeYapDatabaseString(&_collection);
-			FreeYapDatabaseString(&_key);
 			return;
 		}
 		
@@ -4534,8 +4832,6 @@
 	{
 		sqlite3_stmt *statement = [connection insertForRowidStatement];
 		if (statement == NULL) {
-			FreeYapDatabaseString(&_collection);
-			FreeYapDatabaseString(&_key);
 			return;
 		}
 		
@@ -4546,7 +4842,10 @@
 		int const bind_idx_data       = SQLITE_BIND_START + 2;
 		int const bind_idx_metadata   = SQLITE_BIND_START + 3;
 		
+		YapDatabaseString _collection; MakeYapDatabaseString(&_collection, collection);
 		sqlite3_bind_text(statement, bind_idx_collection, _collection.str, _collection.length, SQLITE_STATIC);
+		
+		YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
 		sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 		
 		sqlite3_bind_blob(statement, bind_idx_data,
@@ -4559,6 +4858,8 @@
 		if (status == SQLITE_DONE)
 		{
 			rowid = sqlite3_last_insert_rowid(connection->db);
+			
+			[connection->keyCache setObject:cacheKey forKey:@(rowid)];
 		}
 		else
 		{
@@ -4568,17 +4869,14 @@
 		
 		sqlite3_clear_bindings(statement);
 		sqlite3_reset(statement);
+		FreeYapDatabaseString(&_collection);
+		FreeYapDatabaseString(&_key);
 	}
-	
-	FreeYapDatabaseString(&_collection);
-	FreeYapDatabaseString(&_key);
 	
 	if (!set) return;
 	
 	connection->hasDiskChanges = YES;
 	[connection->mutationStack markAsMutated];  // mutation during enumeration protection
-	
-	[connection->keyCache setObject:cacheKey forKey:@(rowid)];
 	
 	id _object = nil;
 	if (connection->objectPolicy == YapDatabasePolicyContainment) {

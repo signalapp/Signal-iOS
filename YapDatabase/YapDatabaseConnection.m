@@ -234,7 +234,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSUInteger keyCacheLimit = [self calculateKeyCacheLimit];
 		
-		keyCache = [[YapCache alloc] initWithCountLimit:keyCacheLimit];
+		keyCache = [[YapBidirectionalCache alloc] initWithCountLimit:keyCacheLimit];
 		keyCache.allowedKeyClasses = [NSSet setWithObject:[NSNumber class]];
 		keyCache.allowedObjectClasses = [NSSet setWithObject:[YapCollectionKey class]];
 		
@@ -1175,7 +1175,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	sqlite3_stmt **statement = &getDataForKeyStatement;
 	if (*statement == NULL)
 	{
-		const char *stmt = "SELECT \"data\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		const char *stmt = "SELECT \"rowid\", \"data\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
@@ -1193,7 +1193,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	sqlite3_stmt **statement = &getMetadataForKeyStatement;
 	if (*statement == NULL)
 	{
-		const char *stmt = "SELECT \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		const char *stmt = "SELECT \"rowid\", \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
@@ -1211,7 +1211,8 @@ static int connectionBusyHandler(void *ptr, int count)
 	sqlite3_stmt **statement = &getAllForKeyStatement;
 	if (*statement == NULL)
 	{
-		const char *stmt = "SELECT \"data\", \"metadata\" FROM \"database2\" WHERE \"collection\" = ? AND \"key\" = ?;";
+		const char *stmt = "SELECT \"rowid\", \"data\", \"metadata\" FROM \"database2\""
+		                   " WHERE \"collection\" = ? AND \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
 		
 		int status = sqlite3_prepare_v2(db, stmt, stmtLen+1, statement, NULL);
