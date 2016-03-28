@@ -603,7 +603,12 @@
 	
 	id metadata = [connection->metadataCache objectForKey:cacheKey];
 	if (metadata)
-		return metadata;
+	{
+		if (metadata == [YapNull null])
+			return nil;
+		else
+			return metadata;
+	}
 	
 	sqlite3_stmt *statement = [connection getMetadataForRowidStatement];
 	if (statement == NULL) return nil;
@@ -621,14 +626,19 @@
 		const void *blob = sqlite3_column_blob(statement, column_idx_metadata);
 		int blobSize = sqlite3_column_bytes(statement, column_idx_metadata);
 		
-		// Performance tuning:
-		// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
-		
-		NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
-		metadata = connection->database->metadataDeserializer(cacheKey.collection, cacheKey.key, data);
+		if (blobSize > 0)
+		{
+			// Performance tuning:
+			// Use dataWithBytesNoCopy to avoid an extra allocation and memcpy.
+			
+			NSData *data = [NSData dataWithBytesNoCopy:(void *)blob length:blobSize freeWhenDone:NO];
+			metadata = connection->database->metadataDeserializer(cacheKey.collection, cacheKey.key, data);
+		}
 		
 		if (metadata)
 			[connection->metadataCache setObject:metadata forKey:cacheKey];
+		else
+			[connection->metadataCache setObject:[YapNull null] forKey:cacheKey];
 	}
 	else if (status == SQLITE_ERROR)
 	{
