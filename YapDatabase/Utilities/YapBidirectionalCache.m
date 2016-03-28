@@ -164,7 +164,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 			while (CFDictionaryGetCount(key_obj_dict) > (CFIndex)countLimit)
 			{
 				CFDictionaryRemoveValue(key_obj_dict, (const void *)(leastRecentCacheItem->key));
-				CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->key));
+				CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->obj));
 				
 				if (evictedCacheItem == nil)
 				{
@@ -410,7 +410,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 			YDBLogVerbose(@"in(%@), out(%@)", key, leastRecentCacheItem->key);
 			
 			CFDictionaryRemoveValue(key_obj_dict, (const void *)(leastRecentCacheItem->key));
-			CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->key));
+			CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->obj));
 			
 			if (evictedCacheItem == nil)
 			{
