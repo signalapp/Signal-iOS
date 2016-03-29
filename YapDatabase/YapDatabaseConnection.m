@@ -2449,6 +2449,13 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	// Pre-Write-Transaction: Step 1 of 6
 	//
+	// Add IsOnConnectionQueueKey flag to writeQueue.
+	// This allows various methods that depend on the flag to operate correctly.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
+	
+	// Pre-Write-Transaction: Step 2 of 6
+	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
 	// acquire any locks until it executes something.
@@ -2475,7 +2482,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Write-Transaction: Step 2 of 6
+		// Pre-Write-Transaction: Step 3 of 6
 		//
 		// Update our connection state within the state table.
 		//
@@ -2495,7 +2502,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Write-Transaction: Step 3 of 6
+		// Pre-Write-Transaction: Step 4 of 6
 		//
 		// Compare our snapshot with the database's snapshot.
 		
@@ -2521,7 +2528,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
 	
-	// Pre-Write-Transaction: Step 4 of 6
+	// Pre-Write-Transaction: Step 5 of 6
 	//
 	// Update our in-memory data (caches, etc) if needed.
 	// Since this can be CPU intensive, we do this outside the snapshotQueue.
@@ -2556,7 +2563,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		externallyModified = NO;
 	}
 	
-	// Pre-Write-Transaction: Step 5 of 6
+	// Pre-Write-Transaction: Step 6 of 6
 	//
 	// Setup write state and changeset variables
 	
@@ -2581,13 +2588,6 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 	if (mutationStack == nil)
 		mutationStack = [[YapMutationStack_Bool alloc] init];
-	
-	// Pre-Write-Transaction: Step 6 of 6
-	//
-	// Add IsOnConnectionQueueKey flag to writeQueue.
-	// This allows various methods that depend on the flag to operate correctly.
-	
-	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 }
 
 /**
@@ -2947,6 +2947,13 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 	// Pre-Pseudo-Write-Transaction: Step 1 of 3
 	//
+	// Add IsOnConnectionQueueKey flag to writeQueue.
+	// This allows various methods that depend on the flag to operate correctly.
+	
+	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
+	
+	// Pre-Pseudo-Write-Transaction: Step 2 of 3
+	//
 	// Update our connection state within the state table.
 	//
 	// We are the only write transaction for this database.
@@ -2974,20 +2981,13 @@ static int connectionBusyHandler(void *ptr, int count)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting vacuum operation.", self);
 	}});
 	
-	// Pre-Pseudo-Write-Transaction: Step 2 of 3
+	// Pre-Pseudo-Write-Transaction: Step 3 of 3
 	//
 	// Setup write state and changeset variables.
 	
 	hasDiskChanges = NO;
 	
 	// Note: We don't need to setup all changeset variables.
-	
-	// Pre-Pseudo-Write-Transaction: Step 3 of 3
-	//
-	// Add IsOnConnectionQueueKey flag to writeQueue.
-	// This allows various methods that depend on the flag to operate correctly.
-	
-	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 }
 
 /**
@@ -4026,22 +4026,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 - (void)noteCommittedChangeset:(NSDictionary *)changeset
 {
 	// This method must be invoked from within connectionQueue.
-	// It may be invoked from:
-	//
-	// 1. [database noteCommittedChangeset:fromConnection:]
-	//   via dispatch_async(connectionQueue, ...)
-	//
-	// 2. [self  preReadTransaction:]
-	//   via dispatch_X(connectionQueue) -> dispatch_sync(database->snapshotQueue)
-	//
-	// 3. [self preReadWriteTransaction:]
-	//   via dispatch_X(connectionQueue) -> dispatch_sync(database->snapshotQueue)
-	//
-	// In case 1 (the common case) we can see IsOnConnectionQueueKey.
-	// In case 2 & 3 (the edge cases) we can see IsOnSnapshotQueueKey.
 	
-	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey) ||
-			 dispatch_get_specific(database->IsOnSnapshotQueueKey), @"Must be invoked within connectionQueue");
+	NSAssert(dispatch_get_specific(IsOnConnectionQueueKey), @"Must be invoked within connectionQueue");
 	
 	// Grab the new snapshot.
 	// This tells us the minimum snapshot we could get if we started a transaction right now.
