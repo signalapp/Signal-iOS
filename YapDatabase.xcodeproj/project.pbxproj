@@ -391,6 +391,10 @@
 		DC6521621BCEC77E00188E23 /* YapDatabaseTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = DC651FEB1BCEC77E00188E23 /* YapDatabaseTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC6521631BCEC77E00188E23 /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC651FEC1BCEC77E00188E23 /* YapDatabaseTransaction.m */; };
 		DC6521641BCEC77E00188E23 /* YapDatabaseTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DC651FEC1BCEC77E00188E23 /* YapDatabaseTransaction.m */; };
+		DC6C28941CAAF03200166CE4 /* YapBidirectionalCache.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6C28921CAAF03200166CE4 /* YapBidirectionalCache.h */; };
+		DC6C28951CAAF03200166CE4 /* YapBidirectionalCache.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6C28921CAAF03200166CE4 /* YapBidirectionalCache.h */; };
+		DC6C28961CAAF03200166CE4 /* YapBidirectionalCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6C28931CAAF03200166CE4 /* YapBidirectionalCache.m */; };
+		DC6C28971CAAF03200166CE4 /* YapBidirectionalCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6C28931CAAF03200166CE4 /* YapBidirectionalCache.m */; };
 		DC8664E71BE94DC0002F7800 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2AE1BCC8E610087ED39 /* YapDatabase.framework */; };
 		DCAF523F1C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DCAF52401C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -653,6 +657,8 @@
 		DC6521681BCED4D800188E23 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Framework/iOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/Mac/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC65216F1BCED5D100188E23 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		DC6C28921CAAF03200166CE4 /* YapBidirectionalCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapBidirectionalCache.h; sourceTree = "<group>"; };
+		DC6C28931CAAF03200166CE4 /* YapBidirectionalCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapBidirectionalCache.m; sourceTree = "<group>"; };
 		DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseConnectionProxy.h; sourceTree = "<group>"; };
 		DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseConnectionProxy.m; sourceTree = "<group>"; };
 		DCAF52441C4866B700562C92 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "Framework/TestModuleMap-Mac/AppDelegate.h"; sourceTree = "<group>"; };
@@ -1106,6 +1112,8 @@
 		DC651FD61BCEC77E00188E23 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				DC6C28921CAAF03200166CE4 /* YapBidirectionalCache.h */,
+				DC6C28931CAAF03200166CE4 /* YapBidirectionalCache.m */,
 				DC302B451BE98DAC009F8C4D /* YapMutationStack.h */,
 				DC302B461BE98DAC009F8C4D /* YapMutationStack.m */,
 				DC651FD71BCEC77E00188E23 /* YapCache.h */,
@@ -1335,6 +1343,7 @@
 				DC6520E31BCEC77E00188E23 /* YapDatabaseViewState.h in Headers */,
 				DC6520D51BCEC77E00188E23 /* YapDatabaseViewMappingsPrivate.h in Headers */,
 				DC65211D1BCEC77E00188E23 /* YapDatabaseStatement.h in Headers */,
+				DC6C28941CAAF03200166CE4 /* YapBidirectionalCache.h in Headers */,
 				DC6520A11BCEC77E00188E23 /* YapDatabaseSearchResultsViewPrivate.h in Headers */,
 				DC65212B1BCEC77E00188E23 /* YapNull.h in Headers */,
 				DC6521071BCEC77E00188E23 /* NSDictionary+YapDatabase.h in Headers */,
@@ -1448,6 +1457,7 @@
 				DC6520E41BCEC77E00188E23 /* YapDatabaseViewState.h in Headers */,
 				DC6520D61BCEC77E00188E23 /* YapDatabaseViewMappingsPrivate.h in Headers */,
 				DC65211E1BCEC77E00188E23 /* YapDatabaseStatement.h in Headers */,
+				DC6C28951CAAF03200166CE4 /* YapBidirectionalCache.h in Headers */,
 				DC6520A21BCEC77E00188E23 /* YapDatabaseSearchResultsViewPrivate.h in Headers */,
 				DC65212C1BCEC77E00188E23 /* YapNull.h in Headers */,
 				DC6521081BCEC77E00188E23 /* NSDictionary+YapDatabase.h in Headers */,
@@ -1724,6 +1734,7 @@
 				DC6520571BCEC77E00188E23 /* YapDatabaseHooksConnection.m in Sources */,
 				DC6520E51BCEC77E00188E23 /* YapDatabaseViewState.m in Sources */,
 				DC6521331BCEC77E00188E23 /* YapRowidSet.mm in Sources */,
+				DC6C28961CAAF03200166CE4 /* YapBidirectionalCache.m in Sources */,
 				DC6521091BCEC77E00188E23 /* NSDictionary+YapDatabase.m in Sources */,
 				DC6520D91BCEC77E00188E23 /* YapDatabaseViewPage.mm in Sources */,
 				DC6520091BCEC77E00188E23 /* YDBCKMergeInfo.m in Sources */,
@@ -1817,6 +1828,7 @@
 				DC6520581BCEC77E00188E23 /* YapDatabaseHooksConnection.m in Sources */,
 				DC6520E61BCEC77E00188E23 /* YapDatabaseViewState.m in Sources */,
 				DC6521341BCEC77E00188E23 /* YapRowidSet.mm in Sources */,
+				DC6C28971CAAF03200166CE4 /* YapBidirectionalCache.m in Sources */,
 				DC65210A1BCEC77E00188E23 /* NSDictionary+YapDatabase.m in Sources */,
 				DC6520DA1BCEC77E00188E23 /* YapDatabaseViewPage.mm in Sources */,
 				DC65200A1BCEC77E00188E23 /* YDBCKMergeInfo.m in Sources */,
