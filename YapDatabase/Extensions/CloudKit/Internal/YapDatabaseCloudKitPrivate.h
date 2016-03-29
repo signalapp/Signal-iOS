@@ -228,14 +228,14 @@ static NSString *const changeset_key_reset            = @"reset";
 
 // Inherited:
 //
-// @property (atomic, readonly) BOOL isInFlight;
+// @property (nonatomic, readonly) BOOL isInFlight;
 //
 // @property (nonatomic, readonly) NSString *databaseIdentifier;
 //
 // @property (nonatomic, readonly) NSArray *recordIDsToDelete; // Array of CKRecordID's for CKModifyRecordsOperation
 // @property (nonatomic, readonly) NSArray *recordsToSave;     // Array of CKRecord's for CKModifyRecordsOperation
 
-@property (atomic, readwrite) BOOL isInFlight;
+@property (nonatomic, readwrite) BOOL isInFlight;
 
 @property (nonatomic, strong, readwrite) NSString *uuid;
 @property (nonatomic, strong, readwrite) NSString *prev;
