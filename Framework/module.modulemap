@@ -127,4 +127,22 @@ framework module YapDatabase {
 	explicit module YapDatabaseConnectionProxy {
 		header "YapDatabaseConnectionProxy.h"
 	}
+	
+	// Extension: ActionManager
+	
+	explicit module YapDatabaseActionManager {
+		header "YapActionable.h"
+		header "YapActionItem.h"
+		header "YapDatabaseActionManager.h"
+		header "YapDatabaseActionManagerConnection.h"
+		header "YapDatabaseActionManagerTransaction.h"
+	}
+	
+	// Extension: CrossProcessNotification
+	
+	explicit module YapDatabaseCrossProcessNotification {
+		header "YapDatabaseCrossProcessNotification.h"
+		header "YapDatabaseCrossProcessNotificationConnection.h"
+		header "YapDatabaseCrossProcessNotificationTransaction.h"
+	}
 }
