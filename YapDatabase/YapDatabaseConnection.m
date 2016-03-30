@@ -234,7 +234,17 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSUInteger keyCacheLimit = [self calculateKeyCacheLimit];
 		
-		keyCache = [[YapBidirectionalCache alloc] initWithCountLimit:keyCacheLimit];
+		YapBidirectionalCacheCallBacks RowidCallBacks = kYapBidirectionalCacheDefaultCallBacks;
+		RowidCallBacks.shouldCopy = NO;
+		
+		YapBidirectionalCacheCallBacks YapCollectionKeyCallBacks = kYapBidirectionalCacheDefaultCallBacks;
+		YapCollectionKeyCallBacks.shouldCopy = NO;
+		YapCollectionKeyCallBacks.equal = YapCollectionKeyEqual;
+		YapCollectionKeyCallBacks.hash = YapCollectionKeyHash;
+		
+		keyCache = [[YapBidirectionalCache alloc] initWithCountLimit:keyCacheLimit
+		                                                keyCallbacks:&RowidCallBacks
+		                                             objectCallbacks:&YapCollectionKeyCallBacks];
 		keyCache.allowedKeyClasses = [NSSet setWithObject:[NSNumber class]];
 		keyCache.allowedObjectClasses = [NSSet setWithObject:[YapCollectionKey class]];
 		
