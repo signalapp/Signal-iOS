@@ -5,7 +5,7 @@ static NSUInteger const YapBidirectionalCache_Default_CountLimit = 40;
 
 const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (YapBidirectionalCacheCallBacks){
 	.version = 0,
-	.shouldCopy = YES,
+	.shouldCopy = NO,
 	.equal = CFEqual,
 	.hash = CFHash
 };
@@ -23,16 +23,34 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 
 @interface YapBidirectionalCacheItem : NSObject {
 @public
-	__unsafe_unretained YapBidirectionalCacheItem *prev;
-	__strong            YapBidirectionalCacheItem *next;
 	
-	__strong id key;
+	// Memory Management Architecture:
+	//
+	// The prev & next pointers are updated regularly, so it's critical that they
+	// don't have the overhead of memory management (__strong).
+	// The end goal is to have the following retained once, and only once:
+	// - key
+	// - value
+	// - YapBidirectionalCacheItem
+	//
+	// To achieve this, the key_obj_dict retains the key & YapCacheItem.
+	// And the YapBidirectionalCacheItem retains the value.
+	
+	__unsafe_unretained YapBidirectionalCacheItem *prev;
+	__unsafe_unretained YapBidirectionalCacheItem *next;
+	
+	__unsafe_unretained id key;
 	__strong id obj;
 }
 
 @end
 
 @implementation YapBidirectionalCacheItem
+
+//- (void)dealloc
+//{
+//	NSLog(@"[YapBidirectionalCacheItem dealloc]: key: %@, obj: %@", key, obj);
+//}
 
 - (NSString *)description
 {
@@ -50,23 +68,10 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	YapBidirectionalCacheCallBacks keyCallBacks;
 	YapBidirectionalCacheCallBacks objCallBacks;
 	
-	// Memory managemnet architecture:
-	//
-	// - ONLY the YapBidirectionalCacheItem retains the key and object
-	// - ONLY the forward-linked-list retains the YapBidirectionalCacheItem(s)
-	//
-	// It's important to note that:
-	// - key_obj_dict does NOT retain its keys or objects
-	// - obj_key_dict does NOT retain its keys or objects
-	// - the backward-linked-list does NOT retain the items
-	//
-	// This is done for performance reasons.
-	// We can skip a LOT of extraneous retain/release operations this way.
-	
 	CFMutableDictionaryRef key_obj_dict;
 	CFMutableDictionaryRef obj_key_dict;
 	
-	__strong            YapBidirectionalCacheItem *mostRecentCacheItem;
+	__unsafe_unretained YapBidirectionalCacheItem *mostRecentCacheItem;
 	__unsafe_unretained YapBidirectionalCacheItem *leastRecentCacheItem;
 	
 	__strong YapBidirectionalCacheItem *evictedCacheItem;
@@ -103,37 +108,37 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 {
 	if ((self = [super init]))
 	{
-		YapBidirectionalCacheCallBacks defaultCallBacks;
-		defaultCallBacks.version = 0;
-		defaultCallBacks.shouldCopy = NO;
-		defaultCallBacks.equal = CFEqual;
-		defaultCallBacks.hash = CFHash;
-		
 		if (inKeyCallBacks == NULL)
-			inKeyCallBacks = &defaultCallBacks;
+			inKeyCallBacks = &kYapBidirectionalCacheDefaultCallBacks;
 		
 		if (inObjCallBacks == NULL)
-			inObjCallBacks = &defaultCallBacks;
+			inObjCallBacks = &kYapBidirectionalCacheDefaultCallBacks;
 		
 		memcpy(&keyCallBacks, inKeyCallBacks, sizeof(YapBidirectionalCacheCallBacks));
 		memcpy(&objCallBacks, inObjCallBacks, sizeof(YapBidirectionalCacheCallBacks));
 		
+		// Setup key_obj_dict.
+		// This retains the key & YapBidirectionalItem.
+		
 		CFDictionaryKeyCallBacks kcb = kCFTypeDictionaryKeyCallBacks;
-		kcb.retain  = NULL;
-		kcb.release = NULL;
 		kcb.equal   = keyCallBacks.equal;
 		kcb.hash    = keyCallBacks.hash;
 		
 		CFDictionaryValueCallBacks vcb = kCFTypeDictionaryValueCallBacks;
-		vcb.retain  = NULL;
-		vcb.release = NULL;
 		vcb.equal   = objCallBacks.equal;
 		
 		key_obj_dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kcb, &vcb);
 		
+		// Setup obj_key_dict.
+		// This does NOT retain its key or value.
+		
+		kcb.retain  = NULL;
+		kcb.release = NULL;
 		kcb.equal = objCallBacks.equal;
 		kcb.hash  = objCallBacks.hash;
 		
+		vcb.retain  = NULL;
+		vcb.release = NULL;
 		vcb.equal = keyCallBacks.equal;
 		
 		obj_key_dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kcb, &vcb);
@@ -163,8 +168,8 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		{
 			while (CFDictionaryGetCount(key_obj_dict) > (CFIndex)countLimit)
 			{
-				CFDictionaryRemoveValue(key_obj_dict, (const void *)(leastRecentCacheItem->key));
-				CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->obj));
+				__unsafe_unretained id keyToEvict = leastRecentCacheItem->key;
+				__unsafe_unretained id objToEvict = leastRecentCacheItem->obj;
 				
 				if (evictedCacheItem == nil)
 				{
@@ -173,15 +178,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 					leastRecentCacheItem = leastRecentCacheItem->prev;
 					leastRecentCacheItem->next = nil;
 					
+					CFDictionaryRemoveValue(obj_key_dict, (const void *)(objToEvict)); // must be first
+					CFDictionaryRemoveValue(key_obj_dict, (const void *)(keyToEvict)); // must be second
+					
 					evictedCacheItem->prev = nil;
 					evictedCacheItem->next = nil;
 					evictedCacheItem->key  = nil;
-					evictedCacheItem->obj  = nil;
+					evictedCacheItem->obj  = nil; // deallocates obj / objToEvict
 				}
 				else
 				{
 					leastRecentCacheItem = leastRecentCacheItem->prev;
 					leastRecentCacheItem->next = nil;
+					
+					CFDictionaryRemoveValue(obj_key_dict, (const void *)(objToEvict)); // must be first
+					CFDictionaryRemoveValue(key_obj_dict, (const void *)(keyToEvict)); // must be second
 				}
 				
 			#if YapBidirectionalCache_Enable_Statistics
@@ -198,7 +209,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	AssertAllowedKeyClass(key, allowedKeyClasses);
 #endif
 	
-	YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
+	__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
 	if (item)
 	{
 		if (item != mostRecentCacheItem)
@@ -255,7 +266,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	AssertAllowedObjectClass(object, allowedObjectClasses);
 #endif
 	
-	YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
+	__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
 	if (item)
 	{
 		if (item != mostRecentCacheItem)
@@ -318,23 +329,23 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	AssertAllowedObjectClass(object, allowedObjectClasses);
 	#endif
 	
-	YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
-	if (item)
+	__unsafe_unretained YapBidirectionalCacheItem *existingItem = CFDictionaryGetValue(key_obj_dict, (const void *)key);
+	if (existingItem)
 	{
 		// Update item value
-		if (!objCallBacks.equal((__bridge const void *)item->obj, (__bridge const void *)object))
+		if (!objCallBacks.equal((__bridge const void *)existingItem->obj, (__bridge const void *)object))
 		{
-			CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj);
+			CFDictionaryRemoveValue(obj_key_dict, (const void *)existingItem->obj);
 			
 			if (objCallBacks.shouldCopy)
-				item->obj = [object copy];
+				existingItem->obj = [object copy];
 			else
-				item->obj = object;
+				existingItem->obj = object;
 			
-			CFDictionarySetValue(obj_key_dict, (const void *)item->obj, (const void *)item);
+			CFDictionarySetValue(obj_key_dict, (const void *)existingItem->obj, (const void *)existingItem);
 		}
 		
-		if (item != mostRecentCacheItem)
+		if (existingItem != mostRecentCacheItem)
 		{
 			// Remove item from current position in linked-list
 			//
@@ -343,20 +354,20 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 			// so we know there's a valid mostRecentCacheItem & leastRecentCacheItem.
 			// Furthermore, we know the item isn't the mostRecentCacheItem.
 			
-			item->prev->next = item->next;
+			existingItem->prev->next = existingItem->next;
 			
-			if (item == leastRecentCacheItem)
-				leastRecentCacheItem = item->prev;
+			if (existingItem == leastRecentCacheItem)
+				leastRecentCacheItem = existingItem->prev;
 			else
-				item->next->prev = item->prev;
+				existingItem->next->prev = existingItem->prev;
 			
 			// Move item to beginning of linked-list
 			
-			item->prev = nil;
-			item->next = mostRecentCacheItem;
+			existingItem->prev = nil;
+			existingItem->next = mostRecentCacheItem;
 			
-			mostRecentCacheItem->prev = item;
-			mostRecentCacheItem = item;
+			mostRecentCacheItem->prev = existingItem;
+			mostRecentCacheItem = existingItem;
 			
 			YDBLogVerbose(@"key(%@) <- existing, new mostRecent", key);
 		}
@@ -369,39 +380,41 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	{
 		// Create new item (or recycle old evicted item)
 		
+		__strong YapBidirectionalCacheItem *newItem = nil;
+		
 		if (evictedCacheItem)
 		{
-			item = evictedCacheItem;
+			newItem = evictedCacheItem;
 			evictedCacheItem = nil;
 		}
 		else
 		{
-			item = [[YapBidirectionalCacheItem alloc] init];
+			newItem = [[YapBidirectionalCacheItem alloc] init];
 		}
 		
 		if (keyCallBacks.shouldCopy)
-			item->key = [key copy];
+			newItem->key = [key copy];
 		else
-			item->key = key;
+			newItem->key = key;
 		
 		if (objCallBacks.shouldCopy)
-			item->obj = [object copy];
+			newItem->obj = [object copy];
 		else
-			item->obj = object;
+			newItem->obj = object;
 		
 		// Add item to dicts
 		
-		CFDictionarySetValue(key_obj_dict, (const void *)item->key, (const void *)item);
-		CFDictionarySetValue(obj_key_dict, (const void *)item->obj, (const void *)item);
+		CFDictionarySetValue(key_obj_dict, (const void *)newItem->key, (const void *)newItem);
+		CFDictionarySetValue(obj_key_dict, (const void *)newItem->obj, (const void *)newItem);
 		
 		// Add item to beginning of linked-list
 		
-		item->next = mostRecentCacheItem;
+		newItem->next = mostRecentCacheItem;
 		
 		if (mostRecentCacheItem)
-			mostRecentCacheItem->prev = item;
+			mostRecentCacheItem->prev = newItem;
 		
-		mostRecentCacheItem = item;
+		mostRecentCacheItem = newItem;
 		
 		// Evict leastRecentCacheItem if needed
 		
@@ -409,8 +422,8 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		{
 			YDBLogVerbose(@"in(%@), out(%@)", key, leastRecentCacheItem->key);
 			
-			CFDictionaryRemoveValue(key_obj_dict, (const void *)(leastRecentCacheItem->key));
-			CFDictionaryRemoveValue(obj_key_dict, (const void *)(leastRecentCacheItem->obj));
+			__unsafe_unretained id keyToEvict = leastRecentCacheItem->key;
+			__unsafe_unretained id objToEvict = leastRecentCacheItem->obj;
 			
 			if (evictedCacheItem == nil)
 			{
@@ -419,15 +432,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 				leastRecentCacheItem = leastRecentCacheItem->prev;
 				leastRecentCacheItem->next = nil;
 				
+				CFDictionaryRemoveValue(obj_key_dict, (const void *)(objToEvict)); // must be first
+				CFDictionaryRemoveValue(key_obj_dict, (const void *)(keyToEvict)); // must be second
+				
 				evictedCacheItem->prev = nil;
 				evictedCacheItem->next = nil;
 				evictedCacheItem->key  = nil;
-				evictedCacheItem->obj  = nil;
+				evictedCacheItem->obj  = nil; // deallocates obj / objToEvict
 			}
 			else
 			{
 				leastRecentCacheItem = leastRecentCacheItem->prev;
 				leastRecentCacheItem->next = nil;
+				
+				CFDictionaryRemoveValue(obj_key_dict, (const void *)(objToEvict)); // must be first
+				CFDictionaryRemoveValue(key_obj_dict, (const void *)(keyToEvict)); // must be second
 			}
 			
 			#if YapBidirectionalCache_Enable_Statistics
@@ -437,7 +456,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		else
 		{
 			if (leastRecentCacheItem == nil)
-				leastRecentCacheItem = item;
+				leastRecentCacheItem = newItem;
 			
 			YDBLogVerbose(@"key(%@) <- new mostRecent [%ld of %lu]",
 			              key, CFDictionaryGetCount(key_obj_dict), (unsigned long)countLimit);
@@ -464,13 +483,12 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 
 - (void)removeAllObjects
 {
-	CFDictionaryRemoveAllValues(key_obj_dict);
-	CFDictionaryRemoveAllValues(obj_key_dict);
-	
 	leastRecentCacheItem = nil;
 	mostRecentCacheItem = nil;
-	
 	evictedCacheItem = nil;
+	
+	CFDictionaryRemoveAllValues(obj_key_dict); // must be first
+	CFDictionaryRemoveAllValues(key_obj_dict); // must be second
 }
 
 - (void)removeObjectForKey:(id)key
@@ -479,23 +497,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	AssertAllowedKeyClass(key, allowedKeyClasses);
 	#endif
 	
-	YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
+	__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
 	if (item)
 	{
-		if (item->prev)
+		if (item == mostRecentCacheItem)
+			mostRecentCacheItem = item->next;
+		else if (item->prev)
 			item->prev->next = item->next;
 		
-		if (item->next)
+		if (item == leastRecentCacheItem)
+			leastRecentCacheItem = item->prev;
+		else if (item->next)
 			item->next->prev = item->prev;
 		
-		if (mostRecentCacheItem == item)
-			mostRecentCacheItem = item->next;
-		
-		if (leastRecentCacheItem == item)
-			leastRecentCacheItem = item->prev;
-		
-		CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key);
-		CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj);
+		CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj); // must be first
+		CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key); // must be second
 	}
 }
 
@@ -507,23 +523,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		AssertAllowedKeyClass(key, allowedKeyClasses);
 		#endif
 		
-		YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
+		__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(key_obj_dict, (const void *)key);
 		if (item)
 		{
-			if (item->prev)
+			if (item == mostRecentCacheItem)
+				mostRecentCacheItem = item->next;
+			else if (item->prev)
 				item->prev->next = item->next;
 			
-			if (item->next)
+			if (item == leastRecentCacheItem)
+				leastRecentCacheItem = item->prev;
+			else if (item->next)
 				item->next->prev = item->prev;
 			
-			if (mostRecentCacheItem == item)
-				mostRecentCacheItem = item->next;
-			
-			if (leastRecentCacheItem == item)
-				leastRecentCacheItem = item->prev;
-			
-			CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key);
-			CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj);
+			CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj); // must be first
+			CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key); // must be second
 		}
 	}
 }
@@ -534,23 +548,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 	AssertAllowedObjectClass(object, allowedObjectClasses);
 	#endif
 	
-	YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
+	__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
 	if (item)
 	{
-		if (item->prev)
+		if (item == mostRecentCacheItem)
+			mostRecentCacheItem = item->next;
+		else if (item->prev)
 			item->prev->next = item->next;
 		
-		if (item->next)
+		if (item == leastRecentCacheItem)
+			leastRecentCacheItem = item->prev;
+		else if (item->next)
 			item->next->prev = item->prev;
 		
-		if (mostRecentCacheItem == item)
-			mostRecentCacheItem = item->next;
-		
-		if (leastRecentCacheItem == item)
-			leastRecentCacheItem = item->prev;
-		
-		CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key);
-		CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj);
+		CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj); // must be first
+		CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key); // must be second
 	}
 }
 
@@ -562,23 +574,21 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		AssertAllowedObjectClass(object, allowedObjectClasses);
 		#endif
 		
-		YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
+		__unsafe_unretained YapBidirectionalCacheItem *item = CFDictionaryGetValue(obj_key_dict, (const void *)object);
 		if (item)
 		{
-			if (item->prev)
+			if (item == mostRecentCacheItem)
+				mostRecentCacheItem = item->next;
+			else if (item->prev)
 				item->prev->next = item->next;
 			
-			if (item->next)
+			if (item == leastRecentCacheItem)
+				leastRecentCacheItem = item->prev;
+			else if (item->next)
 				item->next->prev = item->prev;
 			
-			if (mostRecentCacheItem == item)
-				mostRecentCacheItem = item->next;
-			
-			if (leastRecentCacheItem == item)
-				leastRecentCacheItem = item->prev;
-			
-			CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key);
-			CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj);
+			CFDictionaryRemoveValue(obj_key_dict, (const void *)item->obj); // must be first
+			CFDictionaryRemoveValue(key_obj_dict, (const void *)item->key); // must be second
 		}
 	}
 }

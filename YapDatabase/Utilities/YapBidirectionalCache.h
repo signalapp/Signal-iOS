@@ -58,7 +58,7 @@ extern const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBac
  * Advanced init method allows you to define the CallBacks for the keys & objects
  * to be used by the internal CFDictionaries.
  * 
- * The default value is : {
+ * The default value for callbacks is : {
  *   version = 0,
  *   shouldCopy = NO,
  *   equal = CFEqual,
