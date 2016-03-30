@@ -1,7 +1,6 @@
 #import "YapCache.h"
 #import "YapDatabaseLogging.h"
 
-
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
@@ -20,8 +19,21 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 
 @interface YapCacheItem : NSObject {
 @public
-	__unsafe_unretained YapCacheItem *prev; // retained by cfdict
-	__unsafe_unretained YapCacheItem *next; // retained by cfdict
+	
+	// Memory Management Architecture & Performance note:
+	//
+	// The prev & next pointers are updated regularly, so it's critical that they
+	// don't have the overhead of memory management (__strong).
+	// The end goal is to have the following retained once, and only once:
+	// - key
+	// - value
+	// - YapCacheItem
+	//
+	// To achieve this, the cfdict retains the key & YapCacheItem.
+	// And the YapCacheItem retains the value.
+	
+	__unsafe_unretained YapCacheItem *prev; // retained by cfdict as a value
+	__unsafe_unretained YapCacheItem *next; // retained by cfdict as a value
 
 	__unsafe_unretained id key; // retained by cfdict as key
 	__strong id value;          // retained only by us
@@ -116,21 +128,31 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 	if (countLimit != newCountLimit)
 	{
 		countLimit = newCountLimit;
-		
-		if (countLimit != 0) {
+		if (countLimit != 0)
+		{
 			while (CFDictionaryGetCount(cfdict) > (CFIndex)countLimit)
 			{
-				leastRecentCacheItem->prev->next = nil;
+				__unsafe_unretained id keyToEvict = leastRecentCacheItem->key;
 				
-				evictedCacheItem = leastRecentCacheItem;
-				leastRecentCacheItem = leastRecentCacheItem->prev;
+				if (evictedCacheItem == nil)
+				{
+					evictedCacheItem = leastRecentCacheItem;
+					
+					leastRecentCacheItem = leastRecentCacheItem->prev;
+					leastRecentCacheItem->next = nil;
+					
+					evictedCacheItem->prev = nil;
+					evictedCacheItem->next = nil;
+					evictedCacheItem->key = nil;
+					evictedCacheItem->value = nil;
+				}
+				else
+				{
+					leastRecentCacheItem = leastRecentCacheItem->prev;
+					leastRecentCacheItem->next = nil;
+				}
 				
-				CFDictionaryRemoveValue(cfdict, (const void *)(evictedCacheItem->key));
-				
-				evictedCacheItem->prev = nil;
-				evictedCacheItem->next = nil;
-				evictedCacheItem->key = nil;
-				evictedCacheItem->value = nil;
+				CFDictionaryRemoveValue(cfdict, (const void *)(keyToEvict));
 				
 				#if YapCache_Enable_Statistics
 				evictionCount++;
@@ -146,7 +168,7 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 	AssertAllowedKeyClass(key, allowedKeyClasses);
 	#endif
 	
-	YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
+	__unsafe_unretained YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
 	if (item)
 	{
 		if (item != mostRecentCacheItem)
@@ -204,13 +226,13 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 	AssertAllowedObjectClass(object, allowedObjectClasses);
 	#endif
 	
-	YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
-	if (item)
+	__unsafe_unretained YapCacheItem *existingItem = CFDictionaryGetValue(cfdict, (const void *)key);
+	if (existingItem)
 	{
 		// Update item value
-		item->value = object;
+		existingItem->value = object;
 		
-		if (item != mostRecentCacheItem)
+		if (existingItem != mostRecentCacheItem)
 		{
 			// Remove item from current position in linked-list
 			//
@@ -219,20 +241,20 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 			// so we know there's a valid mostRecentCacheItem & leastRecentCacheItem.
 			// Furthermore, we know the item isn't the mostRecentCacheItem.
 			
-			item->prev->next = item->next;
+			existingItem->prev->next = existingItem->next;
 			
-			if (item == leastRecentCacheItem)
-				leastRecentCacheItem = item->prev;
+			if (existingItem == leastRecentCacheItem)
+				leastRecentCacheItem = existingItem->prev;
 			else
-				item->next->prev = item->prev;
+				existingItem->next->prev = existingItem->prev;
 			
 			// Move item to beginning of linked-list
 			
-			item->prev = nil;
-			item->next = mostRecentCacheItem;
+			existingItem->prev = nil;
+			existingItem->next = mostRecentCacheItem;
 			
-			mostRecentCacheItem->prev = item;
-			mostRecentCacheItem = item;
+			mostRecentCacheItem->prev = existingItem;
+			mostRecentCacheItem = existingItem;
 			
 			YDBLogVerbose(@"key(%@) <- existing, new mostRecent", key);
 		}
@@ -245,30 +267,32 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 	{
 		// Create new item (or recycle old evicted item)
 		
+		__strong YapCacheItem *newItem = nil;
+		
 		if (evictedCacheItem)
 		{
-			item = evictedCacheItem;
-			item->key = key;
-			item->value = object;
+			newItem = evictedCacheItem;
+			newItem->key = key;
+			newItem->value = object;
 			
 			evictedCacheItem = nil;
 		}
 		else
 		{
-			item = [[YapCacheItem alloc] initWithKey:key value:object];
+			newItem = [[YapCacheItem alloc] initWithKey:key value:object];
 		}
 		
 		// Add item to set
-		CFDictionarySetValue(cfdict, (const void *)key, (const void *)item);
+		CFDictionarySetValue(cfdict, (const void *)key, (const void *)newItem);
 		
 		// Add item to beginning of linked-list
 		
-		item->next = mostRecentCacheItem;
+		newItem->next = mostRecentCacheItem;
 		
 		if (mostRecentCacheItem)
-			mostRecentCacheItem->prev = item;
+			mostRecentCacheItem->prev = newItem;
 		
-		mostRecentCacheItem = item;
+		mostRecentCacheItem = newItem;
 		
 		// Evict leastRecentCacheItem if needed
 		
@@ -276,17 +300,27 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 		{
 			YDBLogVerbose(@"key(%@), out(%@)", key, leastRecentCacheItem->key);
 			
-			leastRecentCacheItem->prev->next = nil;
+			__unsafe_unretained id keyToEvict = leastRecentCacheItem->key;
 			
-			evictedCacheItem = leastRecentCacheItem;
-			leastRecentCacheItem = leastRecentCacheItem->prev;
-
-			CFDictionaryRemoveValue(cfdict, (const void *)(evictedCacheItem->key));
+			if (evictedCacheItem == nil)
+			{
+				evictedCacheItem = leastRecentCacheItem;
+				
+				leastRecentCacheItem = leastRecentCacheItem->prev;
+				leastRecentCacheItem->next = nil;
 			
-			evictedCacheItem->prev = nil;
-			evictedCacheItem->next = nil;
-			evictedCacheItem->key = nil;
-			evictedCacheItem->value = nil;
+				evictedCacheItem->prev = nil;
+				evictedCacheItem->next = nil;
+				evictedCacheItem->key = nil;
+				evictedCacheItem->value = nil;
+			}
+			else
+			{
+				leastRecentCacheItem = leastRecentCacheItem->prev;
+				leastRecentCacheItem->next = nil;
+			}
+			
+			CFDictionaryRemoveValue(cfdict, (const void *)(keyToEvict));
 			
 			#if YapCache_Enable_Statistics
 			evictionCount++;
@@ -295,7 +329,7 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 		else
 		{
 			if (leastRecentCacheItem == nil)
-				leastRecentCacheItem = item;
+				leastRecentCacheItem = newItem;
 			
 			YDBLogVerbose(@"key(%@) <- new, new mostRecent [%ld of %lu]",
 			              key, CFDictionaryGetCount(cfdict), (unsigned long)countLimit);
@@ -339,20 +373,18 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 	AssertAllowedKeyClass(key, allowedKeyClasses);
 	#endif
 	
-	YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
+	__unsafe_unretained YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
 	if (item)
 	{
-		if (item->prev)
-			item->prev->next = item->next;
-		
-		if (item->next)
-			item->next->prev = item->prev;
-		
 		if (mostRecentCacheItem == item)
 			mostRecentCacheItem = item->next;
+		else if (item->prev)
+			item->prev->next = item->next;
 		
 		if (leastRecentCacheItem == item)
 			leastRecentCacheItem = item->prev;
+		else if (item->next)
+			item->next->prev = item->prev;
 		
 		CFDictionaryRemoveValue(cfdict, (const void *)key);
 	}
@@ -366,20 +398,18 @@ static const NSUInteger YapCache_Default_CountLimit = 40;
 		AssertAllowedKeyClass(key, allowedKeyClasses);
 		#endif
 		
-		YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
+		__unsafe_unretained YapCacheItem *item = CFDictionaryGetValue(cfdict, (const void *)key);
 		if (item)
 		{
-			if (item->prev)
-				item->prev->next = item->next;
-			
-			if (item->next)
-				item->next->prev = item->prev;
-			
 			if (mostRecentCacheItem == item)
 				mostRecentCacheItem = item->next;
+			else if (item->prev)
+				item->prev->next = item->next;
 			
 			if (leastRecentCacheItem == item)
 				leastRecentCacheItem = item->prev;
+			else if (item->next)
+				item->next->prev = item->prev;
 			
 			CFDictionaryRemoveValue(cfdict, (const void *)key);
 		}
