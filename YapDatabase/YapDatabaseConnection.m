@@ -98,6 +98,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	BOOL throwExceptionsForImplicitlyEndingLongLivedReadTransaction;
 	NSMutableArray *pendingChangesets;
 	NSMutableArray *processedChangesets;
+	BOOL isFastForwarding;
 	
 	NSDictionary *registeredExtensions;
 	BOOL registeredExtensionsChanged;
@@ -110,7 +111,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	id sharedKeySetForExtensions;
 	
 	sqlite3_stmt *beginTransactionStatement;
-    sqlite3_stmt *beginImmediateTransactionStatement;
+	sqlite3_stmt *beginImmediateTransactionStatement;
 	sqlite3_stmt *commitTransactionStatement;
 	sqlite3_stmt *rollbackTransactionStatement;
 	
@@ -2271,10 +2272,12 @@ static int connectionBusyHandler(void *ptr, int count)
 		}
 		else
 		{
+			isFastForwarding = YES;
 			for (NSDictionary *changeset in changesets)
 			{
 				[self noteCommittedChangeset:changeset];
 			}
+			isFastForwarding = NO;
 			
 			// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 			NSAssert(snapshot == dbSnapshot,
@@ -2557,10 +2560,12 @@ static int connectionBusyHandler(void *ptr, int count)
 		}
 		else
 		{
+			isFastForwarding = YES;
 			for (NSDictionary *changeset in changesets)
 			{
 				[self noteCommittedChangeset:changeset];
 			}
+			isFastForwarding = NO;
 			
 			// The noteCommittedChangeset method (invoked above) updates our 'snapshot' variable.
 			NSAssert(snapshot == dbSnapshot,
@@ -4069,10 +4074,10 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 	
 	if (longLivedReadTransaction)
 	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+		if (isFastForwarding)
 		{
-			// This method is being invoked from preReadTransaction:.
-			// We are to process the changeset for it.
+			// This method is being invoked from preReadTransaction or preReadWriteTransaction.
+			// We need to process the changeset for it.
 			
 			[processedChangesets addObject:changeset];
 		}
