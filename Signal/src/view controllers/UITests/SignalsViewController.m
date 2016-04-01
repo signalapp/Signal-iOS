@@ -137,13 +137,15 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     [super viewWillAppear:animated];
     [self checkIfEmptyView];
 
-    if (![TSAccountManager isRegistered]) {
-        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
-        return;
-    }
-
     [self updateInboxCountLabel];
     [[self tableView] reloadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (![TSAccountManager isRegistered]) {
+        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+    }
 }
 
 - (void)tableViewSetUp {
