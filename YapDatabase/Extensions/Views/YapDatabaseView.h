@@ -69,11 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
                          options:(nullable YapDatabaseViewOptions *)options;
 
 
-@property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock groupingBlock;
-@property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock sortingBlock;
-
-@property (nonatomic, assign, readonly) YapDatabaseBlockType groupingBlockType;
-@property (nonatomic, assign, readonly) YapDatabaseBlockType sortingBlockType;
+@property (nonatomic, strong, readonly) YapDatabaseViewGrouping *grouping;
+@property (nonatomic, strong, readonly) YapDatabaseViewSorting *sorting;
 
 /**
  * The versionTag assists you in updating your blocks.

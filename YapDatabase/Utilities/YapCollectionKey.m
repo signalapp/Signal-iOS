@@ -108,8 +108,7 @@ CFHashCode YapCollectionKeyHash(const __unsafe_unretained YapCollectionKey *ck)
 
 + (CFDictionaryKeyCallBacks)keyCallbacks
 {
-	CFDictionaryKeyCallBacks keyCallbacks;
-	memcpy(&keyCallbacks, &kCFTypeDictionaryKeyCallBacks, sizeof(CFDictionaryKeyCallBacks));
+	CFDictionaryKeyCallBacks keyCallbacks = kCFTypeDictionaryKeyCallBacks;
 	
 	keyCallbacks.equal = (CFDictionaryEqualCallBack)YapCollectionKeyEqual;
 	keyCallbacks.hash = (CFDictionaryHashCallBack)YapCollectionKeyHash;

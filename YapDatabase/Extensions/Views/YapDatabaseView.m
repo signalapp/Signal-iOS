@@ -147,11 +147,8 @@
 #pragma mark Instance
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize groupingBlock = groupingBlock;
-@synthesize sortingBlock = sortingBlock;
-
-@synthesize groupingBlockType = groupingBlockType;
-@synthesize sortingBlockType = sortingBlockType;
+@synthesize grouping = grouping;
+@synthesize sorting = sorting;
 
 @synthesize versionTag = versionTag; // Getter is overriden
 @dynamic options;
@@ -201,121 +198,12 @@
 #pragma mark Custom Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapDatabaseViewGroupingBlock)groupingBlock
-{
-	// This property can be changed from within a readWriteTransaction.
-	// We go through the snapshot queue to ensure we're fetching the most recent value.
-	
-	__block YapDatabaseViewGroupingBlock mostRecentGroupingBlock = NULL;
-	dispatch_block_t block = ^{
-		
-		mostRecentGroupingBlock = groupingBlock;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	else // not registered
-	{
-		block();
-	}
-	
-	return mostRecentGroupingBlock;
-}
-
-- (YapDatabaseViewSortingBlock)sortingBlock
-{
-	// This property can be changed from within a readWriteTransaction.
-	// We go through the snapshot queue to ensure we're fetching the most recent value.
-	
-	__block YapDatabaseViewSortingBlock mostRecentSortingBlock = NULL;
-	dispatch_block_t block = ^{
-		
-		mostRecentSortingBlock = sortingBlock;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	else // not registered
-	{
-		block();
-	}
-	
-	return mostRecentSortingBlock;
-}
-
-- (YapDatabaseBlockType)groupingBlockType
-{
-	// This property can be changed from within a readWriteTransaction.
-	// We go through the snapshot queue to ensure we're fetching the most recent value.
-	
-	__block YapDatabaseBlockType mostRecentGroupingBlockType = 0;
-	dispatch_block_t block = ^{
-		
-		mostRecentGroupingBlockType = groupingBlockType;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	else // not registered
-	{
-		block();
-	}
-	
-	return mostRecentGroupingBlockType;
-}
-
-- (YapDatabaseBlockType)sortingBlockType
-{
-	// This property can be changed from within a readWriteTransaction.
-	// We go through the snapshot queue to ensure we're fetching the most recent value.
-	
-	__block YapDatabaseBlockType mostRecentSortingBlockType = 0;
-	dispatch_block_t block = ^{
-		
-		mostRecentSortingBlockType = sortingBlockType;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	else // not registered
-	{
-		block();
-	}
-	
-	return mostRecentSortingBlockType;
-}
-
 - (NSString *)versionTag
 {
 	// This property can be changed from within a readWriteTransaction.
 	// We go through the snapshot queue to ensure we're fetching the most recent value.
 	
 	__block NSString *mostRecentVersionTag = nil;
-	
 	dispatch_block_t block = ^{
 		
 		mostRecentVersionTag = versionTag;
