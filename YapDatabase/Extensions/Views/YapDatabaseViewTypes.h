@@ -56,7 +56,7 @@ typedef NSString* _Nullable (^YapDatabaseViewGroupingWithRowBlock)
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewGroupingWithMetadataBlock)block;
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewGroupingWithRowBlock)block;
 
-@property (nonatomic, strong, readonly) YapDatabaseViewGroupingBlock block;
+@property (nonatomic, copy,   readonly) YapDatabaseViewGroupingBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType         blockType;
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke       blockInvokeOptions;
 
@@ -144,7 +144,7 @@ typedef NSComparisonResult (^YapDatabaseViewSortingWithRowBlock)
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops metadataBlock:(YapDatabaseViewSortingWithMetadataBlock)block;
 + (instancetype)withOptions:(YapDatabaseBlockInvoke)iops rowBlock:(YapDatabaseViewSortingWithRowBlock)block;
 
-@property (nonatomic, strong, readonly) YapDatabaseViewSortingBlock block;
+@property (nonatomic, copy,   readonly) YapDatabaseViewSortingBlock block;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType        blockType;
 @property (nonatomic, assign, readonly) YapDatabaseBlockInvoke      blockInvokeOptions;
 
@@ -220,7 +220,7 @@ typedef NSComparisonResult (^YapDatabaseViewFindWithRowBlock)
 + (instancetype)withMetadataBlock:(YapDatabaseViewFindWithMetadataBlock)findBlock;
 + (instancetype)withRowBlock:(YapDatabaseViewFindWithRowBlock)findBlock;
 
-@property (nonatomic, strong, readonly) YapDatabaseViewFindBlock findBlock;
+@property (nonatomic, copy, readonly) YapDatabaseViewFindBlock findBlock;
 @property (nonatomic, assign, readonly) YapDatabaseBlockType findBlockType;
 
 @end

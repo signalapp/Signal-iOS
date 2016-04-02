@@ -550,17 +550,17 @@ static int connectionBusyHandler(void *ptr, int count) {
 		if (!inObjectDeserializer || !inMetadataDeserializer)
 			defaultDeserializer = [[self class] defaultDeserializer];
 		
-		objectSerializer = inObjectSerializer ? inObjectSerializer : defaultSerializer;
-		objectDeserializer = inObjectDeserializer ? inObjectDeserializer : defaultDeserializer;
+		objectSerializer = (YapDatabaseSerializer)[inObjectSerializer copy] ?: defaultSerializer;
+		objectDeserializer = (YapDatabaseDeserializer)[inObjectDeserializer copy] ?: defaultDeserializer;
 		
-		metadataSerializer = inMetadataSerializer ? inMetadataSerializer : defaultSerializer;
-		metadataDeserializer = inMetadataDeserializer ? inMetadataDeserializer : defaultDeserializer;
+		metadataSerializer = (YapDatabaseSerializer)[inMetadataSerializer copy] ?: defaultSerializer;
+		metadataDeserializer = (YapDatabaseDeserializer)[inMetadataDeserializer copy] ?: defaultDeserializer;
 		
-		objectPreSanitizer = inObjectPreSanitizer;
-		objectPostSanitizer = inObjectPostSanitizer;
+		objectPreSanitizer = (YapDatabasePreSanitizer)[inObjectPreSanitizer copy];
+		objectPostSanitizer = (YapDatabasePostSanitizer)[inObjectPostSanitizer copy];
 		
-		metadataPreSanitizer = inMetadataPreSanitizer;
-		metadataPostSanitizer = inMetadataPostSanitizer;
+		metadataPreSanitizer = (YapDatabasePreSanitizer)[inMetadataPreSanitizer copy];
+		metadataPostSanitizer = (YapDatabasePostSanitizer)[inMetadataPostSanitizer copy];
 		
 		// Mark the queues so we can identify them.
 		// There are several methods whose use is restricted to within a certain queue.

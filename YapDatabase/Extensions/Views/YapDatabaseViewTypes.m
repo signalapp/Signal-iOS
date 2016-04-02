@@ -50,7 +50,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewGrouping *grouping = [[YapDatabaseViewGrouping alloc] init];
-	grouping->block = block;
+	grouping->block = [block copy];
 	grouping->blockType = YapDatabaseBlockTypeWithKey;
 	grouping->blockInvokeOptions = iops;
 	
@@ -62,7 +62,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewGrouping *grouping = [[YapDatabaseViewGrouping alloc] init];
-	grouping->block = block;
+	grouping->block = [block copy];
 	grouping->blockType = YapDatabaseBlockTypeWithObject;
 	grouping->blockInvokeOptions = iops;
 	
@@ -74,7 +74,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewGrouping *grouping = [[YapDatabaseViewGrouping alloc] init];
-	grouping->block = block;
+	grouping->block = [block copy];
 	grouping->blockType = YapDatabaseBlockTypeWithMetadata;
 	grouping->blockInvokeOptions = iops;
 	
@@ -86,7 +86,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewGrouping *grouping = [[YapDatabaseViewGrouping alloc] init];
-	grouping->block = block;
+	grouping->block = [block copy];
 	grouping->blockType = YapDatabaseBlockTypeWithRow;
 	grouping->blockInvokeOptions = iops;
 	
@@ -180,7 +180,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewSorting *sorting = [[YapDatabaseViewSorting alloc] init];
-	sorting->block = block;
+	sorting->block = [block copy];
 	sorting->blockType = YapDatabaseBlockTypeWithKey;
 	sorting->blockInvokeOptions = iops;
 	
@@ -192,7 +192,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewSorting *sorting = [[YapDatabaseViewSorting alloc] init];
-	sorting->block = block;
+	sorting->block = [block copy];
 	sorting->blockType = YapDatabaseBlockTypeWithObject;
 	sorting->blockInvokeOptions = iops;
 	
@@ -204,7 +204,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewSorting *sorting = [[YapDatabaseViewSorting alloc] init];
-	sorting->block = block;
+	sorting->block = [block copy];
 	sorting->blockType = YapDatabaseBlockTypeWithMetadata;
 	sorting->blockInvokeOptions = iops;
 	
@@ -216,7 +216,7 @@
 	if (block == NULL) return nil;
 	
 	YapDatabaseViewSorting *sorting = [[YapDatabaseViewSorting alloc] init];
-	sorting->block = block;
+	sorting->block = [block copy];
 	sorting->blockType = YapDatabaseBlockTypeWithRow;
 	sorting->blockInvokeOptions = iops;
 	
@@ -286,7 +286,7 @@
 	if (findBlock == NULL) return nil;
 	
 	YapDatabaseViewFind *find = [[YapDatabaseViewFind alloc] init];
-	find->findBlock = findBlock;
+	find->findBlock = [findBlock copy];
 	find->findBlockType = YapDatabaseBlockTypeWithKey;
 	
 	return find;
@@ -297,7 +297,7 @@
 	if (findBlock == NULL) return nil;
 	
 	YapDatabaseViewFind *find = [[YapDatabaseViewFind alloc] init];
-	find->findBlock = findBlock;
+	find->findBlock = [findBlock copy];
 	find->findBlockType = YapDatabaseBlockTypeWithObject;
 	
 	return find;
@@ -308,7 +308,7 @@
 	if (findBlock == NULL) return nil;
 	
 	YapDatabaseViewFind *find = [[YapDatabaseViewFind alloc] init];
-	find->findBlock = findBlock;
+	find->findBlock = [findBlock copy];
 	find->findBlockType = YapDatabaseBlockTypeWithMetadata;
 	
 	return find;
@@ -319,7 +319,7 @@
 	if (findBlock == NULL) return nil;
 	
 	YapDatabaseViewFind *find = [[YapDatabaseViewFind alloc] init];
-	find->findBlock = findBlock;
+	find->findBlock = [findBlock copy];
 	find->findBlockType = YapDatabaseBlockTypeWithRow;
 	
 	return find;

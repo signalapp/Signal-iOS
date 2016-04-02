@@ -327,17 +327,17 @@ extern NSString *const YapDatabaseModifiedExternallyKey;
 @property (nonatomic, strong, readonly) NSString *databasePath_wal;
 @property (nonatomic, strong, readonly) NSString *databasePath_shm;
 
-@property (nonatomic, strong, readonly) YapDatabaseSerializer objectSerializer;
-@property (nonatomic, strong, readonly) YapDatabaseDeserializer objectDeserializer;
+@property (nonatomic, copy, readonly) YapDatabaseSerializer objectSerializer;
+@property (nonatomic, copy, readonly) YapDatabaseDeserializer objectDeserializer;
 
-@property (nonatomic, strong, readonly) YapDatabaseSerializer metadataSerializer;
-@property (nonatomic, strong, readonly) YapDatabaseDeserializer metadataDeserializer;
+@property (nonatomic, copy, readonly) YapDatabaseSerializer metadataSerializer;
+@property (nonatomic, copy, readonly) YapDatabaseDeserializer metadataDeserializer;
 
-@property (nonatomic, strong, readonly, nullable) YapDatabasePreSanitizer objectPreSanitizer;
-@property (nonatomic, strong, readonly, nullable) YapDatabasePostSanitizer objectPostSanitizer;
+@property (nonatomic, copy, readonly, nullable) YapDatabasePreSanitizer objectPreSanitizer;
+@property (nonatomic, copy, readonly, nullable) YapDatabasePostSanitizer objectPostSanitizer;
 
-@property (nonatomic, strong, readonly, nullable) YapDatabasePreSanitizer metadataPreSanitizer;
-@property (nonatomic, strong, readonly, nullable) YapDatabasePostSanitizer metadataPostSanitizer;
+@property (nonatomic, copy, readonly, nullable) YapDatabasePreSanitizer metadataPreSanitizer;
+@property (nonatomic, copy, readonly, nullable) YapDatabasePostSanitizer metadataPostSanitizer;
 
 @property (nonatomic, copy, readonly) YapDatabaseOptions *options;
 
