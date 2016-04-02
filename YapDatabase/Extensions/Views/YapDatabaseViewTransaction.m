@@ -267,8 +267,8 @@
 	//
 	// After the enumeration of all rows is complete, we can simply walk the linked list from the first page.
 	
-	NSMutableDictionary *groupPageDict = [[NSMutableDictionary alloc] init];
-	NSMutableDictionary *groupOrderDict = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary<NSString *, NSMutableDictionary *> *groupPageDict  = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary<NSString *, NSMutableDictionary *> *groupOrderDict = [[NSMutableDictionary alloc] init];
 	
 	__block BOOL error = NO;
 
@@ -308,7 +308,7 @@
 			const unsigned char *text1 = sqlite3_column_text(statement, column_idx_group);
 			int textSize1 = sqlite3_column_bytes(statement, column_idx_group);
 			
-			NSString *group   = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
+			NSString *group = [[NSString alloc] initWithBytes:text1 length:textSize1 encoding:NSUTF8StringEncoding];
 			
 			const unsigned char *text2 = sqlite3_column_text(statement, column_idx_prevPageKey);
 			int textSize2 = sqlite3_column_bytes(statement, column_idx_prevPageKey);
@@ -327,18 +327,18 @@
 				pageMetadata->prevPageKey = prevPageKey;
 				pageMetadata->count = (NSUInteger)count;
 				
-				NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
+				NSMutableDictionary *pageDict = groupPageDict[group];
 				if (pageDict == nil)
 				{
 					pageDict = [[NSMutableDictionary alloc] init];
-					[groupPageDict setObject:pageDict forKey:group];
+					groupPageDict[group] = pageDict;
 				}
 				
-				NSMutableDictionary *orderDict = [groupOrderDict objectForKey:group];
+				NSMutableDictionary *orderDict = groupOrderDict[group];
 				if (orderDict == nil)
 				{
 					orderDict = [[NSMutableDictionary alloc] init];
-					[groupOrderDict setObject:orderDict forKey:group];
+					groupOrderDict[group] = orderDict;
 				}
 			
 				[pageDict setObject:pageMetadata forKey:pageKey];
@@ -409,11 +409,9 @@
 		
 		// Enumerate over each group
 		
-		[groupOrderDict enumerateKeysAndObjectsUsingBlock:^(id _group, id _orderDict, BOOL __unused *stop) {
-			
-			__unsafe_unretained NSString *group = (NSString *)_group;
-			__unsafe_unretained NSMutableDictionary *orderDict = (NSMutableDictionary *)_orderDict;
-			
+		[groupOrderDict enumerateKeysAndObjectsUsingBlock:
+		    ^(NSString *group, NSMutableDictionary *orderDict, BOOL __unused *stop)
+		{
 			NSMutableDictionary *pageDict = [groupPageDict objectForKey:group];
 			
 			// Walk the linked-list to stitch together the pages for this section.
