@@ -52,8 +52,6 @@ NS_INLINE BOOL YDBIsMainThread()
 
 #endif
 
-static const char * const yap_vfs_shim_name = "yap_vfs_shim";
-
 static void yapNotifyDidRead(yap_file *file)
 {
 	__unsafe_unretained YapDatabaseConnection *connection =
@@ -182,11 +180,6 @@ static int connectionBusyHandler(void *ptr, int count)
 		ydb_NSThread_Class = [NSThread class];
 		
 	#endif
-		
-		// Register the yap_vfs shim with sqlite.
-		// This only needs to be done once.
-		
-		yap_vfs_shim_register(yap_vfs_shim_name, NULL);
 	}
 }
 
@@ -272,7 +265,8 @@ static int connectionBusyHandler(void *ptr, int count)
 			
 			int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
 			
-			int status = sqlite3_open_v2([database.databasePath UTF8String], &db, flags, yap_vfs_shim_name);
+			int status = sqlite3_open_v2([database.databasePath UTF8String], &db, flags,
+			                             [database->yap_vfs_shim_name UTF8String]);
 			if (status != SQLITE_OK)
 			{
 				// Sometimes the open function returns a db to allow us to query it for the error message
@@ -2124,7 +2118,20 @@ static int connectionBusyHandler(void *ptr, int count)
 **/
 - (void)preReadTransaction:(YapDatabaseReadTransaction *)transaction
 {
-	// Pre-Read-Transaction: Step 1 of 5
+	// Pre-Read-Transaction: Step 1 of 6
+	//
+	// Prep work: sqlite VFS shim listeners for read notifications (if needed).
+	// Initialize the 'main_file', if we haven't already.
+	
+	if (main_file == NULL)
+	{
+		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
+		if (main_file) {
+			main_file->yap_database_connection = (__bridge void *)self;
+		}
+	}
+	
+	// Pre-Read-Transaction: Step 2 of 6
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -2142,7 +2149,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Read-Transaction: Step 2 of 5
+		// Pre-Read-Transaction: Step 3 of 6
 		//
 		// Update our connection state within the state table.
 		//
@@ -2179,7 +2186,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Read-Transaction: Step 3 of 5
+		// Pre-Read-Transaction: Step 4 of 5
 		//
 		// Compare our snapshot with the database's snapshot.
 		
@@ -2209,6 +2216,13 @@ static int connectionBusyHandler(void *ptr, int count)
 			// If they don't then we need to get caught up by processing changesets.
 			
 			dbSnapshot = [self readSnapshotFromDatabase];
+			if (wal_file == NULL)
+			{
+				wal_file = yap_vfs_last_opened_wal(database->yap_vfs_shim);
+				if (wal_file) {
+					wal_file->yap_database_connection = (__bridge void *)self;
+				}
+			}
 			
 			if (snapshot < dbSnapshot)
 			{
@@ -2255,7 +2269,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		myState->lastTransactionTime = mach_absolute_time();
 	}});
 	
-	// Pre-Read-Transaction: Setp 4 of 5
+	// Pre-Read-Transaction: Setp 5 of 6
 	//
 	// Update our in-memory data (caches, etc) if needed.
 	// Since this can be CPU intensive, we do this outside the snapshotQueue.
@@ -2286,30 +2300,10 @@ static int connectionBusyHandler(void *ptr, int count)
 		}
 	}
 	
-	// Pre-Read-Transaction: Step 5 of 5
+	// Pre-Read-Transaction: Step 6 of 6
 	//
-	// Enable sqlite VFS shim listeners for read notifications (if needed).
-	//
-	// Note: Code above performs the following:
-	//     if (hasActiveWriteTransaction || longLivedReadTransaction || wal_file == NULL)
-	//
-	// So we initialize the 'wal_file' here, if we haven't already.
-	
-	if (main_file == NULL)
-	{
-		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
-		if (main_file) {
-			main_file->yap_database_connection = (__bridge void *)self;
-		}
-	}
-	if (wal_file == NULL) // <- See note above
-	{
-		wal_file = yap_file_wal_find(main_file);
-		if (wal_file)
-		{
-			wal_file->yap_database_connection = (__bridge void *)self;
-		}
-	}
+	// Prep work: sqlite VFS shim listeners for read notifications (if needed).
+	// Initialize the 'wal_file', if we haven't already.
 	
 	if (needsMarkSqlLevelSharedReadLock)
 	{
@@ -2460,14 +2454,27 @@ static int connectionBusyHandler(void *ptr, int count)
 **/
 - (void)preReadWriteTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-	// Pre-Write-Transaction: Step 1 of 6
+	// Pre-Write-Transaction: Step 1 of 7
 	//
 	// Add IsOnConnectionQueueKey flag to writeQueue.
 	// This allows various methods that depend on the flag to operate correctly.
 	
 	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 	
-	// Pre-Write-Transaction: Step 2 of 6
+	// Pre-Write-Transaction: Step 2 of 7
+	//
+	// Prep work: sqlite VFS shim listeners for read notifications (if needed).
+	// Initialize the 'main_file', if we haven't already.
+	
+	if (main_file == NULL)
+	{
+		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
+		if (main_file) {
+			main_file->yap_database_connection = (__bridge void *)self;
+		}
+	}
+	
+	// Pre-Write-Transaction: Step 3 of 7
 	//
 	// Execute "BEGIN TRANSACTION" on database connection.
 	// This is actually a deferred transaction, meaning the sqlite connection won't actually
@@ -2495,7 +2502,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 	dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 		
-		// Pre-Write-Transaction: Step 3 of 6
+		// Pre-Write-Transaction: Step 4 of 7
 		//
 		// Update our connection state within the state table.
 		//
@@ -2515,16 +2522,37 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
-		// Pre-Write-Transaction: Step 4 of 6
+		// Pre-Write-Transaction: Step 5 of 7
 		//
 		// Compare our snapshot with the database's snapshot.
 		
 		// In multiprocess mode, the snapshot number might have been externally updated
-		if (enableMultiProcessSupport)
+		if (wal_file == NULL || enableMultiProcessSupport)
+		{
+			// If sqlite hasn't opened the wal_file yet,
+			// then we need to invoke the sql machinery so we can get access to it.
+			// We need the wal_file in order to properly receive notifications of
+			// when sqlite acquires an "sql-level" snapshot.
+			//
+			// In case of multiple processes accessing the database,
+			// we can't know for sure so we must make this assumption.
+			
 			dbSnapshot = [self readSnapshotFromDatabase];
+			if (wal_file == NULL)
+			{
+				wal_file = yap_vfs_last_opened_wal(database->yap_vfs_shim);
+				if (wal_file) {
+					wal_file->yap_database_connection = (__bridge void *)self;
+				}
+			}
+		}
 		else
+		{
+			// We can just grab the snapshot from YapDatabase's in-memory version.
+			
 			dbSnapshot = [database snapshot];
-        
+		}
+		
 		if (snapshot < dbSnapshot)
 		{
 			// The transaction hasn't processed recent changeset(s) yet.
@@ -2541,7 +2569,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting read-write transaction.", self);
 	}});
 	
-	// Pre-Write-Transaction: Step 5 of 6
+	// Pre-Write-Transaction: Step 6 of 7
 	//
 	// Update our in-memory data (caches, etc) if needed.
 	// Since this can be CPU intensive, we do this outside the snapshotQueue.
@@ -2578,7 +2606,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		externallyModified = NO;
 	}
 	
-	// Pre-Write-Transaction: Step 6 of 6
+	// Pre-Write-Transaction: Step 7 of 7
 	//
 	// Setup write state and changeset variables
 	
@@ -2960,14 +2988,27 @@ static int connectionBusyHandler(void *ptr, int count)
 	// Thus we cannot simply use preReadWriteTransaction & postReadWriteTransaction.
 	// Instead we use a select subset of them.
 	
-	// Pre-Pseudo-Write-Transaction: Step 1 of 3
+	// Pre-Pseudo-Write-Transaction: Step 1 of 5
 	//
 	// Add IsOnConnectionQueueKey flag to writeQueue.
 	// This allows various methods that depend on the flag to operate correctly.
 	
 	dispatch_queue_set_specific(database->writeQueue, IsOnConnectionQueueKey, IsOnConnectionQueueKey, NULL);
 	
-	// Pre-Pseudo-Write-Transaction: Step 2 of 3
+	// Pre-Pseudo-Write-Transaction: Step 2 of 5
+	//
+	// Prep work: sqlite VFS shim listeners for read notifications (if needed).
+	// Initialize the 'main_file', if we haven't already.
+	
+	if (main_file == NULL)
+	{
+		sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, &main_file);
+		if (main_file) {
+			main_file->yap_database_connection = (__bridge void *)self;
+		}
+	}
+	
+	// Pre-Pseudo-Write-Transaction: Step 3 of 5
 	//
 	// Update our connection state within the state table.
 	//
@@ -2989,6 +3030,26 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		NSAssert(myState != nil, @"Missing state in database->connectionStates");
 		
+		// Pre-Pseudo-Write-Transaction: Step 4 of 5
+		//
+		// Prep work: sqlite VFS shim listeners for read notifications (if needed).
+		// Initialize the 'wal_file', if we haven't already.
+		
+		if (wal_file == NULL)
+		{
+			// If sqlite hasn't opened the wal_file yet,
+			// then we need to invoke the sql machinery so we can get access to it.
+			// We need the wal_file in order to properly receive notifications of
+			// when sqlite acquires an "sql-level" snapshot.
+			
+			(void)[self readSnapshotFromDatabase];
+			
+			wal_file = yap_vfs_last_opened_wal(database->yap_vfs_shim);
+			if (wal_file) {
+				wal_file->yap_database_connection = (__bridge void *)self;
+			}
+		}
+		
 		myState->lastTransactionSnapshot = [database snapshot];
 		myState->lastTransactionTime = mach_absolute_time();
 		needsMarkSqlLevelSharedReadLock = YES;
@@ -2996,7 +3057,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		YDBLogVerbose(@"YapDatabaseConnection(%p) starting vacuum operation.", self);
 	}});
 	
-	// Pre-Pseudo-Write-Transaction: Step 3 of 3
+	// Pre-Pseudo-Write-Transaction: Step 5 of 5
 	//
 	// Setup write state and changeset variables.
 	

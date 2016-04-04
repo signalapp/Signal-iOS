@@ -70,6 +70,9 @@ static NSString *const ext_key_class = @"class";
 @interface YapDatabase () {
 @public
 	
+	NSString *yap_vfs_shim_name;
+	yap_vfs *yap_vfs_shim;
+	
 	void *IsOnSnapshotQueueKey;       // Only to be used by YapDatabaseConnection
 	void *IsOnWriteQueueKey;          // Only to be used by YapDatabaseConnection
 	
@@ -195,6 +198,9 @@ static NSString *const ext_key_class = @"class";
 	
 	sqlite3 *db;
 	
+	yap_file *main_file;
+	yap_file *wal_file;
+	
 	dispatch_queue_t connectionQueue;     // For YapDatabaseExtensionConnection subclasses
 	void *IsOnConnectionQueueKey;         // For YapDatabaseExtensionConnection subclasses
 	
@@ -215,9 +221,6 @@ static NSString *const ext_key_class = @"class";
 	YapDatabasePolicy metadataPolicy;     // Read-only by transaction. Use to determine what goes in metadataChanges.
 	
 	BOOL needsMarkSqlLevelSharedReadLock; // Read-only by transaction. Use as consideration of whether to invoke method.
-	
-	yap_file *main_file;
-	yap_file *wal_file;
 	
 	NSMutableDictionary *objectChanges;
 	NSMutableDictionary *metadataChanges;

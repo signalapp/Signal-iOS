@@ -616,6 +616,9 @@ static int connectionBusyHandler(void *ptr, int count) {
 		sqlite3_close(db);
 		db = NULL;
 	}
+	if (yap_vfs_shim) {
+		yap_vfs_shim_unregister(&yap_vfs_shim);
+	}
 	
 	[YapDatabaseManager deregisterDatabaseForPath:databasePath];
 	
@@ -775,6 +778,11 @@ static int connectionBusyHandler(void *ptr, int count) {
 	// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
 	
 	sqlite3_wal_autocheckpoint(db, 0);
+	
+	// Configure VFS shim (for database connections).
+	
+	yap_vfs_shim_name = [NSString stringWithFormat:@"yap_vfs_shim_%@", [[NSUUID UUID] UUIDString]];
+	yap_vfs_shim_register([yap_vfs_shim_name UTF8String], NULL, &yap_vfs_shim);
 	
 	return YES;
 }

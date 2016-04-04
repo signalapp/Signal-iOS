@@ -4,131 +4,8 @@
 #include <stddef.h>
 #include <string.h>
 
-
-static yap_file *yap_file_wal_linked_list = NULL;
-static sqlite3_mutex *yap_file_wal_linked_list_mutex = NULL;
-
-
-static bool yap_file_wal_matches(yap_file *main_file, yap_file *wal_file)
-{
-	// Compare main_file->filename to wal_file->filename
-	//
-	// The filenames should be the same,
-	// except the wal filename should also have a "-wal" suffix at the end.
-	//
-	// E.g.
-	// - main : "/foo/bar/db.sqlite"
-	// - wal  : "/foo/bar/db.sqlite-wal"
-	
-	const char *main_filename = main_file->filename;
-	const char *wal_filename = wal_file->filename;
-	
-	if (main_filename == NULL) return false;
-	if (wal_filename  == NULL) return false;
-	
-	size_t main_len = strlen(main_filename);
-	
-	if (strncmp(main_filename, wal_filename, main_len) != 0) return false;
-	
-	size_t wal_len = strlen(wal_filename);
-	
-	const char *suffix = "-wal";
-	size_t suffixLen = strlen(suffix);
-	
-	if (wal_len != (main_len + suffixLen)) return false;
-	
-	if (strncmp(wal_filename + main_len, suffix, suffixLen) != 0) return false;
-	
-	return wal_file->isWAL;
-}
-
-static void yap_file_wal_register(yap_file *file)
-{
-	if (file == NULL) return;
-	
-	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
-	{
-		// Add to front of linked list
-		
-		if (yap_file_wal_linked_list)
-		{
-			file->next = yap_file_wal_linked_list;
-		}
-		
-		yap_file_wal_linked_list = file;
-	}
-	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
-}
-
-static void yap_file_wal_unregister(yap_file *file)
-{
-	if (file == NULL) return;
-	
-	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
-	{
-		yap_file *match = NULL;
-		yap_file *match_prev = NULL;
-		
-		yap_file *item = yap_file_wal_linked_list;
-		
-		while (item)
-		{
-			if (item == file)
-			{
-				match = item;
-				break;
-			}
-			else
-			{
-				match_prev = item;
-			}
-			
-			item = item->next;
-		}
-		
-		if (match)
-		{
-			if (yap_file_wal_linked_list == match)
-				yap_file_wal_linked_list = match->next;
-			
-			if (match_prev)
-				match_prev->next = match->next;
-		}
-	}
-	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
-}
-
-/**
- * SQLite doesn't seem to provide direct access to the opened sqlite3_file for the WAL.
- * This function provides the missing access, at least for the yap_vfs_shim.
- *
- * Note: SQLite opens the WAL lazily. That is, it won't open the WAL file until the first time it's needed.
- * (E.g. first transaction) So this method may return NULL until that occurs.
-**/
-yap_file* yap_file_wal_find(yap_file *main_file)
-{
-	if (main_file == NULL) return NULL;
-	
-	yap_file *match = NULL;
-	
-	sqlite3_mutex_enter(yap_file_wal_linked_list_mutex);
-	{
-		yap_file *item = yap_file_wal_linked_list;
-		while (item)
-		{
-			if (yap_file_wal_matches(main_file, item))
-			{
-				match = item;
-				break;
-			}
-			
-			item = item->next;
-		}
-	}
-	sqlite3_mutex_leave(yap_file_wal_linked_list_mutex);
-	
-	return match;
-}
+static void yap_vfs_set_last_opened_wal(yap_vfs *yapVFS, yap_file *yapFile);
+static void yap_vfs_unset_last_opened_wal(yap_vfs *yapVFS, yap_file *yapFile);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark sqlite3_io_methods
@@ -148,7 +25,7 @@ static int yap_file_close(sqlite3_file *file)
 		
 		if (yapFile->isWAL)
 		{
-			yap_file_wal_unregister(yapFile);
+			yap_vfs_unset_last_opened_wal(yapFile->vfs, yapFile);
 		}
 	}
 	
@@ -315,7 +192,10 @@ static int yap_file_unfetch(sqlite3_file *file, sqlite3_int64 iOfst, void *ptr)
 
 static int yap_vfs_open(sqlite3_vfs *vfs, const char *zName, sqlite3_file *file, int flags, int *pOutFlags)
 {
+	yap_vfs *yapVFS = (yap_vfs *)vfs;
 	yap_file *yapFile = (yap_file *)file;
+	
+	yapFile->vfs = yapVFS;
 	yapFile->next = NULL;
 	
 	// Regarding zName parameter, from the SQLite docs:
@@ -332,7 +212,7 @@ static int yap_vfs_open(sqlite3_vfs *vfs, const char *zName, sqlite3_file *file,
 	sqlite3_file *realFile = (sqlite3_file *)&yapFile[1];
 	yapFile->pReal = realFile;
 	
-	const sqlite3_vfs *realVFS = ((yap_vfs *)vfs)->pReal;
+	const sqlite3_vfs *realVFS = yapVFS->pReal;
 	int result = realVFS->xOpen((sqlite3_vfs *)realVFS, zName, realFile, flags, pOutFlags);
 	
 	if (realFile->pMethods)
@@ -378,7 +258,7 @@ static int yap_vfs_open(sqlite3_vfs *vfs, const char *zName, sqlite3_file *file,
 	
 	if (result == SQLITE_OK && yapFile->isWAL)
 	{
-		yap_file_wal_register(yapFile);
+		yap_vfs_set_last_opened_wal(yapFile->vfs, yapFile);
 	}
 	
 	return result;
@@ -502,36 +382,110 @@ static const char* yap_vfs_nextSystemCall(sqlite3_vfs *vfs, const char *zName)
 	return realVFS->xNextSystemCall((sqlite3_vfs *)realVFS, zName);
 }
 
+static void yap_vfs_set_last_opened_wal(yap_vfs *yapVFS, yap_file *yapFile)
+{
+	if (yapVFS == NULL) return;
+	
+	sqlite3_mutex_enter(yapVFS->last_opened_wal_mutex);
+	{
+		yapVFS->last_opened_wal = yapFile;
+	}
+	sqlite3_mutex_leave(yapVFS->last_opened_wal_mutex);
+}
+
+static void yap_vfs_unset_last_opened_wal(yap_vfs *yapVFS, yap_file *yapFile)
+{
+	if (yapVFS == NULL) return;
+	
+	sqlite3_mutex_enter(yapVFS->last_opened_wal_mutex);
+	{
+		if (yapVFS->last_opened_wal == yapFile) {
+			yapVFS->last_opened_wal = NULL;
+		}
+	}
+	sqlite3_mutex_leave(yapVFS->last_opened_wal_mutex);
+}
+
+/**
+ * SQLite doesn't seem to provide direct access to the opened sqlite3_file for the WAL.
+ * This function provides the missing access, at least for the yap_vfs_shim.
+ *
+ * Note: SQLite opens the WAL lazily. That is, it won't open the WAL file until the first time it's needed.
+ * (E.g. first transaction) So this method may return NULL until that occurs.
+ *
+ * This method is thread-safe, however it's your responsibility to protect against race conditions.
+ * That is, you must ensure atomicity surrounding the code that may open the wal file,
+ * and the subsequent invocation of this method.
+**/
+yap_file* yap_vfs_last_opened_wal(yap_vfs *yapVFS)
+{
+	if (yapVFS == NULL) return NULL;
+	
+	yap_file *last_opened_wal = NULL;
+	
+	sqlite3_mutex_enter(yapVFS->last_opened_wal_mutex);
+	{
+		last_opened_wal = yapVFS->last_opened_wal;
+	}
+	sqlite3_mutex_leave(yapVFS->last_opened_wal_mutex);
+	
+	return last_opened_wal;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark sqlite3_vfs_shim
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Invoke this method to register the yap_vfs shim with the sqlite system.
+ *
+ * @param yap_vfs_name
+ *   The name to use when registering the shim with sqlite.
+ *   In order to use the shim, you pass the same name when opening a database.
+ *   That is, as the last parameter to sqlite3_open_v2().
+ *
+ * @param underlying_vfs_name
+ *   The name of the vfs that the shim is to wrap.
+ *   That is, the underlying vfs that does the actual work.
+ *   You can pass NULL to specify the default vfs.
+ *
+ * @param vfs_out
+ *   The allocated vfs instance.
+ *   You are responsible for holding onto this pointer,
+ *   and properly unregistering the shim when you're done using it.
+ *
+ * @return
+ *   SQLITE_OK if everything went right.
+ *   Some other SQLITE error if something went wrong.
+**/
 int yap_vfs_shim_register(const char *yap_vfs_name,        // Name for yap VFS shim
-                          const char *underlying_vfs_name) // Name of the underlying VFS
+                          const char *underlying_vfs_name, // Name of the underlying (real) VFS
+                             yap_vfs **vfs_out)            // Allocated output
 {
-	// We do this here because this method is typically only called once.
-	// And is expected to be called in a thread-safe manner.
-	if (yap_file_wal_linked_list_mutex == NULL) {
-		yap_file_wal_linked_list_mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-	}
+	int result = SQLITE_OK;
 	
 	if (yap_vfs_name == NULL)
 	{
 		// yap_vfs_name is required
-		return SQLITE_MISUSE;
+		result = SQLITE_MISUSE;
+		goto done;
 	}
 	
 	sqlite3_vfs *realVFS = sqlite3_vfs_find(underlying_vfs_name);
-	if (realVFS == NULL) {
-		return SQLITE_NOTFOUND;
+	if (realVFS == NULL)
+	{
+		result = SQLITE_NOTFOUND;
+		goto done;
 	}
 	
 	size_t baseLen = sizeof(yap_vfs);
 	size_t nameLen = strlen(yap_vfs_name) + 1;
 	
 	yap_vfs *yapVFS = sqlite3_malloc((int)(baseLen + nameLen));
-	if (yapVFS == NULL) {
-		return SQLITE_NOMEM;
+	if (yapVFS == NULL)
+	{
+		result = SQLITE_NOMEM;
+		goto done;
 	}
 	memset(yapVFS, 0, (int)(baseLen + nameLen));
 	
@@ -571,13 +525,57 @@ int yap_vfs_shim_register(const char *yap_vfs_name,        // Name for yap VFS s
 	}
 	
 	yapVFS->pReal = realVFS;
+	yapVFS->last_opened_wal_mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
 	
 	int makeDefault = 0; // NO
-	int result = sqlite3_vfs_register((sqlite3_vfs *)yapVFS, makeDefault);
+	result = sqlite3_vfs_register((sqlite3_vfs *)yapVFS, makeDefault);
+	
+done:
+	
 	if (result != SQLITE_OK)
 	{
-		sqlite3_free(yapVFS);
+		if (yapVFS) {
+			sqlite3_free(yapVFS);
+		}
 	}
+	
+	*vfs_out = yapVFS;
+	return result;
+}
+
+/**
+ * Invoke this method to unregister the yap_vfs shim with the sqlite system.
+ * Be sure you don't do this until you're truely done using it.
+ *
+ * @param vfs
+ *   The previous output from yap_vfs_shim_register.
+ *   This memory will be freed within this method, and the pointer will be set to NULL.
+ *
+ * @return
+ *   SQLITE_OK if everything went right.
+ *   Some other SQLITE error if something went wrong.
+**/
+int yap_vfs_shim_unregister(yap_vfs **vfs_in_out)
+{
+	if (vfs_in_out == NULL) {
+		return SQLITE_MISUSE;
+	}
+	
+	yap_vfs *yapVFS = *vfs_in_out;
+	
+	if (yapVFS == NULL) {
+		return SQLITE_MISUSE;
+	}
+	
+	if (yapVFS->last_opened_wal_mutex) {
+		sqlite3_mutex_free(yapVFS->last_opened_wal_mutex);
+		yapVFS->last_opened_wal_mutex = NULL;
+	}
+	
+	int result = sqlite3_vfs_unregister(yapVFS);
+	
+	sqlite3_free(yapVFS);
+	*vfs_in_out = NULL;
 	
 	return result;
 }

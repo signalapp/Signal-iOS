@@ -8,6 +8,12 @@ extern "C" {
 #include "sqlite3.h"
 #include "stdbool.h"
 
+struct yap_vfs;
+struct yap_file;
+
+typedef struct yap_vfs yap_vfs;
+typedef struct yap_file yap_file;
+	
 /**
  * From the SQLite Docs:
  * 
@@ -23,17 +29,19 @@ extern "C" {
  * It's designed to provide additional functionality for YapDatabaseConnection.
 **/
 
-typedef struct yap_vfs yap_vfs;
 struct yap_vfs {
 	sqlite3_vfs base;         // Base class. Must be first in struct.
 	const sqlite3_vfs *pReal; // The real underlying VFS.
+	
+	sqlite3_mutex *last_opened_wal_mutex;
+	yap_file *last_opened_wal;
 };
 
-typedef struct yap_file yap_file;
 struct yap_file {
 	sqlite3_file base;             // Base class. Must be first in struct.
 	const sqlite3_file *pReal;     // The real underlying file.
 	
+	yap_vfs *vfs;                  // Do NOT touch. For internal use only.
 	yap_file *next;                // Do NOT touch. For internal use only.
 	
 	const char *filename;
@@ -46,9 +54,6 @@ struct yap_file {
 /**
  * Invoke this method to register the yap_vfs shim with the sqlite system.
  * 
- * Thie method only needs to be called once.
- * It is recommended you use something like dispatch_once or std::call_once to invoke it.
- * 
  * @param yap_vfs_name
  *   The name to use when registering the shim with sqlite.
  *   In order to use the shim, you pass the same name when opening a database.
@@ -59,13 +64,33 @@ struct yap_file {
  *   That is, the underlying vfs that does the actual work.
  *   You can pass NULL to specify the default vfs.
  * 
+ * @param vfs_out
+ *   The allocated vfs instance.
+ *   You are responsible for holding onto this pointer,
+ *   and properly unregistering the shim when you're done using it.
+ *
  * @return
  *   SQLITE_OK if everything went right.
  *   Some other SQLITE error if something went wrong.
 **/
 int yap_vfs_shim_register(const char *yap_vfs_name,         // Name for yap VFS shim
-                          const char *underlying_vfs_name); // Name of the underlying VFS
+                          const char *underlying_vfs_name,  // Name of the underlying (real) VFS
+                             yap_vfs **vfs_out);             // Allocated output
 
+
+/**
+ * Invoke this method to unregister the yap_vfs shim with the sqlite system.
+ * Be sure you don't do this until you're truely done using it.
+ * 
+ * @param vfs
+ *   The previous output from yap_vfs_shim_register.
+ *   This memory will be freed within this method, and the pointer will be set to NULL.
+ * 
+ * @return
+ *   SQLITE_OK if everything went right.
+ *   Some other SQLITE error if something went wrong.
+**/
+int yap_vfs_shim_unregister(yap_vfs **vfs_in_out);
 
 /**
  * SQLite doesn't seem to provide direct access to the opened sqlite3_file for the WAL.
@@ -74,9 +99,11 @@ int yap_vfs_shim_register(const char *yap_vfs_name,         // Name for yap VFS 
  * Note: SQLite opens the WAL lazily. That is, it won't open the WAL file until the first time it's needed.
  * (E.g. first transaction) So this method may return NULL until that occurs.
  * 
- * This method is thread-safe.
+ * This method is thread-safe, however it's your responsibility to protect against race conditions.
+ * That is, you must ensure atomicity surrounding the code that may open the wal file,
+ * and the subsequent invocation of this method.
 **/
-yap_file* yap_file_wal_find(yap_file *main_file);
+yap_file* yap_vfs_last_opened_wal(yap_vfs *vfs);
 
 #if defined __cplusplus
 };
