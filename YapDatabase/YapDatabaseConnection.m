@@ -255,8 +255,21 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		lock = OS_SPINLOCK_INIT;
 		
-		db = [database connectionPoolDequeue];
-		if (db == NULL)
+		BOOL recycled = [database connectionPoolDequeue:&db main_file:&main_file wal_file:&wal_file];
+		if (recycled)
+		{
+			// Update pointer values
+			
+			if (main_file) {
+				main_file->yap_database_connection = (__bridge void *)self;
+			}
+			if (wal_file) {
+				wal_file->yap_database_connection = (__bridge void *)self;
+			}
+			
+			sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)self);
+		}
+		else
 		{
 			// Open the database connection.
 			//
@@ -343,7 +356,7 @@ static int connectionBusyHandler(void *ptr, int count)
 				//
 				//   Note: In all my testing, I've only seen the busy_handler called once per db.
                 
-				sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
+				sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)self);
                 
 #ifdef SQLITE_HAS_CODEC
 				// Configure SQLCipher encryption (if needed)
@@ -417,7 +430,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			wal_file->xNotifyDidRead = NULL;
 		}
 		
-		if (![database connectionPoolEnqueue:db])
+		if (![database connectionPoolEnqueue:db main_file:main_file wal_file:wal_file])
 		{
 			int status = sqlite3_close(db);
 			if (status != SQLITE_OK)
@@ -427,6 +440,8 @@ static int connectionBusyHandler(void *ptr, int count)
 		}
 		
 		db = NULL;
+		main_file = NULL;
+		wal_file = NULL;
 	}
 	
 	[database removeConnection:self];

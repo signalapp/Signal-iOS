@@ -124,8 +124,8 @@ static NSString *const ext_key_class = @"class";
 /**
  * YapDatabaseConnection uses these methods to recycle sqlite3 instances using the connection pool.
 **/
-- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb;
-- (sqlite3 *)connectionPoolDequeue;
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb main_file:(yap_file *)main_file wal_file:(yap_file *)wal_file;
+- (BOOL)connectionPoolDequeue:(sqlite3 **)aDb main_file:(yap_file **)main_file wal_file:(yap_file **)wal_file;
 
 /**
  * These methods are only accessible from within the snapshotQueue.

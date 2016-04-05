@@ -29,11 +29,19 @@
 #endif
 #pragma unused(ydbLogLevel)
 
+/**
+ * YapDatabaseClosedNotification & corresponding keys.
+**/
+
 NSString *const YapDatabaseClosedNotification = @"YapDatabaseClosedNotification";
 
 NSString *const YapDatabasePathKey    = @"databasePath";
 NSString *const YapDatabasePathWalKey = @"databasePath_wal";
 NSString *const YapDatabasePathShmKey = @"databasePath_shm";
+
+/**
+ * YapDatabaseModifiedNotification & corresponding keys.
+**/
 
 NSString *const YapDatabaseModifiedNotification = @"YapDatabaseModifiedNotification";
 NSString *const YapDatabaseModifiedExternallyNotification = @"YapDatabaseModifiedExternallyNotification";
@@ -56,6 +64,14 @@ NSString *const YapDatabaseRegisteredMemoryTablesKey = @"registeredMemoryTables"
 NSString *const YapDatabaseExtensionsOrderKey        = @"extensionsOrder";
 NSString *const YapDatabaseExtensionDependenciesKey  = @"extensionDependencies";
 NSString *const YapDatabaseNotificationKey           = @"notification";
+
+/**
+ * ConnectionPool value dictionary keys.
+**/
+
+static NSString *const YDBConnectionPoolValueKey_db        = @"db";
+static NSString *const YDBConnectionPoolValueKey_main_file = @"main_file";
+static NSString *const YDBConnectionPoolValueKey_wal_file  = @"wal_file";
 
 /**
  * The database version is stored (via pragma user_version) to sqlite.
@@ -522,6 +538,13 @@ static int connectionBusyHandler(void *ptr, int count) {
 			return nil;
 		}
 		
+		// Configure VFS shim (for database connections).
+		
+		yap_vfs_shim_name = [NSString stringWithFormat:@"yap_vfs_shim_%@", [[NSUUID UUID] UUIDString]];
+		yap_vfs_shim_register([yap_vfs_shim_name UTF8String], NULL, &yap_vfs_shim);
+		
+		// Initialize variables
+		
 		internalQueue   = dispatch_queue_create("YapDatabase-Internal", NULL);
 		checkpointQueue = dispatch_queue_create("YapDatabase-Checkpoint", NULL);
 		snapshotQueue   = dispatch_queue_create("YapDatabase-Snapshot", NULL);
@@ -572,6 +595,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 		dispatch_queue_set_specific(writeQueue, IsOnWriteQueueKey, IsOnWriteQueueKey, NULL);
 		
 		// Complete database setup in the background
+		
 		dispatch_async(snapshotQueue, ^{ @autoreleasepool {
 	
 			[self upgradeTable];
@@ -778,11 +802,6 @@ static int connectionBusyHandler(void *ptr, int count) {
 	// so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
 	
 	sqlite3_wal_autocheckpoint(db, 0);
-	
-	// Configure VFS shim (for database connections).
-	
-	yap_vfs_shim_name = [NSString stringWithFormat:@"yap_vfs_shim_%@", [[NSUUID UUID] UUIDString]];
-	yap_vfs_shim_register([yap_vfs_shim_name UTF8String], NULL, &yap_vfs_shim);
 	
 	return YES;
 }
@@ -2467,7 +2486,7 @@ static int connectionBusyHandler(void *ptr, int count) {
  * Returns NO if the instance was not added to the pool.
  * If so, the YapDatabaseConnection must close the instance.
 **/
-- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb
+- (BOOL)connectionPoolEnqueue:(sqlite3 *)aDb main_file:(yap_file *)main_file wal_file:(yap_file *)wal_file
 {
 	__block BOOL result = NO;
 	
@@ -2483,7 +2502,13 @@ static int connectionBusyHandler(void *ptr, int count) {
 			
 			YDBLogVerbose(@"Enqueuing connection to pool: %p", aDb);
 			
-			[connectionPoolValues addObject:[NSValue valueWithPointer:(const void *)aDb]];
+			NSDictionary *value = @{
+			  YDBConnectionPoolValueKey_db        : [NSValue valueWithPointer:(const void *)aDb],
+			  YDBConnectionPoolValueKey_main_file : [NSValue valueWithPointer:(const void *)main_file],
+			  YDBConnectionPoolValueKey_wal_file  : [NSValue valueWithPointer:(const void *)wal_file],
+			};
+			
+			[connectionPoolValues addObject:value];
 			[connectionPoolDates addObject:[NSDate date]];
 			
 			result = YES;
@@ -2502,15 +2527,25 @@ static int connectionBusyHandler(void *ptr, int count) {
  * Retrieves a connection from the connection pool if available.
  * Returns NULL if no connections are available.
 **/
-- (sqlite3 *)connectionPoolDequeue
+- (BOOL)connectionPoolDequeue:(sqlite3 **)pDb main_file:(yap_file **)pMainFile wal_file:(yap_file **)pWalFile
 {
+	NSParameterAssert(pDb != NULL);
+	NSParameterAssert(pMainFile != NULL);
+	NSParameterAssert(pWalFile != NULL);
+	
 	__block sqlite3 *aDb = NULL;
+	__block yap_file *main_file = NULL;
+	__block yap_file *wal_file = NULL;
 	
 	dispatch_sync(internalQueue, ^{
 		
 		if ([connectionPoolValues count] > 0)
 		{
-			aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			NSDictionary *value = [connectionPoolValues objectAtIndex:0];
+			
+			aDb       = (sqlite3 *)[[value objectForKey:YDBConnectionPoolValueKey_db] pointerValue];
+			main_file = (yap_file *)[[value objectForKey:YDBConnectionPoolValueKey_main_file] pointerValue];
+			wal_file  = (yap_file *)[[value objectForKey:YDBConnectionPoolValueKey_wal_file] pointerValue];
 			
 			YDBLogVerbose(@"Dequeuing connection from pool: %p", aDb);
 			
@@ -2521,7 +2556,11 @@ static int connectionBusyHandler(void *ptr, int count) {
 		}
 	});
 	
-	return aDb;
+	*pDb = aDb;
+	*pMainFile = main_file;
+	*pWalFile = wal_file;
+	
+	return (aDb != NULL);
 }
 
 /**
@@ -2595,7 +2634,9 @@ static int connectionBusyHandler(void *ptr, int count) {
 		
 		if ((interval >= connectionPoolLifetime) || (interval < 0))
 		{
-			sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+			NSDictionary *value = [connectionPoolValues objectAtIndex:0];
+			
+			sqlite3 *aDb = (sqlite3 *)[[value objectForKey:YDBConnectionPoolValueKey_db] pointerValue];;
 			
 			YDBLogVerbose(@"Closing connection from pool: %p", aDb);
 			
