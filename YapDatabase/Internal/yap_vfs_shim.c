@@ -463,6 +463,7 @@ int yap_vfs_shim_register(const char *yap_vfs_name,        // Name for yap VFS s
                              yap_vfs **vfs_out)            // Allocated output
 {
 	int result = SQLITE_OK;
+	yap_vfs *yapVFS = NULL;
 	
 	if (yap_vfs_name == NULL)
 	{
@@ -481,7 +482,7 @@ int yap_vfs_shim_register(const char *yap_vfs_name,        // Name for yap VFS s
 	size_t baseLen = sizeof(yap_vfs);
 	size_t nameLen = strlen(yap_vfs_name) + 1;
 	
-	yap_vfs *yapVFS = sqlite3_malloc((int)(baseLen + nameLen));
+	yapVFS = sqlite3_malloc((int)(baseLen + nameLen));
 	if (yapVFS == NULL)
 	{
 		result = SQLITE_NOMEM;
