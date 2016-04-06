@@ -2012,6 +2012,7 @@
 				WARNING_CFLAGS = (
 					"-Wsometimes-uninitialized",
 					"-Wincompatible-pointer-types",
+					"-Warc-unsafe-retained-assign",
 				);
 			};
 			name = Release;
@@ -2070,6 +2071,7 @@
 				WARNING_CFLAGS = (
 					"-Wsometimes-uninitialized",
 					"-Wincompatible-pointer-types",
+					"-Warc-unsafe-retained-assign",
 				);
 			};
 			name = Debug;
