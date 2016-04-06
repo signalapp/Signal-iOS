@@ -2552,7 +2552,16 @@ static int connectionBusyHandler(void *ptr, int count)
 			// In case of multiple processes accessing the database,
 			// we can't know for sure so we must make this assumption.
 			
-			dbSnapshot = [self readSnapshotFromDatabase];
+			if (enableMultiProcessSupport)
+			{
+				dbSnapshot = [self readSnapshotFromDatabase];
+			}
+			else
+			{
+				(void)[self readSnapshotFromDatabase]; // create wal_file
+				dbSnapshot = [database snapshot];
+			}
+			
 			if (wal_file == NULL)
 			{
 				wal_file = yap_vfs_last_opened_wal(database->yap_vfs_shim);
