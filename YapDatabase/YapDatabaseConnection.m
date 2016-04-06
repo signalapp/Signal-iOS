@@ -233,8 +233,8 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		YapBidirectionalCacheCallBacks YapCollectionKeyCallBacks = kYapBidirectionalCacheDefaultCallBacks;
 		YapCollectionKeyCallBacks.shouldCopy = NO;
-		YapCollectionKeyCallBacks.equal = YapCollectionKeyEqual;
-		YapCollectionKeyCallBacks.hash = YapCollectionKeyHash;
+		YapCollectionKeyCallBacks.equal = (CFDictionaryEqualCallBack)YapCollectionKeyEqual;
+		YapCollectionKeyCallBacks.hash = (CFDictionaryHashCallBack)YapCollectionKeyHash;
 		
 		keyCache = [[YapBidirectionalCache alloc] initWithCountLimit:keyCacheLimit
 		                                                keyCallbacks:&RowidCallBacks

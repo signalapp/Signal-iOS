@@ -573,7 +573,7 @@ int yap_vfs_shim_unregister(yap_vfs **vfs_in_out)
 		yapVFS->last_opened_wal_mutex = NULL;
 	}
 	
-	int result = sqlite3_vfs_unregister(yapVFS);
+	int result = sqlite3_vfs_unregister((sqlite3_vfs *)yapVFS);
 	
 	sqlite3_free(yapVFS);
 	*vfs_in_out = NULL;
