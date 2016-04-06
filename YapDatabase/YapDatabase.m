@@ -621,7 +621,9 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	while ([connectionPoolValues count] > 0)
 	{
-		sqlite3 *aDb = (sqlite3 *)[[connectionPoolValues objectAtIndex:0] pointerValue];
+		NSDictionary *value = [connectionPoolValues objectAtIndex:0];
+		
+		sqlite3 *aDb = (sqlite3 *)[[value objectForKey:YDBConnectionPoolValueKey_db] pointerValue];
 		
 		int status = sqlite3_close(aDb);
 		if (status != SQLITE_OK)
@@ -2636,7 +2638,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 		{
 			NSDictionary *value = [connectionPoolValues objectAtIndex:0];
 			
-			sqlite3 *aDb = (sqlite3 *)[[value objectForKey:YDBConnectionPoolValueKey_db] pointerValue];;
+			sqlite3 *aDb = (sqlite3 *)[[value objectForKey:YDBConnectionPoolValueKey_db] pointerValue];
 			
 			YDBLogVerbose(@"Closing connection from pool: %p", aDb);
 			
