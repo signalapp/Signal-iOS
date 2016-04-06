@@ -1948,7 +1948,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0730;
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2202,6 +2202,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4153085C0BD66EF9172C0381067255A0 /* Reachability.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
@@ -2221,6 +2222,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4153085C0BD66EF9172C0381067255A0 /* Reachability.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREFIX_HEADER = "Target Support Files/Reachability/Reachability-prefix.pch";
@@ -2253,6 +2255,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2278,6 +2281,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0F7C8CF1D0850D0FB72FBD8E42EDB5B /* Pods-YapDatabase.release.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
@@ -2297,6 +2301,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4D8708DF55D0D5BD89A53BEE74955330 /* Pods-YapDatabase.debug.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				MACH_O_TYPE = staticlib;
@@ -2349,6 +2354,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9C6EA81E9ED6F19D65ABDA324F4416A9 /* Pods-YapDatabaseTests.release.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
@@ -2368,6 +2374,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 206E6CC1A898952A147273F555D4C83E /* YapDatabase.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREFIX_HEADER = "Target Support Files/YapDatabase/YapDatabase-prefix.pch";
@@ -2379,6 +2386,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wsometimes-uninitialized",
+					"-Wincompatible-pointer-types",
+				);
 			};
 			name = Debug;
 		};
@@ -2386,6 +2397,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 206E6CC1A898952A147273F555D4C83E /* YapDatabase.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
@@ -2398,6 +2410,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wsometimes-uninitialized",
+					"-Wincompatible-pointer-types",
+				);
 			};
 			name = Release;
 		};
@@ -2405,6 +2421,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 91F5D69F75F2BB9B6164BDD329B0D685 /* Pods-YapDatabaseTests.debug.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				MACH_O_TYPE = staticlib;
@@ -2423,6 +2440,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B2460B736BC8FF172FD4464862E36509 /* Pods-MultiprocessApp.debug.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				MACH_O_TYPE = staticlib;
@@ -2441,6 +2459,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DE32C436CCA18276190B8C137D302CD5 /* CocoaLumberjack.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
@@ -2460,6 +2479,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DE32C436CCA18276190B8C137D302CD5 /* CocoaLumberjack.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaLumberjack/CocoaLumberjack-prefix.pch";
@@ -2478,6 +2498,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0F127FB3BE9B964DE9121380AC962CC /* Pods-MultiprocessApp.release.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXECUTABLE_PREFIX = lib;
