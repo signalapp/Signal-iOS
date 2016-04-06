@@ -392,10 +392,14 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 			newItem = [[YapBidirectionalCacheItem alloc] init];
 		}
 		
+		__strong id newKey = nil;
+		
 		if (keyCallBacks.shouldCopy)
-			newItem->key = [key copy];
+			newKey = [key copy];
 		else
-			newItem->key = key;
+			newKey = key;
+		
+		newItem->key = newKey; // __unsafe_unretained assignment
 		
 		if (objCallBacks.shouldCopy)
 			newItem->obj = [object copy];
@@ -404,7 +408,7 @@ const YapBidirectionalCacheCallBacks kYapBidirectionalCacheDefaultCallBacks = (Y
 		
 		// Add item to dicts
 		
-		CFDictionarySetValue(key_obj_dict, (const void *)newItem->key, (const void *)newItem);
+		CFDictionarySetValue(key_obj_dict, (const void *)newKey, (const void *)newItem);
 		CFDictionarySetValue(obj_key_dict, (const void *)newItem->obj, (const void *)newItem);
 		
 		// Add item to beginning of linked-list
