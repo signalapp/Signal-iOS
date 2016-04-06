@@ -16,7 +16,7 @@ It has the following features:
 
 * **Metadata**. Ever wanted to store extra data along with your object? Like maybe a timestamp of when it was downloaded. Or a fully separate but related object? You're in luck. Metadata support comes standard. Along with its own separate configurable cache too!
 
-* **Views**. Need to filter, group & sort your data? No problem. YapDatabase comes with Views. And you don't even need to write esoteric SQL queries. Views work using blocks and Objective-C code. Plus they automatically update themselves, and they make animating tables really easy.
+* **Views**. Need to filter, group & sort your data? No problem. YapDatabase comes with Views. And you don't even need to write esoteric SQL queries. Views work using blocks with your own code. Plus they automatically update themselves, and they make animating tables super easy.
  
 * **Secondary Indexing**. Speed up your queries by indexing important properties. And then use SQL style queries to quickly find your items.
 
