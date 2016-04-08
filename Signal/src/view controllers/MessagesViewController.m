@@ -12,7 +12,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <TextSecureKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 #import "ContactsManager.h"
 #import "DJWActionSheet+OWS.h"
@@ -172,6 +172,8 @@ typedef enum : NSUInteger {
 
     [self initializeBubbles];
     [self initializeTextView];
+
+    [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
 
     [self initializeCollectionViewLayout];
 

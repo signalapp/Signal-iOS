@@ -5,12 +5,14 @@
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : 0,
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0,
+    "D74FB800F048CB516BB4BC70047F7CC676D291B9" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D0F297E7-A82D-4657-A941-96B268F80ABC",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : "Signal-iOS\/",
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "TSKit\/"
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "TSKit\/",
+    "D74FB800F048CB516BB4BC70047F7CC676D291B9" : "Signal-iOS\/Pods\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Signal",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
@@ -25,6 +27,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/Signal-iOS.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/FredericJacobs\/Precompiled-Signal-Dependencies.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D74FB800F048CB516BB4BC70047F7CC676D291B9"
     }
   ]
 }

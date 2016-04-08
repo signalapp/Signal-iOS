@@ -8,7 +8,7 @@
 
 #import "CodeVerificationViewController.h"
 
-#import <TextSecureKit/TSStorageManager+keyingMaterial.h>
+#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import "ContactsManager.h"
 #import "Environment.h"
 #import "LocalizableText.h"
