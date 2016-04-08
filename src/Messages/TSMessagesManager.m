@@ -10,9 +10,9 @@
 
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
-#import <TextSecureKit/TSAccountManager.h>
 
 #import "NSData+messagePadding.h"
+#import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
 #import "TSDatabaseView.h"

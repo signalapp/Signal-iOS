@@ -7,18 +7,18 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = "TextSecureKit"
+  s.name             = "SignalServiceKit"
   s.version          = "0.0.4"
-  s.summary          = "An Objective-C library for communicating via TextSecure."
+  s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC
   TextSecureKit is a library for the TextSecure protocol for iOS & OS X
                        DESC
 
-  s.homepage         = "https://github.com/WhisperSystems/TextSecureKit"
+  s.homepage         = "https://github.com/WhisperSystems/SignalServiceKit"
   s.license          = 'GPLv3'
   s.author           = { "Frederic Jacobs" => "github@fredericjacobs.com" }
-  s.source           = { :git => "https://github.com/WhisperSystems/TextSecureKit.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/WhisperSystems/SignalServiceKit.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/FredericJacobs'
 
   s.platform     = :ios, '8.0'

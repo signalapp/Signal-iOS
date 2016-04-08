@@ -1,1 +1,1 @@
-# TextSecureKit
+# SignalServiceKit

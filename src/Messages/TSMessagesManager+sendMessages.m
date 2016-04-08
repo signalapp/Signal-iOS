@@ -12,11 +12,11 @@
 #import <AxolotlKit/SessionBuilder.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <Mantle/Mantle.h>
-#import <TextSecureKit/TSAccountManager.h>
 #import <TwistedOakCollapsingFutures/CollapsingFutures.h>
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
@@ -48,7 +48,7 @@ dispatch_queue_t sendingQueue() {
               success:(void (^)(NSArray<SignalRecipient *> *))success
               failure:(void (^)(NSError *error))failure {
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray array];
-    
+
     __block NSError *latestError;
     for (NSString *recipientId in identifiers) {
         __block SignalRecipient *recipient;
@@ -56,7 +56,7 @@ dispatch_queue_t sendingQueue() {
           recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
         }];
 
-        
+
         if (!recipient) {
             [[self contactUpdater] synchronousLookup:recipientId
                 success:^(SignalRecipient *newRecipient) {
@@ -76,7 +76,7 @@ dispatch_queue_t sendingQueue() {
     } else {
         failure(latestError);
     }
-    
+
     return;
 }
 
