@@ -1,5 +1,4 @@
 # Signal for iOS [![Build Status](https://travis-ci.org/WhisperSystems/Signal-iOS.svg?branch=master)](https://travis-ci.org/WhisperSystems/Signal-iOS)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/WhisperSystems/Signal-iOS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Signal is a messaging app for simple private communication with friends.
 
