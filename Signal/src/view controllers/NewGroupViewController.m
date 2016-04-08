@@ -235,7 +235,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (IBAction)addGroupPhoto:(id)sender {
     [self.nameGroupTextField resignFirstResponder];
 
-    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"NEW_GROUP_ADD_PHOTO_ACTION", @"")
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar")
                                                                                    message:nil
                                                                             preferredStyle:UIAlertControllerStyleActionSheet];
 

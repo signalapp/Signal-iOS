@@ -155,8 +155,8 @@
 
     switch (indexPath.section) {
         case 1: {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"IRREVERSIBLE_ACTION_TITLE", @"")
-                                                                                           message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_MESSAGE", @"")
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"IRREVERSIBLE_ACTION_TITLE", @"Alert dialog title appearing before destructive actions")
+                                                                                           message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_MESSAGE", @"Alert message before user confirms clearing history")
                                                                                     preferredStyle:UIAlertControllerStyleAlert];
 
             UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")

@@ -102,8 +102,8 @@ static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeVi
 
 
 - (IBAction)shredAndDelete:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"IRREVERSIBLE_ACTION_TITLE", @"")
-                                                                             message:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"")
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"IRREVERSIBLE_ACTION_TITLE", @"Alert title appearing before destructive actions")
+                                                                             message:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"Alert message before resetting conversation session.")
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
