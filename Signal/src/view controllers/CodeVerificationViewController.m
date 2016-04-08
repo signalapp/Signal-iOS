@@ -49,11 +49,6 @@
     [self adjustScreenSizes];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 - (IBAction)verifyChallengeAction:(id)sender {
     [self enableServerActions:NO];
     [_challengeTextField resignFirstResponder];

@@ -79,12 +79,6 @@
     [self populateImageView:self.image];
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 #pragma mark - Initializers
 
 - (void)initializeBackground {
