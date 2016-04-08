@@ -7,10 +7,10 @@
 //
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <TextSecureKit/NSDate+millisecondTimeStamp.h>
-#import <TextSecureKit/TSAccountManager.h>
-#import <TextSecureKit/TSMessagesManager+attachments.h>
-#import <TextSecureKit/TSMessagesManager+sendMessages.h>
+#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager+attachments.h>
+#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
 #import "ContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"

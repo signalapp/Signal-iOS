@@ -1,4 +1,4 @@
-#import <TextSecureKit/TSStorageManager+keyingMaterial.h>
+#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <XCTest/XCTest.h>
 #import "HttpSocket.h"
 #import "SignalKeyingStorage.h"

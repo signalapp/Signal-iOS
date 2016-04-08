@@ -1,6 +1,6 @@
 #import <AddressBook/AddressBook.h>
 #import <Foundation/Foundation.h>
-#import <TextSecureKit/TSCall.h>
+#import <SignalServiceKit/TSCall.h>
 #import "Contact.h"
 #import "ContactsManager.h"
 #import "PhoneNumber.h"

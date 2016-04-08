@@ -8,7 +8,7 @@
 
 #import "GroupContactsResult.h"
 
-#import <TextSecureKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import "Contact.h"
 #import "ContactsManager.h"
 #import "Environment.h"
