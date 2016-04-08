@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		4B552ED26FB6FB54EDDBB7BD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D124A70602BD07D5F1EE5FD8 /* libPods.a */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
@@ -487,6 +488,7 @@
 
 /* Begin PBXFileReference section */
 		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
 		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
@@ -1633,6 +1635,7 @@
 			isa = PBXGroup;
 			children = (
 				A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */,
+				45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */,
 			);
 			path = xibs;
 			sourceTree = "<group>";
@@ -2370,6 +2373,7 @@
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
@@ -3055,7 +3059,6 @@
 			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3110,7 +3113,6 @@
 			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
