@@ -112,15 +112,13 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.205)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`,
-    branch `test`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
 
 EXTERNAL SOURCES:
   JSQMessagesViewController:
     :commit: e5582fef8a6b3e35f8070361ef37237222da712b
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SignalServiceKit:
-    :branch: test
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
 
 CHECKOUT OPTIONS:
@@ -128,7 +126,7 @@ CHECKOUT OPTIONS:
     :commit: e5582fef8a6b3e35f8070361ef37237222da712b
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SignalServiceKit:
-    :commit: 518c44ce9ad3b005146669972d84e8d4c4477005
+    :commit: a0c147722e3a07412cb356c7712f42ba086a3fa0
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
 
 SPEC CHECKSUMS:
