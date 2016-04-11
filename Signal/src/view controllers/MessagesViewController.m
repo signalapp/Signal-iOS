@@ -91,6 +91,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
+@property NSCache *messageAdapterCache;
+
 @end
 
 @interface UINavigationItem () {
@@ -149,6 +151,8 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
+
+    self.messageAdapterCache = [[NSCache alloc] init];
 
     _showFingerprintDisplay =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
@@ -1590,6 +1594,8 @@ typedef enum : NSUInteger {
       for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
           switch (rowChange.type) {
               case YapDatabaseViewChangeDelete: {
+                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.indexPath];
+                  [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
                   [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                   break;
               }
@@ -1609,7 +1615,8 @@ typedef enum : NSUInteger {
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                   }
-
+                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.indexPath];
+                  [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
                   [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                   scrollToBottom = YES;
                   break;
@@ -1661,7 +1668,15 @@ typedef enum : NSUInteger {
 
 - (TSMessageAdapter *)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+
+    TSMessageAdapter *messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
+
+    if (messageAdapter == nil) {
+        messageAdapter = [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+        [self.messageAdapterCache setObject:messageAdapter forKey: interaction.uniqueId];
+    }
+
+    return messageAdapter;
 }
 
 #pragma mark group action view
