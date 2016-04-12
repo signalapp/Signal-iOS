@@ -89,6 +89,7 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'ActionManager' do |ssee|
+        ssee.platforms = [:ios, :osx]
         ssee.dependency 'Reachability', '~> 3'
         ssee.dependency 'YapDatabase/Standard/Extensions/Views'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
@@ -160,6 +161,7 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'ActionManager' do |ssee|
+        ssee.platforms = [:ios, :osx]
         ssee.dependency 'Reachability', '~> 3'
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/Views'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
