@@ -931,50 +931,54 @@ typedef enum : NSUInteger {
                 if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
-                    if ([messageMedia isImage]) {
-                        tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSPhotoAdapter with nil image");
+                    } else {
                         CGRect convertedRect =
-                            [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                      toView:nil];
+                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
+                                                  toView:nil];
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                          attachment =
-                              [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                         }];
 
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
                             FullImageViewController *vc   = [[FullImageViewController alloc]
-                                initWithAttachment:attStream
-                                          fromRect:convertedRect
-                                    forInteraction:[self interactionAtIndexPath:indexPath]
-                                        isAnimated:NO];
+                                                             initWithAttachment:attStream
+                                                             fromRect:convertedRect
+                                                             forInteraction:[self interactionAtIndexPath:indexPath]
+                                                             isAnimated:NO];
 
                             [vc presentFromViewController:self.navigationController];
                         }
-                    } else {
-                        DDLogWarn(@"Currently unsupported");
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
                     // Show animated image full-screen
                     TSAnimatedAdapter *messageMedia = (TSAnimatedAdapter *)[messageItem media];
                     tappedImage                     = ((UIImageView *)[messageMedia mediaView]).image;
-                    CGRect convertedRect =
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
+                    } else {
+                        CGRect convertedRect =
                         [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
                                                   toView:nil];
-                    __block TSAttachment *attachment = nil;
-                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                      attachment =
-                          [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
-                    }];
-                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
-                        FullImageViewController *vc =
+                        __block TSAttachment *attachment = nil;
+                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                        }];
+                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                            TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
+                            FullImageViewController *vc =
                             [[FullImageViewController alloc] initWithAttachment:attStream
                                                                        fromRect:convertedRect
                                                                  forInteraction:[self interactionAtIndexPath:indexPath]
                                                                      isAnimated:YES];
-                        [vc presentFromViewController:self.navigationController];
+                            [vc presentFromViewController:self.navigationController];
+                        }
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
                     // fileurl disappeared should look up in db as before. will do refactor
@@ -1364,7 +1368,7 @@ typedef enum : NSUInteger {
 /*
  *  Fetching data from UIImagePickerController
  */
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
@@ -1373,45 +1377,56 @@ typedef enum : NSUInteger {
         NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
         [self sendQualityAdjustedAttachment:videoURL];
     } else {
-        // Send image as NSData to accommodate both static and animated images
-        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL]
-            resultBlock:^(ALAsset *asset) {
-              ALAssetRepresentation *representation = [asset defaultRepresentation];
-              Byte *img_buffer                      = (Byte *)malloc((unsigned long)representation.size);
-              NSUInteger length_buffered =
-                  [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
-              NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
-              NSString *file_type;
-              switch (img_buffer[0]) {
-                  case 0x89:
-                      file_type = @"image/png";
-                      break;
-                  case 0x47:
-                      file_type = @"image/gif";
-                      break;
-                  case 0x49:
-                  case 0x4D:
-                      file_type = @"image/tiff";
-                      break;
-                  case 0x42:
-                      file_type = @"@image/bmp";
-                      break;
-                  case 0xFF:
-                  default:
-                      file_type = @"image/jpeg";
-                      break;
-              }
-              DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
-                           (unsigned long)length_buffered,
-                           img_buffer[0],
-                           img_buffer[0],
-                           file_type);
-              [self sendMessageAttachment:img_data ofType:file_type];
+        if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)
+        {
+            // Image captured from camera
+            UIImage *pictureCamera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
+            if (pictureCamera) {
+                DDLogVerbose(@"Sending picture attachement ...");
+                [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pictureCamera] ofType:@"image/jpeg"];
             }
-            failureBlock:^(NSError *error) {
-              DDLogVerbose(@"Couldn't get image asset: %@", error);
-            }];
+        } else {
+            // Image picked from library
+            // Send image as NSData to accommodate both static and animated images
+            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+            [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL]
+                     resultBlock:^(ALAsset *asset) {
+                         ALAssetRepresentation *representation = [asset defaultRepresentation];
+                         Byte *img_buffer                      = (Byte *)malloc((unsigned long)representation.size);
+                         NSUInteger length_buffered =
+                         [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
+                         NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
+                         NSString *file_type;
+                         switch (img_buffer[0]) {
+                             case 0x89:
+                                 file_type = @"image/png";
+                                 break;
+                             case 0x47:
+                                 file_type = @"image/gif";
+                                 break;
+                             case 0x49:
+                             case 0x4D:
+                                 file_type = @"image/tiff";
+                                 break;
+                             case 0x42:
+                                 file_type = @"@image/bmp";
+                                 break;
+                             case 0xFF:
+                             default:
+                                 file_type = @"image/jpeg";
+                                 break;
+                         }
+                         DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
+                                      (unsigned long)length_buffered,
+                                      img_buffer[0],
+                                      img_buffer[0],
+                                      file_type);
+                         [self sendMessageAttachment:img_data ofType:file_type];
+                     }
+                    failureBlock:^(NSError *error) {
+                        DDLogVerbose(@"Couldn't get image asset: %@", error);
+                    }];
+        }
     }
 }
 
