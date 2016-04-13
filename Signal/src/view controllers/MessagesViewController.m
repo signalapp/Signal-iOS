@@ -931,50 +931,54 @@ typedef enum : NSUInteger {
                 if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
-                    if ([messageMedia isImage]) {
-                        tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSPhotoAdapter with nil image");
+                    } else {
                         CGRect convertedRect =
-                            [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                      toView:nil];
+                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
+                                                  toView:nil];
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                          attachment =
-                              [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                         }];
 
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
                             FullImageViewController *vc   = [[FullImageViewController alloc]
-                                initWithAttachment:attStream
-                                          fromRect:convertedRect
-                                    forInteraction:[self interactionAtIndexPath:indexPath]
-                                        isAnimated:NO];
+                                                             initWithAttachment:attStream
+                                                             fromRect:convertedRect
+                                                             forInteraction:[self interactionAtIndexPath:indexPath]
+                                                             isAnimated:NO];
 
                             [vc presentFromViewController:self.navigationController];
                         }
-                    } else {
-                        DDLogWarn(@"Currently unsupported");
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
                     // Show animated image full-screen
                     TSAnimatedAdapter *messageMedia = (TSAnimatedAdapter *)[messageItem media];
                     tappedImage                     = ((UIImageView *)[messageMedia mediaView]).image;
-                    CGRect convertedRect =
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
+                    } else {
+                        CGRect convertedRect =
                         [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
                                                   toView:nil];
-                    __block TSAttachment *attachment = nil;
-                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                      attachment =
-                          [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
-                    }];
-                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
-                        FullImageViewController *vc =
+                        __block TSAttachment *attachment = nil;
+                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                        }];
+                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                            TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
+                            FullImageViewController *vc =
                             [[FullImageViewController alloc] initWithAttachment:attStream
                                                                        fromRect:convertedRect
                                                                  forInteraction:[self interactionAtIndexPath:indexPath]
                                                                      isAnimated:YES];
-                        [vc presentFromViewController:self.navigationController];
+                            [vc presentFromViewController:self.navigationController];
+                        }
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
                     // fileurl disappeared should look up in db as before. will do refactor
