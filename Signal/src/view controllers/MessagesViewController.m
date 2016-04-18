@@ -1609,9 +1609,12 @@ typedef enum : NSUInteger {
       for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
           switch (rowChange.type) {
               case YapDatabaseViewChangeDelete: {
-                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.indexPath];
-                  [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
                   [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   break;
               }
               case YapDatabaseViewChangeInsert: {
@@ -1625,13 +1628,15 @@ typedef enum : NSUInteger {
                   break;
               }
               case YapDatabaseViewChangeUpdate: {
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
 
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                   }
-                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.indexPath];
-                  [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
                   [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                   scrollToBottom = YES;
                   break;
