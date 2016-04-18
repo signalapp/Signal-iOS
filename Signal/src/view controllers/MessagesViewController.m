@@ -308,6 +308,15 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.textView.editable = NO;
 }
 
+- (void)willDeleteThreadWithId:(NSString *)threadId {
+    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+        [[transaction ext:TSMessageDatabaseViewExtensionName] enumerateKeysInGroup:threadId
+                                                                        usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop){
+                                                                            [self.messageAdapterCache removeObjectForKey:key];
+                                                                        }];
+    }];
+}
+
 #pragma mark - Initiliazers
 
 

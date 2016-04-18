@@ -278,8 +278,13 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 - (void)deleteThread:(TSThread *)thread {
+
+    if (self.mvc) {
+        [self.mvc willDeleteThreadWithId:thread.uniqueId];
+    }
+
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [thread removeWithTransaction:transaction];
+        [thread removeWithTransaction:transaction];
     }];
 
     _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
