@@ -30,7 +30,6 @@
 
 - (void)configureForThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardAppearing;
 - (void)popKeyBoard;
-- (void)willDeleteThreadWithId:(NSString *)threadId;
 
 #pragma mark 3D Touch Methods
 

@@ -308,15 +308,6 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.textView.editable = NO;
 }
 
-- (void)willDeleteThreadWithId:(NSString *)threadId {
-    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
-        [[transaction ext:TSMessageDatabaseViewExtensionName] enumerateKeysInGroup:threadId
-                                                                        usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop){
-                                                                            [self.messageAdapterCache removeObjectForKey:key];
-                                                                        }];
-    }];
-}
-
 #pragma mark - Initiliazers
 
 
@@ -1249,9 +1240,8 @@ typedef enum : NSUInteger {
 
 - (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-        [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
-        [interaction removeWithTransaction:transaction];
+      TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+      [interaction removeWithTransaction:transaction];
     }];
 }
 
@@ -1620,6 +1610,11 @@ typedef enum : NSUInteger {
           switch (rowChange.type) {
               case YapDatabaseViewChangeDelete: {
                   [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   break;
               }
               case YapDatabaseViewChangeInsert: {
@@ -1633,13 +1628,15 @@ typedef enum : NSUInteger {
                   break;
               }
               case YapDatabaseViewChangeUpdate: {
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
 
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                   }
-                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.indexPath];
-                  [self.messageAdapterCache removeObjectForKey:interaction.uniqueId];
                   [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                   scrollToBottom = YES;
                   break;
