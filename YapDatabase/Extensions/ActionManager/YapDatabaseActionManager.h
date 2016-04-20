@@ -6,7 +6,7 @@
 #import "YapDatabaseActionManagerTransaction.h"
 #import "YapDatabaseView.h"
 
-#import <Reachability/Reachability.h>
+@class Reachability;
 
 NS_ASSUME_NONNULL_BEGIN
 
