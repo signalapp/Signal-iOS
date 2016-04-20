@@ -7,6 +7,7 @@
 #import "NSDate+YapDatabase.h"
 
 #import <libkern/OSAtomic.h>
+#import <Reachability/Reachability.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
