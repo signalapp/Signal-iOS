@@ -318,6 +318,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _groupImageButton.imageView.layer.masksToBounds = YES;
     _groupImageButton.imageView.layer.borderColor   = [[UIColor lightGrayColor] CGColor];
     _groupImageButton.imageView.layer.borderWidth   = 0.5f;
+    _groupImageButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 #pragma mark - Table view data source
