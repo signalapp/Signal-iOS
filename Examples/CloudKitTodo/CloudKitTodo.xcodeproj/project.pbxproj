@@ -212,7 +212,7 @@
 				TargetAttributes = {
 					DCDE771A1A3023E9001D8FCE = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = 4D98PK6HWS;
+						DevelopmentTeam = VT5GYGYX83;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -443,7 +443,7 @@
 				INFOPLIST_FILE = CloudKitTodo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.silentcircle.concepts.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.4th-a.CloudKitTodo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -468,7 +468,7 @@
 				INFOPLIST_FILE = CloudKitTodo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.silentcircle.concepts.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.4th-a.CloudKitTodo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
