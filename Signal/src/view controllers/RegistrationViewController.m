@@ -58,12 +58,6 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [_phoneNumberTextField becomeFirstResponder];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-
 #pragma mark - Locale
 
 - (void)populateDefaultCountryNameAndCode {

@@ -8,7 +8,7 @@
 
 #import "CodeVerificationViewController.h"
 
-#import <TextSecureKit/TSStorageManager+keyingMaterial.h>
+#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import "ContactsManager.h"
 #import "Environment.h"
 #import "LocalizableText.h"
@@ -48,11 +48,6 @@
     [_phoneNumberEntered setText:_formattedPhoneNumber];
     [self adjustScreenSizes];
 }
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 
 - (IBAction)verifyChallengeAction:(id)sender {
     [self enableServerActions:NO];

@@ -65,6 +65,7 @@
       _timeLabel.attributedText = attributedDate;
 
       if ([thread isKindOfClass:[TSGroupThread class]]) {
+          _contactPictureView.contentMode = UIViewContentModeScaleAspectFill;
           _contactPictureView.image = ((TSGroupThread *)thread).groupModel.groupImage != nil
                                           ? ((TSGroupThread *)thread).groupModel.groupImage
                                           : [UIImage imageNamed:@"empty-group-avatar"];

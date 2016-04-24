@@ -1,4 +1,4 @@
-#import <TextSecureKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 #import "NotificationsManager.h"
 #import "RecentCallManager.h"
 #import "TSCall.h"

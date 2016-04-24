@@ -41,10 +41,6 @@
     return [super initWithStyle:UITableViewStyleGrouped];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)loadView {
     [super loadView];
 

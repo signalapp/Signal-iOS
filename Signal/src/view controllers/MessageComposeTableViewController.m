@@ -51,11 +51,6 @@
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
@@ -484,14 +479,14 @@
           });
         }
         failure:^(NSError *error) {
-          UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT
-                                                          message:TIMEOUT_CONTACTS_DETAIL
-                                                         delegate:nil
-                                                cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                otherButtonTitles:nil];
-          [alert show];
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateAfterRefreshTry];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT
+                                                                message:TIMEOUT_CONTACTS_DETAIL
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                      otherButtonTitles:nil];
+                [alert show];
+                [self updateAfterRefreshTry];
           });
         }];
 

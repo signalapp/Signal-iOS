@@ -13,12 +13,6 @@
 
 @implementation PresentIdentityQRCodeViewController
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 

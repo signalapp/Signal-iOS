@@ -7,10 +7,10 @@
 //
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <TextSecureKit/NSDate+millisecondTimeStamp.h>
-#import <TextSecureKit/TSAccountManager.h>
-#import <TextSecureKit/TSMessagesManager+attachments.h>
-#import <TextSecureKit/TSMessagesManager+sendMessages.h>
+#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager+attachments.h>
+#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
 #import "ContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
@@ -90,10 +90,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _addPeopleLabel.text            = NSLocalizedString(@"NEW_GROUP_REQUEST_ADDPEOPLE", @"");
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Initializers
 
 - (void)initializeDelegates {
@@ -146,59 +142,56 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                              inMessage:message
                              thread:self.thread
                              success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [Environment messageGroup:self.thread];
+                                                              }];
+
+                                 });
                              }
-
                              failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                       [self.thread removeWithTransaction:transaction];
+                                                                   }];
 
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
-
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-                             }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }
+                                      ];
+                                 });
+                             }
+                          ];
                      } else {
                          [[TSMessagesManager sharedManager] sendMessage:message
                              inThread:self.thread
                              success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [Environment messageGroup:self.thread];
+                                                              }
+                                      ];
+                                 });
                              }
-
                              failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     [self dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                      [self.thread removeWithTransaction:transaction];
+                                                                  }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }
+                                      ];
+                                 });
 
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
-
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-
-                             }];
+                             }
+                          ];
                      }
                    }];
 }
@@ -325,6 +318,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _groupImageButton.imageView.layer.masksToBounds = YES;
     _groupImageButton.imageView.layer.borderColor   = [[UIColor lightGrayColor] CGColor];
     _groupImageButton.imageView.layer.borderWidth   = 0.5f;
+    _groupImageButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 #pragma mark - Table view data source

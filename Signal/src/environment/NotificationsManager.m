@@ -7,11 +7,11 @@
 //
 
 #import <AudioToolbox/AudioServices.h>
-#import <TextSecureKit/TSCall.h>
-#import <TextSecureKit/TSContactThread.h>
-#import <TextSecureKit/TSErrorMessage.h>
-#import <TextSecureKit/TSIncomingMessage.h>
-#import <TextSecureKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/TSCall.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSErrorMessage.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "PreferencesUtil.h"

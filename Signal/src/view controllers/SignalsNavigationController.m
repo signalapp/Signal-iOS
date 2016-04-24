@@ -25,11 +25,6 @@ static double const STALLED_PROGRESS = 0.9;
     [TSSocketManager sendNotification];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)initializeSocketStatusBar {
     if (!_socketStatusView) {
         _socketStatusView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];

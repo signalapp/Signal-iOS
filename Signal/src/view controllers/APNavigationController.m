@@ -35,11 +35,6 @@
     self.originalNavigationBarTitle = self.navigationBar.topItem.title;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)toggleDropDown:(id)sender {
     if (self.isDropDownVisible) {
         [self hideDropDown:sender];

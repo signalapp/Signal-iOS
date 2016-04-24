@@ -59,14 +59,7 @@
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
-        NSFileManager *fm         = [NSFileManager defaultManager];
-        NSArray *cachesDir        = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *bloomFilterPath = [[cachesDir objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
-        [fm removeItemAtPath:bloomFilterPath error:nil];
-        [[TSStorageManager sharedManager]
-                .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-          [transaction removeAllObjectsInCollection:@"TSRecipient"];
-        }];
+        [self clearBloomFilterCache];
     }
 }
 
@@ -203,6 +196,31 @@
                             }
                                  retryBlock:retryBlock
                                 usesNetwork:YES];
+}
+
+#pragma mark Upgrading to 2.3.0
+
+// We removed bloom filter contact discovery. Clean up any local bloom filter data.
++ (void)clearBloomFilterCache {
+    NSFileManager *fm         = [NSFileManager defaultManager];
+    NSArray *cachesDir        = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *bloomFilterPath = [[cachesDir objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
+
+    if ([fm fileExistsAtPath:bloomFilterPath]) {
+        NSError *deleteError;
+        if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
+            DDLogInfo(@"Successfully removed bloom filter cache.");
+            [[TSStorageManager sharedManager]
+             .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                 [transaction removeAllObjectsInCollection:@"TSRecipient"];
+             }];
+            DDLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+        } else {
+            DDLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
+        }
+    } else {
+        DDLogDebug(@"No bloom filter cache to remove.");
+    }
 }
 
 #pragma mark Util
