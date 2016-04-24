@@ -7,24 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		293F0028AEDFF824D7C421C1 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0323C934791C3391A2C6E5F1 /* Pods.framework */; };
-		2B6BCE46C058401C99E2F969 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0323C934791C3391A2C6E5F1 /* Pods.framework */; };
-		B2136B683DE4386311D20BE4 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		45458B751CC342B600A02153 /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */; };
+		45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */; };
+		45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */; };
+		45458B781CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */; };
+		45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */; };
+		45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */; };
+		45458B7B1CC342B600A02153 /* CryptographyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B731CC342B600A02153 /* CryptographyTests.m */; };
+		45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B741CC342B600A02153 /* MessagePaddingTests.m */; };
+		880BC85B411CBFE45132A8DC /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49AE9C024887F81529BCC67F /* libPods.a */; };
 		B6273DD61C13A2E500738558 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD51C13A2E500738558 /* main.m */; };
 		B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD81C13A2E500738558 /* AppDelegate.m */; };
 		B6273DDC1C13A2E500738558 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DDB1C13A2E500738558 /* ViewController.m */; };
 		B6273DDF1C13A2E500738558 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6273DDD1C13A2E500738558 /* Main.storyboard */; };
 		B6273DE11C13A2E500738558 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6273DE01C13A2E500738558 /* Assets.xcassets */; };
 		B6273DE41C13A2E500738558 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6273DE21C13A2E500738558 /* LaunchScreen.storyboard */; };
-		B6273E021C13A37600738558 /* CryptographyTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6273DF91C13A37600738558 /* CryptographyTests.mm */; };
-		B6273E031C13A37600738558 /* MessagePaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFA1C13A37600738558 /* MessagePaddingTests.m */; };
-		B6273E041C13A37600738558 /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFB1C13A37600738558 /* SignedPreKeyDeletionTests.m */; };
-		B6273E051C13A37600738558 /* TextSecureKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFC1C13A37600738558 /* TextSecureKitTests.m */; };
-		B6273E061C13A37600738558 /* TSAttachementsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFD1C13A37600738558 /* TSAttachementsTest.m */; };
-		B6273E071C13A37600738558 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFE1C13A37600738558 /* TSMessageStorageTests.m */; };
-		B6273E081C13A37600738558 /* TSStorageIdentityKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DFF1C13A37600738558 /* TSStorageIdentityKeyStoreTests.m */; };
-		B6273E091C13A37600738558 /* TSStoragePreKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273E001C13A37600738558 /* TSStoragePreKeyStoreTests.m */; };
-		B6273E0A1C13A37600738558 /* TSStorageSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273E011C13A37600738558 /* TSStorageSignedPreKeyStore.m */; };
+		D0FA0139A9F66309115D43B3 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49AE9C024887F81529BCC67F /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +36,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0323C934791C3391A2C6E5F1 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
+		45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentsTest.m; sourceTree = "<group>"; };
+		45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
+		45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStorageIdentityKeyStoreTests.m; sourceTree = "<group>"; };
+		45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStoragePreKeyStoreTests.m; sourceTree = "<group>"; };
+		45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStorageSignedPreKeyStore.m; sourceTree = "<group>"; };
+		45458B731CC342B600A02153 /* CryptographyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptographyTests.m; sourceTree = "<group>"; };
+		45458B741CC342B600A02153 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePaddingTests.m; sourceTree = "<group>"; };
+		49AE9C024887F81529BCC67F /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD51C13A2E500738558 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B6273DD71C13A2E500738558 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -51,15 +57,6 @@
 		B6273DE51C13A2E500738558 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6273DEA1C13A2E500738558 /* TSKitiOSTestAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TSKitiOSTestAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DF01C13A2E500738558 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B6273DF91C13A37600738558 /* CryptographyTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CryptographyTests.mm; path = ../../../tests/CryptographyTests.mm; sourceTree = "<group>"; };
-		B6273DFA1C13A37600738558 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MessagePaddingTests.m; path = ../../../tests/MessagePaddingTests.m; sourceTree = "<group>"; };
-		B6273DFB1C13A37600738558 /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignedPreKeyDeletionTests.m; path = ../../../tests/SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
-		B6273DFC1C13A37600738558 /* TextSecureKitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextSecureKitTests.m; path = ../../../tests/TextSecureKitTests.m; sourceTree = "<group>"; };
-		B6273DFD1C13A37600738558 /* TSAttachementsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSAttachementsTest.m; path = ../../../tests/TSAttachementsTest.m; sourceTree = "<group>"; };
-		B6273DFE1C13A37600738558 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageStorageTests.m; path = ../../../tests/TSMessageStorageTests.m; sourceTree = "<group>"; };
-		B6273DFF1C13A37600738558 /* TSStorageIdentityKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSStorageIdentityKeyStoreTests.m; path = ../../../tests/TSStorageIdentityKeyStoreTests.m; sourceTree = "<group>"; };
-		B6273E001C13A37600738558 /* TSStoragePreKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSStoragePreKeyStoreTests.m; path = ../../../tests/TSStoragePreKeyStoreTests.m; sourceTree = "<group>"; };
-		B6273E011C13A37600738558 /* TSStorageSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSStorageSignedPreKeyStore.m; path = ../../../tests/TSStorageSignedPreKeyStore.m; sourceTree = "<group>"; };
 		CA4799E963578F8A78F620D5 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		FF5DDF075DE4141C6CD4BD01 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,7 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				293F0028AEDFF824D7C421C1 /* Pods.framework in Frameworks */,
+				880BC85B411CBFE45132A8DC /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,14 +74,53 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2136B683DE4386311D20BE4 /* (null) in Frameworks */,
-				2B6BCE46C058401C99E2F969 /* Pods.framework in Frameworks */,
+				D0FA0139A9F66309115D43B3 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		45458B691CC342B600A02153 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */,
+			);
+			name = Account;
+			path = ../../../tests/Account;
+			sourceTree = "<group>";
+		};
+		45458B6B1CC342B600A02153 /* Attachments */ = {
+			isa = PBXGroup;
+			children = (
+				45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */,
+			);
+			name = Attachments;
+			path = ../../../tests/Attachments;
+			sourceTree = "<group>";
+		};
+		45458B6D1CC342B600A02153 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */,
+				45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */,
+				45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */,
+				45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */,
+			);
+			name = Storage;
+			path = ../../../tests/Storage;
+			sourceTree = "<group>";
+		};
+		45458B721CC342B600A02153 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				45458B731CC342B600A02153 /* CryptographyTests.m */,
+				45458B741CC342B600A02153 /* MessagePaddingTests.m */,
+			);
+			name = Util;
+			path = ../../../tests/Util;
+			sourceTree = "<group>";
+		};
 		8A5ED4B4EB43D7DAC1EBA16B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -141,15 +177,10 @@
 		B6273DED1C13A2E500738558 /* TSKitiOSTestAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				B6273DF91C13A37600738558 /* CryptographyTests.mm */,
-				B6273DFA1C13A37600738558 /* MessagePaddingTests.m */,
-				B6273DFB1C13A37600738558 /* SignedPreKeyDeletionTests.m */,
-				B6273DFC1C13A37600738558 /* TextSecureKitTests.m */,
-				B6273DFD1C13A37600738558 /* TSAttachementsTest.m */,
-				B6273DFE1C13A37600738558 /* TSMessageStorageTests.m */,
-				B6273DFF1C13A37600738558 /* TSStorageIdentityKeyStoreTests.m */,
-				B6273E001C13A37600738558 /* TSStoragePreKeyStoreTests.m */,
-				B6273E011C13A37600738558 /* TSStorageSignedPreKeyStore.m */,
+				45458B691CC342B600A02153 /* Account */,
+				45458B6B1CC342B600A02153 /* Attachments */,
+				45458B6D1CC342B600A02153 /* Storage */,
+				45458B721CC342B600A02153 /* Util */,
 				B6273DF01C13A2E500738558 /* Info.plist */,
 			);
 			path = TSKitiOSTestAppTests;
@@ -158,7 +189,7 @@
 		D48ED582F6D650213187ECA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0323C934791C3391A2C6E5F1 /* Pods.framework */,
+				49AE9C024887F81529BCC67F /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -372,15 +403,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6273E071C13A37600738558 /* TSMessageStorageTests.m in Sources */,
-				B6273E031C13A37600738558 /* MessagePaddingTests.m in Sources */,
-				B6273E021C13A37600738558 /* CryptographyTests.mm in Sources */,
-				B6273E081C13A37600738558 /* TSStorageIdentityKeyStoreTests.m in Sources */,
-				B6273E051C13A37600738558 /* TextSecureKitTests.m in Sources */,
-				B6273E041C13A37600738558 /* SignedPreKeyDeletionTests.m in Sources */,
-				B6273E061C13A37600738558 /* TSAttachementsTest.m in Sources */,
-				B6273E0A1C13A37600738558 /* TSStorageSignedPreKeyStore.m in Sources */,
-				B6273E091C13A37600738558 /* TSStoragePreKeyStoreTests.m in Sources */,
+				45458B781CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m in Sources */,
+				45458B751CC342B600A02153 /* SignedPreKeyDeletionTests.m in Sources */,
+				45458B7B1CC342B600A02153 /* CryptographyTests.m in Sources */,
+				45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */,
+				45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */,
+				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
+				45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */,
+				45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

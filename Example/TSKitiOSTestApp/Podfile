@@ -1,10 +1,10 @@
 # Uncomment this line to define a global platform for your project
 # platform :ios, '8.0'
 # Uncomment this line if you're using Swift
- use_frameworks!
+# use_frameworks!
 
 link_with 'TSKitiOSTestApp', 'TSKitiOSTestAppTests'
-pod 'TextSecureKit', :path => '../../TextSecureKit.podspec'
+pod 'SignalServiceKit', :path => '../../SignalServiceKit.podspec'
 
 target 'TSKitiOSTestApp' do
 

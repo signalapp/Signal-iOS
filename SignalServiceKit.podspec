@@ -1,5 +1,5 @@
 #
-# Be sure to run `pod lib lint TextSecureKit.podspec' to ensure this is a
+# Be sure to run `pod lib lint SignalServiceKit.podspec' to ensure this is a
 # valid spec before submitting.
 #
 # Any lines starting with a # are optional, but their use is encouraged
@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC
-  TextSecureKit is a library for the TextSecure protocol for iOS & OS X
-                       DESC
+An Objective-C library for communicating with the Signal messaging service.
+  DESC
 
   s.homepage         = "https://github.com/WhisperSystems/SignalServiceKit"
   s.license          = 'GPLv3'

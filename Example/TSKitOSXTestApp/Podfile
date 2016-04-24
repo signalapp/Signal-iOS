@@ -4,7 +4,7 @@
 # use_frameworks!
 
 link_with 'TSKitOSXTestApp', 'TSKitOSXTestAppTests'
-pod 'TextSecureKit', :path => '../../TextSecureKit.podspec'
+pod 'SignalServiceKit', :path => '../../SignalServiceKit.podspec'
 
 target 'TSKitOSXTestApp' do
 

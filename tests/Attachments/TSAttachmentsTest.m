@@ -11,11 +11,11 @@
 #import "TSAttachmentStream.h"
 #import "Cryptography.h"
 
-@interface TSAttachementsTest : XCTestCase
+@interface TSAttachmentsTest : XCTestCase
 
 @end
 
-@implementation TSAttachementsTest
+@implementation TSAttachmentsTest
 
 - (void)setUp {
     [super setUp];
@@ -27,7 +27,7 @@
     [super tearDown];
 }
 
-- (void)testAttachementEncryptionDecryption {
+- (void)testAttachmentEncryptionDecryption {
     NSData *plaintext = [Cryptography generateRandomBytes:100];
     NSString *contentType = @"img/jpg";
     uint64_t identifier   = 3063578577793591963;
@@ -37,7 +37,7 @@
     
     NSData *plaintextBis = [Cryptography decryptAttachment:encryptionResult.body withKey:encryptionResult.pointer.encryptionKey];
     
-    XCTAssert([plaintext isEqualToData:plaintextBis], @"Attachements encryption failed");
+    XCTAssert([plaintext isEqualToData:plaintextBis], @"Attachments encryption failed");
 }
 
 @end
