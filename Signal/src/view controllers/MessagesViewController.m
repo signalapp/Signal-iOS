@@ -128,6 +128,7 @@ typedef enum : NSUInteger {
       [self markAllMessagesAsRead];
       [self.collectionView reloadData];
     }];
+    [self updateLoadEarlierVisible];
 }
 
 - (void)hideInputIfNeeded {
