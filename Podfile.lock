@@ -107,8 +107,7 @@ PODS:
 DEPENDENCIES:
   - DJWActionSheet
   - FFCircularProgressView (~> 0.5)
-  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`,
-    commit `e5582fef8a6b3e35f8070361ef37237222da712b`)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, commit `e5582fef8a6b3e35f8070361ef37237222da712b`)
   - OpenSSL (~> 1.0.205)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
@@ -153,4 +152,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 15b6867a07ff30eac3af28794cd2262b4d0ca4ca
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: af3e5fd78f05de4871e7abb5fbb2432a85b1ad23
+
+COCOAPODS: 1.0.0.beta.5
