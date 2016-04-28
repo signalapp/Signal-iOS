@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  * [transaction objectForKey:edge.sourceKey inCollection:edge.sourceCollection];
 **/
-- (id)sourceNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
+- (nullable id)sourceNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
 
 /**
  * Shortcut for fetching the destination object for the given edge.
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  * [transaction objectForKey:edge.destinationKey inCollection:edge.destinationCollection];
 **/
-- (id)destinationNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
+- (nullable id)destinationNodeForEdge:(YapDatabaseRelationshipEdge *)edge;
 
 #pragma mark Enumerate
 
