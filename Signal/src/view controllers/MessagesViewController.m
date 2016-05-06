@@ -430,6 +430,7 @@ typedef enum : NSUInteger {
                                              style:UIBarButtonItemStylePlain
                                             target:self
                                             action:@selector(didSelectShow:)];
+        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
     }
 
     [self hideInputIfNeeded];
