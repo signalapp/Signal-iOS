@@ -7,6 +7,11 @@ cd $BIN_DIR/..
 # Pull all translations which are at least 80% complete
 tx pull -a --minimum-perc=80
 
-# Pull any *existing* translations regardless of their completion. Once
-# supported, we don't want to drop any translations.
+# Legacy hack: pull *any existing* translations regardless of their completion.
+# Once supported, we don't want to drop any translations.
 tx pull
+
+# Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
+# This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
+../../../iStringsCheck/target/debug/iStringsCheck en.lproj/Localizable.strings .
+
