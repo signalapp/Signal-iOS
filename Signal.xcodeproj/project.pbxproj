@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
-		4B552ED26FB6FB54EDDBB7BD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D124A70602BD07D5F1EE5FD8 /* libPods.a */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
@@ -370,13 +369,13 @@
 		B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		B7DA4FB4AF4DC44F0A733938 /* libPods-common-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E70F04B61858E50807F1EE /* libPods-common-Signal.a */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B97940271832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFB074C719A5611000F2947C /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
 		BFB074C919A5611000F2947C /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C619A5611000F2947C /* ObservableValue.m */; };
-		CF6B0CD2D27A0FE420224EE9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D124A70602BD07D5F1EE5FD8 /* libPods.a */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -391,6 +390,7 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		D2B0B834374E3A19C463A04B /* libPods-common-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F924FEE3731ACDDEEE20EFD /* libPods-common-SignalTests.a */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
 		E1370BE118A0686C00826894 /* completed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40818A05754001A532A /* completed.mp3 */; };
@@ -487,8 +487,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.app store release.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.app store release.xcconfig"; sourceTree = "<group>"; };
+		05E70F04B61858E50807F1EE /* libPods-common-Signal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-common-Signal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25033AA681ABB1D2109E4916 /* Pods-common-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-common-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-common-Signal/Pods-common-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
+		48C4ADDF0179A575C77DD812 /* Pods-common-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-common-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-common-Signal/Pods-common-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
 		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
@@ -697,8 +699,9 @@
 		76EB050C18170B33006006FC /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
-		91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods.ad-hoc distribution.xcconfig"; path = "Pods/Target Support Files/Pods/Pods.ad-hoc distribution.xcconfig"; sourceTree = "<group>"; };
+		7C9698276B0AFDE07583585A /* Pods-common-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-common-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-common-SignalTests/Pods-common-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
+		7F924FEE3731ACDDEEE20EFD /* libPods-common-SignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-common-SignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9EAE71905A7EC2904AB78DE6 /* Pods-common-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-common-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-common-SignalTests/Pods-common-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
@@ -900,7 +903,6 @@
 		BFB074C419A5611000F2947C /* FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtil.m; sourceTree = "<group>"; };
 		BFB074C519A5611000F2947C /* ObservableValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableValue.h; sourceTree = "<group>"; };
 		BFB074C619A5611000F2947C /* ObservableValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableValue.m; sourceTree = "<group>"; };
-		D124A70602BD07D5F1EE5FD8 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Signal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Signal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1042,7 +1044,7 @@
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
-				CF6B0CD2D27A0FE420224EE9 /* libPods.a in Frameworks */,
+				B7DA4FB4AF4DC44F0A733938 /* libPods-common-Signal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1065,23 +1067,13 @@
 				D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */,
 				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
 				D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */,
-				4B552ED26FB6FB54EDDBB7BD /* libPods.a in Frameworks */,
+				D2B0B834374E3A19C463A04B /* libPods-common-SignalTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		420DEC7C09ED549B971FBF67 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */,
-				9CC6C6BD3B51923FD6317C94 /* Pods.ad-hoc distribution.xcconfig */,
-				14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		70B8009F190C529C0042E3F0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1110,6 +1102,17 @@
 				70E803ED18F6DD1400BF77BC /* EvpUtil.h */,
 			);
 			path = crypto;
+			sourceTree = "<group>";
+		};
+		74850970F7E4D1F69D4E1895 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				25033AA681ABB1D2109E4916 /* Pods-common-Signal.debug.xcconfig */,
+				48C4ADDF0179A575C77DD812 /* Pods-common-Signal.app store release.xcconfig */,
+				9EAE71905A7EC2904AB78DE6 /* Pods-common-SignalTests.debug.xcconfig */,
+				7C9698276B0AFDE07583585A /* Pods-common-SignalTests.app store release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		76EB03C118170B33006006FC /* src */ = {
@@ -1961,7 +1964,7 @@
 				D221A08A169C9E5E00537ABF /* Products */,
 				70B8009E190C529C0042E3F0 /* spandsp.xcodeproj */,
 				70B800A7190C54790042E3F0 /* speex.xcodeproj */,
-				420DEC7C09ED549B971FBF67 /* Pods */,
+				74850970F7E4D1F69D4E1895 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2001,7 +2004,8 @@
 				D221A08D169C9E5E00537ABF /* UIKit.framework */,
 				D221A08F169C9E5E00537ABF /* Foundation.framework */,
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
-				D124A70602BD07D5F1EE5FD8 /* libPods.a */,
+				05E70F04B61858E50807F1EE /* libPods-common-Signal.a */,
+				7F924FEE3731ACDDEEE20EFD /* libPods-common-SignalTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2200,12 +2204,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */;
 			buildPhases = (
-				493CFB695DB448D8A3C1AE06 /* Check Pods Manifest.lock */,
+				061491F40F12EF3540E98BC7 /* 📦 Check Pods Manifest.lock */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
 				D221A087169C9E5E00537ABF /* Resources */,
-				DC8D50B785074F8FA3DBAACE /* Copy Pods Resources */,
-				8F3AB5C1386B0A342A82D871 /* Embed Pods Frameworks */,
+				91BC14531C6088726690BFBD /* 📦 Embed Pods Frameworks */,
+				195479284C02BAB834009996 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2222,12 +2226,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BF169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "SignalTests" */;
 			buildPhases = (
-				EE182B0CAFB74DD9A2D39FD3 /* Check Pods Manifest.lock */,
+				C1336A59EF40ABCFDD1AC880 /* 📦 Check Pods Manifest.lock */,
 				D221A0A5169C9E5F00537ABF /* Sources */,
 				D221A0A6169C9E5F00537ABF /* Frameworks */,
 				D221A0A7169C9E5F00537ABF /* Resources */,
-				BA4E2805598B464FB7B24430 /* Copy Pods Resources */,
-				599E3FF58EB09DC4524C94AE /* Embed Pods Frameworks */,
+				4464703828FE677DB6009ABD /* 📦 Embed Pods Frameworks */,
+				6A521F710DF9B0351DA4B144 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2410,14 +2414,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		493CFB695DB448D8A3C1AE06 /* Check Pods Manifest.lock */ = {
+		061491F40F12EF3540E98BC7 /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2425,74 +2429,74 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		599E3FF58EB09DC4524C94AE /* Embed Pods Frameworks */ = {
+		195479284C02BAB834009996 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-common-Signal/Pods-common-Signal-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8F3AB5C1386B0A342A82D871 /* Embed Pods Frameworks */ = {
+		4464703828FE677DB6009ABD /* 📦 Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "📦 Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-common-SignalTests/Pods-common-SignalTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BA4E2805598B464FB7B24430 /* Copy Pods Resources */ = {
+		6A521F710DF9B0351DA4B144 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-common-SignalTests/Pods-common-SignalTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DC8D50B785074F8FA3DBAACE /* Copy Pods Resources */ = {
+		91BC14531C6088726690BFBD /* 📦 Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-common-Signal/Pods-common-Signal-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EE182B0CAFB74DD9A2D39FD3 /* Check Pods Manifest.lock */ = {
+		C1336A59EF40ABCFDD1AC880 /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3056,7 +3060,7 @@
 		};
 		D221A0BD169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 25033AA681ABB1D2109E4916 /* Pods-common-Signal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -3110,7 +3114,7 @@
 		};
 		D221A0BE169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
+			baseConfigurationReference = 48C4ADDF0179A575C77DD812 /* Pods-common-Signal.app store release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -3164,7 +3168,7 @@
 		};
 		D221A0C0169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91E46203423941C0C94D90E9 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 9EAE71905A7EC2904AB78DE6 /* Pods-common-SignalTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -3217,7 +3221,7 @@
 		};
 		D221A0C1169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14DDBCE302E19644A773D119 /* Pods.app store release.xcconfig */;
+			baseConfigurationReference = 7C9698276B0AFDE07583585A /* Pods-common-SignalTests.app store release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
