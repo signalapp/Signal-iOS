@@ -139,10 +139,9 @@ typedef enum : NSUInteger {
 
     if ([_thread isKindOfClass:[TSGroupThread class]] &&
         ![((TSGroupThread *)_thread).groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+
         [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-    } else if (![self isTextSecureReachable]) {
-        [self inputToolbar].hidden = YES; // only RedPhone
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
