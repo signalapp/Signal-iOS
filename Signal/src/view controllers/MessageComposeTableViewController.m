@@ -341,7 +341,10 @@
     sendTextButton.hidden                = YES;
     self.searchController.searchBar.text = @"";
 
-    [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+    //must dismiss search controller before presenting alert.
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+    }];
 }
 
 #pragma mark - SMS Composer Delegate
