@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -40,7 +38,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.3.0.4</string>
+	<string>2.3.0.5</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LOGS_EMAIL</key>
 	<string>support@whispersystems.org</string>
 	<key>LOGS_URL</key>
