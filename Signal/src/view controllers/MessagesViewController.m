@@ -144,7 +144,6 @@ typedef enum : NSUInteger {
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     } else {
         [self inputToolbar].hidden = NO;
-        [self loadDraftInCompose];
     }
 }
 
@@ -242,6 +241,8 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView endEditing:YES];
 
     self.inputToolbar.contentView.textView.editable = YES;
+    
+    [self loadDraftInCompose];
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
