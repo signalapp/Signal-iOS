@@ -393,6 +393,18 @@ static int connectionBusyHandler(void *ptr, int count)
 	extensionsReady = ([registeredExtensions count] == 0);
 }
 
+- (NSString *)description
+{
+    // If the user has a name then lets use it for printing
+    // Will look something like this <YapDatabaseConnection: 0x7f85e0e62300> - ConnectionName
+    
+    if (_name.length > 0) {
+        return [NSString stringWithFormat:@"%@ - %@", [super description], _name];
+    } else {
+        return [super description];
+    }
+}
+
 - (void)dealloc
 {
 	YDBLogVerbose(@"Dealloc <YapDatabaseConnection %p: databaseName=%@>",
