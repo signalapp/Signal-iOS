@@ -314,7 +314,7 @@
                   [self.searchController setActive:NO];
 
                   UIDevice *device = [UIDevice currentDevice];
-                  if ([[device model] isEqualToString:@"iPhone"]) {
+                  if ([[device model] isEqualToString:@"iPhone"] && [MFMessageComposeViewController canSendText]) {
                       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
                       picker.messageComposeDelegate          = self;
 
