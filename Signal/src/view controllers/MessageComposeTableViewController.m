@@ -301,7 +301,7 @@
                                             message:confirmMessage
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"")
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
                                                            style:UIAlertActionStyleCancel
                                                          handler:^(UIAlertAction *action) {
                                                            DDLogDebug(@"Cancel action");
@@ -313,8 +313,7 @@
                 handler:^(UIAlertAction *action) {
                   [self.searchController setActive:NO];
 
-                  UIDevice *device = [UIDevice currentDevice];
-                  if ([[device model] isEqualToString:@"iPhone"]) {
+                  if ([MFMessageComposeViewController canSendText]) {
                       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
                       picker.messageComposeDelegate          = self;
 
@@ -325,7 +324,6 @@
                               @" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
                       [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                   } else {
-                      // TODO: better backup for iPods (just don't support on)
                       UIAlertView *notPermitted =
                           [[UIAlertView alloc] initWithTitle:@""
                                                      message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")
@@ -342,9 +340,13 @@
     self.searchController.searchBar.text = @"";
 
     //must dismiss search controller before presenting alert.
-    [self dismissViewControllerAnimated:YES completion:^{
+    if ([self presentedViewController]) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+        }];
+    } else {
         [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
-    }];
+    }
 }
 
 #pragma mark - SMS Composer Delegate
