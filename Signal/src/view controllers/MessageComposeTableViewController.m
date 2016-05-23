@@ -342,9 +342,13 @@
     self.searchController.searchBar.text = @"";
 
     //must dismiss search controller before presenting alert.
-    [self dismissViewControllerAnimated:YES completion:^{
+    if ([self presentedViewController]) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+        }];
+    } else {
         [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
-    }];
+    }
 }
 
 #pragma mark - SMS Composer Delegate
