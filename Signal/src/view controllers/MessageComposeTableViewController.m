@@ -313,8 +313,7 @@
                 handler:^(UIAlertAction *action) {
                   [self.searchController setActive:NO];
 
-                  UIDevice *device = [UIDevice currentDevice];
-                  if ([[device model] isEqualToString:@"iPhone"] && [MFMessageComposeViewController canSendText]) {
+                  if ([MFMessageComposeViewController canSendText]) {
                       MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
                       picker.messageComposeDelegate          = self;
 
@@ -325,7 +324,6 @@
                               @" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
                       [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                   } else {
-                      // TODO: better backup for iPods (just don't support on)
                       UIAlertView *notPermitted =
                           [[UIAlertView alloc] initWithTitle:@""
                                                      message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")
