@@ -14,6 +14,7 @@ static NSString *const DEFAULTS_KEY_DATE         = @"DefaultsKeyDate";
 - (instancetype)initWithContactWithFirstName:(NSString *)firstName
                                  andLastName:(NSString *)lastName
                      andUserTextPhoneNumbers:(NSArray *)phoneNumbers
+                                    andImage:(UIImage *)image
                                 andContactID:(ABRecordID)record {
     self = [super init];
     if (self) {
@@ -21,6 +22,7 @@ static NSString *const DEFAULTS_KEY_DATE         = @"DefaultsKeyDate";
         _lastName             = lastName;
         _userTextPhoneNumbers = phoneNumbers;
         _recordID             = record;
+        _image                = image;
 
         NSMutableArray *parsedPhoneNumbers = [NSMutableArray array];
 

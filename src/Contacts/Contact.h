@@ -31,6 +31,7 @@
 - (instancetype)initWithContactWithFirstName:(NSString *)firstName
                                  andLastName:(NSString *)lastName
                      andUserTextPhoneNumbers:(NSArray *)phoneNumbers
+                                    andImage:(UIImage *)image
                                 andContactID:(ABRecordID)record;
 
 @property (readonly, nonatomic) UIImage *image;
