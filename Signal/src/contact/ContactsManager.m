@@ -275,13 +275,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
     //    NSString *notes = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonNoteProperty);
     //    NSArray *emails = [ContactsManager emailsForRecord:record];
-    //    NSData *image = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record,
-    //    kABPersonImageFormatThumbnail);
-    //    UIImage *img = [UIImage imageWithData:image];
-
+    NSData *image = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
+    UIImage *img = [UIImage imageWithData:image];
+    
     return [[Contact alloc] initWithContactWithFirstName:firstName
                                              andLastName:lastName
                                  andUserTextPhoneNumbers:phoneNumbers
+                                                andImage:img
                                             andContactID:recordID];
 }
 
