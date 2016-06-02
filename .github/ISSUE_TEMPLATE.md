@@ -35,5 +35,4 @@ Describe here the issue that you are experiencing.
 **Signal version:** Z.Y
 
 ### Link to debug log
-<!-- immediately after the bug has happened capture a debug log via Signal's advanced settings and paste the link below -->
-
+<!-- ensure that "Enable Debug Log" is on in Signal's settings then make the bug happen and immediately after that tap "Submit Debug Log" from settings and paste the link below -->
