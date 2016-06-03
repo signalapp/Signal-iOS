@@ -11,7 +11,8 @@
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForAnalyzing = "YES"
+            hideIssues = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D221A088169C9E5E00537ABF"
@@ -35,6 +36,16 @@
                BlueprintIdentifier = "D221A0A9169C9E5F00537ABF"
                BuildableName = "SignalTests.xctest"
                BlueprintName = "SignalTests"
+               ReferencedContainer = "container:Signal.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ADCD2DCB1C4E16DC0096B04D"
+               BuildableName = "SignalUITests.xctest"
+               BlueprintName = "SignalUITests"
                ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
          </TestableReference>
