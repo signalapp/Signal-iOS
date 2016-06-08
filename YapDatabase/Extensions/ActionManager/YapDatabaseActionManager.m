@@ -98,6 +98,13 @@
 
 - (void)dealloc
 {
+    // libdispatch isn't happy about releasing suspended dispatch sources.
+    // See _dispatch_source_xref_release at https://opensource.apple.com/source/libdispatch/libdispatch-187.7/src/source.c
+    if(timer && timerSuspended) {
+        dispatch_resume(timer);
+        timerSuspended = NO;
+    }
+    
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
