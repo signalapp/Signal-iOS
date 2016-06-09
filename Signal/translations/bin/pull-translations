@@ -15,3 +15,4 @@ tx pull --force
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
 ../../../iStringsCheck/target/debug/iStringsCheck en.lproj/Localizable.strings .
 
+echo "Make sure you register any new localizations in XCode! (Go to Project > Signal > Localizations > Add Localizations)"
