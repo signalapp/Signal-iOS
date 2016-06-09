@@ -20,6 +20,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
     if (self) {
         life                         = [TOCCancelTokenSource new];
         observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        latestContactsById           = @{};
     }
     return self;
 }
