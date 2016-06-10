@@ -141,7 +141,7 @@ typedef NSData *_Nonnull (^YapDatabaseCipherKeyBlock)(void);
  * 
  * > #ifdef __APPLE__
  * > # include <TargetConditionals.h>
- * > # if TARGET_OS_IPHONE
+ * > # if TARGET_OS_IOS
  * > #   undef SQLITE_MAX_MMAP_SIZE
  * > #   define SQLITE_MAX_MMAP_SIZE 0
  * > # endif
