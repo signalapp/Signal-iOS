@@ -8,12 +8,12 @@ env:
 before_install:
   - cd $TEST_DIR
   - brew update
-  - brew uninstall xctool && brew install --HEAD xctool
+  - brew outdated xctool || brew upgrade xctool
+  - gem install cocoapods --no-ri --no-rdoc
+  - pod repo update --silent
 
-install: travis_wait 30 pod install
+install: pod install
 
 xcode_workspace: TSKitiOSTestApp.xcworkspace
 xcode_scheme: TSKitiOSTestApp
-
-before_script: pwd
 
