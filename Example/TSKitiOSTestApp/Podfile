@@ -3,8 +3,10 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'TSKitiOSTestApp' do
   pod 'SignalServiceKit', :path => '../../SignalServiceKit.podspec'
+  pod 'SocketRocket', git: 'https://github.com/WhisperSystems/SocketRocket.git', branch: 'signal-ios'
 
   target 'TSKitiOSTestAppTests' do
      inherit! :search_paths
   end
 end
+

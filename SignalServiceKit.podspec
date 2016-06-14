@@ -37,7 +37,10 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
-  s.dependency 'SocketRocket-PinningPolicy'
+  # NOTE: we're using a custom fork of SocketRocket to support our certificate
+  # pinning policy.
+  # see Example/TSKitiOSTestApp/Podfile for details
+  s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'SSKeychain'
   s.dependency 'TwistedOakCollapsingFutures'

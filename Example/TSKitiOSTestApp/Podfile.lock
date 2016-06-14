@@ -41,11 +41,11 @@ PODS:
     - CocoaLumberjack
     - libPhoneNumber-iOS
     - Mantle
-    - SocketRocket-PinningPolicy
+    - SocketRocket
     - SSKeychain
     - TwistedOakCollapsingFutures
     - YapDatabase/SQLCipher
-  - SocketRocket-PinningPolicy (0.4.3)
+  - SocketRocket (0.5.1)
   - SQLCipher/common (3.4.0)
   - SQLCipher/fts (3.4.0):
     - SQLCipher/common
@@ -105,10 +105,19 @@ PODS:
 
 DEPENDENCIES:
   - SignalServiceKit (from `../../SignalServiceKit.podspec`)
+  - SocketRocket (from `https://github.com/WhisperSystems/SocketRocket.git`, branch `signal-ios`)
 
 EXTERNAL SOURCES:
   SignalServiceKit:
     :path: "../../SignalServiceKit.podspec"
+  SocketRocket:
+    :branch: signal-ios
+    :git: https://github.com/WhisperSystems/SocketRocket.git
+
+CHECKOUT OPTIONS:
+  SocketRocket:
+    :commit: 587ad297eb63eb0d64d4caeb32a7da646ad1132b
+    :git: https://github.com/WhisperSystems/SocketRocket.git
 
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
@@ -120,14 +129,14 @@ SPEC CHECKSUMS:
   Mantle: bc40bb061d8c2c6fb48d5083e04d928c3b7f73d9
   ProtocolBuffers: d088180c10072b3d24a9939a6314b7b9bcc2340b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SignalServiceKit: db7e03dbb7870f77dfa2743eb0e4926dab59d792
-  SocketRocket-PinningPolicy: f2ef00c3927bac05cd04d9d5171f82d922b40d3d
+  SignalServiceKit: e27a3025c2d5c61696386e44a50ac8d2fe83151e
+  SocketRocket: 3f77ec2104cc113add553f817ad90a77114f5d43
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   SSKeychain: c71293fa57216a40ab06c23f4085387583293de4
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: c00f4197bba2fea17bdbd82c8e8e3f7104b6fa67
 
-PODFILE CHECKSUM: 913b3be9a409f864e7b2de3a8bb57d95da3b7358
+PODFILE CHECKSUM: 6bebc6fc58d19a6a56c27878035f7a074da10006
 
 COCOAPODS: 1.0.1

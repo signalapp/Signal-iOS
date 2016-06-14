@@ -6,10 +6,10 @@
 //  Copyright © 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import <SocketRocket-PinningPolicy/SRWebSocket.h>
+#import <SocketRocket/NSURLRequest+SRWebSocket.h>
 #import "AFSecurityPolicy.h"
 
-@interface AFSecurityOWSPolicy : AFSecurityPolicy <CertificateVerifier>
+@interface AFSecurityOWSPolicy : AFSecurityPolicy <SRSecurityPolicy>
 
 + (instancetype)OWS_PinningPolicy;
 

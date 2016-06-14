@@ -100,7 +100,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
     NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
-    request.securityPolicy       = [AFSecurityOWSPolicy OWS_PinningPolicy];
+    request.SR_securityPolicy    = [AFSecurityOWSPolicy OWS_PinningPolicy];
 
     socket          = [[SRWebSocket alloc] initWithURLRequest:request];
     socket.delegate = [self sharedManager];
