@@ -2,6 +2,7 @@ platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
+    pod 'SocketRocket',               :git => 'https://github.com/WhisperSystems/SocketRocket.git', :branch => 'signal-ios'
     pod 'SignalServiceKit',           :git => 'https://github.com/WhisperSystems/SignalServiceKit.git'
     pod 'OpenSSL',                    '~> 1.0.208'
     pod 'PastelogKit',                '~> 1.3'
