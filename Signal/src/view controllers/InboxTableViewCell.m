@@ -50,7 +50,9 @@
 
 - (void)configureWithThread:(TSThread *)thread {
     if (!_threadId || ![_threadId isEqualToString:thread.uniqueId]) {
-        self.hidden = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.hidden = YES;
+        });
     }
 
     NSString *name                     = thread.name;
