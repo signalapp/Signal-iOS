@@ -7,6 +7,7 @@
     "ABB939127996C66F7E852A780552ADEEF03C6B13" : 0,
     "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0,
     "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : 0,
+    "90530B99EB0008E7A50951FDFBE02169118FA649" : 0,
     "D74FB800F048CB516BB4BC70047F7CC676D291B9" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D0F297E7-A82D-4657-A941-96B268F80ABC",
@@ -14,6 +15,7 @@
     "ABB939127996C66F7E852A780552ADEEF03C6B13" : "SocketRocket\/",
     "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "TSKit\/",
     "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : "Signal-iOS\/",
+    "90530B99EB0008E7A50951FDFBE02169118FA649" : "JSQMessagesViewController\/",
     "D74FB800F048CB516BB4BC70047F7CC676D291B9" : "Signal-iOS\/Pods\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Signal",
@@ -29,6 +31,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/Signal-iOS.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/JSQMessagesViewController.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90530B99EB0008E7A50951FDFBE02169118FA649"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/SocketRocket.git",

@@ -115,7 +115,7 @@ PODS:
 DEPENDENCIES:
   - DJWActionSheet
   - FFCircularProgressView (~> 0.5)
-  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, commit `e5582fef8a6b3e35f8070361ef37237222da712b`)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController`, branch `JSignalQ`)
   - OpenSSL (~> 1.0.208)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
@@ -124,7 +124,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   JSQMessagesViewController:
-    :commit: e5582fef8a6b3e35f8070361ef37237222da712b
+    :branch: JSignalQ
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SignalServiceKit:
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
@@ -134,7 +134,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   JSQMessagesViewController:
-    :commit: e5582fef8a6b3e35f8070361ef37237222da712b
+    :commit: 225b1baa11125ea84d4b960d700834b5b0a40ee1
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SignalServiceKit:
     :commit: 8058951b08a9fb0c610c56bdb50c403132da2089
@@ -168,6 +168,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 713d4018cfacbd6e77dd430710ca84730e450980
 
-PODFILE CHECKSUM: a9818778687fb3b24c8db9e4fe1e7344dcf7643b
+PODFILE CHECKSUM: ab4ae2b002e53f49ff0b90778217bcc43fd30773
 
 COCOAPODS: 1.0.1
