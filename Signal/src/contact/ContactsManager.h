@@ -21,14 +21,7 @@
 typedef void (^ABAccessRequestCompletionBlock)(BOOL hasAccess);
 typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
-@interface ContactsManager : NSObject <ContactsManagerProtocol> {
-   @private
-    TOCFuture *futureAddressBook;
-   @private
-    ObservableValueController *observableContactsController;
-   @private
-    TOCCancelTokenSource *life;
-}
+@interface ContactsManager : NSObject <ContactsManagerProtocol>
 
 @property CNContactStore *contactStore;
 
