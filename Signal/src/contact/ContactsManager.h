@@ -28,8 +28,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
     ObservableValueController *observableContactsController;
    @private
     TOCCancelTokenSource *life;
-   @private
-    NSDictionary *latestWhisperUsersById;
 }
 
 @property CNContactStore *contactStore;

@@ -176,12 +176,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-- (void)setupLatestRedPhoneUsers:(NSArray *)users {
-    if (users) {
-        latestWhisperUsersById = [ContactsManager keyContactsById:users];
-    }
-}
-
 #pragma mark - Observables
 
 - (ObservableValue *)getObservableContacts {
@@ -397,12 +391,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
-- (Contact *)latestContactWithRecordId:(ABRecordID)recordId {
-    @synchronized(self) {
-        return self.latestContactsById[@(recordId)];
-    }
-}
-
 - (NSArray<Contact *> *)allContacts {
     NSMutableArray *allContacts = [NSMutableArray array];
 
@@ -445,18 +433,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         return YES;
     NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
     return [searchString rangeOfString:queryString options:searchOpts].location != NSNotFound;
-}
-
-- (NSArray *)contactsForContactIds:(NSArray *)contactIds {
-    NSMutableArray *contacts = [NSMutableArray array];
-    for (NSNumber *favouriteId in contactIds) {
-        Contact *contact = [self latestContactWithRecordId:favouriteId.intValue];
-
-        if (contact) {
-            [contacts addObject:contact];
-        }
-    }
-    return [contacts copy];
 }
 
 #pragma mark - Whisper User Management
