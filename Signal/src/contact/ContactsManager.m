@@ -11,6 +11,8 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
     id addressBookReference;
 }
 
+@property(atomic, copy) NSDictionary *latestContactsById;
+
 @end
 
 @implementation ContactsManager
@@ -20,7 +22,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
     if (self) {
         life                         = [TOCCancelTokenSource new];
         observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        latestContactsById           = @{};
+        _latestContactsById = @{};
     }
     return self;
 }
@@ -111,7 +113,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)setupLatestContacts:(NSArray *)contacts {
     if (contacts) {
-        latestContactsById = [ContactsManager keyContactsById:contacts];
+        self.latestContactsById = [ContactsManager keyContactsById:contacts];
     }
 }
 
@@ -251,7 +253,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (NSArray *)latestContactsWithSearchString:(NSString *)searchString {
-    return [latestContactsById.allValues filter:^int(Contact *contact) {
+    return [self.latestContactsById.allValues filter:^int(Contact *contact) {
       return searchString.length == 0 || [ContactsManager name:contact.fullName matchesQuery:searchString];
     }];
 }
@@ -397,15 +399,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (Contact *)latestContactWithRecordId:(ABRecordID)recordId {
     @synchronized(self) {
-        return latestContactsById[@(recordId)];
+        return self.latestContactsById[@(recordId)];
     }
 }
 
 - (NSArray<Contact *> *)allContacts {
     NSMutableArray *allContacts = [NSMutableArray array];
 
-    for (NSString *key in latestContactsById.allKeys) {
-        Contact *contact = [latestContactsById objectForKey:key];
+    for (NSString *key in self.latestContactsById.allKeys) {
+        Contact *contact = [self.latestContactsById objectForKey:key];
 
         if ([contact isKindOfClass:[Contact class]]) {
             [allContacts addObject:contact];

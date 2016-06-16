@@ -29,8 +29,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
    @private
     TOCCancelTokenSource *life;
    @private
-    NSDictionary *latestContactsById;
-   @private
     NSDictionary *latestWhisperUsersById;
 }
 
