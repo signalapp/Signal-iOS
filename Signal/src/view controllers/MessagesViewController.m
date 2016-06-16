@@ -192,9 +192,6 @@ typedef enum : NSUInteger {
                                              selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
-
-    self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See
-    // http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
 }
 
 - (void)initializeTextView {
