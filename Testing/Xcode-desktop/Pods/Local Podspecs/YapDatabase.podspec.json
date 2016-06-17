@@ -78,16 +78,16 @@
               "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
             },
             {
-              "name": "FilteredViews",
+              "name": "FilteredView",
               "dependencies": {
                 "YapDatabase/Standard/Extensions/View": [
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}"
             },
             {
-              "name": "SearchResults",
+              "name": "SearchResultsView",
               "dependencies": {
                 "YapDatabase/Standard/Extensions/AutoView": [
 
@@ -96,7 +96,7 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SearchResultsView/**/*.{h,m,mm,c}"
             },
             {
               "name": "CloudKit",
@@ -195,16 +195,16 @@
               "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
             },
             {
-              "name": "FilteredViews",
+              "name": "FilteredView",
               "dependencies": {
                 "YapDatabase/SQLCipher/Extensions/View": [
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}"
             },
             {
-              "name": "SearchResults",
+              "name": "SearchResultsView",
               "dependencies": {
                 "YapDatabase/SQLCipher/Extensions/AutoView": [
 
@@ -213,7 +213,7 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SearchResultsView/**/*.{h,m,mm,c}"
             },
             {
               "name": "CloudKit",
