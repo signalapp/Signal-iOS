@@ -32,7 +32,7 @@
 
 + (void)performUpdateCheck {
     NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
+    [Environment.preferences setAndGetCurrentVersion];
     BOOL VOIPRegistration =
         [[PushManager sharedManager] supportsVOIPPush] && ![Environment.preferences hasRegisteredVOIPPush];
 
