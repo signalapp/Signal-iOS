@@ -74,10 +74,10 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'SearchResults' do |ssee|
+      sse.subspec 'SearchResultsView' do |ssee|
         ssee.dependency 'YapDatabase/Standard/Extensions/AutoView'
         ssee.dependency 'YapDatabase/Standard/Extensions/FullTextSearch'
-        ssee.source_files = 'YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}'
+        ssee.source_files = 'YapDatabase/Extensions/SearchResultsView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'CloudKit' do |ssee|
@@ -152,10 +152,10 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'SearchResults' do |ssee|
+      sse.subspec 'SearchResultsView' do |ssee|
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/AutoView'
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/FullTextSearch'
-        ssee.source_files = 'YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}'
+        ssee.source_files = 'YapDatabase/Extensions/SearchResultsView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'CloudKit' do |ssee|
