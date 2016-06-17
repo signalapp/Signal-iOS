@@ -1077,6 +1077,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		457F3AB01D1470CF00C51351 /* view controllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "view controllers";
+			sourceTree = "<group>";
+		};
+		457F3AC01D14A0F700C51351 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		70B8009F190C529C0042E3F0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1125,8 +1140,9 @@
 				76EB04B118170B33006006FC /* profiling */,
 				B60959791C2C0FA9004E8797 /* rating */,
 				76EB04C818170B33006006FC /* util */,
-				76EB04FE18170B33006006FC /* view controllers */,
-				76EB052B18170B33006006FC /* views */,
+				457F3AC01D14A0F700C51351 /* Models */,
+				76EB052B18170B33006006FC /* Views */,
+				76EB04FE18170B33006006FC /* View Controllers */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1594,7 +1610,7 @@
 			path = utilities;
 			sourceTree = "<group>";
 		};
-		76EB04FE18170B33006006FC /* view controllers */ = {
+		76EB04FE18170B33006006FC /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				B6B226981BE4C59200860F4D /* APNavigationController.h */,
@@ -1607,10 +1623,11 @@
 				76EB050B18170B33006006FC /* InCallViewController.h */,
 				76EB050C18170B33006006FC /* InCallViewController.m */,
 			);
+			name = "View Controllers";
 			path = "view controllers";
 			sourceTree = "<group>";
 		};
-		76EB052B18170B33006006FC /* views */ = {
+		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */,
@@ -1623,6 +1640,7 @@
 				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
 				76EB053818170B33006006FC /* xibs */,
 			);
+			name = Views;
 			path = views;
 			sourceTree = "<group>";
 		};
@@ -1669,6 +1687,7 @@
 				B6D3CBCE1C1376BE00C039DF /* TSContentAdapters.h */,
 			);
 			name = TSMessageAdapters;
+			path = TSMessageAdapaters;
 			sourceTree = "<group>";
 		};
 		B633C4FD1A1D190B0059AC12 /* Images */ = {
@@ -1723,6 +1742,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				457F3AB01D1470CF00C51351 /* view controllers */,
 				B660F66D1C29867F00687D6E /* audio */,
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
@@ -2147,7 +2167,6 @@
 				A569778E1A351BC400173BF2 /* ScanIdentityBarcodeViewController.m */,
 				A56977901A351BC400173BF2 /* PresentIdentityQRCodeViewController.h */,
 				A569778F1A351BC400173BF2 /* PresentIdentityQRCodeViewController.m */,
-				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
