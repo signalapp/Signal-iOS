@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'AutoView' do |ssee|
+        ssee.dependency 'YapDatabase/Standard/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}'
       end
       
