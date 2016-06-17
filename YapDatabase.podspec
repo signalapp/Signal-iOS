@@ -69,9 +69,9 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'FilteredViews' do |ssee|
+      sse.subspec 'FilteredView' do |ssee|
         ssee.dependency 'YapDatabase/Standard/Extensions/View'
-        ssee.source_files = 'YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}'
+        ssee.source_files = 'YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SearchResults' do |ssee|
@@ -147,9 +147,9 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}'
       end
       
-      sse.subspec 'FilteredViews' do |ssee|
+      sse.subspec 'FilteredView' do |ssee|
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
-        ssee.source_files = 'YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}'
+        ssee.source_files = 'YapDatabase/Extensions/FilteredView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SearchResults' do |ssee|
