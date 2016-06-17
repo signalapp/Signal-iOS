@@ -102,6 +102,10 @@ typedef enum : NSUInteger {
 
 @implementation MessagesViewController
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)peekSetup {
     _peek = YES;
     [self setComposeOnOpen:NO];
@@ -184,14 +188,34 @@ typedef enum : NSUInteger {
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(startReadTimer)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(cancelReadTimer)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
+
+}
+
+- (void)toggleObservers:(BOOL)shouldObserve {
+    if (shouldObserve) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(startReadTimer)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(cancelReadTimer)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    }
 }
 
 - (void)initializeTextView {
@@ -203,6 +227,8 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+
+    [self toggleObservers:YES];
     [self initializeToolbars];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
@@ -257,6 +283,7 @@ typedef enum : NSUInteger {
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self toggleObservers:NO];
 
     if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
         // back button was pressed.
@@ -1542,10 +1569,6 @@ typedef enum : NSUInteger {
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
     }
     return _uiDatabaseConnection;
 }
@@ -1959,10 +1982,6 @@ typedef enum : NSUInteger {
             _unreadContainer.hidden = true;
         }
     }
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark 3D Touch Preview Actions
