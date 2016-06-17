@@ -2,6 +2,7 @@
 
 #import "YapDatabase.h"
 #import "YapDatabaseView.h"
+#import "YapDatabaseAutoView.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
@@ -90,11 +91,11 @@
 	
 	NSString *initialVersionTag = @"1";
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:initialVersionTag
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:initialVersionTag
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1287,11 +1288,11 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -1993,11 +1994,11 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	// Without registering the view,
 	// add a bunch of keys to the database.
@@ -2123,11 +2124,11 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
     
-    YapDatabaseView *databaseView =
-      [[YapDatabaseView alloc] initWithGrouping:grouping
-                                        sorting:sorting
-                                     versionTag:@"1"
-                                        options:options];
+    YapDatabaseAutoView *databaseView =
+      [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+                                            sorting:sorting
+                                         versionTag:@"1"
+                                            options:options];
     
     // Without registering the view,
     // add a bunch of keys to the database.
@@ -2229,11 +2230,11 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2582,11 +2583,11 @@
 		return [object1 compare:object2 options:NSNumericSearch];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2676,11 +2677,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -2875,11 +2876,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -3000,11 +3001,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	
@@ -3117,11 +3118,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult = [database registerExtension:databaseView withName:@"order"];
 	

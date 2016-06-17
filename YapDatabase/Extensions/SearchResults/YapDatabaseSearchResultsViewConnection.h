@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
-#import "YapDatabaseViewConnection.h"
+#import "YapDatabaseAutoViewConnection.h"
 
 @class YapDatabaseSearchResultsView;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YapDatabaseSearchResultsViewConnection : YapDatabaseViewConnection
+@interface YapDatabaseSearchResultsViewConnection : YapDatabaseAutoViewConnection
 
 // Returns properly typed parent instance
 @property (nonatomic, strong, readonly) YapDatabaseSearchResultsView *searchResultsView;

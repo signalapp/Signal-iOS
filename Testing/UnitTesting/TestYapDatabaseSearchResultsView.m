@@ -157,11 +157,11 @@
 	YapDatabaseViewOptions *viewOptions = [[YapDatabaseViewOptions alloc] init];
 	viewOptions.isPersistent = NO;
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:viewOptions];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:viewOptions];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");

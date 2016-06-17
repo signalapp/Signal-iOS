@@ -24,43 +24,7 @@
 
 @implementation YapDatabaseSearchResultsView
 
-+ (void)dropTablesForRegisteredName:(NSString *)registeredName
-                    withTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                      wasPersistent:(BOOL)wasPersistent
-{
-	NSString *snippetTableName = [self snippetTableNameForRegisteredName:registeredName];
-	
-	if (wasPersistent)
-	{
-		// Handle persistent view
-		
-		sqlite3 *db = transaction->connection->db;
-		
-		NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", snippetTableName];
-		
-		int status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@ - Failed dropping snippet table (%@): %d %s",
-			            THIS_METHOD, snippetTableName, status, sqlite3_errmsg(db));
-		}
-	}
-	else
-	{
-		// Handle memory view
-		
-		[transaction->connection unregisterMemoryTableWithName:snippetTableName];
-	}
-}
-
-+ (NSString *)snippetTableNameForRegisteredName:(NSString *)registeredName
-{
-	return [NSString stringWithFormat:@"view_%@_snippet", registeredName];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Invalid
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (instancetype)initWithGrouping:(YapDatabaseViewGrouping __unused *)grouping
                          sorting:(YapDatabaseViewSorting __unused *)sorting
@@ -70,9 +34,9 @@
 	NSString *reason = @"You must use the init method(s) specific to YapDatabaseSearchResults.";
 	
 	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
-	    @"YapDatabaseSearchResults is designed to pipe search results from YapDatabaseFullTextSearch into"
-		@" a YapDatabaseView. Thus it needs different information which is specific to this task."
-		@" As such, YapDatabaseSearchResults has different init methods you must use."};
+	  @"YapDatabaseSearchResults is designed to pipe search results from YapDatabaseFullTextSearch into"
+	  @" a YapDatabaseView. Thus it needs different information which is specific to this task."
+	  @" As such, YapDatabaseSearchResults has different init methods you must use."};
 	
 	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 	
@@ -94,14 +58,13 @@
 	NSAssert(inFullTextSearchName != nil, @"Invalid fullTextSearchName");
 	NSAssert(inParentViewName != nil, @"Invalid parentViewName");
 	
-	if ((self = [super init]))
+	if (inOptions == nil)
+		inOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	
+	if ((self = [super initWithVersionTag:inVersionTag options:inOptions]))
 	{
 		fullTextSearchName = [inFullTextSearchName copy];
 		parentViewName = [inParentViewName copy];
-		
-		versionTag = inVersionTag ? [inVersionTag copy] : @"";
-		
-		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsViewOptions alloc] init];
 	}
 	return self;
 }
@@ -117,16 +80,12 @@
 	NSAssert([inGrouping isKindOfClass:[YapDatabaseViewGrouping class]], @"Invalid parameter: grouping");
 	NSAssert([inSorting isKindOfClass:[YapDatabaseViewSorting class]], @"Invalid parameter: sorting");
 	
-	if ((self = [super init]))
+	if (inOptions == nil)
+		inOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
+	
+	if ((self = [super initWithGrouping:inGrouping sorting:inSorting versionTag:inVersionTag options:inOptions]))
 	{
 		fullTextSearchName = [inFullTextSearchName copy];
-		
-		grouping = inGrouping;
-		sorting = inSorting;
-		
-		versionTag = inVersionTag ? [inVersionTag copy] : @"";
-		
-		options = inOptions ? [inOptions copy] : [[YapDatabaseSearchResultsViewOptions alloc] init];
 	}
 	return self;
 }
@@ -186,13 +145,6 @@
 			YDBLogWarn(@"The specified parentViewName (%@) isn't a YapDatabaseView extension", parentViewName);
 			return NO;
 		}
-		
-		// Capture grouping & sorting block
-		
-		__unsafe_unretained YapDatabaseView *parentView = (YapDatabaseView *)ext;
-		
-		grouping = parentView->grouping;
-		sorting = parentView->sorting;
 	}
 	
 	return YES;
@@ -214,16 +166,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseSearchResultsViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Internal
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (NSString *)snippetTableName
-{
-	return [[self class] snippetTableNameForRegisteredName:self.registeredName];
+	return [[YapDatabaseSearchResultsViewConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 @end

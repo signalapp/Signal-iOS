@@ -71,15 +71,11 @@
 	NSAssert(inParentViewName != nil, @"Invalid parameter: parentViewName == nil");
 	NSAssert([inFiltering isKindOfClass:[YapDatabaseViewFiltering class]], @"Invalid parameter: filtering");
 	
-	if ((self = [super init]))
+	if ((self = [super initWithVersionTag:inVersionTag options:inOptions]))
 	{
 		parentViewName = [inParentViewName copy];
 		
 		filtering = inFiltering;
-		
-		versionTag = inVersionTag ? [inVersionTag copy] : @"";
-		
-		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
 	}
 	return self;
 }
@@ -137,13 +133,6 @@
 		return NO;
 	}
 	
-	// Capture grouping & sorting block
-	
-	__unsafe_unretained YapDatabaseView *parentView = (YapDatabaseView *)ext;
-	
-	grouping = parentView->grouping;
-	sorting = parentView->sorting;
-	
 	return YES;
 }
 
@@ -158,7 +147,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseFilteredViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
+	return [[YapDatabaseFilteredViewConnection alloc] initWithParent:self databaseConnection:databaseConnection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,20 +178,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Used by YapDatabaseFilteredViewConnection to fetch & cache the values for a readWriteTransaction.
+ * Used by YapDatabaseFilteredViewConnection to fetch & cache the value for a readWriteTransaction.
 **/
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-            sorting:(YapDatabaseViewSorting **)sortingPtr
-          filtering:(YapDatabaseViewFiltering **)filteringPtr
+- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr
 {
-	__block YapDatabaseViewGrouping  * mostRecentGrouping  = nil;
-	__block YapDatabaseViewSorting   * mostRecentSorting   = nil;
 	__block YapDatabaseViewFiltering * mostRecentFiltering = nil;
 	
 	dispatch_block_t block = ^{
 	
-		mostRecentGrouping  = grouping;
-		mostRecentSorting   = sorting;
 		mostRecentFiltering = filtering;
 	};
 	
@@ -215,8 +198,6 @@
 			dispatch_sync(database->snapshotQueue, block);
 	}
 	
-	if (groupingPtr)  *groupingPtr  = mostRecentGrouping;
-	if (sortingPtr)   *sortingPtr   = mostRecentSorting;
 	if (filteringPtr) *filteringPtr = mostRecentFiltering;
 }
 

@@ -41,8 +41,12 @@ Pod::Spec.new do |s|
     ss.subspec 'Extensions' do |sse|
       sse.dependency 'YapDatabase/Standard/Core'
       
-      sse.subspec 'Views' do |ssee|
-        ssee.source_files = 'YapDatabase/Extensions/Views/**/*.{h,m,mm,c}'
+      sse.subspec 'View' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/View/**/*.{h,m,mm,c}'
+      end
+      
+      sse.subspec 'AutoView' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SecondaryIndex' do |ssee|
@@ -66,12 +70,12 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'FilteredViews' do |ssee|
-        ssee.dependency 'YapDatabase/Standard/Extensions/Views'
+        ssee.dependency 'YapDatabase/Standard/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SearchResults' do |ssee|
-        ssee.dependency 'YapDatabase/Standard/Extensions/Views'
+        ssee.dependency 'YapDatabase/Standard/Extensions/AutoView'
         ssee.dependency 'YapDatabase/Standard/Extensions/FullTextSearch'
         ssee.source_files = 'YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}'
       end
@@ -92,7 +96,7 @@ Pod::Spec.new do |s|
         ssee.osx.deployment_target = '10.8'
         ssee.ios.deployment_target = '6.0'
         ssee.dependency 'Reachability', '~> 3'
-        ssee.dependency 'YapDatabase/Standard/Extensions/Views'
+        ssee.dependency 'YapDatabase/Standard/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
       end
       
@@ -114,8 +118,13 @@ Pod::Spec.new do |s|
     ss.subspec 'Extensions' do |sse|
       sse.dependency 'YapDatabase/SQLCipher/Core'
       
-      sse.subspec 'Views' do |ssee|
-        ssee.source_files = 'YapDatabase/Extensions/Views/**/*.{h,m,mm,c}'
+      sse.subspec 'View' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/View/**/*.{h,m,mm,c}'
+      end
+      
+      sse.subspec 'AutoView' do |ssee|
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
+        ssee.source_files = 'YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SecondaryIndex' do |ssee|
@@ -139,12 +148,12 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'FilteredViews' do |ssee|
-        ssee.dependency 'YapDatabase/SQLCipher/Extensions/Views'
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SearchResults' do |ssee|
-        ssee.dependency 'YapDatabase/SQLCipher/Extensions/Views'
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/AutoView'
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/FullTextSearch'
         ssee.source_files = 'YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}'
       end
@@ -165,7 +174,7 @@ Pod::Spec.new do |s|
         ssee.osx.deployment_target = '10.8'
         ssee.ios.deployment_target = '6.0'
         ssee.dependency 'Reachability', '~> 3'
-        ssee.dependency 'YapDatabase/SQLCipher/Extensions/Views'
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
       end
       

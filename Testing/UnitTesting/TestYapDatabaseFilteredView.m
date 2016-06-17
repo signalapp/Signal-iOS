@@ -1,7 +1,7 @@
 #import <XCTest/XCTest.h>
 
 #import "YapDatabase.h"
-#import "YapDatabaseView.h"
+#import "YapDatabaseAutoView.h"
 #import "YapDatabaseFilteredView.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -43,30 +43,7 @@
 {
 	dispatch_block_t exceptionBlock = ^{
 		
-		YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withKeyBlock:
-		    ^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key)
-		{
-			if ([key isEqualToString:@"keyX"]) // Exclude keyX from view
-				return nil;
-			else
-				return @"";
-		}];
-		
-		YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:
-		    ^(YapDatabaseReadTransaction *transaction, NSString *group,
-		        NSString *collection1, NSString *key1, id obj1,
-		        NSString *collection2, NSString *key2, id obj2)
-		{
-			__unsafe_unretained NSNumber *number1 = (NSNumber *)obj1;
-			__unsafe_unretained NSNumber *number2 = (NSNumber *)obj2;
-			
-			return [number1 compare:number2];
-		}];
-		
-		(void)[[YapDatabaseFilteredView alloc] initWithGrouping:grouping
-		                                                sorting:sorting
-		                                             versionTag:@"xyz"
-		                                                options:nil];
+		(void)[[YapDatabaseFilteredView alloc] init];
 	};
 	
 	XCTAssertThrows(exceptionBlock(), @"Should have thrown an exception");
@@ -128,11 +105,11 @@
 	
 	NSString *order_initialVersionTag = @"1";
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:order_initialVersionTag
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:order_initialVersionTag
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -284,13 +261,13 @@
 		return [number1 compare:number2];
 	}];
     
-    NSString *order_initialVersionTag = @"1";
+	NSString *order_initialVersionTag = @"1";
     
-    YapDatabaseView *view =
-    [[YapDatabaseView alloc] initWithGrouping:grouping
-                                      sorting:sorting
-                                   versionTag:order_initialVersionTag
-                                      options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+                                            sorting:sorting
+                                         versionTag:order_initialVersionTag
+                                            options:options];
     
     BOOL registerResult1 = [database registerExtension:view withName:@"order"];
     XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -301,7 +278,7 @@
         XCTAssert([versionTag isEqualToString:order_initialVersionTag], @"Bad versionTag");
     }];
     
-    YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
+	YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:
 		^BOOL (YapDatabaseReadTransaction *transaction, NSString *group, NSString *collection, NSString *key, id object)
 	{
 		__unsafe_unretained NSNumber *number = (NSNumber *)object;
@@ -312,7 +289,7 @@
 			return NO;  // odd
 	}];
     
-    NSString *filter_initialVersionTag = @"1";
+	NSString *filter_initialVersionTag = @"1";
     
 	YapDatabaseFilteredView *filteredView =
 	  [[YapDatabaseFilteredView alloc] initWithParentViewName:@"order"
@@ -320,44 +297,44 @@
 	                                               versionTag:filter_initialVersionTag
 	                                                  options:options];
     
-    // Without registering the view,
-    // add a bunch of keys to the database.
-    
-    [connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	// Without registering the view,
+	// add a bunch of keys to the database.
+	
+	[connection1 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         
-        for (int i = 0; i < 100; i++)
-        {
-            NSString *key = [NSString stringWithFormat:@"key%d", i];
-            
-            [transaction setObject:@(i) forKey:key inCollection:nil];
-        }
-    }];
+		for (int i = 0; i < 100; i++)
+		{
+			NSString *key = [NSString stringWithFormat:@"key%d", i];
+			
+			[transaction setObject:@(i) forKey:key inCollection:nil];
+		}
+	}];
+	
+	BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
+	XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
+	
+	[connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
+		if (options.skipInitialViewPopulation) {
+			XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+		} else {
+			XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+		}
+	}];
+	
+	[connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+		
+		NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
+		if (options.skipInitialViewPopulation) {
+			XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+		} else {
+			XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
+		}
+	}];
     
-    BOOL registerResult2 = [database registerExtension:filteredView withName:@"filter"];
-    XCTAssertTrue(registerResult2, @"Failure registering filteredView extension");
-    
-    [connection1 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        
-        NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
-        if (options.skipInitialViewPopulation) {
-            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
-        } else {
-            XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
-        }
-    }];
-    
-    [connection2 readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        
-        NSUInteger orderCount = [[transaction ext:@"filter"] numberOfItemsInGroup:@""];
-        if (options.skipInitialViewPopulation) {
-            XCTAssertTrue(orderCount == 0, @"Bad count in view. Expected 0, got %d", (int)orderCount);
-        } else {
-            XCTAssertTrue(orderCount == 50, @"Bad count in view. Expected 0, got %d", (int)orderCount);
-        }
-    }];
-    
-    connection1 = nil;
-    connection2 = nil;
+	connection1 = nil;
+	connection2 = nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -414,11 +391,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -530,11 +507,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -683,11 +660,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -782,11 +759,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -900,11 +877,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -1144,11 +1121,11 @@
 		return [number1 compare:number2];
 	}];
 	
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"1"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:options];
 	
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -1430,11 +1407,11 @@
 		return [number1 compare:number2];
 	}];
 
-	YapDatabaseView *view =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting
-	                                 versionTag:@"0"
-	                                    options:options];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"0"
+	                                        options:options];
 
 	BOOL registerResult1 = [database registerExtension:view withName:@"order"];
 	XCTAssertTrue(registerResult1, @"Failure registering view extension");
@@ -1646,11 +1623,11 @@
 			return [number1 compare:number2];
 		}];
 
-		YapDatabaseView *view =
-		  [[YapDatabaseView alloc] initWithGrouping:grouping
-		                                    sorting:sorting
-		                                 versionTag:@"0"
-		                                    options:options];
+		YapDatabaseAutoView *view =
+		  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+		                                        sorting:sorting
+		                                     versionTag:@"0"
+		                                        options:options];
 		
 		registerResult = [database registerExtension:view withName:@"view-object"];
 		XCTAssertTrue(registerResult, @"Failure registering view extension");
@@ -1678,11 +1655,11 @@
 			return [number1 compare:number2];
 		}];
 
-		YapDatabaseView *view =
-		  [[YapDatabaseView alloc] initWithGrouping:grouping
-		                                    sorting:sorting
-		                                 versionTag:@"0"
-		                                    options:options];
+		YapDatabaseAutoView *view =
+		  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+		                                        sorting:sorting
+		                                     versionTag:@"0"
+		                                        options:options];
 		
 		registerResult = [database registerExtension:view withName:@"view-metadata"];
 		XCTAssertTrue(registerResult, @"Failure registering view extension");

@@ -1,15 +1,11 @@
 #import <Foundation/Foundation.h>
 
-#import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseAutoViewTransaction.h"
 #import "YapDatabaseSearchQueue.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YapDatabaseSearchResultsViewTransaction : YapDatabaseViewTransaction
-
-// This class extends YapDatabaseViewTransaction.
-//
-// Please see YapDatabaseViewTransaction.h
+@interface YapDatabaseSearchResultsViewTransaction : YapDatabaseAutoViewTransaction
 
 /**
  * Returns the snippet for the given collection/key tuple.

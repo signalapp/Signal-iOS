@@ -4,7 +4,7 @@
 #import "YapActionItem.h"
 #import "YapDatabaseActionManagerConnection.h"
 #import "YapDatabaseActionManagerTransaction.h"
-#import "YapDatabaseView.h"
+#import "YapDatabaseAutoView.h"
 
 @class Reachability;
 
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * - refreshing items when they've become "stale"
  *   e.g.: periodically updating user infromation from the server
 **/
-@interface YapDatabaseActionManager : YapDatabaseView
+@interface YapDatabaseActionManager : YapDatabaseAutoView
 
 - (instancetype)init;
 - (instancetype)initWithOptions:(nullable YapDatabaseViewOptions *)options;

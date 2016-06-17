@@ -23,11 +23,9 @@
  * This method is designed exclusively for YapDatabaseFilteredViewConnection.
  * All subclasses and transactions are required to use our version of the same method.
  *
- * So we declare it here, as opposed to within YapDatabaseViewPrivate.
+ * So we declare it here, as opposed to within YapDatabaseFilteredViewPrivate.
 **/
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-            sorting:(YapDatabaseViewSorting **)sortingPtr
-          filtering:(YapDatabaseViewFiltering **)filteringPtr;
+- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr;
 
 @end
 
@@ -41,7 +39,7 @@
 
 - (YapDatabaseFilteredView *)filteredView
 {
-	return (YapDatabaseFilteredView *)view;
+	return (YapDatabaseFilteredView *)parent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,9 +51,11 @@
 **/
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseFilteredViewTransaction *filteredViewTransaction =
-	  [[YapDatabaseFilteredViewTransaction alloc] initWithViewConnection:self
-	                                                 databaseTransaction:databaseTransaction];
+	  [[YapDatabaseFilteredViewTransaction alloc] initWithParentConnection:self
+	                                                   databaseTransaction:databaseTransaction];
 	
 	return filteredViewTransaction;
 }
@@ -65,9 +65,11 @@
 **/
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
+	YDBLogAutoTrace();
+	
 	YapDatabaseFilteredViewTransaction *filteredViewTransaction =
-	  [[YapDatabaseFilteredViewTransaction alloc] initWithViewConnection:self
-	                                                 databaseTransaction:databaseTransaction];
+	  [[YapDatabaseFilteredViewTransaction alloc] initWithParentConnection:self
+	                                                   databaseTransaction:databaseTransaction];
 	
 	[self prepareForReadWriteTransaction];
 	return filteredViewTransaction;
@@ -140,86 +142,31 @@
 #pragma mark Internal
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Used when the parentView's groupingBlock/sortingBlock changes.
- *
- * We need to update our groupingBlock/sortingBlock to match,
- * but NOT the versionTag (since it didn't change).
-**/
-- (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
-            sorting:(YapDatabaseViewSorting *)newSorting
+- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr
 {
-	grouping = newGrouping;
-	groupingChanged = YES;
+	if (!filtering)
+	{
+		// Fetch & Cache
+		
+		__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)parent;
+		
+		YapDatabaseViewFiltering * mostRecentFiltering = nil;
+		[filteredView getFiltering:&mostRecentFiltering];
+		
+		filtering = mostRecentFiltering;
+	}
 	
-	sorting = newSorting;
-	sortingChanged = YES;
+	if (filteringPtr) *filteringPtr = filtering;
 }
 
 - (void)setFiltering:(YapDatabaseViewFiltering *)newFiltering
-          versionTag:(NSString *)newVersionTag
+			 versionTag:(NSString *)newVersionTag
 {
 	filtering = newFiltering;
 	filteringChanged = YES;
 	
 	versionTag = newVersionTag;
 	versionTagChanged = YES;
-}
-
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-            sorting:(YapDatabaseViewSorting **)sortingPtr
-          filtering:(YapDatabaseViewFiltering **)filteringPtr
-{
-	if (!grouping || !sorting || !filtering)
-	{
-		// Fetch & Cache
-		
-		__unsafe_unretained YapDatabaseFilteredView *filteredView = (YapDatabaseFilteredView *)view;
-		
-		YapDatabaseViewGrouping  * mostRecentGrouping  = nil;
-		YapDatabaseViewSorting   * mostRecentSorting   = nil;
-		YapDatabaseViewFiltering * mostRecentFiltering = nil;
-		
-		BOOL needsGrouping  = (grouping == nil);
-		BOOL needsSorting   = (sorting == nil);
-		BOOL needsFiltering = (filtering == nil);
-		
-		[filteredView getGrouping:(needsGrouping  ? &mostRecentGrouping  : NULL)
-		                  sorting:(needsSorting   ? &mostRecentSorting   : NULL)
-		                filtering:(needsFiltering ? &mostRecentFiltering : NULL)];
-		
-		if (needsGrouping) {
-			grouping = mostRecentGrouping;
-		}
-		if (needsSorting) {
-			sorting = mostRecentSorting;
-		}
-		if (needsFiltering) {
-			filtering = mostRecentFiltering;
-		}
-	}
-	
-	if (groupingPtr)  *groupingPtr  = grouping;
-	if (sortingPtr)   *sortingPtr   = sorting;
-	if (filteringPtr) *filteringPtr = filtering;
-}
-
-/**
- * Overrides method in YapDatabaseView
-**/
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-            sortingBlock:(YapDatabaseViewSorting **)sortingPtr
-{
-	[self getGrouping:groupingPtr
-	          sorting:sortingPtr
-	        filtering:NULL];
-}
-
-- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr
-{
-	[self getGrouping:NULL
-	          sorting:NULL
-	        filtering:filteringPtr];
 }
 
 @end

@@ -1,10 +1,11 @@
 #import <Foundation/Foundation.h>
 
-#import "YapDatabaseExtensionConnection.h"
+#import "YapDatabaseViewConnection.h"
 #import "YapDatabaseViewChange.h"
 #import "YapDatabaseViewMappings.h"
 
 @class YapDatabaseView;
+@class YapDatabaseAutoView;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,12 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
  * @see YapDatabaseView
  * @see YapDatabaseViewTransaction
 **/
-@interface YapDatabaseViewConnection : YapDatabaseExtensionConnection
+@interface YapDatabaseAutoViewConnection : YapDatabaseViewConnection
 
-/**
- * Returns the parent view instance.
-**/
-@property (nonatomic, strong, readonly) YapDatabaseView *view;
+// Returns properly typed parent view instance
+@property (nonatomic, strong, readonly) YapDatabaseAutoView *autoView;
 
 /**
  * Want to easily animate a tableView or collectionView when the view changes?

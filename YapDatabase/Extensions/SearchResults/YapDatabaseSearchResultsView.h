@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "YapDatabaseView.h"
+#import "YapDatabaseAutoView.h"
 #import "YapDatabaseSearchResultsViewOptions.h"
 #import "YapDatabaseSearchResultsViewConnection.h"
 #import "YapDatabaseSearchResultsViewTransaction.h"
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * YapDatabaseSearchResults allows you to pipe search results from YapDatabaseFullTextSearch into a YapDatabaseView.
  * This makes it easy to display search results in a tableView or collectionView.
 **/
-@interface YapDatabaseSearchResultsView : YapDatabaseView
+@interface YapDatabaseSearchResultsView : YapDatabaseAutoView
 
 /**
  * In this configuration, you want to search an existing YapDatabaseView,

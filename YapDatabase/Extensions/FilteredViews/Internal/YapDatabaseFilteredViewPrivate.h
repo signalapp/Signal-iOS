@@ -62,16 +62,9 @@ static NSString *const changeset_key_filtering = @"filtering";
 	BOOL filteringChanged;
 }
 
-- (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
-            sorting:(YapDatabaseViewSorting *)newSorting;
+- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr;
 
 - (void)setFiltering:(YapDatabaseViewFiltering *)newFiltering
           versionTag:(NSString *)newVersionTag;
-
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-			sorting:(YapDatabaseViewSorting **)sortingPtr
-          filtering:(YapDatabaseViewFiltering **)filteringPtr;
-
-- (void)getFiltering:(YapDatabaseViewFiltering **)filteringPtr;
 
 @end

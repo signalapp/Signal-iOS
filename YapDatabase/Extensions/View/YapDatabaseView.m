@@ -1,9 +1,6 @@
 #import "YapDatabaseView.h"
 #import "YapDatabaseViewPrivate.h"
 
-#import "YapDatabasePrivate.h"
-#import "YapDatabaseExtensionPrivate.h"
-
 #import "YapDatabaseLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -23,6 +20,9 @@
 
 
 @implementation YapDatabaseView
+
+@synthesize versionTag = versionTag; // Getter is overriden
+@dynamic options;
 
 + (void)dropTablesForRegisteredName:(NSString *)registeredName
                     withTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -65,11 +65,6 @@
 		[transaction->connection unregisterMemoryTableWithName:pageTableName];
 		[transaction->connection unregisterMemoryTableWithName:pageMetadataTableName];
 	}
-}
-
-+ (NSArray *)previousClassNames
-{
-	return @[ @"YapCollectionsDatabaseView" ];
 }
 
 + (NSString *)mapTableNameForRegisteredName:(NSString *)registeredName
@@ -144,49 +139,26 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Instance
+#pragma mark Init
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@synthesize grouping = grouping;
-@synthesize sorting = sorting;
-
-@synthesize versionTag = versionTag; // Getter is overriden
-@dynamic options;
-
-#pragma mark Init
-
-- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)inGrouping
-                         sorting:(YapDatabaseViewSorting *)inSorting
+- (instancetype)init
 {
-	return [self initWithGrouping:inGrouping
-	                      sorting:inSorting
-	                   versionTag:nil
-	                      options:nil];
-}
-
-- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)inGrouping
-                         sorting:(YapDatabaseViewSorting *)inSorting
-                      versionTag:(NSString *)inVersionTag
-{
-	return [self initWithGrouping:inGrouping
-	                      sorting:inSorting
-	                   versionTag:inVersionTag
-	                      options:nil];
-}
-
-- (instancetype)initWithGrouping:(YapDatabaseViewGrouping *)inGrouping
-                         sorting:(YapDatabaseViewSorting *)inSorting
-                      versionTag:(NSString *)inVersionTag
-                         options:(YapDatabaseViewOptions *)inOptions
-{
-	NSAssert([inGrouping isKindOfClass:[YapDatabaseViewGrouping class]], @"Invalid parameter: grouping");
-	NSAssert([inSorting isKindOfClass:[YapDatabaseViewSorting class]], @"Invalid parameter: sorting");
+	NSString *reason = @"YapDatabaseView is an abstract class.";
 	
+	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+	  @"Use a concrete subclass of YapDatabaseView, such as YapDatabaseAutoView." };
+	
+	@throw [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
+	
+	return nil;
+}
+
+- (instancetype)initWithVersionTag:(NSString *)inVersionTag
+                           options:(YapDatabaseViewOptions *)inOptions
+{
 	if ((self = [super init]))
 	{
-		grouping = inGrouping;
-		sorting = inSorting;
-		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		
 		options = inOptions ? [inOptions copy] : [[YapDatabaseViewOptions alloc] init];
@@ -243,11 +215,6 @@
 	return options.isPersistent;
 }
 
-- (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
-{
-	return [[YapDatabaseViewConnection alloc] initWithView:self databaseConnection:databaseConnection];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Table Names
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,18 +248,6 @@
 {
 	YDBLogAutoTrace();
 	
-	YapDatabaseViewGrouping *newGrouping = changeset[changeset_key_grouping];
-	if (newGrouping)
-	{
-		grouping = newGrouping;
-	}
-	
-	YapDatabaseViewSorting *newSorting = changeset[changeset_key_sorting];
-	if (newSorting)
-	{
-		sorting = newSorting;
-	}
-	
 	NSString *newVersionTag = changeset[changeset_key_versionTag];
 	if (newVersionTag)
 	{
@@ -312,52 +267,31 @@
 - (BOOL)getState:(YapDatabaseViewState **)statePtr
    forConnection:(YapDatabaseViewConnection *)viewConnection
 {
+	__unsafe_unretained YapDatabaseConnection *databaseConnection = viewConnection->databaseConnection;
+	__unsafe_unretained YapDatabase *database = databaseConnection->database;
+	
 	__block BOOL result = NO;
 	__block YapDatabaseViewState *state = nil;
 	
-	int64_t extConnectionSnapshot = [viewConnection->databaseConnection snapshot];
-	
-	dispatch_sync(viewConnection->databaseConnection->database->snapshotQueue, ^{
+	int64_t extConnectionSnapshot = [databaseConnection snapshot];
+	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		int64_t extSnapshot = [viewConnection->databaseConnection->database snapshot];
+		int64_t extSnapshot = [database snapshot];
 		
 		if (extConnectionSnapshot == extSnapshot)
 		{
 			result = YES;
 			state = latestState;
 		}
-	});
+	}};
+	
+	if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
+		block();
+	else
+		dispatch_sync(database->snapshotQueue, block);
 	
 	*statePtr = state;
 	return result;
-}
-
-/**
- * Used by YapDatabaseViewConnection to fetch & cache the values for a readWriteTransaction.
-**/
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
-            sorting:(YapDatabaseViewSorting **)sortingPtr
-{
-	__block YapDatabaseViewGrouping *mostRecentGrouping = nil;
-	__block YapDatabaseViewSorting  *mostRecentSorting  = nil;
-	
-	dispatch_block_t block = ^{
-	
-		mostRecentGrouping = grouping;
-		mostRecentSorting  = sorting;
-	};
-	
-	__strong YapDatabase *database = self.registeredDatabase;
-	if (database)
-	{
-		if (dispatch_get_specific(database->IsOnSnapshotQueueKey))
-			block();
-		else
-			dispatch_sync(database->snapshotQueue, block);
-	}
-	
-	if (groupingPtr) *groupingPtr = mostRecentGrouping;
-	if (sortingPtr)  *sortingPtr  = mostRecentSorting;
 }
 
 @end

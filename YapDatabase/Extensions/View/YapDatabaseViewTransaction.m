@@ -1,19 +1,13 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewPrivate.h"
-#import "YapDatabaseViewPage.h"
-#import "YapDatabaseViewPageMetadata.h"
-#import "YapDatabaseViewChange.h"
-#import "YapDatabaseViewChangePrivate.h"
+
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapDatabasePrivate.h"
+
 #import "YapCache.h"
 #import "YapCollectionKey.h"
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
-
-#if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
-#endif
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -30,26 +24,16 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-/**
- * The view is tasked with storing ordered arrays of keys.
- * In doing so, it splits the array into "pages" of keys,
- * and stores the pages in the database.
- * This reduces disk IO, as only the contents of a single page are written for a single change.
- * And only the contents of a single page need be read to fetch a single key.
-**/
-#define YAP_DATABASE_VIEW_MAX_PAGE_SIZE 50
-
-
 @implementation YapDatabaseViewTransaction
 
-- (id)initWithViewConnection:(YapDatabaseViewConnection *)inViewConnection
-         databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
+- (id)initWithParentConnection:(YapDatabaseViewConnection *)inParentConnection
+           databaseTransaction:(YapDatabaseReadTransaction *)inDatabaseTransaction
 {
 	YDBLogAutoTrace();
 	
 	if ((self = [super init]))
 	{
-		viewConnection = inViewConnection;
+		parentConnection = inParentConnection;
 		databaseTransaction = inDatabaseTransaction;
 		
 		if (![self isPersistentView])
@@ -84,14 +68,17 @@
 		
 		if (![self createTables]) return NO;
 		
-		if (!viewConnection->view->options.skipInitialViewPopulation)
+		if (parentConnection->state == nil)
+			parentConnection->state = [[YapDatabaseViewState alloc] init];
+		
+		if (!parentConnection->parent->options.skipInitialViewPopulation)
 		{
 			if (![self populateView]) return NO;
 		}
 		
 		// Store initial versionTag in prefs table
 		
-		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
+		NSString *versionTag = [parentConnection->parent versionTag]; // MUST get init value from view
 		
 		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:NO];
 		
@@ -101,7 +88,7 @@
 		BOOL dropPersistentTables = [self getIntValue:NULL forExtensionKey:ext_key_classVersion persistent:YES];
 		if (dropPersistentTables)
 		{
-			[[viewConnection->view class]
+			[[parentConnection->parent class]
 			  dropTablesForRegisteredName:[self registeredName]
 			              withTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 			                wasPersistent:YES];
@@ -115,7 +102,7 @@
 	
 		int classVersion = YAP_DATABASE_VIEW_CLASS_VERSION;
 		
-		NSString *versionTag = [viewConnection->view versionTag]; // MUST get init value from view
+		NSString *versionTag = [parentConnection->parent versionTag]; // MUST get init value from view
 		
 		// Figure out what steps we need to take in order to register the view
 		
@@ -133,7 +120,7 @@
 			// First time registration
 			
 			needsCreateTables = YES;
-			needsPopulateView = !viewConnection->view->options.skipInitialViewPopulation;
+			needsPopulateView = !parentConnection->parent->options.skipInitialViewPopulation;
 		}
 		else if (oldClassVersion != classVersion)
 		{
@@ -190,6 +177,9 @@
 		
 		if (needsPopulateView)
 		{
+			if (parentConnection->state == nil)
+				parentConnection->state = [[YapDatabaseViewState alloc] init];
+			
 			if (![self populateView]) return NO;
 		}
 		
@@ -226,7 +216,7 @@
 {
 	YDBLogAutoTrace();
 	
-	if (viewConnection->state)
+	if (parentConnection->state)
 	{
 		// Already prepared
 		return YES;
@@ -236,13 +226,13 @@
 	
 	YapDatabaseViewState *state = nil;
 	
-	BOOL shortcut = [viewConnection->view getState:&state forConnection:viewConnection];
+	BOOL shortcut = [parentConnection->parent getState:&state forConnection:parentConnection];
 	if (shortcut && state)
 	{
 		if (databaseTransaction->isReadWriteTransaction)
-			viewConnection->state = [state mutableCopy];
+			parentConnection->state = [state mutableCopy];
 		else
-			viewConnection->state = [state copy];
+			parentConnection->state = [state copy];
 		
 		return YES;
 	}
@@ -405,7 +395,7 @@
 		// Initialize ivars in viewConnection.
 		// We try not to do this before we know the table exists.
 		
-		viewConnection->state = [[YapDatabaseViewState alloc] init];
+		parentConnection->state = [[YapDatabaseViewState alloc] init];
 		
 		// Enumerate over each group
 		
@@ -426,7 +416,7 @@
 			NSUInteger pageCount = 0;
 			NSUInteger expectedPageCount = [orderDict count];
 			
-			[viewConnection->state createGroup:group withCapacity:expectedPageCount];
+			[parentConnection->state createGroup:group withCapacity:expectedPageCount];
 			
 			NSString *pageKey = [orderDict objectForKey:[NSNull null]];
 			while (pageKey)
@@ -441,7 +431,7 @@
 					break;
 				}
 				
-				[viewConnection->state addPageMetadata:pageMetadata toGroup:group];
+				[parentConnection->state addPageMetadata:pageMetadata toGroup:group];
 				pageCount++;
 				
 				// get the next pageKey in the linked list
@@ -477,16 +467,19 @@
 		// If there was an error opening the view, we need to reset the ivars to nil.
 		// These are checked at the beginning of this method as a shortcut.
 		
-		viewConnection->state = nil;
+		parentConnection->state = nil;
 	}
 	else
 	{
-		YDBLogVerbose(@"viewConnection->state: %@", viewConnection->state);
+		YDBLogVerbose(@"parentConnection->state: %@", parentConnection->state);
 	}
 	
 	return !error;
 }
 
+/**
+ * Codebase upgrade helper.
+**/
 - (void)dropTablesForOldClassVersion:(int)oldClassVersion
 {
 	YDBLogAutoTrace();
@@ -534,6 +527,10 @@
 	}
 }
 
+/**
+ * Subclasses can easily override this method to create their own tables.
+ * If overriden, don't forget to invoke [super createTables].
+**/
 - (BOOL)createTables
 {
 	YDBLogAutoTrace();
@@ -619,415 +616,14 @@
 	}
 }
 
+/**
+ * Method designed for subclasses to override.
+**/
 - (BOOL)populateView
 {
-	YDBLogAutoTrace();
+	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 	
-	// Remove everything from the database
-	
-	[self removeAllRowids];
-	
-	// Initialize ivars
-	
-	if (viewConnection->state == nil)
-		viewConnection->state = [[YapDatabaseViewState alloc] init];
-	
-	// Enumerate the existing rows in the database and populate the view
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting  *sorting  = nil;
-	
-	[viewConnection getGrouping:&grouping
-	                    sorting:&sorting];
-	
-	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
-	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
-	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
-	
-	BOOL needsObject = groupingNeedsObject || sortingNeedsObject;
-	BOOL needsMetadata = groupingNeedsMetadata || sortingNeedsMetadata;
-	
-	NSString *(^getGroup)(NSString *collection, NSString *key, id object, id metadata);
-	
-	if (grouping->blockType == YapDatabaseBlockTypeWithKey)
-	{
-		getGroup = ^(NSString *collection, NSString *key, id __unused object, id __unused metadata){
-			
-			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithKeyBlock)grouping->block;
-			
-			NSString *group = groupingBlock(databaseTransaction, collection, key);
-			return [group copy]; // mutable string protection
-		};
-	}
-	else if (grouping->blockType == YapDatabaseBlockTypeWithObject)
-	{
-		getGroup = ^(NSString *collection, NSString *key, id object, id __unused metadata){
-			
-			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithObjectBlock)grouping->block;
-			
-			NSString *group = groupingBlock(databaseTransaction, collection, key, object);
-			return [group copy]; // mutable string protection
-		};
-	}
-	else if (grouping->blockType == YapDatabaseBlockTypeWithMetadata)
-	{
-		getGroup = ^(NSString *collection, NSString *key, id __unused object, id metadata){
-			
-			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithMetadataBlock)grouping->block;
-			
-			NSString *group = groupingBlock(databaseTransaction, collection, key, metadata);
-			return [group copy]; // mutable string protection
-		};
-	}
-	else
-	{
-		getGroup = ^(NSString *collection, NSString *key, id object, id metadata){
-			
-			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-		        (YapDatabaseViewGroupingWithRowBlock)grouping->block;
-			
-			NSString *group = groupingBlock(databaseTransaction, collection, key, object, metadata);
-			return [group copy]; // mutable string protection
-		};
-	}
-	
-	YapDatabaseViewChangesBitMask flags = (YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata);
-	
-	if (needsObject && needsMetadata)
-	{
-		if (groupingNeedsObject || groupingNeedsMetadata)
-		{
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop){
-				
-				NSString *group = getGroup(collection, key, object, metadata);
-				if (group)
-				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
-					[self insertRowid:rowid
-					    collectionKey:collectionKey
-					           object:object
-					         metadata:metadata
-					          inGroup:group withChanges:flags isNew:YES];
-				}
-			};
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *__unused outerStop) {
-					
-					if ([allowedCollections isAllowed:collection]) {
-						[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:block];
-					}
-				}];
-			}
-			else // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block];
-			}
-		}
-		else
-		{
-			// Optimization: Grouping doesn't require the object or metadata.
-			// So we can skip the deserialization step for any rows not in the view.
-			
-			__block NSString *group = nil;
-			
-			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key) {
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			};
-			
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL __unused *stop){
-				
-				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
-				[self insertRowid:rowid
-				    collectionKey:collectionKey
-				           object:object
-				         metadata:metadata
-				          inGroup:group withChanges:flags isNew:YES];
-			};
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-					
-					if ([allowedCollections isAllowed:collection])
-					{
-						[databaseTransaction _enumerateRowsInCollections:@[ collection ]
-						                                      usingBlock:block
-						                                      withFilter:filter];
-					}
-				}];
-			}
-			else // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:block withFilter:filter];
-			}
-		}
-	}
-	else if (needsObject && !needsMetadata)
-	{
-		if (groupingNeedsObject)
-		{
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop){
-				
-				NSString *group = getGroup(collection, key, object, nil);
-				if (group)
-				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
-					[self insertRowid:rowid
-					    collectionKey:collectionKey
-					           object:object
-					          metadata:nil
-					           inGroup:group withChanges:flags isNew:YES];
-				}
-			};
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-					
-					if ([allowedCollections isAllowed:collection])
-					{
-						[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ]
-						                                                usingBlock:block];
-					}
-				}];
-			}
-			else // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block];
-			}
-		}
-		else
-		{
-			// Optimization: Grouping doesn't require the object.
-			// So we can skip the deserialization step for any rows not in the view.
-			
-			__block NSString *group = nil;
-			
-			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key) {
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			};
-			
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL __unused *stop){
-				
-				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				
-				[self insertRowid:rowid
-				    collectionKey:collectionKey
-				           object:object
-				          metadata:nil
-				        inGroup:group withChanges:flags isNew:YES];
-			};
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-					
-					if ([allowedCollections isAllowed:collection])
-					{
-						[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ]
-						                                                usingBlock:block
-						                                                withFilter:filter];
-					}
-				}];
-			}
-			else // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:block withFilter:filter];
-			}
-		}
-	}
-	else if (!needsObject && needsMetadata)
-	{
-		if (groupingNeedsMetadata)
-		{
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop){
-				
-				NSString *group = getGroup(collection, key, nil, metadata);
-				if (group)
-				{
-					YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-					
-					[self insertRowid:rowid
-					    collectionKey:collectionKey
-					           object:nil
-					         metadata:metadata
-					          inGroup:group withChanges:flags isNew:YES];
-				}
-			};
-			
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-					
-					if ([allowedCollections isAllowed:collection])
-					{
-						[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ]
-						                                                 usingBlock:block];
-					}
-				}];
-			}
-			else  // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block];
-			}
-		}
-		else
-		{
-			// Optimization: Grouping doesn't require the metadata.
-			// So we can skip the deserialization step for any rows not in the view.
-			
-			__block NSString *group = nil;
-			
-			BOOL (^filter)(int64_t rowid, NSString *collection, NSString *key);
-			filter = ^BOOL(int64_t __unused rowid, NSString *collection, NSString *key){
-				
-				group = getGroup(collection, key, nil, nil);
-				return (group != nil);
-			};
-			
-			void (^block)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-			block = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL __unused *stop){
-				
-				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				
-				[self insertRowid:rowid
-				    collectionKey:collectionKey
-				           object:nil
-				         metadata:metadata
-				          inGroup:group withChanges:flags isNew:YES];
-			};
-			
-			YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-			if (allowedCollections)
-			{
-				[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-					
-					if ([allowedCollections isAllowed:collection])
-					{
-						[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ]
-						                                                 usingBlock:block
-						                                                 withFilter:filter];
-					}
-				}];
-			}
-			else  // if (!allowedCollections)
-			{
-				[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:block withFilter:filter];
-			}
-		}
-	}
-	else // if (!needsObject && !needsMetadata)
-	{
-		void (^block)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
-		block = ^(int64_t rowid, NSString *collection, NSString *key, BOOL __unused *stop){
-			
-			NSString *group = getGroup(collection, key, nil, nil);
-			if (group)
-			{
-				YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				
-				[self insertRowid:rowid
-				    collectionKey:collectionKey
-				           object:nil
-				         metadata:nil
-				          inGroup:group withChanges:flags isNew:YES];
-			}
-		};
-		
-		YapWhitelistBlacklist *allowedCollections = viewConnection->view->options.allowedCollections;
-		if (allowedCollections)
-		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL __unused *stop) {
-				
-				if ([allowedCollections isAllowed:collection])
-				{
-					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:block];
-				}
-			}];
-		}
-		else  // if (!allowedCollections)
-		{
-			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:block];
-		}
-	}
-	
-	return YES;
-}
-
-- (void)repopulateView
-{
-	YDBLogAutoTrace();
-	
-	// Code overview:
-	//
-	// We could simply run the usual algorithm.
-	// That is, enumerate over every item in the database, and run pretty much the same code as
-	// in the handleUpdateObject:forCollectionKey:withMetadata:rowid:.
-	// However, this causes a potential issue where the sortingBlock will be invoked with items that
-	// no longer exist in the given group.
-	//
-	// Instead we're going to find a way around this.
-	// That way the sortingBlock works in a manner we're used to.
-	//
-	// Here's the algorithm overview:
-	//
-	// - Insert remove ops for every row & group
-	// - Remove all items from the database tables
-	// - Flush the group_pagesMetadata_dict (and related ivars)
-	// - Set the reset flag (for internal notification creation)
-	// - And then run the normal populate routine, with one exceptione handled by the isRepopulate flag.
-	//
-	// The changeset mechanism will automatically consolidate all changes to the minimum.
-	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *outerStop) {
-		
-		// We must add the changes in reverse order.
-		// Either that, or the change index of each item would have to be zero,
-		// because a YapDatabaseViewRowChange records the index at the moment the change happens.
-		
-		[self enumerateRowidsInGroup:group
-		                 withOptions:NSEnumerationReverse
-		                  usingBlock:^(int64_t rowid, NSUInteger index, BOOL __unused *innerStop)
-		{
-			YapCollectionKey *collectionKey = [databaseTransaction collectionKeyForRowid:rowid];
-			
-			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
-		}];
-		
-		[viewConnection->changes addObject:[YapDatabaseViewSectionChange deleteGroup:group]];
-	}];
-	
-	isRepopulate = YES;
-	[self populateView];
-	isRepopulate = NO;
+	return NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1047,32 +643,32 @@
 **/
 - (YapDatabaseExtensionConnection *)extensionConnection
 {
-	return viewConnection;
+	return parentConnection;
 }
 
 - (NSString *)registeredName
 {
-	return [viewConnection->view registeredName];
+	return [parentConnection->parent registeredName];
 }
 
 - (NSString *)mapTableName
 {
-	return [viewConnection->view mapTableName];
+	return [parentConnection->parent mapTableName];
 }
 
 - (NSString *)pageTableName
 {
-	return [viewConnection->view pageTableName];
+	return [parentConnection->parent pageTableName];
 }
 
 - (NSString *)pageMetadataTableName
 {
-	return [viewConnection->view pageMetadataTableName];
+	return [parentConnection->parent pageMetadataTableName];
 }
 
 - (BOOL)isPersistentView
 {
-	return viewConnection->view->options.isPersistent;
+	return parentConnection->parent->options.isPersistent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1098,16 +694,7 @@
 
 - (NSString *)generatePageKey
 {
-	NSString *key = nil;
-	
-	CFUUIDRef uuid = CFUUIDCreate(NULL);
-	if (uuid)
-	{
-		key = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, uuid);
-		CFRelease(uuid);
-	}
-	
-	return key;
+	return [[NSUUID UUID] UUIDString];
 }
 
 /**
@@ -1123,7 +710,7 @@
 	
 	// Check dirty cache & clean cache
 	
-	pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
+	pageKey = [parentConnection->dirtyMaps objectForKey:rowidNumber];
 	if (pageKey)
 	{
 		if ((id)pageKey == (id)[NSNull null])
@@ -1132,7 +719,7 @@
 			return pageKey;
 	}
 	
-	pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
+	pageKey = [parentConnection->mapCache objectForKey:rowidNumber];
 	if (pageKey)
 	{
 		if ((id)pageKey == (id)[NSNull null])
@@ -1145,7 +732,7 @@
 	
 	if ([self isPersistentView])
 	{
-		sqlite3_stmt *statement = [viewConnection mapTable_getPageKeyForRowidStatement];
+		sqlite3_stmt *statement = [parentConnection mapTable_getPageKeyForRowidStatement];
 		if (statement == NULL)
 			return nil;
 		
@@ -1180,229 +767,11 @@
 	}
 	
 	if (pageKey)
-		[viewConnection->mapCache setObject:pageKey forKey:rowidNumber];
+		[parentConnection->mapCache setObject:pageKey forKey:rowidNumber];
 	else
-		[viewConnection->mapCache setObject:[NSNull null] forKey:rowidNumber];
+		[parentConnection->mapCache setObject:[NSNull null] forKey:rowidNumber];
 	
 	return pageKey;
-}
-
-/**
- * This method looks up a whole bunch of pageKeys using only a few queries.
- *
- * @param rowids
- *     On input, includes all the rowids to lookup.
- *     On output, includes all the valid rowids. That is, those rowids that are in the view.
- * 
- * @param keyMappings
- *     A dictionary of the form: @{
- *         @(rowid) = collectionKey, ...
- *     }
- * 
- * @return A dictionary of the form: @{
- *         pageKey = @{ @(rowid) = collectionKey, ... }
- *     }
-**/
-- (NSDictionary *)pageKeysForRowids:(NSArray **)rowidsPtr withKeyMappings:(NSDictionary *)keyMappings
-{
-	if ([*rowidsPtr count] == 0)
-	{
-		*rowidsPtr = [NSArray array];
-		return [NSDictionary dictionary];
-	}
-	
-	NSMutableArray *inRowids =  [*rowidsPtr mutableCopy];
-	NSMutableArray *outRowids = [NSMutableArray arrayWithCapacity:[inRowids count]];
-	
-	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[inRowids count]];
-	
-	// Step 1 of 2:
-	//
-	// Check for any (rowid, pageKey) information we already have in memory.
-	//
-	// This is actually a requirement if the information is in dirtyMaps.
-	// If the info is in mapCache, then its just an optimization.
-	
-	for (NSUInteger iPlusOne = [inRowids count]; iPlusOne > 0; iPlusOne--)
-	{
-		NSUInteger i = iPlusOne - 1;
-		NSNumber *rowidNumber = [inRowids objectAtIndex:i];
-		
-		NSString *pageKey = nil;
-		
-		pageKey = [viewConnection->dirtyMaps objectForKey:rowidNumber];
-		if (pageKey == nil)
-		{
-			pageKey = [viewConnection->mapCache objectForKey:rowidNumber];
-		}
-		
-		if (pageKey)
-		{
-			if ((id)pageKey == (id)[NSNull null])
-			{
-				// This rowid has already been removed from the view,
-				// and is marked for deletion from the mapTable.
-				//
-				// However, it has not been deleted yet, as that will occur during flushPendingChangesToExtensionTables.
-				// So we need to remove it from inRowids, as the mapTable will still contain the rowid.
-				
-				[inRowids removeObjectAtIndex:i];
-			}
-			else
-			{
-				// Add to result dictionary
-				
-				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-				if (subKeyMappings == nil)
-				{
-					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-					[result setObject:subKeyMappings forKey:pageKey];
-				}
-				
-				YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
-				[subKeyMappings setObject:collectionKey forKey:rowidNumber];
-				
-				// Add to outRowids
-				
-				[outRowids addObject:rowidNumber];
-				
-				// Remove from inRowids
-				
-				[inRowids removeObjectAtIndex:i];
-			}
-		}
-		
-	}
-	
-	// Step 2 of 2:
-	//
-	// Fetch any pageKey information we're still missing from the database.
-	
-	NSUInteger count = [inRowids count];
-	if (count > 0)
-	{
-		if ([self isPersistentView])
-		{
-			sqlite3 *db = databaseTransaction->connection->db;
-			
-			// Note:
-			// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
-			//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
-			//
-			// So we don't have to worry about sqlite's upper bound on host parameters.
-			
-			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
-			
-			int const column_idx_rowid   = SQLITE_COLUMN_START + 0;
-			int const column_idx_pageKey = SQLITE_COLUMN_START + 1;
-			
-			NSUInteger capacity = 50 + (count * 3);
-			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
-			
-			[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
-			
-			for (NSUInteger i = 0; i < count; i++)
-			{
-				if (i == 0)
-					[query appendString:@"?"];
-				else
-					[query appendString:@", ?"];
-			}
-			
-			[query appendString:@");"];
-			
-			sqlite3_stmt *statement;
-			int status;
-			
-			status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
-			if (status != SQLITE_OK)
-			{
-				YDBLogError(@"%@ (%@): Error creating statement\n"
-				            @" - status(%d), errmsg: %s\n"
-				            @" - query: %@",
-				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
-				
-				*rowidsPtr = nil;
-				return nil;
-			}
-			
-			for (NSUInteger i = 0; i < count; i++)
-			{
-				int64_t rowid = [[inRowids objectAtIndex:i] longLongValue];
-				
-				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
-			}
-			
-			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
-			{
-				// Extract rowid & pageKey from row
-				
-				int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
-				
-				const unsigned char *text = sqlite3_column_text(statement, column_idx_pageKey);
-				int textSize = sqlite3_column_bytes(statement, column_idx_pageKey);
-				
-				NSNumber *rowidNumber = @(rowid);
-				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
-				
-				// Add to result dictionary
-				
-				NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-				if (subKeyMappings == nil)
-				{
-					subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-					[result setObject:subKeyMappings forKey:pageKey];
-				}
-				
-				YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
-				[subKeyMappings setObject:collectionKey forKey:rowidNumber];
-				
-				// Add to outRowids
-				
-				[outRowids addObject:rowidNumber];
-			}
-			
-			if (status != SQLITE_DONE)
-			{
-				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
-				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
-			}
-		
-			sqlite3_finalize(statement);
-			
-		}
-		else // if (isNonPersistentView)
-		{
-			[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
-				
-				for (NSNumber *rowidNumber in inRowids)
-				{
-					NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
-					if (pageKey)
-					{
-						// Add to result dictionary
-						
-						NSMutableDictionary *subKeyMappings = [result objectForKey:pageKey];
-						if (subKeyMappings == nil)
-						{
-							subKeyMappings = [NSMutableDictionary dictionaryWithCapacity:1];
-							[result setObject:subKeyMappings forKey:pageKey];
-						}
-						
-						NSString *key = [keyMappings objectForKey:rowidNumber];
-						[subKeyMappings setObject:key forKey:rowidNumber];
-						
-						// Add to outRowids
-						
-						[outRowids addObject:rowidNumber];
-					}
-				}
-			}}];
-		}
-	}
-	
-	*rowidsPtr = outRowids;
-	return result;
 }
 
 /**
@@ -1417,17 +786,17 @@
 	
 	// Check dirty cache & clean cache
 	
-	page = [viewConnection->dirtyPages objectForKey:pageKey];
+	page = [parentConnection->dirtyPages objectForKey:pageKey];
 	if (page) return page;
 	
-	page = [viewConnection->pageCache objectForKey:pageKey];
+	page = [parentConnection->pageCache objectForKey:pageKey];
 	if (page) return page;
 	
 	// Otherwise pull from the database
 	
 	if ([self isPersistentView])
 	{
-		sqlite3_stmt *statement = [viewConnection pageTable_getDataForPageKeyStatement];
+		sqlite3_stmt *statement = [parentConnection pageTable_getDataForPageKeyStatement];
 		if (statement == NULL)
 			return nil;
 		
@@ -1467,7 +836,7 @@
 	
 	// Store in cache if found
 	if (page)
-		[viewConnection->pageCache setObject:page forKey:pageKey];
+		[parentConnection->pageCache setObject:page forKey:pageKey];
 	
 	return page;
 }
@@ -1477,7 +846,7 @@
 	// Calculate the offset of the corresponding page within the group.
 	
 	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -1506,9 +875,246 @@
 	return pageOffset + indexWithinPage;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Logic - ReadOnly
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)containsRowid:(int64_t)rowid
+{
+	return ([self pageKeyForRowid:rowid] != nil);
+}
+
+- (NSString *)groupForRowid:(int64_t)rowid
+{
+	return [parentConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
+}
+
+- (YapDatabaseViewLocator *)locatorForRowid:(int64_t)rowid
+{
+	YapDatabaseViewLocator *locator = nil;
+	
+	NSString *pageKey = [self pageKeyForRowid:rowid];
+	if (pageKey)
+	{
+		NSString *group = [parentConnection->state groupForPageKey:pageKey];
+		if (group)
+		{
+			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			locator = [[YapDatabaseViewLocator alloc] initWithGroup:group index:index pageKey:pageKey];
+		}
+	}
+	
+	return locator;
+}
+
+/**
+ * This method looks up a whole bunch of locators using a minimal number of SQL queries.
+ *
+ * @param rowids
+ *     All the rowids to lookup.
+ * 
+ * @return
+ *     A dictionary of the form: @{
+ *       @(rowid) = YapDatabaseViewLocator, ... }
+ *     }
+ *     If a rowid isn't in the view, it won't be represented in the dictionary.
+**/
+- (NSDictionary *)locatorsForRowids:(NSArray *)rowids
+{
+	if (rowids.count == 0)
+	{
+		return [NSDictionary dictionary];
+	}
+	if (rowids.count == 1)
+	{
+		int64_t rowid = [[rowids firstObject] longLongValue];
+		YapDatabaseViewLocator *locator = [self locatorForRowid:rowid];
+		
+		if (locator)
+			return @{ @(rowid) : locator };
+		else
+			return [NSDictionary dictionary];
+	}
+	
+	NSMutableDictionary *pageKeys = [NSMutableDictionary dictionaryWithCapacity:rowids.count];
+	NSMutableArray *remainingRowids = [NSMutableArray arrayWithCapacity:rowids.count];
+	
+	// Step 1 of 3:
+	//
+	// Check for any (rowid -> pageKey) information we already have in memory.
+	//
+	// This is actually a requirement if the information is in dirtyMaps.
+	// If the info is in mapCache, then its just an optimization.
+	
+	for (NSNumber *rowidNumber in rowids)
+	{
+		NSString *pageKey = nil;
+		
+		pageKey = [parentConnection->dirtyMaps objectForKey:rowidNumber];
+		if (pageKey == nil)
+		{
+			pageKey = [parentConnection->mapCache objectForKey:rowidNumber];
+		}
+		
+		if (pageKey)
+		{
+			if ((id)pageKey == (id)[NSNull null])
+			{
+				// This rowid has already been removed from the view,
+				// and is marked for deletion from the mapTable.
+			}
+			else
+			{
+				pageKeys[rowidNumber] = pageKey;
+			}
+		}
+		else
+		{
+			[remainingRowids addObject:rowidNumber];
+		}
+		
+	}
+	
+	// Step 2 of 3:
+	//
+	// Fetch any pageKey information we're still missing from the database.
+	
+	if ([self isPersistentView])
+	{
+		sqlite3 *db = databaseTransaction->connection->db;
+		
+		while (remainingRowids.count > 0)
+		{
+			// Don't forget about sqlite's upper bound on host parameters.
+			
+			NSUInteger maxHostParams = (NSUInteger) sqlite3_limit(db, SQLITE_LIMIT_VARIABLE_NUMBER, -1);
+			
+			NSUInteger count = MIN(remainingRowids.count, maxHostParams);
+			
+			// SELECT "rowid", "pageKey" FROM "mapTableName" WHERE "rowid" IN (?, ?, ...);
+			
+			int const column_idx_rowid   = SQLITE_COLUMN_START + 0;
+			int const column_idx_pageKey = SQLITE_COLUMN_START + 1;
+			
+			NSUInteger capacity = 50 + (count * 3);
+			NSMutableString *query = [NSMutableString stringWithCapacity:capacity];
+			
+			[query appendFormat:@"SELECT \"rowid\", \"pageKey\" FROM \"%@\" WHERE \"rowid\" IN (", [self mapTableName]];
+			
+			for (NSUInteger i = 0; i < count; i++)
+			{
+				if (i == 0)
+					[query appendString:@"?"];
+				else
+					[query appendString:@", ?"];
+			}
+			
+			[query appendString:@");"];
+			
+			sqlite3_stmt *statement;
+			int status;
+			
+			status = sqlite3_prepare_v2(db, [query UTF8String], -1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"%@ (%@): Error creating statement\n"
+				            @" - status(%d), errmsg: %s\n"
+				            @" - query: %@",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db), query);
+				
+				return nil;
+			}
+			
+			for (NSUInteger i = 0; i < count; i++)
+			{
+				int64_t rowid = [[remainingRowids objectAtIndex:i] longLongValue];
+				
+				sqlite3_bind_int64(statement, (int)(SQLITE_BIND_START + i), rowid);
+			}
+			
+			while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+			{
+				// Extract rowid & pageKey from row
+				
+				int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+				
+				const unsigned char *text = sqlite3_column_text(statement, column_idx_pageKey);
+				int textSize = sqlite3_column_bytes(statement, column_idx_pageKey);
+				
+				NSString *pageKey = [[NSString alloc] initWithBytes:text length:textSize encoding:NSUTF8StringEncoding];
+				
+				// Add to result dictionary
+				
+				pageKeys[@(rowid)] = pageKey;
+			}
+			
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ (%@): Error executing statement: %d %s",
+				            THIS_METHOD, [self registeredName], status, sqlite3_errmsg(db));
+			}
+		
+			sqlite3_finalize(statement);
+			
+			[remainingRowids removeObjectsInRange:NSMakeRange(0, count)];
+			
+		} // end while (remainingRowids.count > 0)
+	}
+	else // if (isNonPersistentView)
+	{
+		if (remainingRowids.count > 0)
+		{
+			[mapTableTransaction accessWithBlock:^{ @autoreleasepool {
+				
+				for (NSNumber *rowidNumber in remainingRowids)
+				{
+					NSString *pageKey = [mapTableTransaction objectForKey:rowidNumber];
+					if (pageKey)
+					{
+						// Add to result dictionary
+						
+						pageKeys[rowidNumber] = pageKey;
+					}
+				}
+			}}];
+		}
+	}
+	
+	// Step 3 of 3
+	//
+	// Use the pageKey mappings to create the locators.
+	//
+	// In order to do this, we'll need to fetch the page for each rowid.
+	// And since many of the rowids may share the same page,
+	// we'll optimize the IO by sorting rowids by pageKey first.
+	
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:pageKeys.count];
+	
+	NSArray *sortedRowids = [pageKeys keysSortedByValueUsingSelector:@selector(compare:)];
+	for (NSNumber *rowidNumber in sortedRowids)
+	{
+		NSString *pageKey = pageKeys[rowidNumber];
+		
+		NSString *group = [parentConnection->state groupForPageKey:pageKey];
+		if (group)
+		{
+			int64_t rowid = [rowidNumber longLongValue];
+			NSUInteger index = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
+			
+			YapDatabaseViewLocator *locator =
+			  [[YapDatabaseViewLocator alloc] initWithGroup:group index:index pageKey:pageKey];
+			
+			result[rowidNumber] = locator;
+		}
+	}
+	
+	return result;
+}
+
 - (BOOL)getRowid:(int64_t *)rowidPtr atIndex:(NSUInteger)index inGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	NSUInteger pageOffset = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -1542,7 +1148,7 @@
 	// else
 	//     return nil;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	__block int64_t rowid = 0;
 	__block BOOL found = NO;
@@ -1566,91 +1172,23 @@
 	return found;
 }
 
-- (BOOL)containsRowid:(int64_t)rowid
-{
-	return ([self pageKeyForRowid:rowid] != nil);
-}
-
-- (NSString *)groupForRowid:(int64_t)rowid
-{
-	return [viewConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Logic
+#pragma mark Logic - ReadWrite
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Creates a new group and inserts the given row.
- * Important: The group MUST NOT already exist.
-**/
-- (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey inNewGroup:(NSString *)group
-{
-	YDBLogAutoTrace();
-	
-	NSParameterAssert(collectionKey != nil);
-	NSParameterAssert(group != nil);
-	
-	// First object added to group.
-	
-	NSString *pageKey = [self generatePageKey];
-	
-	YDBLogVerbose(@"Inserting key(%@) collection(%@) in new group(%@) with page(%@)",
-				  collectionKey.key, collectionKey.collection, group, pageKey);
-	
-	// Create page
-	
-	YapDatabaseViewPage *page =
-	  [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
-	[page addRowid:rowid];
-	
-	// Create pageMetadata
-	
-	YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
-	pageMetadata->pageKey = pageKey;
-	pageMetadata->prevPageKey = nil;
-	pageMetadata->group = group;
-	pageMetadata->count = 1;
-	pageMetadata->isNew = YES;
-	
-	// Add pageMetadata to state
-	
-	[viewConnection->state createGroup:group withCapacity:1];
-	[viewConnection->state addPageMetadata:pageMetadata toGroup:group];
-	
-	// Mark page as dirty
-	
-	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache setObject:page forKey:pageKey];
-	
-	// Mark rowid for insertion
-	
-	[viewConnection->dirtyMaps setObject:pageKey forKey:@(rowid)];
-	[viewConnection->mapCache setObject:pageKey forKey:@(rowid)];
-	
-	// Add change to log
-	
-	[viewConnection->changes addObject:
-	  [YapDatabaseViewSectionChange insertGroup:group]];
-	
-	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:0]];
-	
-	[viewConnection->mutatedGroups addObject:group];
-	
-	// Subclass hook
-	
-	[self didInsertRowid:rowid collectionKey:collectionKey];
-}
-
-/**
- * Inserts the given rowid into an existing group.
- * Important: The group MUST already exist.
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
 **/
 - (void)insertRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
                                          inGroup:(NSString *)group
                                          atIndex:(NSUInteger)index
-                             withExistingPageKey:(NSString *)existingPageKey
 {
 	YDBLogAutoTrace();
 	
@@ -1661,516 +1199,244 @@
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
-	
-	NSUInteger pageOffset = 0;
-	NSUInteger pageIndex = 0;
-	
-	NSUInteger lastPageIndex = [pagesMetadataForGroup count] - 1;
-	
-	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
-	{
-		// Edge case: key is being inserted at the very end
-		
-		if ((index < (pageOffset + pm->count)) || (pageIndex == lastPageIndex))
-		{
-			pageMetadata = pm;
-			break;
-		}
-		else if (index == (pageOffset + pm->count))
-		{
-			// Optimization:
-			// The insertion index is in-between two pages.
-			// So it could go at the end of this page, or the beginning of the next page.
-			//
-			// We always place the key in the next page, unless:
-			// - this page has room AND
-			// - the next page is already full
-			//
-			// Related method: splitOversizedPage:
-			
-			NSUInteger maxPageSize = YAP_DATABASE_VIEW_MAX_PAGE_SIZE;
-			
-			if (pm->count < maxPageSize)
-			{
-				YapDatabaseViewPageMetadata *nextpm = [pagesMetadataForGroup objectAtIndex:(pageIndex+1)];
-				if (nextpm->count >= maxPageSize)
-				{
-					pageMetadata = pm;
-					break;
-				}
-			}
-		}
-		
-		pageIndex++;
-		pageOffset += pm->count;
-	}
-	
-	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@)", group);
-	
-	NSString *pageKey = pageMetadata->pageKey;
-	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
-	
-	YDBLogVerbose(@"Inserting key(%@) collection(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
-	              collectionKey.key, collectionKey.collection, group,
-	              (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
-	
-	// Update page (insert rowid)
-	
-	[page insertRowid:rowid atIndex:(index - pageOffset)];
-	
-	// Update pageMetadata (increment count)
-	
-	pageMetadata->count = [page count];
-	
-	// Mark page as dirty
-	
-	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache setObject:page forKey:pageKey];
-	
-	// Mark key for insertion (if needed - may have already been in group)
-	
-	if (![pageKey isEqualToString:existingPageKey])
-	{
-		[viewConnection->dirtyMaps setObject:pageKey forKey:@(rowid)];
-		[viewConnection->mapCache setObject:pageKey forKey:@(rowid)];
-	}
-	
-	// Add change to log
-	
-	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:index]];
-	
-	[viewConnection->mutatedGroups addObject:group];
-	
-	// During a transaction we allow pages to grow in size beyond the max page size.
-	// This increases efficiency, as we can allow multiple changes to occur,
-	// but perform the cleanup task only once (of splitting oversized pages ).
-	//
-	// However, we do want to avoid allowing a single page to grow infinitely large.
-	// So we use triggers to ensure pages don't get too big.
-	
-	NSUInteger trigger = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 32;
-	NSUInteger target = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 16;
-	
-	if ([page count] > trigger)
-	{
-		[self splitOversizedPage:page withPageKey:pageKey toSize:target];
-	}
-	
-	// Subclass hook
-	
-	[self didInsertRowid:rowid collectionKey:collectionKey];
-}
-
-/**
- * Use this method after it has been determined that the key should be inserted into the given group.
- * The object and metadata parameters must be properly set (if needed by the sorting block).
- * 
- * This method will use the configured sorting block to find the proper index for the key.
- * It will attempt to optimize this operation as best as possible using a variety of techniques.
-**/
-- (void)insertRowid:(int64_t)rowid
-      collectionKey:(YapCollectionKey *)collectionKey
-			 object:(id)object
-           metadata:(id)metadata
-            inGroup:(NSString *)group
-        withChanges:(YapDatabaseViewChangesBitMask)flags
-              isNew:(BOOL)isGuaranteedNew
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getSorting:&sorting];
-	
-	// Is the key already in the group?
-	// If so:
-	// - its index within the group may or may not have changed.
-	// - we can use its existing position as an optimization during sorting.
-	
-	BOOL tryExistingIndexInGroup = NO;
-	NSUInteger existingIndexInGroup = NSNotFound;
-	
-	NSString *existingPageKey = isGuaranteedNew ? nil : [self pageKeyForRowid:rowid];
-	if (existingPageKey)
-	{
-		// The key is already in the view.
-		// Has it changed groups?
-		
-		NSString *existingGroup = [viewConnection->state groupForPageKey:existingPageKey];
-		
-		if ([group isEqualToString:existingGroup])
-		{
-			// The key is already in the group.
-			//
-			// Possible optimization:
-			// Object or metadata was updated, but doesn't affect the position of the row within the view.
-			
-			existingIndexInGroup = [self indexForRowid:rowid inGroup:group withPageKey:existingPageKey];
-			tryExistingIndexInGroup = YES;
-		}
-		else
-		{
-			// The item has changed groups.
-			// Remove it from previous group.
-			
-			[self removeRowid:rowid collectionKey:collectionKey
-			                          withPageKey:existingPageKey
-			                              inGroup:existingGroup
-			                     skipSubclassHook:YES]; // will be re-adding (in new group)
-			
-			// Don't forget to reset the existingPageKey ivar!
-			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
-			existingPageKey = nil;
-		}
-	}
-	
-	// Fetch the pages associated with the group.
-	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
-	
-	// Is this a new group ?
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	if (pagesMetadataForGroup == nil)
 	{
 		// First object added to group.
 		
-		[self insertRowid:rowid collectionKey:collectionKey inNewGroup:group];
-		return;
+		NSString *pageKey = [self generatePageKey];
+		
+		YDBLogVerbose(@"Inserting key(%@) collection(%@) in new group(%@) with page(%@)",
+					  collectionKey.key, collectionKey.collection, group, pageKey);
+		
+		// Create page
+		
+		YapDatabaseViewPage *page =
+		  [[YapDatabaseViewPage alloc] initWithCapacity:YAP_DATABASE_VIEW_MAX_PAGE_SIZE];
+		[page addRowid:rowid];
+		
+		// Create pageMetadata
+		
+		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+		pageMetadata->pageKey = pageKey;
+		pageMetadata->prevPageKey = nil;
+		pageMetadata->group = group;
+		pageMetadata->count = 1;
+		pageMetadata->isNew = YES;
+		
+		// Add pageMetadata to state
+		
+		[parentConnection->state createGroup:group withCapacity:1];
+		[parentConnection->state addPageMetadata:pageMetadata toGroup:group];
+		
+		// Mark page as dirty
+		
+		[parentConnection->dirtyPages setObject:page forKey:pageKey];
+		[parentConnection->pageCache setObject:page forKey:pageKey];
+		
+		// Mark map as dirty
+		
+		[parentConnection->dirtyMaps setObject:pageKey forKey:@(rowid) withPreviousValue:nil];
+		[parentConnection->mapCache setObject:pageKey forKey:@(rowid)];
+		
+		// Add change to log
+		
+		[parentConnection->changes addObject:
+		  [YapDatabaseViewSectionChange insertGroup:group]];
+		
+		[parentConnection->changes addObject:
+		  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:0]];
+		
+		[parentConnection->mutatedGroups addObject:group];
 	}
-	
-	// Need to determine the location within the existing group.
-
-	// Calculate how many keys are in the group.
-	
-	NSUInteger count = 0;
-	
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+	else
 	{
-		count += pageMetadata->count;
-	}
-	
-	// Create a block to do a single sorting comparison between the object to be inserted,
-	// and some other object within the group at a given index.
-	//
-	// This block will be invoked repeatedly as we calculate the insertion index.
-	
-	NSComparisonResult (^compare)(NSUInteger) = ^NSComparisonResult (NSUInteger index){
-		
-		int64_t anotherRowid = 0;
-		
 		NSUInteger pageOffset = 0;
-		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
+		NSUInteger pageIndex = 0;
+		
+		NSUInteger lastPageIndex = [pagesMetadataForGroup count] - 1;
+		
+		for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 		{
-			if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
+			// Edge case: key is being inserted at the very end
+			
+			if ((index < (pageOffset + pm->count)) || (pageIndex == lastPageIndex))
 			{
-				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
-				
-				anotherRowid = [page rowidAtIndex:(index - pageOffset)];
+				pageMetadata = pm;
 				break;
 			}
-			else
+			else if (index == (pageOffset + pm->count))
 			{
-				pageOffset += pageMetadata->count;
+				// Optimization:
+				// The insertion index is in-between two pages.
+				// So it could go at the end of this page, or the beginning of the next page.
+				//
+				// We always place the key in the next page, unless:
+				// - this page has room AND
+				// - the next page is already full
+				//
+				// Related method: splitOversizedPage:
+				
+				NSUInteger maxPageSize = YAP_DATABASE_VIEW_MAX_PAGE_SIZE;
+				
+				if (pm->count < maxPageSize)
+				{
+					YapDatabaseViewPageMetadata *nextpm = [pagesMetadataForGroup objectAtIndex:(pageIndex+1)];
+					if (nextpm->count >= maxPageSize)
+					{
+						pageMetadata = pm;
+						break;
+					}
+				}
 			}
-		}
-		
-		if (sorting->blockType == YapDatabaseBlockTypeWithKey)
-		{
-			__unsafe_unretained YapDatabaseViewSortingWithKeyBlock sortingBlock =
-			    (YapDatabaseViewSortingWithKeyBlock)sorting->block;
 			
-			YapCollectionKey *another = [databaseTransaction collectionKeyForRowid:anotherRowid];
-			
-			return sortingBlock(databaseTransaction, group,
-			                      collectionKey.collection, collectionKey.key,
-			                            another.collection,       another.key);
-		}
-		else if (sorting->blockType == YapDatabaseBlockTypeWithObject)
-		{
-			__unsafe_unretained YapDatabaseViewSortingWithObjectBlock sortingBlock =
-			    (YapDatabaseViewSortingWithObjectBlock)sorting->block;
-			
-			YapCollectionKey *another = nil;
-			id anotherObject = nil;
-			[databaseTransaction getCollectionKey:&another
-			                               object:&anotherObject
-			                             forRowid:anotherRowid];
-			
-			return sortingBlock(databaseTransaction, group,
-			                      collectionKey.collection, collectionKey.key,        object,
-			                            another.collection,       another.key, anotherObject);
-		}
-		else if (sorting->blockType == YapDatabaseBlockTypeWithMetadata)
-		{
-			__unsafe_unretained YapDatabaseViewSortingWithMetadataBlock sortingBlock =
-			    (YapDatabaseViewSortingWithMetadataBlock)sorting->block;
-			
-			YapCollectionKey *another = nil;
-			id anotherMetadata = nil;
-			[databaseTransaction getCollectionKey:&another
-			                             metadata:&anotherMetadata
-			                             forRowid:anotherRowid];
-			
-			return sortingBlock(databaseTransaction, group,
-			                      collectionKey.collection, collectionKey.key,        metadata,
-			                            another.collection,       another.key, anotherMetadata);
-		}
-		else
-		{
-			__unsafe_unretained YapDatabaseViewSortingWithRowBlock sortingBlock =
-			    (YapDatabaseViewSortingWithRowBlock)sorting->block;
-			
-			YapCollectionKey *another = nil;
-			id anotherObject = nil;
-			id anotherMetadata = nil;
-			[databaseTransaction getCollectionKey:&another
-			                               object:&anotherObject
-			                             metadata:&anotherMetadata
-			                             forRowid:anotherRowid];
-			
-			return sortingBlock(databaseTransaction, group,
-			                      collectionKey.collection, collectionKey.key,        object,        metadata,
-			                            another.collection,       another.key, anotherObject, anotherMetadata);
-		}
-	};
-	
-	NSComparisonResult cmp;
-	
-	// Optimization 1:
-	//
-	// If the key is already in the group, check to see if its index is the same as before.
-	// This handles the common case where an object is updated without changing its position within the view.
-	
-	if (tryExistingIndexInGroup)
-	{
-		// Edge case: existing key is the only key in the group
-		//
-		// (existingIndex == 0) && (count == 1)
-		
-		BOOL useExistingIndexInGroup = YES;
-		
-		if (existingIndexInGroup > 0)
-		{
-			cmp = compare(existingIndexInGroup - 1); // compare vs prev
-			
-			useExistingIndexInGroup = (cmp != NSOrderedAscending); // object >= prev
-		}
-		
-		if ((existingIndexInGroup + 1) < count && useExistingIndexInGroup)
-		{
-			cmp = compare(existingIndexInGroup + 1); // compare vs next
-			
-			useExistingIndexInGroup = (cmp != NSOrderedDescending); // object <= next
-		}
-		
-		if (useExistingIndexInGroup)
-		{
-			// The key doesn't change position.
-			
-			YDBLogVerbose(@"Updated key(%@) in group(%@) maintains current index", collectionKey.key, group);
-			
-			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-			                                        inGroup:group
-			                                        atIndex:existingIndexInGroup
-			                                    withChanges:flags]];
-			return;
-		}
-		else
-		{
-			// The item has changed position within its group.
-			// Remove it from previous position (and don't forget to decrement count).
-			
-			[self removeRowid:rowid collectionKey:collectionKey
-			                          withPageKey:existingPageKey
-			                              inGroup:group
-			                     skipSubclassHook:YES]; // will be re-adding (in new index)
-			count--;
-			
-			// Don't forget to reset the existingPageKey ivar!
-			// Or else 'insertKey:inGroup:atIndex:withExistingPageKey:' will be given an invalid existingPageKey.
-			existingPageKey = nil;
-		}
-	}
-		
-	// Optimization 2:
-	//
-	// A very common operation is to insert objects at the beginning or end of the array.
-	// We attempt to notice this trend and optimize around it.
-	
-	if (viewConnection->lastInsertWasAtFirstIndex && (count > 1))
-	{
-		cmp = compare(0);
-		
-		if (cmp == NSOrderedAscending) // object < first
-		{
-			YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) at beginning (optimization)",
-			              collectionKey.key, collectionKey.collection, group);
-			
-			[self insertRowid:rowid collectionKey:collectionKey
-			                              inGroup:group
-			                              atIndex:0
-			                  withExistingPageKey:existingPageKey];
-			return;
-		}
-	}
-	
-	if (viewConnection->lastInsertWasAtLastIndex && (count > 1))
-	{
-		cmp = compare(count - 1);
-		
-		if (cmp != NSOrderedAscending) // object >= last
-		{
-			YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) at end (optimization)",
-			              collectionKey.key, collectionKey.collection, group);
-			
-			[self insertRowid:rowid collectionKey:collectionKey
-			                              inGroup:group
-			                              atIndex:count
-			                  withExistingPageKey:existingPageKey];
-			return;
-		}
-	}
-	
-	// Otherwise:
-	//
-	// Binary search operation.
-	//
-	// This particular algorithm accounts for cases where the objects are not unique.
-	// That is, if some objects are NSOrderedSame, then the algorithm returns the largest index possible
-	// (within the region where elements are "equal").
-	
-	NSUInteger loopCount = 0;
-	
-	NSUInteger min = 0;
-	NSUInteger max = count;
-	
-	while (min < max)
-	{
-		NSUInteger mid = (min + max) / 2;
-		
-		cmp = compare(mid);
-		
-		if (cmp == NSOrderedAscending)
-			max = mid;
-		else
-			min = mid + 1;
-		
-		loopCount++;
-	}
-	
-	YDBLogVerbose(@"Insert key(%@) collection(%@) in group(%@) took %lu comparisons",
-	              collectionKey.key, collectionKey.collection, group, (unsigned long)loopCount);
-	
-	[self insertRowid:rowid collectionKey:collectionKey
-	                              inGroup:group
-	                              atIndex:min
-	                  withExistingPageKey:existingPageKey];
-	
-	viewConnection->lastInsertWasAtFirstIndex = (min == 0);
-	viewConnection->lastInsertWasAtLastIndex  = (min == count);
-}
-
-/**
- * Use this method when the index (within the group) is already known.
-**/
-- (void)removeRowid:(int64_t)rowid
-      collectionKey:(YapCollectionKey *)collectionKey
-            atIndex:(NSUInteger)index
-            inGroup:(NSString *)group
-{
-	YDBLogAutoTrace();
-	
-	NSParameterAssert(collectionKey != nil);
-	NSParameterAssert(group != nil);
-	
-	// Fetch page
-	
-	YapDatabaseViewPage *page = nil;
-	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	
-	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
-	
-	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
-	{
-		if ((index < (pageOffset + pm->count)) && (pm->count > 0))
-		{
-			pageMetadata = pm;
-			page = [self pageForPageKey:pm->pageKey];
-			
-			break;
-		}
-		else
-		{
+			pageIndex++;
 			pageOffset += pm->count;
 		}
+		
+		NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@)", group);
+		
+		NSString *pageKey = pageMetadata->pageKey;
+		YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
+		
+		YDBLogVerbose(@"Inserting key(%@) collection(%@) in group(%@) at index(%lu) with page(%@) pageOffset(%lu)",
+		              collectionKey.key, collectionKey.collection, group,
+		              (unsigned long)index, pageKey, (unsigned long)(index - pageOffset));
+		
+		// Update page (insert rowid)
+		
+		[page insertRowid:rowid atIndex:(index - pageOffset)];
+		
+		// Update pageMetadata (increment count)
+		
+		pageMetadata->count = [page count];
+		
+		// Mark page as dirty
+		
+		[parentConnection->dirtyPages setObject:page forKey:pageKey];
+		[parentConnection->pageCache setObject:page forKey:pageKey];
+		
+		// Mark map as dirty
+		
+		[parentConnection->dirtyMaps setObject:pageKey forKey:@(rowid)  withPreviousValue:nil];
+		[parentConnection->mapCache setObject:pageKey forKey:@(rowid)];
+		
+		// Add change to log
+		
+		[parentConnection->changes addObject:
+		  [YapDatabaseViewRowChange insertCollectionKey:collectionKey inGroup:group atIndex:index]];
+		
+		[parentConnection->mutatedGroups addObject:group];
+		
+		// During a transaction we allow pages to grow in size beyond the max page size.
+		// This increases efficiency, as we can allow multiple changes to occur,
+		// but perform the cleanup task only once (of splitting oversized pages ).
+		//
+		// However, we do want to avoid allowing a single page to grow infinitely large.
+		// So we use triggers to ensure pages don't get too big.
+		
+		NSUInteger trigger = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 32;
+		NSUInteger target = YAP_DATABASE_VIEW_MAX_PAGE_SIZE * 16;
+		
+		if ([page count] > trigger)
+		{
+			[self splitOversizedPage:page withPageKey:pageKey toSize:target];
+		}
 	}
-	
-	if (page == nil)
-	{
-		YDBLogError(@"%@ (%@): Unable to remove rowid at groupIndex(%lu) in group(%@)",
-		            THIS_METHOD, [self registeredName], (unsigned long)index, group);
-		return;
-	}
-	
-	// Verify specified rowid matches specified index
-	
-	NSUInteger indexWithinPage = index - pageOffset;
-	
-	NSAssert(rowid == [page rowidAtIndex:indexWithinPage], @"Rowid mismatch");
-	
-	YDBLogVerbose(@"Removing collection(%@) key(%@) from page(%@) at pageIndex(%lu)",
-	              collectionKey.collection, collectionKey.key, page, (unsigned long)indexWithinPage);
-	
-	// Add change to log
-	
-	[viewConnection->changes addObject:
-	  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:index]];
-	
-	[viewConnection->mutatedGroups addObject:group];
-	
-	// Update page (by removing rowid from array)
-	
-	[page removeRowidAtIndex:indexWithinPage];
-	
-	// Update page metadata (by decrementing count)
-	
-	pageMetadata->count = [page count];
-	
-	// Mark page as dirty
-	
-	YDBLogVerbose(@"Dirty page(%@)", pageMetadata->pageKey);
-	
-	[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
-	[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
-	
-	// Mark key for deletion
-	
-	[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
-	[viewConnection->mapCache removeObjectForKey:@(rowid)];
-	
-	// Subclass hook
-	
-	[self didRemoveRowid:rowid collectionKey:collectionKey];
 }
 
 /**
- * Use this method (instead of removeKey:) when the pageKey and group are already known.
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
+**/
+- (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+{
+	YDBLogAutoTrace();
+	
+	// Find out if collection/key is in view
+	
+	YapDatabaseViewLocator *locator = [self locatorForRowid:rowid];
+	if (locator)
+	{
+		[self removeRowid:rowid collectionKey:collectionKey withLocator:locator];
+	}
+}
+
+/**
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
+**/
+- (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+                                         atIndex:(NSUInteger)index
+                                         inGroup:(NSString *)group
+{
+	[self removeRowid:rowid
+	    collectionKey:collectionKey
+	          atIndex:index
+	          inGroup:group
+	      withPageKey:nil];
+}
+
+/**
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
 **/
 - (void)removeRowid:(int64_t)rowid
       collectionKey:(YapCollectionKey *)collectionKey
-        withPageKey:(NSString *)pageKey
-            inGroup:(NSString *)group
-   skipSubclassHook:(BOOL)skipSubclassHook
+        withLocator:(YapDatabaseViewLocator *)locator
+{
+	[self removeRowid:rowid
+	    collectionKey:collectionKey
+	          atIndex:locator.index
+	          inGroup:locator.group
+	      withPageKey:locator.pageKey];
+}
+
+/**
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
+**/
+- (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
+                                         atIndex:(NSUInteger)index
+                                         inGroup:(NSString *)group
+                                     withPageKey:(NSString *)pageKey
 {
 	YDBLogAutoTrace();
 	
 	NSParameterAssert(collectionKey != nil);
-	NSParameterAssert(pageKey != nil);
 	NSParameterAssert(group != nil);
+	
+	// Fetch pageKey (if unknown)
+	
+	if (pageKey == nil)
+		pageKey = [self pageKeyForRowid:rowid];
+	
+	NSAssert(pageKey != nil, @"Missing pageKey for rowid(%lld) in group(%@)", rowid, group);
 	
 	// Fetch page & pageMetadata
 	
@@ -2179,7 +1445,7 @@
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageOffset = 0;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 	{
@@ -2213,10 +1479,10 @@
 	
 	NSUInteger indexWithinGroup = pageOffset + indexWithinPage;
 	
-	[viewConnection->changes addObject:
+	[parentConnection->changes addObject:
 	  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:indexWithinGroup]];
 	
-	[viewConnection->mutatedGroups addObject:group];
+	[parentConnection->mutatedGroups addObject:group];
 	
 	// Update page (by removing key from array)
 	
@@ -2230,156 +1496,79 @@
 	
 	YDBLogVerbose(@"Dirty page(%@)", pageKey);
 	
-	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache setObject:page forKey:pageKey];
+	[parentConnection->dirtyPages setObject:page forKey:pageKey];
+	[parentConnection->pageCache setObject:page forKey:pageKey];
 	
-	// Mark key for deletion
+	// Mark map as dirty
 	
-	[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
-	[viewConnection->mapCache removeObjectForKey:@(rowid)];
-	
-	// Subclass hook
-	
-	if (!skipSubclassHook) {
-		[self didRemoveRowid:rowid collectionKey:collectionKey];
-	}
+	[parentConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid) withPreviousValue:pageKey];
+	[parentConnection->mapCache removeObjectForKey:@(rowid)];
 }
 
 /**
- * Use this method when you don't know if the collection/key exists in the view.
-**/
-- (void)removeRowid:(int64_t)rowid collectionKey:(YapCollectionKey *)collectionKey
-{
-	YDBLogAutoTrace();
-	
-	// Find out if collection/key is in view
-	
-	NSString *pageKey = [self pageKeyForRowid:rowid];
-	if (pageKey)
-	{
-		[self removeRowid:rowid collectionKey:collectionKey
-		                          withPageKey:pageKey
-		                              inGroup:[viewConnection->state groupForPageKey:pageKey]
-		                     skipSubclassHook:NO];
-	}
-}
-
-/**
- * Use this method to remove 1 or more keys from a given pageKey & group.
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
  *
- * The dictionary is to be of the form:
- * @{
- *     @(rowid) = collectionKey,
- * }
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
 **/
-- (void)removeRowidsWithKeyMappings:(NSDictionary *)keyMappings pageKey:(NSString *)pageKey inGroup:(NSString *)group
+- (void)removeRowidsWithCollectionKeys:(NSDictionary<NSNumber *, YapCollectionKey *> *)collectionKeys
+                              locators:(NSDictionary<NSNumber *, YapDatabaseViewLocator *> *)locators
 {
-	YDBLogAutoTrace();
+	// Let's optimize IO by enumerating the items by pageKey.
+	// That is, group our changes by page.
 	
-	NSUInteger count = [keyMappings count];
-	
-	if (count == 0) return;
-	if (count == 1)
+	NSArray *sortedRowids = [locators keysSortedByValueUsingComparator:
+		^NSComparisonResult(YapDatabaseViewLocator *locator1, YapDatabaseViewLocator *locator2)
 	{
-		for (NSNumber *rowidNumber in keyMappings)
-		{
-			int64_t rowid = [rowidNumber longLongValue];
-			YapCollectionKey *collectionKey = [keyMappings objectForKey:rowidNumber];
-			
-			[self removeRowid:rowid collectionKey:collectionKey
-			                          withPageKey:pageKey
-			                              inGroup:group
-			                     skipSubclassHook:YES]; // The handleRemoveObjectsForKeys::: does it
-		}
-		return;
-	}
-	
-	NSParameterAssert(pageKey != nil);
-	NSParameterAssert(group != nil);
-	
-	// Fetch page & pageMetadata
-	
-	YapDatabaseViewPage *page = [self pageForPageKey:pageKey];
-	
-	YapDatabaseViewPageMetadata *pageMetadata = nil;
-	NSUInteger pageOffset = 0;
-	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
-	
-	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
-	{
-		if ([pm->pageKey isEqualToString:pageKey])
-		{
-			pageMetadata = pm;
-			break;
-		}
+		__unsafe_unretained NSString *pageKey1 = locator1.pageKey;
+		__unsafe_unretained NSString *pageKey2 = locator2.pageKey;
 		
-		pageOffset += pm->count;
-	}
-	
-	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@) withPageKey(%@)", group, pageKey);
-	
-	// Find matching indexes within page.
-	// And add changes to log.
-	// Notes:
-	//
-	// - We must add the changes in reverse order,
-	//     just as if we were deleting them from the array one-at-a-time.
-	
-	NSUInteger numRemoved = 0;
-	
-	for (NSUInteger iPlusOne = [page count]; iPlusOne > 0; iPlusOne--)
-	{
-		NSUInteger i = iPlusOne - 1;
-		int64_t rowid = [page rowidAtIndex:i];
-		
-		YapCollectionKey *collectionKey = [keyMappings objectForKey:@(rowid)];
-		if (collectionKey)
+		if (pageKey1)
 		{
-			[page removeRowidAtIndex:i];
-			numRemoved++;
-			
-			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange deleteCollectionKey:collectionKey inGroup:group atIndex:(pageOffset + i)]];
+			if (pageKey2)
+				return [pageKey1 compare:pageKey2];
+			else
+				return NSOrderedAscending;
 		}
-	}
+		else if (pageKey2)
+		{
+			return NSOrderedDescending;
+		}
+		else
+		{
+			return NSOrderedSame;
+		}
+	}];
 	
-	[viewConnection->mutatedGroups addObject:group];
-	
-	YDBLogVerbose(@"Removed %lu key(s) from page(%@)", (unsigned long)numRemoved, page);
-	
-	if (numRemoved != count)
+	[locators enumerateKeysAndObjectsUsingBlock:
+		^(NSNumber *rowidNumber, YapDatabaseViewLocator *locator, BOOL __unused *stop)
 	{
-		YDBLogWarn(@"%@ (%@): Expected to remove %lu, but only found %lu in page(%@)",
-		           THIS_METHOD, [self registeredName], (unsigned long)count, (unsigned long)numRemoved, pageKey);
-	}
-	
-	// Update page metadata (by decrementing count)
-	
-	pageMetadata->count = [page count];
-	
-	// Mark page as dirty
-	
-	YDBLogVerbose(@"Dirty page(%@)", pageKey);
-	
-	[viewConnection->dirtyPages setObject:page forKey:pageKey];
-	[viewConnection->pageCache setObject:page forKey:pageKey];
-	
-	// Mark rowid mappings for deletion
-	
-	for (NSNumber *rowidNumber in keyMappings)
-	{
-		[viewConnection->dirtyMaps setObject:[NSNull null] forKey:rowidNumber];
-		[viewConnection->mapCache removeObjectForKey:rowidNumber];
-	}
+		int64_t rowid = [rowidNumber longLongValue];
+		YapCollectionKey *collectionKey = collectionKeys[rowidNumber];
+		
+		NSAssert(collectionKey != nil, @"Missing collectionKey for rowid !");
+		
+		[self removeRowid:rowid collectionKey:collectionKey withLocator:locator];
+	}];
 }
 
 /**
- * This method is used by subclasses.
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
 **/
 - (void)removeAllRowidsInGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	NSMutableArray *removedRowids = [NSMutableArray array];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -2392,8 +1581,8 @@
 			
 			[removedRowids addObject:@(rowid)];
 			
-			[viewConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid)];
-			[viewConnection->mapCache removeObjectForKey:@(rowid)];
+			[parentConnection->dirtyMaps setObject:[NSNull null] forKey:@(rowid) withPreviousValue:pageMetadata->pageKey];
+			[parentConnection->mapCache removeObjectForKey:@(rowid)];
 		}];
 		
 		// Update page (by removing all rowids from array)
@@ -2408,26 +1597,32 @@
 		
 		YDBLogVerbose(@"Dirty page(%@)", pageMetadata->pageKey);
 		
-		[viewConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
-		[viewConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
+		[parentConnection->dirtyPages setObject:page forKey:pageMetadata->pageKey];
+		[parentConnection->pageCache setObject:page forKey:pageMetadata->pageKey];
 	}
 	
-	[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
-	[viewConnection->mutatedGroups addObject:group];
-	
-	// Subclass hook
-	
-	[self didRemoveRowids:removedRowids collectionKeys:nil];
+	[parentConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
+	[parentConnection->mutatedGroups addObject:group];
 }
 
+/**
+ * This is an internal method that modifies the underlying structures that hold the arrays of rowids.
+ * These structures are meant to be private, and knowledge of how they work shouldn't be required by subclasses.
+ * Subclasses should always use these internal methods,
+ * and should never attempt to modify the internal structures themselves.
+ *
+ * Remember:
+ * The internal structure may change in future versions.
+ * When this happens, subclasses that disobey this rule will break.
+**/
 - (void)removeAllRowids
 {
 	YDBLogAutoTrace();
 	
 	if ([self isPersistentView])
 	{
-		sqlite3_stmt *mapStatement = [viewConnection mapTable_removeAllStatement];
-		sqlite3_stmt *pageStatement = [viewConnection pageTable_removeAllStatement];
+		sqlite3_stmt *mapStatement = [parentConnection mapTable_removeAllStatement];
+		sqlite3_stmt *pageStatement = [parentConnection pageTable_removeAllStatement];
 		
 		if (mapStatement == NULL || pageStatement == NULL)
 			return;
@@ -2468,28 +1663,24 @@
 		[pageMetadataTableTransaction removeAllObjects];
 	}
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *stop) {
+	[parentConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL __unused *stop) {
 		
 		if (!isRepopulate) {
-			[viewConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
+			[parentConnection->changes addObject:[YapDatabaseViewSectionChange resetGroup:group]];
 		}
-		[viewConnection->mutatedGroups addObject:group];
+		[parentConnection->mutatedGroups addObject:group];
 	}];
 	
-	[viewConnection->state removeAllGroups];
+	[parentConnection->state removeAllGroups];
 	
-	[viewConnection->mapCache removeAllObjects];
-	[viewConnection->pageCache removeAllObjects];
+	[parentConnection->mapCache removeAllObjects];
+	[parentConnection->pageCache removeAllObjects];
 	
-	[viewConnection->dirtyMaps removeAllObjects];
-	[viewConnection->dirtyPages removeAllObjects];
-	[viewConnection->dirtyLinks removeAllObjects];
+	[parentConnection->dirtyMaps removeAllObjects];
+	[parentConnection->dirtyPages removeAllObjects];
+	[parentConnection->dirtyLinks removeAllObjects];
 	
-	viewConnection->reset = YES;
-	
-	// Subclass hook
-	
-	[self didRemoveAllRowids];
+	parentConnection->reset = YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2502,8 +1693,8 @@
 	
 	// Find associated pageMetadata
 	
-	NSString *group = [viewConnection->state groupForPageKey:pageKey];
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSString *group = [parentConnection->state groupForPageKey:pageKey];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	YapDatabaseViewPageMetadata *pageMetadata;
 	for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
@@ -2514,6 +1705,8 @@
 			break;
 		}
 	}
+	
+	NSAssert(pageMetadata != nil, @"Missing pageMetadata in group(%@) withPageKey(%@)", group, pageKey);
 	
 	// Split the page as many times as needed to make it fit the designated maxPageSize
 	
@@ -2555,8 +1748,8 @@
 				// Mark prevPage as dirty.
 				// The page is already marked as dirty.
 				
-				[viewConnection->dirtyPages setObject:prevPage forKey:prevPageMetadata->pageKey];
-				[viewConnection->pageCache setObject:prevPage forKey:prevPageMetadata->pageKey];
+				[parentConnection->dirtyPages setObject:prevPage forKey:prevPageMetadata->pageKey];
+				[parentConnection->pageCache setObject:prevPage forKey:prevPageMetadata->pageKey];
 				
 				// Mark rowid mappings as dirty
 				
@@ -2564,10 +1757,8 @@
 				                               range:prevPageRange
 				                          usingBlock:^(int64_t rowid, NSUInteger __unused index, BOOL __unused *stop) {
 					
-					NSNumber *number = @(rowid);
-					
-					[viewConnection->dirtyMaps setObject:prevPageMetadata->pageKey forKey:number];
-					[viewConnection->mapCache setObject:prevPageMetadata->pageKey forKey:number];
+					[parentConnection->dirtyMaps setObject:prevPageMetadata->pageKey forKey:@(rowid) withPreviousValue:pageMetadata->pageKey];
+					[parentConnection->mapCache setObject:prevPageMetadata->pageKey forKey:@(rowid)];
 				}];
 				
 				continue;
@@ -2605,8 +1796,8 @@
 				// Mark nextPage as dirty.
 				// The page is already marked as dirty.
 				
-				[viewConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
-				[viewConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];
+				[parentConnection->dirtyPages setObject:nextPage forKey:nextPageMetadata->pageKey];
+				[parentConnection->pageCache setObject:nextPage forKey:nextPageMetadata->pageKey];
 				
 				// Mark rowid mappings as dirty
 				
@@ -2614,10 +1805,8 @@
 				                               range:nextPageRange
 				                          usingBlock:^(int64_t rowid, NSUInteger __unused index, BOOL __unused *stop) {
 					
-					NSNumber *number = @(rowid);
-					
-					[viewConnection->dirtyMaps setObject:nextPageMetadata->pageKey forKey:number];
-					[viewConnection->mapCache setObject:nextPageMetadata->pageKey forKey:number];
+					[parentConnection->dirtyMaps setObject:nextPageMetadata->pageKey forKey:@(rowid) withPreviousValue:pageMetadata->pageKey];
+					[parentConnection->mapCache setObject:nextPageMetadata->pageKey forKey:@(rowid)];
 				}];
 				
 				continue;
@@ -2643,7 +1832,7 @@
 		
 		// Insert new pageMetadata into array
 		
-		pagesMetadataForGroup = [viewConnection->state insertPageMetadata:newPageMetadata
+		pagesMetadataForGroup = [parentConnection->state insertPageMetadata:newPageMetadata
 		                                                          atIndex:(pageIndex + 1)
 		                                                          inGroup:group];
 		
@@ -2654,7 +1843,7 @@
 			YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 2)];
 			nextPageMetadata->prevPageKey = newPageKey;
 			
-			[viewConnection->dirtyLinks setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
+			[parentConnection->dirtyLinks setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
 		}
 		
 		// Move objects from end of page to beginning of new page
@@ -2672,17 +1861,15 @@
 		// Mark newPage as dirty.
 		// The page is already marked as dirty.
 		
-		[viewConnection->dirtyPages setObject:newPage forKey:newPageKey];
-		[viewConnection->pageCache setObject:newPage forKey:newPageKey];
+		[parentConnection->dirtyPages setObject:newPage forKey:newPageKey];
+		[parentConnection->pageCache setObject:newPage forKey:newPageKey];
 		
 		// Mark rowid mappings as dirty
 		
 		[newPage enumerateRowidsUsingBlock:^(int64_t rowid, NSUInteger __unused idx, BOOL __unused *stop) {
 			
-			NSNumber *number = @(rowid);
-			
-			[viewConnection->dirtyMaps setObject:newPageKey forKey:number];
-			[viewConnection->mapCache setObject:newPageKey forKey:number];
+			[parentConnection->dirtyMaps setObject:newPageKey forKey:@(rowid) withPreviousValue:pageMetadata->pageKey];
+			[parentConnection->mapCache setObject:newPageKey forKey:@(rowid)];
 		}];
 		
 	} // end while (pageMetadata->count > maxPageSize)
@@ -2694,8 +1881,8 @@
 	
 	// Find associated pageMetadata
 	
-	NSString *group = [viewConnection->state groupForPageKey:pageKey];
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSString *group = [parentConnection->state groupForPageKey:pageKey];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	YapDatabaseViewPageMetadata *pageMetadata = nil;
 	NSUInteger pageIndex = 0;
@@ -2720,19 +1907,19 @@
 		YapDatabaseViewPageMetadata *nextPageMetadata = [pagesMetadataForGroup objectAtIndex:(pageIndex + 1)];
 		nextPageMetadata->prevPageKey = pageMetadata->prevPageKey;
 		
-		[viewConnection->dirtyLinks setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
+		[parentConnection->dirtyLinks setObject:nextPageMetadata forKey:nextPageMetadata->pageKey];
 	}
 	
 	// Drop pageMetada (from in-memory state)
 	
-	pagesMetadataForGroup = [viewConnection->state removePageMetadataAtIndex:pageIndex inGroup:group];
+	pagesMetadataForGroup = [parentConnection->state removePageMetadataAtIndex:pageIndex inGroup:group];
 	
 	// Mark page as dropped
 	
-	[viewConnection->dirtyPages setObject:[NSNull null] forKey:pageMetadata->pageKey];
-	[viewConnection->pageCache removeObjectForKey:pageMetadata->pageKey];
+	[parentConnection->dirtyPages setObject:[NSNull null] forKey:pageMetadata->pageKey];
+	[parentConnection->pageCache removeObjectForKey:pageMetadata->pageKey];
 	
-	[viewConnection->dirtyLinks removeObjectForKey:pageMetadata->pageKey];
+	[parentConnection->dirtyLinks removeObjectForKey:pageMetadata->pageKey];
 	
 	// Maybe drop group
 	
@@ -2740,10 +1927,10 @@
 	{
 		YDBLogVerbose(@"Dropping empty group(%@)", pageMetadata->group);
 		
-		[viewConnection->changes addObject:
+		[parentConnection->changes addObject:
 		    [YapDatabaseViewSectionChange deleteGroup:pageMetadata->group]];
 		
-		[viewConnection->state removeGroup:group];
+		[parentConnection->state removeGroup:group];
 	}
 }
 
@@ -2769,7 +1956,7 @@
 	// Get all the dirty pageMetadata objects.
 	// We snapshot the items so we can make modifications as we enumerate.
 	
-	NSArray *pageKeys = [viewConnection->dirtyPages allKeys];
+	NSArray *pageKeys = [parentConnection->dirtyPages allKeys];
 	
 	// Step 1 is to "expand" the oversized pages.
 	//
@@ -2778,7 +1965,7 @@
 	
 	for (NSString *pageKey in pageKeys)
 	{
-		YapDatabaseViewPage *page = [viewConnection->dirtyPages objectForKey:pageKey];
+		YapDatabaseViewPage *page = [parentConnection->dirtyPages objectForKey:pageKey];
 		
 		if ([page count] > maxPageSize)
 		{
@@ -2795,7 +1982,7 @@
 	
 	for (NSString *pageKey in pageKeys)
 	{
-		YapDatabaseViewPage *page = [viewConnection->dirtyPages objectForKey:pageKey];
+		YapDatabaseViewPage *page = [parentConnection->dirtyPages objectForKey:pageKey];
 		
 		if ([page count] == 0)
 		{
@@ -2824,9 +2011,9 @@
 	// During the transaction we stored all changes in the "dirty" dictionaries.
 	// This allows the view to make multiple changes to a page, yet only write it once.
 	
-	YDBLogVerbose(@"viewConnection->dirtyPages: %@", viewConnection->dirtyPages);
-	YDBLogVerbose(@"viewConnection->dirtyLinks: %@", viewConnection->dirtyLinks);
-	YDBLogVerbose(@"viewConnection->dirtyMaps: %@", viewConnection->dirtyMaps);
+	YDBLogVerbose(@"parentConnection->dirtyPages: %@", parentConnection->dirtyPages);
+	YDBLogVerbose(@"parentConnection->dirtyLinks: %@", parentConnection->dirtyLinks);
+	YDBLogVerbose(@"parentConnection->dirtyMaps: %@", parentConnection->dirtyMaps);
 	
 	if ([self isPersistentView])
 	{
@@ -2834,7 +2021,7 @@
 		//
 		// Write dirty pages to table (along with associated dirty metadata)
 	
-		[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
+		[parentConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 			
 			__unsafe_unretained NSString *pageKey = (NSString *)key;
 			__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -2844,15 +2031,15 @@
 			
 			YapDatabaseViewPageMetadata *pageMetadata = nil;
 			
-			pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
+			pageMetadata = [parentConnection->dirtyLinks objectForKey:pageKey];
 			if (pageMetadata)
 			{
 				hasDirtyLink = YES;
 			}
 			else
 			{
-				NSString *group = [viewConnection->state groupForPageKey:pageKey];
-				NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+				NSString *group = [parentConnection->state groupForPageKey:pageKey];
+				NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 				
 				for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 				{
@@ -2872,7 +2059,7 @@
 			
 			if ((id)page == (id)[NSNull null])
 			{
-				sqlite3_stmt *statement = [viewConnection pageTable_removeForPageKeyStatement];
+				sqlite3_stmt *statement = [parentConnection pageTable_removeForPageKeyStatement];
 				if (statement == NULL)
 				{
 					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
@@ -2903,7 +2090,7 @@
 			}
 			else if (needsInsert)
 			{
-				sqlite3_stmt *statement = [viewConnection pageTable_insertForPageKeyStatement];
+				sqlite3_stmt *statement = [parentConnection pageTable_insertForPageKeyStatement];
 				if (statement == NULL)
 				{
 					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
@@ -2960,7 +2147,7 @@
 			}
 			else if (hasDirtyLink)
 			{
-				sqlite3_stmt *statement = [viewConnection pageTable_updateAllForPageKeyStatement];
+				sqlite3_stmt *statement = [parentConnection pageTable_updateAllForPageKeyStatement];
 				if (statement == NULL)
 				{
 					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
@@ -3009,7 +2196,7 @@
 			}
 			else
 			{
-				sqlite3_stmt *statement = [viewConnection pageTable_updatePageForPageKeyStatement];
+				sqlite3_stmt *statement = [parentConnection pageTable_updatePageForPageKeyStatement];
 				if (statement == NULL)
 				{
 					NSAssert(NO, @"Cannot get proper statement! View will become corrupt!");
@@ -3053,12 +2240,12 @@
 		// Write dirty prevPageKey values to table (those not also associated with dirty pages).
 		// This happens when only the prevPageKey pointer is changed.
 		
-		[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[parentConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
 			
 			NSString *pageKey = (NSString *)key;
 			YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
 			
-			if ([viewConnection->dirtyPages objectForKey:pageKey])
+			if ([parentConnection->dirtyPages objectForKey:pageKey])
 			{
 				// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
 				// No need to write the metadata again.
@@ -3066,7 +2253,7 @@
 				return;//continue;
 			}
 			
-			sqlite3_stmt *statement = [viewConnection pageTable_updateLinkForPageKeyStatement];
+			sqlite3_stmt *statement = [parentConnection pageTable_updateLinkForPageKeyStatement];
 			if (statement == NULL) {
 				*stop = YES;
 				return;//from block
@@ -3108,14 +2295,14 @@
 		//
 		// Update the dirty rowid -> pageKey mappings.
 		
-		[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id rowIdObj, id pageKeyObj, BOOL *stop) {
+		[parentConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id rowIdObj, id pageKeyObj, BOOL *stop) {
 			
 			int64_t rowid = [(NSNumber *)rowIdObj longLongValue];
 			__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
 			
 			if ((id)pageKey == (id)[NSNull null])
 			{
-				sqlite3_stmt *statement = [viewConnection mapTable_removeForRowidStatement];
+				sqlite3_stmt *statement = [parentConnection mapTable_removeForRowidStatement];
 				if (statement == NULL)
 				{
 					*stop = YES;
@@ -3144,7 +2331,7 @@
 			}
 			else
 			{
-				sqlite3_stmt *statement = [viewConnection mapTable_setPageKeyForRowidStatement];
+				sqlite3_stmt *statement = [parentConnection mapTable_setPageKeyForRowidStatement];
 				if (statement == NULL)
 				{
 					*stop = YES;
@@ -3185,15 +2372,15 @@
 		//
 		// Write dirty pages to table
 		
-		BOOL hasDirtyPages = ([viewConnection->dirtyPages count] > 0);
-		BOOL hasDirtyLinks = ([viewConnection->dirtyLinks count] > 0);
-		BOOL hasDirtyMaps  = ([viewConnection->dirtyMaps  count] > 0);
+		BOOL hasDirtyPages = ([parentConnection->dirtyPages count] > 0);
+		BOOL hasDirtyLinks = ([parentConnection->dirtyLinks count] > 0);
+		BOOL hasDirtyMaps  = ([parentConnection->dirtyMaps  count] > 0);
 		
 		if (hasDirtyPages)
 		{
 			[pageTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
+				[parentConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -3218,7 +2405,7 @@
 		{
 			[pageMetadataTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
+				[parentConnection->dirtyPages enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPage *page = (YapDatabaseViewPage *)obj;
@@ -3231,11 +2418,11 @@
 					{
 						YapDatabaseViewPageMetadata *pageMetadata = nil;
 						
-						pageMetadata = [viewConnection->dirtyLinks objectForKey:pageKey];
+						pageMetadata = [parentConnection->dirtyLinks objectForKey:pageKey];
 						if (pageMetadata == nil)
 						{
-							NSString *group = [viewConnection->state groupForPageKey:pageKey];
-							NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+							NSString *group = [parentConnection->state groupForPageKey:pageKey];
+							NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 							
 							for (YapDatabaseViewPageMetadata *pm in pagesMetadataForGroup)
 							{
@@ -3257,12 +2444,12 @@
 					}
 				}];
 				
-				[viewConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
+				[parentConnection->dirtyLinks enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSString *pageKey = (NSString *)key;
 					__unsafe_unretained YapDatabaseViewPageMetadata *pageMetadata = (YapDatabaseViewPageMetadata *)obj;
 					
-					if ([viewConnection->dirtyPages objectForKey:pageKey])
+					if ([parentConnection->dirtyPages objectForKey:pageKey])
 					{
 						// Both the page and metadata were dirty, so we wrote them both to disk at the same time.
 						// No need to write the metadata again.
@@ -3283,7 +2470,7 @@
 		{
 			[mapTableTransaction modifyWithBlock:^{ @autoreleasepool {
 				
-				[viewConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
+				[parentConnection->dirtyMaps enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop) {
 					
 					__unsafe_unretained NSNumber *rowidNumber = (NSNumber *)key;
 					__unsafe_unretained NSString *pageKey = (NSString *)obj;
@@ -3313,14 +2500,14 @@
 	// Commit is complete.
 	// Forward to connection for further cleanup.
 	
-	[viewConnection postCommitCleanup];
+	[parentConnection postCommitCleanup];
 	
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
 	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
 	
-	viewConnection = nil;      // Do not remove !
+	parentConnection = nil;    // Do not remove !
 	databaseTransaction = nil; // Do not remove !
 }
 
@@ -3338,553 +2525,15 @@
 	// Rollback is complete.
 	// Forward to connection for further cleanup.
 	
-	[viewConnection postRollbackCleanup];
+	[parentConnection postRollbackCleanup];
 	
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
 	// Thus, this code is here as a safety net to ensure that such accidental misuse doesn't do any damage.
 	
-	viewConnection = nil;      // Do not remove !
+	parentConnection = nil;    // Do not remove !
 	databaseTransaction = nil; // Do not remove !
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Transaction Hooks
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (void)_handleChangeWithRowid:(int64_t)rowid
-                 collectionKey:(YapCollectionKey *)collectionKey
-                        object:(id)object
-                      metadata:(id)metadata
-                      grouping:(YapDatabaseViewGrouping *)grouping
-                       sorting:(YapDatabaseViewSorting *)sorting
-            blockInvokeBitMask:(YapDatabaseBlockInvoke)blockInvokeBitMask
-                changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
-                      isInsert:(BOOL)isInsert
-{
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseView *view = viewConnection->view;
-	
-	__unsafe_unretained NSString *collection = collectionKey.collection;
-	__unsafe_unretained NSString *key = collectionKey.key;
-	
-	// Should we ignore the row based on the allowedCollections ?
-	
-	YapWhitelistBlacklist *allowedCollections = view->options.allowedCollections;
-	
-	if (allowedCollections && ![allowedCollections isAllowed:collection])
-	{
-		return;
-	}
-	
-	// Determine if the grouping or sorting may have changed
-	
-	BOOL groupingMayHaveChanged;
-	BOOL sortingMayHaveChanged;
-	
-	if (isInsert)
-	{
-		groupingMayHaveChanged = YES;
-		sortingMayHaveChanged  = YES;
-	}
-	else
-	{
-		groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-		sortingMayHaveChanged  = (sorting->blockInvokeOptions & blockInvokeBitMask);
-	}
-	
-	NSString *group = nil;
-	
-	if (!groupingMayHaveChanged && !sortingMayHaveChanged)
-	{
-		// Nothing left to do.
-		// Neither the groupingBlock or sortingBlock need to be run.
-		
-		NSString *pageKey = [self pageKeyForRowid:rowid];
-		group = [viewConnection->state groupForPageKey:pageKey];
-		
-		if (group)
-		{
-			NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
-			
-			[viewConnection->changes addObject:
-			  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-			                                        inGroup:group
-			                                        atIndex:existingIndex
-			                                    withChanges:changesBitMask]];
-		}
-		
-		return;
-	}
-	
-	// Invoke the grouping block to find out if the row should be included in the view.
-	
-	if (groupingMayHaveChanged)
-	{
-		if (grouping->blockType == YapDatabaseBlockTypeWithKey)
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithKeyBlock groupingBlock =
-			    (YapDatabaseViewGroupingWithKeyBlock)grouping->block;
-			
-			group = groupingBlock(databaseTransaction, collection, key);
-			group = [group copy]; // mutable string protection
-		}
-		else if (grouping->blockType == YapDatabaseBlockTypeWithObject)
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithObjectBlock groupingBlock =
-			    (YapDatabaseViewGroupingWithObjectBlock)grouping->block;
-			
-			group = groupingBlock(databaseTransaction, collection, key, object);
-			group = [group copy]; // mutable string protection
-		}
-		else if (grouping->blockType == YapDatabaseBlockTypeWithMetadata)
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithMetadataBlock groupingBlock =
-			    (YapDatabaseViewGroupingWithMetadataBlock)grouping->block;
-			
-			group = groupingBlock(databaseTransaction, collection, key, metadata);
-			group = [group copy]; // mutable string protection
-		}
-		else
-		{
-			__unsafe_unretained YapDatabaseViewGroupingWithRowBlock groupingBlock =
-			    (YapDatabaseViewGroupingWithRowBlock)grouping->block;
-			
-			group = groupingBlock(databaseTransaction, collection, key, object, metadata);
-			group = [group copy]; // mutable string protection
-		}
-		
-		if (group == nil)
-		{
-			// Remove row from view (if needed).
-			
-			if (!isInsert)
-			{
-				[self removeRowid:rowid collectionKey:collectionKey];
-			}
-			
-			return;
-		}
-		
-		if (!sortingMayHaveChanged)
-		{
-			NSString *pageKey = [self pageKeyForRowid:rowid];
-			NSString *existingGroup = [viewConnection->state groupForPageKey:pageKey];
-			
-			if ([group isEqualToString:existingGroup])
-			{
-				NSUInteger existingIndex = [self indexForRowid:rowid inGroup:group withPageKey:pageKey];
-				
-				[viewConnection->changes addObject:
-				  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
-				                                        inGroup:group
-				                                        atIndex:existingIndex
-				                                    withChanges:changesBitMask]];
-				
-				return;
-			}
-		}
-	}
-	else
-	{
-		// Grouping hasn't changed.
-		// Fetch the current group.
-		
-		NSString *pageKey = [self pageKeyForRowid:rowid];
-		group = [viewConnection->state groupForPageKey:pageKey];
-		
-		if (group == nil)
-		{
-			// Nothing to do.
-			// The row wasn't previously in the view, and still isn't in the view.
-			
-			return;
-		}
-	}
-	
-	// Add row to the view or update its position.
-	// This was an update operation, so the row may have previously been in the view.
-	
-	[self insertRowid:rowid
-	    collectionKey:collectionKey
-	           object:object
-	         metadata:metadata
-	          inGroup:group
-	      withChanges:changesBitMask
-	            isNew:NO];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeOnInsertOnly;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:YES];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectModified |
-	                                            YapDatabaseBlockInvokeIfMetadataModified;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectModified;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
-	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
-	
-	id metadata = nil;
-	if ((groupingMayHaveChanged && groupingNeedsMetadata) || (sortingMayHaveChanged && sortingNeedsMetadata))
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfMetadataModified;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
-	
-	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
-	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
-	
-	id object = nil;
-	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * Subclasses MUST implement this method.
- * YapDatabaseReadWriteTransaction Hook, invoked post-op.
- *
- * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
- * - touchObjectForKey:inCollection:collection:
-**/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfObjectTouched;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
-	
-	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
-	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
-	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
-	
-	id object = nil;
-	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if ((groupingMayHaveChanged && groupingNeedsMetadata) || (sortingMayHaveChanged && sortingNeedsMetadata))
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * Subclasses MUST implement this method.
- * YapDatabaseReadWriteTransaction Hook, invoked post-op.
- *
- * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
- * - touchMetadataForKey:inCollection:
-**/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask = YapDatabaseBlockInvokeIfMetadataTouched;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
-	
-	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
-	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
-	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
-	
-	id object = nil;
-	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if ((groupingMayHaveChanged && groupingNeedsMetadata) || (sortingMayHaveChanged && sortingNeedsMetadata))
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * Subclasses MUST implement this method.
- * YapDatabaseReadWriteTransaction Hook, invoked post-op.
- *
- * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
- * - touchRowForKey:inCollection:
-**/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapDatabaseBlockInvoke blockInvokeBitMask =
-	  YapDatabaseBlockInvokeIfObjectTouched | YapDatabaseBlockInvokeIfMetadataTouched;
-	
-	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
-	
-	YapDatabaseViewGrouping *grouping = nil;
-	YapDatabaseViewSorting *sorting = nil;
-	
-	[viewConnection getGrouping:&grouping sorting:&sorting];
-	
-	BOOL groupingMayHaveChanged = (grouping->blockInvokeOptions & blockInvokeBitMask);
-	BOOL sortingMayHaveChanged  = (sorting->blockInvokeOptions  & blockInvokeBitMask);
-	
-	BOOL groupingNeedsObject = (grouping->blockType & YapDatabaseBlockType_ObjectFlag);
-	BOOL sortingNeedsObject  = (sorting->blockType  & YapDatabaseBlockType_ObjectFlag);
-	
-	BOOL groupingNeedsMetadata = (grouping->blockType & YapDatabaseBlockType_MetadataFlag);
-	BOOL sortingNeedsMetadata  = (sorting->blockType  & YapDatabaseBlockType_MetadataFlag);
-	
-	id object = nil;
-	if ((groupingMayHaveChanged && groupingNeedsObject) || (sortingMayHaveChanged && sortingNeedsObject))
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if ((groupingMayHaveChanged && groupingNeedsMetadata) || (sortingMayHaveChanged && sortingNeedsMetadata))
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                    grouping:grouping
-	                     sorting:sorting
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	[self removeRowid:rowid collectionKey:collectionKey];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
-{
-	YDBLogAutoTrace();
-	
-	NSUInteger count = [keys count];
-	NSMutableDictionary *keyMappings = [NSMutableDictionary dictionaryWithCapacity:count];
-	
-	for (NSUInteger i = 0; i < count; i++)
-	{
-		NSNumber *rowid = [rowids objectAtIndex:i];
-		NSString *key = [keys objectAtIndex:i];
-		
-		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-		
-		[keyMappings setObject:collectionKey forKey:rowid];
-	}
-	
-	NSArray *validRowids = rowids;
-	NSDictionary *output = [self pageKeysForRowids:&validRowids withKeyMappings:keyMappings];
-	
-	// output.key = pageKey
-	// output.value = NSDictionary with keyMappings for page
-	
-	[output enumerateKeysAndObjectsUsingBlock:^(id pageKeyObj, id dictObj, BOOL __unused *stop) {
-		
-		__unsafe_unretained NSString *pageKey = (NSString *)pageKeyObj;
-		__unsafe_unretained NSDictionary *keyMappingsForPage = (NSDictionary *)dictObj;
-		
-		NSString *group = [viewConnection->state groupForPageKey:pageKey];
-		NSAssert(group != nil, @"Unknown group for pageKey: %@", pageKey);
-		
-		[self removeRowidsWithKeyMappings:keyMappingsForPage pageKey:pageKey inGroup:group];
-	}];
-	
-	// Subclass hook
-	
-	NSMutableArray *validCollectionKeys = [NSMutableArray arrayWithCapacity:[validRowids count]];
-	for (NSNumber *rowid in validRowids)
-	{
-		[validCollectionKeys addObject:[keyMappings objectForKey:rowid]];
-	}
-	
-	[self didRemoveRowids:validRowids collectionKeys:validCollectionKeys];
-}
-
-/**
- * YapDatabase extension hook.
- * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
-**/
-- (void)handleRemoveAllObjectsInAllCollections
-{
-	YDBLogAutoTrace();
-	
-	[self removeAllRowids];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3898,7 +2547,7 @@
 	
 	__block NSUInteger count = 0;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
+	[parentConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -3918,9 +2567,9 @@
 	// Note: We don't remove pages or groups until flushPendingChangesToExtensionTables.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[viewConnection->state numberOfGroups]];
+	NSMutableArray *allGroups = [NSMutableArray arrayWithCapacity:[parentConnection->state numberOfGroups]];
 	
-	[viewConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
+	[parentConnection->state enumerateWithBlock:^(NSString *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -3944,7 +2593,7 @@
 	// Note: We don't remove pages or groups until flushPendingChangesToExtensionTables.
 	// This allows us to recycle pages whenever possible, which reduces disk IO during the commit.
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -3961,7 +2610,7 @@
 
 - (NSUInteger)numberOfItemsInGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	NSUInteger count = 0;
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
@@ -3976,8 +2625,9 @@
 {
 	__block NSUInteger count = 0;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop) {
-		
+	[parentConnection->state enumerateWithBlock:
+	  ^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL __unused *stop)
+	{
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
 			count += pageMetadata->count;
@@ -3993,7 +2643,7 @@
 **/
 - (BOOL)isEmptyGroup:(NSString *)group
 {
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -4013,7 +2663,7 @@
 {
 	__block BOOL result = YES;
 	
-	[viewConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
+	[parentConnection->state enumerateWithBlock:^(NSString __unused *group, NSArray *pagesMetadataForGroup, BOOL *stop) {
 		
 		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 		{
@@ -4107,7 +2757,7 @@
 	int64_t rowid;
 	if ([databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
 	{
-		return [viewConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
+		return [parentConnection->state groupForPageKey:[self pageKeyForRowid:rowid]];
 	}
 	
 	return nil;
@@ -4145,12 +2795,12 @@
 			// Now that we have the pageKey, fetch the corresponding group.
 			// This is done using an in-memory cache.
 			
-			group = [viewConnection->state groupForPageKey:pageKey];
+			group = [parentConnection->state groupForPageKey:pageKey];
 		
 			// Calculate the offset of the corresponding page within the group.
 			
 			NSUInteger pageOffset = 0;
-			NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+			NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 			
 			for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 			{
@@ -4199,250 +2849,6 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Public API - Finding
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * See header file for extensive documentation for this method.
-**/
-- (NSRange)findRangeInGroup:(NSString *)group using:(YapDatabaseViewFind *)find quitAfterOne:(BOOL)quitAfterOne
-{
-	if (group == nil || find == NULL)
-	{
-		return NSMakeRange(NSNotFound, 0);
-	}
-	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
-	NSUInteger count = 0;
-	
-	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
-	{
-		count += pageMetadata->count;
-	}
-	
-	if (count == 0)
-	{
-		return NSMakeRange(NSNotFound, 0);
-	}
-	
-	// Helper block:
-	//
-	// Finds the rowid for a given index (within the view.group).
-	
-	int64_t (^findRowid)(NSUInteger) = ^int64_t (NSUInteger index){
-		
-		NSUInteger pageOffset = 0;
-		for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
-		{
-			if ((index < (pageOffset + pageMetadata->count)) && (pageMetadata->count > 0))
-			{
-				YapDatabaseViewPage *page = [self pageForPageKey:pageMetadata->pageKey];
-				
-				return [page rowidAtIndex:(index - pageOffset)];
-			}
-			else
-			{
-				pageOffset += pageMetadata->count;
-			}
-		}
-		
-		NSAssert(NO, @"index(%lu) not found !!!", (unsigned long)index);
-		return (int64_t)0;
-	};
-	
-	// Helper block:
-	//
-	// Executes the findBlock against the row represented by the given index (within the view.group).
-	
-	NSComparisonResult (^compare)(NSUInteger);
-		
-	switch (find.findBlockType)
-	{
-		case YapDatabaseBlockTypeWithKey :
-		{
-			__unsafe_unretained YapDatabaseViewFindWithKeyBlock findBlock =
-			  (YapDatabaseViewFindWithKeyBlock)find.findBlock;
-			
-			compare = ^NSComparisonResult (NSUInteger index){
-				
-				int64_t rowid = findRowid(index);
-				
-				YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
-				
-				return findBlock(ck.collection, ck.key);
-			};
-			
-			break;
-		}
-		case YapDatabaseBlockTypeWithObject :
-		{
-			__unsafe_unretained YapDatabaseViewFindWithObjectBlock findBlock =
-			    (YapDatabaseViewFindWithObjectBlock)find.findBlock;
-			
-			compare = ^NSComparisonResult (NSUInteger index){
-				
-				int64_t rowid = findRowid(index);
-				
-				YapCollectionKey *ck = nil;
-				id object = nil;
-				[databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
-				
-				return findBlock(ck.collection, ck.key, object);
-			};
-			
-			break;
-		}
-		case YapDatabaseBlockTypeWithMetadata :
-		{
-			__unsafe_unretained YapDatabaseViewFindWithMetadataBlock findBlock =
-			    (YapDatabaseViewFindWithMetadataBlock)find.findBlock;
-			
-			compare = ^NSComparisonResult (NSUInteger index){
-				
-				int64_t rowid = findRowid(index);
-				
-				YapCollectionKey *ck = nil;
-				id metadata = nil;
-				[databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
-				
-				return findBlock(ck.collection, ck.key, metadata);
-			};
-			
-			break;
-		}
-		default :
-		{
-			__unsafe_unretained YapDatabaseViewFindWithRowBlock findBlock =
-			    (YapDatabaseViewFindWithRowBlock)find.findBlock;
-			
-			compare = ^NSComparisonResult (NSUInteger index){
-				
-				int64_t rowid = findRowid(index);
-				
-				YapCollectionKey *ck = nil;
-				id object = nil;
-				id metadata = nil;
-				[databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
-				
-				return findBlock(ck.collection, ck.key, object, metadata);
-			};
-		}
-		
-	} // end switch (blockType)
-		
-	
-	NSUInteger loopCount = 0;
-	
-	// Find first match (first to return NSOrderedSame)
-	
-	NSUInteger mMin = 0;
-	NSUInteger mMax = count;
-	NSUInteger mMid = 0;
-	
-	BOOL found = NO;
-	
-	while (mMin < mMax && !found)
-	{
-		mMid = (mMin + mMax) / 2;
-		
-		NSComparisonResult cmp = compare(mMid);
-		
-		if (cmp == NSOrderedDescending)      // Descending => value is greater than desired range
-			mMax = mMid;
-		else if (cmp == NSOrderedAscending)  // Ascending => value is less than desired range
-			mMin = mMid + 1;
-		else
-			found = YES;
-		
-		loopCount++;
-	}
-	
-	if (!found)
-	{
-		return NSMakeRange(NSNotFound, 0);
-	}
-	
-	if (quitAfterOne)
-	{
-		return NSMakeRange(mMid, 1);
-	}
-	
-	// Find start of range
-	
-	NSUInteger sMin = mMin;
-	NSUInteger sMax = mMid;
-	NSUInteger sMid;
-	
-	while (sMin < sMax)
-	{
-		sMid = (sMin + sMax) / 2;
-		
-		NSComparisonResult cmp = compare(sMid);
-		
-		if (cmp == NSOrderedAscending) // Ascending => value is less than desired range
-			sMin = sMid + 1;
-		else
-			sMax = sMid;
-		
-		loopCount++;
-	}
-	
-	// Find end of range
-	
-	NSUInteger eMin = mMid;
-	NSUInteger eMax = mMax;
-	NSUInteger eMid;
-	
-	while (eMin < eMax)
-	{
-		eMid = (eMin + eMax) / 2;
-		
-		NSComparisonResult cmp = compare(eMid);
-		
-		if (cmp == NSOrderedDescending) // Descending => value is greater than desired range
-			eMax = eMid;
-		else
-			eMin = eMid + 1;
-		
-		loopCount++;
-	}
-	
-	YDBLogVerbose(@"Find range in group(%@) took %lu comparisons", group, (unsigned long)loopCount);
-	
-	return NSMakeRange(sMin, (eMax - sMin));
-}
-
-/**
- * See header file for extensive documentation for this method.
-**/
-- (NSRange)findRangeInGroup:(NSString *)group using:(YapDatabaseViewFind *)find
-{
-	return [self findRangeInGroup:group using:find quitAfterOne:NO];
-}
-
-/**
- * This method uses a binary search algorithm to find an item within the view that matches the given criteria.
- * 
- * It works similarly to findRangeInGroup:using:, but immediately returns once a single match has been found.
- * This makes it more efficient when you only care about the existence of a match,
- * or you know there will never be more than a single match.
- *
- * See the documentation for findRangeInGroup:using: for more information.
- * @see findRangeInGroup:using:
- *
- * @return
- *   If found, the index of the first match discovered.
- *   That is, an item where the find block returned NSOrderedSame.
- *   If not found, returns NSNotFound.
-**/
-- (NSUInteger)findFirstMatchInGroup:(NSString *)group using:(YapDatabaseViewFind *)find
-{
-	NSRange range = [self findRangeInGroup:group using:find quitAfterOne:YES];
-	
-	return range.location;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Public API - Enumerating
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4450,20 +2856,20 @@
 {
 	if (block == NULL) return;
 	
-	[viewConnection->mutatedGroups removeAllObjects]; // mutation during enumeration protection
+	[parentConnection->mutatedGroups removeAllObjects]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	
-	[viewConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *innerStop) {
+	[parentConnection->state enumerateGroupsWithBlock:^(NSString *group, BOOL *innerStop) {
 		
 		block(group, &stop);
 		
-		if (stop || [viewConnection->mutatedGroups count] > 0) *innerStop = YES;
+		if (stop || [parentConnection->mutatedGroups count] > 0) *innerStop = YES;
 	}];
 	
-	if (!stop && [viewConnection->mutatedGroups count] > 0)
+	if (!stop && [parentConnection->mutatedGroups count] > 0)
 	{
-		NSString *anyMutatedGroup = [viewConnection->mutatedGroups anyObject];
+		NSString *anyMutatedGroup = [parentConnection->mutatedGroups anyObject];
 		
 		@throw [self mutationDuringEnumerationException:anyMutatedGroup];
 	}
@@ -4523,12 +2929,12 @@
 {
 	if (block == NULL) return;
 	
-	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
+	[parentConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	
 	NSUInteger pageOffset = 0;
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	for (YapDatabaseViewPageMetadata *pageMetadata in pagesMetadataForGroup)
 	{
@@ -4538,15 +2944,15 @@
 			
 			block(rowid, pageOffset+idx, &stop);
 			
-			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+			if (stop || [parentConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
 		
-		if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
+		if (stop || [parentConnection->mutatedGroups containsObject:group]) break;
 		
 		pageOffset += pageMetadata->count;
 	}
 	
-	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	if (!stop && [parentConnection->mutatedGroups containsObject:group])
 	{
 		@throw [self mutationDuringEnumerationException:group];
 	}
@@ -4561,7 +2967,7 @@
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	BOOL forwardEnumeration = (options != NSEnumerationReverse);
 	
-	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
+	[parentConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	__block NSUInteger index;
@@ -4571,7 +2977,7 @@
 	else
 		index = [self numberOfItemsInGroup:group] - 1;
 	
-	NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+	NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 	
 	[pagesMetadataForGroup enumerateObjectsWithOptions:options
 	                                        usingBlock:^(id pageMetadataObj, NSUInteger __unused outerIdx, BOOL *outerStop)
@@ -4590,13 +2996,13 @@
 			else
 				index--;
 			
-			if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+			if (stop || [parentConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 		}];
 		
-		if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
+		if (stop || [parentConnection->mutatedGroups containsObject:group]) *outerStop = YES;
 	}];
 	
-	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	if (!stop && [parentConnection->mutatedGroups containsObject:group])
 	{
 		@throw [self mutationDuringEnumerationException:group];
 	}
@@ -4611,7 +3017,7 @@
 	
 	NSEnumerationOptions options = (inOptions & NSEnumerationReverse); // We only support NSEnumerationReverse
 	
-	[viewConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
+	[parentConnection->mutatedGroups removeObject:group]; // mutation during enumeration protection
 	
 	__block BOOL stop = NO;
 	__block NSUInteger keysLeft = range.length;
@@ -4620,7 +3026,7 @@
 	{
 		// Forward enumeration (optimized)
 		
-		NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+		NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 		
 		NSUInteger pageOffset = 0;
 		BOOL startedRange = NO;
@@ -4645,10 +3051,10 @@
 				{
 					block(rowid, pageOffset+idx, &stop);
 					
-					if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+					if (stop || [parentConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 				}];
 				
-				if (stop || [viewConnection->mutatedGroups containsObject:group]) break;
+				if (stop || [parentConnection->mutatedGroups containsObject:group]) break;
 				
 				keysLeft -= enumRange.length;
 			}
@@ -4665,7 +3071,7 @@
 	{
 		// Reverse enumeration
 		
-		NSArray *pagesMetadataForGroup = [viewConnection->state pagesMetadataForGroup:group];
+		NSArray *pagesMetadataForGroup = [parentConnection->state pagesMetadataForGroup:group];
 		
 		__block NSUInteger pageOffset = [self numberOfItemsInGroup:group];
 		__block BOOL startedRange = NO;
@@ -4696,10 +3102,10 @@
 					
 					block(rowid, pageOffset+idx, &stop);
 					
-					if (stop || [viewConnection->mutatedGroups containsObject:group]) *innerStop = YES;
+					if (stop || [parentConnection->mutatedGroups containsObject:group]) *innerStop = YES;
 				}];
 				
-				if (stop || [viewConnection->mutatedGroups containsObject:group]) *outerStop = YES;
+				if (stop || [parentConnection->mutatedGroups containsObject:group]) *outerStop = YES;
 				
 				keysLeft -= enumRange.length;
 			}
@@ -4712,7 +3118,7 @@
 		}];
 	}
 	
-	if (!stop && [viewConnection->mutatedGroups containsObject:group])
+	if (!stop && [parentConnection->mutatedGroups containsObject:group])
 	{
 		@throw [self mutationDuringEnumerationException:group];
 	}
@@ -4726,87 +3132,21 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Subclass Hooks
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Subclasses may override these methods as an easy hook for concrete changes.
- *
- * That is, the handleX methods are hooks from the main database,
- * but they don't necessarily reflect changes to this view.
- * For example, handleRemoveObjectForCollectionKey:: notifies us that something from the main database was removed,
- * but that item may or may not have been in our view. In contrast, these hook methods are only invoked
- * when something is added or removed from our view.
-**/
-
-/**
- * Invoked when an item is added to the view.
-**/
-- (void)didInsertRowid:(int64_t __unused)rowid collectionKey:(YapCollectionKey __unused *)collectionKey
-{
-	// Subclasses may override me.
-	// Default implementation does nothing.
-}
-
-/**
- * Invoked when an item is removed from the view.
- *
- * This method is only invoked for "single remove" operations.
- * That is, when an individual item is removed from the view as a single operation.
- * For larger (non-single) remove operations, the other hook methods are used.
-**/
-- (void)didRemoveRowid:(int64_t __unused)rowid collectionKey:(YapCollectionKey __unused *)collectionKey
-{
-	// Subclasses may override me.
-	// Default implementation does nothing.
-}
-
-/**
- * Invoked when a number of items are removed from the view in a single operation.
- * 
- * Important #1:
- *   The collectionKeys parameter is not always available.
- *   If the collectionKeys parameter is non-nil, then it is correct.
- *   Otherwise it will be nil because the opertion didn't have access to the information, and didn't need it.
- *   Thus, if needed, you'll need to manually fetch the corresponding list of collectionKeys.
- * 
- * Important #2:
- *   The given rowids array is unbounded.
- *   That is, normally hook methods are limited by SQLITE_LIMIT_VARIABLE_NUMBER.
- *   But that is ** NOT ** the case here.
- *   So you'll be required to check for this, and split your queries accordingly.
-**/
-- (void)didRemoveRowids:(NSArray __unused *)rowids collectionKeys:(NSArray __unused *)collectionKeys
-{
-	// Subclasses may override me.
-	// Default implementation does nothing.
-}
-
-/**
- * Invoked when the view is cleared.
-**/
-- (void)didRemoveAllRowids
-{
-	// Subclasses may override me.
-	// Default implementation does nothing.
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Exceptions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSException *)mutationDuringEnumerationException:(NSString *)group
 {
 	NSString *reason = [NSString stringWithFormat:
-	    @"View <RegisteredName=%@, Group=%@> was mutated while being enumerated.", [self registeredName], group];
+	  @"View <RegisteredName=%@, Group=%@> was mutated while being enumerated.", [self registeredName], group];
 	
 	NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
-	    @"If you modify the database during enumeration you must either"
-		@" (A) ensure you don't mutate the group you're enumerating OR"
-		@" (B) set the 'stop' parameter of the enumeration block to YES (*stop = YES;). "
-		@"If you're enumerating in order to remove items from the database,"
-		@" and you're enumerating in order (forwards or backwards)"
-		@" then you may also consider looping and using firstKeyInGroup / lastKeyInGroup."};
+	  @"If you modify the database during enumeration you must either"
+	  @" (A) ensure you don't mutate the group you're enumerating OR"
+	  @" (B) set the 'stop' parameter of the enumeration block to YES (*stop = YES;). "
+	  @"If you're enumerating in order to remove items from the database,"
+	  @" and you're enumerating in order (forwards or backwards)"
+	  @" then you may also consider looping and using firstKeyInGroup / lastKeyInGroup."};
 	
 	return [NSException exceptionWithName:@"YapDatabaseException" reason:reason userInfo:userInfo];
 }
@@ -4910,67 +3250,6 @@
 		
 		[self handleTouchRowForCollectionKey:collectionKey withRowid:rowid];
 	}
-}
-
-/**
- * This method allows you to change the grouping and/or sorting on-the-fly.
- * 
- * Note: You must pass a different versionTag, or this method does nothing.
-**/
-- (void)setGrouping:(YapDatabaseViewGrouping *)grouping
-            sorting:(YapDatabaseViewSorting *)sorting
-         versionTag:(NSString *)inVersionTag
-{
-	YDBLogAutoTrace();
-	
-	NSAssert(grouping != nil, @"Invalid parameter: grouping == nil");
-	NSAssert(sorting != nil, @"Invalid parameter: sorting == nil");
-	
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		YDBLogWarn(@"%@ - Method only allowed in readWrite transaction", THIS_METHOD);
-		return;
-	}
-	
-	NSString *newVersionTag = inVersionTag ? [inVersionTag copy] : @"";
-	
-	if ([[self versionTag] isEqualToString:newVersionTag])
-	{
-		YDBLogWarn(@"%@ - versionTag didn't change, so not updating view", THIS_METHOD);
-		return;
-	}
-	
-	[viewConnection setGrouping:grouping
-	                    sorting:sorting
-	                 versionTag:newVersionTag];
-	
-	[self repopulateView];
-	
-	[self setStringValue:newVersionTag
-	     forExtensionKey:ext_key_versionTag
-	          persistent:[self isPersistentView]];
-	
-	// Notify any extensions dependent upon this one that we repopulated.
-	
-	NSString *registeredName = [self registeredName];
-	NSDictionary *extensionDependencies = databaseTransaction->connection->extensionDependencies;
-	
-	[extensionDependencies enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL __unused *stop){
-		
-		__unsafe_unretained NSString *extName = (NSString *)key;
-		__unsafe_unretained NSSet *extDependencies = (NSSet *)obj;
-		
-		if ([extDependencies containsObject:registeredName])
-		{
-			YapDatabaseExtensionTransaction *extTransaction = [databaseTransaction ext:extName];
-			
-			if ([extTransaction respondsToSelector:@selector(view:didRepopulateWithFlags:)])
-			{
-				int flags = YDB_GroupingBlockChanged | YDB_SortingBlockChanged;
-				[(id <YapDatabaseViewDependency>)extTransaction view:registeredName didRepopulateWithFlags:flags];
-			}
-		}
-	}];
 }
 
 @end

@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.8.3",
+  "version": "2.9.1",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.8.3"
+    "tag": "2.9.1"
   },
   "platforms": {
     "osx": "10.8",
@@ -50,8 +50,12 @@
           },
           "subspecs": [
             {
-              "name": "Views",
-              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+              "name": "View",
+              "source_files": "YapDatabase/Extensions/View/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "AutoView",
+              "source_files": "YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}"
             },
             {
               "name": "SecondaryIndex",
@@ -76,7 +80,7 @@
             {
               "name": "FilteredViews",
               "dependencies": {
-                "YapDatabase/Standard/Extensions/Views": [
+                "YapDatabase/Standard/Extensions/View": [
 
                 ]
               },
@@ -85,7 +89,7 @@
             {
               "name": "SearchResults",
               "dependencies": {
-                "YapDatabase/Standard/Extensions/Views": [
+                "YapDatabase/Standard/Extensions/AutoView": [
 
                 ],
                 "YapDatabase/Standard/Extensions/FullTextSearch": [
@@ -108,11 +112,15 @@
             },
             {
               "name": "ActionManager",
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0"
+              },
               "dependencies": {
                 "Reachability": [
                   "~> 3"
                 ],
-                "YapDatabase/Standard/Extensions/Views": [
+                "YapDatabase/Standard/Extensions/View": [
 
                 ]
               },
@@ -154,8 +162,17 @@
           },
           "subspecs": [
             {
-              "name": "Views",
-              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+              "name": "View",
+              "source_files": "YapDatabase/Extensions/View/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "AutoView",
+              "dependencies": {
+                "YapDatabase/SQLCipher/Extensions/View": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}"
             },
             {
               "name": "SecondaryIndex",
@@ -180,7 +197,7 @@
             {
               "name": "FilteredViews",
               "dependencies": {
-                "YapDatabase/SQLCipher/Extensions/Views": [
+                "YapDatabase/SQLCipher/Extensions/View": [
 
                 ]
               },
@@ -189,7 +206,7 @@
             {
               "name": "SearchResults",
               "dependencies": {
-                "YapDatabase/SQLCipher/Extensions/Views": [
+                "YapDatabase/SQLCipher/Extensions/AutoView": [
 
                 ],
                 "YapDatabase/SQLCipher/Extensions/FullTextSearch": [
@@ -212,11 +229,15 @@
             },
             {
               "name": "ActionManager",
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0"
+              },
               "dependencies": {
                 "Reachability": [
                   "~> 3"
                 ],
-                "YapDatabase/SQLCipher/Extensions/Views": [
+                "YapDatabase/SQLCipher/Extensions/View": [
 
                 ]
               },

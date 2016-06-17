@@ -4,9 +4,9 @@
 
 @implementation YapDatabaseActionManagerConnection
 
-- (id)initWithView:(YapDatabaseView *)inView databaseConnection:(YapDatabaseConnection *)inDbC
+- (id)initWithParent:(YapDatabaseView *)inParent databaseConnection:(YapDatabaseConnection *)inDbC
 {
-	if ((self = [super initWithView:inView databaseConnection:inDbC]))
+	if ((self = [super initWithParent:inParent databaseConnection:inDbC]))
 	{
 		actionItemsCache = [[YapCache alloc] initWithCountLimit:100];
 		actionItemsCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
@@ -18,8 +18,8 @@
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	YapDatabaseActionManagerTransaction *extTransaction =
-	  [[YapDatabaseActionManagerTransaction alloc] initWithViewConnection:self
-	                                                  databaseTransaction:databaseTransaction];
+	  [[YapDatabaseActionManagerTransaction alloc] initWithParentConnection:self
+	                                                    databaseTransaction:databaseTransaction];
 	
 	return extTransaction;
 }
@@ -27,8 +27,8 @@
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	YapDatabaseActionManagerTransaction *extTransaction =
-	  [[YapDatabaseActionManagerTransaction alloc] initWithViewConnection:self
-	                                                  databaseTransaction:databaseTransaction];
+	  [[YapDatabaseActionManagerTransaction alloc] initWithParentConnection:self
+	                                                    databaseTransaction:databaseTransaction];
 	
 	[self prepareForReadWriteTransaction];
 	return extTransaction;

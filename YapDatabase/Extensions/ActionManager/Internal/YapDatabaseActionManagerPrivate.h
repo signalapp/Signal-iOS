@@ -10,7 +10,7 @@
 
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
-#import "YapDatabaseViewPrivate.h"
+#import "YapDatabaseAutoViewPrivate.h"
 
 #import "YapCache.h"
 

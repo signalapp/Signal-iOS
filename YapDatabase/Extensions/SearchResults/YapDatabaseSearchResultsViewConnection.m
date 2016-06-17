@@ -22,26 +22,10 @@
 
 
 @implementation YapDatabaseSearchResultsViewConnection
-{
-	sqlite3_stmt *snippetTable_getForRowidStatement;
-	sqlite3_stmt *snippetTable_setForRowidStatement;
-	sqlite3_stmt *snippetTable_removeForRowidStatement;
-	sqlite3_stmt *snippetTable_removeAllStatement;
-}
-
-- (void)_flushStatements
-{
-	[super _flushStatements];
-	
-	sqlite_finalize_null(&snippetTable_getForRowidStatement);
-	sqlite_finalize_null(&snippetTable_setForRowidStatement);
-	sqlite_finalize_null(&snippetTable_removeForRowidStatement);
-	sqlite_finalize_null(&snippetTable_removeAllStatement);
-}
 
 - (YapDatabaseSearchResultsView *)searchResultsView
 {
-	return (YapDatabaseSearchResultsView *)view;
+	return (YapDatabaseSearchResultsView *)parent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +38,8 @@
 - (id)newReadTransaction:(YapDatabaseReadTransaction *)databaseTransaction
 {
 	YapDatabaseSearchResultsViewTransaction *transaction =
-	  [[YapDatabaseSearchResultsViewTransaction alloc] initWithViewConnection:self
-	                                                      databaseTransaction:databaseTransaction];
+	  [[YapDatabaseSearchResultsViewTransaction alloc] initWithParentConnection:self
+	                                                        databaseTransaction:databaseTransaction];
 	
 	return transaction;
 }
@@ -66,8 +50,8 @@
 - (id)newReadWriteTransaction:(YapDatabaseReadWriteTransaction *)databaseTransaction
 {
 	YapDatabaseSearchResultsViewTransaction *transaction =
-	  [[YapDatabaseSearchResultsViewTransaction alloc] initWithViewConnection:self
-	                                                      databaseTransaction:databaseTransaction];
+	  [[YapDatabaseSearchResultsViewTransaction alloc] initWithParentConnection:self
+	                                                        databaseTransaction:databaseTransaction];
 	
 	[self prepareForReadWriteTransaction];
 	return transaction;
@@ -78,6 +62,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
+**/
+- (void)postCommitCleanup
+{
+	YDBLogAutoTrace();
+	[super postCommitCleanup];
+	
+	queryChanged = NO;
+}
+
+/**
  * Invoked by our YapDatabaseViewTransaction at the completion of the rollbackTransaction method.
 **/
 - (void)postRollbackCleanup
@@ -86,17 +81,6 @@
 	[super postRollbackCleanup];
 	
 	query = nil;
-	queryChanged = NO;
-}
-
-/**
- * Invoked by our YapDatabaseViewTransaction at the completion of the commitTransaction method.
-**/
-- (void)postCommitCleanup
-{
-	YDBLogAutoTrace();
-	[super postCommitCleanup];
-	
 	queryChanged = NO;
 }
 
@@ -148,76 +132,6 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Statements - SnippetTable
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (sqlite3_stmt *)snippetTable_getForRowidStatement
-{
-	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
-	
-	sqlite3_stmt **statement = &snippetTable_getForRowidStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"snippet\" FROM \"%@\" WHERE \"rowid\" = ?;",
-		  [(YapDatabaseSearchResultsView *)view snippetTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)snippetTable_setForRowidStatement
-{
-	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
-	
-	sqlite3_stmt **statement = &snippetTable_setForRowidStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"INSERT OR REPLACE INTO \"%@\" (\"rowid\", \"snippet\") VALUES (?, ?);",
-		  [(YapDatabaseSearchResultsView *)view snippetTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)snippetTable_removeForRowidStatement
-{
-	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
-	
-	sqlite3_stmt **statement = &snippetTable_removeForRowidStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"rowid\" = ? ;", [(YapDatabaseSearchResultsView *)view snippetTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)snippetTable_removeAllStatement
-{
-	NSAssert([self isPersistentView], @"In-memory view accessing sqlite");
-	
-	sqlite3_stmt **statement = &snippetTable_removeAllStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\";", [(YapDatabaseSearchResultsView *)view snippetTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Internal
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -238,14 +152,6 @@
 	return result;
 }
 
-- (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange
-{
-	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
-	
-	query = [newQuery copy];
-	queryChanged = queryChanged || isChange;
-}
-
 - (void)getQuery:(NSString **)queryPtr wasChanged:(BOOL *)wasChangedPtr
 {
 	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
@@ -254,20 +160,12 @@
 	if (wasChangedPtr) *wasChangedPtr = queryChanged;
 }
 
-/**
- * Used when the parentView's groupingBlock/sortingBlock changes.
- *
- * We need to update our groupingBlock/sortingBlock to match,
- * but NOT the versionTag (since it didn't change).
-**/
-- (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
-            sorting:(YapDatabaseViewSorting *)newSorting
+- (void)setQuery:(NSString *)newQuery isChange:(BOOL)isChange
 {
-	grouping = newGrouping;
-	groupingChanged = YES;
+	NSAssert(dispatch_get_specific(databaseConnection->IsOnConnectionQueueKey), @"Expected to be on connectionQueue");
 	
-	sorting = newSorting;
-	sortingChanged = YES;
+	query = [newQuery copy];
+	queryChanged = queryChanged || isChange;
 }
 
 @end

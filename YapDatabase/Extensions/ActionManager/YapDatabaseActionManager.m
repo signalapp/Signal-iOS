@@ -242,7 +242,7 @@
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)connection
 {
-	return [[YapDatabaseActionManagerConnection alloc] initWithView:self databaseConnection:connection];
+	return [[YapDatabaseActionManagerConnection alloc] initWithParent:self databaseConnection:connection];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
