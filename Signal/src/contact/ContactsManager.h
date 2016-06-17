@@ -28,7 +28,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (ObservableValue *)getObservableContacts;
 
 - (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
-- (Contact *)latestContactWithRecordId:(ABRecordID)recordId;
 - (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
 - (NSArray *)latestContactsWithSearchString:(NSString *)searchString;
 
