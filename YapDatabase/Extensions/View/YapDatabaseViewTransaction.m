@@ -3214,7 +3214,7 @@
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
-		[self handleTouchObjectForCollectionKey:collectionKey withRowid:rowid];
+		[self didTouchObjectForCollectionKey:collectionKey withRowid:rowid];
 	}
 }
 
@@ -3231,7 +3231,7 @@
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
-		[self handleTouchMetadataForCollectionKey:collectionKey withRowid:rowid];
+		[self didTouchMetadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 }
 
@@ -3248,7 +3248,7 @@
 	{
 		YapCollectionKey *collectionKey = [[YapCollectionKey alloc] initWithCollection:collection key:key];
 		
-		[self handleTouchRowForCollectionKey:collectionKey withRowid:rowid];
+		[self didTouchRowForCollectionKey:collectionKey withRowid:rowid];
 	}
 }
 

@@ -4785,14 +4785,14 @@
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		if (found)
-			[extTransaction handleWillUpdateObject:object
-			                      forCollectionKey:cacheKey
-			                          withMetadata:metadata
-			                                 rowid:rowid];
+			[extTransaction willUpdateObject:object
+			                forCollectionKey:cacheKey
+			                    withMetadata:metadata
+			                           rowid:rowid];
 		else
-			[extTransaction handleWillInsertObject:object
-			                      forCollectionKey:cacheKey
-			                          withMetadata:metadata];
+			[extTransaction willInsertObject:object
+			                forCollectionKey:cacheKey
+			                    withMetadata:metadata];
 	}
 	
 	BOOL set = YES;
@@ -4925,15 +4925,15 @@
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
 		if (found)
-			[extTransaction handleUpdateObject:object
-			                  forCollectionKey:cacheKey
-			                      withMetadata:metadata
-			                             rowid:rowid];
+			[extTransaction didUpdateObject:object
+			               forCollectionKey:cacheKey
+			                   withMetadata:metadata
+			                          rowid:rowid];
 		else
-			[extTransaction handleInsertObject:object
-			                  forCollectionKey:cacheKey
-			                      withMetadata:metadata
-			                             rowid:rowid];
+			[extTransaction didInsertObject:object
+			               forCollectionKey:cacheKey
+			                   withMetadata:metadata
+			                          rowid:rowid];
 	}
 	
 	if (connection->database->objectPostSanitizer)
@@ -5070,7 +5070,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleWillReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction willReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
 	}
 	
 	// UPDATE "database2" SET "data" = ? WHERE "rowid" = ?;
@@ -5119,7 +5119,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didReplaceObject:object forCollectionKey:cacheKey withRowid:rowid];
 	}
 	
 	if (connection->database->objectPostSanitizer)
@@ -5248,7 +5248,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleWillReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction willReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
 	}
 	
 	// UPDATE "database2" SET "metadata" = ? WHERE "rowid" = ?;
@@ -5307,7 +5307,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didReplaceMetadata:metadata forCollectionKey:cacheKey withRowid:rowid];
 	}
 	
 	if (metadata && connection->database->metadataPostSanitizer)
@@ -5334,7 +5334,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleTouchObjectForCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didTouchObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5352,7 +5352,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleTouchMetadataForCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didTouchMetadataForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5373,7 +5373,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleTouchRowForCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didTouchRowForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5396,7 +5396,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleWillRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction willRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 	
 	// DELETE FROM "database" WHERE "rowid" = ?;
@@ -5433,7 +5433,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
+		[extTransaction didRemoveObjectForCollectionKey:cacheKey withRowid:rowid];
 	}
 }
 
@@ -5602,9 +5602,9 @@
 			
             for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
             {
-                [extTransaction handleWillRemoveObjectsForKeys:foundKeys
-                                                  inCollection:collection
-                                                    withRowids:foundRowids];
+                [extTransaction willRemoveObjectsForKeys:foundKeys
+                                            inCollection:collection
+                                              withRowids:foundRowids];
             }
 			
 			for (i = 0; i < foundCount; i++)
@@ -5644,9 +5644,9 @@
 			
 			for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 			{
-				[extTransaction handleRemoveObjectsForKeys:foundKeys
-				                              inCollection:collection
-				                                withRowids:foundRowids];
+				[extTransaction didRemoveObjectsForKeys:foundKeys
+				                           inCollection:collection
+				                             withRowids:foundRowids];
 			}
 			
 		}
@@ -5892,12 +5892,12 @@
 				return;
 			}
             
-            for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
-            {
-                [extTransaction handleWillRemoveObjectsForKeys:foundKeys
-                                                  inCollection:collection
-                                                    withRowids:foundRowids];
-            }
+			for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
+			{
+				[extTransaction willRemoveObjectsForKeys:foundKeys
+				                            inCollection:collection
+				                              withRowids:foundRowids];
+			}
 			
 			for (i = 0; i < foundCount; i++)
 			{
@@ -5923,9 +5923,9 @@
 			
 			for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 			{
-				[extTransaction handleRemoveObjectsForKeys:foundKeys
-				                              inCollection:collection
-				                                withRowids:foundRowids];
+				[extTransaction didRemoveObjectsForKeys:foundKeys
+				                           inCollection:collection
+				                             withRowids:foundRowids];
 			}
 		}
 		
@@ -5946,7 +5946,7 @@
 
     for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
     {
-        [extTransaction handleWillRemoveAllObjectsInAllCollections];
+        [extTransaction willRemoveAllObjectsInAllCollections];
     }
 	
 	int status = sqlite3_step(statement);
@@ -5973,7 +5973,7 @@
 	
 	for (YapDatabaseExtensionTransaction *extTransaction in [self orderedExtensions])
 	{
-		[extTransaction handleRemoveAllObjectsInAllCollections];
+		[extTransaction didRemoveAllObjectsInAllCollections];
 	}
 }
 

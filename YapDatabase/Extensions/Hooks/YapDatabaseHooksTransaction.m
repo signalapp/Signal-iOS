@@ -97,10 +97,10 @@
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)ck
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didInsertObject:(id)object
+       forCollectionKey:(YapCollectionKey *)ck
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -145,10 +145,10 @@
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)ck
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didUpdateObject:(id)object
+       forCollectionKey:(YapCollectionKey *)ck
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -192,9 +192,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleReplaceObject:(id)object
-           forCollectionKey:(YapCollectionKey *)ck
-                  withRowid:(int64_t)rowid
+- (void)didReplaceObject:(id)object
+        forCollectionKey:(YapCollectionKey *)ck
+               withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -237,9 +237,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleReplaceMetadata:(id)metadata
-             forCollectionKey:(YapCollectionKey *)ck
-                    withRowid:(int64_t)rowid
+- (void)didReplaceMetadata:(id)metadata
+          forCollectionKey:(YapCollectionKey *)ck
+                 withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -279,7 +279,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchObjectForKey:inCollection:collection:
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -319,7 +319,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchMetadataForKey:inCollection:
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -359,7 +359,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchRowForKey:inCollection:
 **/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -399,7 +399,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction
  * - removeObjectForKey:inCollection:
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -433,7 +433,7 @@
  * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
  * and then loop over them in "chunks" which are readily processable for extensions.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)didRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -461,7 +461,7 @@
  *
  * Corresponds to [transaction removeAllObjectsInAllCollections].
 **/
-- (void)handleRemoveAllObjectsInAllCollections
+- (void)didRemoveAllObjectsInAllCollections
 {
 	YDBHooks_DidRemoveAllRows didRemoveAllRows = parentConnection->parent.didRemoveAllRows;
 	if (didRemoveAllRows)
@@ -488,9 +488,9 @@
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleWillInsertObject:(id)object
-              forCollectionKey:(YapCollectionKey *)ck
-                  withMetadata:(id)metadata
+- (void)willInsertObject:(id)object
+        forCollectionKey:(YapCollectionKey *)ck
+            withMetadata:(id)metadata
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -535,10 +535,10 @@
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleWillUpdateObject:(id)object
-              forCollectionKey:(YapCollectionKey *)ck
-                  withMetadata:(id)metadata
-                         rowid:(int64_t)rowid
+- (void)willUpdateObject:(id)object
+        forCollectionKey:(YapCollectionKey *)ck
+            withMetadata:(id)metadata
+                   rowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -582,9 +582,9 @@
  *
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleWillReplaceObject:(id)object
-               forCollectionKey:(YapCollectionKey *)ck
-                      withRowid:(int64_t)rowid
+- (void)willReplaceObject:(id)object
+         forCollectionKey:(YapCollectionKey *)ck
+                withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -628,9 +628,9 @@
  *
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleWillReplaceMetadata:(id)metadata
-                 forCollectionKey:(YapCollectionKey *)ck
-                        withRowid:(int64_t)rowid
+- (void)willReplaceMetadata:(id)metadata
+           forCollectionKey:(YapCollectionKey *)ck
+                  withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -671,7 +671,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - removeObjectForKey:inCollection:
 **/
-- (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)willRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -705,7 +705,7 @@
  * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
  * and then loop over them in "chunks" which are readily processable for extensions.
 **/
-- (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)willRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	__unsafe_unretained YapWhitelistBlacklist *allowedCollections = parentConnection->parent->allowedCollections;
 	
@@ -734,7 +734,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - removeAllObjectsInAllCollections
 **/
-- (void)handleWillRemoveAllObjectsInAllCollections
+- (void)willRemoveAllObjectsInAllCollections
 {
 	YDBHooks_WillRemoveAllRows willRemoveAllRows = parentConnection->parent.willRemoveAllRows;
 	if (willRemoveAllRows)

@@ -150,7 +150,7 @@
 	//
 	// We could simply run the usual algorithm.
 	// That is, enumerate over every item in the database, and run pretty much the same code as
-	// in the handleUpdateObject:forCollectionKey:withMetadata:rowid:.
+	// in the didUpdateObject:forCollectionKey:withMetadata:rowid:.
 	// However, this causes a potential issue where the sortingBlock will be invoked with items that
 	// no longer exist in the given group.
 	//
@@ -855,10 +855,10 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didInsertObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -887,10 +887,10 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didUpdateObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -920,7 +920,7 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -961,7 +961,7 @@
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
  * This method overrides the version in YapDatabaseViewTransaction.
 **/
-- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1004,7 +1004,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchObjectForKey:inCollection:collection:
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1054,7 +1054,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchMetadataForKey:inCollection:
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1104,7 +1104,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchRowForKey:inCollection:
 **/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1152,7 +1152,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1173,7 +1173,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)didRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
 	
@@ -1205,7 +1205,7 @@
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveAllObjectsInAllCollections
+- (void)didRemoveAllObjectsInAllCollections
 {
 	YDBLogAutoTrace();
 	

@@ -232,10 +232,10 @@
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleInsertObject:(id __unused)object
-          forCollectionKey:(YapCollectionKey __unused *)collectionKey
-              withMetadata:(id __unused)metadata
-                     rowid:(int64_t __unused)rowid
+- (void)didInsertObject:(id __unused)object
+       forCollectionKey:(YapCollectionKey __unused *)collectionKey
+           withMetadata:(id __unused)metadata
+                  rowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -251,10 +251,10 @@
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleUpdateObject:(id __unused)object
-          forCollectionKey:(YapCollectionKey __unused *)collectionKey
-              withMetadata:(id __unused)metadata
-                     rowid:(int64_t __unused)rowid
+- (void)didUpdateObject:(id __unused)object
+       forCollectionKey:(YapCollectionKey __unused *)collectionKey
+           withMetadata:(id __unused)metadata
+                  rowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -269,9 +269,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleReplaceObject:(id __unused)object
-           forCollectionKey:(YapCollectionKey __unused *)collectionKey
-                  withRowid:(int64_t __unused)rowid
+- (void)didReplaceObject:(id __unused)object
+        forCollectionKey:(YapCollectionKey __unused *)collectionKey
+               withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -286,9 +286,9 @@
  * 
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleReplaceMetadata:(id __unused)metadata
-             forCollectionKey:(YapCollectionKey __unused *)collectionKey
-                    withRowid:(int64_t __unused)rowid
+- (void)didReplaceMetadata:(id __unused)metadata
+          forCollectionKey:(YapCollectionKey __unused *)collectionKey
+                 withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -300,7 +300,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchObjectForKey:inCollection:collection:
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -312,7 +312,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchMetadataForKey:inCollection:
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -324,7 +324,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchRowForKey:inCollection:
 **/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -336,7 +336,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction
  * - removeObjectForKey:inCollection:
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -356,9 +356,9 @@
  * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
  * and then loop over them in "chunks" which are readily processable for extensions.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray __unused *)keys
-                      inCollection:(NSString __unused *)collection
-                        withRowids:(NSArray __unused *)rowids
+- (void)didRemoveObjectsForKeys:(NSArray __unused *)keys
+                   inCollection:(NSString __unused *)collection
+                     withRowids:(NSArray __unused *)rowids
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -369,7 +369,7 @@
  *
  * Corresponds to [transaction removeAllObjectsInAllCollections].
 **/
-- (void)handleRemoveAllObjectsInAllCollections
+- (void)didRemoveAllObjectsInAllCollections
 {
 	NSAssert(NO, @"Missing required override method(%@) in class(%@)", NSStringFromSelector(_cmd), [self class]);
 }
@@ -389,9 +389,9 @@
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleWillInsertObject:(id)object
-              forCollectionKey:(YapCollectionKey *)collectionKey
-                  withMetadata:(id)metadata
+- (void)willInsertObject:(id)object
+        forCollectionKey:(YapCollectionKey *)collectionKey
+            withMetadata:(id)metadata
 {
 	// Override me if needed
 }
@@ -407,10 +407,10 @@
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleWillUpdateObject:(id)object
-              forCollectionKey:(YapCollectionKey *)collectionKey
-                  withMetadata:(id)metadata
-                         rowid:(int64_t)rowid
+- (void)willUpdateObject:(id)object
+        forCollectionKey:(YapCollectionKey *)collectionKey
+            withMetadata:(id)metadata
+                   rowid:(int64_t)rowid
 {
 	// Override me if needed
 }
@@ -425,9 +425,9 @@
  *
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleWillReplaceObject:(id)object
-               forCollectionKey:(YapCollectionKey *)collectionKey
-                      withRowid:(int64_t)rowid
+- (void)willReplaceObject:(id)object
+         forCollectionKey:(YapCollectionKey *)collectionKey
+                withRowid:(int64_t)rowid
 {
 	// Override me if needed
 }
@@ -442,9 +442,9 @@
  *
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleWillReplaceMetadata:(id)metadata
-                 forCollectionKey:(YapCollectionKey *)collectionKey
-                        withRowid:(int64_t)rowid
+- (void)willReplaceMetadata:(id)metadata
+           forCollectionKey:(YapCollectionKey *)collectionKey
+                  withRowid:(int64_t)rowid
 {
 	// Override me if needed
 }
@@ -456,7 +456,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - removeObjectForKey:inCollection:
 **/
-- (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)willRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Override me if needed
 }
@@ -476,7 +476,7 @@
  * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
  * and then loop over them in "chunks" which are readily processable for extensions.
 **/
-- (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)willRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	// Override me if needed
 }
@@ -488,7 +488,7 @@
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - removeAllObjectsInAllCollections
 **/
-- (void)handleWillRemoveAllObjectsInAllCollections
+- (void)willRemoveAllObjectsInAllCollections
 {
 	// Override me if needed
 }

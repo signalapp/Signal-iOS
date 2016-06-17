@@ -1412,7 +1412,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 }
 
 /**
- * This method is called from handleRemoveObjectsForKeys:inCollection:withRowids:.
+ * This method is called from didRemoveObjectsForKeys:inCollection:withRowids:.
  *
  * It's used to fetch all the mappingTableInfo items for all the given rowids.
  * This information is used in order to determine which rowids are mapped to a CKRecords (in the record table).
@@ -1476,7 +1476,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		sqlite3 *db = databaseTransaction->connection->db;
 		
 		// Note:
-		// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
+		// The didRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
 		//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
 		//
 		// So we don't have to worry about sqlite's upper bound on host parameters.
@@ -1864,7 +1864,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 }
 
 /**
- * This method is called from handleRemoveObjectsForKeys:inCollection:withRowids:.
+ * This method is called from didRemoveObjectsForKeys:inCollection:withRowids:.
  * 
  * It's used to fetch all the recordInfo items for all the given rowids.
  * This information is used in order to determine which rowids have associated CKRecords,
@@ -1927,7 +1927,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 		sqlite3 *db = databaseTransaction->connection->db;
 		
 		// Note:
-		// The handleRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
+		// The didRemoveObjectsForKeys:inCollection:withRowids: has the following guarantee:
 		//     count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
 		//
 		// So we don't have to worry about sqlite's upper bound on host parameters.
@@ -3258,10 +3258,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didInsertObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3304,10 +3304,10 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didUpdateObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3342,7 +3342,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3382,7 +3382,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3422,7 +3422,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Check for possible MidMerge
 	
@@ -3466,7 +3466,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Check for possible MidMerge
 	
@@ -3510,7 +3510,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Check for possible MidMerge
 	
@@ -3555,7 +3555,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -3581,7 +3581,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)didRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	YDBLogAutoTrace();
 	
@@ -3623,7 +3623,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveAllObjectsInAllCollections
+- (void)didRemoveAllObjectsInAllCollections
 {
 	YDBLogAutoTrace();
 	
