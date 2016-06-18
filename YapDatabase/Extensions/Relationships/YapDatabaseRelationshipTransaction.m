@@ -1175,7 +1175,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 		{
 			if ((edge->state & YDB_EdgeState_HasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
+				if (edge->sourceRowid != srcRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1228,7 +1228,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				// Shortcut:
 				// We already know the sourceRowid. It was given to us as a parameter.
 				
-				edge->sourceRowid = srcRowid.unsignedLongLongValue;
+				edge->sourceRowid = srcRowid.longLongValue;
 				edge->flags |= YDB_EdgeState_HasSourceRowid;
 			}
 			else
@@ -1286,7 +1286,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 			}
 			else if ((edge->state & YDB_EdgeState_HasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
+				if (edge->destinationRowid != dstRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1319,7 +1319,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 			}
 			else if ((edge->state & YDB_EdgeState_HasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
+				if (edge->destinationRowid != dstRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1376,7 +1376,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				// Shortcut:
 				// We already know the sourceRowid. It was given to us as a parameter.
 				
-				edge->destinationRowid = dstRowid.unsignedLongLongValue;
+				edge->destinationRowid = dstRowid.longLongValue;
 				edge->state |= YDB_EdgeState_HasDestinationRowid;
 			}
 			else
@@ -1534,7 +1534,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 		}
 		else if ((edge->state & YDB_EdgeState_HasDestinationRowid) && dstRowid)
 		{
-			if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
+			if (edge->destinationRowid != dstRowid.longLongValue)
 			{
 				continue;
 			}
@@ -1562,7 +1562,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 		{
 			if ((edge->state & YDB_EdgeState_HasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
+				if (edge->sourceRowid != srcRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1582,7 +1582,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 			}
 			else if ((edge->state & YDB_EdgeState_HasDestinationRowid) && dstRowid)
 			{
-				if (edge->destinationRowid != dstRowid.unsignedLongLongValue)
+				if (edge->destinationRowid != dstRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1634,7 +1634,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				// Shortcut:
 				// We already know the sourceRowid. It was given to us as a parameter.
 				
-				edge->sourceRowid = srcRowid.unsignedLongLongValue;
+				edge->sourceRowid = srcRowid.longLongValue;
 				edge->state |= YDB_EdgeState_HasSourceRowid;
 			}
 			else
@@ -1650,7 +1650,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				// Shortcut:
 				// We already know the destinationRowid. It was given to us as a parameter.
 				
-				edge->destinationRowid = dstRowid.unsignedLongLongValue;
+				edge->destinationRowid = dstRowid.longLongValue;
 				edge->state |= YDB_EdgeState_HasDestinationRowid;
 			}
 			else
@@ -1722,7 +1722,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 		{
 			if ((edge->state & YDB_EdgeState_HasSourceRowid) && srcRowid)
 			{
-				if (edge->sourceRowid != srcRowid.unsignedLongLongValue)
+				if (edge->sourceRowid != srcRowid.longLongValue)
 				{
 					continue;
 				}
@@ -1779,7 +1779,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				// Shortcut:
 				// We already know the sourceRowid. It was given to us as a parameter.
 				
-				edge->sourceRowid = srcRowid.unsignedLongLongValue;
+				edge->sourceRowid = srcRowid.longLongValue;
 				edge->state |= YDB_EdgeState_HasSourceRowid;
 			}
 			else
