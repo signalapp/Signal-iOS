@@ -25,6 +25,7 @@ PODS:
     - YapDatabase/Standard/Extensions/FilteredView (= 2.9.1)
     - YapDatabase/Standard/Extensions/FullTextSearch (= 2.9.1)
     - YapDatabase/Standard/Extensions/Hooks (= 2.9.1)
+    - YapDatabase/Standard/Extensions/ManualView (= 2.9.1)
     - YapDatabase/Standard/Extensions/Relationships (= 2.9.1)
     - YapDatabase/Standard/Extensions/RTreeIndex (= 2.9.1)
     - YapDatabase/Standard/Extensions/SearchResultsView (= 2.9.1)
@@ -36,6 +37,7 @@ PODS:
     - YapDatabase/Standard/Extensions/View
   - YapDatabase/Standard/Extensions/AutoView (2.9.1):
     - YapDatabase/Standard/Core
+    - YapDatabase/Standard/Extensions/View
   - YapDatabase/Standard/Extensions/CloudKit (2.9.1):
     - YapDatabase/Standard/Core
   - YapDatabase/Standard/Extensions/ConnectionProxy (2.9.1):
@@ -49,6 +51,9 @@ PODS:
     - YapDatabase/Standard/Core
   - YapDatabase/Standard/Extensions/Hooks (2.9.1):
     - YapDatabase/Standard/Core
+  - YapDatabase/Standard/Extensions/ManualView (2.9.1):
+    - YapDatabase/Standard/Core
+    - YapDatabase/Standard/Extensions/View
   - YapDatabase/Standard/Extensions/Relationships (2.9.1):
     - YapDatabase/Standard/Core
   - YapDatabase/Standard/Extensions/RTreeIndex (2.9.1):
@@ -72,7 +77,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  YapDatabase: 6b06eae7b0f0b91d2cc7463fc032ebe0490ee37c
+  YapDatabase: 1e1022915eff521c2cc3054e939e81b7e83420b4
 
 PODFILE CHECKSUM: eb2117e7418ea98206580f01aedbd418eb34b2f3
 

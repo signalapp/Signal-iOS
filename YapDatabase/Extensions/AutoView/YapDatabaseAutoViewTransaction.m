@@ -466,7 +466,7 @@
 	__unsafe_unretained YapDatabaseAutoViewConnection *viewConnection = (YapDatabaseViewConnection *)parentConnection;
 	
 	YapDatabaseViewSorting *sorting = nil;
-	[viewConnection getSorting:&sorting];
+	[viewConnection getGrouping:NULL sorting:&sorting];
 	
 	// Is the key already in the group?
 	// If so:

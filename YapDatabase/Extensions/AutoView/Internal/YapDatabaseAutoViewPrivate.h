@@ -77,10 +77,6 @@
 - (void)getGrouping:(YapDatabaseViewGrouping **)groupingPtr
             sorting:(YapDatabaseViewSorting **)sortingPtr;
 
-- (void)getGrouping:(YapDatabaseViewGrouping **)groupingBlockPtr;
-
-- (void)getSorting:(YapDatabaseViewSorting **)sortingBlockPtr;
-
 - (void)setGrouping:(YapDatabaseViewGrouping *)newGrouping
             sorting:(YapDatabaseViewSorting *)newSorting
          versionTag:(NSString *)newVersionTag;
@@ -93,7 +89,7 @@
 
 @interface YapDatabaseViewTransaction ()
 
-// The following are declared for view subclasses (such as YapDatabaseFilteredView)
+// The following are declared for YDBAutoView subclasses (such as YapDatabaseSearchResultsView)
 
 - (void)insertRowid:(int64_t)rowid
       collectionKey:(YapCollectionKey *)collectionKey

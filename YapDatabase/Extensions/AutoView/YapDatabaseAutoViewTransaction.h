@@ -33,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Keep in mind that the YapDatabaseViewTransaction object is linked to the YapDatabaseReadTransaction object.
  * So don't try to use it outside the transaction block (cause it won't work).
 **/
-
 @interface YapDatabaseAutoViewTransaction : YapDatabaseViewTransaction
 
 #pragma mark Finding

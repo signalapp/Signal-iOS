@@ -7,10 +7,6 @@
 #import "YapDatabaseViewTransaction.h"
 #import "YapDatabaseViewOptions.h"
 
-#import "YapDatabaseViewMappings.h"
-#import "YapDatabaseViewChange.h"
-#import "YapDatabaseViewRangeOptions.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**

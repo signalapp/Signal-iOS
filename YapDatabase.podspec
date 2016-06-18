@@ -50,6 +50,11 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}'
       end
       
+      sse.subspec 'ManualView' do |ssee|
+        ssee.dependency 'YapDatabase/Standard/Extensions/View'
+        ssee.source_files = 'YapDatabase/Extensions/ManualView/**/*.{h,m,mm,c}'
+      end
+      
       sse.subspec 'SecondaryIndex' do |ssee|
         ssee.source_files = 'YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}'
       end
@@ -126,6 +131,11 @@ Pod::Spec.new do |s|
       sse.subspec 'AutoView' do |ssee|
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}'
+      end
+      
+      sse.subspec 'ManualView' do |ssee|
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
+        ssee.source_files = 'YapDatabase/Extensions/ManualView/**/*.{h,m,mm,c}'
       end
       
       sse.subspec 'SecondaryIndex' do |ssee|

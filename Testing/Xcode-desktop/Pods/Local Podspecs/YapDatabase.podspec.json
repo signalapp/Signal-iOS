@@ -55,7 +55,21 @@
             },
             {
               "name": "AutoView",
+              "dependencies": {
+                "YapDatabase/Standard/Extensions/View": [
+
+                ]
+              },
               "source_files": "YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ManualView",
+              "dependencies": {
+                "YapDatabase/Standard/Extensions/View": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/ManualView/**/*.{h,m,mm,c}"
             },
             {
               "name": "SecondaryIndex",
@@ -173,6 +187,15 @@
                 ]
               },
               "source_files": "YapDatabase/Extensions/AutoView/**/*.{h,m,mm,c}"
+            },
+            {
+              "name": "ManualView",
+              "dependencies": {
+                "YapDatabase/SQLCipher/Extensions/View": [
+
+                ]
+              },
+              "source_files": "YapDatabase/Extensions/ManualView/**/*.{h,m,mm,c}"
             },
             {
               "name": "SecondaryIndex",
