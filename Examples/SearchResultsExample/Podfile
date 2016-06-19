@@ -1,3 +1,5 @@
 platform :ios, '8.0'
 
-pod "YapDatabase", path: '../../'
+target "SearchResultsExample" do
+    pod "YapDatabase", path: '../../'
+end

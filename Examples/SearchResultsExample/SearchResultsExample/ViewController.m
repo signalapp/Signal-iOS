@@ -20,13 +20,14 @@
 	YapDatabaseViewMappings *mainMappings;
 	YapDatabaseViewMappings *searchMappings;
 	
-	UISearchDisplayController *searchController;
+	UISearchController *searchController;
 	
 	YapDatabaseConnection *searchConnection;
 	YapDatabaseSearchQueue *searchQueue;
 }
 
 @synthesize mainTableView = mainTableView;
+@synthesize searchResultsTableView = searchResultsTableView;
 
 - (void)viewDidLoad
 {
@@ -34,14 +35,11 @@
 	
 	// Setup search bar & controller
 	
-	UISearchBar *searchBar = [[UISearchBar alloc] init];
+	searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+	searchController.searchResultsUpdater = self;
+	searchController.dimsBackgroundDuringPresentation = NO;
 	
-	searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar contentsController:self];
-	searchController.delegate = self;
-	searchController.searchResultsDataSource = self;
-	searchController.searchResultsDelegate = self;
-	
-	mainTableView.tableHeaderView = searchBar;
+	mainTableView.tableHeaderView = searchController.searchBar;
 	
 	// Setup database
 	
@@ -118,13 +116,13 @@
 	
 	// Update mainTableView
 	
-	DDLogVerbose(@"Calculating rowChanges for mainTableView...");
+//	DDLogVerbose(@"Calculating rowChanges for mainTableView...");
 	[[databaseConnection ext:@"order"] getSectionChanges:NULL
 	                                          rowChanges:&rowChanges
 	                                    forNotifications:notifications
 	                                        withMappings:mainMappings];
 	
-	DDLogVerbose(@"Processing rowChanges for mainTableView...");
+//	DDLogVerbose(@"Processing rowChanges for mainTableView...");
 	
 	if ([rowChanges count] > 0)
 	{
@@ -171,17 +169,17 @@
 	
 	rowChanges = nil;
 	
-	DDLogVerbose(@"Calculating rowChanges for searchResultsTableView...");
+//	DDLogVerbose(@"Calculating rowChanges for searchResultsTableView...");
 	[[databaseConnection ext:@"searchResults"] getSectionChanges:NULL
 	                                                  rowChanges:&rowChanges
 	                                            forNotifications:notifications
 	                                                withMappings:searchMappings];
 	
-	DDLogVerbose(@"Processing rowChanges for searchResultsTableView...");
+//	DDLogVerbose(@"Processing rowChanges for searchResultsTableView...");
 	
 	if ([rowChanges count] > 0)
 	{
-		UITableView *tableView = searchController.searchResultsTableView;
+		UITableView *tableView = searchResultsTableView;
 		[tableView beginUpdates];
 		
 		for (YapDatabaseViewRowChange *rowChange in rowChanges)
@@ -254,7 +252,7 @@
 	}
 	else
 	{
-		cell = [searchController.searchResultsTableView dequeueReusableCellWithIdentifier:identifier];
+		cell = [searchResultsTableView dequeueReusableCellWithIdentifier:identifier];
 		if (cell == nil) {
 			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
 		}
@@ -265,10 +263,10 @@
 	[databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
 		if (sender == mainTableView) {
-			person = [[transaction ext:@"order"] objectAtIndex:indexPath.row inGroup:@"all"];
+			person = [[transaction ext:@"order"] objectAtIndexPath:indexPath withMappings:mainMappings];
 		}
 		else {
-			person = [[transaction ext:@"searchResults"] objectAtIndex:indexPath.row inGroup:@"all"];
+			person = [[transaction ext:@"searchResults"] objectAtIndexPath:indexPath withMappings:searchMappings];
 		}
 	}];
 	
@@ -279,69 +277,12 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark UISearchDisplayController
+#pragma mark UISearchResultsUpdating
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-  didLoadSearchResultsTableView:(UITableView *)sender
+- (void)updateSearchResultsForSearchController:(UISearchController *)sender
 {
 	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-    willUnloadSearchResultsTableView:(UITableView *)sender
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-     willShowSearchResultsTableView:(UITableView *)searchTableView
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-    didShowSearchResultsTableView:(UITableView *)searchTableView
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-    willHideSearchResultsTableView:(UITableView *)searchTableView
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-    didHideSearchResultsTableView:(UITableView *)searchTableView
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
-{
-	DDLogVerbose(@"%@ - %@", THIS_FILE, THIS_METHOD);
-}
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller
-    shouldReloadTableForSearchString:(NSString *)searchString
-{
-	DDLogVerbose(@"%@ - %@ (%@)", THIS_FILE, THIS_METHOD, searchString);
 	
 	if (searchConnection == nil)
 		searchConnection = [TheAppDelegate.database newConnection];
@@ -351,6 +292,8 @@
 	
 	// Parse the text into a proper search query
 	
+	NSString *searchString = sender.searchBar.text;
+	
 	NSCharacterSet *whitespace = [NSCharacterSet whitespaceCharacterSet];
 	
 	NSArray *searchComponents = [searchString componentsSeparatedByCharactersInSet:whitespace];
@@ -358,8 +301,10 @@
 	
 	for (NSString *term in searchComponents)
 	{
-		if ([term length] > 0)
-			[query appendString:@""];
+		if (term.length == 0) continue;
+		
+		if (query.length > 0)
+			[query appendString:@" "];
 		
 		[query appendFormat:@"%@*", term];
 	}
@@ -373,7 +318,16 @@
 		[[transaction ext:@"searchResults"] performSearchWithQueue:searchQueue];
 	}];
 	
-	return NO;
+	if (searchString.length == 0)
+	{
+		[self.view bringSubviewToFront:mainTableView];
+		searchResultsTableView.hidden = YES;
+	}
+	else
+	{
+		searchResultsTableView.hidden = NO;
+		[self.view bringSubviewToFront:searchResultsTableView];
+	}
 }
 
 @end

@@ -3,9 +3,10 @@
 
 @interface ViewController : UIViewController <UITableViewDelegate,
                                               UITableViewDataSource,
-                                              UISearchBarDelegate,
-                                              UISearchDisplayDelegate>
+                                              UISearchResultsUpdating>
 
 @property (nonatomic, strong) IBOutlet UITableView *mainTableView;
+@property (nonatomic, strong) IBOutlet UITableView *searchResultsTableView;
 
 @end
+

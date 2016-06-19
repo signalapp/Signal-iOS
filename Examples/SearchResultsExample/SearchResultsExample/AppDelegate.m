@@ -46,7 +46,7 @@ AppDelegate *TheAppDelegate;
 	// Fill the database with our sample names (if needed)
 	[self asyncPopulateDatabaseIfNeeded];
 	
-    return YES;
+	return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,8 @@ AppDelegate *TheAppDelegate;
 {
 	NSString *databasePath = [self databasePath];
 	
-	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
+	// Delete the previous database on next launch (force create new database)
+//	[[NSFileManager defaultManager] removeItemAtPath:databasePath error:NULL];
 	
 	// Create the database.
 	// We do this using the default settings.
@@ -110,10 +111,11 @@ AppDelegate *TheAppDelegate;
         return [person1.name compare:person2.name options:NSLiteralSearch];
     }];
 
-	YapDatabaseView *view = [[YapDatabaseView alloc] initWithGrouping:grouping
-                                                              sorting:sorting
-                                                           versionTag:@"1"
-                                                              options:nil];
+	YapDatabaseAutoView *view =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting
+	                                     versionTag:@"1"
+	                                        options:nil];
 	
 	if (![database registerExtension:view withName:@"order"])
 	{
@@ -130,13 +132,18 @@ AppDelegate *TheAppDelegate;
 	
 	DDLogVerbose(@"Creating fts...");
 
-    YapDatabaseFullTextSearchHandler *handler = [YapDatabaseFullTextSearchHandler withObjectBlock:^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object) {
-        __unsafe_unretained Person *person = (Person *)object;
-        dict[@"name"] = person.name;
-    }];
+	YapDatabaseFullTextSearchHandler *handler = [YapDatabaseFullTextSearchHandler withObjectBlock:
+		^(NSMutableDictionary *dict, NSString *collection, NSString *key, id object)
+	{
+		__unsafe_unretained Person *person = (Person *)object;
+		
+		dict[@"name"] = person.name;
+	}];
 
-	YapDatabaseFullTextSearch *fts = [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[ @"name" ] handler:handler versionTag:@"1"];
-
+	YapDatabaseFullTextSearch *fts =
+	  [[YapDatabaseFullTextSearch alloc] initWithColumnNames:@[ @"name" ]
+	                                                 handler:handler
+	                                              versionTag:@"1"];
 	
 	if (![database registerExtension:fts withName:@"fts"])
 	{
@@ -157,10 +164,11 @@ AppDelegate *TheAppDelegate;
 	YapDatabaseSearchResultsViewOptions *searchViewOptions = [[YapDatabaseSearchResultsViewOptions alloc] init];
 	searchViewOptions.isPersistent = NO;
 	
-	YapDatabaseSearchResultsView *searchResultsView = [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
+	YapDatabaseSearchResultsView *searchResultsView =
+	  [[YapDatabaseSearchResultsView alloc] initWithFullTextSearchName:@"fts"
 	                                                    parentViewName:@"order"
 	                                                        versionTag:@"1"
-	                                                      options:searchViewOptions];
+	                                                           options:searchViewOptions];
 	
 	if (![database registerExtension:searchResultsView withName:@"searchResults"])
 	{
@@ -170,13 +178,19 @@ AppDelegate *TheAppDelegate;
 
 - (void)asyncPopulateDatabaseIfNeeded
 {
-	[[database newConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+	YapDatabaseConnection *databaseConnection = [database newConnection];
+	
+	__block NSUInteger count = 0;
+	[databaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
 		
-		NSUInteger count = [transaction numberOfKeysInAllCollections];
-		if (count > 0)
-		{
+		count = [transaction numberOfKeysInAllCollections];
+		
+	} completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+	  completionBlock:^{ @autoreleasepool {
+		
+		if (count > 0) {
 			// Looks like the database is already populated.
-			return; // from block
+			return;
 		}
 		
 		DDLogVerbose(@"Loading sample names from JSON file...");
@@ -188,27 +202,30 @@ AppDelegate *TheAppDelegate;
 		
 		NSArray *people = [NSJSONSerialization JSONObjectWithStream:inputStream options:0 error:nil];
 		
-		DDLogVerbose(@"Adding sample items to database...");
-		
-		// Bump the objectCacheLimit for a little performance boost.
-		// https://github.com/yaptv/YapDatabase/wiki/Performance-Pro
-		NSUInteger originalObjectCacheLimit = transaction.connection.objectCacheLimit;
-		transaction.connection.objectCacheLimit = [people count];
-		
-		[people enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
-            
-			NSString *name = info[@"name"];
-			NSString *uuid = info[@"udid"];
+		[databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 			
-			Person *person = [[Person alloc] initWithName:name uuid:uuid];
+			DDLogVerbose(@"Adding sample items to database...");
 			
-			[transaction setObject:person forKey:person.uuid inCollection:@"people"];
+			// Bump the objectCacheLimit for a little performance boost.
+			// https://github.com/yaptv/YapDatabase/wiki/Performance-Pro
+			NSUInteger originalObjectCacheLimit = transaction.connection.objectCacheLimit;
+			transaction.connection.objectCacheLimit = [people count];
+			
+			[people enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
+				
+				NSString *name = info[@"name"];
+				NSString *uuid = info[@"udid"];
+				
+				Person *person = [[Person alloc] initWithName:name uuid:uuid];
+				
+				[transaction setObject:person forKey:person.uuid inCollection:@"people"];
+			}];
+			
+			transaction.connection.objectCacheLimit = originalObjectCacheLimit;
+			
+			DDLogVerbose(@"Committing transaction...");
 		}];
-		
-		transaction.connection.objectCacheLimit = originalObjectCacheLimit;
-		
-		DDLogVerbose(@"Committing transaction...");
-	}];
+	}}];
 }
 
 @end

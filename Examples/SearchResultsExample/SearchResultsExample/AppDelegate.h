@@ -1,14 +1,14 @@
 #import <UIKit/UIKit.h>
 
 #import "YapDatabase.h"
-#import "YapDatabaseView.h"
+#import "YapDatabaseAutoView.h"
 #import "YapDatabaseFullTextSearch.h"
 #import "YapDatabaseSearchResultsView.h"
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (nonatomic, strong) UIWindow *window;
+@property (strong, nonatomic) UIWindow *window;
 
 @property (nonatomic, strong, readonly) YapDatabase *database;
 
