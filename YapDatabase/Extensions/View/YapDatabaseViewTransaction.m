@@ -1544,16 +1544,17 @@
 		}
 	}];
 	
-	[locators enumerateKeysAndObjectsUsingBlock:
-		^(NSNumber *rowidNumber, YapDatabaseViewLocator *locator, BOOL __unused *stop)
+	for (NSNumber *rowidNumber in sortedRowids)
 	{
 		int64_t rowid = [rowidNumber longLongValue];
+		
 		YapCollectionKey *collectionKey = collectionKeys[rowidNumber];
+		YapDatabaseViewLocator *locator = locators[rowidNumber];
 		
 		NSAssert(collectionKey != nil, @"Missing collectionKey for rowid !");
 		
 		[self removeRowid:rowid collectionKey:collectionKey withLocator:locator];
-	}];
+	}
 }
 
 /**

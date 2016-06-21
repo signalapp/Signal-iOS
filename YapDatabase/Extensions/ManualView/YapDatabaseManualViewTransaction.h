@@ -76,6 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 - (BOOL)removeKey:(NSString *)key inCollection:(nullable NSString *)collection fromGroup:(NSString *)group;
 
+/**
+ * Removes all <collection, key> tuples from the given group.
+**/
+- (void)removeAllItemsInGroup:(NSString *)group;
+
 @end
 
 NS_ASSUME_NONNULL_END

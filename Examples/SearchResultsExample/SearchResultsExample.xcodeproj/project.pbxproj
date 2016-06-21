@@ -13,8 +13,8 @@
 		DC19C8CF1D161D1E00BA38D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC19C8CD1D161D1E00BA38D4 /* Main.storyboard */; };
 		DC19C8D11D161D1E00BA38D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC19C8D01D161D1E00BA38D4 /* Assets.xcassets */; };
 		DC19C8D41D161D1E00BA38D4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC19C8D21D161D1E00BA38D4 /* LaunchScreen.storyboard */; };
-		DC19C8DD1D161E0E00BA38D4 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = DC19C8DC1D161E0E00BA38D4 /* Person.m */; };
 		DC19C8DF1D161E7800BA38D4 /* names.json in Resources */ = {isa = PBXBuildFile; fileRef = DC19C8DE1D161E7800BA38D4 /* names.json */; };
+		DC4AC42D1D1714A900CC54F0 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4AC42C1D1714A900CC54F0 /* Person.m */; };
 		E5CFAC39C91B691F70E261AE /* libPods-SearchResultsExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEC787ED67CFC7B098B07D06 /* libPods-SearchResultsExample.a */; };
 /* End PBXBuildFile section */
 
@@ -31,9 +31,9 @@
 		DC19C8D01D161D1E00BA38D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC19C8D31D161D1E00BA38D4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DC19C8D51D161D1E00BA38D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DC19C8DB1D161E0E00BA38D4 /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
-		DC19C8DC1D161E0E00BA38D4 /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
 		DC19C8DE1D161E7800BA38D4 /* names.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = names.json; path = "../../Sample Data/names.json"; sourceTree = "<group>"; };
+		DC4AC42B1D1714A900CC54F0 /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Person.h; path = "../../Sample Data/Person.h"; sourceTree = "<group>"; };
+		DC4AC42C1D1714A900CC54F0 /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Person.m; path = "../../Sample Data/Person.m"; sourceTree = "<group>"; };
 		EEC787ED67CFC7B098B07D06 /* libPods-SearchResultsExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SearchResultsExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -87,15 +87,15 @@
 		DC19C8C31D161D1E00BA38D4 /* SearchResultsExample */ = {
 			isa = PBXGroup;
 			children = (
-				DC19C8DB1D161E0E00BA38D4 /* Person.h */,
-				DC19C8DC1D161E0E00BA38D4 /* Person.m */,
 				DC19C8C71D161D1E00BA38D4 /* AppDelegate.h */,
 				DC19C8C81D161D1E00BA38D4 /* AppDelegate.m */,
 				DC19C8CA1D161D1E00BA38D4 /* ViewController.h */,
 				DC19C8CB1D161D1E00BA38D4 /* ViewController.m */,
 				DC19C8CD1D161D1E00BA38D4 /* Main.storyboard */,
 				DC19C8D21D161D1E00BA38D4 /* LaunchScreen.storyboard */,
-				DC19C8E01D161E8000BA38D4 /* Assets */,
+				DC19C8D01D161D1E00BA38D4 /* Assets.xcassets */,
+				DC19C8D51D161D1E00BA38D4 /* Info.plist */,
+				DC4AC42A1D17147D00CC54F0 /* Sample Data */,
 				DC19C8C41D161D1E00BA38D4 /* Supporting Files */,
 			);
 			path = SearchResultsExample;
@@ -109,14 +109,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		DC19C8E01D161E8000BA38D4 /* Assets */ = {
+		DC4AC42A1D17147D00CC54F0 /* Sample Data */ = {
 			isa = PBXGroup;
 			children = (
-				DC19C8D01D161D1E00BA38D4 /* Assets.xcassets */,
+				DC4AC42B1D1714A900CC54F0 /* Person.h */,
+				DC4AC42C1D1714A900CC54F0 /* Person.m */,
 				DC19C8DE1D161E7800BA38D4 /* names.json */,
-				DC19C8D51D161D1E00BA38D4 /* Info.plist */,
 			);
-			name = Assets;
+			name = "Sample Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,7 +243,7 @@
 			files = (
 				DC19C8CC1D161D1E00BA38D4 /* ViewController.m in Sources */,
 				DC19C8C91D161D1E00BA38D4 /* AppDelegate.m in Sources */,
-				DC19C8DD1D161E0E00BA38D4 /* Person.m in Sources */,
+				DC4AC42D1D1714A900CC54F0 /* Person.m in Sources */,
 				DC19C8C61D161D1E00BA38D4 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -19,6 +19,231 @@
 
 @implementation YapDatabaseManualViewTransaction
 
+#pragma mark Extension Lifecycle
+
+/**
+ * Required override method from YapDatabaseViewTransaction.
+**/
+- (BOOL)populateView
+{
+	return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Transaction Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)_handleChangeWithRowid:(int64_t)rowid
+                 collectionKey:(YapCollectionKey *)collectionKey
+                changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
+{
+	// Should we ignore the row based on the allowedCollections ?
+	
+	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
+	
+	if (allowedCollections && ![allowedCollections isAllowed:collectionKey.collection])
+	{
+		return;
+	}
+	
+	// Process as usual
+	
+	YapDatabaseViewLocator *locator = [self locatorForRowid:rowid];
+	if (locator)
+	{
+		[parentConnection->changes addObject:
+		  [YapDatabaseViewRowChange updateCollectionKey:collectionKey
+		                                        inGroup:locator.group
+		                                        atIndex:locator.index
+		                                    withChanges:changesBitMask]];
+	}
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didInsertObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Nothing to do here.
+	// Since this is an insert, it means the object is new, and thus doesn't exist in our view.
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didUpdateObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchObjectForKey:inCollection:collection:
+**/
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchMetadataForKey:inCollection:
+**/
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * Subclasses MUST implement this method.
+ * YapDatabaseReadWriteTransaction Hook, invoked post-op.
+ *
+ * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
+ * - touchRowForKey:inCollection:
+**/
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
+	
+	[self _handleChangeWithRowid:rowid
+	               collectionKey:collectionKey
+	              changesBitMask:changesBitMask];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+{
+	YDBLogAutoTrace();
+	
+	// Should we ignore the row based on the allowedCollections ?
+	
+	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collectionKey.collection])
+	{
+		return;
+	}
+	
+	// Process as usual
+	
+	[self removeRowid:rowid collectionKey:collectionKey];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+{
+	YDBLogAutoTrace();
+	
+	// Should we ignore the rows based on the allowedCollections ?
+	
+	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
+	if (allowedCollections && ![allowedCollections isAllowed:collection])
+	{
+		return;
+	}
+	
+	// Process as usual
+	
+	NSMutableDictionary *collectionKeys = [NSMutableDictionary dictionaryWithCapacity:keys.count];
+	
+	[rowids enumerateObjectsUsingBlock:^(NSNumber *rowidNumber, NSUInteger idx, BOOL *stop) {
+		
+		NSString *key = [keys objectAtIndex:idx];
+		
+		collectionKeys[rowidNumber] = [[YapCollectionKey alloc] initWithCollection:collection key:key];
+	}];
+	
+	NSDictionary *locators = [self locatorsForRowids:rowids];
+	
+	[self removeRowidsWithCollectionKeys:collectionKeys locators:locators];
+}
+
+/**
+ * YapDatabase extension hook.
+ * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
+**/
+- (void)didRemoveAllObjectsInAllCollections
+{
+	YDBLogAutoTrace();
+	
+	[self removeAllRowids];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Public API
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Adds the <collection, key> tuple to the end of the group (greatest index possible).
  *
@@ -169,6 +394,16 @@
 	[self removeRowid:rowid collectionKey:collectionKey withLocator:locator];
 	
 	return YES;
+}
+
+/**
+ * Removes all <collection, key> tuples from the given group.
+**/
+- (void)removeAllItemsInGroup:(NSString *)group
+{
+	YDBLogAutoTrace();
+	
+	[self removeAllRowidsInGroup:group];
 }
 
 @end
