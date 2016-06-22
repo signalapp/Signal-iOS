@@ -1439,7 +1439,15 @@ typedef enum : NSUInteger {
                                       img_buffer[0],
                                       img_buffer[0],
                                       file_type);
-                         [self sendMessageAttachment:img_data ofType:file_type];
+
+                         if([file_type isEqualToString:@"image/gif"]) {
+                             // Don't convert gif to JPG
+                             // TODO make sure this isn't a ridiculous size.
+                             [self sendMessageAttachment:img_data ofType:file_type];
+                         } else {
+                             UIImage *pickedImage = [[UIImage alloc] initWithData:img_data];
+                             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage] ofType:@"image/jpeg"];
+                         }
                      }
                     failureBlock:^(NSError *error) {
                         DDLogVerbose(@"Couldn't get image asset: %@", error);
