@@ -1427,7 +1427,7 @@ typedef enum : NSUInteger {
                                  file_type = @"image/tiff";
                                  break;
                              case 0x42:
-                                 file_type = @"@image/bmp";
+                                 file_type = @"image/bmp";
                                  break;
                              case 0xFF:
                              default:
