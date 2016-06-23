@@ -1427,19 +1427,33 @@ typedef enum : NSUInteger {
                                  file_type = @"image/tiff";
                                  break;
                              case 0x42:
-                                 file_type = @"@image/bmp";
+                                 file_type = @"image/bmp";
                                  break;
                              case 0xFF:
                              default:
                                  file_type = @"image/jpeg";
                                  break;
                          }
-                         DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
+                         DDLogVerbose(@"Picked image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
                                       (unsigned long)length_buffered,
                                       img_buffer[0],
                                       img_buffer[0],
                                       file_type);
-                         [self sendMessageAttachment:img_data ofType:file_type];
+
+                         if ([file_type isEqualToString:@"image/gif"] && img_data.length <= 5 * 1024 * 1024) {
+                             // Media Size constraints lifted from Signal-Android (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
+                             // GifMaxSize return 5 * MB;
+                             // For reference, other media size limits we're not explicitly enforcing:
+                             // ImageMaxSize return 420 * KB;
+                             // VideoMaxSize return 100 * MB;
+                             // getAudioMaxSize 100 * MB;
+                             DDLogVerbose(@"Sending raw image/gif");
+                             [self sendMessageAttachment:img_data ofType:file_type];
+                         } else {
+                             DDLogVerbose(@"Compressing attachment as image/jpeg");
+                             UIImage *pickedImage = [[UIImage alloc] initWithData:img_data];
+                             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage] ofType:@"image/jpeg"];
+                         }
                      }
                     failureBlock:^(NSError *error) {
                         DDLogVerbose(@"Couldn't get image asset: %@", error);
@@ -1456,6 +1470,10 @@ typedef enum : NSUInteger {
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
+                                 DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                                              attachmentData.length,
+                                              attachmentType);
+
                                [[TSMessagesManager sharedManager] sendAttachment:attachmentData
                                                                      contentType:attachmentType
                                                                        inMessage:message
