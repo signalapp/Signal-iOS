@@ -9,7 +9,7 @@
 #import "CodeVerificationViewController.h"
 
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "Environment.h"
 #import "LocalizableText.h"
 #import "PushManager.h"

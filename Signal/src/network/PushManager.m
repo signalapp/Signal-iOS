@@ -9,7 +9,7 @@
 #import <PushKit/PushKit.h>
 
 #import "AppDelegate.h"
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "InCallViewController.h"
 #import "NSData+ows_StripToken.h"
 #import "NSDate+millisecondTimeStamp.h"

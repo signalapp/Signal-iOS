@@ -1,4 +1,4 @@
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
 #import "Util.h"
@@ -7,7 +7,7 @@
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
-@interface ContactsManager ()
+@interface OWSContactsManager ()
 
 @property id addressBookReference;
 @property TOCFuture *futureAddressBook;
@@ -17,7 +17,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 @end
 
-@implementation ContactsManager
+@implementation OWSContactsManager
 
 - (void)dealloc {
     [_life cancel];
@@ -65,7 +65,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context);
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context) {
-    ContactsManager *contactsManager = (__bridge ContactsManager *)context;
+    OWSContactsManager *contactsManager = (__bridge OWSContactsManager *)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       [contactsManager pullLatestAddressBook];
       [contactsManager intersectContacts];
@@ -76,7 +76,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)setupAddressBook {
     dispatch_async(ADDRESSBOOK_QUEUE, ^{
-      [[ContactsManager asyncGetAddressBook] thenDo:^(id addressBook) {
+      [[OWSContactsManager asyncGetAddressBook] thenDo:^(id addressBook) {
         self.addressBookReference = addressBook;
         ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
         ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
@@ -107,7 +107,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError)localizedDescription]);
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
       if (!granted) {
-          [ContactsManager blockingContactDialog];
+          [OWSContactsManager blockingContactDialog];
       }
     });
     [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
@@ -115,7 +115,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)setupLatestContacts:(NSArray *)contacts {
     if (contacts) {
-        self.latestContactsById = [ContactsManager keyContactsById:contacts];
+        self.latestContactsById = [OWSContactsManager keyContactsById:contacts];
     }
 }
 
@@ -250,7 +250,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (NSArray *)latestContactsWithSearchString:(NSString *)searchString {
     return [self.latestContactsById.allValues filter:^int(Contact *contact) {
-      return searchString.length == 0 || [ContactsManager name:contact.fullName matchesQuery:searchString];
+      return searchString.length == 0 || [OWSContactsManager name:contact.fullName matchesQuery:searchString];
     }];
 }
 

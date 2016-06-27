@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 
 /**
  *

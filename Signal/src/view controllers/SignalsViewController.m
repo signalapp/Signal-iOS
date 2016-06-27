@@ -9,7 +9,7 @@
 #import "InboxTableViewCell.h"
 #import "UIUtil.h"
 
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "InCallViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
