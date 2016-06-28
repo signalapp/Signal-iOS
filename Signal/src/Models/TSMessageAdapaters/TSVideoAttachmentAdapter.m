@@ -39,7 +39,6 @@
     self = [super initWithFileURL:[attachment mediaURL] isReadyToPlay:YES];
 
     if (self) {
-        ;
         _image           = attachment.image;
         _cachedImageView = nil;
         _attachmentId    = attachment.uniqueId;
@@ -200,15 +199,11 @@
 }
 
 - (CGSize)mediaViewDisplaySize {
-    CGSize mediaDisplaySize;
-    if ([self isVideo]) {
-        mediaDisplaySize = [super mediaViewDisplaySize];
-    } else if ([self isAudio]) {
-        CGSize size      = [super mediaViewDisplaySize];
-        size.height      = AUDIO_BAR_HEIGHT;
-        mediaDisplaySize = size;
+    CGSize size = [super mediaViewDisplaySize];
+    if ([self isAudio]) {
+        size.height = AUDIO_BAR_HEIGHT;
     }
-    return mediaDisplaySize;
+    return size;
 }
 
 - (UIView *)mediaPlaceholderView {
