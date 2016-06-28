@@ -18,18 +18,17 @@
 
 @interface MessageComposeTableViewController () <UISearchBarDelegate,
                                                  UISearchResultsUpdating,
-                                                 MFMessageComposeViewControllerDelegate> {
-    UIButton *sendTextButton;
-    NSString *currentSearchTerm;
-    NSArray<Contact *> *contacts;
-    NSArray<Contact *> *searchResults;
-}
+                                                 MFMessageComposeViewControllerDelegate>
 
+@property (nonatomic) UIButton *sendTextButton;
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, strong) UIBarButtonItem *addGroup;
 @property (nonatomic, strong) UIView *loadingBackgroundView;
 @property (nonatomic, strong) UIView *emptyBackgroundView;
+@property (copy) NSArray<Contact *> *contacts;
+@property (nonatomic) NSString *currentSearchTerm;
+@property (copy) NSArray<Contact *> *searchResults;
 
 @end
 
@@ -39,8 +38,8 @@
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    contacts = [[[Environment getCurrent] contactsManager] signalContacts];
-    searchResults = contacts;
+    self.contacts = [[[Environment getCurrent] contactsManager] signalContacts];
+    self.searchResults = self.contacts;
     [self initializeSearch];
 
     self.searchController.searchBar.hidden          = NO;
@@ -54,7 +53,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    if ([contacts count] == 0) {
+    if ([self.contacts count] == 0) {
         [self showEmptyBackgroundView:YES];
     }
 }
@@ -218,17 +217,17 @@
     self.searchController.searchBar.delegate       = self;
     self.searchController.searchBar.placeholder    = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
 
-    sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
-    [sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x,
-                                      self.searchController.searchBar.frame.origin.y + 44.0,
-                                      self.searchController.searchBar.frame.size.width,
-                                      44.0);
-    [self.view addSubview:sendTextButton];
-    sendTextButton.hidden = YES;
+    self.sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
+    [self.sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x,
+                                           self.searchController.searchBar.frame.origin.y + 44.0,
+                                           self.searchController.searchBar.frame.size.width,
+                                           44.0);
+    [self.view addSubview:self.sendTextButton];
+    self.sendTextButton.hidden = YES;
 
-    [sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
+    [self.sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [self initializeRefreshControl];
 }
 
@@ -257,7 +256,7 @@
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    sendTextButton.hidden = YES;
+    self.sendTextButton.hidden = YES;
 }
 
 
@@ -269,20 +268,20 @@
     NSPredicate *resultPredicate = [NSPredicate
         predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchText, formattedNumber];
 
-    searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
-    if (!searchResults.count && _searchController.searchBar.text.length == 0) {
-        searchResults = contacts;
+    self.searchResults = [self.contacts filteredArrayUsingPredicate:resultPredicate];
+    if (!self.searchResults.count && self.searchController.searchBar.text.length == 0) {
+        self.searchResults = self.contacts;
     }
 
     // text to a non-signal number if we have no results and a valid phone #
-    if (searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
+    if (self.searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
         NSString *sendTextTo = NSLocalizedString(@"SEND_SMS_BUTTON", @"");
         sendTextTo           = [sendTextTo stringByAppendingString:formattedNumber];
-        [sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
-        sendTextButton.hidden = NO;
-        currentSearchTerm     = formattedNumber;
+        [self.sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
+        self.sendTextButton.hidden = NO;
+        self.currentSearchTerm     = formattedNumber;
     } else {
-        sendTextButton.hidden = YES;
+        self.sendTextButton.hidden = YES;
     }
 }
 
@@ -291,9 +290,9 @@
 
 - (void)sendText {
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
-    if ([currentSearchTerm length] > 0) {
+    if ([self.currentSearchTerm length] > 0) {
         confirmMessage = NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"");
-        confirmMessage = [confirmMessage stringByAppendingString:currentSearchTerm];
+        confirmMessage = [confirmMessage stringByAppendingString:self.currentSearchTerm];
         confirmMessage = [confirmMessage stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
@@ -319,7 +318,7 @@
                       picker.messageComposeDelegate          = self;
 
                       picker.recipients =
-                          [currentSearchTerm length] > 0 ? [NSArray arrayWithObject:currentSearchTerm] : nil;
+                          [self.currentSearchTerm length] > 0 ? [NSArray arrayWithObject:self.currentSearchTerm] : nil;
                       picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"")
                           stringByAppendingString:
                               @" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
@@ -337,7 +336,7 @@
 
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
-    sendTextButton.hidden                = YES;
+    self.sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
 
     //must dismiss search controller before presenting alert.
@@ -397,9 +396,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.searchController.active) {
-        return (NSInteger)[searchResults count];
+        return (NSInteger)[self.searchResults count];
     } else {
-        return (NSInteger)[contacts count];
+        return (NSInteger)[self.contacts count];
     }
 }
 
@@ -453,9 +452,9 @@
     Contact *contact = nil;
 
     if (self.searchController.active) {
-        contact = [searchResults objectAtIndex:(NSUInteger)indexPath.row];
+        contact = [self.searchResults objectAtIndex:(NSUInteger)indexPath.row];
     } else {
-        contact = [contacts objectAtIndex:(NSUInteger)indexPath.row];
+        contact = [self.contacts objectAtIndex:(NSUInteger)indexPath.row];
     }
 
     return contact;
@@ -467,7 +466,7 @@
     [self.refreshControl endRefreshing];
 
     [self showLoadingBackgroundView:NO];
-    if ([contacts count] == 0) {
+    if ([self.contacts count] == 0) {
         [self showEmptyBackgroundView:YES];
     } else {
         [self showEmptyBackgroundView:NO];
@@ -478,7 +477,7 @@
     [[ContactsUpdater sharedUpdater]
         updateSignalContactIntersectionWithABContacts:[Environment getCurrent].contactsManager.allContacts
         success:^{
-          contacts = [[[Environment getCurrent] contactsManager] signalContacts];
+          self.contacts = [[[Environment getCurrent] contactsManager] signalContacts];
           dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSearchResultsForSearchController:self.searchController];
             [self.tableView reloadData];
@@ -497,7 +496,7 @@
           });
         }];
 
-    if ([contacts count] == 0) {
+    if ([self.contacts count] == 0) {
         [self showLoadingBackgroundView:YES];
     }
 }
