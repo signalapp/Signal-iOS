@@ -132,7 +132,6 @@
     [TSAccountManager verifyAccountWithCode:[self validationCodeFromTextField]
         pushToken:pushTokens[0]
         voipToken:([pushTokens count] == 2) ? pushTokens.lastObject : nil
-        supportsVoice:YES
         success:^{
           [textsecureRegistration trySetResult:@YES];
         }

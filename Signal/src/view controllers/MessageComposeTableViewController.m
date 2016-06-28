@@ -21,8 +21,8 @@
                                                  MFMessageComposeViewControllerDelegate> {
     UIButton *sendTextButton;
     NSString *currentSearchTerm;
-    NSArray *contacts;
-    NSArray *searchResults;
+    NSArray<Contact *> *contacts;
+    NSArray<Contact *> *searchResults;
 }
 
 @property (nonatomic, strong) UISearchController *searchController;
@@ -39,7 +39,7 @@
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    contacts      = [[Environment getCurrent] contactsManager].signalContacts;
+    contacts = [[[Environment getCurrent] contactsManager] signalContacts];
     searchResults = contacts;
     [self initializeSearch];
 
@@ -266,7 +266,7 @@
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope {
     // search by contact name or number
     NSPredicate *resultPredicate = [NSPredicate
-        predicateWithFormat:@"(fullName contains[c] %@) OR (allPhoneNumbers contains[c] %@)", searchText, searchText];
+        predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchText, searchText];
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) {
         searchResults = contacts;
@@ -427,8 +427,9 @@
 
 #pragma mark - Table View delegate
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Contact *person = [self contactForIndexPath:indexPath];
-    return person.isTextSecureContact ? indexPath : nil;
+    Contact *contact = [self contactForIndexPath:indexPath];
+    // TODO what does it mean to have non Signal contacts here?
+    return contact.isSignalContact ? indexPath : nil;
 }
 
 
@@ -476,7 +477,7 @@
     [[ContactsUpdater sharedUpdater]
         updateSignalContactIntersectionWithABContacts:[Environment getCurrent].contactsManager.allContacts
         success:^{
-          contacts = [[Environment getCurrent] contactsManager].signalContacts;
+          contacts = [[[Environment getCurrent] contactsManager] signalContacts];
           dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSearchResultsForSearchController:self.searchController];
             [self.tableView reloadData];

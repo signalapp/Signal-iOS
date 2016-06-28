@@ -374,7 +374,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
     return [[contacts filter:^int(Contact *contact) {
-      return contact.isRedPhoneContact || contact.isTextSecureContact;
+      return [contact isSignalContact];
     }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 
@@ -393,13 +393,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     };
 }
 
-- (NSArray *)signalContacts {
+- (NSArray<Contact *> *)signalContacts {
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
 - (NSArray *)textSecureContacts {
     return [[self.allContacts filter:^int(Contact *contact) {
-      return [contact isTextSecureContact];
+      return [contact isSignalContact];
     }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 

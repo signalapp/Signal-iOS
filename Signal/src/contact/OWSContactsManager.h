@@ -28,7 +28,7 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (void)verifyABPermission;
 
 - (NSArray<Contact *> *)allContacts;
-- (NSArray *)signalContacts;
+- (NSArray<Contact *> *)signalContacts;
 - (NSArray *)textSecureContacts;
 
 - (void)doAfterEnvironmentInitSetup;
