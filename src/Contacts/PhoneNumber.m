@@ -110,21 +110,24 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     if ([text isEqualToString:@""]) {
         return nil;
     }
-    
-    char s[text.length + 1];
-    int xx = 0;
-    for (NSUInteger i = 0; i < text.length; i++) {
-        unichar x = [text characterAtIndex:i];
-        if (x == '+' || (x >= '0' && x <= '9')) {
-            s[xx++] = (char)x;
+    NSString *sanitizedString = [self removeFormattingCharacters:text];
+
+    return [self phoneNumberFromUserSpecifiedText:sanitizedString];
+}
+
++ (NSString *)removeFormattingCharacters:(NSString *)inputString {
+    char outputString[inputString.length + 1];
+
+    int outputLength = 0;
+    for (NSUInteger i = 0; i < inputString.length; i++) {
+        unichar c = [inputString characterAtIndex:i];
+        if (c == '+' || (c >= '0' && c <= '9')) {
+            outputString[outputLength++] = (char)c;
         }
     }
 
-    s[xx] = 0;
-    text  = [NSString stringWithUTF8String:(void *)s];
-
-
-    return [self phoneNumberFromUserSpecifiedText:text];
+    outputString[outputLength] = 0;
+    return [NSString stringWithUTF8String:(void *)outputString];
 }
 
 + (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {

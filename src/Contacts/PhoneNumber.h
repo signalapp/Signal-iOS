@@ -24,7 +24,7 @@
 + (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
 + (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
 
-
++ (NSString *)removeFormattingCharacters:(NSString *)inputString;
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input;
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
                                               withSpecifiedCountryCodeString:(NSString *)countryCodeString;
