@@ -335,58 +335,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-+ (NSArray *)emailsForRecord:(ABRecordRef)record {
-    ABMultiValueRef emailRefs = ABRecordCopyValue(record, kABPersonEmailProperty);
-
-    @try {
-        NSArray *emails = (__bridge_transfer NSArray *)ABMultiValueCopyArrayOfAllValues(emailRefs);
-
-        if (emails == nil)
-            emails = @[];
-
-        return emails;
-
-    } @finally {
-        if (emailRefs) {
-            CFRelease(emailRefs);
-        }
-    }
-}
-
-+ (NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString {
-    assert(contacts != nil);
-
-    NSArray *matchingContacts = [contacts filter:^int(Contact *contact) {
-      return optionalSearchString.length == 0 || [self name:contact.fullName matchesQuery:optionalSearchString];
-    }];
-
-    return [matchingContacts groupBy:^id(Contact *contact) {
-      NSString *nameToUse = @"";
-
-      BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-
-      if (firstNameOrdering && contact.firstName != nil && contact.firstName.length > 0) {
-          nameToUse = contact.firstName;
-      } else if (!firstNameOrdering && contact.lastName != nil && contact.lastName.length > 0) {
-          nameToUse = contact.lastName;
-      } else if (contact.lastName == nil) {
-          if (contact.fullName.length > 0) {
-              nameToUse = contact.fullName;
-          } else {
-              return nameToUse;
-          }
-      } else {
-          nameToUse = contact.lastName;
-      }
-
-      if (nameToUse.length >= 1) {
-          return [[[nameToUse substringToIndex:1] uppercaseString] decomposedStringWithCompatibilityMapping];
-      } else {
-          return @" ";
-      }
-    }];
-}
-
 + (NSDictionary *)keyContactsById:(NSArray *)contacts {
     return [contacts keyedBy:^id(Contact *contact) {
       return @((int)contact.recordID);
@@ -406,11 +354,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return allContacts;
 }
 
-- (NSArray *)recordsForContacts:(NSArray *)contacts {
-    return [contacts map:^id(Contact *contact) {
-      return @([contact recordID]);
-    }];
-}
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
     NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
@@ -425,16 +368,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         return [nameWord rangeOfString:query options:searchOpts].location != NSNotFound;
       }];
     }];
-}
-
-+ (BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString {
-    NSString *phoneNumberString = phoneNumber.localizedDescriptionForUser;
-    NSString *searchString      = phoneNumberString.digitsOnly;
-
-    if (queryString.length == 0)
-        return YES;
-    NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
-    return [searchString rangeOfString:queryString options:searchOpts].location != NSNotFound;
 }
 
 #pragma mark - Whisper User Management
@@ -461,7 +394,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (NSArray *)signalContacts {
-    return [self getSignalUsersFromContactsArray:self.allContacts];
+    return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
 - (NSArray *)textSecureContacts {
@@ -469,15 +402,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
       return [contact isTextSecureContact];
     }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
-
-- (NSArray *)getNewItemsFrom:(NSArray *)newArray comparedTo:(NSArray *)oldArray {
-    NSMutableSet *newSet = [NSMutableSet setWithArray:newArray];
-    NSSet *oldSet        = [NSSet setWithArray:oldArray];
-
-    [newSet minusSet:oldSet];
-    return newSet.allObjects;
-}
-
 
 - (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier {
     for (Contact *contact in self.allContacts) {

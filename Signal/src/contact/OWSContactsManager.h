@@ -25,8 +25,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 - (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
 - (NSArray *)latestContactsWithSearchString:(NSString *)searchString;
 
-+ (NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString;
-
 - (void)verifyABPermission;
 
 - (NSArray<Contact *> *)allContacts;
