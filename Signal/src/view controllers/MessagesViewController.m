@@ -15,7 +15,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 #import "ContactsManager.h"
-#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -1232,28 +1231,41 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
-    [self dismissKeyBoard];
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-             otherButtonTitles:@[ NSLocalizedString(@"SEND_AGAIN_BUTTON", @"") ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogDebug(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            [self.editingDatabaseConnection
-                                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                  [message removeWithTransaction:transaction];
-                                }];
-                        } else {
-                            [[TSMessagesManager sharedManager] sendMessage:message
-                                                                  inThread:self.thread
-                                                                   success:nil
-                                                                   failure:nil];
-                            [self finishSendingMessage];
-                        }
-                      }];
+
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * _Nonnull action) { /*no-op*/ } ];
+    [actionSheetController addAction:dismissAction];
+
+    void (^deleteMessage)() = ^() {
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message removeWithTransaction:transaction];
+        }];
+    };
+    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                  style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction * _Nonnull action) { deleteMessage(); } ];
+    [actionSheetController addAction:deleteMessageAction];
+
+
+    void (^resendMessage)() = ^() {
+        [[TSMessagesManager sharedManager] sendMessage:(TSOutgoingMessage *)message
+                                              inThread:self.thread
+                                               success:nil
+                                               failure:nil];
+        [self finishSendingMessage];
+    };
+    UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * _Nonnull action) { resendMessage(); } ];
+    [actionSheetController addAction:resendMessageAction];
+
+    [self presentViewController:actionSheetController animated:true completion:nil];
+
 }
 
 - (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
@@ -1275,42 +1287,43 @@ typedef enum : NSUInteger {
         } else {
             keyOwner = [self.thread name];
         }
+        NSString *alertTitle = [NSString stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
 
-        NSString *messageString = [NSString
-            stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
-        NSArray *actions = @[
-            NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""),
-            NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")
-        ];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                                 message:nil
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
 
-        [self dismissKeyBoard];
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:^(UIAlertAction * _Nonnull action) { /*no-op*/ } ];
+        [alertController addAction:dismissAction];
 
-        [DJWActionSheet showInView:self.parentViewController.view
-                         withTitle:messageString
-                 cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-            destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                 otherButtonTitles:actions
-                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                DDLogDebug(@"User Cancelled");
-                            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                [self.editingDatabaseConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                      [message removeWithTransaction:transaction];
-                                    }];
-                            } else {
-                                switch (tappedButtonIndex) {
-                                    case 0:
-                                        [errorMessage acceptNewIdentityKey];
-                                        break;
-                                    case 1:
-                                        [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                          }];
+        void (^deleteMessage)() = ^() {
+            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [message removeWithTransaction:transaction];
+            }];
+        };
+        UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                      style:UIAlertActionStyleDestructive
+                                                                    handler:^(UIAlertAction * _Nonnull action) { deleteMessage(); } ];
+        [alertController addAction:deleteMessageAction];
+
+
+        UIAlertAction *acceptIdentityKeyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:^(UIAlertAction * _Nonnull action) {
+                                                                        [errorMessage acceptNewIdentityKey];
+                                                                    }];
+        [alertController addAction:acceptIdentityKeyAction];
+
+        UIAlertAction *copyIdentityKeyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")
+                                                                          style:UIAlertActionStyleDefault
+                                                                        handler:^(UIAlertAction * _Nonnull action) {
+                                                                            [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
+                                                                        }];
+        [alertController addAction:copyIdentityKeyAction];
+
+        [self presentViewController:alertController animated:true completion:nil];
     }
 }
 
@@ -1783,39 +1796,31 @@ typedef enum : NSUInteger {
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
-    [self dismissKeyBoard];
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIView *presenter = self.parentViewController.view;
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * _Nonnull action) { }];
+    [actionSheetController addAction:cancelAction];
 
-    [DJWActionSheet showInView:presenter
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[
-                 NSLocalizedString(@"TAKE_MEDIA_BUTTON", @""),
-                 NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
-             ] //,@"Record audio"]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogVerbose(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            DDLogVerbose(@"Destructive button tapped");
-                        } else {
-                            switch (tappedButtonIndex) {
-                                case 0:
-                                    [self takePictureOrVideo];
-                                    break;
-                                case 1:
-                                    [self chooseFromLibrary];
-                                    break;
-                                case 2:
-                                    [self recordAudio];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                      }];
+
+    UIAlertAction *takeMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_MEDIA_BUTTON", @"")
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * _Nonnull action) {
+                                                          [self takePictureOrVideo];
+                                                      }];
+    [actionSheetController addAction:takeMediaAction];
+
+    UIAlertAction *chooseMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
+                                                          style:UIAlertActionStyleDefault
+                                                        handler:^(UIAlertAction * _Nonnull action) {
+                                                            [self chooseFromLibrary];
+                                                        }];
+    [actionSheetController addAction:chooseMediaAction];
+
+    [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
 - (void)markAllMessagesAsRead {
