@@ -23,7 +23,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 - (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
 - (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
-- (NSArray *)latestContactsWithSearchString:(NSString *)searchString;
 
 - (void)verifyABPermission;
 

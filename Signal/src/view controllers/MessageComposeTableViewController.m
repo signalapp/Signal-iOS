@@ -12,6 +12,7 @@
 
 #import "ContactTableViewCell.h"
 #import "ContactsUpdater.h"
+#import "OWSContactsSearcher.h"
 #import "Environment.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
@@ -26,8 +27,8 @@
 @property (nonatomic, strong) UIBarButtonItem *addGroup;
 @property (nonatomic, strong) UIView *loadingBackgroundView;
 @property (nonatomic, strong) UIView *emptyBackgroundView;
-@property (copy) NSArray<Contact *> *contacts;
 @property (nonatomic) NSString *currentSearchTerm;
+@property (copy) NSArray<Contact *> *contacts;
 @property (copy) NSArray<Contact *> *searchResults;
 
 @end
@@ -263,16 +264,10 @@
 #pragma mark - Filter
 
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope {
-    // search by contact name or number
+    OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts: self.contacts];
+    self.searchResults = [contactsSearcher filterWithString:searchText];
+
     NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
-    NSPredicate *resultPredicate = [NSPredicate
-        predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchText, formattedNumber];
-
-    self.searchResults = [self.contacts filteredArrayUsingPredicate:resultPredicate];
-    if (!self.searchResults.count && self.searchController.searchBar.text.length == 0) {
-        self.searchResults = self.contacts;
-    }
-
     // text to a non-signal number if we have no results and a valid phone #
     if (self.searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
         NSString *sendTextTo = NSLocalizedString(@"SEND_SMS_BUTTON", @"");
@@ -426,12 +421,6 @@
 }
 
 #pragma mark - Table View delegate
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Contact *contact = [self contactForIndexPath:indexPath];
-    // TODO what does it mean to have non Signal contacts here?
-    return contact.isSignalContact ? indexPath : nil;
-}
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
@@ -441,7 +430,6 @@
                                [Environment messageIdentifier:identifier withCompose:YES];
                              }];
 }
-
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     ContactTableViewCell *cell = (ContactTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];

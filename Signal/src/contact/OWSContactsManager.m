@@ -248,12 +248,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
-- (NSArray *)latestContactsWithSearchString:(NSString *)searchString {
-    return [self.latestContactsById.allValues filter:^int(Contact *contact) {
-      return searchString.length == 0 || [OWSContactsManager name:contact.fullName matchesQuery:searchString];
-    }];
-}
-
 #pragma mark - Contact/Phone Number util
 
 - (Contact *)contactForRecord:(ABRecordRef)record {
