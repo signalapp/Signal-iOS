@@ -11,7 +11,7 @@
 
 #import "SignalsViewController.h"
 
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "Environment.h"
 #import "GroupContactsResult.h"
 

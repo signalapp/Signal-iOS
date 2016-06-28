@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		0DD55B166906AF3368995978 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80CD5E19DD23200E7926EEA7 /* libPods-Signal.a */; };
 		30209C98DABCE82064B4EAF5 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A33D3C7EB4B17BDBD47F0FCC /* libPods-SignalTests.a */; };
+		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
+		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
+		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
@@ -24,7 +27,7 @@
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB057218170B33006006FC /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040018170B33006006FC /* RecentCall.m */; };
 		76EB057418170B33006006FC /* RecentCallManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040218170B33006006FC /* RecentCallManager.m */; };
-		76EB057A18170B33006006FC /* ContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* ContactsManager.m */; };
+		76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		76EB058218170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		76EB058418170B33006006FC /* LocalizableText.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041518170B33006006FC /* LocalizableText.m */; };
 		76EB058618170B33006006FC /* PreferencesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PreferencesUtil.m */; };
@@ -172,7 +175,7 @@
 		B660F6B81C29868000687D6E /* JitterQueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6711C29867F00687D6E /* JitterQueueTest.m */; };
 		B660F6B91C29868000687D6E /* SpeexCodecTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6721C29867F00687D6E /* SpeexCodecTest.m */; };
 		B660F6BA1C29868000687D6E /* RecentCallTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6741C29867F00687D6E /* RecentCallTest.m */; };
-		B660F6BB1C29868000687D6E /* ContactManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6761C29867F00687D6E /* ContactManagerTest.m */; };
+		B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */; };
 		B660F6BC1C29868000687D6E /* DnsManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6791C29867F00687D6E /* DnsManagerTest.m */; };
 		B660F6BD1C29868000687D6E /* HttpRequestResponseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F67B1C29867F00687D6E /* HttpRequestResponseTest.m */; };
 		B660F6BE1C29868000687D6E /* IpAddressTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F67C1C29867F00687D6E /* IpAddressTest.m */; };
@@ -232,7 +235,7 @@
 		B660F7141C29988E00687D6E /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040018170B33006006FC /* RecentCall.m */; };
 		B660F7151C29988E00687D6E /* RecentCallManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040218170B33006006FC /* RecentCallManager.m */; };
 		B660F7161C29988E00687D6E /* GroupContactsResult.m in Sources */ = {isa = PBXBuildFile; fileRef = B671B2451A93B238002BBD9D /* GroupContactsResult.m */; };
-		B660F7171C29988E00687D6E /* ContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* ContactsManager.m */; };
+		B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		B660F7181C29988E00687D6E /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		B660F7191C29988E00687D6E /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		B660F71A1C29988E00687D6E /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
@@ -489,6 +492,9 @@
 /* Begin PBXFileReference section */
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
+		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
+		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -515,8 +521,8 @@
 		76EB040018170B33006006FC /* RecentCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCall.m; sourceTree = "<group>"; };
 		76EB040118170B33006006FC /* RecentCallManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentCallManager.h; sourceTree = "<group>"; };
 		76EB040218170B33006006FC /* RecentCallManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallManager.m; sourceTree = "<group>"; };
-		76EB040818170B33006006FC /* ContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsManager.h; sourceTree = "<group>"; };
-		76EB040918170B33006006FC /* ContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsManager.m; sourceTree = "<group>"; };
+		76EB040818170B33006006FC /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
+		76EB040918170B33006006FC /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		76EB041218170B33006006FC /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		76EB041318170B33006006FC /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		76EB041418170B33006006FC /* LocalizableText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableText.h; sourceTree = "<group>"; };
@@ -786,7 +792,7 @@
 		B660F6711C29867F00687D6E /* JitterQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JitterQueueTest.m; sourceTree = "<group>"; };
 		B660F6721C29867F00687D6E /* SpeexCodecTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpeexCodecTest.m; sourceTree = "<group>"; };
 		B660F6741C29867F00687D6E /* RecentCallTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentCallTest.m; sourceTree = "<group>"; };
-		B660F6761C29867F00687D6E /* ContactManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactManagerTest.m; sourceTree = "<group>"; };
+		B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManagerTest.m; sourceTree = "<group>"; };
 		B660F6791C29867F00687D6E /* DnsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DnsManagerTest.m; sourceTree = "<group>"; };
 		B660F67B1C29867F00687D6E /* HttpRequestResponseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestResponseTest.m; sourceTree = "<group>"; };
 		B660F67C1C29867F00687D6E /* IpAddressTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IpAddressTest.m; sourceTree = "<group>"; };
@@ -1180,8 +1186,10 @@
 			isa = PBXGroup;
 			children = (
 				76EB04A818170B33006006FC /* number directory */,
-				76EB040818170B33006006FC /* ContactsManager.h */,
-				76EB040918170B33006006FC /* ContactsManager.m */,
+				76EB040818170B33006006FC /* OWSContactsManager.h */,
+				76EB040918170B33006006FC /* OWSContactsManager.m */,
+				45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */,
+				45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */,
 			);
 			path = contact;
 			sourceTree = "<group>";
@@ -1781,7 +1789,8 @@
 		B660F6751C29867F00687D6E /* contact */ = {
 			isa = PBXGroup;
 			children = (
-				B660F6761C29867F00687D6E /* ContactManagerTest.m */,
+				B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */,
+				45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */,
 			);
 			path = contact;
 			sourceTree = "<group>";
@@ -2587,13 +2596,14 @@
 				76EB061018170B33006006FC /* EventWindow.m in Sources */,
 				E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */,
 				76EB058418170B33006006FC /* LocalizableText.m in Sources */,
-				76EB057A18170B33006006FC /* ContactsManager.m in Sources */,
+				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				E197B61918BBEC1A00F073E5 /* RemoteIOBufferListWrapper.m in Sources */,
 				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
 				A547DD741A70A87800103EC7 /* DJWActionSheet+OWS.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				B6258B331C29E2E60014138E /* NotificationsManager.m in Sources */,
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
@@ -2743,7 +2753,7 @@
 				B660F7141C29988E00687D6E /* RecentCall.m in Sources */,
 				B660F7151C29988E00687D6E /* RecentCallManager.m in Sources */,
 				B660F7161C29988E00687D6E /* GroupContactsResult.m in Sources */,
-				B660F7171C29988E00687D6E /* ContactsManager.m in Sources */,
+				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
 				B660F7191C29988E00687D6E /* EvpMessageDigest.m in Sources */,
 				B660F71A1C29988E00687D6E /* EvpSymetricUtil.m in Sources */,
@@ -2793,6 +2803,7 @@
 				B660F7461C29988E00687D6E /* HelloAckPacket.m in Sources */,
 				B660F7471C29988E00687D6E /* HelloPacket.m in Sources */,
 				B660F7481C29988E00687D6E /* RecipientUnavailable.m in Sources */,
+				45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
 				B660F7491C29988E00687D6E /* ShortAuthenticationStringGenerator.m in Sources */,
 				B660F74A1C29988E00687D6E /* ZrtpHandshakeResult.m in Sources */,
 				B660F74B1C29988E00687D6E /* ZrtpHandshakeSocket.m in Sources */,
@@ -2806,6 +2817,7 @@
 				B660F7531C29988E00687D6E /* NetworkStream.m in Sources */,
 				B660F7541C29988E00687D6E /* SecureEndPoint.m in Sources */,
 				B660F7551C29988E00687D6E /* UdpSocket.m in Sources */,
+				45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */,
 				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				B660F7571C29988E00687D6E /* NotificationTracker.m in Sources */,
 				B660F7581C29988E00687D6E /* RPAccountManager.m in Sources */,
@@ -2893,7 +2905,7 @@
 				B660F6D51C29868000687D6E /* TestUtil.m in Sources */,
 				B660F6B81C29868000687D6E /* JitterQueueTest.m in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
-				B660F6BB1C29868000687D6E /* ContactManagerTest.m in Sources */,
+				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				B660F6CE1C29868000687D6E /* PhoneNumberTest.m in Sources */,
 				B660F6C41C29868000687D6E /* HandshakePacketTest.m in Sources */,
 				B660F6CD1C29868000687D6E /* UdpSocketTest.m in Sources */,

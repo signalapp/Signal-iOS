@@ -14,7 +14,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
@@ -437,9 +437,7 @@ typedef enum : NSUInteger {
                                             target:self
                                             action:@selector(callAction)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-    } else if (!_thread.isGroupThread) {
-        self.navigationItem.rightBarButtonItem = nil;
-    } else {
+    } else if ([self.thread isGroupThread]) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-options-action"]
                                                        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
@@ -447,6 +445,9 @@ typedef enum : NSUInteger {
                                             target:self
                                             action:@selector(didSelectShow:)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+        DDLogError(@"Thread was neither group thread nor callable");
     }
 
     [self hideInputIfNeeded];
@@ -627,17 +628,8 @@ typedef enum : NSUInteger {
     return recipient;
 }
 
-- (BOOL)isRedPhoneReachable {
-    return [self signalRecipient].supportsVoice;
-}
-
-
 - (BOOL)isTextSecureReachable {
-    if (isGroupConversation) {
-        return YES;
-    } else {
-        return [self signalRecipient];
-    }
+    return isGroupConversation || [self signalRecipient];
 }
 
 - (PhoneNumber *)phoneNumberForThread {
@@ -646,18 +638,17 @@ typedef enum : NSUInteger {
 }
 
 - (void)callAction {
-    if ([self isRedPhoneReachable]) {
+    if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
-        DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
+        DDLogWarn(@"Tried to initiate a call but thread is not callable.");
     }
 }
 
 - (BOOL)canCall {
-    return !isGroupConversation && [self isRedPhoneReachable] &&
-           ![((TSContactThread *)_thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]];
+    return !(isGroupConversation || [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
