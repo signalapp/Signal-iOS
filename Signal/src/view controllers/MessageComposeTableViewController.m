@@ -265,13 +265,14 @@
 
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope {
     // search by contact name or number
+    NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
     NSPredicate *resultPredicate = [NSPredicate
-        predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchText, searchText];
+        predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchText, formattedNumber];
+
     searchResults = [contacts filteredArrayUsingPredicate:resultPredicate];
     if (!searchResults.count && _searchController.searchBar.text.length == 0) {
         searchResults = contacts;
     }
-    NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
 
     // text to a non-signal number if we have no results and a valid phone #
     if (searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
