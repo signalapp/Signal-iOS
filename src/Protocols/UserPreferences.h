@@ -1,5 +1,5 @@
 //
-//  ContactsManagerProtocol.h
+//  UserPreferences.h
 //  Pods
 //
 //  Created by Frederic Jacobs on 05/12/15.
