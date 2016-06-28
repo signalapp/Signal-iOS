@@ -3,11 +3,6 @@
 #import "SignalRecipient.h"
 #import "TSStorageManager.h"
 
-static NSString *const DEFAULTS_KEY_CONTACT      = @"DefaultsKeyContact";
-static NSString *const DEFAULTS_KEY_PHONE_NUMBER = @"DefaultsKeyPhoneNumber";
-static NSString *const DEFAULTS_KEY_CALL_TYPE    = @"DefaultsKeycallType";
-static NSString *const DEFAULTS_KEY_DATE         = @"DefaultsKeyDate";
-
 @implementation Contact
 
 #if TARGET_OS_IOS
@@ -42,70 +37,31 @@ static NSString *const DEFAULTS_KEY_DATE         = @"DefaultsKeyDate";
 
 - (NSString *)fullName {
     NSMutableString *fullName = [NSMutableString string];
-    if (_firstName)
-        [fullName appendString:_firstName];
-    if (_lastName) {
-        [fullName appendString:[NSString stringWithFormat:@" %@", _lastName]];
+    if (self.firstName)
+        [fullName appendString:self.firstName];
+    if (self.lastName) {
+        [fullName appendString:[NSString stringWithFormat:@" %@", self.lastName]];
     }
     return fullName;
 }
 
-- (NSString *)allPhoneNumbers {
-    NSString *allNumbers = @"";
-    for (PhoneNumber *number in self.parsedPhoneNumbers) {
-        allNumbers = [allNumbers stringByAppendingString:number.toE164];
-        allNumbers = [allNumbers stringByAppendingString:@";"];
-    }
-    return allNumbers;
-}
-
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%@ %@: %@", _firstName, _lastName, _userTextPhoneNumbers];
+    return [NSString stringWithFormat:@"%@ %@: %@", self.firstName, self.lastName, self.userTextPhoneNumbers];
 }
 
-- (BOOL)isTextSecureContact {
+- (BOOL)isSignalContact {
     NSArray *identifiers = [self textSecureIdentifiers];
 
-    if ([identifiers count] > 0) {
-        return YES;
-    }
-
-    return NO;
+    return [identifiers count] > 0;
 }
 
-- (NSArray *)textSecureIdentifiers {
+- (NSArray<NSString *> *)textSecureIdentifiers {
     __block NSMutableArray *identifiers = [NSMutableArray array];
 
     [[TSStorageManager sharedManager]
             .dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
       for (PhoneNumber *number in self.parsedPhoneNumbers) {
           if ([SignalRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
-              [identifiers addObject:number.toE164];
-          }
-      }
-    }];
-    return identifiers;
-}
-
-- (BOOL)isRedPhoneContact {
-    NSArray *identifiers = [self redPhoneIdentifiers];
-
-    if ([identifiers count] > 0) {
-        return YES;
-    }
-
-    return NO;
-}
-
-- (NSArray *)redPhoneIdentifiers {
-    __block NSMutableArray *identifiers = [NSMutableArray array];
-
-    [[TSStorageManager sharedManager]
-            .dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      for (PhoneNumber *number in self.parsedPhoneNumbers) {
-          SignalRecipient *recipient =
-              [SignalRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction];
-          if (recipient && recipient.supportsVoice) {
               [identifiers addObject:number.toE164];
           }
       }

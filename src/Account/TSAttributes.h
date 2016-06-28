@@ -10,10 +10,9 @@
 
 @interface TSAttributes : NSObject
 
-+ (NSDictionary *)attributesFromStorageWithVoiceSupport:(BOOL)voice;
++ (NSDictionary *)attributesFromStorageWithVoiceSupport;
 
 + (NSDictionary *)attributesWithSignalingKey:(NSString *)signalingKey
-                             serverAuthToken:(NSString *)authToken
-                               supportsVoice:(BOOL)voice;
+                             serverAuthToken:(NSString *)authToken;
 
 @end

@@ -56,7 +56,6 @@ typedef void (^failedBlock)(NSError *error);
 + (void)verifyAccountWithCode:(NSString *)verificationCode
                     pushToken:(NSString *)pushToken
                     voipToken:(NSString *)voipToken
-                supportsVoice:(BOOL)voice
                       success:(successCompletionBlock)successBlock
                       failure:(failedBlock)failureBlock;
 

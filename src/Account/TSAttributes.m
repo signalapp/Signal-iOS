@@ -13,21 +13,18 @@
 
 @implementation TSAttributes
 
-+ (NSDictionary *)attributesFromStorageWithVoiceSupport:(BOOL)voice {
++ (NSDictionary *)attributesFromStorageWithVoiceSupport {
     return [self attributesWithSignalingKey:[TSStorageManager signalingKey]
-                            serverAuthToken:[TSStorageManager serverAuthToken]
-                              supportsVoice:voice];
+                            serverAuthToken:[TSStorageManager serverAuthToken]];
 }
 
 + (NSDictionary *)attributesWithSignalingKey:(NSString *)signalingKey
                              serverAuthToken:(NSString *)authToken
-                               supportsVoice:(BOOL)voice
-
 {
     return @{
         @"signalingKey" : signalingKey,
         @"AuthKey" : authToken,
-        @"voice" : [NSNumber numberWithBool:voice],
+        @"voice" : [NSNumber numberWithBool:YES], // all Signal-iOS clients support voice
         @"registrationId" : [NSString stringWithFormat:@"%i", [TSAccountManager getOrGenerateRegistrationId]]
     };
 }

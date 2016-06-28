@@ -10,6 +10,6 @@
 
 @interface TSUpdateAttributesRequest : TSRequest
 
-- (instancetype)initWithUpdatedAttributesWithVoice:(BOOL)supportsVoice;
+- (instancetype)initWithUpdatedAttributesWithVoice;
 
 @end

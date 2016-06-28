@@ -143,7 +143,6 @@
 + (void)verifyAccountWithCode:(NSString *)verificationCode
                     pushToken:(NSString *)pushToken
                     voipToken:(NSString *)voipToken
-                supportsVoice:(BOOL)voice
                       success:(successCompletionBlock)successBlock
                       failure:(failedBlock)failureBlock {
     NSString *authToken    = [self generateNewAccountAuthenticationToken];
@@ -158,8 +157,7 @@
     TSVerifyCodeRequest *request = [[TSVerifyCodeRequest alloc] initWithVerificationCode:verificationCode
                                                                                forNumber:phoneNumber
                                                                             signalingKey:signalingKey
-                                                                                 authKey:authToken
-                                                                           supportsVoice:voice];
+                                                                                 authKey:authToken];
 
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {

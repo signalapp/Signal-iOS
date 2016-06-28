@@ -18,13 +18,10 @@
 @property (readonly, nonatomic) NSString *notes;
 
 - (NSString *)fullName;
-- (NSString *)allPhoneNumbers;
 
-- (BOOL)isTextSecureContact;
-- (BOOL)isRedPhoneContact;
 
-- (NSArray *)textSecureIdentifiers;
-- (NSArray *)redPhoneIdentifiers;
+- (BOOL)isSignalContact;
+- (NSArray<NSString *> *)textSecureIdentifiers;
 
 #if TARGET_OS_IOS
 

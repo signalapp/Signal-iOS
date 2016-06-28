@@ -16,6 +16,7 @@
 		45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */; };
 		45458B7B1CC342B600A02153 /* CryptographyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B731CC342B600A02153 /* CryptographyTests.m */; };
 		45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B741CC342B600A02153 /* MessagePaddingTests.m */; };
+		45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
 		B6273DD61C13A2E500738558 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD51C13A2E500738558 /* main.m */; };
 		B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD81C13A2E500738558 /* AppDelegate.m */; };
@@ -47,6 +48,7 @@
 		45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStorageSignedPreKeyStore.m; sourceTree = "<group>"; };
 		45458B731CC342B600A02153 /* CryptographyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptographyTests.m; sourceTree = "<group>"; };
 		45458B741CC342B600A02153 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePaddingTests.m; sourceTree = "<group>"; };
+		45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttributesTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD51C13A2E500738558 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B6273DD71C13A2E500738558 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */,
+				45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */,
 			);
 			name = Account;
 			path = ../../../tests/Account;
@@ -417,6 +420,7 @@
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */,
 				45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */,
+				45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
