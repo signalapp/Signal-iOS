@@ -26,7 +26,7 @@ OSX_SDK=$(xcrun --sdk macosx --show-sdk-path)
 
 # Clean up whatever was left from our previous build
 
-rm -rf include-ios include-osx lib-ios lib-osx
+rm -rf include-ios include-macos lib-ios lib-macos
 rm -rf /tmp/openssl-${OPENSSL_VERSION}*
 
 configure() {
@@ -40,10 +40,10 @@ configure() {
     export CROSS_SDK="${OS}${SDK_VERSION}.sdk"
     if [ "$ARCH" == "x86_64" ]; then
        ./Configure darwin64-x86_64-cc --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-       sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH -mios-simulator-version-min=${DEPLOYMENT_VERSION} !" "Makefile"
+       sed -ie "s!^CFLAG=!CFLAG=-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} -arch $ARCH -mios-simulator-version-min=${DEPLOYMENT_VERSION} -miphoneos-version-min=${DEPLOYMENT_VERSION} !" "Makefile"
    else
        ./Configure iphoneos-cross -no-asm --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-       sed -ie "s!^CFLAG=!CFLAG=-mios-simulator-version-min=${DEPLOYMENT_VERSION} !" "Makefile"
+       sed -ie "s!^CFLAG=!CFLAG=-mios-simulator-version-min=${DEPLOYMENT_VERSION} -miphoneos-version-min=${DEPLOYMENT_VERSION} !" "Makefile"
        perl -i -pe 's|static volatile sig_atomic_t intr_signal|static volatile int intr_signal|' crypto/ui/ui_openssl.c
    fi
 }
@@ -75,7 +75,7 @@ build()
       else
          configure "iPhoneOS" $ARCH ${IPHONEOS_PLATFORM} ${IPHONEOS_SDK_VERSION} ${IPHONEOS_DEPLOYMENT_VERSION}
       fi
-   elif [ "$TYPE" == "osx" ]; then    
+   elif [ "$TYPE" == "macos" ]; then    
       #OSX
       if [ "$ARCH" == "x86_64" ]; then
          ./Configure darwin64-x86_64-cc --openssldir="/tmp/openssl-${OPENSSL_VERSION}-${ARCH}" &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
@@ -113,10 +113,10 @@ cp -r /tmp/openssl-${OPENSSL_VERSION}-arm64/include/openssl include-ios/
 
 rm -rf /tmp/openssl-${OPENSSL_VERSION}*
 
-build "i386" "${OSX_SDK}" "osx"
-build "x86_64" "${OSX_SDK}" "osx"
+build "i386" "${OSX_SDK}" "macos"
+build "x86_64" "${OSX_SDK}" "macos"
 
-mkdir -p include-osx
-cp -r /tmp/openssl-${OPENSSL_VERSION}-x86_64/include/openssl include-osx/
+mkdir -p include-macos
+cp -r /tmp/openssl-${OPENSSL_VERSION}-x86_64/include/openssl include-macos/
 
 rm -rf /tmp/openssl-${OPENSSL_VERSION}*

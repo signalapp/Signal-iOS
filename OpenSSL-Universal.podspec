@@ -34,11 +34,11 @@ Pod::Spec.new do |s|
 
   s.osx.platform          = :osx, '10.9'
   s.osx.deployment_target = '10.8'
-  s.osx.source_files        = 'include-osx/openssl/**/*.h'
-  s.osx.public_header_files = 'include-osx/openssl/**/*.h'
+  s.osx.source_files        = 'include-macos/openssl/**/*.h'
+  s.osx.public_header_files = 'include-macos/openssl/**/*.h'
   s.osx.header_dir          = 'openssl'
-  s.osx.preserve_paths      = 'lib-osx/libcrypto.a', 'lib-osx/libssl.a'
-  s.osx.vendored_libraries  = 'lib-osx/libcrypto.a', 'lib-osx/libssl.a'
+  s.osx.preserve_paths      = 'lib-macos/libcrypto.a', 'lib-macos/libssl.a'
+  s.osx.vendored_libraries  = 'lib-macos/libcrypto.a', 'lib-macos/libssl.a'
 
   s.libraries = 'ssl', 'crypto'
   s.requires_arc = false
