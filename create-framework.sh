@@ -2,7 +2,7 @@
 
 # Bitcode is not working
 
-FWNAME="OpenSSL"
+FWNAME="openssl"
 OSX_MIN="10.9"
 IOS_MIN="8.0"
 
