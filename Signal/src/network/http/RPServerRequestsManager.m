@@ -9,7 +9,7 @@
 #import "RPServerRequestsManager.h"
 
 #import "AFHTTPSessionManager+SignalMethods.h"
-#import "AFSecurityOWSPolicy.h"
+#import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 
 @interface RPServerRequestsManager ()
 
@@ -38,7 +38,7 @@
         NSURL *endPointURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:%d", endpoint.hostname, 443]];
         self.operationManager =
             [[AFHTTPSessionManager alloc] initWithBaseURL:endPointURL sessionConfiguration:sessionConfig];
-        self.operationManager.securityPolicy = [AFSecurityOWSPolicy OWS_PinningPolicy];
+        self.operationManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     }
     return self;
 }
