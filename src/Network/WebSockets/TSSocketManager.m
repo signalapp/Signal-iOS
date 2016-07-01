@@ -14,7 +14,7 @@
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 
-#import "AFSecurityOWSPolicy.h"
+#import "OWSWebsocketSecurityPolicy.h"
 #import "Cryptography.h"
 
 #define kWebSocketHeartBeat 30
@@ -100,9 +100,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
     NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
-    request.SR_securityPolicy    = [AFSecurityOWSPolicy OWS_PinningPolicy];
 
-    socket          = [[SRWebSocket alloc] initWithURLRequest:request];
+    socket          = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
     socket.delegate = [self sharedManager];
 
     [[self sharedManager] setWebsocket:socket];
@@ -226,10 +225,11 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)webSocketHeartBeat {
-    @try {
-        [self.websocket sendPing:nil];
-    } @catch (NSException *exception) {
-        DDLogWarn(@"Caught exception while trying to write on the socket %@", exception.debugDescription);
+    NSError *error;
+
+    [self.websocket sendPing:nil error:&error];
+    if (error) {
+        DDLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
     }
 }
 

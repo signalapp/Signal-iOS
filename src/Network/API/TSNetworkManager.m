@@ -8,7 +8,7 @@
 
 #import <AFNetworking/AFNetworking.h>
 
-#import "AFSecurityOWSPolicy.h"
+#import "OWSHTTPSecurityPolicy.h"
 
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "TSAccountManager.h"
@@ -45,7 +45,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         self.operationManager =
             [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL]
                                      sessionConfiguration:sessionConf];
-        self.operationManager.securityPolicy = [AFSecurityOWSPolicy OWS_PinningPolicy];
+        self.operationManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     }
     return self;
 }

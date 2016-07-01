@@ -2,8 +2,8 @@ platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'TSKitiOSTestApp' do
+  pod 'SocketRocket', git: 'https://github.com/WhisperSystems/SocketRocket.git', branch: 'pluggable-security-policies'
   pod 'SignalServiceKit', :path => '../../SignalServiceKit.podspec'
-  pod 'SocketRocket', git: 'https://github.com/WhisperSystems/SocketRocket.git', branch: 'signal-ios'
 
   target 'TSKitiOSTestAppTests' do
      inherit! :search_paths

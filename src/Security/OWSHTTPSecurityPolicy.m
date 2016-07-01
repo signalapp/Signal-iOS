@@ -1,23 +1,21 @@
 //
-//  AFSecurityPolicyNone.m
-//  Signal
-//
 //  Created by Fred on 01/09/15.
 //  Copyright © 2015 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSHTTPSecurityPolicy.h"
+
 #import <AssertMacros.h>
-#import "AFSecurityOWSPolicy.h"
 
-@implementation AFSecurityOWSPolicy
+@implementation OWSHTTPSecurityPolicy
 
-+ (instancetype)OWS_PinningPolicy {
-    static AFSecurityOWSPolicy *sharedMyManager = nil;
-    @synchronized(self) {
-        if (sharedMyManager == nil)
-            sharedMyManager = [[self alloc] initWithOWSPolicy];
-    }
-    return sharedMyManager;
++ (instancetype)sharedPolicy {
+    static OWSHTTPSecurityPolicy *httpSecurityPolicy = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        httpSecurityPolicy = [[self alloc] initWithOWSPolicy];
+    });
+    return httpSecurityPolicy;
 }
 
 - (instancetype)initWithOWSPolicy {
@@ -83,7 +81,6 @@
 
     return YES;
 }
-
 
 static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
     BOOL isValid = NO;
