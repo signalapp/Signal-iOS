@@ -1334,29 +1334,30 @@ typedef enum : NSUInteger {
  */
 
 - (void)takePictureOrVideo {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.allowsEditing            = NO;
-    picker.sourceType               = UIImagePickerControllerSourceTypeCamera;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = @[ (NSString *)kUTTypeImage, (NSString *)kUTTypeMovie ];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        DDLogError(@"Camera ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    picker.allowsEditing = NO;
+    picker.delegate = self;
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 - (void)chooseFromLibrary {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.sourceType               = UIImagePickerControllerSourceTypePhotoLibrary;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        NSArray *photoOrVideoTypeArray = [[NSArray alloc]
-            initWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, (NSString *)kUTTypeVideo, nil];
-
-        picker.mediaTypes = photoOrVideoTypeArray;
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        DDLogError(@"PhotoLibrary ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 /*
