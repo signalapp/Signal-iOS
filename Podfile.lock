@@ -136,7 +136,7 @@ CHECKOUT OPTIONS:
     :commit: 225b1baa11125ea84d4b960d700834b5b0a40ee1
     :git: https://github.com/WhisperSystems/JSQMessagesViewController
   SignalServiceKit:
-    :commit: 664162fe243ca4f2ec76ccb1e72752be8ee47596
+    :commit: f537b6f19265b0f0845f15b3155cdac4f1913dc6
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
