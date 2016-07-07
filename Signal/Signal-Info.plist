@@ -73,6 +73,10 @@
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Signal needs access to your microphone to make and receive phone calls.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Signal will let you choose which media from your library to send.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Signal will let you choose which photos from your library to send.</string>
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
