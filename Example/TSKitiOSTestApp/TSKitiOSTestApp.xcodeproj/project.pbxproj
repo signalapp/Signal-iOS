@@ -18,6 +18,7 @@
 		45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B741CC342B600A02153 /* MessagePaddingTests.m */; };
 		459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */; };
 		45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */; };
+		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
 		B6273DD61C13A2E500738558 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD51C13A2E500738558 /* main.m */; };
 		B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD81C13A2E500738558 /* AppDelegate.m */; };
@@ -51,6 +52,7 @@
 		45458B741CC342B600A02153 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePaddingTests.m; sourceTree = "<group>"; };
 		459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhoneNumberTest.m; path = ../../../tests/Contacts/PhoneNumberTest.m; sourceTree = "<group>"; };
 		45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttributesTest.m; sourceTree = "<group>"; };
+		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD51C13A2E500738558 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B6273DD71C13A2E500738558 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -137,6 +139,22 @@
 			name = Contacts;
 			sourceTree = "<group>";
 		};
+		45C6A0971D2F0254007D8AC0 /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				45C6A0981D2F0264007D8AC0 /* Interactions */,
+			);
+			name = Messages;
+			sourceTree = "<group>";
+		};
+		45C6A0981D2F0264007D8AC0 /* Interactions */ = {
+			isa = PBXGroup;
+			children = (
+				45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */,
+			);
+			name = Interactions;
+			sourceTree = "<group>";
+		};
 		5183572EFCE99F6F1791272A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -204,6 +222,7 @@
 		B6273DED1C13A2E500738558 /* TSKitiOSTestAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				45C6A0971D2F0254007D8AC0 /* Messages */,
 				45458B691CC342B600A02153 /* Account */,
 				45458B6B1CC342B600A02153 /* Attachments */,
 				459850BF1D22C6C4006FFEDB /* Contacts */,
@@ -428,6 +447,7 @@
 				45458B7B1CC342B600A02153 /* CryptographyTests.m in Sources */,
 				45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */,
 				45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */,
+				45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */,
 				459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */,
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */,

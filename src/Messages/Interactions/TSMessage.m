@@ -60,10 +60,14 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 }
 
 - (NSString *)description {
-    if (self.attachments > 0) {
+    if ([self hasAttachments]) {
         NSString *attachmentId   = self.attachments[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
-        return attachment.description;
+        if (attachment) {
+            return attachment.description;
+        } else {
+            return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
+        }
     } else {
         return self.body;
     }
