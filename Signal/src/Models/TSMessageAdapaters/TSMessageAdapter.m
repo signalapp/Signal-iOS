@@ -58,6 +58,7 @@
 + (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.messageDate       = interaction.date;
+    // TODO casting a string to an integer? At least need a comment here explaining why we are doing this.
     adapter.identifier        = (NSUInteger)interaction.uniqueId;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -230,7 +231,7 @@
     if (self.thread) {
         return _thread.name;
     }
-    return self.senderDisplayName;
+    return _senderDisplayName;
 }
 
 - (NSDate *)date {
@@ -249,8 +250,13 @@
     return self.messageBody;
 }
 
-- (NSUInteger)messageHash {
-    return self.identifier;
+- (NSUInteger)messageHash
+{
+    if (self.isMediaMessage) {
+        return [self.mediaItem mediaHash];
+    } else  {
+        return self.identifier;
+    }
 }
 
 - (NSInteger)messageState {
