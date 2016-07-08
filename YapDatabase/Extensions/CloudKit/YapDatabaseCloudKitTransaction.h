@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   That is, if we deleted the item locally, and the delete operation is pending upload to the cloudKit server.
  *   If this value is YES, then you may not want to create a new database item for the record.
 **/
-- (void)getRecordChangeTag:(NSString * _Nonnull * _Nullable)outRecordChangeTag
+- (void)getRecordChangeTag:(NSString * _Nullable * _Nullable)outRecordChangeTag
    hasPendingModifications:(nullable BOOL *)outPendingModifications
           hasPendingDelete:(nullable BOOL *)outPendingDelete
                forRecordID:(CKRecordID *)recordID
