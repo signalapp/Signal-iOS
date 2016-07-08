@@ -74,7 +74,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Signal needs access to your microphone to make and receive phone calls.</string>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Signal will let you choose which media from your library to send.</string>
+	<string>Signal needs to use Apple Music to play media attachments.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Signal will let you choose which photos from your library to send.</string>
 	<key>UIApplicationShortcutItems</key>
