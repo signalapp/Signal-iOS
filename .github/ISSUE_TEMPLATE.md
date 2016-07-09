@@ -35,5 +35,21 @@ Describe here the issue that you are experiencing.
 **Signal version:** Z.Y
 
 ### Link to debug log
-<!-- immediately after the bug has happened capture a debug log via Signal's advanced settings and paste the link below -->
+<!-- Ensure that "Enable Debug Log" is on in Signal's settings then make the bug happen and immediately after that tap "Submit Debug Log" from settings and paste the link below. -->
 
+<!--  If this is a crashing bug, after filing this issue, email a copy of your latest crash report to support@whispersystems.org
+
+To get a crash log:
+
+1. On your phone, open the Settings App
+2. Go to Privacy, then Diagnostics & Usage
+3. Select Diagnostics & Usage Data
+4. Locate the log for the crashed app. Crash logs will be named in the
+   format: Signal-(DateTime).ips
+5. Select the desired log. Then, using the text selection UI select the
+   entire text of the log. Once the text is selected, tap Copy
+6. Paste the copied text into an email to support@whispersystems.org
+   with the subject "iOS Crash Log: (your github issue)"
+  * Example subject: iOS Crash Log: Crash on launch #111
+  * Example subject: iOS Crash Log: Crash when sending video #222
+-->

@@ -14,7 +14,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
@@ -102,6 +102,10 @@ typedef enum : NSUInteger {
 
 @implementation MessagesViewController
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)peekSetup {
     _peek = YES;
     [self setComposeOnOpen:NO];
@@ -128,6 +132,7 @@ typedef enum : NSUInteger {
       [self markAllMessagesAsRead];
       [self.collectionView reloadData];
     }];
+    [self updateLoadEarlierVisible];
 }
 
 - (void)hideInputIfNeeded {
@@ -138,10 +143,9 @@ typedef enum : NSUInteger {
 
     if ([_thread isKindOfClass:[TSGroupThread class]] &&
         ![((TSGroupThread *)_thread).groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+
         [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-    } else if (![self isTextSecureReachable]) {
-        [self inputToolbar].hidden = YES; // only RedPhone
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
@@ -184,17 +188,34 @@ typedef enum : NSUInteger {
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(startReadTimer)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(cancelReadTimer)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
 
-    self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See
-    // http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
+}
+
+- (void)toggleObservers:(BOOL)shouldObserve {
+    if (shouldObserve) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(startReadTimer)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(cancelReadTimer)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    }
 }
 
 - (void)initializeTextView {
@@ -202,17 +223,12 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.leftBarButtonItem           = _attachButton;
     self.inputToolbar.contentView.rightBarButtonItem          = _messageButton;
     self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
-
-    CGFloat one_px = 1.0 / [UIScreen mainScreen].scale;
-    UIView *line =
-        [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.inputToolbar.contentView.bounds.size.width, one_px)];
-    line.backgroundColor  = [UIColor ows_materialBlueColor];
-    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.inputToolbar.contentView addSubview:line];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+
+    [self toggleObservers:YES];
     [self initializeToolbars];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
@@ -267,6 +283,7 @@ typedef enum : NSUInteger {
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self toggleObservers:NO];
 
     if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
         // back button was pressed.
@@ -420,15 +437,17 @@ typedef enum : NSUInteger {
                                             target:self
                                             action:@selector(callAction)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-    } else if (!_thread.isGroupThread) {
-        self.navigationItem.rightBarButtonItem = nil;
-    } else {
+    } else if ([self.thread isGroupThread]) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-options-action"]
                                                        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                              style:UIBarButtonItemStylePlain
                                             target:self
                                             action:@selector(didSelectShow:)];
+        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+        DDLogError(@"Thread was neither group thread nor callable");
     }
 
     [self hideInputIfNeeded];
@@ -609,17 +628,8 @@ typedef enum : NSUInteger {
     return recipient;
 }
 
-- (BOOL)isRedPhoneReachable {
-    return [self signalRecipient].supportsVoice;
-}
-
-
 - (BOOL)isTextSecureReachable {
-    if (isGroupConversation) {
-        return YES;
-    } else {
-        return [self signalRecipient];
-    }
+    return isGroupConversation || [self signalRecipient];
 }
 
 - (PhoneNumber *)phoneNumberForThread {
@@ -628,18 +638,17 @@ typedef enum : NSUInteger {
 }
 
 - (void)callAction {
-    if ([self isRedPhoneReachable]) {
+    if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
-        DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
+        DDLogWarn(@"Tried to initiate a call but thread is not callable.");
     }
 }
 
 - (BOOL)canCall {
-    return !isGroupConversation && [self isRedPhoneReachable] &&
-           ![((TSContactThread *)_thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]];
+    return !(isGroupConversation || [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
@@ -1325,29 +1334,30 @@ typedef enum : NSUInteger {
  */
 
 - (void)takePictureOrVideo {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.allowsEditing            = NO;
-    picker.sourceType               = UIImagePickerControllerSourceTypeCamera;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = @[ (NSString *)kUTTypeImage, (NSString *)kUTTypeMovie ];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        DDLogError(@"Camera ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    picker.allowsEditing = NO;
+    picker.delegate = self;
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 - (void)chooseFromLibrary {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.sourceType               = UIImagePickerControllerSourceTypePhotoLibrary;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        NSArray *photoOrVideoTypeArray = [[NSArray alloc]
-            initWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, (NSString *)kUTTypeVideo, nil];
-
-        picker.mediaTypes = photoOrVideoTypeArray;
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        DDLogError(@"PhotoLibrary ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 /*
@@ -1409,19 +1419,33 @@ typedef enum : NSUInteger {
                                  file_type = @"image/tiff";
                                  break;
                              case 0x42:
-                                 file_type = @"@image/bmp";
+                                 file_type = @"image/bmp";
                                  break;
                              case 0xFF:
                              default:
                                  file_type = @"image/jpeg";
                                  break;
                          }
-                         DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
+                         DDLogVerbose(@"Picked image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
                                       (unsigned long)length_buffered,
                                       img_buffer[0],
                                       img_buffer[0],
                                       file_type);
-                         [self sendMessageAttachment:img_data ofType:file_type];
+
+                         if ([file_type isEqualToString:@"image/gif"] && img_data.length <= 5 * 1024 * 1024) {
+                             // Media Size constraints lifted from Signal-Android (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
+                             // GifMaxSize return 5 * MB;
+                             // For reference, other media size limits we're not explicitly enforcing:
+                             // ImageMaxSize return 420 * KB;
+                             // VideoMaxSize return 100 * MB;
+                             // getAudioMaxSize 100 * MB;
+                             DDLogVerbose(@"Sending raw image/gif");
+                             [self sendMessageAttachment:img_data ofType:file_type];
+                         } else {
+                             DDLogVerbose(@"Compressing attachment as image/jpeg");
+                             UIImage *pickedImage = [[UIImage alloc] initWithData:img_data];
+                             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage] ofType:@"image/jpeg"];
+                         }
                      }
                     failureBlock:^(NSError *error) {
                         DDLogVerbose(@"Couldn't get image asset: %@", error);
@@ -1438,6 +1462,10 @@ typedef enum : NSUInteger {
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
+                                 DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                                              attachmentData.length,
+                                              attachmentType);
+
                                [[TSMessagesManager sharedManager] sendAttachment:attachmentData
                                                                      contentType:attachmentType
                                                                        inMessage:message
@@ -1551,10 +1579,6 @@ typedef enum : NSUInteger {
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
     }
     return _uiDatabaseConnection;
 }
@@ -1968,10 +1992,6 @@ typedef enum : NSUInteger {
             _unreadContainer.hidden = true;
         }
     }
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark 3D Touch Preview Actions

@@ -4,11 +4,10 @@
 #import "Environment.h"
 #import "PhoneManager.h"
 
-#define CONTACT_TABLE_CELL_BORDER_WIDTH 1.0f
+@interface ContactTableViewCell ()
 
-@interface ContactTableViewCell () {
-}
 @property (strong, nonatomic) Contact *associatedContact;
+
 @end
 
 @implementation ContactTableViewCell
@@ -22,17 +21,9 @@
     return NSStringFromClass(self.class);
 }
 
-
 - (void)configureWithContact:(Contact *)contact {
-    if (!contact.isTextSecureContact) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    _associatedContact = contact;
-
-    _nameLabel.attributedText = [self attributedStringForContact:contact];
-    if (!contact.isTextSecureContact) {
-        _nameLabel.textColor = [UIColor lightGrayColor];
-    }
+    self.associatedContact = contact;
+    self.nameLabel.attributedText = [self attributedStringForContact:contact];
 }
 
 - (NSAttributedString *)attributedStringForContact:(Contact *)contact {

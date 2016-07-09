@@ -649,8 +649,8 @@ static NSHashTable *allAnimatedImagesWeak;
     
     // "In iOS 4.0 and later, and OS X v10.6 and later, you can pass NULL if you want Quartz to allocate memory for the bitmap." (source: docs)
     void *data = NULL;
-    size_t width = imageToPredraw.size.width;
-    size_t height = imageToPredraw.size.height;
+    size_t width = (size_t)imageToPredraw.size.width;
+    size_t height = (size_t)imageToPredraw.size.height;
     size_t bitsPerComponent = CHAR_BIT;
     
     size_t bitsPerPixel = (bitsPerComponent * numberOfComponents);

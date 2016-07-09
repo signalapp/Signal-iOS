@@ -1,4 +1,4 @@
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
 #import "Util.h"
@@ -7,19 +7,28 @@
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
-@interface ContactsManager () {
-    id addressBookReference;
-}
+@interface OWSContactsManager ()
+
+@property id addressBookReference;
+@property TOCFuture *futureAddressBook;
+@property ObservableValueController *observableContactsController;
+@property TOCCancelTokenSource *life;
+@property(atomic, copy) NSDictionary *latestContactsById;
 
 @end
 
-@implementation ContactsManager
+@implementation OWSContactsManager
+
+- (void)dealloc {
+    [_life cancel];
+}
 
 - (id)init {
     self = [super init];
     if (self) {
-        life                         = [TOCCancelTokenSource new];
-        observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        _life = [TOCCancelTokenSource new];
+        _observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+        _latestContactsById = @{};
     }
     return self;
 }
@@ -38,20 +47,16 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
     [self setupAddressBook];
 
-    [observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
+    [self.observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
       @synchronized(self) {
           [self setupLatestContacts:latestContacts];
       }
     }
-                                                     untilCancelled:life.token];
-}
-
-- (void)dealloc {
-    [life cancel];
+                                                     untilCancelled:_life.token];
 }
 
 - (void)verifyABPermission {
-    if (!addressBookReference) {
+    if (!self.addressBookReference) {
         [self setupAddressBook];
     }
 }
@@ -60,7 +65,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context);
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context) {
-    ContactsManager *contactsManager = (__bridge ContactsManager *)context;
+    OWSContactsManager *contactsManager = (__bridge OWSContactsManager *)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       [contactsManager pullLatestAddressBook];
       [contactsManager intersectContacts];
@@ -71,8 +76,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)setupAddressBook {
     dispatch_async(ADDRESSBOOK_QUEUE, ^{
-      [[ContactsManager asyncGetAddressBook] thenDo:^(id addressBook) {
-        addressBookReference           = addressBook;
+      [[OWSContactsManager asyncGetAddressBook] thenDo:^(id addressBook) {
+        self.addressBookReference = addressBook;
         ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
         ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -102,15 +107,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError)localizedDescription]);
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
       if (!granted) {
-          [ContactsManager blockingContactDialog];
+          [OWSContactsManager blockingContactDialog];
       }
     });
-    [observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
+    [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
 }
 
 - (void)setupLatestContacts:(NSArray *)contacts {
     if (contacts) {
-        latestContactsById = [ContactsManager keyContactsById:contacts];
+        self.latestContactsById = [OWSContactsManager keyContactsById:contacts];
     }
 }
 
@@ -173,16 +178,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-- (void)setupLatestRedPhoneUsers:(NSArray *)users {
-    if (users) {
-        latestWhisperUsersById = [ContactsManager keyContactsById:users];
-    }
-}
-
 #pragma mark - Observables
 
 - (ObservableValue *)getObservableContacts {
-    return observableContactsController;
+    return self.observableContactsController;
 }
 
 #pragma mark - Address Book utils
@@ -249,12 +248,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
-- (NSArray *)latestContactsWithSearchString:(NSString *)searchString {
-    return [latestContactsById.allValues filter:^int(Contact *contact) {
-      return searchString.length == 0 || [ContactsManager name:contact.fullName matchesQuery:searchString];
-    }];
-}
-
 #pragma mark - Contact/Phone Number util
 
 - (Contact *)contactForRecord:(ABRecordRef)record {
@@ -275,13 +268,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
     //    NSString *notes = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonNoteProperty);
     //    NSArray *emails = [ContactsManager emailsForRecord:record];
-    //    NSData *image = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record,
-    //    kABPersonImageFormatThumbnail);
-    //    UIImage *img = [UIImage imageWithData:image];
-
+    NSData *image = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
+    UIImage *img = [UIImage imageWithData:image];
+    
     return [[Contact alloc] initWithContactWithFirstName:firstName
                                              andLastName:lastName
                                  andUserTextPhoneNumbers:phoneNumbers
+                                                andImage:img
                                             andContactID:recordID];
 }
 
@@ -336,75 +329,17 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-+ (NSArray *)emailsForRecord:(ABRecordRef)record {
-    ABMultiValueRef emailRefs = ABRecordCopyValue(record, kABPersonEmailProperty);
-
-    @try {
-        NSArray *emails = (__bridge_transfer NSArray *)ABMultiValueCopyArrayOfAllValues(emailRefs);
-
-        if (emails == nil)
-            emails = @[];
-
-        return emails;
-
-    } @finally {
-        if (emailRefs) {
-            CFRelease(emailRefs);
-        }
-    }
-}
-
-+ (NSDictionary *)groupContactsByFirstLetter:(NSArray *)contacts matchingSearchString:(NSString *)optionalSearchString {
-    assert(contacts != nil);
-
-    NSArray *matchingContacts = [contacts filter:^int(Contact *contact) {
-      return optionalSearchString.length == 0 || [self name:contact.fullName matchesQuery:optionalSearchString];
-    }];
-
-    return [matchingContacts groupBy:^id(Contact *contact) {
-      NSString *nameToUse = @"";
-
-      BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-
-      if (firstNameOrdering && contact.firstName != nil && contact.firstName.length > 0) {
-          nameToUse = contact.firstName;
-      } else if (!firstNameOrdering && contact.lastName != nil && contact.lastName.length > 0) {
-          nameToUse = contact.lastName;
-      } else if (contact.lastName == nil) {
-          if (contact.fullName.length > 0) {
-              nameToUse = contact.fullName;
-          } else {
-              return nameToUse;
-          }
-      } else {
-          nameToUse = contact.lastName;
-      }
-
-      if (nameToUse.length >= 1) {
-          return [[[nameToUse substringToIndex:1] uppercaseString] decomposedStringWithCompatibilityMapping];
-      } else {
-          return @" ";
-      }
-    }];
-}
-
 + (NSDictionary *)keyContactsById:(NSArray *)contacts {
     return [contacts keyedBy:^id(Contact *contact) {
       return @((int)contact.recordID);
     }];
 }
 
-- (Contact *)latestContactWithRecordId:(ABRecordID)recordId {
-    @synchronized(self) {
-        return latestContactsById[@(recordId)];
-    }
-}
-
 - (NSArray<Contact *> *)allContacts {
     NSMutableArray *allContacts = [NSMutableArray array];
 
-    for (NSString *key in latestContactsById.allKeys) {
-        Contact *contact = [latestContactsById objectForKey:key];
+    for (NSString *key in self.latestContactsById.allKeys) {
+        Contact *contact = [self.latestContactsById objectForKey:key];
 
         if ([contact isKindOfClass:[Contact class]]) {
             [allContacts addObject:contact];
@@ -413,11 +348,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return allContacts;
 }
 
-- (NSArray *)recordsForContacts:(NSArray *)contacts {
-    return [contacts map:^id(Contact *contact) {
-      return @([contact recordID]);
-    }];
-}
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
     NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
@@ -434,33 +364,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
-+ (BOOL)phoneNumber:(PhoneNumber *)phoneNumber matchesQuery:(NSString *)queryString {
-    NSString *phoneNumberString = phoneNumber.localizedDescriptionForUser;
-    NSString *searchString      = phoneNumberString.digitsOnly;
-
-    if (queryString.length == 0)
-        return YES;
-    NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
-    return [searchString rangeOfString:queryString options:searchOpts].location != NSNotFound;
-}
-
-- (NSArray *)contactsForContactIds:(NSArray *)contactIds {
-    NSMutableArray *contacts = [NSMutableArray array];
-    for (NSNumber *favouriteId in contactIds) {
-        Contact *contact = [self latestContactWithRecordId:favouriteId.intValue];
-
-        if (contact) {
-            [contacts addObject:contact];
-        }
-    }
-    return [contacts copy];
-}
-
 #pragma mark - Whisper User Management
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
     return [[contacts filter:^int(Contact *contact) {
-      return contact.isRedPhoneContact || contact.isTextSecureContact;
+      return [contact isSignalContact];
     }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 
@@ -479,24 +387,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     };
 }
 
-- (NSArray *)signalContacts {
-    return [self getSignalUsersFromContactsArray:self.allContacts];
+- (NSArray<Contact *> *)signalContacts {
+    return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
 - (NSArray *)textSecureContacts {
     return [[self.allContacts filter:^int(Contact *contact) {
-      return [contact isTextSecureContact];
+      return [contact isSignalContact];
     }] sortedArrayUsingComparator:[[self class] contactComparator]];
 }
-
-- (NSArray *)getNewItemsFrom:(NSArray *)newArray comparedTo:(NSArray *)oldArray {
-    NSMutableSet *newSet = [NSMutableSet setWithArray:newArray];
-    NSSet *oldSet        = [NSSet setWithArray:oldArray];
-
-    [newSet minusSet:oldSet];
-    return newSet.allObjects;
-}
-
 
 - (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier {
     for (Contact *contact in self.allContacts) {

@@ -2,7 +2,7 @@
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
 #import "CodeVerificationViewController.h"
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
