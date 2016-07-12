@@ -16,16 +16,16 @@
                              date:(NSDate *)date
 {
     self = [super initWithSenderId:senderId senderDisplayName:senderDisplayName date:date];
-    
+
     if (self) {
         _errorMessageType = messageType;
         _messageType = TSErrorMessageAdapter;
     }
-    
+
     return self;
 }
 
-- (NSString*)text
+- (NSString *)text
 {
     switch (self.errorMessageType) {
         case JSQErrorMessageNoSession:
@@ -49,7 +49,7 @@
         case JSQErrorMessageInvalidVersion:
             return [NSString stringWithFormat:@"Error: Invalid version for contact %@.", self.senderDisplayName];
             break;
-            
+
         default:
             return nil;
             break;
@@ -61,13 +61,17 @@
     return self.senderId.hash ^ self.date.hash;
 }
 
-- (NSString*)description
+- (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: senderId=%@, senderDisplayName=%@, date=%@, type=%ld>",
-            [self class], self.senderId, self.senderDisplayName, self.date, self.errorMessageType];
+                     [self class],
+                     self.senderId,
+                     self.senderDisplayName,
+                     self.date,
+                     self.errorMessageType];
 }
 
--(TSMessageAdapterType)messageType
+- (TSMessageAdapterType)messageType
 {
     return TSErrorMessageAdapter;
 }

@@ -13,7 +13,7 @@
 typedef enum : NSUInteger {
     kCallOutgoing = 1,
     kCallIncoming = 2,
-    kCallMissed   = 3,
+    kCallMissed = 3,
     kGroupUpdateJoin = 4,
     kGroupUpdateLeft = 5,
     kGroupUpdate = 6
@@ -39,7 +39,7 @@ typedef enum : NSUInteger {
 @property (copy, nonatomic, readonly) NSDate *date;
 
 /*
- * Returns the call status 
+ * Returns the call status
  * @see CallStatus
  */
 @property (nonatomic) CallStatus status;
@@ -61,16 +61,16 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) NSString *detailString;
 
 
-#pragma mark - Initialization 
+#pragma mark - Initialization
 
 - (instancetype)initWithCallerId:(NSString *)callerId
                callerDisplayName:(NSString *)callerDisplayName
                             date:(NSDate *)date
                           status:(CallStatus)status
-                   displayString:(NSString*)detailString;
+                   displayString:(NSString *)detailString;
 
--(NSString*)dateText;
+- (NSString *)dateText;
 
--(UIImage*)thumbnailImage;
+- (UIImage *)thumbnailImage;
 
 @end

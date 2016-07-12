@@ -34,27 +34,27 @@
 
 #pragma mark - Initializer
 
--(void)awakeFromNib
+- (void)awakeFromNib
 {
     [super awakeFromNib];
-    
+
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    
+
     self.backgroundColor = [UIColor whiteColor];
-    
+
     self.cellLabel.textAlignment = NSTextAlignmentCenter;
     self.cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0f];
     self.cellLabel.textColor = [UIColor lightGrayColor];
 }
 
--(void)dealloc
+- (void)dealloc
 {
     _cellLabel = nil;
 }
 
 #pragma mark - Collection view cell
 
--(void)prepareForReuse
+- (void)prepareForReuse
 {
     [super prepareForReuse];
     self.cellLabel.text = nil;

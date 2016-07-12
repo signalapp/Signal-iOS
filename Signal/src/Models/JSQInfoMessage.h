@@ -8,7 +8,7 @@
 
 #import "JSQDisplayedMessage.h"
 
-typedef NS_ENUM(NSInteger, JSQInfoMessageType){
+typedef NS_ENUM(NSInteger, JSQInfoMessageType) {
     JSQInfoMessageTypeSessionDidEnd,
 };
 
@@ -21,11 +21,11 @@ typedef NS_ENUM(NSInteger, JSQInfoMessageType){
 #pragma mark - Initialization
 
 - (instancetype)initWithInfoType:(JSQInfoMessageType)messageType
-                        senderId:(NSString*)senderId
-               senderDisplayName:(NSString*)senderDisplayName
-                            date:(NSDate*)date;
+                        senderId:(NSString *)senderId
+               senderDisplayName:(NSString *)senderDisplayName
+                            date:(NSDate *)date;
 
-- (NSString*)text;
+- (NSString *)text;
 
 
 @end

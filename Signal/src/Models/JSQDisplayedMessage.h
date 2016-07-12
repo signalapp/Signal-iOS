@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Hexed Bits. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "JSQMessageData.h"
 #import "TSMessageAdapter.h"
+#import <Foundation/Foundation.h>
 
 /* JSQDisplayed message is the parent class for displaying information to the user
  * from within the conversation view. Do not use directly :
@@ -38,8 +38,8 @@
 
 #pragma mark - Initializer
 
--(instancetype)initWithSenderId:(NSString*)senderId
-              senderDisplayName:(NSString*)senderDisplayName
-                           date:(NSDate*)date;
+- (instancetype)initWithSenderId:(NSString *)senderId
+               senderDisplayName:(NSString *)senderDisplayName
+                            date:(NSDate *)date;
 
 @end

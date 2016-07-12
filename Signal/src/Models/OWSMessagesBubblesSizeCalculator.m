@@ -7,8 +7,8 @@
 //
 
 #import "OWSMessagesBubblesSizeCalculator.h"
-#import "TSMessageAdapter.h"
 #import "JSQDisplayedMessageCollectionViewCell.h"
+#import "TSMessageAdapter.h"
 
 @implementation OWSMessagesBubblesSizeCalculator
 
@@ -27,13 +27,10 @@
                               atIndexPath:(NSIndexPath *)indexPath
                                withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    CGSize superSize = [super messageBubbleSizeForMessageData:messageData
-                                                  atIndexPath:indexPath
-                                                   withLayout:layout];
+    CGSize superSize = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
 
     TSMessageAdapter *message = (TSMessageAdapter *)messageData;
-    if (message.messageType == TSInfoMessageAdapter ||
-        message.messageType == TSErrorMessageAdapter) {
+    if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
 
         // Prevent cropping message text by accounting for message container/icon
         superSize.height = OWSDisplayedMessageCellHeight;

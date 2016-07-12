@@ -14,7 +14,7 @@
 
 @interface JSQCallCollectionViewCell : JSQMessagesCollectionViewCell
 
-//TODO can we use an existing label from JSQMessagesCollectionViewCell?
+// TODO can we use an existing label from JSQMessagesCollectionViewCell?
 @property (weak, nonatomic, readonly) JSQMessagesLabel *cellLabel;
 
 @property (weak, nonatomic, readonly) UIImageView *outgoingCallImageView;

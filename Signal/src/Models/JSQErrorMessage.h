@@ -8,7 +8,7 @@
 
 #import "JSQDisplayedMessage.h"
 
-typedef NS_ENUM(NSInteger, JSQErrorMessageType){
+typedef NS_ENUM(NSInteger, JSQErrorMessageType) {
     JSQErrorMessageNoSession,
     JSQErrorMessageWrongTrustedIdentityKey,
     JSQErrorMessageInvalidKeyException,
@@ -27,10 +27,10 @@ typedef NS_ENUM(NSInteger, JSQErrorMessageType){
 #pragma mark - Initialization
 
 - (instancetype)initWithErrorType:(JSQErrorMessageType)messageType
-                         senderId:(NSString*)senderId
-                senderDisplayName:(NSString*)senderDisplayName
-                             date:(NSDate*)date;
+                         senderId:(NSString *)senderId
+                senderDisplayName:(NSString *)senderDisplayName
+                             date:(NSDate *)date;
 
-- (NSString*)text;
+- (NSString *)text;
 
 @end

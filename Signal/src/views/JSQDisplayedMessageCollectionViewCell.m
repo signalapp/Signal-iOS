@@ -12,8 +12,8 @@
 
 @interface JSQDisplayedMessageCollectionViewCell ()
 
-@property(weak, nonatomic) IBOutlet JSQMessagesLabel* cellLabel;
-@property (weak, nonatomic) IBOutlet UIImageView* headerImageView;
+@property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
 @property (strong, nonatomic) IBOutlet UIView *textContainer;
 
 @end
@@ -34,14 +34,14 @@
 
 #pragma mark - Initializer
 
--(void)awakeFromNib
+- (void)awakeFromNib
 {
     [super awakeFromNib];
-    
+
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    
+
     self.backgroundColor = [UIColor whiteColor];
-//    self.cellLabelHeightConstraint.constant = 0.0f;
+    //    self.cellLabelHeightConstraint.constant = 0.0f;
 
     self.textContainer.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.textContainer.layer.borderWidth = 0.75f;
@@ -53,10 +53,10 @@
 
 #pragma mark - Collection view cell
 
--(void)prepareForReuse
+- (void)prepareForReuse
 {
     [super prepareForReuse];
-    
+
     self.cellLabel.text = nil;
 }
 

@@ -14,15 +14,15 @@
 
 #pragma mark - Initialzation
 
--(instancetype)initWithCallerId:(NSString *)senderId
-              callerDisplayName:(NSString *)senderDisplayName
-                           date:(NSDate *)date
-                         status:(CallStatus)status
-                  displayString:(NSString *)detailString
+- (instancetype)initWithCallerId:(NSString *)senderId
+               callerDisplayName:(NSString *)senderDisplayName
+                            date:(NSDate *)date
+                          status:(CallStatus)status
+                   displayString:(NSString *)detailString
 {
     NSParameterAssert(senderId != nil);
     NSParameterAssert(senderDisplayName != nil);
-    
+
     self = [super init];
     if (self) {
         _senderId = [senderId copy];
@@ -31,25 +31,28 @@
         _status = status;
         _messageType = TSCallAdapter;
         _detailString = [detailString stringByAppendingFormat:@" "];
-        
     }
     return self;
 }
 
--(id)init
+- (id)init
 {
-    NSAssert(NO,@"%s is not a valid initializer for %@. Use %@ instead", __PRETTY_FUNCTION__, [self class], NSStringFromSelector(@selector(initWithCallerId:callerDisplayName:date:status:displayString:)));
+    NSAssert(NO,
+        @"%s is not a valid initializer for %@. Use %@ instead",
+        __PRETTY_FUNCTION__,
+        [self class],
+        NSStringFromSelector(@selector(initWithCallerId:callerDisplayName:date:status:displayString:)));
     return nil;
 }
 
--(void)dealloc
+- (void)dealloc
 {
     _senderId = nil;
     _senderDisplayName = nil;
     _date = nil;
 }
 
--(NSString*)dateText
+- (NSString *)dateText
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterShortStyle;
@@ -58,9 +61,10 @@
     return [dateFormatter stringFromDate:_date];
 }
 
--(UIImage*)thumbnailImage {
+- (UIImage *)thumbnailImage
+{
     // This relies on those assets being in the project
-    if(!_useThumbnail) {
+    if (!_useThumbnail) {
         return nil;
     }
     switch (_status) {
@@ -86,49 +90,47 @@
     }
 }
 
-
 #pragma mark - NSObject
 
--(BOOL)isEqual:(id)object
+- (BOOL)isEqual:(id)object
 {
-    if (self==object) {
+    if (self == object) {
         return YES;
     }
-    
-    if (![object isKindOfClass:[self class]])
-    {
+
+    if (![object isKindOfClass:[self class]]) {
         return NO;
     }
-    
-    JSQCall * aCall = (JSQCall*)object;
-    
-    return [self.senderId isEqualToString:aCall.senderId]
-    && [self.senderDisplayName isEqualToString:aCall.senderDisplayName]
-    && ([self.date compare:aCall.date] == NSOrderedSame)
-    && self.status == aCall.status;
+
+    JSQCall *aCall = (JSQCall *)object;
+
+    return [self.senderId isEqualToString:aCall.senderId] &&
+        [self.senderDisplayName isEqualToString:aCall.senderDisplayName]
+        && ([self.date compare:aCall.date] == NSOrderedSame) && self.status == aCall.status;
 }
 
--(NSUInteger)hash
+- (NSUInteger)hash
 {
     return self.senderId.hash ^ self.date.hash;
 }
-
--(NSString*)description
+- (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: senderId=%@, senderDisplayName=%@, date=%@>",
-            [self class], self.senderId, self.senderDisplayName, self.date];
+                     [self class],
+                     self.senderId,
+                     self.senderDisplayName,
+                     self.date];
 }
-
 #pragma mark - JSQMessageData
 
-//TODO I'm not sure this is right. It affects bubble rendering.
-- (BOOL)isMediaMessage {
+// TODO I'm not sure this is right. It affects bubble rendering.
+- (BOOL)isMediaMessage
+{
     return NO;
 }
-
 #pragma mark - NSCoding
 
--(instancetype)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
     if (self) {
@@ -150,21 +152,21 @@
 
 #pragma mark - NSCopying
 
--(instancetype)copyWithZone:(NSZone *)zone
+- (instancetype)copyWithZone:(NSZone *)zone
 {
-    return [[[self class] allocWithZone:zone]initWithCallerId:self.senderId
-                                            callerDisplayName:self.senderDisplayName
-                                                         date:self.date
-                                                       status:self.status
-                                                displayString:self.detailString];
+    return [[[self class] allocWithZone:zone] initWithCallerId:self.senderId
+                                             callerDisplayName:self.senderDisplayName
+                                                          date:self.date
+                                                        status:self.status
+                                                 displayString:self.detailString];
 }
 
-- (NSUInteger)messageHash{
+- (NSUInteger)messageHash
+{
     return self.hash;
 }
-
-- (NSString *)text{
+- (NSString *)text
+{
     return _detailString;
 }
-
 @end

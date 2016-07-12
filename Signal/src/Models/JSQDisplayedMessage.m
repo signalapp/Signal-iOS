@@ -10,24 +10,28 @@
 
 @implementation JSQDisplayedMessage
 
--(id)init
+- (id)init
 {
-    NSAssert(NO,@"%s is not a valid initializer for %@. Use %@ instead", __PRETTY_FUNCTION__, [self class], NSStringFromSelector(@selector(initWithSenderId:senderDisplayName:date:)));
+    NSAssert(NO,
+        @"%s is not a valid initializer for %@. Use %@ instead",
+        __PRETTY_FUNCTION__,
+        [self class],
+        NSStringFromSelector(@selector(initWithSenderId:senderDisplayName:date:)));
     return nil;
 }
 
--(instancetype)initWithSenderId:(NSString*)senderId
-              senderDisplayName:(NSString*)senderDisplayName
-                           date:(NSDate*)date
+- (instancetype)initWithSenderId:(NSString *)senderId
+               senderDisplayName:(NSString *)senderDisplayName
+                            date:(NSDate *)date
 {
     self = [super init];
-    
+
     if (self) {
         _senderId = [senderId copy];
         _senderDisplayName = [senderDisplayName copy];
         _date = [date copy];
     }
-    
+
     return self;
 }
 

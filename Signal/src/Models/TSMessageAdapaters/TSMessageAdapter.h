@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
     TSInfoMessageAdapter,
     TSErrorMessageAdapter,
     TSMediaAttachmentAdapter,
-    TSGenericTextMessageAdapter,       //Used when message direction is unknown (outgoing or incoming)
+    TSGenericTextMessageAdapter, // Used when message direction is unknown (outgoing or incoming)
 };
 
 @interface TSMessageAdapter : NSObject <JSQMessageData>

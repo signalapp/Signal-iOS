@@ -254,7 +254,7 @@
 {
     if (self.isMediaMessage) {
         return [self.mediaItem mediaHash];
-    } else  {
+    } else {
         return self.identifier;
     }
 }
