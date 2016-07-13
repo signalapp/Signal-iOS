@@ -39,13 +39,10 @@
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
-//TODO should OWSInfoMessage be rolled into OWSDisplayedMessageCollectionViewCell?
 #import "OWSInfoMessage.h"
 #import "TSInfoMessage.h"
-//TODO should OWSErrorMessage be rolled into OWSDisplayedMessageCollectionViewCell?
 #import "OWSErrorMessage.h"
 #import "TSErrorMessage.h"
-//TODO should OWSCall be rolled into OWSCallCollectionViewCell?
 #import "OWSCall.h"
 #import "TSCall.h"
 #import "TSIncomingMessage.h"
@@ -119,7 +116,8 @@ typedef enum : NSUInteger {
 
 @implementation MessagesViewController
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -169,7 +167,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     // JSQMVC width is 375px at this point (as specified by the xib), but this causes
     // our initial bubble calculations to be off since they happen before the containing
@@ -223,7 +222,8 @@ typedef enum : NSUInteger {
           forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
 }
 
-- (void)toggleObservers:(BOOL)shouldObserve {
+- (void)toggleObservers:(BOOL)shouldObserve
+{
     if (shouldObserve) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
@@ -529,7 +529,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)initializeBubbles {
+- (void)initializeBubbles
+{
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
@@ -710,7 +711,8 @@ typedef enum : NSUInteger {
 #pragma mark - JSQMessages CollectionView DataSource
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView
-       messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
+       messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     return [self messageAtIndexPath:indexPath];
 }
 
@@ -750,31 +752,25 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionViewCell *cell;
     switch (message.messageType) {
         case TSCallAdapter: {
-            DDLogDebug(@"building cell for Call");
             OWSCall *call = (OWSCall *)message;
             cell = [self loadCallCellForCall:call atIndexPath:indexPath];
         } break;
         case TSInfoMessageAdapter: {
-            DDLogDebug(@"building cell for InfoMessage");
             OWSInfoMessage *infoMessage = (OWSInfoMessage *)message;
             cell = [self loadInfoMessageCellForMessage:infoMessage atIndexPath:indexPath];
         } break;
         case TSErrorMessageAdapter: {
-            DDLogDebug(@"building cell  for ErrorMessage");
             OWSErrorMessage *errorMessage = (OWSErrorMessage *)message;
             cell = [self loadErrorMessageCellForMessage:errorMessage atIndexPath:indexPath];
         } break;
         case TSIncomingMessageAdapter: {
-            DDLogDebug(@"building cell for incoming message: %@", message);
             cell = [self loadIncomingMessageCellForMessage:message atIndexPath:indexPath];
-
         } break;
         case TSOutgoingMessageAdapter: {
-            DDLogDebug(@"building cell for incoming message: %@", message);
             cell = [self loadOutgoingCellForMessage:message atIndexPath:indexPath];
         } break;
         default: {
-            DDLogDebug(@"using default cell constructor for message: %@", message);
+            DDLogWarn(@"using default cell constructor for message: %@", message);
             cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
         } break;
     }
@@ -786,7 +782,8 @@ typedef enum : NSUInteger {
 #pragma mark - Loading message cells
 
 - (JSQMessagesCollectionViewCell *)loadIncomingMessageCellForMessage:(id<JSQMessageData>)message
-                                                         atIndexPath:(NSIndexPath *)indexPath {
+                                                         atIndexPath:(NSIndexPath *)indexPath
+{
     JSQMessagesCollectionViewCell *cell =
         (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
@@ -801,7 +798,8 @@ typedef enum : NSUInteger {
 }
 
 - (JSQMessagesCollectionViewCell *)loadOutgoingCellForMessage:(id<JSQMessageData>)message
-                                                  atIndexPath:(NSIndexPath *)indexPath {
+                                                  atIndexPath:(NSIndexPath *)indexPath
+{
     JSQMessagesCollectionViewCell *cell =
         (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
@@ -815,10 +813,8 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call
-                                       atIndexPath:(NSIndexPath *)indexPath
+- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
 {
-
     OWSCallCollectionViewCell *callCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
                                                                                          forIndexPath:indexPath];
 
@@ -860,7 +856,8 @@ typedef enum : NSUInteger {
 }
 
 - (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(OWSErrorMessage *)errorMessage
-                                                              atIndexPath:(NSIndexPath *)indexPath {
+                                                              atIndexPath:(NSIndexPath *)indexPath
+{
     OWSDisplayedMessageCollectionViewCell *errorCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
                                                                                                      forIndexPath:indexPath];
     errorCell.cellLabel.text = [errorMessage text];
@@ -956,7 +953,8 @@ typedef enum : NSUInteger {
     return nextMessage;
 }
 
-- (BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter *)message {
+- (BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter *)message
+{
     if (message.messageType == TSOutgoingMessageAdapter) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
         if(outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
@@ -1027,7 +1025,8 @@ typedef enum : NSUInteger {
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
-    didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath {
+    didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
+{
     TSMessageAdapter *messageItem =
         [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
@@ -1223,9 +1222,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)handleWarningTap:(TSInteraction *)interaction {
-    //TODO why is handle warning tap expecting a TSIncomingMessage? I assumed it was for info messages, but maybe those aren't actionable.
-    // Looks like we create an InfoMessage "attachment is downloading" and tapping on it may restart a stalled fetch
+- (void)handleWarningTap:(TSInteraction *)interaction
+{
     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
@@ -1240,6 +1238,7 @@ typedef enum : NSUInteger {
                 TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
 
                 // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
+                // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (!pointer.isDownloading) {
                     [[TSMessagesManager sharedManager] retrieveAttachment:pointer messageId:message.uniqueId];
                 }
@@ -2110,6 +2109,5 @@ typedef enum : NSUInteger {
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
     return @[];
 }
-
 
 @end

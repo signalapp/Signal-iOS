@@ -78,6 +78,7 @@
 {
     return self.senderId.hash ^ self.date.hash;
 }
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: senderId=%@, senderDisplayName=%@, date=%@>",
@@ -86,13 +87,14 @@
                      self.senderDisplayName,
                      self.date];
 }
+
 #pragma mark - JSQMessageData
 
-// TODO I'm not sure this is right. It affects bubble rendering.
 - (BOOL)isMediaMessage
 {
     return NO;
 }
+
 #pragma mark - NSCoding
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -133,8 +135,10 @@
 {
     return self.hash;
 }
+
 - (NSString *)text
 {
     return _detailString;
 }
+
 @end

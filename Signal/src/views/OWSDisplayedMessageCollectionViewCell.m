@@ -37,7 +37,6 @@
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.backgroundColor = [UIColor whiteColor];
-    //    self.cellLabelHeightConstraint.constant = 0.0f;
 
     self.textContainer.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.textContainer.layer.borderWidth = 0.75f;

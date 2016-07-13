@@ -12,14 +12,12 @@
  * @see OWSErrorMessage
  *
  */
-
 @interface OWSDisplayedMessage : NSObject <JSQMessageData>
 
 /*
  * Returns the unique identifier of the person affected by the displayed message
  */
 @property (copy, nonatomic, readonly) NSString *senderId;
-
 
 /*
  * Returns the name of the person affected by the displayed message
