@@ -138,7 +138,6 @@
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
         OWSCall *call       = [self owsCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
-        call.useThumbnail   = NO; // disables use of iconography to represent group update actions
         return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
@@ -160,7 +159,6 @@
                                                          date:nil
                                                        status:status
                                                 displayString:@""];
-            call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
     } else {

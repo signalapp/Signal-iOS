@@ -840,18 +840,6 @@ typedef enum : NSUInteger {
 
         const NSRange range = NSMakeRange([text length],[[call dateText] length]);
         [attributedText setAttributes:subAttrs range:range];
-
-        BOOL isOutgoing = [self.senderId isEqualToString:call.senderId];
-        if (isOutgoing)
-        {
-            callCell.outgoingCallImageView.image = [call thumbnailImage];
-        } else {
-            callCell.incomingCallImageView.image = [call thumbnailImage];
-        }
-    } else {
-        // TODO wrt comment, does it make sense to receive a group meta message in a *call* or was this copy/paste misfire?
-        // A group meta message
-        callCell.incomingCallImageView.image = [call thumbnailImage];
     }
     callCell.cellLabel.attributedText = attributedText;
     callCell.cellLabel.numberOfLines = 0; // uses as many lines as it needs

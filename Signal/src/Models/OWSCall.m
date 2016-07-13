@@ -2,7 +2,6 @@
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSCall.h"
-
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIImage+JSQMessages.h>
 
@@ -55,35 +54,6 @@
     dateFormatter.dateStyle = NSDateFormatterMediumStyle;
     dateFormatter.doesRelativeDateFormatting = YES;
     return [dateFormatter stringFromDate:_date];
-}
-
-- (UIImage *)thumbnailImage
-{
-    // This relies on those assets being in the project
-    if (!_useThumbnail) {
-        return nil;
-    }
-    switch (_status) {
-        case kCallOutgoing:
-            return [UIImage imageNamed:@"statCallOutgoing--blue"];
-            break;
-        case kCallIncoming:
-        case kCallMissed:
-            return [UIImage imageNamed:@"statCallIncoming--blue"];
-            break;
-        case kGroupUpdate:
-            return [UIImage imageNamed:@"statRefreshedGroup--blue"];
-            break;
-        case kGroupUpdateLeft:
-            return [UIImage imageNamed:@"statLeftGroup--blue"];
-            break;
-        case kGroupUpdateJoin:
-            return [UIImage imageNamed:@"statJoinedGroup--blue"];
-            break;
-        default:
-            return nil;
-            break;
-    }
 }
 
 #pragma mark - NSObject

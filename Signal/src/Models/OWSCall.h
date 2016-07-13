@@ -14,14 +14,12 @@ typedef enum : NSUInteger {
     kGroupUpdate = 6
 } CallStatus;
 
-
 @interface OWSCall : NSObject <JSQMessageData, NSCoding, NSCopying>
 
 /*
  * Returns the string Id of the user who initiated the call
  */
 @property (copy, nonatomic, readonly) NSString *senderId;
-
 
 /*
  * Returns the display name for user who initiated the call
@@ -44,17 +42,10 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) TSMessageAdapterType messageType;
 
-/*
- * User can configure whether a thumbnail is used in the display of this cell or not
- */
-@property (nonatomic) BOOL useThumbnail;
-
 /**
  *  String to be displayed
  */
-
 @property (nonatomic, copy) NSString *detailString;
-
 
 #pragma mark - Initialization
 
@@ -65,7 +56,5 @@ typedef enum : NSUInteger {
                    displayString:(NSString *)detailString;
 
 - (NSString *)dateText;
-
-- (UIImage *)thumbnailImage;
 
 @end
