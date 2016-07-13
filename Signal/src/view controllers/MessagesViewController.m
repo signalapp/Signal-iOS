@@ -837,9 +837,7 @@ typedef enum : NSUInteger {
     }
     callCell.cellLabel.attributedText = attributedText;
     callCell.cellLabel.numberOfLines = 0; // uses as many lines as it needs
-
-    // TODO is this a constant somewhere else already?
-    callCell.cellLabel.textColor = [UIColor colorWithRed:32.f/255.f green:144.f/255.f blue:234.f/255.f  alpha:1.f];
+    callCell.cellLabel.textColor = [UIColor ows_materialBlueColor];
 
     callCell.layer.shouldRasterize = YES;
     callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
@@ -854,8 +852,7 @@ typedef enum : NSUInteger {
     infoCell.cellLabel.text = [infoMessage text];
     infoCell.cellLabel.textColor = [UIColor darkGrayColor];
 
-    // TODO is this a constant somewhere else already?
-    infoCell.textContainer.layer.borderColor = [[UIColor colorWithRed:239.f/255.f green:189.f/255.f blue:88.f/255.f alpha:1.0f] CGColor];
+    infoCell.textContainer.layer.borderColor = infoCell.textContainer.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
     infoCell.layer.shouldRasterize = YES;
     infoCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
@@ -869,8 +866,7 @@ typedef enum : NSUInteger {
     errorCell.cellLabel.text = [errorMessage text];
     errorCell.cellLabel.textColor = [UIColor darkGrayColor];
 
-    // TODO is this a constant somewhere else already?
-    errorCell.textContainer.layer.borderColor = [[UIColor colorWithRed:195.f/255.f green:0 blue:22.f/255.f alpha:1.0f] CGColor];
+    errorCell.textContainer.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
     errorCell.layer.shouldRasterize = YES;
     errorCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
