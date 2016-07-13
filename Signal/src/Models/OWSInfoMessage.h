@@ -23,5 +23,4 @@ typedef NS_ENUM(NSInteger, OWSInfoMessageType) {
 
 - (NSString *)text;
 
-
 @end

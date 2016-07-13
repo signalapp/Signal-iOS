@@ -9,6 +9,16 @@
 
 #pragma mark - Initialzation
 
+- (id)init
+{
+    NSAssert(NO,
+        @"%s is not a valid initializer for %@. Use %@ instead",
+        __PRETTY_FUNCTION__,
+        [self class],
+        NSStringFromSelector(@selector(initWithCallerId:callerDisplayName:date:status:displayString:)));
+    return [self initWithCallerId:nil callerDisplayName:nil date:nil status:0 displayString:nil];
+}
+
 - (instancetype)initWithCallerId:(NSString *)senderId
                callerDisplayName:(NSString *)senderDisplayName
                             date:(NSDate *)date
@@ -19,32 +29,21 @@
     NSParameterAssert(senderDisplayName != nil);
 
     self = [super init];
-    if (self) {
-        _senderId = [senderId copy];
-        _senderDisplayName = [senderDisplayName copy];
-        _date = [date copy];
-        _status = status;
-        _messageType = TSCallAdapter;
-        _detailString = [detailString stringByAppendingFormat:@" "];
+    if (!self) {
+        return self;
     }
+
+    _senderId = [senderId copy];
+    _senderDisplayName = [senderDisplayName copy];
+    _date = [date copy];
+    _status = status;
+    _messageType = TSCallAdapter;
+
+    // TODO interpret detailString from status. make sure it works for calls and
+    // our re-use of calls as group update display
+    _detailString = [detailString stringByAppendingFormat:@" "];
+
     return self;
-}
-
-- (id)init
-{
-    NSAssert(NO,
-        @"%s is not a valid initializer for %@. Use %@ instead",
-        __PRETTY_FUNCTION__,
-        [self class],
-        NSStringFromSelector(@selector(initWithCallerId:callerDisplayName:date:status:displayString:)));
-    return nil;
-}
-
-- (void)dealloc
-{
-    _senderId = nil;
-    _senderDisplayName = nil;
-    _date = nil;
 }
 
 - (NSString *)dateText
@@ -98,14 +97,17 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    self = [super init];
-    if (self) {
-        _senderId = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderId))];
-        _senderDisplayName = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderDisplayName))];
-        _date = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(date))];
-        _status = (CallStatus)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(status))];
-    }
-    return self;
+    NSString *senderId = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderId))];
+    NSString *senderDisplayName = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderDisplayName))];
+    NSDate *date = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(date))];
+    CallStatus status = (CallStatus)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(status))];
+    NSString *displayString = @""; // FIXME what should this be?
+
+    return [self initWithCallerId:senderId
+                callerDisplayName:senderDisplayName
+                             date:date
+                           status:status
+                    displayString:displayString];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder

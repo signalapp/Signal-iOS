@@ -4,7 +4,6 @@
 #import "OWSCallCollectionViewCell.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
-
 @interface OWSCallCollectionViewCell ()
 
 @property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellLabel;
@@ -42,10 +41,6 @@
     self.cellLabel.textColor = [UIColor lightGrayColor];
 }
 
-- (void)dealloc
-{
-    _cellLabel = nil;
-}
 
 #pragma mark - Collection view cell
 

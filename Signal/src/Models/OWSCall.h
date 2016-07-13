@@ -53,7 +53,7 @@ typedef enum : NSUInteger {
                callerDisplayName:(NSString *)callerDisplayName
                             date:(NSDate *)date
                           status:(CallStatus)status
-                   displayString:(NSString *)detailString;
+                   displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
 
 - (NSString *)dateText;
 

@@ -826,20 +826,14 @@ typedef enum : NSUInteger {
     NSString *allText = call.date != nil ? [text stringByAppendingString:[call dateText]] : text;
 
     UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0f];
-    UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
-
-    //TODO declarative dict
-    NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:boldFont, NSFontAttributeName, nil];
     NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:allText
-                                                                                       attributes:attrs];
-
+                                                                                       attributes:@{ NSFontAttributeName: boldFont }];
     if([call date]!=nil) {
         // Not a group meta message
-        NSDictionary *subAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  regularFont, NSFontAttributeName, nil];
-
-        const NSRange range = NSMakeRange([text length],[[call dateText] length]);
-        [attributedText setAttributes:subAttrs range:range];
+        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
+        const NSRange range = NSMakeRange([text length], [[call dateText] length]);
+        [attributedText setAttributes:@{ NSFontAttributeName: regularFont }
+                                range:range];
     }
     callCell.cellLabel.attributedText = attributedText;
     callCell.cellLabel.numberOfLines = 0; // uses as many lines as it needs

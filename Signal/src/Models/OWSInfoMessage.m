@@ -14,11 +14,12 @@
     //@discussion: NSParameterAssert() ?
 
     self = [super initWithSenderId:senderId senderDisplayName:senderDisplayName date:date];
-
-    if (self) {
-        _infoMessageType = messageType;
-        _messageType = TSInfoMessageAdapter;
+    if (!self) {
+        return self;
     }
+
+    _infoMessageType = messageType;
+    _messageType = TSInfoMessageAdapter;
 
     return self;
 }

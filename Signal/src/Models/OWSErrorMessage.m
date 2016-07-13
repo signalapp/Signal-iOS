@@ -11,11 +11,12 @@
                              date:(NSDate *)date
 {
     self = [super initWithSenderId:senderId senderDisplayName:senderDisplayName date:date];
-
-    if (self) {
-        _errorMessageType = messageType;
-        _messageType = TSErrorMessageAdapter;
+    if (!self) {
+        return self;
     }
+
+    _errorMessageType = messageType;
+    _messageType = TSErrorMessageAdapter;
 
     return self;
 }

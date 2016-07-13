@@ -21,12 +21,13 @@
                             date:(NSDate *)date
 {
     self = [super init];
-
-    if (self) {
-        _senderId = [senderId copy];
-        _senderDisplayName = [senderDisplayName copy];
-        _date = [date copy];
+    if (!self) {
+        return self;
     }
+
+    _senderId = [senderId copy];
+    _senderDisplayName = [senderDisplayName copy];
+    _date = [date copy];
 
     return self;
 }
