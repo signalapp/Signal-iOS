@@ -7,10 +7,9 @@
 //
 
 #import "TSAnimatedAdapter.h"
-
 #import "FLAnimatedImage.h"
-#import "JSQMessagesMediaViewBubbleImageMasker.h"
 #import "UIDevice+TSHardwareVersion.h"
+#import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 
 @interface TSAnimatedAdapter ()
 

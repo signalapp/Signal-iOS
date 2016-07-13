@@ -1,19 +1,13 @@
-//
-//  TSAttachementAdapter.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 17/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import "TSMessagesManager.h"
 #import "TSVideoAttachmentAdapter.h"
-
-#import "FFCircularProgressView.h"
-#import "JSQMessagesMediaViewBubbleImageMasker.h"
 #import "MIMETypeUtil.h"
-#import "SCWaveformView.h"
+#import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import <FFCircularProgressView.h>
+#import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
+#import <SCWaveformView.h>
 #define AUDIO_BAR_HEIGHT 36
 
 @interface TSVideoAttachmentAdapter ()

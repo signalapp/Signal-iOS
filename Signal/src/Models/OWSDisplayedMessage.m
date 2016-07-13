@@ -1,14 +1,10 @@
-//
-//  JSQDisplayedMessage.m
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 29/11/14.
 //  Copyright (c) 2014 Hexed Bits. All rights reserved.
-//
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
-#import "JSQDisplayedMessage.h"
+#import "OWSDisplayedMessage.h"
 
-@implementation JSQDisplayedMessage
+@implementation OWSDisplayedMessage
 
 - (id)init
 {

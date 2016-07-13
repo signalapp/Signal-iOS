@@ -1,16 +1,11 @@
-//
-//  JSQErrorMessage.m
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 29/11/14.
 //  Copyright (c) 2014 Hexed Bits. All rights reserved.
-//
 
-#import "JSQErrorMessage.h"
+#import "OWSErrorMessage.h"
 
-@implementation JSQErrorMessage
+@implementation OWSErrorMessage
 
-- (instancetype)initWithErrorType:(JSQErrorMessageType)messageType
+- (instancetype)initWithErrorType:(OWSErrorMessageType)messageType
                          senderId:(NSString *)senderId
                 senderDisplayName:(NSString *)senderDisplayName
                              date:(NSDate *)date
@@ -28,25 +23,25 @@
 - (NSString *)text
 {
     switch (self.errorMessageType) {
-        case JSQErrorMessageNoSession:
+        case OWSErrorMessageNoSession:
             return [NSString stringWithFormat:@"No session error"];
             break;
-        case JSQErrorMessageWrongTrustedIdentityKey:
+        case OWSErrorMessageWrongTrustedIdentityKey:
             return [NSString stringWithFormat:@"Error : Wrong trusted identity key for %@.", self.senderDisplayName];
             break;
-        case JSQErrorMessageInvalidKeyException:
+        case OWSErrorMessageInvalidKeyException:
             return [NSString stringWithFormat:@"Error : Invalid key exception for %@.", self.senderDisplayName];
             break;
-        case JSQErrorMessageMissingKeyId:
+        case OWSErrorMessageMissingKeyId:
             return [NSString stringWithFormat:@"Error: Missing key identifier for %@", self.senderDisplayName];
             break;
-        case JSQErrorMessageInvalidMessage:
+        case OWSErrorMessageInvalidMessage:
             return [NSString stringWithFormat:@"Error: Invalid message"];
             break;
-        case JSQErrorMessageDuplicateMessage:
+        case OWSErrorMessageDuplicateMessage:
             return [NSString stringWithFormat:@"Error: Duplicate message"];
             break;
-        case JSQErrorMessageInvalidVersion:
+        case OWSErrorMessageInvalidVersion:
             return [NSString stringWithFormat:@"Error: Invalid version for contact %@.", self.senderDisplayName];
             break;
 

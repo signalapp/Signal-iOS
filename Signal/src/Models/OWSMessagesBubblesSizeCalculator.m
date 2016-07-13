@@ -1,13 +1,7 @@
-//
-//  OWSMessagesBubblesSizeCalculator.m
-//  Signal
-//
-//  Created by Michael Kirk on 7/10/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
-//
+//  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSMessagesBubblesSizeCalculator.h"
-#import "JSQDisplayedMessageCollectionViewCell.h"
+#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "TSMessageAdapter.h"
 
 @implementation OWSMessagesBubblesSizeCalculator

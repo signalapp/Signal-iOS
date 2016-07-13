@@ -1,14 +1,9 @@
-//
-//  JSQCall.h
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 20/11/14.
-//
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
-#import <Foundation/Foundation.h>
-
-#import "JSQMessageData.h"
 #import "TSMessageAdapter.h"
+#import <Foundation/Foundation.h>
+#import <JSQMessagesViewController/JSQMessageData.h>
 
 typedef enum : NSUInteger {
     kCallOutgoing = 1,
@@ -20,7 +15,7 @@ typedef enum : NSUInteger {
 } CallStatus;
 
 
-@interface JSQCall : NSObject <JSQMessageData, NSCoding, NSCopying>
+@interface OWSCall : NSObject <JSQMessageData, NSCoding, NSCopying>
 
 /*
  * Returns the string Id of the user who initiated the call

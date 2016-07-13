@@ -1,24 +1,19 @@
-//
-//  JSQDisplayedMessage.h
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 29/11/14.
 //  Copyright (c) 2014 Hexed Bits. All rights reserved.
-//
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "JSQMessageData.h"
-#import "TSMessageAdapter.h"
 #import <Foundation/Foundation.h>
 
-/* JSQDisplayed message is the parent class for displaying information to the user
+/* OWSDisplayedMessage message is the parent class for displaying information to the user
  * from within the conversation view. Do not use directly :
  *
- * @see JSQInfoMessage
- * @see JSQErrorMessage
+ * @see OWSInfoMessage
+ * @see OWSErrorMessage
  *
  */
 
-@interface JSQDisplayedMessage : NSObject <JSQMessageData>
+@interface OWSDisplayedMessage : NSObject <JSQMessageData>
 
 /*
  * Returns the unique identifier of the person affected by the displayed message

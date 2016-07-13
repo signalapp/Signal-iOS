@@ -14,13 +14,20 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
+#import <JSQMessagesViewController/UIColor+JSQMessages.h>
+#import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
+#import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
+#import <JSQSystemSoundPlayer.h>
 #import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "JSQCallCollectionViewCell.h"
-#import "JSQDisplayedMessageCollectionViewCell.h"
+#import "OWSCallCollectionViewCell.h"
+#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
@@ -32,14 +39,14 @@
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
-//TODO should JSQInfoMessage be rolled into JSQDisplayedMessageCollectionViewCell?
-#import "JSQInfoMessage.h"
+//TODO should OWSInfoMessage be rolled into OWSDisplayedMessageCollectionViewCell?
+#import "OWSInfoMessage.h"
 #import "TSInfoMessage.h"
-//TODO should JSQErrorMessage be rolled into JSQDisplayedMessageCollectionViewCell?
-#import "JSQErrorMessage.h"
+//TODO should OWSErrorMessage be rolled into OWSDisplayedMessageCollectionViewCell?
+#import "OWSErrorMessage.h"
 #import "TSErrorMessage.h"
-//TODO should JSQCall be rolled into JSQCallCollectionViewCell?
-#import "JSQCall.h"
+//TODO should OWSCall be rolled into OWSCallCollectionViewCell?
+#import "OWSCall.h"
 #import "TSCall.h"
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -209,11 +216,11 @@ typedef enum : NSUInteger {
 
 - (void)registerCustomMessageNibs
 {
-    [self.collectionView registerNib:[JSQCallCollectionViewCell nib]
-          forCellWithReuseIdentifier:[JSQCallCollectionViewCell cellReuseIdentifier]];
+    [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]];
 
-    [self.collectionView registerNib:[JSQDisplayedMessageCollectionViewCell nib]
-          forCellWithReuseIdentifier:[JSQDisplayedMessageCollectionViewCell cellReuseIdentifier]];
+    [self.collectionView registerNib:[OWSDisplayedMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
 }
 
 - (void)toggleObservers:(BOOL)shouldObserve {
@@ -744,17 +751,17 @@ typedef enum : NSUInteger {
     switch (message.messageType) {
         case TSCallAdapter: {
             DDLogDebug(@"building cell for Call");
-            JSQCall *call = (JSQCall *)message;
+            OWSCall *call = (OWSCall *)message;
             cell = [self loadCallCellForCall:call atIndexPath:indexPath];
         } break;
         case TSInfoMessageAdapter: {
             DDLogDebug(@"building cell for InfoMessage");
-            JSQInfoMessage *infoMessage = (JSQInfoMessage *)message;
+            OWSInfoMessage *infoMessage = (OWSInfoMessage *)message;
             cell = [self loadInfoMessageCellForMessage:infoMessage atIndexPath:indexPath];
         } break;
         case TSErrorMessageAdapter: {
             DDLogDebug(@"building cell  for ErrorMessage");
-            JSQErrorMessage *errorMessage = (JSQErrorMessage *)message;
+            OWSErrorMessage *errorMessage = (OWSErrorMessage *)message;
             cell = [self loadErrorMessageCellForMessage:errorMessage atIndexPath:indexPath];
         } break;
         case TSIncomingMessageAdapter: {
@@ -808,11 +815,11 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-- (JSQCallCollectionViewCell *)loadCallCellForCall:(JSQCall *)call
+- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call
                                        atIndexPath:(NSIndexPath *)indexPath
 {
 
-    JSQCallCollectionViewCell *callCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[JSQCallCollectionViewCell cellReuseIdentifier]
+    OWSCallCollectionViewCell *callCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
                                                                                          forIndexPath:indexPath];
 
     NSString *text =  call.date != nil ? [call text] : call.senderDisplayName;
@@ -857,10 +864,10 @@ typedef enum : NSUInteger {
     return callCell;
 }
 
-- (JSQDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(JSQInfoMessage *)infoMessage
+- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(OWSInfoMessage *)infoMessage
                                                              atIndexPath:(NSIndexPath *)indexPath
 {
-    JSQDisplayedMessageCollectionViewCell *infoCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[JSQDisplayedMessageCollectionViewCell cellReuseIdentifier]
+    OWSDisplayedMessageCollectionViewCell *infoCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
                                                                                                      forIndexPath:indexPath];
     infoCell.cellLabel.text = [infoMessage text];
     infoCell.cellLabel.textColor = [UIColor darkGrayColor];
@@ -873,9 +880,9 @@ typedef enum : NSUInteger {
     return infoCell;
 }
 
-- (JSQDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(JSQErrorMessage *)errorMessage
+- (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(OWSErrorMessage *)errorMessage
                                                               atIndexPath:(NSIndexPath *)indexPath {
-    JSQDisplayedMessageCollectionViewCell *errorCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[JSQDisplayedMessageCollectionViewCell cellReuseIdentifier]
+    OWSDisplayedMessageCollectionViewCell *errorCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
                                                                                                      forIndexPath:indexPath];
     errorCell.cellLabel.text = [errorMessage text];
     errorCell.cellLabel.textColor = [UIColor darkGrayColor];

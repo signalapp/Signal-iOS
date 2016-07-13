@@ -9,24 +9,24 @@
 /* Begin PBXBuildFile section */
 		0DD55B166906AF3368995978 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80CD5E19DD23200E7926EEA7 /* libPods-Signal.a */; };
 		30209C98DABCE82064B4EAF5 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A33D3C7EB4B17BDBD47F0FCC /* libPods-SignalTests.a */; };
-		453D28B31D32B87100D523F0 /* JSQErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B01D32B87100D523F0 /* JSQErrorMessage.m */; };
-		453D28B41D32B87100D523F0 /* JSQInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B21D32B87100D523F0 /* JSQInfoMessage.m */; };
-		453D28B71D32BA5F00D523F0 /* JSQDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* JSQDisplayedMessage.m */; };
+		453D28B31D32B87100D523F0 /* OWSErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B01D32B87100D523F0 /* OWSErrorMessage.m */; };
+		453D28B41D32B87100D523F0 /* OWSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B21D32B87100D523F0 /* OWSInfoMessage.m */; };
+		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
-		45C681B71D305A580050903A /* JSQCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* JSQCall.m */; };
-		45C681B81D305A580050903A /* JSQCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* JSQCall.m */; };
-		45C681BC1D305C080050903A /* JSQCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* JSQCallCollectionViewCell.m */; };
-		45C681BD1D305C080050903A /* JSQCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* JSQCallCollectionViewCell.m */; };
-		45C681C41D305C9E0050903A /* JSQCallCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C01D305C9E0050903A /* JSQCallCollectionViewCell.xib */; };
-		45C681C51D305C9E0050903A /* JSQCallCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C01D305C9E0050903A /* JSQCallCollectionViewCell.xib */; };
-		45C681C61D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681C21D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m */; };
-		45C681C71D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681C21D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m */; };
-		45C681C81D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib */; };
-		45C681C91D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib */; };
+		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
+		45C681B81D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
+		45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */; };
+		45C681BD1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */; };
+		45C681C41D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */; };
+		45C681C51D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */; };
+		45C681C61D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */; };
+		45C681C71D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */; };
+		45C681C81D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */; };
+		45C681C91D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
@@ -506,26 +506,26 @@
 
 /* Begin PBXFileReference section */
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
-		453D28AF1D32B87100D523F0 /* JSQErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQErrorMessage.h; sourceTree = "<group>"; };
-		453D28B01D32B87100D523F0 /* JSQErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQErrorMessage.m; sourceTree = "<group>"; };
-		453D28B11D32B87100D523F0 /* JSQInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQInfoMessage.h; sourceTree = "<group>"; };
-		453D28B21D32B87100D523F0 /* JSQInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQInfoMessage.m; sourceTree = "<group>"; };
-		453D28B51D32BA5F00D523F0 /* JSQDisplayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQDisplayedMessage.h; sourceTree = "<group>"; };
-		453D28B61D32BA5F00D523F0 /* JSQDisplayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQDisplayedMessage.m; sourceTree = "<group>"; };
+		453D28AF1D32B87100D523F0 /* OWSErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSErrorMessage.h; sourceTree = "<group>"; };
+		453D28B01D32B87100D523F0 /* OWSErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSErrorMessage.m; sourceTree = "<group>"; };
+		453D28B11D32B87100D523F0 /* OWSInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSInfoMessage.h; sourceTree = "<group>"; };
+		453D28B21D32B87100D523F0 /* OWSInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSInfoMessage.m; sourceTree = "<group>"; };
+		453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisplayedMessage.h; sourceTree = "<group>"; };
+		453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisplayedMessage.m; sourceTree = "<group>"; };
 		453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesBubblesSizeCalculator.h; sourceTree = "<group>"; };
 		453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesBubblesSizeCalculator.m; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
 		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
 		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
-		45C681B51D305A580050903A /* JSQCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQCall.h; sourceTree = "<group>"; };
-		45C681B61D305A580050903A /* JSQCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQCall.m; sourceTree = "<group>"; };
-		45C681B91D305C080050903A /* JSQCallCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQCallCollectionViewCell.h; sourceTree = "<group>"; };
-		45C681BA1D305C080050903A /* JSQCallCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQCallCollectionViewCell.m; sourceTree = "<group>"; };
-		45C681C01D305C9E0050903A /* JSQCallCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQCallCollectionViewCell.xib; sourceTree = "<group>"; };
-		45C681C11D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQDisplayedMessageCollectionViewCell.h; sourceTree = "<group>"; };
-		45C681C21D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQDisplayedMessageCollectionViewCell.m; sourceTree = "<group>"; };
-		45C681C31D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JSQDisplayedMessageCollectionViewCell.xib; sourceTree = "<group>"; };
+		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
+		45C681B61D305A580050903A /* OWSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCall.m; sourceTree = "<group>"; };
+		45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCallCollectionViewCell.h; sourceTree = "<group>"; };
+		45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCallCollectionViewCell.m; sourceTree = "<group>"; };
+		45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSCallCollectionViewCell.xib; sourceTree = "<group>"; };
+		45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisplayedMessageCollectionViewCell.h; sourceTree = "<group>"; };
+		45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisplayedMessageCollectionViewCell.m; sourceTree = "<group>"; };
+		45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSDisplayedMessageCollectionViewCell.xib; sourceTree = "<group>"; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1125,14 +1125,14 @@
 			isa = PBXGroup;
 			children = (
 				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
-				453D28B51D32BA5F00D523F0 /* JSQDisplayedMessage.h */,
-				453D28B61D32BA5F00D523F0 /* JSQDisplayedMessage.m */,
-				453D28AF1D32B87100D523F0 /* JSQErrorMessage.h */,
-				453D28B01D32B87100D523F0 /* JSQErrorMessage.m */,
-				453D28B11D32B87100D523F0 /* JSQInfoMessage.h */,
-				453D28B21D32B87100D523F0 /* JSQInfoMessage.m */,
-				45C681B51D305A580050903A /* JSQCall.h */,
-				45C681B61D305A580050903A /* JSQCall.m */,
+				453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */,
+				453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */,
+				453D28AF1D32B87100D523F0 /* OWSErrorMessage.h */,
+				453D28B01D32B87100D523F0 /* OWSErrorMessage.m */,
+				453D28B11D32B87100D523F0 /* OWSInfoMessage.h */,
+				453D28B21D32B87100D523F0 /* OWSInfoMessage.m */,
+				45C681B51D305A580050903A /* OWSCall.h */,
+				45C681B61D305A580050903A /* OWSCall.m */,
 				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
 				453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */,
 			);
@@ -1679,12 +1679,12 @@
 		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				45C681C11D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.h */,
-				45C681C21D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m */,
-				45C681C31D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib */,
-				45C681B91D305C080050903A /* JSQCallCollectionViewCell.h */,
-				45C681BA1D305C080050903A /* JSQCallCollectionViewCell.m */,
-				45C681C01D305C9E0050903A /* JSQCallCollectionViewCell.xib */,
+				45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */,
+				45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */,
+				45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */,
+				45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */,
+				45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */,
+				45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */,
 				A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */,
 				A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */,
 				FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */,
@@ -2446,7 +2446,7 @@
 				A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */,
 				A507A3B11A6C60E300BEED0D /* InboxTableViewCell.xib in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
-				45C681C41D305C9E0050903A /* JSQCallCollectionViewCell.xib in Resources */,
+				45C681C41D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
@@ -2455,7 +2455,7 @@
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
-				45C681C81D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib in Resources */,
+				45C681C81D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
@@ -2492,8 +2492,8 @@
 			files = (
 				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
 				76EB060118170B33006006FC /* InitiateSignal.proto in Resources */,
-				45C681C91D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.xib in Resources */,
-				45C681C51D305C9E0050903A /* JSQCallCollectionViewCell.xib in Resources */,
+				45C681C91D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */,
+				45C681C51D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2652,7 +2652,7 @@
 				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
 				A547DD741A70A87800103EC7 /* DJWActionSheet+OWS.m in Sources */,
-				45C681B71D305A580050903A /* JSQCall.m in Sources */,
+				45C681B71D305A580050903A /* OWSCall.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
@@ -2663,18 +2663,18 @@
 				76EB05FE18170B33006006FC /* InitiateSignal.pb.m in Sources */,
 				76EB05CA18170B33006006FC /* RecipientUnavailable.m in Sources */,
 				E197B61418BBEC1A00F073E5 /* DropoutTracker.m in Sources */,
-				453D28B41D32B87100D523F0 /* JSQInfoMessage.m in Sources */,
+				453D28B41D32B87100D523F0 /* OWSInfoMessage.m in Sources */,
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
 				76EB05DA18170B33006006FC /* LowLatencyConnector.m in Sources */,
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
 				B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */,
-				453D28B31D32B87100D523F0 /* JSQErrorMessage.m in Sources */,
+				453D28B31D32B87100D523F0 /* OWSErrorMessage.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
 				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
-				45C681C61D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m in Sources */,
+				45C681C61D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
 				A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */,
@@ -2726,7 +2726,7 @@
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
-				453D28B71D32BA5F00D523F0 /* JSQDisplayedMessage.m in Sources */,
+				453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
 				76EB064618170B33006006FC /* TimeUtil.m in Sources */,
 				70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */,
@@ -2764,7 +2764,7 @@
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
-				45C681BC1D305C080050903A /* JSQCallCollectionViewCell.m in Sources */,
+				45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
@@ -2843,7 +2843,7 @@
 				B660F7341C29988E00687D6E /* RtpSocket.m in Sources */,
 				B660F7351C29988E00687D6E /* SequenceCounter.m in Sources */,
 				B660F7361C29988E00687D6E /* SrtpSocket.m in Sources */,
-				45C681C71D305C9E0050903A /* JSQDisplayedMessageCollectionViewCell.m in Sources */,
+				45C681C71D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
 				B660F7371C29988E00687D6E /* SrtpStream.m in Sources */,
 				B660F7381C29988E00687D6E /* DH3KKeyAgreementParticipant.m in Sources */,
 				B660F7391C29988E00687D6E /* DH3KKeyAgreementProtocol.m in Sources */,
@@ -2864,7 +2864,7 @@
 				B660F7481C29988E00687D6E /* RecipientUnavailable.m in Sources */,
 				45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
 				B660F7491C29988E00687D6E /* ShortAuthenticationStringGenerator.m in Sources */,
-				45C681BD1D305C080050903A /* JSQCallCollectionViewCell.m in Sources */,
+				45C681BD1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */,
 				B660F74A1C29988E00687D6E /* ZrtpHandshakeResult.m in Sources */,
 				B660F74B1C29988E00687D6E /* ZrtpHandshakeSocket.m in Sources */,
 				B660F74C1C29988E00687D6E /* ZrtpInitiator.m in Sources */,
@@ -2896,7 +2896,7 @@
 				B660F7641C29988E00687D6E /* InitiateSignal.pb.m in Sources */,
 				B660F7651C29988E00687D6E /* InitiatorSessionDescriptor.m in Sources */,
 				B660F7661C29988E00687D6E /* ResponderSessionDescriptor.m in Sources */,
-				45C681B81D305A580050903A /* JSQCall.m in Sources */,
+				45C681B81D305A580050903A /* OWSCall.m in Sources */,
 				B660F7671C29988E00687D6E /* SignalUtil.m in Sources */,
 				B660F7681C29988E00687D6E /* CategorizingLogger.m in Sources */,
 				B660F7691C29988E00687D6E /* DecayingSampleEstimator.m in Sources */,

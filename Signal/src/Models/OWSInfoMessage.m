@@ -1,16 +1,12 @@
-//
-//  JSQInfoMessage.m
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 29/11/14.
 //  Copyright (c) 2014 Hexed Bits. All rights reserved.
-//
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
-#import "JSQInfoMessage.h"
+#import "OWSInfoMessage.h"
 
-@implementation JSQInfoMessage
+@implementation OWSInfoMessage
 
-- (instancetype)initWithInfoType:(JSQInfoMessageType)messageType
+- (instancetype)initWithInfoType:(OWSInfoMessageType)messageType
                         senderId:(NSString *)senderId
                senderDisplayName:(NSString *)senderDisplayName
                             date:(NSDate *)date
@@ -30,7 +26,7 @@
 - (NSString *)text
 {
     switch (self.infoMessageType) {
-        case JSQInfoMessageTypeSessionDidEnd:
+        case OWSInfoMessageTypeSessionDidEnd:
             return [NSString stringWithFormat:@"Session with %@ ended.", self.senderDisplayName];
             break;
 

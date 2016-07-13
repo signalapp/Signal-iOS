@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "JSQCall.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
+#import "OWSCall.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
@@ -137,7 +137,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
-        JSQCall *call       = [self jsqCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
+        OWSCall *call       = [self owsCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
         call.useThumbnail   = NO; // disables use of iconography to represent group update actions
         return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
@@ -155,7 +155,7 @@
             } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            JSQCall *call = [[JSQCall alloc] initWithCallerId:@""
+            OWSCall *call = [[OWSCall alloc] initWithCallerId:@""
                                             callerDisplayName:adapter.messageBody
                                                          date:nil
                                                        status:status
@@ -177,7 +177,7 @@
     return adapter;
 }
 
-+ (JSQCall *)jsqCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
++ (OWSCall *)owsCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
     CallStatus status      = 0;
     NSString *name         = thread.name;
     NSString *detailString = @"";
@@ -211,12 +211,12 @@
             break;
     }
 
-    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier
+    OWSCall *owsCall = [[OWSCall alloc] initWithCallerId:thread.contactIdentifier
                                        callerDisplayName:thread.name
                                                     date:call.date
                                                   status:status
                                            displayString:detailString];
-    return jsqCall;
+    return owsCall;
 }
 
 - (NSString *)senderId {

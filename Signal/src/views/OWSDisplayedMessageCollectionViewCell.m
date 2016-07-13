@@ -1,24 +1,20 @@
-//
-//  JSQCallCollectionViewCell.m
-//  JSQMessages
-//
-//  Created by Dylan Bourgeois on 20/11/14.
-//
+//  Created by Dylan Bourgeois on 29/11/14.
+//  Copyright (c) 2014 Hexed Bits. All rights reserved.
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
-#import "JSQCallCollectionViewCell.h"
+#import "OWSDisplayedMessageCollectionViewCell.h"
 
-#import "UIView+JSQMessages.h"
+#import <JSQMessagesViewController/UIView+JSQMessages.h>
 
-
-@interface JSQCallCollectionViewCell ()
+@interface OWSDisplayedMessageCollectionViewCell ()
 
 @property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *outgoingCallImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *incomingCallImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
+@property (strong, nonatomic) IBOutlet UIView *textContainer;
 
 @end
 
-@implementation JSQCallCollectionViewCell
+@implementation OWSDisplayedMessageCollectionViewCell
 
 #pragma mark - Class Methods
 
@@ -41,15 +37,14 @@
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.backgroundColor = [UIColor whiteColor];
+    //    self.cellLabelHeightConstraint.constant = 0.0f;
 
+    self.textContainer.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.textContainer.layer.borderWidth = 0.75f;
+    self.textContainer.layer.cornerRadius = 5.0f;
     self.cellLabel.textAlignment = NSTextAlignmentCenter;
     self.cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0f];
     self.cellLabel.textColor = [UIColor lightGrayColor];
-}
-
-- (void)dealloc
-{
-    _cellLabel = nil;
 }
 
 #pragma mark - Collection view cell
@@ -57,6 +52,7 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+
     self.cellLabel.text = nil;
 }
 

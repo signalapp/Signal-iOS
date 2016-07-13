@@ -1,16 +1,12 @@
-//
-//  JSQCall.m
-//  JSQMessages
-//
 //  Created by Dylan Bourgeois on 20/11/14.
-//
+//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
-#import "JSQCall.h"
+#import "OWSCall.h"
 
-#import "JSQMessagesTimestampFormatter.h"
-#import "UIImage+JSQMessages.h"
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
+#import <JSQMessagesViewController/UIImage+JSQMessages.h>
 
-@implementation JSQCall
+@implementation OWSCall
 
 #pragma mark - Initialzation
 
@@ -102,7 +98,7 @@
         return NO;
     }
 
-    JSQCall *aCall = (JSQCall *)object;
+    OWSCall *aCall = (OWSCall *)object;
 
     return [self.senderId isEqualToString:aCall.senderId] &&
         [self.senderDisplayName isEqualToString:aCall.senderDisplayName]

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQMessageData.h>
-
 #import "TSInteraction.h"
 #import "TSMessageAdapter.h"
 #import "TSThread.h"
