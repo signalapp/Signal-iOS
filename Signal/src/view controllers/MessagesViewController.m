@@ -49,7 +49,6 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"
-#import "UIButton+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 
@@ -93,7 +92,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, retain) UIButton *messageButton;
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
@@ -187,10 +185,6 @@ typedef enum : NSUInteger {
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
-    _messageButton         = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
-    _messageButton.enabled = NO;
-    _messageButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0,
                                        0,
@@ -252,8 +246,16 @@ typedef enum : NSUInteger {
 
 - (void)initializeTextView {
     [self.inputToolbar.contentView.textView setFont:[UIFont ows_dynamicTypeBodyFont]];
-    self.inputToolbar.contentView.leftBarButtonItem           = _attachButton;
-    self.inputToolbar.contentView.rightBarButtonItem          = _messageButton;
+
+    self.inputToolbar.contentView.leftBarButtonItem = self.attachButton;
+
+    UILabel *sendLabel = self.inputToolbar.contentView.rightBarButtonItem.titleLabel;
+    // override superclass translations since we support more translations than upstream.
+    sendLabel.text = NSLocalizedString(@"SEND_BUTTON_TITLE", nil);
+    sendLabel.font = [UIFont ows_regularFontWithSize:17.0f];
+    sendLabel.textColor = [UIColor ows_materialBlueColor];
+    sendLabel.textAlignment = NSTextAlignmentCenter;
+
     self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
 }
 
@@ -681,13 +683,6 @@ typedef enum : NSUInteger {
     return !(isGroupConversation || [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
 }
 
-- (void)textViewDidChange:(UITextView *)textView {
-    if ([textView.text length] > 0) {
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
-    } else {
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
-    }
-}
 #pragma mark - JSQMessagesViewController method overrides
 
 - (void)didPressSendButton:(UIButton *)button
