@@ -255,8 +255,6 @@ typedef enum : NSUInteger {
     sendLabel.font = [UIFont ows_regularFontWithSize:17.0f];
     sendLabel.textColor = [UIColor ows_materialBlueColor];
     sendLabel.textAlignment = NSTextAlignmentCenter;
-
-    self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
