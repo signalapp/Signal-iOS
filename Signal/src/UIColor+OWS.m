@@ -1,61 +1,74 @@
-//
-//  UIColor+UIColor_OWS.m
-//  Signal
-//
 //  Created by Dylan Bourgeois on 25/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "Cryptography.h"
 #import "UIColor+OWS.h"
 
 @implementation UIColor (OWS)
 
-
-+ (UIColor *)ows_materialBlueColor {
++ (UIColor *)ows_materialBlueColor
+{
     // blue: #2090EA
     return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_blackColor {
++ (UIColor *)ows_blackColor
+{
     // black: #080A00
     return [UIColor colorWithRed:8.f / 255.f green:10.f / 255.f blue:0. / 255.f alpha:1.f];
 }
 
-
-+ (UIColor *)ows_darkGrayColor {
++ (UIColor *)ows_darkGrayColor
+{
     return [UIColor colorWithRed:81.f / 255.f green:81.f / 255.f blue:81.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_darkBackgroundColor {
++ (UIColor *)ows_darkBackgroundColor
+{
     return [UIColor colorWithRed:35.f / 255.f green:31.f / 255.f blue:32.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_fadedBlueColor {
++ (UIColor *)ows_fadedBlueColor
+{
     // blue: #B6DEF4
     return [UIColor colorWithRed:182.f / 255.f green:222.f / 255.f blue:244.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_yellowColor {
++ (UIColor *)ows_yellowColor
+{
     // gold: #FFBB5C
     return [UIColor colorWithRed:245.f / 255.f green:186.f / 255.f blue:98.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_greenColor {
++ (UIColor *)ows_greenColor
+{
     // green: #BF4240
     return [UIColor colorWithRed:66.f / 255.f green:191.f / 255.f blue:64.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_redColor {
++ (UIColor *)ows_redColor
+{
     // red: #FF3867
     return [UIColor colorWithRed:255. / 255.f green:56.f / 255.f blue:103.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_lightBackgroundColor {
++ (UIColor *)ows_errorMessageBorderColor
+{
+    return [UIColor colorWithRed:195.f / 255.f green:0 blue:22.f / 255.f alpha:1.0f];
+}
+
++ (UIColor *)ows_infoMessageBorderColor
+{
+    return [UIColor colorWithRed:239.f / 255.f green:189.f / 255.f blue:88.f / 255.f alpha:1.0f];
+}
+
++ (UIColor *)ows_lightBackgroundColor
+{
     return [UIColor colorWithRed:242.f / 255.f green:242.f / 255.f blue:242.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier {
++ (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier
+{
     NSArray *colors = @[
         [UIColor colorWithRed:204.f / 255.f green:148.f / 255.f blue:102.f / 255.f alpha:1.f],
         [UIColor colorWithRed:187.f / 255.f green:104.f / 255.f blue:62.f / 255.f alpha:1.f],
@@ -87,6 +100,5 @@
     [hashData getBytes:&choose length:hashingLength];
     return [colors objectAtIndex:(choose % [colors count])];
 }
-
 
 @end

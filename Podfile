@@ -9,7 +9,7 @@ target 'Signal' do
     pod 'FFCircularProgressView',     '~> 0.5'
     pod 'SCWaveformView',             '~> 1.0'
     pod 'DJWActionSheet'
-    pod 'JSQMessagesViewController',  :git => 'https://github.com/WhisperSystems/JSQMessagesViewController', :branch => 'JSignalQ'
+    pod 'JSQMessagesViewController'
     target 'SignalTests' do
         inherit! :search_paths
     end

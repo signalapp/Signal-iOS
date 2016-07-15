@@ -9,8 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "APNavigationController.h"
-#import "JSQMessages.h"
-#import "JSQMessagesViewController.h"
+#import <JSQMessagesViewController/JSQMessagesViewController.h>
 #import "TSGroupModel.h"
 @class TSThread;
 

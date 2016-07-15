@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "JSQCall.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
+#import "OWSCall.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
@@ -58,6 +58,7 @@
 + (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.messageDate       = interaction.date;
+    // TODO casting a string to an integer? At least need a comment here explaining why we are doing this.
     adapter.identifier        = (NSUInteger)interaction.uniqueId;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -136,8 +137,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
-        JSQCall *call       = [self jsqCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
-        call.useThumbnail   = NO; // disables use of iconography to represent group update actions
+        OWSCall *call       = [self owsCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
         return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
@@ -154,12 +154,11 @@
             } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            JSQCall *call = [[JSQCall alloc] initWithCallerId:@""
+            OWSCall *call = [[OWSCall alloc] initWithCallerId:@""
                                             callerDisplayName:adapter.messageBody
                                                          date:nil
                                                        status:status
                                                 displayString:@""];
-            call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
     } else {
@@ -176,7 +175,7 @@
     return adapter;
 }
 
-+ (JSQCall *)jsqCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
++ (OWSCall *)owsCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
     CallStatus status      = 0;
     NSString *name         = thread.name;
     NSString *detailString = @"";
@@ -210,12 +209,12 @@
             break;
     }
 
-    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier
+    OWSCall *owsCall = [[OWSCall alloc] initWithCallerId:thread.contactIdentifier
                                        callerDisplayName:thread.name
                                                     date:call.date
                                                   status:status
                                            displayString:detailString];
-    return jsqCall;
+    return owsCall;
 }
 
 - (NSString *)senderId {
@@ -230,7 +229,7 @@
     if (self.thread) {
         return _thread.name;
     }
-    return self.senderDisplayName;
+    return _senderDisplayName;
 }
 
 - (NSDate *)date {
@@ -249,8 +248,13 @@
     return self.messageBody;
 }
 
-- (NSUInteger)messageHash {
-    return self.identifier;
+- (NSUInteger)messageHash
+{
+    if (self.isMediaMessage) {
+        return [self.mediaItem mediaHash];
+    } else {
+        return self.identifier;
+    }
 }
 
 - (NSInteger)messageState {
