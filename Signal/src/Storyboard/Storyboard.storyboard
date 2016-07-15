@@ -785,7 +785,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Select Country Code" id="XoD-Ld-9kq" userLabel="_1.0__1c Navigation Bar">
-                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="TGY-g8-Q3E">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="TGY-g8-Q3E">
                             <connections>
                                 <segue destination="FyL-dj-xBH" kind="unwind" unwindAction="unwindToCountryCodeSelectionCancelled:" id="RgP-lV-2uZ"/>
                             </connections>
@@ -1682,7 +1682,7 @@ A0 09 9A FF A8 8A 09 99</string>
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
                         <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
-                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="bP2-Tc-byJ">
                             <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
