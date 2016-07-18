@@ -1032,8 +1032,19 @@ typedef enum : NSUInteger {
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView didTapCellAtIndexPath:(NSIndexPath *)indexPath touchLocation:(CGPoint)touchLocation
 {
-    // Pass info/error message tapping to bubble tapping handler
-    [self collectionView:collectionView didTapMessageBubbleAtIndexPath:indexPath];
+    TSMessageAdapter *messageItem = [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+
+    switch (messageItem.messageType) {
+        case TSErrorMessageAdapter:
+            [self handleErrorMessageTap:(TSErrorMessage *)interaction];
+            break;
+        case TSInfoMessageAdapter:
+            [self handleWarningTap:interaction];
+            break;
+        default:
+            DDLogDebug(@"Not handling cell tap for message: %@", messageItem);
+    }
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
@@ -1220,12 +1231,6 @@ typedef enum : NSUInteger {
                 }
             }
         } break;
-        case TSErrorMessageAdapter:
-            [self handleErrorMessageTap:(TSErrorMessage *)interaction];
-            break;
-        case TSInfoMessageAdapter:
-            [self handleWarningTap:interaction];
-            break;
         case TSCallAdapter:
             break;
         default:
