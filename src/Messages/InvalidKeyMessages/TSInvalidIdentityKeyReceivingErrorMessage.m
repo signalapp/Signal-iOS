@@ -69,7 +69,7 @@
                                   NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                 TSInteraction *interaction = (TSInteraction *)object;
 
-                                DDLogVerbose(@"Interaction type: %@", interaction.description);
+                                DDLogVerbose(@"Interaction type: %@", interaction.debugDescription);
 
                                 if ([interaction isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
                                     TSInvalidIdentityKeyErrorMessage *invalidKeyMessage =

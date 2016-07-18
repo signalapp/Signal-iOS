@@ -55,13 +55,25 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     return self;
 }
 
-- (BOOL)hasAttachments {
+- (BOOL)hasAttachments
+{
     return self.attachments ? (self.attachments.count > 0) : false;
 }
 
-- (NSString *)description {
+- (NSString *)debugDescription
+{
     if ([self hasAttachments]) {
-        NSString *attachmentId   = self.attachments[0];
+        NSString *attachmentId = self.attachments[0];
+        return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
+    } else {
+        return [NSString stringWithFormat:@"Message with body:%@", self.body];
+    }
+}
+
+- (NSString *)description
+{
+    if ([self hasAttachments]) {
+        NSString *attachmentId = self.attachments[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
         if (attachment) {
             return attachment.description;

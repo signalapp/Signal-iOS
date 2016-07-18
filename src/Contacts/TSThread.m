@@ -21,7 +21,7 @@
 @property (nonatomic, retain) NSDate *lastMessageDate;
 @property (nonatomic, copy) NSString *messageDraft;
 
-- (TSInteraction *) lastInteraction;
+- (TSInteraction *)lastInteraction;
 
 @end
 
@@ -111,7 +111,7 @@
     if (self.lastInteraction == nil) {
         return @"";
     } else {
-        return self.lastInteraction.description;
+        return [self lastInteraction].description;
     }
 }
 
