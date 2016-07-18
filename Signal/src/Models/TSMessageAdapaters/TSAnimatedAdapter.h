@@ -6,11 +6,12 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQPhotoMediaItem.h>
-#import "TSAttachmentStream.h"
 
-@interface TSAnimatedAdapter : JSQMediaItem
+@class TSAttachmentStream;
+
+@interface TSAnimatedAdapter : JSQMediaItem <OWSMessageEditing>
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment;
 
@@ -19,5 +20,6 @@
 - (BOOL)isVideo;
 
 @property NSString *attachmentId;
+@property NSData *fileData;
 
 @end

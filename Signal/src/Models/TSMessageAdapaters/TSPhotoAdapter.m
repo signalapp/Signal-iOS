@@ -2,6 +2,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSPhotoAdapter.h"
+#import "TSAttachmentStream.h"
 #import "UIDevice+TSHardwareVersion.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 
@@ -15,10 +16,14 @@
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment {
     self = [super initWithImage:attachment.image];
 
-    if (self) {
-        _cachedImageView = nil;
-        _attachmentId    = attachment.uniqueId;
+    if (!self) {
+        return self;
     }
+
+    _cachedImageView = nil;
+    _attachment = attachment;
+    _attachmentId = attachment.uniqueId;
+
     return self;
 }
 
@@ -69,6 +74,28 @@
 
 - (BOOL)isVideo {
     return NO;
+}
+
+#pragma mark - OWSMessageEditing Protocol
+
+- (BOOL)canPerformEditingAction:(SEL)action
+{
+    return (action == @selector(copy:) || action == NSSelectorFromString(@"save:"));
+}
+
+- (void)performEditingAction:(SEL)action
+{
+    if (action == @selector(copy:)) {
+        UIPasteboard.generalPasteboard.image = self.image;
+        return;
+    } else if (action == NSSelectorFromString(@"save:")) {
+        UIImageWriteToSavedPhotosAlbum(self.image, nil, nil, nil);
+        return;
+    }
+
+    // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
+    NSString *actionString = NSStringFromSelector(action);
+    DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
 }
 
 #pragma mark - Utility

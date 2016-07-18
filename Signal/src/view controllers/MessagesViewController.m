@@ -198,7 +198,10 @@ typedef enum : NSUInteger {
     [self initializeTextView];
 
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
-    self.collectionView.collectionViewLayout.bubbleSizeCalculator = [[OWSMessagesBubblesSizeCalculator alloc] init];
+    SEL saveSelector = NSSelectorFromString(@"save:");
+    [JSQMessagesCollectionViewCell registerMenuAction:saveSelector];
+    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
+                                                                                      action:saveSelector] ];
 
     [self initializeCollectionViewLayout];
     [self registerCustomMessageNibs];
@@ -531,6 +534,7 @@ typedef enum : NSUInteger {
 
 - (void)initializeBubbles
 {
+    self.collectionView.collectionViewLayout.bubbleSizeCalculator = [[OWSMessagesBubblesSizeCalculator alloc] init];
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
@@ -699,6 +703,21 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
         [self finishSendingMessage];
     }
+}
+
+- (BOOL)collectionView:(JSQMessagesCollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath == nil) {
+        DDLogError(@"Aborting shouldShowMenuForItemAtIndexPath because indexPath is nil");
+        // Not sure why this is nil, but occasionally it is, which crashes.
+        return NO;
+    }
+
+    // JSQM does some setup in super method
+    [super collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
+
+    // Super method returns false for media methods. We want menu for *all* items
+    return YES;
 }
 
 #pragma mark - JSQMessages CollectionView DataSource
@@ -1350,13 +1369,6 @@ typedef enum : NSUInteger {
                       }];
 }
 
-- (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-      [interaction removeWithTransaction:transaction];
-    }];
-}
-
 - (void)handleErrorMessageTap:(TSErrorMessage *)message {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage *)message;
@@ -1813,6 +1825,7 @@ typedef enum : NSUInteger {
     return message;
 }
 
+// FIXME DANGER this method doesn't always return TSMessageAdapters - it can also return JSQCall!
 - (TSMessageAdapter *)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
@@ -1923,22 +1936,24 @@ typedef enum : NSUInteger {
       canPerformAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
-    if (action == @selector(delete:)) {
-        return YES;
+
+    TSMessageAdapter *messageAdapter = [self messageAtIndexPath:indexPath];
+    // HACK make sure method exists before calling since messageAtIndexPath doesn't
+    // always return TSMessageAdapters - it can also return JSQCall!
+    if ([messageAdapter respondsToSelector:@selector(canPerformEditingAction:)]) {
+        return [messageAdapter canPerformEditingAction:action];
+    }
+    else {
+        return NO;
     }
 
-    return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView
          performAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
-    if (action == @selector(delete:)) {
-        [self deleteMessageAtIndexPath:indexPath];
-    } else {
-        [super collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
-    }
+    [[self messageAtIndexPath:indexPath] performEditingAction:action];
 }
 
 - (void)updateGroup {
