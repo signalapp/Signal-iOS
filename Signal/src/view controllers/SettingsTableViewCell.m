@@ -56,7 +56,7 @@
             break;
         default:
             DDLogWarn(@"Unknown Image Quality setting : %lu <%s>",
-                      [Environment.preferences imageUploadQuality],
+                      (unsigned long)[Environment.preferences imageUploadQuality],
                       __PRETTY_FUNCTION__);
             break;
     }

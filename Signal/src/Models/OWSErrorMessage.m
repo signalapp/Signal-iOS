@@ -64,7 +64,7 @@
                      self.senderId,
                      self.senderDisplayName,
                      self.date,
-                     self.errorMessageType];
+                     (long)self.errorMessageType];
 }
 
 - (TSMessageAdapterType)messageType

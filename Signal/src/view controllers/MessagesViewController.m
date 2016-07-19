@@ -1583,7 +1583,7 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES
                              completion:^{
                                  DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                                              attachmentData.length,
+                                              (unsigned long)attachmentData.length,
                                               attachmentType);
 
                                [[TSMessagesManager sharedManager] sendAttachment:attachmentData
