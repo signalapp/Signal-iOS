@@ -55,4 +55,13 @@
     self.cellLabel.text = nil;
 }
 
+// This subclass does not have a messageBubbleContainerView, so superclass
+// touch calculations will be incorrect. Since this view spans the entire
+// frame, we can override the touch handler to respond to user actions by
+// default.
+- (void)jsq_handleTapGesture:(UITapGestureRecognizer *)tap
+{
+    [self.delegate messagesCollectionViewCellDidTapMessageBubble:self];
+}
+
 @end
