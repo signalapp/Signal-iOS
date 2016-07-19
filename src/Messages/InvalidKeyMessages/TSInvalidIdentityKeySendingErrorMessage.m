@@ -58,22 +58,39 @@
     return message;
 }
 
-- (void)acceptNewIdentityKey {
-    [[TSStorageManager sharedManager] saveRemoteIdentity:[self newKey] recipientId:_recipientId];
+- (void)acceptNewIdentityKey
+{
+    [[TSStorageManager sharedManager] saveRemoteIdentity:[self newKey] recipientId:self.recipientId];
 
     __block TSOutgoingMessage *message;
     __block TSThread *thread;
+    __block SignalRecipient *recipient;
 
-    [[TSStorageManager sharedManager]
-            .newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      thread  = [TSContactThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
-      message = [TSOutgoingMessage fetchObjectWithUniqueID:_messageId transaction:transaction];
+    [[TSStorageManager sharedManager].newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSContactThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+            message = [TSOutgoingMessage fetchObjectWithUniqueID:self.messageId transaction:transaction];
+            recipient = [SignalRecipient fetchObjectWithUniqueID:self.recipientId transaction:transaction];
 
-      [self removeWithTransaction:transaction];
-    }];
+            [self removeWithTransaction:transaction];
+        }];
+
 
     if (message) {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:thread success:nil failure:nil];
+
+        void (^logSuccess)() = ^void() {
+            DDLogInfo(@"Successfully redelivered message to recipient after accepting new key.");
+        };
+
+        void (^logFailure)() = ^void() {
+            DDLogWarn(@"Failed to redeliver message to recipient after accepting new key.");
+        };
+        // Resend to single recipient
+        [[TSMessagesManager sharedManager] resendMessage:message
+                                             toRecipient:recipient
+                                                inThread:thread
+                                                 success:logSuccess
+                                                 failure:logFailure];
     }
 }
 

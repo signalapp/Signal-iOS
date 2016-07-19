@@ -84,6 +84,27 @@ dispatch_queue_t sendingQueue() {
     return [ContactsUpdater sharedUpdater];
 }
 
+- (void)resendMessage:(TSOutgoingMessage *)message
+          toRecipient:(SignalRecipient *)recipient
+             inThread:(TSThread *)thread
+              success:(successSendingCompletionBlock)successCompletionBlock
+              failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        dispatch_async(sendingQueue(), ^{
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            [self groupSend:@[ recipient ] // Avoid spamming entire group when resending failed message.
+                    Message:message
+                   inThread:thread
+                    success:successCompletionBlock
+                    failure:failedCompletionBlock];
+        });
+    } else {
+        [self sendMessage:message inThread:thread success:successCompletionBlock failure:failedCompletionBlock];
+    }
+}
+
+
 - (void)sendMessage:(TSOutgoingMessage *)message
            inThread:(TSThread *)thread
             success:(successSendingCompletionBlock)successCompletionBlock
@@ -91,7 +112,6 @@ dispatch_queue_t sendingQueue() {
     dispatch_async(sendingQueue(), ^{
       if ([thread isKindOfClass:[TSGroupThread class]]) {
           TSGroupThread *groupThread = (TSGroupThread *)thread;
-          [self saveGroupMessage:message inThread:thread];
           [self getRecipients:groupThread.groupModel.groupMemberIds
               success:^(NSArray<SignalRecipient *> *recipients) {
                 [self groupSend:recipients
@@ -177,7 +197,9 @@ dispatch_queue_t sendingQueue() {
           Message:(TSOutgoingMessage *)message
          inThread:(TSThread *)thread
           success:(successSendingCompletionBlock)successBlock
-          failure:(failedSendingCompletionBlock)failureBlock {
+          failure:(failedSendingCompletionBlock)failureBlock
+{
+    [self saveGroupMessage:message inThread:thread];
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
     for (SignalRecipient *rec in recipients) {

@@ -18,4 +18,10 @@ typedef void (^failedSendingCompletionBlock)();
             success:(successSendingCompletionBlock)successCompletionBlock
             failure:(failedSendingCompletionBlock)failedCompletionBlock;
 
+- (void)resendMessage:(TSOutgoingMessage *)message
+          toRecipient:(SignalRecipient *)recipient
+             inThread:(TSThread *)thread
+              success:(successSendingCompletionBlock)successCompletionBlock
+              failure:(failedSendingCompletionBlock)failedCompletionBlock;
+
 @end
