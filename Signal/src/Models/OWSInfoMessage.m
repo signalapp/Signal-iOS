@@ -49,7 +49,7 @@
                      self.senderId,
                      self.senderDisplayName,
                      self.date,
-                     self.infoMessageType];
+                     (long)self.infoMessageType];
 }
 
 @end
