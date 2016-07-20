@@ -194,7 +194,6 @@ typedef enum : NSUInteger {
         UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
 
-    [self initializeBubbles];
     [self initializeTextView];
 
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
@@ -532,28 +531,33 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)initializeBubbles
+// Overiding JSQMVC layout defaults
+- (void)initializeCollectionViewLayout
 {
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
+
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsHorizontalScrollIndicator = NO;
+
+    [self updateLoadEarlierVisible];
+
+    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+
+    if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad) {
+        // Narrow the bubbles a bit to create more white space in the messages view
+        // Since we're not using avatars it gets a bit crowded otherwise.
+        self.collectionView.collectionViewLayout.messageBubbleLeftRightMargin = 80.0f;
+    }
+
+    // Bubbles
     self.collectionView.collectionViewLayout.bubbleSizeCalculator = [[OWSMessagesBubblesSizeCalculator alloc] init];
     JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
     self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
     self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
     self.currentlyOutgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
     self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor grayColor]];
-}
 
-- (void)initializeCollectionViewLayout {
-    if (self.collectionView) {
-        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
-
-        self.collectionView.showsVerticalScrollIndicator   = NO;
-        self.collectionView.showsHorizontalScrollIndicator = NO;
-
-        [self updateLoadEarlierVisible];
-
-        self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
-        self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
-    }
 }
 
 #pragma mark - Fingerprints
