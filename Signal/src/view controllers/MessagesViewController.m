@@ -852,33 +852,38 @@ typedef enum : NSUInteger {
     return callCell;
 }
 
+- (OWSDisplayedMessageCollectionViewCell *)loadDisplayedMessageCollectionViewCellForIndexPath:(NSIndexPath *)indexPath
+{
+    OWSDisplayedMessageCollectionViewCell *messageCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
+                                                                                                        forIndexPath:indexPath];
+    messageCell.layer.shouldRasterize = YES;
+    messageCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    messageCell.cellTopLabel.attributedText = [self.collectionView.dataSource collectionView:self.collectionView attributedTextForCellTopLabelAtIndexPath:indexPath];
+
+    return messageCell;
+}
+
 - (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(OWSInfoMessage *)infoMessage
                                                              atIndexPath:(NSIndexPath *)indexPath
 {
-    OWSDisplayedMessageCollectionViewCell *infoCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
-                                                                                                     forIndexPath:indexPath];
+    OWSDisplayedMessageCollectionViewCell *infoCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     infoCell.cellLabel.text = [infoMessage text];
     infoCell.cellLabel.textColor = [UIColor darkGrayColor];
-
     infoCell.textContainer.layer.borderColor = infoCell.textContainer.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
-    infoCell.layer.shouldRasterize = YES;
-    infoCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+
     return infoCell;
 }
 
 - (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(OWSErrorMessage *)errorMessage
                                                               atIndexPath:(NSIndexPath *)indexPath
 {
-    OWSDisplayedMessageCollectionViewCell *errorCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
-                                                                                                     forIndexPath:indexPath];
+    OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     errorCell.cellLabel.text = [errorMessage text];
     errorCell.cellLabel.textColor = [UIColor darkGrayColor];
-
     errorCell.textContainer.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
-    errorCell.layer.shouldRasterize = YES;
-    errorCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+
     return errorCell;
 }
 
