@@ -85,6 +85,15 @@
 
 - (void)performEditingAction:(SEL)action
 {
+    NSString *actionString = NSStringFromSelector(action);
+    if (!self.image) {
+        DDLogWarn(@"Refusing to perform '%@' action with nil image for %@: attachmentId=%@. (corrupted attachment?)",
+            actionString,
+            self.class,
+            self.attachmentId);
+        return;
+    }
+
     if (action == @selector(copy:)) {
         UIPasteboard.generalPasteboard.image = self.image;
         return;
@@ -94,7 +103,6 @@
     }
 
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
-    NSString *actionString = NSStringFromSelector(action);
     DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
 }
 
