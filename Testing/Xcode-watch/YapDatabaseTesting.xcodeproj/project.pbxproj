@@ -1,0 +1,672 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		92607ABC9FD5AE627933EECE /* libPods-YapDatabaseTesting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */; };
+		DC842FF91D414231002F2ED8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC842FF81D414231002F2ED8 /* main.m */; };
+		DC842FFC1D414231002F2ED8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC842FFB1D414231002F2ED8 /* AppDelegate.m */; };
+		DC842FFF1D414231002F2ED8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC842FFE1D414231002F2ED8 /* ViewController.m */; };
+		DC8430021D414231002F2ED8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8430001D414231002F2ED8 /* Main.storyboard */; };
+		DC8430041D414231002F2ED8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8430031D414231002F2ED8 /* Assets.xcassets */; };
+		DC8430071D414231002F2ED8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8430051D414231002F2ED8 /* LaunchScreen.storyboard */; };
+		DC84300C1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = DC84300B1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app */; };
+		DC8430121D414231002F2ED8 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC8430101D414231002F2ED8 /* Interface.storyboard */; };
+		DC8430141D414231002F2ED8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC8430131D414231002F2ED8 /* Assets.xcassets */; };
+		DC84301B1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DC84301A1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DC8430231D414231002F2ED8 /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8430221D414231002F2ED8 /* InterfaceController.m */; };
+		DC8430261D414231002F2ED8 /* ExtensionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8430251D414231002F2ED8 /* ExtensionDelegate.m */; };
+		DC8430291D414231002F2ED8 /* NotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8430281D414231002F2ED8 /* NotificationController.m */; };
+		DC84302B1D414231002F2ED8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC84302A1D414231002F2ED8 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DC84300D1D414231002F2ED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC842FEC1D414231002F2ED8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC84300A1D414231002F2ED8;
+			remoteInfo = "YapDatabaseTesting WatchKit App";
+		};
+		DC84301C1D414231002F2ED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC842FEC1D414231002F2ED8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC8430191D414231002F2ED8;
+			remoteInfo = "YapDatabaseTesting WatchKit Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DC8430321D414231002F2ED8 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DC84301B1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC8430361D414231002F2ED8 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				DC84300C1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YapDatabaseTesting.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		747B643333389FA2CDBB467A /* Pods-YapDatabaseTesting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YapDatabaseTesting.release.xcconfig"; path = "Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting.release.xcconfig"; sourceTree = "<group>"; };
+		DC842FF41D414231002F2ED8 /* YapDatabaseTesting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YapDatabaseTesting.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC842FF81D414231002F2ED8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DC842FFA1D414231002F2ED8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		DC842FFB1D414231002F2ED8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		DC842FFD1D414231002F2ED8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		DC842FFE1D414231002F2ED8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		DC8430011D414231002F2ED8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		DC8430031D414231002F2ED8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC8430061D414231002F2ED8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		DC8430081D414231002F2ED8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DC84300B1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YapDatabaseTesting WatchKit App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8430111D414231002F2ED8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
+		DC8430131D414231002F2ED8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC8430151D414231002F2ED8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DC84301A1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "YapDatabaseTesting WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8430201D414231002F2ED8 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		DC8430211D414231002F2ED8 /* InterfaceController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterfaceController.h; sourceTree = "<group>"; };
+		DC8430221D414231002F2ED8 /* InterfaceController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InterfaceController.m; sourceTree = "<group>"; };
+		DC8430241D414231002F2ED8 /* ExtensionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExtensionDelegate.h; sourceTree = "<group>"; };
+		DC8430251D414231002F2ED8 /* ExtensionDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExtensionDelegate.m; sourceTree = "<group>"; };
+		DC8430271D414231002F2ED8 /* NotificationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationController.h; sourceTree = "<group>"; };
+		DC8430281D414231002F2ED8 /* NotificationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationController.m; sourceTree = "<group>"; };
+		DC84302A1D414231002F2ED8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC84302C1D414231002F2ED8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF39F31C30B59E1952C6B9B3 /* Pods-YapDatabaseTesting.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YapDatabaseTesting.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C7DD4B59F67483CA5E4CF5DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC842FF11D414231002F2ED8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92607ABC9FD5AE627933EECE /* libPods-YapDatabaseTesting.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC8430171D414231002F2ED8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		286FD73D0A91234BF4EE58B9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC842FEB1D414231002F2ED8 = {
+			isa = PBXGroup;
+			children = (
+				DC842FF61D414231002F2ED8 /* YapDatabaseTesting */,
+				DC84300F1D414231002F2ED8 /* YapDatabaseTesting WatchKit App */,
+				DC84301E1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension */,
+				DC842FF51D414231002F2ED8 /* Products */,
+				DCA8489560E8B379441B2077 /* Pods */,
+				286FD73D0A91234BF4EE58B9 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		DC842FF51D414231002F2ED8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DC842FF41D414231002F2ED8 /* YapDatabaseTesting.app */,
+				DC84300B1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app */,
+				DC84301A1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DC842FF61D414231002F2ED8 /* YapDatabaseTesting */ = {
+			isa = PBXGroup;
+			children = (
+				DC842FFA1D414231002F2ED8 /* AppDelegate.h */,
+				DC842FFB1D414231002F2ED8 /* AppDelegate.m */,
+				DC842FFD1D414231002F2ED8 /* ViewController.h */,
+				DC842FFE1D414231002F2ED8 /* ViewController.m */,
+				DC8430001D414231002F2ED8 /* Main.storyboard */,
+				DC8430031D414231002F2ED8 /* Assets.xcassets */,
+				DC8430051D414231002F2ED8 /* LaunchScreen.storyboard */,
+				DC8430081D414231002F2ED8 /* Info.plist */,
+				DC842FF71D414231002F2ED8 /* Supporting Files */,
+			);
+			path = YapDatabaseTesting;
+			sourceTree = "<group>";
+		};
+		DC842FF71D414231002F2ED8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC842FF81D414231002F2ED8 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DC84300F1D414231002F2ED8 /* YapDatabaseTesting WatchKit App */ = {
+			isa = PBXGroup;
+			children = (
+				DC8430101D414231002F2ED8 /* Interface.storyboard */,
+				DC8430131D414231002F2ED8 /* Assets.xcassets */,
+				DC8430151D414231002F2ED8 /* Info.plist */,
+			);
+			path = "YapDatabaseTesting WatchKit App";
+			sourceTree = "<group>";
+		};
+		DC84301E1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension */ = {
+			isa = PBXGroup;
+			children = (
+				DC8430211D414231002F2ED8 /* InterfaceController.h */,
+				DC8430221D414231002F2ED8 /* InterfaceController.m */,
+				DC8430241D414231002F2ED8 /* ExtensionDelegate.h */,
+				DC8430251D414231002F2ED8 /* ExtensionDelegate.m */,
+				DC8430271D414231002F2ED8 /* NotificationController.h */,
+				DC8430281D414231002F2ED8 /* NotificationController.m */,
+				DC84302A1D414231002F2ED8 /* Assets.xcassets */,
+				DC84302C1D414231002F2ED8 /* Info.plist */,
+				DC84301F1D414231002F2ED8 /* Supporting Files */,
+			);
+			path = "YapDatabaseTesting WatchKit Extension";
+			sourceTree = "<group>";
+		};
+		DC84301F1D414231002F2ED8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DC8430201D414231002F2ED8 /* PushNotificationPayload.apns */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DCA8489560E8B379441B2077 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EF39F31C30B59E1952C6B9B3 /* Pods-YapDatabaseTesting.debug.xcconfig */,
+				747B643333389FA2CDBB467A /* Pods-YapDatabaseTesting.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DC842FF31D414231002F2ED8 /* YapDatabaseTesting */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC8430371D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting" */;
+			buildPhases = (
+				3FA73C8C042E613D9612306F /* [CP] Check Pods Manifest.lock */,
+				DC842FF01D414231002F2ED8 /* Sources */,
+				DC842FF11D414231002F2ED8 /* Frameworks */,
+				DC842FF21D414231002F2ED8 /* Resources */,
+				DC8430361D414231002F2ED8 /* Embed Watch Content */,
+				EAD01AC8E836A0F17344BA11 /* [CP] Embed Pods Frameworks */,
+				F7E86F8E4525E024DCFFA3AC /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DC84300E1D414231002F2ED8 /* PBXTargetDependency */,
+			);
+			name = YapDatabaseTesting;
+			productName = YapDatabaseTesting;
+			productReference = DC842FF41D414231002F2ED8 /* YapDatabaseTesting.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DC84300A1D414231002F2ED8 /* YapDatabaseTesting WatchKit App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC8430331D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit App" */;
+			buildPhases = (
+				DC8430091D414231002F2ED8 /* Resources */,
+				DC8430321D414231002F2ED8 /* Embed App Extensions */,
+				C7DD4B59F67483CA5E4CF5DA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DC84301D1D414231002F2ED8 /* PBXTargetDependency */,
+			);
+			name = "YapDatabaseTesting WatchKit App";
+			productName = "YapDatabaseTesting WatchKit App";
+			productReference = DC84300B1D414231002F2ED8 /* YapDatabaseTesting WatchKit App.app */;
+			productType = "com.apple.product-type.application.watchapp2";
+		};
+		DC8430191D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC84302F1D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit Extension" */;
+			buildPhases = (
+				DC8430161D414231002F2ED8 /* Sources */,
+				DC8430171D414231002F2ED8 /* Frameworks */,
+				DC8430181D414231002F2ED8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "YapDatabaseTesting WatchKit Extension";
+			productName = "YapDatabaseTesting WatchKit Extension";
+			productReference = DC84301A1D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension.appex */;
+			productType = "com.apple.product-type.watchkit2-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DC842FEC1D414231002F2ED8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Deusty LLC";
+				TargetAttributes = {
+					DC842FF31D414231002F2ED8 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					DC84300A1D414231002F2ED8 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					DC8430191D414231002F2ED8 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = DC842FEF1D414231002F2ED8 /* Build configuration list for PBXProject "YapDatabaseTesting" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DC842FEB1D414231002F2ED8;
+			productRefGroup = DC842FF51D414231002F2ED8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DC842FF31D414231002F2ED8 /* YapDatabaseTesting */,
+				DC84300A1D414231002F2ED8 /* YapDatabaseTesting WatchKit App */,
+				DC8430191D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DC842FF21D414231002F2ED8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC8430071D414231002F2ED8 /* LaunchScreen.storyboard in Resources */,
+				DC8430041D414231002F2ED8 /* Assets.xcassets in Resources */,
+				DC8430021D414231002F2ED8 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC8430091D414231002F2ED8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC8430141D414231002F2ED8 /* Assets.xcassets in Resources */,
+				DC8430121D414231002F2ED8 /* Interface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC8430181D414231002F2ED8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC84302B1D414231002F2ED8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3FA73C8C042E613D9612306F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		EAD01AC8E836A0F17344BA11 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F7E86F8E4525E024DCFFA3AC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC842FF01D414231002F2ED8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC842FFF1D414231002F2ED8 /* ViewController.m in Sources */,
+				DC842FFC1D414231002F2ED8 /* AppDelegate.m in Sources */,
+				DC842FF91D414231002F2ED8 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC8430161D414231002F2ED8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC8430261D414231002F2ED8 /* ExtensionDelegate.m in Sources */,
+				DC8430231D414231002F2ED8 /* InterfaceController.m in Sources */,
+				DC8430291D414231002F2ED8 /* NotificationController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DC84300E1D414231002F2ED8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC84300A1D414231002F2ED8 /* YapDatabaseTesting WatchKit App */;
+			targetProxy = DC84300D1D414231002F2ED8 /* PBXContainerItemProxy */;
+		};
+		DC84301D1D414231002F2ED8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC8430191D414231002F2ED8 /* YapDatabaseTesting WatchKit Extension */;
+			targetProxy = DC84301C1D414231002F2ED8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		DC8430001D414231002F2ED8 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC8430011D414231002F2ED8 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		DC8430051D414231002F2ED8 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC8430061D414231002F2ED8 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		DC8430101D414231002F2ED8 /* Interface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DC8430111D414231002F2ED8 /* Base */,
+			);
+			name = Interface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DC84302D1D414231002F2ED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DC84302E1D414231002F2ED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DC8430301D414231002F2ED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "YapDatabaseTesting WatchKit Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting.watchkitapp.watchkitextension;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		DC8430311D414231002F2ED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "YapDatabaseTesting WatchKit Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting.watchkitapp.watchkitextension;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		DC8430341D414231002F2ED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				IBSC_MODULE = YapDatabaseTesting_WatchKit_Extension;
+				INFOPLIST_FILE = "YapDatabaseTesting WatchKit App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		DC8430351D414231002F2ED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				IBSC_MODULE = YapDatabaseTesting_WatchKit_Extension;
+				INFOPLIST_FILE = "YapDatabaseTesting WatchKit App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		DC8430381D414231002F2ED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EF39F31C30B59E1952C6B9B3 /* Pods-YapDatabaseTesting.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = YapDatabaseTesting/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DC8430391D414231002F2ED8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 747B643333389FA2CDBB467A /* Pods-YapDatabaseTesting.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = YapDatabaseTesting/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.deusty.YapDatabaseTesting;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DC842FEF1D414231002F2ED8 /* Build configuration list for PBXProject "YapDatabaseTesting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC84302D1D414231002F2ED8 /* Debug */,
+				DC84302E1D414231002F2ED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC84302F1D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC8430301D414231002F2ED8 /* Debug */,
+				DC8430311D414231002F2ED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC8430331D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC8430341D414231002F2ED8 /* Debug */,
+				DC8430351D414231002F2ED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC8430371D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC8430381D414231002F2ED8 /* Debug */,
+				DC8430391D414231002F2ED8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DC842FEC1D414231002F2ED8 /* Project object */;
+}

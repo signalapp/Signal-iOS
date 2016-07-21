@@ -30,7 +30,7 @@
 @property (nonatomic, assign, readwrite) YapDatabasePolicy objectPolicy;
 @property (nonatomic, assign, readwrite) YapDatabasePolicy metadataPolicy;
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 @property (nonatomic, assign, readwrite) YapDatabaseConnectionFlushMemoryFlags autoFlushMemoryFlags;
 #endif
 

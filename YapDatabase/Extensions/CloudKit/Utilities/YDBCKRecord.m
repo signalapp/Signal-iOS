@@ -26,7 +26,7 @@
 **/
 - (id)safeCopy
 {
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_IOS
 	
 	// iOS only
 	//

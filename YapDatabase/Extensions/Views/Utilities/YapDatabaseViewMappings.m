@@ -4,7 +4,7 @@
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
 #endif
 
@@ -804,7 +804,7 @@
 		return NO;
 	}
 	
-  #if TARGET_OS_IPHONE
+  #if TARGET_OS_IOS
 	NSUInteger section = indexPath.section;
 	NSUInteger row = indexPath.row;
   #else
@@ -1139,7 +1139,7 @@
 	
 	if ([self getRow:&row section:&section forIndex:index inGroup:group])
 	{
-	  #if TARGET_OS_IPHONE
+	  #if TARGET_OS_IOS
 		return [NSIndexPath indexPathForRow:row inSection:section];
 	  #else
 		NSUInteger indexes[] = {section, row};
@@ -1596,7 +1596,7 @@
 				_section = 0;
 			}
 			
-		  #if TARGET_OS_IPHONE
+		  #if TARGET_OS_IOS
 			return [NSIndexPath indexPathForRow:_row inSection:_section];
 		  #else
 			NSUInteger indexes[] = {_section, _row};
@@ -1630,7 +1630,7 @@
 					_section = 0;
 				}
 				
-			  #if TARGET_OS_IPHONE
+			  #if TARGET_OS_IOS
 				return [NSIndexPath indexPathForRow:_row inSection:_section];
 			  #else
 				NSUInteger indexes[] = {_section, _row};
@@ -1663,7 +1663,7 @@
 					_section = 0;
 				}
 				
-			  #if TARGET_OS_IPHONE
+			  #if TARGET_OS_IOS
 				return [NSIndexPath indexPathForRow:_row inSection:_section];
 			  #else
 				NSUInteger indexes[] = {_section, _row};

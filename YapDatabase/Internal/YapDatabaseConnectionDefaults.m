@@ -15,7 +15,7 @@ static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 @synthesize objectPolicy = objectPolicy;
 @synthesize metadataPolicy = metadataPolicy;
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 @synthesize autoFlushMemoryFlags = autoFlushMemoryFlags;
 #endif
 
@@ -32,7 +32,7 @@ static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 		objectPolicy = YapDatabasePolicyContainment;
 		metadataPolicy = YapDatabasePolicyContainment;
 		
-		#if TARGET_OS_IPHONE
+		#if TARGET_OS_IOS || TARGET_OS_TV
 		autoFlushMemoryFlags = YapDatabaseConnectionFlushMemoryFlags_All;
 		#endif
 	}
@@ -52,7 +52,7 @@ static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 	copy->objectPolicy = objectPolicy;
 	copy->metadataPolicy = metadataPolicy;
 	
-	#if TARGET_OS_IPHONE
+	#if TARGET_OS_IOS || TARGET_OS_TV
 	copy->autoFlushMemoryFlags = autoFlushMemoryFlags;
 	#endif
 	

@@ -473,7 +473,7 @@ extern NSString *const YapDatabaseModifiedExternallyKey;
 @property (atomic, assign, readwrite) YapDatabasePolicy defaultObjectPolicy;
 @property (atomic, assign, readwrite) YapDatabasePolicy defaultMetadataPolicy;
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 /**
  * Allows you to set the default autoFlushMemoryFlags for all new connections.
  *

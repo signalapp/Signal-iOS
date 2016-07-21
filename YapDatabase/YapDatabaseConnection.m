@@ -15,7 +15,7 @@
 #import <mach/mach_time.h>
 #import <libkern/OSAtomic.h>
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 #import <UIKit/UIKit.h>
 #endif
 
@@ -249,7 +249,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		self.permittedTransactions = YDB_AnyTransaction;
 		#endif
 		
-		#if TARGET_OS_IPHONE
+		#if TARGET_OS_IOS || TARGET_OS_TV
 		self.autoFlushMemoryFlags = defaults.autoFlushMemoryFlags;
 		#endif
 		
@@ -365,7 +365,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			}
 		}
 		
-		#if TARGET_OS_IPHONE
+		#if TARGET_OS_IOS || TARGET_OS_TV
 		[[NSNotificationCenter defaultCenter] addObserver:self
 		                                         selector:@selector(didReceiveMemoryWarning:)
 		                                             name:UIApplicationDidReceiveMemoryWarningNotification
@@ -555,7 +555,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		dispatch_async(connectionQueue, block);
 }
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 - (void)didReceiveMemoryWarning:(NSNotification __unused *)notification
 {
 	[self flushMemoryWithFlags:[self autoFlushMemoryFlags]];
@@ -573,7 +573,7 @@ static int connectionBusyHandler(void *ptr, int count)
 @synthesize permittedTransactions = _mustUseAtomicProperty_permittedTransactions;
 #endif
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 @synthesize autoFlushMemoryFlags;
 #endif
 
