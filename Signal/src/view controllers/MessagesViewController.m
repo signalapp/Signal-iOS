@@ -151,6 +151,7 @@ typedef enum : NSUInteger {
 - (void)hideInputIfNeeded {
     if (_peek) {
         [self inputToolbar].hidden = YES;
+        [self.inputToolbar endEditing:TRUE];
         return;
     }
 
@@ -158,6 +159,7 @@ typedef enum : NSUInteger {
         ![((TSGroupThread *)_thread).groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
 
         [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
+        [self.inputToolbar endEditing:TRUE];
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     } else {
         [self inputToolbar].hidden = NO;
