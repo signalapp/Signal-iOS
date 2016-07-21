@@ -9,7 +9,7 @@
 #import "InboxTableViewCell.h"
 #import "UIUtil.h"
 
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "InCallViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -31,7 +31,6 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
 
-@property (nonatomic, strong) MessagesViewController *mvc;
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
@@ -324,18 +323,16 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!_mvc) {
-          _mvc = [[UIStoryboard storyboardWithName:@"Storyboard" bundle:NULL]
-              instantiateViewControllerWithIdentifier:@"MessagesViewController"];
-      }
+      MessagesViewController *mvc = [[UIStoryboard storyboardWithName:@"Storyboard" bundle:NULL]
+                instantiateViewControllerWithIdentifier:@"MessagesViewController"];
 
       if (self.presentedViewController) {
           [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
       }
       [self.navigationController popToRootViewControllerAnimated:YES];
 
-      [_mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
-      [self.navigationController pushViewController:_mvc animated:YES];
+      [mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
+      [self.navigationController pushViewController:mvc animated:YES];
     });
 }
 

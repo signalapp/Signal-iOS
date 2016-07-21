@@ -1,19 +1,21 @@
-//
 //  TSMessageAdapter.m
+//
 //  Signal
 //
 //  Created by Frederic Jacobs on 24/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "JSQCall.h"
+#import "OWSCall.h"
 #import "TSAttachmentPointer.h"
+#import "TSAttachmentStream.h"
 #import "TSCall.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 
 @interface TSMessageAdapter ()
@@ -41,7 +43,7 @@
 
 // for MediaMessages
 
-@property JSQMediaItem *mediaItem;
+@property JSQMediaItem<OWSMessageEditing> *mediaItem;
 
 // ---
 
@@ -57,7 +59,9 @@
 
 + (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
+    adapter.interaction = interaction;
     adapter.messageDate       = interaction.date;
+    // TODO casting a string to an integer? At least need a comment here explaining why we are doing this.
     adapter.identifier        = (NSUInteger)interaction.uniqueId;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -136,8 +140,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         adapter.messageBody = @"Placeholder for TSCalls";
         adapter.messageType = TSCallAdapter;
-        JSQCall *call       = [self jsqCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
-        call.useThumbnail   = NO; // disables use of iconography to represent group update actions
+        OWSCall *call       = [self owsCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
         return call;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
@@ -154,12 +157,11 @@
             } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            JSQCall *call = [[JSQCall alloc] initWithCallerId:@""
+            OWSCall *call = [[OWSCall alloc] initWithCallerId:@""
                                             callerDisplayName:adapter.messageBody
                                                          date:nil
                                                        status:status
                                                 displayString:@""];
-            call.useThumbnail = NO; // disables use of iconography to represent group update actions
             return call;
         }
     } else {
@@ -176,7 +178,7 @@
     return adapter;
 }
 
-+ (JSQCall *)jsqCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
++ (OWSCall *)owsCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
     CallStatus status      = 0;
     NSString *name         = thread.name;
     NSString *detailString = @"";
@@ -210,12 +212,12 @@
             break;
     }
 
-    JSQCall *jsqCall = [[JSQCall alloc] initWithCallerId:thread.contactIdentifier
+    OWSCall *owsCall = [[OWSCall alloc] initWithCallerId:thread.contactIdentifier
                                        callerDisplayName:thread.name
                                                     date:call.date
                                                   status:status
                                            displayString:detailString];
-    return jsqCall;
+    return owsCall;
 }
 
 - (NSString *)senderId {
@@ -230,11 +232,62 @@
     if (self.thread) {
         return _thread.name;
     }
-    return self.senderDisplayName;
+    return _senderDisplayName;
 }
 
 - (NSDate *)date {
     return self.messageDate;
+}
+
+#pragma mark - OWSMessageEditing Protocol
+
+- (BOOL)canPerformEditingAction:(SEL)action
+{
+
+    // Deletes are always handled by TSMessageAdapter
+    if (action == @selector(delete:)) {
+        return YES;
+    }
+
+    // Delegate other actions for media items
+    if (self.isMediaMessage) {
+        return [self.mediaItem canPerformEditingAction:action];
+    } else {
+        // Text message - no media attachment
+        if (action == @selector(copy:)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)performEditingAction:(SEL)action
+{
+    // Deletes are always handled by TSMessageAdapter
+    if (action == @selector(delete:)) {
+        DDLogDebug(@"Deleting interaction with uniqueId: %@", self.interaction.uniqueId);
+        [self.interaction remove];
+        return;
+    }
+
+    // Delegate other actions for media items
+    if (self.isMediaMessage) {
+        [self.mediaItem performEditingAction:action];
+        return;
+    } else {
+        // Text message - no media attachment
+        if (action == @selector(copy:)) {
+            UIPasteboard.generalPasteboard.string = self.messageBody;
+            return;
+        }
+    }
+
+    // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
+    NSString *actionString = NSStringFromSelector(action);
+    DDLogError(@"'%@' action unsupported for TSInteraction: uniqueId=%@, mediaType=%@",
+        actionString,
+        self.interaction.uniqueId,
+        [self.mediaItem class]);
 }
 
 - (BOOL)isMediaMessage {
@@ -249,8 +302,13 @@
     return self.messageBody;
 }
 
-- (NSUInteger)messageHash {
-    return self.identifier;
+- (NSUInteger)messageHash
+{
+    if (self.isMediaMessage) {
+        return [self.mediaItem mediaHash];
+    } else {
+        return self.identifier;
+    }
 }
 
 - (NSInteger)messageState {

@@ -11,7 +11,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSMessagesManager+attachments.h>
 #import <SignalServiceKit/TSMessagesManager+sendMessages.h>
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"

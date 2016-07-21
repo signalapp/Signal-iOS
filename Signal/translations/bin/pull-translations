@@ -9,9 +9,10 @@ tx pull -a --minimum-perc=80
 
 # Legacy hack: pull *any existing* translations regardless of their completion.
 # Once supported, we don't want to drop any translations.
-tx pull
+tx pull --force
 
 # Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
 ../../../iStringsCheck/target/debug/iStringsCheck en.lproj/Localizable.strings .
 
+echo "Make sure you register any new localizations in XCode! (Go to Project > Signal > Localizations > Add Localizations)"

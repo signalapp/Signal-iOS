@@ -1,19 +1,14 @@
-//
-//  TableViewCell.m
-//  Signal
-//
 //  Created by Dylan Bourgeois on 27/10/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
+#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
+#import <JSQMessagesViewController/UIImage+JSQMessages.h>
 #import "Environment.h"
 #import "InboxTableViewCell.h"
-#import "JSQMessagesAvatarImageFactory.h"
 #import "PreferencesUtil.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
-#import "UIImage+JSQMessages.h"
 #import "Util.h"
 
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
@@ -50,7 +45,9 @@
 
 - (void)configureWithThread:(TSThread *)thread {
     if (!_threadId || ![_threadId isEqualToString:thread.uniqueId]) {
-        self.hidden = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.hidden = YES;
+        });
     }
 
     NSString *name                     = thread.name;

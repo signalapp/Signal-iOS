@@ -32,7 +32,7 @@
 
 + (void)performUpdateCheck {
     NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
+    [Environment.preferences setAndGetCurrentVersion];
     BOOL VOIPRegistration =
         [[PushManager sharedManager] supportsVOIPPush] && ![Environment.preferences hasRegisteredVOIPPush];
 
@@ -169,7 +169,7 @@
 
       __block BOOL success;
 
-      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice:YES];
+      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
             success = YES;

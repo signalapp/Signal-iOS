@@ -67,7 +67,7 @@ static Environment *environment = nil;
              andTestingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
                         andZrtpClientId:(NSData *)zrtpClientId
                        andZrtpVersionId:(NSData *)zrtpVersionId
-                     andContactsManager:(ContactsManager *)contactsManager {
+                     andContactsManager:(OWSContactsManager *)contactsManager {
     ows_require(errorNoter != nil);
     ows_require(zrtpClientId != nil);
     ows_require(zrtpVersionId != nil);
