@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 
 #import <AddressBookUI/AddressBookUI.h>
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -51,6 +50,8 @@
 #import "TSMessagesManager+sendMessages.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+
+@import Photos;
 
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
@@ -1498,79 +1499,79 @@ typedef enum : NSUInteger {
 /*
  *  Fetching data from UIImagePickerController
  */
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
+- (void)imagePickerController:(UIImagePickerController *)picker
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
+{
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if (CFStringCompare((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
-        NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
-        [self sendQualityAdjustedAttachment:videoURL];
-    } else {
-        if (picker.sourceType == UIImagePickerControllerSourceTypeCamera)
-        {
-            // Image captured from camera
-            UIImage *pictureCamera = [[info objectForKey:UIImagePickerControllerOriginalImage] normalizedImage];
-            if (pictureCamera) {
-                DDLogVerbose(@"Sending picture attachement ...");
-                [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pictureCamera] ofType:@"image/jpeg"];
-            }
-        } else {
-            // Image picked from library
-            // Send image as NSData to accommodate both static and animated images
-            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-            [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL]
-                     resultBlock:^(ALAsset *asset) {
-                         ALAssetRepresentation *representation = [asset defaultRepresentation];
-                         Byte *img_buffer                      = (Byte *)malloc((unsigned long)representation.size);
-                         NSUInteger length_buffered =
-                         [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
-                         NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
-                         NSString *file_type;
-                         switch (img_buffer[0]) {
-                             case 0x89:
-                                 file_type = @"image/png";
-                                 break;
-                             case 0x47:
-                                 file_type = @"image/gif";
-                                 break;
-                             case 0x49:
-                             case 0x4D:
-                                 file_type = @"image/tiff";
-                                 break;
-                             case 0x42:
-                                 file_type = @"image/bmp";
-                                 break;
-                             case 0xFF:
-                             default:
-                                 file_type = @"image/jpeg";
-                                 break;
-                         }
-                         DDLogVerbose(@"Picked image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
-                                      (unsigned long)length_buffered,
-                                      img_buffer[0],
-                                      img_buffer[0],
-                                      file_type);
+    void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
+        DDLogError(@"failed to pick attachment with error: %@", error);
+    };
 
-                         if ([file_type isEqualToString:@"image/gif"] && img_data.length <= 5 * 1024 * 1024) {
-                             // Media Size constraints lifted from Signal-Android (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
-                             // GifMaxSize return 5 * MB;
-                             // For reference, other media size limits we're not explicitly enforcing:
-                             // ImageMaxSize return 420 * KB;
-                             // VideoMaxSize return 100 * MB;
-                             // getAudioMaxSize 100 * MB;
-                             DDLogVerbose(@"Sending raw image/gif");
-                             [self sendMessageAttachment:img_data ofType:file_type];
-                         } else {
-                             DDLogVerbose(@"Compressing attachment as image/jpeg");
-                             UIImage *pickedImage = [[UIImage alloc] initWithData:img_data];
-                             [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage] ofType:@"image/jpeg"];
-                         }
-                     }
-                    failureBlock:^(NSError *error) {
-                        DDLogVerbose(@"Couldn't get image asset: %@", error);
-                    }];
+    NSString *mediaType = info[UIImagePickerControllerMediaType];
+    if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
+        // Video picked from library or captured with camera
+
+        NSURL *videoURL = info[UIImagePickerControllerMediaURL];
+        [self sendQualityAdjustedAttachment:videoURL];
+    } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        // Static Image captured from camera
+
+        UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
+        if (imageFromCamera) {
+            [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:imageFromCamera] ofType:@"image/jpeg"];
+        } else {
+            failedToPickAttachment(nil);
         }
+    } else {
+        // Non-Video image picked from library
+
+        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
+        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
+        if (!asset) {
+            return failedToPickAttachment(nil);
+        }
+
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = YES; // We're only fetching one asset.
+        options.networkAccessAllowed = YES; // iCloud OK
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:asset
+                             options:options
+                       resultHandler:^(NSData *_Nullable imageData,
+                           NSString *_Nullable dataUTI,
+                           UIImageOrientation orientation,
+                           NSDictionary *_Nullable assetInfo) {
+
+                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
+                           if (assetFetchingError || !imageData) {
+                               return failedToPickAttachment(assetFetchingError);
+                           }
+                           DDLogVerbose(@"Size in bytes: %lu; detected filetype: %@", imageData.length, dataUTI);
+
+                           if ([dataUTI isEqualToString:(__bridge NSString *)kUTTypeGIF]
+                               && imageData.length <= 5 * 1024 * 1024) {
+                               DDLogVerbose(@"Sending raw image/gif to retain any animation");
+                               /**
+                                * Media Size constraints lifted from Signal-Android
+                                * (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
+                                *
+                                * GifMaxSize return 5 * MB;
+                                * For reference, other media size limits we're not explicitly enforcing:
+                                * ImageMaxSize return 420 * KB;
+                                * VideoMaxSize return 100 * MB;
+                                * getAudioMaxSize 100 * MB;
+                                */
+                               [self sendMessageAttachment:imageData ofType:@"image/gif"];
+                           } else {
+                               DDLogVerbose(@"Compressing attachment as image/jpeg");
+                               UIImage *pickedImage = [[UIImage alloc] initWithData:imageData];
+                               [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage]
+                                                    ofType:@"image/jpeg"];
+                           }
+                       }];
     }
 }
 
