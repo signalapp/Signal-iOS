@@ -30,7 +30,7 @@ PODS:
   - DJWActionSheet (1.0.4)
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (7.3.3):
+  - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.8.14)
@@ -144,7 +144,7 @@ SPEC CHECKSUMS:
   DJWActionSheet: 2fe54b1298a7f0fe44462233752c76a530e0cd80
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
-  JSQMessagesViewController: 0ee3f80237268192a3e8337fd0d787f1a1bf5a7a
+  JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: fb165271ebe7fb32e55da97b83219382f2f9d409
   Mantle: bc40bb061d8c2c6fb48d5083e04d928c3b7f73d9
