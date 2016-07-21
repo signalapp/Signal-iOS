@@ -44,6 +44,7 @@
     }
                                                                                 onThread:[NSThread mainThread]
                                                                           untilCancelled:nil];
+    _callStatusLabel.lineBreakMode = NSLineBreakByWordWrapping | NSLineBreakByTruncatingTail;
 }
 
 - (void)linkActions {
