@@ -269,6 +269,10 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView sizeToFit];
     self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
 
+    // prevent draft from obscuring message history in case user wants to scroll back to refer to something
+    // while composing a long message.
+    self.inputToolbar.maximumHeight = 300;
+
     [super viewWillAppear:animated];
 
     [self toggleObservers:YES];
