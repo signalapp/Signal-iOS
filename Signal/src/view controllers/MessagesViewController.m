@@ -171,6 +171,9 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.navController = (APNavigationController *)self.navigationController;
+
     // JSQMVC width is 375px at this point (as specified by the xib), but this causes
     // our initial bubble calculations to be off since they happen before the containing
     // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
@@ -210,6 +213,8 @@ typedef enum : NSUInteger {
 
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
+
+    [self initializeToolbars];
 }
 
 - (void)registerCustomMessageNibs
@@ -264,22 +269,11 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // HACK JSQMessagesViewController doesn't yet support dynamic type in the inputToolbar.
-    // See: https://github.com/jessesquires/JSQMessagesViewController/pull/1169/files
-    [self.inputToolbar.contentView.textView sizeToFit];
-    self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
-
-    // prevent draft from obscuring message history in case user wants to scroll back to refer to something
-    // while composing a long message.
-    self.inputToolbar.maximumHeight = 300;
-
     [super viewWillAppear:animated];
 
     [self toggleObservers:YES];
-    [self initializeToolbars];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
     if (numberOfMessages > 0) {
         NSIndexPath *lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages - 1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath
@@ -473,8 +467,16 @@ typedef enum : NSUInteger {
     self.title                                  = navTitle;
 }
 
-- (void)initializeToolbars {
-    self.navController = (APNavigationController *)self.navigationController;
+- (void)initializeToolbars
+{
+    // HACK JSQMessagesViewController doesn't yet support dynamic type in the inputToolbar.
+    // See: https://github.com/jessesquires/JSQMessagesViewController/pull/1169/files
+    [self.inputToolbar.contentView.textView sizeToFit];
+    self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
+
+    // prevent draft from obscuring message history in case user wants to scroll back to refer to something
+    // while composing a long message.
+    self.inputToolbar.maximumHeight = 300;
 
     if ([self canCall]) {
         self.navigationItem.rightBarButtonItem =
