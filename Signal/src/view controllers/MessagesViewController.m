@@ -262,7 +262,13 @@ typedef enum : NSUInteger {
     sendLabel.textAlignment = NSTextAlignmentCenter;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
+    // HACK JSQMessagesViewController doesn't yet support dynamic type in the inputToolbar.
+    // See: https://github.com/jessesquires/JSQMessagesViewController/pull/1169/files
+    [self.inputToolbar.contentView.textView sizeToFit];
+    self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
+
     [super viewWillAppear:animated];
 
     [self toggleObservers:YES];
