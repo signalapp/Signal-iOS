@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0DD55B166906AF3368995978 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80CD5E19DD23200E7926EEA7 /* libPods-Signal.a */; };
 		30209C98DABCE82064B4EAF5 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A33D3C7EB4B17BDBD47F0FCC /* libPods-SignalTests.a */; };
+		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		453D28B31D32B87100D523F0 /* OWSErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B01D32B87100D523F0 /* OWSErrorMessage.m */; };
 		453D28B41D32B87100D523F0 /* OWSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B21D32B87100D523F0 /* OWSInfoMessage.m */; };
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
@@ -504,6 +505,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		453D28AF1D32B87100D523F0 /* OWSErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSErrorMessage.h; sourceTree = "<group>"; };
@@ -1062,6 +1064,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
@@ -2068,6 +2071,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4520D8D41D417D8E00123472 /* Photos.framework */,
 				B6B226961BE4B7D200860F4D /* ContactsUI.framework */,
 				B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */,
 				FC3BD9871A30A790005B96BB /* Social.framework */,
