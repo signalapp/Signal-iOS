@@ -1,19 +1,18 @@
-//
-//  TSMessagesManager+attachments.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 17/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <YapDatabase/YapDatabaseConnection.h>
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSAttachmentPointer.h"
+#import "TSContactThread.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSNetworkManager.h"
+#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @interface TSMessagesManager ()
 
@@ -195,6 +194,9 @@ dispatch_queue_t attachmentsQueue() {
                     [self decryptedAndSaveAttachment:attachment data:data messageId:messageId];
                 }
               });
+          } else {
+              DDLogError(@"Failed retrieval of attachment. Response had unexpected format.");
+              [self setFailedAttachment:attachment inMessage:messageId];
           }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {

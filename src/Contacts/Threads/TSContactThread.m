@@ -1,15 +1,11 @@
-//
-//  TSContactThread.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 16/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
+#import "TSContactThread.h"
 #import "ContactsUpdater.h"
 #import "IncomingPushMessageSignal.pb.h"
-#import "TSContactThread.h"
 #import "TextSecureKitEnv.h"
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 #define TSContactThreadPrefix @"c"
 

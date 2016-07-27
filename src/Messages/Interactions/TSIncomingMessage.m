@@ -7,6 +7,8 @@
 //
 
 #import "TSIncomingMessage.h"
+#import "TSContactThread.h"
+#import "TSGroupThread.h"
 
 @implementation TSIncomingMessage
 

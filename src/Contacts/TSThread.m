@@ -6,13 +6,12 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSDatabaseView.h"
-#import "TSInteraction.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
-
+#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+#import "TSInteraction.h"
 #import "TSOutgoingMessage.h"
+#import "TSStorageManager.h"
 
 @interface TSThread ()
 

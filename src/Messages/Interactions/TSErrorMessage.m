@@ -7,6 +7,7 @@
 //
 
 #import "TSErrorMessage.h"
+#import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSMessagesManager.h"
 #import "TextSecureKitEnv.h"

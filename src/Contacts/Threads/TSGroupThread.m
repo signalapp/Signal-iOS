@@ -1,14 +1,10 @@
-//
-//  TSGroupThread.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 16/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
+#import "TSGroupThread.h"
 #import "NSData+Base64.h"
 #import "SignalRecipient.h"
-#import "TSGroupThread.h"
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @implementation TSGroupThread
 

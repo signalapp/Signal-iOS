@@ -8,6 +8,9 @@
 
 #import "TSMessage.h"
 
+@class TSContactThread;
+@class TSGroupThread;
+
 @interface TSIncomingMessage : TSMessage
 
 /**

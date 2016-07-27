@@ -1,13 +1,9 @@
-//
-//  TSYapDatabaseObject.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 16/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
+#import "TSStorageManager.h"
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @implementation TSYapDatabaseObject
 
@@ -40,7 +36,6 @@
     [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
 }
 
-
 - (void)remove {
     [[TSStorageManager sharedManager]
             .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -48,7 +43,6 @@
       [[transaction ext:@"relationships"] flush];
     }];
 }
-
 
 #pragma mark Class Methods
 

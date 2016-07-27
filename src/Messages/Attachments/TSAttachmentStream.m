@@ -1,14 +1,10 @@
-//
-//  TSattachmentStream.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 17/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <AVFoundation/AVFoundation.h>
-#import "MIMETypeUtil.h"
 #import "TSAttachmentStream.h"
+#import "MIMETypeUtil.h"
+#import <AVFoundation/AVFoundation.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 
@@ -17,12 +13,17 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
 - (instancetype)initWithIdentifier:(NSString *)identifier
                               data:(NSData *)data
                                key:(NSData *)key
-                       contentType:(NSString *)contentType {
+                       contentType:(NSString *)contentType
+{
     self = [super initWithIdentifier:identifier encryptionKey:key contentType:contentType];
+    if (!self) {
+        return self;
+    }
 
-    [[NSFileManager defaultManager] createFileAtPath:self.filePath contents:data attributes:nil];
-
+    [[NSFileManager defaultManager] createFileAtPath:[self filePath] contents:data attributes:nil];
+    DDLogInfo(@"Created file at %@", [self filePath]);
     _isDownloaded = YES;
+
     return self;
 }
 
@@ -35,19 +36,19 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return @[ attachmentFileEdge ];
 }
 
-+ (NSString *)attachmentsFolder {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *fileURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    NSString *path = [fileURL path];
-    NSString *attachmentFolder = [path stringByAppendingFormat:@"/Attachments"];
++ (NSString *)attachmentsFolder
+{
+    NSString *documentsPath =
+        [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *attachmentFolder = [documentsPath stringByAppendingFormat:@"/Attachments"];
 
     NSError *error = nil;
     [[NSFileManager defaultManager] createDirectoryAtPath:attachmentFolder
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:&error];
-    if (error != nil) {
-        DDLogError(@"Failed to create attachments directory: %@", error.description);
+    if (error) {
+        DDLogError(@"Failed to create attachments directory: %@", error);
     }
 
     return attachmentFolder;
@@ -88,7 +89,6 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     }
 }
 
-
 - (UIImage *)videoThumbnail {
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:self.filePath] options:nil];
     AVAssetImageGenerator *generate         = [[AVAssetImageGenerator alloc] initWithAsset:asset];
@@ -99,10 +99,10 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return [[UIImage alloc] initWithCGImage:imgRef];
 }
 
-+ (void)deleteAttachments {
-    NSFileManager *fm = [NSFileManager defaultManager];
++ (void)deleteAttachments
+{
     NSError *error;
-    [fm removeItemAtPath:[self attachmentsFolder] error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:[self attachmentsFolder] error:&error];
     if (error) {
         DDLogError(@"Failed to delete attachment folder with error: %@", error.debugDescription);
     }

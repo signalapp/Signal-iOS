@@ -1,16 +1,10 @@
-//
-//  TSYapDatabaseObject.h
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 16/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-
-#import <Foundation/Foundation.h>
 
 #import <Mantle/MTLModel+NSCoding.h>
-#import "YapDatabaseRelationshipNode.h"
-#import "YapDatabaseTransaction.h"
+
+@class YapDatabaseReadTransaction;
+@class YapDatabaseReadWriteTransaction;
 
 @interface TSYapDatabaseObject : MTLModel
 
@@ -29,8 +23,8 @@
  *
  *  @return Key (string) identifying the collection
  */
-
 + (NSString *)collection;
+
 
 /**
  *  Fetches the object with the provided identifier
@@ -38,7 +32,7 @@
  *  @param uniqueID    Unique identifier of the entry in a collection
  *  @param transaction Transaction used for fetching the object
  *
- *  @return Returns and instance of the object or nil if non-existent
+ *  @return Instance of the object or nil if non-existent
  */
 
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID transaction:(YapDatabaseReadTransaction *)transaction;

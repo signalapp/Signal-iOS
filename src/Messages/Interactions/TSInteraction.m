@@ -7,9 +7,9 @@
 //
 
 #import "TSInteraction.h"
-
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSStorageManager+messageIDs.h"
+#import "TSThread.h"
 
 
 const struct TSMessageRelationships TSMessageRelationships = {

@@ -1,27 +1,22 @@
-//
-//  TSMessagesHandler.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 11/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "TSMessagesManager.h"
-
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
-
 #import "NSData+messagePadding.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
+#import "TSContactThread.h"
 #import "TSDatabaseView.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSStorageHeaders.h"
 #import "TextSecureKitEnv.h"
-
 
 @interface TSMessagesManager ()
 

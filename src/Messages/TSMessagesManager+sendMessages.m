@@ -1,27 +1,23 @@
-//
-//  TSMessagesManager+sendMessages.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 17/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "TSMessagesManager+sendMessages.h"
-
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <AxolotlKit/SessionCipher.h>
-#import <Mantle/Mantle.h>
-#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
+#import "TSContactThread.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
 #import "TSStorageHeaders.h"
+#import <AxolotlKit/AxolotlExceptions.h>
+#import <AxolotlKit/SessionBuilder.h>
+#import <AxolotlKit/SessionCipher.h>
+#import <Mantle/Mantle.h>
+#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
 
 #define RETRY_ATTEMPTS 3
 
@@ -92,7 +88,6 @@ dispatch_queue_t sendingQueue() {
 {
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         dispatch_async(sendingQueue(), ^{
-            TSGroupThread *groupThread = (TSGroupThread *)thread;
             [self groupSend:@[ recipient ] // Avoid spamming entire group when resending failed message.
                     Message:message
                    inThread:thread

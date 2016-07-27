@@ -1,18 +1,9 @@
-//
-//  TSInteraction.h
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 12/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-
-#import <Foundation/Foundation.h>
-#import <YapDatabase/YapDatabaseRelationshipNode.h>
 
 #import "TSYapDatabaseObject.h"
 
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
+@class TSThread;
 
 extern const struct TSMessageRelationships { __unsafe_unretained NSString *threadUniqueId; } TSMessageRelationships;
 

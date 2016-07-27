@@ -8,6 +8,8 @@
 
 #import "TSMessagesManager.h"
 
+@class SignalRecipient;
+
 @interface TSMessagesManager (sendMessages)
 
 typedef void (^successSendingCompletionBlock)();
