@@ -10,8 +10,10 @@
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
+#import "TSContactThread.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
+#import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
@@ -57,7 +59,8 @@
 
 @implementation TSMessageAdapter
 
-+ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread {
++ (id<JSQMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread
+{
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] init];
     adapter.interaction = interaction;
     adapter.messageDate       = interaction.date;
@@ -94,8 +97,8 @@
         TSMessage *message  = (TSMessage *)interaction;
         adapter.messageBody = message.body;
 
-        if ([message.attachments count] > 0) {
-            for (NSString *attachmentID in message.attachments) {
+        if ([message hasAttachments]) {
+            for (NSString *attachmentID in message.attachmentIds) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
 
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {

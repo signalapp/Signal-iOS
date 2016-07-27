@@ -174,7 +174,8 @@
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
               withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler {
+             completionHandler:(void (^)())completionHandler
+{
     if ([identifier isEqualToString:Signal_Message_Reply_Identifier]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
@@ -184,7 +185,7 @@
                 [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                     inThread:thread
                                                  messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]
-                                                 attachments:nil];
+                                               attachmentIds:nil];
             [[TSMessagesManager sharedManager] sendMessage:message
                 inThread:thread
                 success:^{
