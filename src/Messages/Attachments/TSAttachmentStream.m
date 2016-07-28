@@ -6,8 +6,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
-NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
-
 @implementation TSAttachmentStream
 
 - (instancetype)initWithIdentifier:(NSString *)identifier
@@ -20,6 +18,7 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
         return self;
     }
 
+    // TODO move this to save?
     [[NSFileManager defaultManager] createFileAtPath:[self filePath] contents:data attributes:nil];
     DDLogInfo(@"Created file at %@", [self filePath]);
     _isDownloaded = YES;
@@ -27,13 +26,20 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return self;
 }
 
-- (NSArray *)yapDatabaseRelationshipEdges {
-    YapDatabaseRelationshipEdge *attachmentFileEdge =
-        [YapDatabaseRelationshipEdge edgeWithName:TSAttachementFileRelationshipEdge
-                               destinationFileURL:[self mediaURL]
-                                  nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super removeWithTransaction:transaction];
+    [self removeFile];
+}
 
-    return @[ attachmentFileEdge ];
+- (void)removeFile
+{
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:[self filePath] error:&error];
+
+    if (error) {
+        DDLogError(@"remove file errored with: %@", error);
+    }
 }
 
 + (NSString *)attachmentsFolder
@@ -54,7 +60,21 @@ NSString *const TSAttachementFileRelationshipEdge = @"TSAttachementFileEdge";
     return attachmentFolder;
 }
 
-- (NSString *)filePath {
++ (NSUInteger)numberOfItemsInAttachmentsFolder
+{
+    NSError *error;
+    NSUInteger count =
+        [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self attachmentsFolder] error:&error] count];
+
+    if (error) {
+        DDLogError(@"Unable to count attachments in attachments folder. Error: %@", error);
+    }
+
+    return count;
+}
+
+- (NSString *)filePath
+{
     return [MIMETypeUtil filePathForAttachment:self.uniqueId
                                     ofMIMEType:self.contentType
                                       inFolder:[[self class] attachmentsFolder]];

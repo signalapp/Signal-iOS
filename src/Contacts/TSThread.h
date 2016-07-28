@@ -1,15 +1,8 @@
-//
-//  TSThread.h
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 16/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
 #import "TSYapDatabaseObject.h"
+#import <UIKit/UIKit.h>
 
 @class TSInteraction;
 
@@ -42,7 +35,12 @@
 - (UIImage *)image;
 #endif
 
-#pragma mark Read Status
+#pragma mark Interactions
+
+/**
+ *  @return The number of interactions in this thread.
+ */
+- (NSUInteger)numberOfInteractions;
 
 /**
  *  Returns whether or not the thread has unread messages.
@@ -52,8 +50,6 @@
 - (BOOL)hasUnreadMessages;
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-#pragma mark Last Interactions
 
 /**
  *  Returns the latest date of a message in the thread or the thread creation date if there are no messages in that

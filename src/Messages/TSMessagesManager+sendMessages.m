@@ -1,7 +1,6 @@
 //  Created by Frederic Jacobs on 17/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
-#import "TSMessagesManager+sendMessages.h"
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
@@ -10,6 +9,7 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
+#import "TSMessagesManager+sendMessages.h"
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
 #import "TSStorageHeaders.h"

@@ -2,8 +2,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSMessagesManager.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionCipher.h>
 #import "NSData+messagePadding.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
@@ -17,6 +15,8 @@
 #import "TSMessagesManager+attachments.h"
 #import "TSStorageHeaders.h"
 #import "TextSecureKitEnv.h"
+#import <AxolotlKit/AxolotlExceptions.h>
+#import <AxolotlKit/SessionCipher.h>
 
 @interface TSMessagesManager ()
 

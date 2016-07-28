@@ -5,8 +5,6 @@
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
-NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
-
 @implementation TSMessage
 
 - (void)addattachments:(NSArray *)attachments {
@@ -21,22 +19,6 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     }
 
     [self.attachments addObject:attachment];
-}
-
-- (NSArray *)yapDatabaseRelationshipEdges {
-    NSMutableArray *edges = [[super yapDatabaseRelationshipEdges] mutableCopy];
-
-    if ([self hasAttachments]) {
-        for (NSString *attachmentId in self.attachments) {
-            YapDatabaseRelationshipEdge *fileEdge =
-                [[YapDatabaseRelationshipEdge alloc] initWithName:TSAttachementsRelationshipEdgeName
-                                                   destinationKey:attachmentId
-                                                       collection:[TSAttachment collection]
-                                                  nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
-            [edges addObject:fileEdge];
-        }
-    }
-    return edges;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -82,13 +64,14 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     }
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    for (NSString *attachmentId in _attachments) {
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        [attachment removeWithTransaction:transaction];
-    }
-
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     [super removeWithTransaction:transaction];
+    [self.attachments
+        enumerateObjectsUsingBlock:^(NSString *_Nonnull attachmentId, NSUInteger idx, BOOL *_Nonnull stop) {
+            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+            [attachment removeWithTransaction:transaction];
+        }];
 }
 
 @end

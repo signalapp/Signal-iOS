@@ -60,8 +60,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
 
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-
-    [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
 

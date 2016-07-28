@@ -1,8 +1,8 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
+#import "TSAttachment.h"
 #import "TSMessage.h"
 #import "TSThread.h"
-#import "TSAttachment.h"
 
 #import <XCTest/XCTest.h>
 

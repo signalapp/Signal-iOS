@@ -5,11 +5,7 @@
 
 @class TSThread;
 
-extern const struct TSMessageRelationships { __unsafe_unretained NSString *threadUniqueId; } TSMessageRelationships;
-
-extern const struct TSMessageEdges { __unsafe_unretained NSString *thread; } TSMessageEdges;
-
-@interface TSInteraction : TSYapDatabaseObject <YapDatabaseRelationshipNode>
+@interface TSInteraction : TSYapDatabaseObject
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 

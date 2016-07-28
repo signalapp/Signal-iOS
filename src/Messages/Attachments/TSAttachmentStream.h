@@ -6,7 +6,7 @@
 #import <UIKit/UIKit.h>
 #endif
 
-@interface TSAttachmentStream : TSAttachment <YapDatabaseRelationshipNode>
+@interface TSAttachmentStream : TSAttachment
 
 @property (nonatomic) BOOL isDownloaded;
 
@@ -22,9 +22,11 @@
 - (BOOL)isAnimated;
 - (BOOL)isImage;
 - (BOOL)isVideo;
+- (NSString *)filePath;
 - (NSURL *)mediaURL;
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
++ (NSUInteger)numberOfItemsInAttachmentsFolder;
 
 @end
