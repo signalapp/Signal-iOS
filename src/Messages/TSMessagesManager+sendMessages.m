@@ -524,8 +524,8 @@ dispatch_queue_t sendingQueue() {
                 break;
             case TSGroupMessageUpdate:
             case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && [message.attachments count] == 1) {
-                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:[message.attachments firstObject]];
+                if (gThread.groupModel.groupImage != nil && [message.attachmentIds count] == 1) {
+                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds[0]];
                     if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
                         TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
                         PushMessageContentAttachmentPointerBuilder *attachmentbuilder =
@@ -550,8 +550,8 @@ dispatch_queue_t sendingQueue() {
         [builder setGroup:groupBuilder.build];
     }
     if (processAttachments) {
-        NSMutableArray *attachmentsArray = [NSMutableArray array];
-        for (NSString *attachmentId in message.attachments) {
+        NSMutableArray *attachments = [NSMutableArray new];
+        for (NSString *attachmentId in message.attachmentIds) {
             id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
 
             if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
@@ -563,10 +563,10 @@ dispatch_queue_t sendingQueue() {
                 [attachmentbuilder setContentType:attachment.contentType];
                 [attachmentbuilder setKey:attachment.encryptionKey];
 
-                [attachmentsArray addObject:[attachmentbuilder build]];
+                [attachments addObject:[attachmentbuilder build]];
             }
         }
-        [builder setAttachmentsArray:attachmentsArray];
+        [builder setAttachmentsArray:attachments];
     }
     return [builder.build data];
 }

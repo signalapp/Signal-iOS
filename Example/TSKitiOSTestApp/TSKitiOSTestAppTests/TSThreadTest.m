@@ -38,13 +38,13 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
                                                                           messageBody:@"incoming message body"
-                                                                          attachments:nil];
+                                                                        attachmentIds:nil];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:20000
                                                                              inThread:thread
                                                                           messageBody:@"outgoing message body"
-                                                                          attachments:nil];
+                                                                        attachmentIds:nil];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);
@@ -75,7 +75,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
                                                                           messageBody:@"incoming message body"
-                                                                          attachments:@[ attachment.uniqueId ]];
+                                                                        attachmentIds:@[ attachment.uniqueId ]];
     [incomingMessage save];
 
     // Sanity check

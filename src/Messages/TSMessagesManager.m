@@ -211,11 +211,13 @@
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
 }
 
-- (void)handleReceivedTextMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content {
-    [self handleReceivedMessage:message withContent:content attachments:content.attachments];
+- (void)handleReceivedTextMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content
+{
+    [self handleReceivedMessage:message withContent:content attachmentIds:content.attachments];
 }
 
-- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage {
+- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
+{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSContactThread *cThread =
           [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
@@ -223,21 +225,23 @@
       TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
                                                                                inThread:cThread
                                                                             messageBody:outgoingMessage.body
-                                                                            attachments:outgoingMessage.attachments];
+                                                                          attachmentIds:outgoingMessage.attachmentIds];
       [incomingMessage saveWithTransaction:transaction];
     }];
 }
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments {
-    [self handleReceivedMessage:message withContent:content attachments:attachments completionBlock:nil];
+                attachmentIds:(NSArray<NSString *> *)attachmentIds
+{
+    [self handleReceivedMessage:message withContent:content attachmentIds:attachmentIds completionBlock:nil];
 }
 
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments
-              completionBlock:(void (^)(NSString *messageIdentifier))completionBlock {
+                attachmentIds:(NSArray<NSString *> *)attachmentIds
+              completionBlock:(void (^)(NSString *messageIdentifier))completionBlock
+{
     uint64_t timeStamp = message.timestamp;
     NSString *body     = content.body;
     NSData *groupId    = content.hasGroup ? content.group.id : nil;
@@ -256,8 +260,8 @@
           [gThread saveWithTransaction:transaction];
 
           if (content.group.type == PushMessageContentGroupContextTypeUpdate) {
-              if ([attachments count] == 1) {
-                  NSString *avatarId   = [attachments firstObject];
+              if ([attachmentIds count] == 1) {
+                  NSString *avatarId = attachmentIds[0];
                   TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
                   if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
                       TSAttachmentStream *stream = (TSAttachmentStream *)avatar;
@@ -299,7 +303,7 @@
                                                                     inThread:gThread
                                                                     authorId:message.source
                                                                  messageBody:body
-                                                                 attachments:attachments];
+                                                               attachmentIds:attachmentIds];
               [incomingMessage saveWithTransaction:transaction];
           }
 
@@ -312,30 +316,30 @@
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                 inThread:cThread
                                                              messageBody:body
-                                                             attachments:attachments];
+                                                           attachmentIds:attachmentIds];
           thread = cThread;
       }
 
       if (thread && incomingMessage) {
-          if ([attachments count] > 0 && body != nil &&
-              ![body isEqualToString:@""]) {                   // Android allows attachments to be
-                                                                // sent with body.
-              uint64_t textMessageTimestamp = timeStamp + 1000; // We want the text to be displayed under the attachment
+          // Android allows attachments to be sent with body.
+          // We want the text to be displayed under the attachment
+          if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
+              uint64_t textMessageTimestamp = timeStamp + 1000;
 
               if ([thread isGroupThread]) {
-                  TSGroupThread *gThread         = (TSGroupThread *)thread;
+                  TSGroupThread *gThread = (TSGroupThread *)thread;
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:gThread
                                                                                        authorId:message.source
                                                                                     messageBody:body
-                                                                                    attachments:nil];
+                                                                                  attachmentIds:nil];
                   [textMessage saveWithTransaction:transaction];
               } else {
-                  TSContactThread *cThread       = (TSContactThread *)thread;
+                  TSContactThread *cThread = (TSContactThread *)thread;
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:cThread
                                                                                     messageBody:body
-                                                                                    attachments:nil];
+                                                                                  attachmentIds:nil];
                   [textMessage saveWithTransaction:transaction];
               }
           }

@@ -43,7 +43,7 @@
     TSContactThread *unsavedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-does-not-exist"];
 
     TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:unsavedThread messageBody:@"footch" attachments:nil];
+        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:unsavedThread messageBody:@"footch" attachmentIds:nil];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
@@ -57,7 +57,7 @@
     [savedThread save];
 
     TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:savedThread messageBody:@"footch" attachments:nil];
+        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:savedThread messageBody:@"footch" attachmentIds:nil];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
@@ -98,7 +98,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
                                                                           messageBody:@"footch"
-                                                                          attachments:@[ attachmentStream.uniqueId ]];
+                                                                        attachmentIds:@[ attachmentStream.uniqueId ]];
     [incomingMessage save];
 
     NSString *attachmentFilePath = [attachmentStream filePath];

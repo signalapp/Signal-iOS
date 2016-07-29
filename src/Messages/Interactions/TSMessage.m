@@ -7,42 +7,32 @@
 
 @implementation TSMessage
 
-- (void)addattachments:(NSArray *)attachments {
-    for (NSString *identifier in attachments) {
-        [self addattachment:identifier];
-    }
-}
-
-- (void)addattachment:(NSString *)attachment {
-    if (!_attachments) {
-        _attachments = [NSMutableArray array];
-    }
-
-    [self.attachments addObject:attachment];
-}
-
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                      attachments:(NSArray *)attachments {
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+{
     self = [super initWithTimestamp:timestamp inThread:thread];
 
-    if (self) {
-        _body        = body;
-        _attachments = [attachments mutableCopy];
+    if (!self) {
+        return self;
     }
+
+    _body = body;
+    _attachmentIds = [attachmentIds mutableCopy];
+
     return self;
 }
 
 - (BOOL)hasAttachments
 {
-    return self.attachments ? (self.attachments.count > 0) : false;
+    return self.attachmentIds ? (self.attachmentIds.count > 0) : false;
 }
 
 - (NSString *)debugDescription
 {
     if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachments[0];
+        NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
         return [NSString stringWithFormat:@"Message with body:%@", self.body];
@@ -52,7 +42,7 @@
 - (NSString *)description
 {
     if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachments[0];
+        NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
         if (attachment) {
             return attachment.description;
@@ -67,11 +57,10 @@
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];
-    [self.attachments
-        enumerateObjectsUsingBlock:^(NSString *_Nonnull attachmentId, NSUInteger idx, BOOL *_Nonnull stop) {
-            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-            [attachment removeWithTransaction:transaction];
-        }];
+    for (NSString *attachmentId in self.attachmentIds) {
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        [attachment removeWithTransaction:transaction];
+    };
 }
 
 @end

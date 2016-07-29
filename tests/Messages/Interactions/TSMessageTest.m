@@ -24,20 +24,25 @@
 
 - (void)testDescription {
     TSThread *thread = [[TSThread alloc] init];
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:nil];
+    TSMessage *message =
+        [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachmentIds:nil];
     XCTAssertEqualObjects(@"My message body", [message description]);
 }
 
 - (void)testDescriptionWithBogusAttachmentId {
     TSThread *thread = [[TSThread alloc] init];
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[@"fake-attachment-id"]];
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ @"fake-attachment-id" ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"UNKNOWN_ATTACHMENT_LABEL", actualDescription);
 }
 
 - (void)testDescriptionWithEmptyAttachments {
     TSThread *thread = [[TSThread alloc] init];
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[]];
+    TSMessage *message =
+        [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachmentIds:@[]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"My message body", actualDescription);
 }
@@ -49,7 +54,10 @@
                                                             contentType:@"image/jpeg"];
     [attachment save];
 
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[@"fake-photo-attachment-id"]];
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ @"fake-photo-attachment-id" ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"📷 ATTACHMENT", actualDescription);
 }
@@ -62,7 +70,10 @@
                                                             contentType:@"video/mp4"];
     [attachment save];
 
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[@"fake-video-attachment-id"]];
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ @"fake-video-attachment-id" ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"📽 ATTACHMENT", actualDescription);
 }
@@ -75,7 +86,10 @@
                                                             contentType:@"audio/mp3"];
     [attachment save];
 
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[@"fake-audio-attachment-id"]];
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ @"fake-audio-attachment-id" ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"📻 ATTACHMENT", actualDescription);
 }
@@ -87,7 +101,10 @@
                                                             contentType:@"non/sense"];
     [attachment save];
 
-    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachments:@[@"fake-nonsense-attachment-id"]];
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ @"fake-nonsense-attachment-id" ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"ATTACHMENT", actualDescription);
 }

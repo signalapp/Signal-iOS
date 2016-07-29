@@ -16,12 +16,15 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachments:nil];
+                failedMessageType:(TSErrorMessageType)errorMessageType
+{
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:nil];
 
-    if (self) {
-        _errorType = errorMessageType;
+    if (!self) {
+        return self;
     }
+
+    _errorType = errorMessageType;
 
     [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:self inThread:thread];
 

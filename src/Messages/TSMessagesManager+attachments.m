@@ -71,10 +71,11 @@ dispatch_queue_t attachmentsQueue() {
     }];
 
     if (shouldProcessMessage) {
-        [self handleReceivedMessage:message
-                        withContent:content
-                        attachments:retrievedAttachments
-                    completionBlock:^(NSString *messageIdentifier) {
+        [self
+            handleReceivedMessage:message
+                      withContent:content
+                    attachmentIds:retrievedAttachments
+                  completionBlock:^(NSString *messageIdentifier) {
                       for (NSString *pointerId in retrievedAttachments) {
                           dispatch_async(attachmentsQueue(), ^{
                             __block TSAttachmentPointer *pointer;
@@ -86,7 +87,7 @@ dispatch_queue_t attachmentsQueue() {
                             [self retrieveAttachment:pointer messageId:messageIdentifier];
                           });
                       }
-                    }];
+                  }];
     }
 }
 
@@ -102,17 +103,17 @@ dispatch_queue_t attachmentsQueue() {
           dispatch_async(attachmentsQueue(), ^{
             if ([responseObject isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
-                NSString *attachementId    = [(NSNumber *)[responseDict objectForKey:@"id"] stringValue];
+                NSString *attachmentId = [(NSNumber *)[responseDict objectForKey:@"id"] stringValue];
                 NSString *location         = [responseDict objectForKey:@"location"];
 
                 TSAttachmentEncryptionResult *result =
-                    [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachementId];
+                    [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachmentId];
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                   result.pointer.isDownloaded = NO;
                   [result.pointer saveWithTransaction:transaction];
                 }];
                 outgoingMessage.body = nil;
-                [outgoingMessage.attachments addObject:attachementId];
+                [outgoingMessage.attachmentIds addObject:attachmentId];
                 if (outgoingMessage.groupMetaMessage != TSGroupMessageNew &&
                     outgoingMessage.groupMetaMessage != TSGroupMessageUpdate) {
                     [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
@@ -120,7 +121,7 @@ dispatch_queue_t attachmentsQueue() {
                       [outgoingMessage saveWithTransaction:transaction];
                     }];
                 }
-                BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachementId];
+                BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachmentId];
                 if (success) {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                       result.pointer.isDownloaded = YES;
@@ -164,11 +165,12 @@ dispatch_queue_t attachmentsQueue() {
            contentType:(NSString *)contentType
                 thread:(TSThread *)thread
                success:(successSendingCompletionBlock)successCompletionBlock
-               failure:(failedSendingCompletionBlock)failedCompletionBlock {
+               failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:thread
                                                                   messageBody:nil
-                                                                  attachments:[[NSMutableArray alloc] init]];
+                                                                attachmentIds:[NSMutableArray new]];
     [self sendAttachment:attachmentData
              contentType:contentType
                inMessage:message

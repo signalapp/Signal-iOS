@@ -16,10 +16,14 @@
 /**
  *  Initiates an incoming message
  *
- *  @param timestamp    timestamp of the message in milliseconds since epoch
- *  @param thread       thread to which the message belongs
- *  @param body         body of the message
- *  @param attachments attachments of the message
+ *  @param timestamp
+ *    Timestamp of the message in milliseconds since epoch
+ *  @param thread
+ *    Thread to which the message belongs
+ *  @param body
+ *    Body of the message
+ *  @param attachmentIds
+ *    The uniqueIds for the message's attachments
  *
  *  @return initiated incoming message
  */
@@ -27,16 +31,21 @@
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSContactThread *)thread
                       messageBody:(NSString *)body
-                      attachments:(NSArray *)attachments;
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 /**
  *  Initiates an incoming group message
  *
- *  @param timestamp    timestamp of the message in milliseconds since epoch
- *  @param thread       thread to which the message belongs
- *  @param authorId     author identifier of the user in the group that sent the message
- *  @param body         body of the message
- *  @param attachments attachments of the message
+ *  @param timestamp
+ *    Timestamp of the message in milliseconds since epoch
+ *  @param thread
+ *    Thread to which the message belongs
+ *  @param authorId
+ *    Author identifier of the user in the group that sent the message
+ *  @param body
+ *    Body of the message
+ *  @param attachmentIds
+ *    The uniqueIds for the message's attachments
  *
  *  @return initiated incoming group message
  */
@@ -45,7 +54,7 @@
                          inThread:(TSGroupThread *)thread
                          authorId:(NSString *)authorId
                       messageBody:(NSString *)body
-                      attachments:(NSArray *)attachments;
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 @property (nonatomic, readonly) NSString *authorId;
 @property (nonatomic, getter=wasRead) BOOL read;

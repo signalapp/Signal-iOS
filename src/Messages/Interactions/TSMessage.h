@@ -16,17 +16,15 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 };
 @interface TSMessage : TSInteraction
 
-@property (nonatomic, readonly) NSMutableArray<NSString *> *attachments;
+@property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nonatomic) NSString *body;
 @property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                      attachments:(NSArray<NSString *> *)attachments;
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
-- (void)addattachments:(NSArray<NSString *> *)attachments;
-- (void)addattachment:(NSString *)attachment;
 - (BOOL)hasAttachments;
 
 @end

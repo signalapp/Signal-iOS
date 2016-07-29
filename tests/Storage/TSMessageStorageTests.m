@@ -27,7 +27,8 @@
 
 @implementation TSMessageStorageTests
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
     
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -40,12 +41,14 @@
     [manager purgeCollection:[TSMessage collection]];
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
 
-- (void)testIncrementalMessageNumbers{
+- (void)testIncrementalMessageNumbers
+{
     __block NSInteger messageInt;
     NSString *body = @"I don't see myself as a hero because what I'm doing is self-interested: I don't want to live in a world where there's no privacy and therefore no room for intellectual exploration and creativity.";
     [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -53,13 +56,11 @@
         NSString* messageId;
         
         for (uint64_t i = 0; i<50; i++) {
-            TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
-                                                                                inThread:self.thread
-                                                                             messageBody:body
-                                                                             attachments:nil];
-             [newMessage saveWithTransaction:transaction];
-             if (i == 0) {
-                 messageId = newMessage.uniqueId;
+            TSIncomingMessage *newMessage =
+                [[TSIncomingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body attachmentIds:nil];
+            [newMessage saveWithTransaction:transaction];
+            if (i == 0) {
+                messageId = newMessage.uniqueId;
              }
         }
         
@@ -80,7 +81,7 @@
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:uniqueNewTimestamp
                                                                             inThread:self.thread
                                                                          messageBody:body
-                                                                         attachments:nil];
+                                                                       attachmentIds:nil];
         [newMessage saveWithTransaction:transaction];
         
         TSIncomingMessage *retrieved = [TSIncomingMessage fetchObjectWithUniqueID:[@(messageInt+50) stringValue] transaction:transaction];
@@ -88,16 +89,15 @@
     }];
 }
 
-- (void)testStoreIncomingMessage {
+- (void)testStoreIncomingMessage
+{
     __block NSString *messageId;
     uint64_t timestamp = 666;
     
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
-    
-    TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                        inThread:self.thread
-                                                                     messageBody:body
-                                                                     attachments:nil];
+
+    TSIncomingMessage *newMessage =
+        [[TSIncomingMessage alloc] initWithTimestamp:timestamp inThread:self.thread messageBody:body attachmentIds:nil];
     [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
         messageId = newMessage.uniqueId;
@@ -106,21 +106,20 @@
     TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:messageId];
     
     NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
-    NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
+    NSAssert(fetchedMessage.attachmentIds == nil, @"attachments are nil");
     NSAssert(fetchedMessage.timestamp == timestamp, @"Unique identifier is accurate");
     NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
     NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");
 }
 
-- (void)testMessagesDeletedOnThreadDeletion {
+- (void)testMessagesDeletedOnThreadDeletion
+{
     uint64_t timestamp = 666;
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
     
     for (uint64_t i = timestamp; i<100; i++) {
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
-                                                                            inThread:self.thread
-                                                                         messageBody:body
-                                                                         attachments:nil];
+        TSIncomingMessage *newMessage =
+            [[TSIncomingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body attachmentIds:nil];
         [newMessage save];
     }
     
@@ -131,7 +130,7 @@
             TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:[TSInteraction stringFromTimeStamp:timestamp] transaction:transaction];
             
             NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
-            NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
+            NSAssert(fetchedMessage.attachmentIds == nil, @"attachments are nil");
             NSAssert([fetchedMessage.uniqueId isEqualToString:[TSInteraction stringFromTimeStamp:timestamp]], @"Unique identifier is accurate");
             NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
             NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");
@@ -150,7 +149,8 @@
 }
 
 
-- (void)testGroupMessagesDeletedOnThreadDeletion {
+- (void)testGroupMessagesDeletedOnThreadDeletion
+{
     uint64_t timestamp = 666;
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
     
@@ -170,8 +170,12 @@
     [manager purgeCollection:[TSMessage collection]];
     
     for (uint64_t i = timestamp; i<100; i++) {
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i inThread:thread authorId:@"Ed" messageBody:body attachments:nil];
-        
+        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
+                                                                            inThread:thread
+                                                                            authorId:@"Ed"
+                                                                         messageBody:body
+                                                                       attachmentIds:nil];
+
         [newMessage save];
     }
     
@@ -185,7 +189,7 @@
             
             
             NSAssert([fetchedMessage.body isEqualToString:body], @"Body of incoming message recovered");
-            NSAssert(fetchedMessage.attachments == nil, @"attachments are nil");
+            NSAssert(fetchedMessage.attachmentIds == nil, @"attachments are nil");
             NSAssert([fetchedMessage.uniqueId isEqualToString:[TSInteraction stringFromTimeStamp:timestamp]], @"Unique identifier is accurate");
             NSAssert(fetchedMessage.wasRead == false, @"Message should originally be unread");
             NSAssert([fetchedMessage.uniqueThreadId isEqualToString:self.thread.uniqueId], @"Isn't stored in the right thread!");

@@ -22,10 +22,10 @@
                 inThread:(TSThread *)thread;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments;
+                attachmentIds:(NSArray<NSString *> *)attachmentIds;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments
+                attachmentIds:(NSArray<NSString *> *)attachmentIds
               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock;
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage;

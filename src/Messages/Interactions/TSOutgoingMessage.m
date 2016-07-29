@@ -9,16 +9,19 @@
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                      attachments:(NSMutableArray *)attachments {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachments:attachments];
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+{
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:attachmentIds];
 
-    if (self) {
-        _messageState = TSOutgoingMessageStateAttemptingOut;
-        if ([thread isKindOfClass:[TSGroupThread class]]) {
-            self.groupMetaMessage = TSGroupMessageDeliver;
-        } else {
-            self.groupMetaMessage = TSGroupMessageNone;
-        }
+    if (!self) {
+        return self;
+    }
+
+    _messageState = TSOutgoingMessageStateAttemptingOut;
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        self.groupMetaMessage = TSGroupMessageDeliver;
+    } else {
+        self.groupMetaMessage = TSGroupMessageNone;
     }
 
     return self;
