@@ -1,9 +1,10 @@
-#import <SignalServiceKit/TextSecureKitEnv.h>
-#import "NotificationsManager.h"
 #import "RecentCallManager.h"
+#import "NotificationsManager.h"
 #import "TSCall.h"
+#import "TSContactThread.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager.h"
+#import <SignalServiceKit/TextSecureKitEnv.h>
 
 @interface RecentCallManager ()
 @property YapDatabaseConnection *dbConnection;

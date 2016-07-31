@@ -9,14 +9,15 @@
 #import "InboxTableViewCell.h"
 #import "UIUtil.h"
 
-#import "OWSContactsManager.h"
 #import "InCallViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSContactsManager.h"
 #import "PreferencesUtil.h"
 #import "SignalsViewController.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
+#import "TSGroupThread.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "TSStorageManager.h"
 #import "VersionMigrations.h"
@@ -254,7 +255,7 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:thread
                                                                       messageBody:@""
-                                                                      attachments:[[NSMutableArray alloc] init]];
+                                                                    attachmentIds:[NSMutableArray new]];
         message.groupMetaMessage = TSGroupMessageQuit;
         [[TSMessagesManager sharedManager] sendMessage:message
             inThread:thread
