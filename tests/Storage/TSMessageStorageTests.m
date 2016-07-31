@@ -159,13 +159,17 @@
 
     __block TSGroupThread *thread;
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd" memberIds:[@[] mutableCopy] image:nil groupId:[NSData data] associatedAttachmentId:pointer.uniqueId] transaction:transaction];
-        
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
+                                                                                          memberIds:[@[] mutableCopy]
+                                                                                              image:nil
+                                                                                            groupId:[NSData data]]
+                                                    transaction:transaction];
+
         [thread saveWithTransaction:transaction];
         [pointer saveWithTransaction:transaction];
 
     }];
-    
+
     TSStorageManager *manager         = [TSStorageManager sharedManager];
     [manager purgeCollection:[TSMessage collection]];
     

@@ -228,7 +228,8 @@ dispatch_queue_t attachmentsQueue() {
 
 - (void)decryptedAndSaveAttachment:(TSAttachmentPointer *)attachment
                               data:(NSData *)cipherText
-                         messageId:(NSString *)messageId {
+                         messageId:(NSString *)messageId
+{
     NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey];
 
     if (!plaintext) {
@@ -242,17 +243,15 @@ dispatch_queue_t attachmentsQueue() {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
           [stream saveWithTransaction:transaction];
           if ([attachment.avatarOfGroupId length] != 0) {
-              TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc]
-                           initWithTitle:nil
-                               memberIds:nil
-                                   image:nil
-                                 groupId:attachment.avatarOfGroupId
-                  associatedAttachmentId:attachment.uniqueId]; // TODO refactor the TSGroupThread to just take in an ID
-                                                               // (as it is all that it uses). Should not take in more
-                                                               // than it uses
+              TSGroupModel *emptyModelToFillOutId =
+                  [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId];
               TSGroupThread *gThread =
                   [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+
               gThread.groupModel.groupImage = [stream image];
+              // No need to keep the attachment around after assigning the image.
+              [stream removeWithTransaction:transaction];
+
               [gThread saveWithTransaction:transaction];
           } else {
               // Causing message to be reloaded in view.

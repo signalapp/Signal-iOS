@@ -3,8 +3,6 @@
 
 #import "TSGroupModel.h"
 
-NSString *const TSAttachementGroupAvatarFileRelationshipEdge = @"TSAttachementGroupAvatarFileEdge";
-
 @implementation TSGroupModel
 
 #if TARGET_OS_IOS
@@ -12,11 +10,10 @@ NSString *const TSAttachementGroupAvatarFileRelationshipEdge = @"TSAttachementGr
                     memberIds:(NSMutableArray *)memberIds
                         image:(UIImage *)image
                       groupId:(NSData *)groupId
-       associatedAttachmentId:(NSString *)attachmentId {
+{
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
-    _groupImage             = image;
-    _associatedAttachmentId = attachmentId;
+    _groupImage = image; // image is stored in DB
     _groupId                = groupId;
 
     return self;

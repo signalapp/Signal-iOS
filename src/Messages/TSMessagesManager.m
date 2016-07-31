@@ -158,23 +158,17 @@
     }
 }
 
-- (void)handleIncomingMessage:(IncomingPushMessageSignal *)incomingMessage
-              withPushContent:(PushMessageContent *)content {
+- (void)handleIncomingMessage:(IncomingPushMessageSignal *)incomingMessage withPushContent:(PushMessageContent *)content
+{
     if (content.hasGroup) {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-          TSGroupModel *emptyModelToFillOutId =
-              [[TSGroupModel alloc] initWithTitle:nil
-                                        memberIds:nil
-                                            image:nil
-                                          groupId:content.group.id
-                           associatedAttachmentId:nil]; // TODO refactor the TSGroupThread to
-                                                        // just take in an ID (as it
-          // is all that it uses). Should not take in more than it uses
-          TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
-          if (gThread == nil && content.group.type != PushMessageContentGroupContextTypeUpdate) {
-              ignoreMessage = YES;
-          }
+            TSGroupModel *emptyModelToFillOutId =
+                [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id];
+            TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+            if (gThread == nil && content.group.type != PushMessageContentGroupContextTypeUpdate) {
+                ignoreMessage = YES;
+            }
         }];
         if (ignoreMessage) {
             DDLogDebug(@"Received message from group that I left or don't know "
@@ -254,8 +248,7 @@
               [[TSGroupModel alloc] initWithTitle:content.group.name
                                         memberIds:[[[NSSet setWithArray:content.group.members] allObjects] mutableCopy]
                                             image:nil
-                                          groupId:content.group.id
-                           associatedAttachmentId:nil];
+                                          groupId:content.group.id];
           TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
           [gThread saveWithTransaction:transaction];
 
@@ -266,8 +259,9 @@
                   if ([avatar isKindOfClass:[TSAttachmentStream class]]) {
                       TSAttachmentStream *stream = (TSAttachmentStream *)avatar;
                       if ([stream isImage]) {
-                          model.associatedAttachmentId = stream.uniqueId;
-                          model.groupImage             = [stream image];
+                          model.groupImage = [stream image];
+                          // No need to keep the attachment around after assigning the image.
+                          [stream removeWithTransaction:transaction];
                       }
                   }
               }
