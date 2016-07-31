@@ -1,22 +1,17 @@
-//
-//  TSStorageManager.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 27/10/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-
-#import <25519/Randomness.h>
-#import <SSKeychain/SSKeychain.h>
-#import <YapDatabase/YapDatabaseRelationship.h>
+#import "TSStorageManager.h"
 #import "NSData+Base64.h"
+#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import "TSInteraction.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
+#import <25519/Randomness.h>
+#import <SSKeychain/SSKeychain.h>
+#import <YapDatabase/YapDatabaseRelationship.h>
 
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
 
@@ -65,8 +60,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
 
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-
-    [self.database registerExtension:[[YapDatabaseRelationship alloc] init] withName:@"TSRelationships"];
 }
 
 

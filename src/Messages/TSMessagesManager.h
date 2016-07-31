@@ -1,17 +1,13 @@
-//
-//  TSMessagesHandler.h
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 11/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
 #import "IncomingPushMessageSignal.pb.h"
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSOutgoingMessage.h"
+
 @class TSCall;
+@class YapDatabaseConnection;
 
 @interface TSMessagesManager : NSObject
 
@@ -26,10 +22,10 @@
                 inThread:(TSThread *)thread;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments;
+                attachmentIds:(NSArray<NSString *> *)attachmentIds;
 - (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
                   withContent:(PushMessageContent *)content
-                  attachments:(NSArray *)attachments
+                attachmentIds:(NSArray<NSString *> *)attachmentIds
               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock;
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage;

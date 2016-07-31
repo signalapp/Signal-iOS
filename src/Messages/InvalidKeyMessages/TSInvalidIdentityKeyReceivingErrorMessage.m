@@ -1,23 +1,18 @@
-//
-//  TSInvalidIdentityKeyErrorMessage.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 31/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <YapDatabase/YapDatabaseTransaction.h>
-#import <YapDatabase/YapDatabaseView.h>
-
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/PreKeyWhisperMessage.h>
+#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
+#import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSFingerprintGenerator.h"
-#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <AxolotlKit/PreKeyWhisperMessage.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
+#import <YapDatabase/YapDatabaseView.h>
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage
 

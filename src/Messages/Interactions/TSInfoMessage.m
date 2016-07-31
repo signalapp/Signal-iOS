@@ -13,12 +13,15 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachments:nil];
+                      messageType:(TSInfoMessageType)infoMessage
+{
+    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:nil];
 
-    if (self) {
-        _messageType = infoMessage;
+    if (!self) {
+        return self;
     }
+
+    _messageType = infoMessage;
 
     return self;
 }

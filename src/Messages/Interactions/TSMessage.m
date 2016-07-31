@@ -1,69 +1,38 @@
-//
-//  TSMessage.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 12/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "TSMessage.h"
-
-NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
+#import "TSAttachment.h"
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @implementation TSMessage
-
-- (void)addattachments:(NSArray *)attachments {
-    for (NSString *identifier in attachments) {
-        [self addattachment:identifier];
-    }
-}
-
-- (void)addattachment:(NSString *)attachment {
-    if (!_attachments) {
-        _attachments = [NSMutableArray array];
-    }
-
-    [self.attachments addObject:attachment];
-}
-
-- (NSArray *)yapDatabaseRelationshipEdges {
-    NSMutableArray *edges = [[super yapDatabaseRelationshipEdges] mutableCopy];
-
-    if ([self hasAttachments]) {
-        for (NSString *attachmentId in self.attachments) {
-            YapDatabaseRelationshipEdge *fileEdge =
-                [[YapDatabaseRelationshipEdge alloc] initWithName:TSAttachementsRelationshipEdgeName
-                                                   destinationKey:attachmentId
-                                                       collection:[TSAttachment collection]
-                                                  nodeDeleteRules:YDB_DeleteDestinationIfAllSourcesDeleted];
-            [edges addObject:fileEdge];
-        }
-    }
-    return edges;
-}
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageBody:(NSString *)body
-                      attachments:(NSArray *)attachments {
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+{
     self = [super initWithTimestamp:timestamp inThread:thread];
 
-    if (self) {
-        _body        = body;
-        _attachments = [attachments mutableCopy];
+    if (!self) {
+        return self;
     }
+
+    _body = body;
+    _attachmentIds = [attachmentIds mutableCopy];
+
     return self;
 }
 
 - (BOOL)hasAttachments
 {
-    return self.attachments ? (self.attachments.count > 0) : false;
+    return self.attachmentIds ? (self.attachmentIds.count > 0) : false;
 }
 
 - (NSString *)debugDescription
 {
     if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachments[0];
+        NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
         return [NSString stringWithFormat:@"Message with body:%@", self.body];
@@ -73,7 +42,7 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
 - (NSString *)description
 {
     if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachments[0];
+        NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
         if (attachment) {
             return attachment.description;
@@ -85,13 +54,13 @@ NSString *const TSAttachementsRelationshipEdgeName = @"TSAttachmentEdge";
     }
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    for (NSString *attachmentId in _attachments) {
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super removeWithTransaction:transaction];
+    for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         [attachment removeWithTransaction:transaction];
-    }
-
-    [super removeWithTransaction:transaction];
+    };
 }
 
 @end

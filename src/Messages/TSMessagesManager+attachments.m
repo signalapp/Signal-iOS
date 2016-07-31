@@ -1,19 +1,18 @@
-//
-//  TSMessagesManager+attachments.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 17/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <YapDatabase/YapDatabaseConnection.h>
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSAttachmentPointer.h"
+#import "TSContactThread.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSNetworkManager.h"
+#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @interface TSMessagesManager ()
 
@@ -72,10 +71,11 @@ dispatch_queue_t attachmentsQueue() {
     }];
 
     if (shouldProcessMessage) {
-        [self handleReceivedMessage:message
-                        withContent:content
-                        attachments:retrievedAttachments
-                    completionBlock:^(NSString *messageIdentifier) {
+        [self
+            handleReceivedMessage:message
+                      withContent:content
+                    attachmentIds:retrievedAttachments
+                  completionBlock:^(NSString *messageIdentifier) {
                       for (NSString *pointerId in retrievedAttachments) {
                           dispatch_async(attachmentsQueue(), ^{
                             __block TSAttachmentPointer *pointer;
@@ -87,7 +87,7 @@ dispatch_queue_t attachmentsQueue() {
                             [self retrieveAttachment:pointer messageId:messageIdentifier];
                           });
                       }
-                    }];
+                  }];
     }
 }
 
@@ -103,17 +103,17 @@ dispatch_queue_t attachmentsQueue() {
           dispatch_async(attachmentsQueue(), ^{
             if ([responseObject isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
-                NSString *attachementId    = [(NSNumber *)[responseDict objectForKey:@"id"] stringValue];
+                NSString *attachmentId = [(NSNumber *)[responseDict objectForKey:@"id"] stringValue];
                 NSString *location         = [responseDict objectForKey:@"location"];
 
                 TSAttachmentEncryptionResult *result =
-                    [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachementId];
+                    [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachmentId];
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                   result.pointer.isDownloaded = NO;
                   [result.pointer saveWithTransaction:transaction];
                 }];
                 outgoingMessage.body = nil;
-                [outgoingMessage.attachments addObject:attachementId];
+                [outgoingMessage.attachmentIds addObject:attachmentId];
                 if (outgoingMessage.groupMetaMessage != TSGroupMessageNew &&
                     outgoingMessage.groupMetaMessage != TSGroupMessageUpdate) {
                     [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
@@ -121,7 +121,7 @@ dispatch_queue_t attachmentsQueue() {
                       [outgoingMessage saveWithTransaction:transaction];
                     }];
                 }
-                BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachementId];
+                BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachmentId];
                 if (success) {
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                       result.pointer.isDownloaded = YES;
@@ -165,11 +165,12 @@ dispatch_queue_t attachmentsQueue() {
            contentType:(NSString *)contentType
                 thread:(TSThread *)thread
                success:(successSendingCompletionBlock)successCompletionBlock
-               failure:(failedSendingCompletionBlock)failedCompletionBlock {
+               failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:thread
                                                                   messageBody:nil
-                                                                  attachments:[[NSMutableArray alloc] init]];
+                                                                attachmentIds:[NSMutableArray new]];
     [self sendAttachment:attachmentData
              contentType:contentType
                inMessage:message
@@ -195,6 +196,9 @@ dispatch_queue_t attachmentsQueue() {
                     [self decryptedAndSaveAttachment:attachment data:data messageId:messageId];
                 }
               });
+          } else {
+              DDLogError(@"Failed retrieval of attachment. Response had unexpected format.");
+              [self setFailedAttachment:attachment inMessage:messageId];
           }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -224,7 +228,8 @@ dispatch_queue_t attachmentsQueue() {
 
 - (void)decryptedAndSaveAttachment:(TSAttachmentPointer *)attachment
                               data:(NSData *)cipherText
-                         messageId:(NSString *)messageId {
+                         messageId:(NSString *)messageId
+{
     NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey];
 
     if (!plaintext) {
@@ -238,17 +243,15 @@ dispatch_queue_t attachmentsQueue() {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
           [stream saveWithTransaction:transaction];
           if ([attachment.avatarOfGroupId length] != 0) {
-              TSGroupModel *emptyModelToFillOutId = [[TSGroupModel alloc]
-                           initWithTitle:nil
-                               memberIds:nil
-                                   image:nil
-                                 groupId:attachment.avatarOfGroupId
-                  associatedAttachmentId:attachment.uniqueId]; // TODO refactor the TSGroupThread to just take in an ID
-                                                               // (as it is all that it uses). Should not take in more
-                                                               // than it uses
+              TSGroupModel *emptyModelToFillOutId =
+                  [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:attachment.avatarOfGroupId];
               TSGroupThread *gThread =
                   [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+
               gThread.groupModel.groupImage = [stream image];
+              // No need to keep the attachment around after assigning the image.
+              [stream removeWithTransaction:transaction];
+
               [gThread saveWithTransaction:transaction];
           } else {
               // Causing message to be reloaded in view.

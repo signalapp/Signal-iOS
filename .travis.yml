@@ -8,7 +8,7 @@ before_install:
   - cd $TEST_DIR
   - brew update
   - brew outdated xctool || brew upgrade xctool
-  - gem install cocoapods --no-ri --no-rdoc
+  - gem install cocoapods xcpretty --no-ri --no-rdoc
   - pod repo update --silent
 
 install: pod install
@@ -16,7 +16,11 @@ install: pod install
 script:
 - |
   set -o pipefail
-  xcodebuild -workspace TSKitiOSTestApp.xcworkspace -scheme TSKitiOSTestApp -sdk iphonesimulator build test
+  xcodebuild -workspace TSKitiOSTestApp.xcworkspace \
+             -scheme TSKitiOSTestApp \
+             -sdk iphonesimulator \
+             -destination 'platform=iOS Simulator,name=iPhone 6' \
+             build test | xcpretty
 
 xcode_workspace: TSKitiOSTestApp.xcworkspace
 xcode_scheme: TSKitiOSTestApp

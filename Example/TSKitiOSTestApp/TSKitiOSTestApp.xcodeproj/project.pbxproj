@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		308D7DFA789594CEA62740D9 /* libPods-TSKitiOSTestAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0DC1A83C39CBC09FB2405A3 /* libPods-TSKitiOSTestAppTests.a */; };
+		452EE6CF1D4A754C00E934BA /* TSThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 452EE6CE1D4A754C00E934BA /* TSThreadTest.m */; };
+		452EE6D51D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 452EE6D41D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m */; };
 		45458B751CC342B600A02153 /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */; };
 		45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */; };
 		45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */; };
@@ -42,6 +44,8 @@
 		1A50A62A8930EE2BC9B8AC11 /* Pods-TSKitiOSTestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestApp/Pods-TSKitiOSTestApp.release.xcconfig"; sourceTree = "<group>"; };
 		31DFDA8F9523F5B15EA2376B /* Pods-TSKitiOSTestApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestApp/Pods-TSKitiOSTestApp.debug.xcconfig"; sourceTree = "<group>"; };
 		36DA6C703F99948D553F4E3F /* Pods-TSKitiOSTestAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestAppTests/Pods-TSKitiOSTestAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		452EE6CE1D4A754C00E934BA /* TSThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThreadTest.m; sourceTree = "<group>"; };
+		452EE6D41D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanedDataCleanerTest.m; sourceTree = "<group>"; };
 		45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
 		45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentsTest.m; sourceTree = "<group>"; };
 		45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
@@ -51,6 +55,7 @@
 		45458B731CC342B600A02153 /* CryptographyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptographyTests.m; sourceTree = "<group>"; };
 		45458B741CC342B600A02153 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePaddingTests.m; sourceTree = "<group>"; };
 		459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhoneNumberTest.m; path = ../../../tests/Contacts/PhoneNumberTest.m; sourceTree = "<group>"; };
+		459FE0DA1D4AD49E00E1071A /* TSKitiOSTestApp-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TSKitiOSTestApp-Prefix.pch"; sourceTree = "<group>"; };
 		45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttributesTest.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,6 +121,7 @@
 				45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */,
 				45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */,
 				45458B711CC342B600A02153 /* TSStorageSignedPreKeyStore.m */,
+				452EE6D41D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m */,
 			);
 			name = Storage;
 			path = ../../../tests/Storage;
@@ -135,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */,
+				452EE6CE1D4A754C00E934BA /* TSThreadTest.m */,
 			);
 			name = Contacts;
 			sourceTree = "<group>";
@@ -207,6 +214,7 @@
 				B6273DE21C13A2E500738558 /* LaunchScreen.storyboard */,
 				B6273DE51C13A2E500738558 /* Info.plist */,
 				B6273DD41C13A2E500738558 /* Supporting Files */,
+				459FE0DA1D4AD49E00E1071A /* TSKitiOSTestApp-Prefix.pch */,
 			);
 			path = TSKitiOSTestApp;
 			sourceTree = "<group>";
@@ -446,6 +454,8 @@
 				45458B751CC342B600A02153 /* SignedPreKeyDeletionTests.m in Sources */,
 				45458B7B1CC342B600A02153 /* CryptographyTests.m in Sources */,
 				45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */,
+				452EE6D51D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m in Sources */,
+				452EE6CF1D4A754C00E934BA /* TSThreadTest.m in Sources */,
 				45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */,
 				45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */,
 				459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */,
@@ -597,6 +607,8 @@
 			baseConfigurationReference = 36DA6C703F99948D553F4E3F /* Pods-TSKitiOSTestAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/TSKitiOSTestApp-Prefix.pch";
 				INFOPLIST_FILE = TSKitiOSTestAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.TSKitiOSTestAppTests;
@@ -610,6 +622,8 @@
 			baseConfigurationReference = D3737F7A041D7147015C02C2 /* Pods-TSKitiOSTestAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/TSKitiOSTestApp-Prefix.pch";
 				INFOPLIST_FILE = TSKitiOSTestAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.TSKitiOSTestAppTests;

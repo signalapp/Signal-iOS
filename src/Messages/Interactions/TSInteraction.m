@@ -1,24 +1,10 @@
-//
-//  TSInteraction.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 12/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "TSInteraction.h"
-
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSStorageManager+messageIDs.h"
-
-
-const struct TSMessageRelationships TSMessageRelationships = {
-    .threadUniqueId = @"threadUniqueId",
-};
-
-const struct TSMessageEdges TSMessageEdges = {
-    .thread = @"thread",
-};
+#import "TSThread.h"
 
 @implementation TSInteraction
 
@@ -54,23 +40,6 @@ const struct TSMessageEdges TSMessageEdges = {
                       usingTransaction:transaction];
 
     return interaction;
-}
-
-
-#pragma mark YapDatabaseRelationshipNode
-
-- (NSArray *)yapDatabaseRelationshipEdges {
-    NSArray *edges = nil;
-    if (self.uniqueThreadId) {
-        YapDatabaseRelationshipEdge *threadEdge =
-            [YapDatabaseRelationshipEdge edgeWithName:TSMessageEdges.thread
-                                       destinationKey:self.uniqueThreadId
-                                           collection:[TSThread collection]
-                                      nodeDeleteRules:YDB_DeleteSourceIfDestinationDeleted];
-        edges = @[ threadEdge ];
-    }
-
-    return edges;
 }
 
 + (NSString *)collection {

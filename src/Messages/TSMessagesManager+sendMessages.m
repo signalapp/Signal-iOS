@@ -1,27 +1,23 @@
-//
-//  TSMessagesManager+sendMessages.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 17/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import "TSMessagesManager+sendMessages.h"
-
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <AxolotlKit/SessionCipher.h>
-#import <Mantle/Mantle.h>
-#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
+#import "TSContactThread.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
+#import "TSMessagesManager+sendMessages.h"
 #import "TSNetworkManager.h"
 #import "TSServerMessage.h"
 #import "TSStorageHeaders.h"
+#import <AxolotlKit/AxolotlExceptions.h>
+#import <AxolotlKit/SessionBuilder.h>
+#import <AxolotlKit/SessionCipher.h>
+#import <Mantle/Mantle.h>
+#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
 
 #define RETRY_ATTEMPTS 3
 
@@ -92,7 +88,6 @@ dispatch_queue_t sendingQueue() {
 {
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         dispatch_async(sendingQueue(), ^{
-            TSGroupThread *groupThread = (TSGroupThread *)thread;
             [self groupSend:@[ recipient ] // Avoid spamming entire group when resending failed message.
                     Message:message
                    inThread:thread
@@ -529,8 +524,8 @@ dispatch_queue_t sendingQueue() {
                 break;
             case TSGroupMessageUpdate:
             case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && [message.attachments count] == 1) {
-                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:[message.attachments firstObject]];
+                if (gThread.groupModel.groupImage != nil && [message.attachmentIds count] == 1) {
+                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds[0]];
                     if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
                         TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
                         PushMessageContentAttachmentPointerBuilder *attachmentbuilder =
@@ -555,8 +550,8 @@ dispatch_queue_t sendingQueue() {
         [builder setGroup:groupBuilder.build];
     }
     if (processAttachments) {
-        NSMutableArray *attachmentsArray = [NSMutableArray array];
-        for (NSString *attachmentId in message.attachments) {
+        NSMutableArray *attachments = [NSMutableArray new];
+        for (NSString *attachmentId in message.attachmentIds) {
             id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
 
             if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
@@ -568,10 +563,10 @@ dispatch_queue_t sendingQueue() {
                 [attachmentbuilder setContentType:attachment.contentType];
                 [attachmentbuilder setKey:attachment.encryptionKey];
 
-                [attachmentsArray addObject:[attachmentbuilder build]];
+                [attachments addObject:[attachmentbuilder build]];
             }
         }
-        [builder setAttachmentsArray:attachmentsArray];
+        [builder setAttachmentsArray:attachments];
     }
     return [builder.build data];
 }
