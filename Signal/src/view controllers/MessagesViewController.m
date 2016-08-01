@@ -710,14 +710,15 @@ typedef enum : NSUInteger {
            withMessageText:(NSString *)text
                   senderId:(NSString *)senderId
          senderDisplayName:(NSString *)senderDisplayName
-                      date:(NSDate *)date {
+                      date:(NSDate *)date
+{
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
 
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:self.thread
                                                                       messageBody:text
-                                                                      attachments:nil];
+                                                                    attachmentIds:nil];
 
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
         [self finishSendingMessage];
@@ -1257,7 +1258,7 @@ typedef enum : NSUInteger {
     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-        for (NSString *attachmentId in message.attachments) {
+        for (NSString *attachmentId in message.attachmentIds) {
             __block TSAttachment *attachment;
 
             [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1587,11 +1588,12 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType {
+- (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType
+{
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:self.thread
                                                                   messageBody:nil
-                                                                  attachments:[NSMutableArray array]];
+                                                                attachmentIds:[NSMutableArray new]];
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
@@ -1980,14 +1982,15 @@ typedef enum : NSUInteger {
     [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
 }
 
-- (void)leaveGroup {
+- (void)leaveGroup
+{
     [self.navController hideDropDown:self];
 
     TSGroupThread *gThread     = (TSGroupThread *)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:gThread
                                                                   messageBody:@""
-                                                                  attachments:[[NSMutableArray alloc] init]];
+                                                                attachmentIds:[NSMutableArray new]];
     message.groupMetaMessage = TSGroupMessageQuit;
     [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread success:nil failure:nil];
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1999,10 +2002,10 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel {
+- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
+{
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
-
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       groupThread            = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
@@ -2011,7 +2014,7 @@ typedef enum : NSUInteger {
       message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                     inThread:groupThread
                                                  messageBody:@""
-                                                 attachments:[[NSMutableArray alloc] init]];
+                                               attachmentIds:[NSMutableArray new]];
       message.groupMetaMessage = TSGroupMessageUpdate;
     }];
 
