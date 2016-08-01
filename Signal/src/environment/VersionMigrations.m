@@ -63,10 +63,13 @@
         [self clearBloomFilterCache];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.4.1"] && [TSAccountManager isRegistered]) {
-        DDLogInfo(@"Running migration: removing orphaned data.");
-        [[OWSOrphanedDataCleaner new] removeOrphanedData];
-    }
+    //    Disabled until further stability testing is done. After some local testing, I saw missing attachments. - MJK
+    //
+    //    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.4.1"] && [TSAccountManager isRegistered])
+    //    {
+    //        DDLogInfo(@"Running migration: removing orphaned data.");
+    //        [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    //    }
 
     [Environment.preferences setAndGetCurrentVersion];
 }
