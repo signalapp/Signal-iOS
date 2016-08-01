@@ -54,7 +54,6 @@
 + (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                        usingBlock:(void (^)(id object, BOOL *stop))block;
 
-
 /**
  * @return A shared database connection.
  */
@@ -69,15 +68,12 @@
  *
  *  @return Instance of the object or nil if non-existent
  */
-
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID transaction:(YapDatabaseReadTransaction *)transaction;
-
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID;
 
 /**
  *  Saves the object with a new YapDatabaseConnection
  */
-
 - (void)save;
 
 /**
@@ -85,17 +81,12 @@
  *
  *  @param transaction Database transaction
  */
-
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 
 /**
  *  The unique identifier of the stored object
  */
-
-
 @property (nonatomic) NSString *uniqueId;
-
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)remove;

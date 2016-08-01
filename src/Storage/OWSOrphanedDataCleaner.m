@@ -77,7 +77,6 @@
         }
     }];
 
-    // TODO Make sure we're not deleting group update avatars
     NSArray<NSString *> *filenamesToDelete = [attachmentIdFilenames allValues];
     NSMutableArray<NSString *> *absolutePathsToDelete = [NSMutableArray arrayWithCapacity:[filenamesToDelete count]];
     for (NSString *filename in filenamesToDelete) {

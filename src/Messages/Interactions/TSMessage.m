@@ -5,6 +5,31 @@
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
+static const NSUInteger OWSMessageSchemaVersion = 2;
+
+@interface TSMessage ()
+
+/**
+ * The version of the model class's schema last used to serialize this model. Use this to manage data migrations during
+ * object de/serialization.
+ *
+ * e.g.
+ *
+ *    - (id)initWithCoder:(NSCoder *)coder
+ *    {
+ *      self = [super initWithCoder:coder];
+ *      if (!self) { return self; }
+ *      if (_schemaVersion < 2) {
+ *        _newName = [coder decodeObjectForKey:@"oldName"]
+ *      }
+ *      ...
+ *      _schemaVersion = 2;
+ *    }
+ */
+@property (nonatomic, readonly) NSUInteger schemaVersion;
+
+@end
+
 @implementation TSMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -23,6 +48,24 @@
 
     return self;
 }
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_schemaVersion < 2) {
+        if (!_attachmentIds) {
+            _attachmentIds = [coder decodeObjectForKey:@"attachments"];
+        }
+    }
+
+    _schemaVersion = OWSMessageSchemaVersion;
+    return self;
+}
+
 
 - (BOOL)hasAttachments
 {
