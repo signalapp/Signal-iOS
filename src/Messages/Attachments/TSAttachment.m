@@ -38,6 +38,8 @@
         return [NSString stringWithFormat:@"📽 %@", attachmentString];
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
         return [NSString stringWithFormat:@"📻 %@", attachmentString];
+    } else if ([MIMETypeUtil isAnimated:self.contentType]) {
+        return [NSString stringWithFormat:@"🎡 %@", attachmentString];
     }
 
     return attachmentString;
