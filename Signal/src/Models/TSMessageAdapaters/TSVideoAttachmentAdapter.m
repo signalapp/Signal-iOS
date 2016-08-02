@@ -143,14 +143,16 @@
         NSURL *url =
             [MIMETypeUtil simLinkCorrectExtensionOfFile:_attachment.mediaURL ofMIMEType:_attachment.contentType];
 
-        AVURLAsset *asset         = [[AVURLAsset alloc] initWithURL:url options:nil];
-        _waveform                 = [[SCWaveformView alloc] init];
-        _waveform.frame           = CGRectMake(42.0, 0.0, size.width - 84, size.height);
-        _waveform.asset           = asset;
-        _waveform.progressColor   = [UIColor whiteColor];
-        _waveform.backgroundColor = [UIColor colorWithRed:229 / 255.0f green:228 / 255.0f blue:234 / 255.0f alpha:1.0f];
-        [_waveform generateWaveforms];
-        _waveform.progress = 0.0;
+        if (!self.waveform) {
+            AVURLAsset *asset         = [[AVURLAsset alloc] initWithURL:url options:nil];
+            self.waveform                 = [[SCWaveformView alloc] init];
+            self.waveform.frame           = CGRectMake(42.0, 0.0, size.width - 84, size.height);
+            self.waveform.asset           = asset;
+            self.waveform.progressColor   = [UIColor whiteColor];
+            self.waveform.backgroundColor = [UIColor colorWithRed:229 / 255.0f green:228 / 255.0f blue:234 / 255.0f alpha:1.0f];
+            [self.waveform generateWaveforms];
+            self.waveform.progress = 0.0;
+        }
 
         _audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
         _audioBubble.backgroundColor =
