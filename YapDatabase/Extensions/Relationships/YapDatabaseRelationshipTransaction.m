@@ -2881,7 +2881,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * Helper method for executing the sqlite statement to delete all protocol edges from the database.
  *
  * This means all edges that were created via the YapDatabaseRelationshipNode protocol.
- * So every edge in the database where the 'manual' column in set to zero.
+ * So every edge in the database where the 'manual' column is set to zero.
 **/
 - (void)removeAllProtocolEdges
 {
