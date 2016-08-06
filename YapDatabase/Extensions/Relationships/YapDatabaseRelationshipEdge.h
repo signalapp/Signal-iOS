@@ -51,9 +51,9 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
              nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
- * Returns an edge with the given name, destinationFilePath & nodeDeleteRules.
+ * Returns an edge with the given name, destinationFileURL & nodeDeleteRules.
  * 
- * When using a destinationFilePath, only a subset of the nodeDeleteRules apply.
+ * When using a destinationFileURL, only a subset of the nodeDeleteRules apply.
  * Specifically only the following work:
  * - YDB_DeleteDestinationIfSourceDeleted
  * - YDB_DeleteDestinationIfAllSourcesDeleted
@@ -89,7 +89,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
 /**
  * Returns a fully specified edge.
  * 
- * When using a destinationFilePath, only a subset of the nodeDeleteRules apply.
+ * When using a destinationFileURL, only a subset of the nodeDeleteRules apply.
  * Specifically only the following work:
  * - YDB_DeleteDestinationIfSourceDeleted
  * - YDB_DeleteDestinationIfAllSourcesDeleted
@@ -117,7 +117,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
- * For documentation @see edgeWithName:destinationFilePath:nodeDeleteRules:
+ * For documentation @see edgeWithName:destinationFileURL:nodeDeleteRules:
 **/
 - (id)initWithName:(NSString *)name destinationFileURL:(NSURL *)destinationFileURL
                                        nodeDeleteRules:(YDB_NodeDeleteRules)rules;
@@ -133,7 +133,7 @@ typedef NS_OPTIONS(uint16_t, YDB_NodeDeleteRules) {
    nodeDeleteRules:(YDB_NodeDeleteRules)rules;
 
 /**
- * For documentation @see edgeWithName:sourceKey:collection:destinationFilePath:nodeDeleteRules:
+ * For documentation @see edgeWithName:sourceKey:collection:destinationFileURL:nodeDeleteRules:
 **/
 - (id)initWithName:(NSString *)name sourceKey:(NSString *)sourceKey
                                    collection:(nullable NSString *)sourceCollection
