@@ -43,34 +43,53 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableAttributedString *fullNameAttributedString =
         [[NSMutableAttributedString alloc] initWithString:contact.fullName];
 
-    UIFont *firstNameFont;
-    UIFont *lastNameFont;
+    BOOL firstNameDisplay = ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
+    BOOL sortByFirstName = ABPersonGetSortOrdering() == kABPersonSortByFirstName ? YES : NO;
 
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
+    UIFont *firstNameFont;
+    UIColor *firstNameFontColor;
+    NSRange firstNameRange;
+    
+    UIFont *lastNameFont;
+    UIColor *lastNameFontColor;
+    NSRange lastNameRange;
+
+    if ((sortByFirstName && contact.firstName) || !contact.lastName) {
         firstNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
-        lastNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
+        firstNameFontColor = [UIColor blackColor];
+        lastNameFont  = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
+        lastNameFontColor = [UIColor ows_darkGrayColor];
     } else {
         firstNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
-        lastNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
+        firstNameFontColor = [UIColor ows_darkGrayColor];
+        lastNameFont  = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
+        lastNameFontColor = [UIColor blackColor];
     }
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:firstNameFont
-                                     range:NSMakeRange(0, contact.firstName.length)];
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:lastNameFont
-                                     range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                     value:[UIColor blackColor]
-                                     range:NSMakeRange(0, contact.fullName.length)];
-
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    
+    if (firstNameDisplay) {
+        unsigned skipFirstName = contact.firstName ? 1 : 0;
+        firstNameRange = NSMakeRange(0, contact.firstName.length);
+        lastNameRange = NSMakeRange(contact.firstName.length + skipFirstName, contact.lastName.length);
     } else {
+        firstNameRange = NSMakeRange(contact.lastName.length, contact.firstName.length);
+        lastNameRange = NSMakeRange(0, contact.lastName.length);
+    }
+    
+    if (contact.firstName) {
+        [fullNameAttributedString addAttribute:NSFontAttributeName
+                                         value:firstNameFont
+                                         range:firstNameRange];
         [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(0, contact.firstName.length)];
+                                         value:firstNameFontColor
+                                         range:firstNameRange];
+    }
+    if (contact.lastName) {
+        [fullNameAttributedString addAttribute:NSFontAttributeName
+                                         value:lastNameFont
+                                         range:lastNameRange];
+        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
+                                         value:lastNameFontColor
+                                         range:lastNameRange];
     }
     return fullNameAttributedString;
 }
