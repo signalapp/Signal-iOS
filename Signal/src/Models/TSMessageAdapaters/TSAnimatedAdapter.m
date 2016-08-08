@@ -56,6 +56,13 @@
     _cachedImageView = nil;
 }
 
+#pragma mark - NSObject
+
+- (NSUInteger)hash
+{
+    return super.hash ^ self.image.hash;
+}
+
 #pragma mark - JSQMessageMediaData protocol
 
 - (UIView *)mediaView {
