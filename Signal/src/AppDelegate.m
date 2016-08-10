@@ -23,7 +23,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @interface AppDelegate ()
 
-@property (nonatomic, retain) UIWindow *blankWindow;
+@property (nonatomic, retain) UIWindow *screenProtectionWindow;
 
 @end
 
@@ -93,7 +93,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
 
-    [self prepareScreenshotProtection];
+    [self prepareScreenProtection];
 
     if ([TSAccountManager isRegistered]) {
         if (application.applicationState == UIApplicationStateInactive) {
@@ -229,31 +229,32 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 }
 
-- (void)prepareScreenshotProtection {
-    self.blankWindow = ({
-        UIWindow *window              = [[UIWindow alloc] initWithFrame:self.window.bounds];
-        window.hidden                 = YES;
-        window.opaque                 = YES;
-        window.userInteractionEnabled = NO;
-        window.windowLevel            = CGFLOAT_MAX;
-        window.backgroundColor        = UIColor.ows_materialBlueColor;
+/**
+ * Screen protection obscures the app screen shown in the app switcher.
+ */
+- (void)prepareScreenProtection
+{
+    UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
+    window.hidden = YES;
+    window.opaque = YES;
+    window.userInteractionEnabled = NO;
+    window.windowLevel = CGFLOAT_MAX;
+    window.backgroundColor = UIColor.ows_materialBlueColor;
+    window.rootViewController =
+        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
-        UIViewController *vc = [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-        window.rootViewController = vc;
-        window;
-    });
+    self.screenProtectionWindow = window;
 }
 
 - (void)protectScreen {
     if (Environment.preferences.screenSecurityIsEnabled) {
-        self.blankWindow.hidden = NO;
+        self.screenProtectionWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection {
     if (Environment.preferences.screenSecurityIsEnabled) {
-        self.blankWindow.hidden = YES;
+        self.screenProtectionWindow.hidden = YES;
     }
 }
 
