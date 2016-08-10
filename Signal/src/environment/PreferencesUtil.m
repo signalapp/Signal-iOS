@@ -35,13 +35,10 @@
     }
 }
 
-- (BOOL)screenSecurityIsEnabled {
+- (BOOL)screenSecurityIsEnabled
+{
     NSNumber *preference = [self tryGetValueForKey:SCREEN_SECURITY_KEY];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
+    return preference ? [preference boolValue] : YES;
 }
 
 - (BOOL)getHasSentAMessage {
