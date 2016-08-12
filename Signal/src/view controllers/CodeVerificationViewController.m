@@ -8,8 +8,8 @@
 
 #import "CodeVerificationViewController.h"
 
-#import <TextSecureKit/TSStorageManager+keyingMaterial.h>
-#import "ContactsManager.h"
+#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
+#import "OWSContactsManager.h"
 #import "Environment.h"
 #import "LocalizableText.h"
 #import "PushManager.h"
@@ -48,11 +48,6 @@
     [_phoneNumberEntered setText:_formattedPhoneNumber];
     [self adjustScreenSizes];
 }
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 
 - (IBAction)verifyChallengeAction:(id)sender {
     [self enableServerActions:NO];
@@ -137,7 +132,6 @@
     [TSAccountManager verifyAccountWithCode:[self validationCodeFromTextField]
         pushToken:pushTokens[0]
         voipToken:([pushTokens count] == 2) ? pushTokens.lastObject : nil
-        supportsVoice:YES
         success:^{
           [textsecureRegistration trySetResult:@YES];
         }

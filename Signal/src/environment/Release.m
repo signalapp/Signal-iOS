@@ -58,7 +58,7 @@ static unsigned char DH3K_PRIME[] = {
                ]
                           andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
                          andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                       andContactsManager:[ContactsManager new]];
+                       andContactsManager:[OWSContactsManager new]];
 }
 
 + (Environment *)stagingEnvironmentWithLogging:(id<Logging>)logging {
@@ -82,7 +82,7 @@ static unsigned char DH3K_PRIME[] = {
                ]
                           andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
                          andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                       andContactsManager:[ContactsManager new]];
+                       andContactsManager:[OWSContactsManager new]];
 }
 
 + (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions {

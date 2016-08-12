@@ -7,14 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <JSQMessagesViewController/JSQMessagesComposerTextView.h>
+#import <JSQMessagesViewController/JSQMessagesInputToolbar.h>
+#import <JSQMessagesViewController/JSQMessagesToolbarContentView.h>
+#import <JSQMessagesViewController/JSQMessagesKeyboardController.h>
 #import "Contact.h"
-
-#import "JSQMessagesComposerTextView.h"
-#import "JSQMessagesInputToolbar.h"
-#import "JSQMessagesToolbarContentView.h"
-
-#import "JSQMessagesKeyboardController.h"
 #import "LocalizableText.h"
 
 @interface MessageComposeTableViewController : UITableViewController

@@ -7,7 +7,7 @@
 //
 
 #import <Mantle/Mantle.h>
-#import <TextSecureKit/NSData+Base64.h>
+#import <SignalServiceKit/NSData+Base64.h>
 #import "ArrayUtil.h"
 #import "DataUtil.h"
 #import "RPAPICall.h"

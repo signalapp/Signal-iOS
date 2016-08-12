@@ -1,6 +1,6 @@
 #import "SignalUtil.h"
 
-#import <TextSecureKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import "Constraints.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"

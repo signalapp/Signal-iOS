@@ -16,6 +16,7 @@
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 #import "TSNetworkManager.h"
+#import <SignalServiceKit/OWSOrphanedDataCleaner.h>
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
@@ -30,23 +31,23 @@
 
 #pragma mark Utility methods
 
-+ (void)performUpdateCheck {
++ (void)performUpdateCheck
+{
     NSString *previousVersion = Environment.preferences.lastRanVersion;
-    NSString *currentVersion  = [Environment.preferences setAndGetCurrentVersion];
-    BOOL VOIPRegistration =
-        [[PushManager sharedManager] supportsVOIPPush] && ![Environment.preferences hasRegisteredVOIPPush];
-
     if (!previousVersion) {
-        DDLogError(@"No previous version found. Possibly first launch since install.");
+        DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         return;
     }
 
     if (([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"])) {
         // We don't migrate from RedPhone anymore, too painful to maintain.
-        // Resetting the app data and quitting.
+        DDLogError(@"Migrating from RedPhone no longer supported. Resetting app data and quitting.");
         [Environment resetAppData];
         exit(0);
     }
+
+    BOOL VOIPRegistration =
+        [[PushManager sharedManager] supportsVOIPPush] && ![Environment.preferences hasRegisteredVOIPPush];
 
     // VOIP Push might need to be enabled because 1) user ran old version 2) Update to compatible iOS version
     if (VOIPRegistration && [TSAccountManager isRegistered]) {
@@ -59,15 +60,15 @@
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
-        NSFileManager *fm         = [NSFileManager defaultManager];
-        NSArray *cachesDir        = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *bloomFilterPath = [[cachesDir objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
-        [fm removeItemAtPath:bloomFilterPath error:nil];
-        [[TSStorageManager sharedManager]
-                .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-          [transaction removeAllObjectsInCollection:@"TSRecipient"];
-        }];
+        [self clearBloomFilterCache];
     }
+
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.4.1"] && [TSAccountManager isRegistered]) {
+        DDLogInfo(@"Running migration: removing orphaned data.");
+        [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    }
+
+    [Environment.preferences setAndGetCurrentVersion];
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString
@@ -102,50 +103,6 @@
                                                      failure:failedBlock];
 }
 
-+ (void)blockingPushRegistration {
-    LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
-      [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_PUSH_KEY];
-
-      __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-
-      __block BOOL success;
-
-      __block failedBlock failedBlock = ^(NSError *error) {
-        success = NO;
-        dispatch_semaphore_signal(sema);
-      };
-
-      [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-        [TSAccountManager registerForPushNotifications:pushToken
-                                             voipToken:voipToken
-                                               success:^{
-                                                 success = YES;
-                                                 dispatch_semaphore_signal(sema);
-                                               }
-                                               failure:failedBlock];
-      }
-                                                       failure:failedBlock];
-
-      dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
-      return success;
-    };
-
-    LIControllerRetryBlock retryBlock = [LockInteractionController defaultNetworkRetry];
-
-    [LockInteractionController performBlock:blockingOperation
-                            completionBlock:^{
-                              [[NSUserDefaults standardUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_PUSH_KEY];
-                              DDLogWarn(@"Successfully migrated to 2.1");
-                            }
-                                 retryBlock:retryBlock
-                                usesNetwork:YES];
-}
-
-+ (BOOL)needsRegisterPush {
-    return [self userDefaultsBoolForKey:NEEDS_TO_REGISTER_PUSH_KEY];
-}
-
 + (void)clearVideoCache {
     NSArray *paths     = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
@@ -164,10 +121,6 @@
 
 #pragma mark Upgrading to 2.1.3 - Adding VOIP flag on TS Server
 
-+ (BOOL)needsRegisterAttributes {
-    return [self userDefaultsBoolForKey:NEEDS_TO_REGISTER_ATTRIBUTES] && [TSAccountManager isRegistered];
-}
-
 + (void)blockingAttributesUpdate {
     LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
       [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
@@ -176,7 +129,7 @@
 
       __block BOOL success;
 
-      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice:YES];
+      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
             success = YES;
@@ -205,15 +158,28 @@
                                 usesNetwork:YES];
 }
 
-#pragma mark Util
+#pragma mark Upgrading to 2.3.0
 
-+ (BOOL)userDefaultsBoolForKey:(NSString *)key {
-    NSNumber *num = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+// We removed bloom filter contact discovery. Clean up any local bloom filter data.
++ (void)clearBloomFilterCache {
+    NSFileManager *fm         = [NSFileManager defaultManager];
+    NSArray *cachesDir        = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *bloomFilterPath = [[cachesDir objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
 
-    if (!num) {
-        return NO;
+    if ([fm fileExistsAtPath:bloomFilterPath]) {
+        NSError *deleteError;
+        if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
+            DDLogInfo(@"Successfully removed bloom filter cache.");
+            [[TSStorageManager sharedManager]
+             .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                 [transaction removeAllObjectsInCollection:@"TSRecipient"];
+             }];
+            DDLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+        } else {
+            DDLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
+        }
     } else {
-        return [num boolValue];
+        DDLogDebug(@"No bloom filter cache to remove.");
     }
 }
 

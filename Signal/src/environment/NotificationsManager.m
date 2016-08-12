@@ -7,11 +7,11 @@
 //
 
 #import <AudioToolbox/AudioServices.h>
-#import <TextSecureKit/TSCall.h>
-#import <TextSecureKit/TSContactThread.h>
-#import <TextSecureKit/TSErrorMessage.h>
-#import <TextSecureKit/TSIncomingMessage.h>
-#import <TextSecureKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/TSCall.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSErrorMessage.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "PreferencesUtil.h"
@@ -25,14 +25,16 @@
 
 @implementation NotificationsManager
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
 
-    if (self) {
-        NSURL *newMessageSound =
-            [NSURL URLWithString:[[NSBundle mainBundle] pathForResource:@"NewMessage" ofType:@"aifc"]];
-        self.newMessageSound = AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageSound, &_newMessageSound);
+    if (!self) {
+        return self;
     }
+
+    NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
 
     return self;
 }

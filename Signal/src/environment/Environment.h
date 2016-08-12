@@ -25,7 +25,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 #define TESTING_OPTION_USE_DH_FOR_HANDSHAKE @"DhKeyAgreementOnly"
 
 @class RecentCallManager;
-@class ContactsManager;
+@class OWSContactsManager;
 @class PhoneManager;
 @class SignalsViewController;
 @class TSGroupThread;
@@ -44,7 +44,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @property (nonatomic, readonly) NSArray *testingAndLegacyOptions;
 @property (nonatomic, readonly) NSData *zrtpClientId;
 @property (nonatomic, readonly) NSData *zrtpVersionId;
-@property (nonatomic, readonly) ContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
 @property (nonatomic, readonly) SignalsViewController *signalsViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
@@ -66,7 +66,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
              andTestingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
                         andZrtpClientId:(NSData *)zrtpClientId
                        andZrtpVersionId:(NSData *)zrtpVersionId
-                     andContactsManager:(ContactsManager *)contactsManager;
+                     andContactsManager:(OWSContactsManager *)contactsManager;
 
 + (Environment *)getCurrent;
 + (void)setCurrent:(Environment *)curEnvironment;

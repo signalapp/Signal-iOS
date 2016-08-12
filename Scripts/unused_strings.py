@@ -1,9 +1,10 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 """
 This script can be used to grep the source to tree to see which localized strings are in use. 
 
 author: corbett
 usage: ./unused_strings.py Localizable.strings source_dir
+eg:    ./unused_strings.py ../Signal/translations/en.lproj/Localizable.strings ../Signal/src
 """
 import sys
 import os
@@ -32,10 +33,13 @@ def rgrep_match(dir_name, s_pat):
 			if match:
 				return match
 	return False
-	
+
 if __name__ == '__main__':
-	for item in open(sys.argv[1]).readlines():
-		grep_for=item.strip().split(' = ')[0].replace('"','')
-		if rgrep_match(sys.argv[2],grep_for):
+	strings_file = sys.argv[1]
+	src_dir_name = sys.argv[2]
+
+	for item in open(strings_file).readlines():
+		grep_for = item.strip().split(' = ')[0].replace('"','')
+		if rgrep_match(src_dir_name, grep_for):
 			print item.strip()
-			
+

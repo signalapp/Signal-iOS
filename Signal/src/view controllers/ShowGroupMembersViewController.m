@@ -11,7 +11,7 @@
 
 #import "SignalsViewController.h"
 
-#import "ContactsManager.h"
+#import "OWSContactsManager.h"
 #import "Environment.h"
 #import "GroupContactsResult.h"
 
@@ -55,10 +55,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                      untilCancelled:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Initializers
 
 
@@ -94,7 +90,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             cell.textLabel.text = [self.groupContacts identifierForIndexPath:relativeIndexPath];
         }
     } else {
-        cell.textLabel.text      = @"Group Members:";
+        cell.textLabel.text      = NSLocalizedString(@"GROUP_MEMBERS_HEADER", @"header for table which lists the members of this group thread");
         cell.textLabel.textColor = [UIColor lightGrayColor];
         cell.selectionStyle      = UITableViewCellSelectionStyleNone;
     }

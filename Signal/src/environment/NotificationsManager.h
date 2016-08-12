@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <TextSecureKit/NotificationsProtocol.h>
+#import <SignalServiceKit/NotificationsProtocol.h>
 
 @class TSCall;
 

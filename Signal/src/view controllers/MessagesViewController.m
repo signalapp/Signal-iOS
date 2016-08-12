@@ -9,17 +9,24 @@
 #import "AppDelegate.h"
 
 #import <AddressBookUI/AddressBookUI.h>
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <TextSecureKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
-#import "ContactsManager.h"
+#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
+#import <JSQMessagesViewController/UIColor+JSQMessages.h>
+#import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
+#import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
+#import <JSQSystemSoundPlayer.h>
+#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "JSQCallCollectionViewCell.h"
+#import "OWSCallCollectionViewCell.h"
+#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
@@ -30,14 +37,21 @@
 #import "TSAttachmentPointer.h"
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
+#import "OWSMessagesBubblesSizeCalculator.h"
+#import "OWSInfoMessage.h"
+#import "TSInfoMessage.h"
+#import "OWSErrorMessage.h"
 #import "TSErrorMessage.h"
+#import "OWSCall.h"
+#import "TSCall.h"
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"
-#import "UIButton+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+
+@import Photos;
 
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
@@ -79,7 +93,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, retain) UIButton *messageButton;
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
@@ -91,6 +104,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
+@property NSCache *messageAdapterCache;
+
 @end
 
 @interface UINavigationItem () {
@@ -99,6 +114,11 @@ typedef enum : NSUInteger {
 @end
 
 @implementation MessagesViewController
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)peekSetup {
     _peek = YES;
@@ -126,29 +146,43 @@ typedef enum : NSUInteger {
       [self markAllMessagesAsRead];
       [self.collectionView reloadData];
     }];
+    [self updateLoadEarlierVisible];
 }
 
 - (void)hideInputIfNeeded {
     if (_peek) {
         [self inputToolbar].hidden = YES;
+        [self.inputToolbar endEditing:TRUE];
         return;
     }
 
     if ([_thread isKindOfClass:[TSGroupThread class]] &&
         ![((TSGroupThread *)_thread).groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+
         [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
+        [self.inputToolbar endEditing:TRUE];
         self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-    } else if (![self isTextSecureReachable]) {
-        [self inputToolbar].hidden = YES; // only RedPhone
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
     }
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+
+    self.navController = (APNavigationController *)self.navigationController;
+
+    // JSQMVC width is 375px at this point (as specified by the xib), but this causes
+    // our initial bubble calculations to be off since they happen before the containing
+    // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
+    // Resetting here makes sure we've got a good initial width.
+    [self resetFrame];
+
     [self.navigationController.navigationBar setTranslucent:NO];
+
+    self.messageAdapterCache = [[NSCache alloc] init];
 
     _showFingerprintDisplay =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
@@ -156,10 +190,6 @@ typedef enum : NSUInteger {
     _toggleContactPhoneDisplay =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
     _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
-
-    _messageButton         = [UIButton ows_blueButtonWithTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"")];
-    _messageButton.enabled = NO;
-    _messageButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0,
@@ -170,47 +200,80 @@ typedef enum : NSUInteger {
         UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [_attachButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
 
-    [self initializeBubbles];
     [self initializeTextView];
 
+    [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
+    SEL saveSelector = NSSelectorFromString(@"save:");
+    [JSQMessagesCollectionViewCell registerMenuAction:saveSelector];
+    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
+                                                                                      action:saveSelector] ];
+
     [self initializeCollectionViewLayout];
+    [self registerCustomMessageNibs];
 
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(startReadTimer)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(cancelReadTimer)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
+    [self initializeToolbars];
+}
 
-    self.navigationController.interactivePopGestureRecognizer.delegate = self; // Swipe back to inbox fix. See
-    // http://stackoverflow.com/questions/19054625/changing-back-button-in-ios-7-disables-swipe-to-navigate-back
+- (void)registerCustomMessageNibs
+{
+    [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]];
+
+    [self.collectionView registerNib:[OWSDisplayedMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
+}
+
+- (void)toggleObservers:(BOOL)shouldObserve
+{
+    if (shouldObserve) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(startReadTimer)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(cancelReadTimer)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    }
 }
 
 - (void)initializeTextView {
     [self.inputToolbar.contentView.textView setFont:[UIFont ows_dynamicTypeBodyFont]];
-    self.inputToolbar.contentView.leftBarButtonItem           = _attachButton;
-    self.inputToolbar.contentView.rightBarButtonItem          = _messageButton;
-    self.inputToolbar.contentView.textView.layer.cornerRadius = 4.f;
 
-    CGFloat one_px = 1.0 / [UIScreen mainScreen].scale;
-    UIView *line =
-        [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.inputToolbar.contentView.bounds.size.width, one_px)];
-    line.backgroundColor  = [UIColor ows_materialBlueColor];
-    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.inputToolbar.contentView addSubview:line];
+    self.inputToolbar.contentView.leftBarButtonItem = self.attachButton;
+
+    UILabel *sendLabel = self.inputToolbar.contentView.rightBarButtonItem.titleLabel;
+    // override superclass translations since we support more translations than upstream.
+    sendLabel.text = NSLocalizedString(@"SEND_BUTTON_TITLE", nil);
+    sendLabel.font = [UIFont ows_regularFontWithSize:17.0f];
+    sendLabel.textColor = [UIColor ows_materialBlueColor];
+    sendLabel.textAlignment = NSTextAlignmentCenter;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
-    [self initializeToolbars];
+
+    [self toggleObservers:YES];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
     if (numberOfMessages > 0) {
         NSIndexPath *lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages - 1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath
@@ -261,6 +324,7 @@ typedef enum : NSUInteger {
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self toggleObservers:NO];
 
     if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
         // back button was pressed.
@@ -300,10 +364,6 @@ typedef enum : NSUInteger {
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     self.inputToolbar.contentView.textView.editable = NO;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Initiliazers
@@ -407,8 +467,16 @@ typedef enum : NSUInteger {
     self.title                                  = navTitle;
 }
 
-- (void)initializeToolbars {
-    self.navController = (APNavigationController *)self.navigationController;
+- (void)initializeToolbars
+{
+    // HACK JSQMessagesViewController doesn't yet support dynamic type in the inputToolbar.
+    // See: https://github.com/jessesquires/JSQMessagesViewController/pull/1169/files
+    [self.inputToolbar.contentView.textView sizeToFit];
+    self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
+
+    // prevent draft from obscuring message history in case user wants to scroll back to refer to something
+    // while composing a long message.
+    self.inputToolbar.maximumHeight = 300;
 
     if ([self canCall]) {
         self.navigationItem.rightBarButtonItem =
@@ -418,15 +486,17 @@ typedef enum : NSUInteger {
                                             target:self
                                             action:@selector(callAction)];
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-    } else if (!_thread.isGroupThread) {
-        self.navigationItem.rightBarButtonItem = nil;
-    } else {
+    } else if ([self.thread isGroupThread]) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-options-action"]
                                                        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                                              style:UIBarButtonItemStylePlain
                                             target:self
                                             action:@selector(didSelectShow:)];
+        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+        DDLogError(@"Thread was neither group thread nor callable");
     }
 
     [self hideInputIfNeeded];
@@ -476,29 +546,33 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)initializeBubbles {
-    JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
-    self.incomingBubbleImageData =
-        [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
-    self.currentlyOutgoingBubbleImageData =
-        [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+// Overiding JSQMVC layout defaults
+- (void)initializeCollectionViewLayout
+{
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
-    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessageFailedBubbleImageWithColor:[UIColor grayColor]];
-}
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsHorizontalScrollIndicator = NO;
 
-- (void)initializeCollectionViewLayout {
-    if (self.collectionView) {
-        [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
+    [self updateLoadEarlierVisible];
 
-        self.collectionView.showsVerticalScrollIndicator   = NO;
-        self.collectionView.showsHorizontalScrollIndicator = NO;
+    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+    self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
 
-        [self updateLoadEarlierVisible];
-
-        self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
-        self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
+    if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad) {
+        // Narrow the bubbles a bit to create more white space in the messages view
+        // Since we're not using avatars it gets a bit crowded otherwise.
+        self.collectionView.collectionViewLayout.messageBubbleLeftRightMargin = 80.0f;
     }
+
+    // Bubbles
+    self.collectionView.collectionViewLayout.bubbleSizeCalculator = [[OWSMessagesBubblesSizeCalculator alloc] init];
+    JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
+    self.incomingBubbleImageData = [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
+    self.currentlyOutgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor grayColor]];
+
 }
 
 #pragma mark - Fingerprints
@@ -607,17 +681,8 @@ typedef enum : NSUInteger {
     return recipient;
 }
 
-- (BOOL)isRedPhoneReachable {
-    return [self signalRecipient].supportsVoice;
-}
-
-
 - (BOOL)isTextSecureReachable {
-    if (isGroupConversation) {
-        return YES;
-    } else {
-        return [self signalRecipient];
-    }
+    return isGroupConversation || [self signalRecipient];
 }
 
 - (PhoneNumber *)phoneNumberForThread {
@@ -626,60 +691,71 @@ typedef enum : NSUInteger {
 }
 
 - (void)callAction {
-    if ([self isRedPhoneReachable]) {
+    if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
-        DDLogWarn(@"Tried to initiate a call but contact has no RedPhone identifier");
+        DDLogWarn(@"Tried to initiate a call but thread is not callable.");
     }
 }
 
 - (BOOL)canCall {
-    return !isGroupConversation && [self isRedPhoneReachable] &&
-           ![((TSContactThread *)_thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]];
+    return !(isGroupConversation || [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
 }
 
-- (void)textViewDidChange:(UITextView *)textView {
-    if ([textView.text length] > 0) {
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = YES;
-    } else {
-        self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
-    }
-}
 #pragma mark - JSQMessagesViewController method overrides
 
 - (void)didPressSendButton:(UIButton *)button
            withMessageText:(NSString *)text
                   senderId:(NSString *)senderId
          senderDisplayName:(NSString *)senderDisplayName
-                      date:(NSDate *)date {
+                      date:(NSDate *)date
+{
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
 
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:self.thread
                                                                       messageBody:text
-                                                                      attachments:nil];
+                                                                    attachmentIds:nil];
 
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
         [self finishSendingMessage];
     }
 }
 
+- (BOOL)collectionView:(JSQMessagesCollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath == nil) {
+        DDLogError(@"Aborting shouldShowMenuForItemAtIndexPath because indexPath is nil");
+        // Not sure why this is nil, but occasionally it is, which crashes.
+        return NO;
+    }
+
+    // JSQM does some setup in super method
+    [super collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
+
+    // Super method returns false for media methods. We want menu for *all* items
+    return YES;
+}
+
 #pragma mark - JSQMessages CollectionView DataSource
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView
-       messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
+       messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
     return [self messageAtIndexPath:indexPath];
 }
 
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView
-             messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    id<JSQMessageData> message = [self messageAtIndexPath:indexPath];
+             messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    TSInteraction *message = [self interactionAtIndexPath:indexPath];
 
-    if ([message.senderId isEqualToString:self.senderId]) {
-        switch (message.messageState) {
+    if ([message isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+        switch (outgoingMessage.messageState) {
             case TSOutgoingMessageStateUnsent:
                 return self.outgoingMessageFailedImageData;
             case TSOutgoingMessageStateAttemptingOut:
@@ -700,31 +776,46 @@ typedef enum : NSUInteger {
 #pragma mark - UICollectionView DataSource
 
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView
-                  cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    TSMessageAdapter *msg = [self messageAtIndexPath:indexPath];
+                  cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    TSMessageAdapter *message = [self messageAtIndexPath:indexPath];
+    NSParameterAssert(message != nil);
 
-    switch (msg.messageType) {
-        case TSIncomingMessageAdapter:
-            return [self loadIncomingMessageCellForMessage:msg atIndexPath:indexPath];
-        case TSOutgoingMessageAdapter:
-            return [self loadOutgoingCellForMessage:msg atIndexPath:indexPath];
-        case TSCallAdapter:
-            return [self loadCallCellForCall:msg atIndexPath:indexPath];
-        case TSInfoMessageAdapter:
-            return [self loadInfoMessageCellForMessage:msg atIndexPath:indexPath];
-        case TSErrorMessageAdapter:
-            return [self loadErrorMessageCellForMessage:msg atIndexPath:indexPath];
-
-        default:
-            DDLogError(@"Something went wrong");
-            return nil;
+    JSQMessagesCollectionViewCell *cell;
+    switch (message.messageType) {
+        case TSCallAdapter: {
+            OWSCall *call = (OWSCall *)message;
+            cell = [self loadCallCellForCall:call atIndexPath:indexPath];
+        } break;
+        case TSInfoMessageAdapter: {
+            OWSInfoMessage *infoMessage = (OWSInfoMessage *)message;
+            cell = [self loadInfoMessageCellForMessage:infoMessage atIndexPath:indexPath];
+        } break;
+        case TSErrorMessageAdapter: {
+            OWSErrorMessage *errorMessage = (OWSErrorMessage *)message;
+            cell = [self loadErrorMessageCellForMessage:errorMessage atIndexPath:indexPath];
+        } break;
+        case TSIncomingMessageAdapter: {
+            cell = [self loadIncomingMessageCellForMessage:message atIndexPath:indexPath];
+        } break;
+        case TSOutgoingMessageAdapter: {
+            cell = [self loadOutgoingCellForMessage:message atIndexPath:indexPath];
+        } break;
+        default: {
+            DDLogWarn(@"using default cell constructor for message: %@", message);
+            cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
+        } break;
     }
+    cell.delegate = collectionView;
+
+    return cell;
 }
 
 #pragma mark - Loading message cells
 
 - (JSQMessagesCollectionViewCell *)loadIncomingMessageCellForMessage:(id<JSQMessageData>)message
-                                                         atIndexPath:(NSIndexPath *)indexPath {
+                                                         atIndexPath:(NSIndexPath *)indexPath
+{
     JSQMessagesCollectionViewCell *cell =
         (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
@@ -739,7 +830,8 @@ typedef enum : NSUInteger {
 }
 
 - (JSQMessagesCollectionViewCell *)loadOutgoingCellForMessage:(id<JSQMessageData>)message
-                                                  atIndexPath:(NSIndexPath *)indexPath {
+                                                  atIndexPath:(NSIndexPath *)indexPath
+{
     JSQMessagesCollectionViewCell *cell =
         (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
@@ -753,26 +845,66 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-- (JSQCallCollectionViewCell *)loadCallCellForCall:(id<JSQMessageData>)call atIndexPath:(NSIndexPath *)indexPath {
-    JSQCallCollectionViewCell *cell =
-        (JSQCallCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
-    return cell;
+- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
+{
+    OWSCallCollectionViewCell *callCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
+                                                                                         forIndexPath:indexPath];
+
+    NSString *text =  call.date != nil ? [call text] : call.senderDisplayName;
+    NSString *allText = call.date != nil ? [text stringByAppendingString:[call dateText]] : text;
+
+    UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0f];
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithString:allText
+                                                                                       attributes:@{ NSFontAttributeName: boldFont }];
+    if([call date]!=nil) {
+        // Not a group meta message
+        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
+        const NSRange range = NSMakeRange([text length], [[call dateText] length]);
+        [attributedText setAttributes:@{ NSFontAttributeName: regularFont }
+                                range:range];
+    }
+    callCell.cellLabel.attributedText = attributedText;
+    callCell.cellLabel.numberOfLines = 0; // uses as many lines as it needs
+    callCell.cellLabel.textColor = [UIColor ows_materialBlueColor];
+
+    callCell.layer.shouldRasterize = YES;
+    callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    return callCell;
 }
 
-- (JSQDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(id<JSQMessageData>)message
-                                                             atIndexPath:(NSIndexPath *)indexPath {
-    JSQDisplayedMessageCollectionViewCell *cell =
-        (JSQDisplayedMessageCollectionViewCell *)[super collectionView:self.collectionView
-                                                cellForItemAtIndexPath:indexPath];
-    return cell;
+- (OWSDisplayedMessageCollectionViewCell *)loadDisplayedMessageCollectionViewCellForIndexPath:(NSIndexPath *)indexPath
+{
+    OWSDisplayedMessageCollectionViewCell *messageCell = [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
+                                                                                                        forIndexPath:indexPath];
+    messageCell.layer.shouldRasterize = YES;
+    messageCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    messageCell.cellTopLabel.attributedText = [self.collectionView.dataSource collectionView:self.collectionView attributedTextForCellTopLabelAtIndexPath:indexPath];
+
+    return messageCell;
 }
 
-- (JSQDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(id<JSQMessageData>)message
-                                                              atIndexPath:(NSIndexPath *)indexPath {
-    JSQDisplayedMessageCollectionViewCell *cell =
-        (JSQDisplayedMessageCollectionViewCell *)[super collectionView:self.collectionView
-                                                cellForItemAtIndexPath:indexPath];
-    return cell;
+- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(OWSInfoMessage *)infoMessage
+                                                             atIndexPath:(NSIndexPath *)indexPath
+{
+    OWSDisplayedMessageCollectionViewCell *infoCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+    infoCell.cellLabel.text = [infoMessage text];
+    infoCell.cellLabel.textColor = [UIColor darkGrayColor];
+    infoCell.textContainer.layer.borderColor = infoCell.textContainer.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
+    infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
+
+    return infoCell;
+}
+
+- (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(OWSErrorMessage *)errorMessage
+                                                              atIndexPath:(NSIndexPath *)indexPath
+{
+    OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+    errorCell.cellLabel.text = [errorMessage text];
+    errorCell.cellLabel.textColor = [UIColor darkGrayColor];
+    errorCell.textContainer.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
+    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
+
+    return errorCell;
 }
 
 #pragma mark - Adjusting cell label heights
@@ -820,9 +952,11 @@ typedef enum : NSUInteger {
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
 
     // If message failed, say that message should be tapped to retry;
-    if (currentMessage.messageType == TSOutgoingMessageAdapter &&
-        currentMessage.messageState == TSOutgoingMessageStateUnsent) {
-        return YES;
+    if (currentMessage.messageType == TSOutgoingMessageAdapter) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)currentMessage;
+        if(outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            return YES;
+        }
     }
 
     if ([self.thread isKindOfClass:[TSGroupThread class]]) {
@@ -856,8 +990,15 @@ typedef enum : NSUInteger {
     return nextMessage;
 }
 
-- (BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter *)message {
-    return message.messageType == TSOutgoingMessageAdapter && message.messageState == TSOutgoingMessageStateDelivered;
+- (BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter *)message
+{
+    if (message.messageType == TSOutgoingMessageAdapter) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+        if(outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 
@@ -868,11 +1009,14 @@ typedef enum : NSUInteger {
     textAttachment.bounds            = CGRectMake(0, 0, 11.0f, 10.0f);
 
     if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
-        if (msg.messageType == TSOutgoingMessageAdapter && msg.messageState == TSOutgoingMessageStateUnsent) {
-            NSMutableAttributedString *attrStr =
+        if (msg.messageType == TSOutgoingMessageAdapter) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)msg;
+            if(outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+                NSMutableAttributedString *attrStr =
                 [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-            return attrStr;
+                [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
+                return attrStr;
+            }
         }
 
         if ([self.thread isKindOfClass:[TSGroupThread class]]) {
@@ -912,16 +1056,20 @@ typedef enum : NSUInteger {
 #pragma mark - Actions
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
-    didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath {
+    didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
+{
     TSMessageAdapter *messageItem =
         [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
     switch (messageItem.messageType) {
-        case TSOutgoingMessageAdapter:
-            if (messageItem.messageState == TSOutgoingMessageStateUnsent) {
+        case TSOutgoingMessageAdapter: {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)messageItem;
+            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
                 [self handleUnsentMessageTap:(TSOutgoingMessage *)interaction];
             }
+        }
+        // No `break` as we want to fall through to capture tapping on media items
         case TSIncomingMessageAdapter: {
             BOOL isMediaMessage = [messageItem isMediaMessage];
 
@@ -929,50 +1077,54 @@ typedef enum : NSUInteger {
                 if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
-                    if ([messageMedia isImage]) {
-                        tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSPhotoAdapter with nil image");
+                    } else {
                         CGRect convertedRect =
-                            [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                      toView:nil];
+                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
+                                                  toView:nil];
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                          attachment =
-                              [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
                         }];
 
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                             TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
                             FullImageViewController *vc   = [[FullImageViewController alloc]
-                                initWithAttachment:attStream
-                                          fromRect:convertedRect
-                                    forInteraction:[self interactionAtIndexPath:indexPath]
-                                        isAnimated:NO];
+                                                             initWithAttachment:attStream
+                                                             fromRect:convertedRect
+                                                             forInteraction:[self interactionAtIndexPath:indexPath]
+                                                             isAnimated:NO];
 
                             [vc presentFromViewController:self.navigationController];
                         }
-                    } else {
-                        DDLogWarn(@"Currently unsupported");
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
                     // Show animated image full-screen
                     TSAnimatedAdapter *messageMedia = (TSAnimatedAdapter *)[messageItem media];
                     tappedImage                     = ((UIImageView *)[messageMedia mediaView]).image;
-                    CGRect convertedRect =
+                    if(tappedImage == nil) {
+                        DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
+                    } else {
+                        CGRect convertedRect =
                         [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
                                                   toView:nil];
-                    __block TSAttachment *attachment = nil;
-                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                      attachment =
-                          [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
-                    }];
-                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
-                        FullImageViewController *vc =
+                        __block TSAttachment *attachment = nil;
+                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                            attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                        }];
+                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                            TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
+                            FullImageViewController *vc =
                             [[FullImageViewController alloc] initWithAttachment:attStream
                                                                        fromRect:convertedRect
                                                                  forInteraction:[self interactionAtIndexPath:indexPath]
                                                                      isAnimated:YES];
-                        [vc presentFromViewController:self.navigationController];
+                            [vc presentFromViewController:self.navigationController];
+                        }
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
                     // fileurl disappeared should look up in db as before. will do refactor
@@ -1096,15 +1248,17 @@ typedef enum : NSUInteger {
         case TSCallAdapter:
             break;
         default:
+            DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);
             break;
     }
 }
 
-- (void)handleWarningTap:(TSInteraction *)interaction {
+- (void)handleWarningTap:(TSInteraction *)interaction
+{
     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-        for (NSString *attachmentId in message.attachments) {
+        for (NSString *attachmentId in message.attachmentIds) {
             __block TSAttachment *attachment;
 
             [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1114,6 +1268,8 @@ typedef enum : NSUInteger {
             if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                 TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
 
+                // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
+                // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (!pointer.isDownloading) {
                     [[TSMessagesManager sharedManager] retrieveAttachment:pointer messageId:message.uniqueId];
                 }
@@ -1232,13 +1388,6 @@ typedef enum : NSUInteger {
                       }];
 }
 
-- (void)deleteMessageAtIndexPath:(NSIndexPath *)indexPath {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-      [interaction removeWithTransaction:transaction];
-    }];
-}
-
 - (void)handleErrorMessageTap:(TSErrorMessage *)message {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage *)message;
@@ -1319,29 +1468,30 @@ typedef enum : NSUInteger {
  */
 
 - (void)takePictureOrVideo {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.allowsEditing            = NO;
-    picker.sourceType               = UIImagePickerControllerSourceTypeCamera;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = @[ (NSString *)kUTTypeImage, (NSString *)kUTTypeMovie ];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        DDLogError(@"Camera ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    picker.allowsEditing = NO;
+    picker.delegate = self;
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 - (void)chooseFromLibrary {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate                 = self;
-    picker.sourceType               = UIImagePickerControllerSourceTypePhotoLibrary;
-
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        NSArray *photoOrVideoTypeArray = [[NSArray alloc]
-            initWithObjects:(NSString *)kUTTypeImage, (NSString *)kUTTypeMovie, (NSString *)kUTTypeVideo, nil];
-
-        picker.mediaTypes = photoOrVideoTypeArray;
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        DDLogError(@"PhotoLibrary ImagePicker source not available");
+        return;
     }
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 /*
@@ -1362,65 +1512,95 @@ typedef enum : NSUInteger {
 /*
  *  Fetching data from UIImagePickerController
  */
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+- (void)imagePickerController:(UIImagePickerController *)picker
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
+{
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-    if (CFStringCompare((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
-        NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+    void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
+        DDLogError(@"failed to pick attachment with error: %@", error);
+    };
+
+    NSString *mediaType = info[UIImagePickerControllerMediaType];
+    if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
+        // Video picked from library or captured with camera
+
+        NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self sendQualityAdjustedAttachment:videoURL];
+    } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        // Static Image captured from camera
+
+        UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
+        if (imageFromCamera) {
+            [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:imageFromCamera] ofType:@"image/jpeg"];
+        } else {
+            failedToPickAttachment(nil);
+        }
     } else {
-        // Send image as NSData to accommodate both static and animated images
-        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        [library assetForURL:[info objectForKey:UIImagePickerControllerReferenceURL]
-            resultBlock:^(ALAsset *asset) {
-              ALAssetRepresentation *representation = [asset defaultRepresentation];
-              Byte *img_buffer                      = (Byte *)malloc((unsigned long)representation.size);
-              NSUInteger length_buffered =
-                  [representation getBytes:img_buffer fromOffset:0 length:(unsigned long)representation.size error:nil];
-              NSData *img_data = [NSData dataWithBytesNoCopy:img_buffer length:length_buffered];
-              NSString *file_type;
-              switch (img_buffer[0]) {
-                  case 0x89:
-                      file_type = @"image/png";
-                      break;
-                  case 0x47:
-                      file_type = @"image/gif";
-                      break;
-                  case 0x49:
-                  case 0x4D:
-                      file_type = @"image/tiff";
-                      break;
-                  case 0x42:
-                      file_type = @"@image/bmp";
-                      break;
-                  case 0xFF:
-                  default:
-                      file_type = @"image/jpeg";
-                      break;
-              }
-              DDLogVerbose(@"Sending image. Size in bytes: %lu; first byte: %02x (%c); detected filetype: %@",
-                           (unsigned long)length_buffered,
-                           img_buffer[0],
-                           img_buffer[0],
-                           file_type);
-              [self sendMessageAttachment:img_data ofType:file_type];
-            }
-            failureBlock:^(NSError *error) {
-              DDLogVerbose(@"Couldn't get image asset: %@", error);
-            }];
+        // Non-Video image picked from library
+
+        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
+        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
+        if (!asset) {
+            return failedToPickAttachment(nil);
+        }
+
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = YES; // We're only fetching one asset.
+        options.networkAccessAllowed = YES; // iCloud OK
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:asset
+                             options:options
+                       resultHandler:^(NSData *_Nullable imageData,
+                           NSString *_Nullable dataUTI,
+                           UIImageOrientation orientation,
+                           NSDictionary *_Nullable assetInfo) {
+
+                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
+                           if (assetFetchingError || !imageData) {
+                               return failedToPickAttachment(assetFetchingError);
+                           }
+                           DDLogVerbose(@"Size in bytes: %lu; detected filetype: %@", imageData.length, dataUTI);
+
+                           if ([dataUTI isEqualToString:(__bridge NSString *)kUTTypeGIF]
+                               && imageData.length <= 5 * 1024 * 1024) {
+                               DDLogVerbose(@"Sending raw image/gif to retain any animation");
+                               /**
+                                * Media Size constraints lifted from Signal-Android
+                                * (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
+                                *
+                                * GifMaxSize return 5 * MB;
+                                * For reference, other media size limits we're not explicitly enforcing:
+                                * ImageMaxSize return 420 * KB;
+                                * VideoMaxSize return 100 * MB;
+                                * getAudioMaxSize 100 * MB;
+                                */
+                               [self sendMessageAttachment:imageData ofType:@"image/gif"];
+                           } else {
+                               DDLogVerbose(@"Compressing attachment as image/jpeg");
+                               UIImage *pickedImage = [[UIImage alloc] initWithData:imageData];
+                               [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage]
+                                                    ofType:@"image/jpeg"];
+                           }
+                       }];
     }
 }
 
-- (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType {
+- (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType
+{
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:self.thread
                                                                   messageBody:nil
-                                                                  attachments:[NSMutableArray array]];
+                                                                attachmentIds:[NSMutableArray new]];
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
+                                 DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                                              (unsigned long)attachmentData.length,
+                                              attachmentType);
+
                                [[TSMessagesManager sharedManager] sendAttachment:attachmentData
                                                                      contentType:attachmentType
                                                                        inMessage:message
@@ -1534,10 +1714,6 @@ typedef enum : NSUInteger {
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
     }
     return _uiDatabaseConnection;
 }
@@ -1593,6 +1769,11 @@ typedef enum : NSUInteger {
           switch (rowChange.type) {
               case YapDatabaseViewChangeDelete: {
                   [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   break;
               }
               case YapDatabaseViewChangeInsert: {
@@ -1606,12 +1787,15 @@ typedef enum : NSUInteger {
                   break;
               }
               case YapDatabaseViewChangeUpdate: {
+                  YapCollectionKey *collectionKey = rowChange.collectionKey;
+                  if (collectionKey.key) {
+                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                  }
                   NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
 
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                   }
-
                   [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
                   scrollToBottom = YES;
                   break;
@@ -1661,9 +1845,18 @@ typedef enum : NSUInteger {
     return message;
 }
 
+// FIXME DANGER this method doesn't always return TSMessageAdapters - it can also return JSQCall!
 - (TSMessageAdapter *)messageAtIndexPath:(NSIndexPath *)indexPath {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+
+    TSMessageAdapter *messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
+
+    if (messageAdapter == nil) {
+        messageAdapter = [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+        [self.messageAdapterCache setObject:messageAdapter forKey: interaction.uniqueId];
+    }
+
+    return messageAdapter;
 }
 
 #pragma mark group action view
@@ -1763,22 +1956,24 @@ typedef enum : NSUInteger {
       canPerformAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
-    if (action == @selector(delete:)) {
-        return YES;
+
+    TSMessageAdapter *messageAdapter = [self messageAtIndexPath:indexPath];
+    // HACK make sure method exists before calling since messageAtIndexPath doesn't
+    // always return TSMessageAdapters - it can also return JSQCall!
+    if ([messageAdapter respondsToSelector:@selector(canPerformEditingAction:)]) {
+        return [messageAdapter canPerformEditingAction:action];
+    }
+    else {
+        return NO;
     }
 
-    return [super collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView
          performAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
-    if (action == @selector(delete:)) {
-        [self deleteMessageAtIndexPath:indexPath];
-    } else {
-        [super collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
-    }
+    [[self messageAtIndexPath:indexPath] performEditingAction:action];
 }
 
 - (void)updateGroup {
@@ -1787,14 +1982,15 @@ typedef enum : NSUInteger {
     [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
 }
 
-- (void)leaveGroup {
+- (void)leaveGroup
+{
     [self.navController hideDropDown:self];
 
     TSGroupThread *gThread     = (TSGroupThread *)_thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:gThread
                                                                   messageBody:@""
-                                                                  attachments:[[NSMutableArray alloc] init]];
+                                                                attachmentIds:[NSMutableArray new]];
     message.groupMetaMessage = TSGroupMessageQuit;
     [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread success:nil failure:nil];
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1806,10 +2002,10 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel {
+- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
+{
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
-
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       groupThread            = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
@@ -1818,7 +2014,7 @@ typedef enum : NSUInteger {
       message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                     inThread:groupThread
                                                  messageBody:@""
-                                                 attachments:[[NSMutableArray alloc] init]];
+                                               attachmentIds:[NSMutableArray new]];
       message.groupMetaMessage = TSGroupMessageUpdate;
     }];
 
@@ -1937,15 +2133,10 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark 3D Touch Preview Actions
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
     return @[];
 }
-
 
 @end

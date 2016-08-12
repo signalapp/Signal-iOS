@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <TextSecureKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import "Constraints.h"
 #import "CryptoTools.h"
 #import "NSData+ows_StripToken.h"

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -x
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $BIN_DIR/..
+
+tx push --source
+

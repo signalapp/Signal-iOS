@@ -7,11 +7,11 @@
 //
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <TextSecureKit/NSDate+millisecondTimeStamp.h>
-#import <TextSecureKit/TSAccountManager.h>
-#import <TextSecureKit/TSMessagesManager+attachments.h>
-#import <TextSecureKit/TSMessagesManager+sendMessages.h>
-#import "ContactsManager.h"
+#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager+attachments.h>
+#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
+#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
@@ -90,10 +90,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _addPeopleLabel.text            = NSLocalizedString(@"NEW_GROUP_REQUEST_ADDPEOPLE", @"");
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Initializers
 
 - (void)initializeDelegates {
@@ -118,7 +114,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 
 #pragma mark - Actions
-- (void)createGroup {
+- (void)createGroup
+{
     TSGroupModel *model = [self makeGroup];
 
     [[TSStorageManager sharedManager]
@@ -134,77 +131,72 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         presentViewController:alertController
                      animated:YES
                    completion:^{
-                     TSOutgoingMessage *message =
-                         [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                             inThread:self.thread
-                                                          messageBody:@""
-                                                          attachments:[[NSMutableArray alloc] init]];
-                     message.groupMetaMessage = TSGroupMessageNew;
-                     if (model.groupImage != nil) {
-                         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
-                             contentType:@"image/png"
-                             inMessage:message
-                             thread:self.thread
-                             success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
-                             }
+                       TSOutgoingMessage *message =
+                           [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                               inThread:self.thread
+                                                            messageBody:@""
+                                                          attachmentIds:[NSMutableArray new]];
+                       message.groupMetaMessage = TSGroupMessageNew;
+                       if (model.groupImage != nil) {
+                           [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
+                               contentType:@"image/png"
+                               inMessage:message
+                               thread:self.thread
+                               success:^{
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       [self dismissViewControllerAnimated:YES
+                                                                completion:^{
+                                                                    [Environment messageGroup:self.thread];
+                                                                }];
 
-                             failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
+                                   });
+                               }
+                               failure:^{
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       [self
+                                           dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                       [self.thread removeWithTransaction:transaction];
+                                                                   }];
 
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }];
+                                   });
+                               }];
+                       } else {
+                           [[TSMessagesManager sharedManager] sendMessage:message
+                               inThread:self.thread
+                               success:^{
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       [self dismissViewControllerAnimated:YES
+                                                                completion:^{
+                                                                    [Environment messageGroup:self.thread];
+                                                                }];
+                                   });
+                               }
+                               failure:^{
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       [self
+                                           dismissViewControllerAnimated:YES
+                                                              completion:^{
+                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
+                                                                      [self.thread removeWithTransaction:transaction];
+                                                                  }];
+                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                              }];
+                                   });
 
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-                             }];
-                     } else {
-                         [[TSMessagesManager sharedManager] sendMessage:message
-                             inThread:self.thread
-                             success:^{
-                               [self dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                          [Environment messageGroup:self.thread];
-                                                        }];
-                             }
-
-                             failure:^{
-                               [self
-                                   dismissViewControllerAnimated:YES
-                                                      completion:^{
-
-                                                        [[TSStorageManager sharedManager]
-                                                                .dbConnection
-                                                            readWriteWithBlock:^(
-                                                                YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                                              [self.thread removeWithTransaction:transaction];
-                                                            }];
-
-                                                        SignalAlertView(
-                                                            NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                            NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                      }];
-
-
-                             }];
-                     }
+                               }];
+                       }
                    }];
 }
 
 
-- (void)updateGroup {
+- (void)updateGroup
+{
     NSMutableArray *mut = [[NSMutableArray alloc] init];
     for (NSIndexPath *idx in _tableView.indexPathsForSelectedRows) {
         [mut addObjectsFromArray:[[contacts objectAtIndex:(NSUInteger)idx.row] textSecureIdentifiers]];
@@ -214,8 +206,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _groupModel = [[TSGroupModel alloc] initWithTitle:_nameGroupTextField.text
                                             memberIds:[[[NSSet setWithArray:mut] allObjects] mutableCopy]
                                                 image:_thread.groupModel.groupImage
-                                              groupId:_thread.groupModel.groupId
-                               associatedAttachmentId:nil];
+                                              groupId:_thread.groupModel.groupId];
 
     [self.nameGroupTextField resignFirstResponder];
 
@@ -223,7 +214,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 
-- (TSGroupModel *)makeGroup {
+- (TSGroupModel *)makeGroup
+{
     NSString *title     = _nameGroupTextField.text;
     NSMutableArray *mut = [[NSMutableArray alloc] init];
 
@@ -233,11 +225,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [mut addObject:[TSAccountManager localNumber]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
 
-    return [[TSGroupModel alloc] initWithTitle:title
-                                     memberIds:mut
-                                         image:_groupImage
-                                       groupId:groupId
-                        associatedAttachmentId:nil];
+    return [[TSGroupModel alloc] initWithTitle:title memberIds:mut image:_groupImage groupId:groupId];
 }
 
 - (IBAction)addGroupPhoto:(id)sender {
@@ -325,6 +313,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _groupImageButton.imageView.layer.masksToBounds = YES;
     _groupImageButton.imageView.layer.borderColor   = [[UIColor lightGrayColor] CGColor];
     _groupImageButton.imageView.layer.borderWidth   = 0.5f;
+    _groupImageButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 #pragma mark - Table view data source
