@@ -491,11 +491,13 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
             firstLine  = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
         } else {
+            // FIXME This looks wrong. Shouldn't we be showing inbox_title/text here?
             firstLine  = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"");
         }
     } else {
         if ([Environment.preferences getHasArchivedAMessage]) {
+            // FIXME This looks wrong. Shouldn't we be showing first_archive_title/text here?
             firstLine  = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
         } else {

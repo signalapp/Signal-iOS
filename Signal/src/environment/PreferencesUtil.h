@@ -1,6 +1,4 @@
-#import <Foundation/Foundation.h>
 #import "PropertyListPreferences.h"
-#import "Zid.h"
 
 typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNoNameNoPreview,
@@ -45,10 +43,8 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
 - (TSImageQuality)imageUploadQuality;
-- (void)setImageUploadQuality:(TSImageQuality)quality;
 
 - (NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
-
 
 @end
