@@ -64,8 +64,14 @@
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.4.1"] && [TSAccountManager isRegistered]) {
-        DDLogInfo(@"Running migration: removing orphaned data.");
-        [[OWSOrphanedDataCleaner new] removeOrphanedData];
+        // Cleaning orphaned data can take a while, so let's run it in the background.
+        // This means this migration is not resiliant to failures - we'll only run it once
+        // regardless of its success.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            DDLogInfo(@"OWSMigration: beginning removing orphaned data.");
+            [[OWSOrphanedDataCleaner new] removeOrphanedData];
+            DDLogInfo(@"OWSMigration: completed removing orphaned data.");
+        });
     }
 
     [Environment.preferences setAndGetCurrentVersion];
