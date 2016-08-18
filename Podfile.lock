@@ -42,23 +42,23 @@ PODS:
     - CocoaLumberjack (~> 2.0)
   - ProtocolBuffers (1.9.11)
   - Reachability (3.2)
+  - SAMKeychain (1.5.0)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.0.7):
+  - SignalServiceKit (0.0.8):
     - '25519'
     - AFNetworking
     - AxolotlKit
     - CocoaLumberjack
     - libPhoneNumber-iOS
     - Mantle
+    - SAMKeychain
     - SocketRocket
-    - SSKeychain
     - TwistedOakCollapsingFutures
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
   - SQLCipher/common (3.4.0)
   - SQLCipher/fts (3.4.0):
     - SQLCipher/common
-  - SSKeychain (1.4.1)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UnionFind (1.0.1)
@@ -130,7 +130,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 01ab8d132d4b0ea1f36a9b760505361c386eef8a
+    :commit: f3a91c2629c1deda88195a932ebf253134e020b3
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
@@ -152,11 +152,11 @@ SPEC CHECKSUMS:
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SAMKeychain: 1fc9ae02f576365395758b12888c84704eebc423
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: e0bc81d12cef07b621403ff49e1c9c6f64d96109
+  SignalServiceKit: 9bdacbb1cb046836e9d601273fa4fad934ad3ecb
   SocketRocket: 3f77ec2104cc113add553f817ad90a77114f5d43
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
-  SSKeychain: 55cc80f66f5c73da827e3077f02e43528897db41
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 713d4018cfacbd6e77dd430710ca84730e450980
