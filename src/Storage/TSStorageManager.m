@@ -10,7 +10,7 @@
 #import "TSInteraction.h"
 #import "TSThread.h"
 #import <25519/Randomness.h>
-#import <SSKeychain/SSKeychain.h>
+#import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
@@ -127,10 +127,11 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     return databasePath;
 }
 
-- (BOOL)databasePasswordAccessible {
-    [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+- (BOOL)databasePasswordAccessible
+{
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     NSError *error;
-    NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount error:&error];
+    NSString *dbPassword = [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&error];
 
     if (dbPassword && !error) {
         return YES;
@@ -143,14 +144,22 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     return NO;
 }
 
-- (NSData *)databasePassword {
-    [SSKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    NSString *dbPassword = [SSKeychain passwordForService:keychainService account:keychainDBPassAccount];
+- (NSData *)databasePassword
+{
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    NSString *dbPassword = [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount];
 
     if (!dbPassword) {
         dbPassword = [[Randomness generateRandomBytes:30] base64EncodedString];
-        [SSKeychain setPassword:dbPassword forService:keychainService account:keychainDBPassAccount];
-        DDLogError(@"Set new password from keychain ...");
+        NSError *error;
+        [SAMKeychain setPassword:dbPassword forService:keychainService account:keychainDBPassAccount error:&error];
+        if (error) {
+            // Sync log to ensure it logs before exiting
+            NSLog(@"Exiting because we failed to set new DB password. error: %@", error);
+            exit(1);
+        } else {
+            DDLogError(@"Succesfully set new DB password. First launch?");
+        }
     }
 
     return [dbPassword dataUsingEncoding:NSUTF8StringEncoding];
@@ -255,7 +264,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     self.database = nil;
     NSError *error;
 
-    [SSKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
     [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
 
 

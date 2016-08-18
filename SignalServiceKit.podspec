@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SignalServiceKit"
-  s.version          = "0.0.7"
+  s.version          = "0.0.8"
   s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC
@@ -42,6 +42,6 @@ An Objective-C library for communicating with the Signal messaging service.
   # see Example/TSKitiOSTestApp/Podfile for details
   s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
-  s.dependency 'SSKeychain'
+  s.dependency 'SAMKeychain'
   s.dependency 'TwistedOakCollapsingFutures'
 end
