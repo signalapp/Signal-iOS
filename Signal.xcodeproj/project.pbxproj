@@ -18,6 +18,10 @@
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
+		458E38311D6682450094BD24 /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */; };
+		458E38341D66873D0094BD24 /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38331D66873D0094BD24 /* OWSLinkDeviceViewController.m */; };
+		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
+		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459C3F0D1C9B3A1B003ACF51 /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */; };
 		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
 		45C681B81D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
@@ -519,6 +523,13 @@
 		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
 		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
 		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
+		458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
+		458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQRCodeScanningViewController.m; sourceTree = "<group>"; };
+		458E38321D66873D0094BD24 /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
+		458E38331D66873D0094BD24 /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
+		458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceProvisioningURLParser.h; sourceTree = "<group>"; };
+		458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceProvisioningURLParser.m; sourceTree = "<group>"; };
+		458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisioningURLParserTest.m; path = Models/OWSDeviceProvisioningURLParserTest.m; sourceTree = "<group>"; };
 		459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageAdapterTest.m; path = "view controllers/Signals/TSMessageAdapters/TSMessageAdapterTest.m"; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
 		45C681B61D305A580050903A /* OWSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCall.m; sourceTree = "<group>"; };
@@ -1113,13 +1124,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		457F3AB01D1470CF00C51351 /* view controllers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "view controllers";
-			sourceTree = "<group>";
-		};
 		457F3AC01D14A0F700C51351 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1134,8 +1138,18 @@
 				45C681B61D305A580050903A /* OWSCall.m */,
 				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
 				453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */,
+				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
+				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		458E38381D6699110094BD24 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */ = {
@@ -1678,6 +1692,8 @@
 				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
 				76EB050B18170B33006006FC /* InCallViewController.h */,
 				76EB050C18170B33006006FC /* InCallViewController.m */,
+				458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */,
+				458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */,
 			);
 			name = "View Controllers";
 			path = "view controllers";
@@ -1803,7 +1819,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
-				457F3AB01D1470CF00C51351 /* view controllers */,
+				458E38381D6699110094BD24 /* Models */,
 				459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */,
 				B660F66D1C29867F00687D6E /* audio */,
 				B660F6731C29867F00687D6E /* call */,
@@ -2220,6 +2236,8 @@
 				B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */,
 				FCD274E91A5AFDDB00202277 /* AboutTableViewController.h */,
 				FCD274EA1A5AFDDB00202277 /* AboutTableViewController.m */,
+				458E38321D66873D0094BD24 /* OWSLinkDeviceViewController.h */,
+				458E38331D66873D0094BD24 /* OWSLinkDeviceViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -2614,6 +2632,7 @@
 				76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
+				458E38311D6682450094BD24 /* OWSQRCodeScanningViewController.m in Sources */,
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
@@ -2698,12 +2717,14 @@
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
+				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */,
 				76EB05C218170B33006006FC /* DhPacketSharedSecretHashes.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				76EB063218170B33006006FC /* Crc32.m in Sources */,
 				E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */,
 				E197B61018BBEC1A00F073E5 /* EncodedAudioPacket.m in Sources */,
+				458E38341D66873D0094BD24 /* OWSLinkDeviceViewController.m in Sources */,
 				76EB063618170B33006006FC /* DataUtil.m in Sources */,
 				E197B60C18BBEC1A00F073E5 /* AudioPacker.m in Sources */,
 				E197B61218BBEC1A00F073E5 /* AudioStretcher.m in Sources */,
@@ -2840,6 +2861,7 @@
 				B660F72C1C29988E00687D6E /* HttpRequestUtil.m in Sources */,
 				B660F72D1C29988E00687D6E /* HttpResponse.m in Sources */,
 				B660F72E1C29988E00687D6E /* HttpManager.m in Sources */,
+				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				B660F72F1C29988E00687D6E /* HttpSocket.m in Sources */,
 				B660F7301C29988E00687D6E /* IpAddress.m in Sources */,
 				B660F7311C29988E00687D6E /* IpEndPoint.m in Sources */,

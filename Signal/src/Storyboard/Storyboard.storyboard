@@ -1408,8 +1408,8 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Network Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNq-FV-lwt">
-                                                    <rect key="frame" x="15" y="11" width="200" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNq-FV-lwt">
+                                                    <rect key="frame" x="15" y="12" width="200" height="19.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="200" id="q6L-Sa-lrA"/>
                                                     </constraints>
@@ -1474,8 +1474,28 @@ A0 09 9A FF A8 8A 09 99</string>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="dkL-Nz-E6H" style="IBUITableViewCellStyleDefault" id="Xx7-pz-aLN" userLabel="Advanced Cell">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="hrc-lZ-NeA" style="IBUITableViewCellStyleDefault" id="wZ8-fs-Ylw" userLabel="Linked Devices Cell">
                                         <rect key="frame" x="0.0" y="314" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wZ8-fs-Ylw" id="Ua5-nw-s2z">
+                                            <rect key="frame" x="0.0" y="0.0" width="287" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Linked Devices" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hrc-lZ-NeA">
+                                                    <rect key="frame" x="15" y="0.0" width="270" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="tWr-1v-Sq9" kind="push" id="LTQ-a4-Xbb"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="dkL-Nz-E6H" style="IBUITableViewCellStyleDefault" id="Xx7-pz-aLN" userLabel="Advanced Cell">
+                                        <rect key="frame" x="0.0" y="358" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xx7-pz-aLN" id="pMA-vR-8Ae">
                                             <rect key="frame" x="0.0" y="0.0" width="287" height="43.5"/>
@@ -1492,7 +1512,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="qeN-f1-cIQ" style="IBUITableViewCellStyleDefault" id="EI4-kQ-MMA" userLabel="About Cell">
-                                        <rect key="frame" x="0.0" y="358" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="402" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EI4-kQ-MMA" id="czg-5p-aVz">
                                             <rect key="frame" x="0.0" y="0.0" width="287" height="43.5"/>
@@ -1513,7 +1533,7 @@ A0 09 9A FF A8 8A 09 99</string>
                             <tableViewSection id="FdD-MV-PUQ">
                                 <cells>
                                     <tableViewCell autoresizesSubviews="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="100" id="R82-FT-SEA" userLabel="Destroy Account Cell">
-                                        <rect key="frame" x="0.0" y="402" width="320" height="100"/>
+                                        <rect key="frame" x="0.0" y="446" width="320" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R82-FT-SEA" id="Ok9-fE-WhB">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="99.5"/>
@@ -1564,6 +1584,7 @@ A0 09 9A FF A8 8A 09 99</string>
                         <outlet property="aboutLabel" destination="qeN-f1-cIQ" id="kmc-iU-NK5"/>
                         <outlet property="advancedLabel" destination="dkL-Nz-E6H" id="HUw-SB-apQ"/>
                         <outlet property="destroyAccountButton" destination="4Mk-ly-6fq" id="6Xj-Rb-kfF"/>
+                        <outlet property="linkedDevicesLabel" destination="hrc-lZ-NeA" id="VkD-E5-2kW"/>
                         <outlet property="networkStatusHeader" destination="uNq-FV-lwt" id="vca-cC-nXG"/>
                         <outlet property="networkStatusLabel" destination="tg3-dQ-odw" id="l6J-8y-maW"/>
                         <outlet property="notificationsLabel" destination="tRQ-1p-6aT" id="sbi-Q3-Mge"/>
@@ -1576,6 +1597,25 @@ A0 09 9A FF A8 8A 09 99</string>
                 <exit id="0Ge-H7-b9J" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-2860" y="-3154"/>
+        </scene>
+        <!--Link Device-->
+        <scene sceneID="all-Be-y2s">
+            <objects>
+                <viewController id="tWr-1v-Sq9" customClass="OWSLinkDeviceViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="HSZ-fb-tHK"/>
+                        <viewControllerLayoutGuide type="bottom" id="nre-8Q-MvI"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XYT-jy-1yR">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Link Device" id="OnR-Ni-zff"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lPR-Bk-TZT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2415" y="-3154"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aWR-d3-s5V">
