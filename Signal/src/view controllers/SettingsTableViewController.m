@@ -255,7 +255,4 @@ typedef enum {
     self.networkStatusLabel.textColor = [UIColor ows_yellowColor];
 }
 
-- (IBAction)unwindToUserCancelledChangeNumber:(UIStoryboardSegue *)segue {
-}
-
 @end
