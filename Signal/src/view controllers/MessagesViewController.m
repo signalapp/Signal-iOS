@@ -1391,7 +1391,7 @@ typedef enum : NSUInteger {
 - (void)handleErrorMessageTap:(TSErrorMessage *)message {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage *)message;
-        NSString *newKeyFingerprint                    = [errorMessage newIdentityKey];
+        NSString *newKeyFingerprint = [errorMessage newIdentityFingerprint];
 
         NSString *keyOwner;
         if ([message isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
