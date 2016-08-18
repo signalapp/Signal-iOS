@@ -58,7 +58,8 @@ typedef enum {
 
 @implementation SettingsTableViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     [self.navigationItem setHidesBackButton:YES];
 
@@ -72,14 +73,14 @@ typedef enum {
     [self initializeObserver];
     [TSSocketManager sendNotification];
 
-    self.title                  = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"");
-    _networkStatusHeader.text   = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-    _settingsPrivacyTitle.text  = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
-    _settingsAdvancedTitle.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-    _settingsAboutTitle.text    = NSLocalizedString(@"SETTINGS_ABOUT", @"");
-    _settingsNotifications.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
-    [_destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                           forState:UIControlStateNormal];
+    self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"");
+    self.networkStatusHeader.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
+    self.privacyLabel.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
+    self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
+    self.aboutLabel.text = NSLocalizedString(@"SETTINGS_ABOUT", @"");
+    self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
+    [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                               forState:UIControlStateNormal];
 }
 
 - (void)dealloc {

@@ -10,16 +10,15 @@
 
 @interface SettingsTableViewController : UITableViewController
 
-@property IBOutlet UILabel *registeredName;
-@property IBOutlet UILabel *registeredNumber;
-@property IBOutlet UILabel *networkStatusLabel;
-
-@property IBOutlet UILabel *networkStatusHeader;
-@property IBOutlet UILabel *settingsPrivacyTitle;
-@property IBOutlet UILabel *settingsNotifications;
-@property IBOutlet UILabel *settingsAdvancedTitle;
-@property IBOutlet UILabel *settingsAboutTitle;
-@property IBOutlet UIButton *destroyAccountButton;
+@property (strong, nonatomic) IBOutlet UILabel *registeredName;
+@property (strong, nonatomic) IBOutlet UILabel *registeredNumber;
+@property (strong, nonatomic) IBOutlet UILabel *networkStatusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *networkStatusHeader;
+@property (strong, nonatomic) IBOutlet UILabel *privacyLabel;
+@property (strong, nonatomic) IBOutlet UILabel *notificationsLabel;
+@property (strong, nonatomic) IBOutlet UILabel *advancedLabel;
+@property (strong, nonatomic) IBOutlet UILabel *aboutLabel;
+@property (strong, nonatomic) IBOutlet UIButton *destroyAccountButton;
 
 - (IBAction)unregisterUser:(id)sender;
 
