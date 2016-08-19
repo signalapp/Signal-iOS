@@ -1,0 +1,19 @@
+package signalservice;
+
+option java_package = "org.whispersystems.signalservice.internal.push";
+option java_outer_classname = "ProvisioningProtos";
+
+import "objectivec-descriptor.proto";
+option (google.protobuf.objectivec_file_options).class_prefix = "OWSProvisioningProtos";
+
+message ProvisionEnvelope {
+  optional bytes publicKey = 1;
+  optional bytes body      = 2; // Encrypted ProvisionMessage
+}
+
+message ProvisionMessage {
+  optional bytes  identityKeyPublic  = 1;
+  optional bytes  identityKeyPrivate = 2;
+  optional string number             = 3;
+  optional string provisioningCode   = 4;
+}
