@@ -36,6 +36,7 @@
     NSString *previousVersion = Environment.preferences.lastRanVersion;
     if (!previousVersion) {
         DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
+        [Environment.preferences setAndGetCurrentVersion];
         return;
     }
 
