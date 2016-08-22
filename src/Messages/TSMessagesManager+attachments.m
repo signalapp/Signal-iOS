@@ -31,63 +31,67 @@ dispatch_queue_t attachmentsQueue() {
 
 @implementation TSMessagesManager (attachments)
 
-- (void)handleReceivedMediaMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content {
-    NSArray *attachmentsToRetrieve =
-        (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate))
-            ? [NSArray arrayWithObject:content.group.avatar]
-            : content.attachments;
+- (void)handleReceivedMediaWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                            dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    // TODO extract group avatar handling rather than checking message type multiple times and forking logic.
+
+    NSArray *attachmentsToRetrieve
+        = (dataMessage.hasGroup && (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate))
+        ? [NSArray arrayWithObject:dataMessage.group.avatar]
+        : dataMessage.attachments;
 
     NSMutableArray *retrievedAttachments = [NSMutableArray array];
     __block BOOL shouldProcessMessage    = YES;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      for (PushMessageContentAttachmentPointer *pointer in attachmentsToRetrieve) {
-          TSAttachmentPointer *attachmentPointer =
-              (content.group != nil && (content.group.type == PushMessageContentGroupContextTypeUpdate))
-                  ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
-                                                                key:pointer.key
-                                                        contentType:pointer.contentType
-                                                              relay:message.relay
-                                                    avatarOfGroupId:content.group.id]
-                  : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
-                                                                key:pointer.key
-                                                        contentType:pointer.contentType
-                                                              relay:message.relay];
+        for (OWSSignalServiceProtosAttachmentPointer *pointer in attachmentsToRetrieve) {
+            TSAttachmentPointer *attachmentPointer
+                = (dataMessage.hasGroup && (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate))
+                ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
+                                                              key:pointer.key
+                                                      contentType:pointer.contentType
+                                                            relay:envelope.relay
+                                                  avatarOfGroupId:dataMessage.group.id]
+                : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
+                                                              key:pointer.key
+                                                      contentType:pointer.contentType
+                                                            relay:envelope.relay];
 
-          if ([MIMETypeUtil isSupportedMIMEType:attachmentPointer.contentType]) {
-              [attachmentPointer saveWithTransaction:transaction];
-              [retrievedAttachments addObject:attachmentPointer.uniqueId];
-              shouldProcessMessage = YES;
-          } else {
-              TSThread *thread =
-                  [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
-              TSInfoMessage *infoMessage =
-                  [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                                  inThread:thread
-                                               messageType:TSInfoMessageTypeUnsupportedMessage];
-              [infoMessage saveWithTransaction:transaction];
-              shouldProcessMessage = NO;
-          }
-      }
+            if ([MIMETypeUtil isSupportedMIMEType:attachmentPointer.contentType]) {
+                [attachmentPointer saveWithTransaction:transaction];
+                [retrievedAttachments addObject:attachmentPointer.uniqueId];
+                shouldProcessMessage = YES;
+            } else {
+                TSThread *thread =
+                    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+                TSInfoMessage *infoMessage =
+                    [[TSInfoMessage alloc] initWithTimestamp:envelope.timestamp
+                                                    inThread:thread
+                                                 messageType:TSInfoMessageTypeUnsupportedMessage];
+                [infoMessage saveWithTransaction:transaction];
+                shouldProcessMessage = NO;
+            }
+        }
     }];
 
     if (shouldProcessMessage) {
-        [self
-            handleReceivedMessage:message
-                      withContent:content
-                    attachmentIds:retrievedAttachments
-                  completionBlock:^(NSString *messageIdentifier) {
-                      for (NSString *pointerId in retrievedAttachments) {
-                          dispatch_async(attachmentsQueue(), ^{
-                            __block TSAttachmentPointer *pointer;
+        [self handleReceivedEnvelope:envelope
+                     withDataMessage:dataMessage
+                       attachmentIds:retrievedAttachments
+                     completionBlock:^(NSString *messageIdentifier) {
+                         for (NSString *pointerId in retrievedAttachments) {
+                             dispatch_async(attachmentsQueue(), ^{
+                                 __block TSAttachmentPointer *pointer;
 
-                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                              pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId transaction:transaction];
-                            }];
+                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                     pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId
+                                                                                transaction:transaction];
+                                 }];
 
-                            [self retrieveAttachment:pointer messageId:messageIdentifier];
-                          });
-                      }
-                  }];
+                                 [self retrieveAttachment:pointer messageId:messageIdentifier];
+                             });
+                         }
+                     }];
     }
 }
 

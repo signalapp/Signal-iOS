@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 @class TSInteraction;
+@class TSInvalidIdentityKeyReceivingErrorMessage;
 
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
@@ -41,6 +42,11 @@
  *  @return The number of interactions in this thread.
  */
 - (NSUInteger)numberOfInteractions;
+
+/**
+ * Get all messages in the thread we weren't able to decrypt
+ */
+- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
 
 /**
  *  Returns whether or not the thread has unread messages.

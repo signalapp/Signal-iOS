@@ -14,7 +14,8 @@
 
 @interface TSMessagesManager (attachments)
 
-- (void)handleReceivedMediaMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content;
+- (void)handleReceivedMediaWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                            dataMessage:(OWSSignalServiceProtosDataMessage *)message;
 
 - (void)sendAttachment:(NSData *)attachmentData
            contentType:(NSString *)contentType

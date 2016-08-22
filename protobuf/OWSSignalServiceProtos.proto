@@ -1,7 +1,10 @@
-package textsecure;
+package signalservice;
 
-option java_package = "org.whispersystems.textsecure.internal.push";
-option java_outer_classname = "TextSecureProtos";
+option java_package = "org.whispersystems.signalservice.internal.push";
+option java_outer_classname = "SignalServiceProtos";
+
+import "objectivec-descriptor.proto";
+option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignalServiceProtos";
 
 message Envelope {
   enum Type {
@@ -62,10 +65,16 @@ message SyncMessage {
     optional Type type = 1;
   }
 
+  message Read {
+    optional string sender    = 1;
+    optional uint64 timestamp = 2;
+  }
+
   optional Sent     sent     = 1;
   optional Contacts contacts = 2;
   optional Groups   groups   = 3;
   optional Request  request  = 4;
+  repeated Read     read     = 5;
 }
 
 message AttachmentPointer {
@@ -107,8 +116,9 @@ message GroupDetails {
     optional uint32 length      = 2;
   }
 
-  optional bytes  id      = 1;
-  optional string name    = 2;
-  repeated string members = 3;
-  optional Avatar avatar  = 4;
+  optional bytes  id       = 1;
+  optional string name     = 2;
+  repeated string members  = 3;
+  optional Avatar avatar   = 4;
+  optional bool   active   = 5 [default = true];
 }

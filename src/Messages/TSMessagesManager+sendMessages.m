@@ -511,16 +511,16 @@ dispatch_queue_t sendingQueue() {
 
 
 - (NSData *)plainTextForMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread {
-    PushMessageContentBuilder *builder = [PushMessageContentBuilder new];
+    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setBody:message.body];
     BOOL processAttachments = YES;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread                              = (TSGroupThread *)thread;
-        PushMessageContentGroupContextBuilder *groupBuilder = [PushMessageContentGroupContextBuilder new];
+        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
 
         switch (message.groupMetaMessage) {
             case TSGroupMessageQuit:
-                [groupBuilder setType:PushMessageContentGroupContextTypeQuit];
+                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
                 break;
             case TSGroupMessageUpdate:
             case TSGroupMessageNew: {
@@ -528,8 +528,8 @@ dispatch_queue_t sendingQueue() {
                     id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds[0]];
                     if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
                         TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-                        PushMessageContentAttachmentPointerBuilder *attachmentbuilder =
-                            [PushMessageContentAttachmentPointerBuilder new];
+                        OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
+                            [OWSSignalServiceProtosAttachmentPointerBuilder new];
                         [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
                         [attachmentbuilder setContentType:attachment.contentType];
                         [attachmentbuilder setKey:attachment.encryptionKey];
@@ -539,11 +539,11 @@ dispatch_queue_t sendingQueue() {
                 }
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
                 [groupBuilder setName:gThread.groupModel.groupName];
-                [groupBuilder setType:PushMessageContentGroupContextTypeUpdate];
+                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
                 break;
             }
             default:
-                [groupBuilder setType:PushMessageContentGroupContextTypeDeliver];
+                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
                 break;
         }
         [groupBuilder setId:gThread.groupModel.groupId];
@@ -557,8 +557,8 @@ dispatch_queue_t sendingQueue() {
             if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
                 TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
 
-                PushMessageContentAttachmentPointerBuilder *attachmentbuilder =
-                    [PushMessageContentAttachmentPointerBuilder new];
+                OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
+                    [OWSSignalServiceProtosAttachmentPointerBuilder new];
                 [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
                 [attachmentbuilder setContentType:attachment.contentType];
                 [attachmentbuilder setKey:attachment.encryptionKey];

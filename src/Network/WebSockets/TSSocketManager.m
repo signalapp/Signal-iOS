@@ -167,9 +167,9 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             return;
         }
 
-        IncomingPushMessageSignal *messageSignal = [IncomingPushMessageSignal parseFromData:decryptedPayload];
+        OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
-        [[TSMessagesManager sharedManager] handleMessageSignal:messageSignal];
+        [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope];
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
     }

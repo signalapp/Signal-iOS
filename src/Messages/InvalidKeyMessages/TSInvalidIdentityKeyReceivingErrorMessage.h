@@ -10,7 +10,8 @@
 
 @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
-+ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal *)preKeyMessage
-                       withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)untrustedKeyWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (NSData *)newIdentityKey;
 
 @end

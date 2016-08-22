@@ -11,6 +11,6 @@
 @interface TSInvalidIdentityKeyErrorMessage : TSErrorMessage
 
 - (void)acceptNewIdentityKey;
-- (NSString *)newIdentityKey;
+- (NSString *)newIdentityFingerprint;
 
 @end

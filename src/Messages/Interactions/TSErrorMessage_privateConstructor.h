@@ -14,7 +14,7 @@
                          inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
-@property NSData *pushSignal;
+@property NSData *envelopeData;
 
 @property NSDictionary *pendingOutgoingMessage;
 

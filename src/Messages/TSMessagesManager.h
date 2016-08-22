@@ -1,13 +1,14 @@
 //  Created by Frederic Jacobs on 11/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
-#import "IncomingPushMessageSignal.pb.h"
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSOutgoingMessage.h"
 
 @class TSCall;
 @class YapDatabaseConnection;
+@class OWSSignalServiceProtosEnvelope;
+@class OWSSignalServiceProtosDataMessage;
 
 @interface TSMessagesManager : NSObject
 
@@ -15,18 +16,16 @@
 
 @property (readonly) YapDatabaseConnection *dbConnection;
 
-- (void)handleMessageSignal:(IncomingPushMessageSignal *)messageSignal;
+- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
 - (void)processException:(NSException *)exception
          outgoingMessage:(TSOutgoingMessage *)message
                 inThread:(TSThread *)thread;
-- (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
-                  withContent:(PushMessageContent *)content
-                attachmentIds:(NSArray<NSString *> *)attachmentIds;
-- (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
-                  withContent:(PushMessageContent *)content
-                attachmentIds:(NSArray<NSString *> *)attachmentIds
-              completionBlock:(void (^)(NSString *messageIdentifier))completionBlock;
+
+- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock;
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage;
 

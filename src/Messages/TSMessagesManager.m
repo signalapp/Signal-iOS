@@ -43,33 +43,31 @@
     return self;
 }
 
-- (void)handleMessageSignal:(IncomingPushMessageSignal *)messageSignal {
+- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
     @try {
-        switch (messageSignal.type) {
-            case IncomingPushMessageSignalTypeCiphertext:
-                [self handleSecureMessage:messageSignal];
+        switch (envelope.type) {
+            case OWSSignalServiceProtosEnvelopeTypeCiphertext:
+                [self handleSecureMessage:envelope];
                 break;
-
-            case IncomingPushMessageSignalTypePrekeyBundle:
-                [self handlePreKeyBundle:messageSignal];
+            case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
+                [self handlePreKeyBundle:envelope];
+                break;
+            case OWSSignalServiceProtosEnvelopeTypeReceipt:
+                DDLogInfo(@"Received a delivery receipt");
+                [self handleDeliveryReceipt:envelope];
                 break;
 
             // Other messages are just dismissed for now.
 
-            case IncomingPushMessageSignalTypeKeyExchange:
+            case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
                 DDLogWarn(@"Received Key Exchange Message, not supported");
                 break;
-            case IncomingPushMessageSignalTypePlaintext:
-                DDLogWarn(@"Received a plaintext message");
-                break;
-            case IncomingPushMessageSignalTypeReceipt:
-                DDLogInfo(@"Received a delivery receipt");
-                [self handleDeliveryReceipt:messageSignal];
-                break;
-            case IncomingPushMessageSignalTypeUnknown:
+            case OWSSignalServiceProtosEnvelopeTypeUnknown:
                 DDLogWarn(@"Received an unknown message type");
                 break;
             default:
+                DDLogWarn(@"Received unhandled envelope type: %d", envelope.type);
                 break;
         }
     } @catch (NSException *exception) {
@@ -77,38 +75,46 @@
     }
 }
 
-- (void)handleDeliveryReceipt:(IncomingPushMessageSignal *)signal {
+- (void)handleDeliveryReceipt:(OWSSignalServiceProtosEnvelope *)envelope
+{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSInteraction *interaction = [TSInteraction interactionForTimestamp:signal.timestamp withTransaction:transaction];
-      if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-          TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
-          outgoingMessage.messageState       = TSOutgoingMessageStateDelivered;
+        TSInteraction *interaction =
+            [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
+        if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
+            outgoingMessage.messageState = TSOutgoingMessageStateDelivered;
 
-          [outgoingMessage saveWithTransaction:transaction];
-      }
+            [outgoingMessage saveWithTransaction:transaction];
+        }
     }];
 }
 
-- (void)handleSecureMessage:(IncomingPushMessageSignal *)secureMessage {
+- (void)handleSecureMessage:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+{
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        NSString *recipientId            = secureMessage.source;
-        int deviceId                     = (int)secureMessage.sourceDevice;
+        NSString *recipientId = messageEnvelope.source;
+        int deviceId = messageEnvelope.sourceDevice;
 
         if (![storageManager containsSession:recipientId deviceId:deviceId]) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-              TSErrorMessage *errorMessage =
-                  [TSErrorMessage missingSessionWithSignal:secureMessage withTransaction:transaction];
-              [errorMessage saveWithTransaction:transaction];
+                TSErrorMessage *errorMessage =
+                    [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
+                [errorMessage saveWithTransaction:transaction];
             }];
             return;
         }
 
-        PushMessageContent *content;
+        // DEPRECATED - Remove after all clients have been upgraded.
+        NSData *encryptedData = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
+        if (!encryptedData) {
+            DDLogError(@"Skipping message envelope which had no encrypted data");
+            return;
+        }
 
+        NSData *plaintextData;
         @try {
-            WhisperMessage *message = [[WhisperMessage alloc] initWithData:secureMessage.message];
-
+            WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
             SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
@@ -116,29 +122,46 @@
                                                                     recipientId:recipientId
                                                                        deviceId:deviceId];
 
-            NSData *plaintext = [[cipher decrypt:message] removePadding];
-
-            content = [PushMessageContent parseFromData:plaintext];
+            plaintextData = [[cipher decrypt:message] removePadding];
         } @catch (NSException *exception) {
-            [self processException:exception pushSignal:secureMessage];
+            [self processException:exception envelope:messageEnvelope];
             return;
         }
 
-        [self handleIncomingMessage:secureMessage withPushContent:content];
+        OWSSignalServiceProtosDataMessage *dataMessage;
+        if (messageEnvelope.hasContent) { // New style content payload
+            OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
+            dataMessage = content.dataMessage;
+        } else if (messageEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        }
+
+        if (!dataMessage) {
+            DDLogWarn(@"Ignoring content that has no dataMessage.");
+            return;
+        }
+
+        [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
     }
 }
 
-- (void)handlePreKeyBundle:(IncomingPushMessageSignal *)preKeyMessage {
+- (void)handlePreKeyBundle:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
+{
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        NSString *recipientId            = preKeyMessage.source;
-        int deviceId                     = (int)preKeyMessage.sourceDevice;
+        NSString *recipientId = preKeyEnvelope.source;
+        int deviceId = preKeyEnvelope.sourceDevice;
 
-        PushMessageContent *content;
+        // DEPRECATED - Remove after all clients have been upgraded.
+        NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
+        if (!encryptedData) {
+            DDLogError(@"Skipping message envelope which had no encrypted data");
+            return;
+        }
 
+        NSData *plaintextData;
         @try {
-            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:preKeyMessage.message];
-
+            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
             SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
@@ -146,27 +169,42 @@
                                                                     recipientId:recipientId
                                                                        deviceId:deviceId];
 
-            NSData *plaintext = [[cipher decrypt:message] removePadding];
-
-            content = [PushMessageContent parseFromData:plaintext];
+            plaintextData = [[cipher decrypt:message] removePadding];
         } @catch (NSException *exception) {
-            [self processException:exception pushSignal:preKeyMessage];
+            [self processException:exception envelope:preKeyEnvelope];
             return;
         }
 
-        [self handleIncomingMessage:preKeyMessage withPushContent:content];
+        OWSSignalServiceProtosDataMessage *dataMessage;
+        if (preKeyEnvelope.hasContent) {
+            OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
+            if (content.hasDataMessage) {
+                dataMessage = content.dataMessage;
+            }
+        } else if (preKeyEnvelope.hasLegacyMessage) {
+            // DEPRECATED - Remove after all clients have been upgraded.
+            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        }
+
+        if (!dataMessage) {
+            DDLogError(@"unable to ascertain decrypted dataMessage from preKeyEnvelope");
+            return;
+        }
+
+        [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
     }
 }
 
-- (void)handleIncomingMessage:(IncomingPushMessageSignal *)incomingMessage withPushContent:(PushMessageContent *)content
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
+               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    if (content.hasGroup) {
+    if (dataMessage.hasGroup) {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupModel *emptyModelToFillOutId =
-                [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:content.group.id];
+                [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:dataMessage.group.id];
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
-            if (gThread == nil && content.group.type != PushMessageContentGroupContextTypeUpdate) {
+            if (gThread == nil && dataMessage.group.type != OWSSignalServiceProtosGroupContextTypeUpdate) {
                 ignoreMessage = YES;
             }
         }];
@@ -176,38 +214,43 @@
             return;
         }
     }
-    if ((content.flags & PushMessageContentFlagsEndSession) != 0) {
+    if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
         DDLogVerbose(@"Received end session message...");
-        [self handleEndSessionMessage:incomingMessage withContent:content];
-    } else if (content.attachments.count > 0 ||
-               (content.hasGroup && content.group.type == PushMessageContentGroupContextTypeUpdate &&
-                content.group.hasAvatar)) {
+        [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
+    } else if (dataMessage.attachments.count > 0
+        || (dataMessage.hasGroup && dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate
+               && dataMessage.group.avatar)) {
+
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
-        [self handleReceivedMediaMessage:incomingMessage withContent:content];
+        [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
         DDLogVerbose(@"Received individual push text message...");
-        [self handleReceivedTextMessage:incomingMessage withContent:content];
+        [self handleReceivedTextMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     }
 }
 
-- (void)handleEndSessionMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content {
+- (void)handleEndSessionMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)endSessionEnvelope
+                                dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:message.source transaction:transaction];
-      uint64_t timeStamp      = message.timestamp;
+        TSContactThread *thread =
+            [TSContactThread getOrCreateThreadWithContactId:endSessionEnvelope.source transaction:transaction];
+        uint64_t timeStamp = endSessionEnvelope.timestamp;
 
-      if (thread) {
-          [[[TSInfoMessage alloc] initWithTimestamp:timeStamp
-                                           inThread:thread
-                                        messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
-      }
+        if (thread) {
+            [[[TSInfoMessage alloc] initWithTimestamp:timeStamp
+                                             inThread:thread
+                                          messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+        }
     }];
 
-    [[TSStorageManager sharedManager] deleteAllSessionsForContact:message.source];
+    [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
 }
 
-- (void)handleReceivedTextMessage:(IncomingPushMessageSignal *)message withContent:(PushMessageContent *)content
+- (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
+                                  dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    [self handleReceivedMessage:message withContent:content attachmentIds:content.attachments];
+    [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[] completionBlock:nil];
 }
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
@@ -224,35 +267,28 @@
     }];
 }
 
-- (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
-                  withContent:(PushMessageContent *)content
-                attachmentIds:(NSArray<NSString *> *)attachmentIds
+- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock
 {
-    [self handleReceivedMessage:message withContent:content attachmentIds:attachmentIds completionBlock:nil];
-}
-
-- (void)handleReceivedMessage:(IncomingPushMessageSignal *)message
-                  withContent:(PushMessageContent *)content
-                attachmentIds:(NSArray<NSString *> *)attachmentIds
-              completionBlock:(void (^)(NSString *messageIdentifier))completionBlock
-{
-    uint64_t timeStamp = message.timestamp;
-    NSString *body     = content.body;
-    NSData *groupId    = content.hasGroup ? content.group.id : nil;
+    uint64_t timeStamp = envelope.timestamp;
+    NSString *body = dataMessage.body;
+    NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSIncomingMessage *incomingMessage;
       TSThread *thread;
       if (groupId) {
-          TSGroupModel *model =
-              [[TSGroupModel alloc] initWithTitle:content.group.name
-                                        memberIds:[[[NSSet setWithArray:content.group.members] allObjects] mutableCopy]
-                                            image:nil
-                                          groupId:content.group.id];
+          NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
+          TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
+                                                          memberIds:uniqueMemberIds
+                                                              image:nil
+                                                            groupId:dataMessage.group.id];
           TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
           [gThread saveWithTransaction:transaction];
 
-          if (content.group.type == PushMessageContentGroupContextTypeUpdate) {
+          if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate) {
               if ([attachmentIds count] == 1) {
                   NSString *avatarId = attachmentIds[0];
                   TSAttachment *avatar = [TSAttachment fetchObjectWithUniqueID:avatarId];
@@ -273,18 +309,18 @@
                                                inThread:gThread
                                             messageType:TSInfoMessageTypeGroupUpdate
                                           customMessage:updateGroupInfo] saveWithTransaction:transaction];
-          } else if (content.group.type == PushMessageContentGroupContextTypeQuit) {
+          } else if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeQuit) {
               NSString *nameString =
-                  [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:message.source];
+                  [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:envelope.source];
 
               if (!nameString) {
-                  nameString = message.source;
+                  nameString = envelope.source;
               }
 
               NSString *updateGroupInfo =
                   [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
               NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-              [newGroupMembers removeObject:message.source];
+              [newGroupMembers removeObject:envelope.source];
               gThread.groupModel.groupMemberIds = newGroupMembers;
 
               [gThread saveWithTransaction:transaction];
@@ -295,7 +331,7 @@
           } else {
               incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                     inThread:gThread
-                                                                    authorId:message.source
+                                                                    authorId:envelope.source
                                                                  messageBody:body
                                                                attachmentIds:attachmentIds];
               [incomingMessage saveWithTransaction:transaction];
@@ -303,9 +339,9 @@
 
           thread = gThread;
       } else {
-          TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:message.source
+          TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
                                                                          transaction:transaction
-                                                                          pushSignal:message];
+                                                                            envelope:envelope];
 
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                 inThread:cThread
@@ -324,7 +360,7 @@
                   TSGroupThread *gThread = (TSGroupThread *)thread;
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:gThread
-                                                                                       authorId:message.source
+                                                                                       authorId:envelope.source
                                                                                     messageBody:body
                                                                                   attachmentIds:nil];
                   [textMessage saveWithTransaction:transaction];
@@ -356,27 +392,28 @@
     }];
 }
 
-- (void)processException:(NSException *)exception pushSignal:(IncomingPushMessageSignal *)signal {
+- (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
     DDLogError(@"Got exception: %@ of type: %@", exception.description, exception.name);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSErrorMessage *errorMessage;
 
       if ([exception.name isEqualToString:NoSessionException]) {
-          errorMessage = [TSErrorMessage missingSessionWithSignal:signal withTransaction:transaction];
+          errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyException]) {
-          errorMessage = [TSErrorMessage invalidKeyExceptionWithSignal:signal withTransaction:transaction];
+          errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
-          errorMessage = [TSErrorMessage invalidKeyExceptionWithSignal:signal withTransaction:transaction];
+          errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:DuplicateMessageException]) {
           // Duplicate messages are dismissed
           return;
       } else if ([exception.name isEqualToString:InvalidVersionException]) {
-          errorMessage = [TSErrorMessage invalidVersionWithSignal:signal withTransaction:transaction];
+          errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
           errorMessage =
-              [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithSignal:signal withTransaction:transaction];
+              [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:envelope withTransaction:transaction];
       } else {
-          errorMessage = [TSErrorMessage corruptedMessageWithSignal:signal withTransaction:transaction];
+          errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
       }
 
       [errorMessage saveWithTransaction:transaction];

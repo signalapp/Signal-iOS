@@ -95,7 +95,8 @@
     }
 }
 
-- (NSString *)newIdentityKey {
+- (NSString *)newIdentityFingerprint
+{
     NSData *identityKey = [self newKey];
 
     return [TSFingerprintGenerator getFingerprintForDisplay:identityKey];

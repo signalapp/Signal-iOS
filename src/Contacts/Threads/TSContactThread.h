@@ -11,15 +11,16 @@
 #import "SignalRecipient.h"
 #import "TSThread.h"
 
-@class IncomingPushMessageSignal;
+@class OWSSignalServiceProtosEnvelope;
 
 @interface TSContactThread : TSThread
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-                                    pushSignal:(IncomingPushMessageSignal *)pushSignal;
+                                      envelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
 - (NSString *)contactIdentifier;
 

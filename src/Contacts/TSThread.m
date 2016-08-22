@@ -5,6 +5,7 @@
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
+#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 
@@ -103,6 +104,37 @@
 
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     [interactionsByThread enumerateRowsInGroup:self.uniqueId usingBlock:interactionBlock];
+}
+
+/**
+ * Enumerates all the threads interactions. Note this will explode if you try to create a transaction in the block.
+ * If you need a transaction, use the sister method: `enumerateInteractionsWithTransaction:usingBlock`
+ */
+- (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self enumerateInteractionsWithTransaction:transaction
+                                        usingBlock:^(
+                                            TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+
+                                            block(interaction);
+                                        }];
+    }];
+}
+
+- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
+{
+    NSMutableArray *errorMessages = [NSMutableArray new];
+    [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+        if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
+            TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
+            if ([[error newIdentityKey] isEqualToData:key]) {
+                [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
+            }
+        }
+    }];
+
+    return [errorMessages copy];
 }
 
 - (NSUInteger)numberOfInteractions

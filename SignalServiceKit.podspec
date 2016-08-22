@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SignalServiceKit"
-  s.version          = "0.0.8"
+  s.version          = "0.1.0"
   s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC
@@ -37,9 +37,6 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
-  # NOTE: we're using a custom fork of SocketRocket to support our certificate
-  # pinning policy.
-  # see Example/TSKitiOSTestApp/Podfile for details
   s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'SAMKeychain'

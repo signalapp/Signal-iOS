@@ -13,7 +13,8 @@
 - (void)acceptNewIdentityKey {
     NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
 }
-- (NSString *)newIdentityKey {
+- (NSString *)newIdentityFingerprint
+{
     NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
     return nil;
 }

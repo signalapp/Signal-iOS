@@ -3,7 +3,7 @@
 
 #import "TSContactThread.h"
 #import "ContactsUpdater.h"
-#import "IncomingPushMessageSignal.pb.h"
+#import "OWSSignalServiceProtos.pb.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -21,12 +21,13 @@
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-                                    pushSignal:(IncomingPushMessageSignal *)pushSignal {
+                                      envelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
     SignalRecipient *recipient =
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
     if (!recipient) {
-        NSString *relay = pushSignal.hasRelay && ![pushSignal.relay isEqualToString:@""] ? pushSignal.relay : nil;
+        NSString *relay = envelope.hasRelay && ![envelope.relay isEqualToString:@""] ? envelope.relay : nil;
         recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay supportsVoice:YES];
 
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId

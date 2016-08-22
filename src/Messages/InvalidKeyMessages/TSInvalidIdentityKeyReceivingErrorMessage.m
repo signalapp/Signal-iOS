@@ -14,96 +14,103 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-@implementation TSInvalidIdentityKeyReceivingErrorMessage
+@implementation TSInvalidIdentityKeyReceivingErrorMessage {
+    // Not using a property declaration in order to exclude from DB serialization
+    OWSSignalServiceProtosEnvelope *_envelope;
+}
+
+@synthesize envelopeData = _envelopeData;
+
++ (instancetype)untrustedKeyWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSContactThread *contactThread =
+        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
+        [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
+                                                    inThread:contactThread
+                                        incomingEnvelopeData:envelope.data];
+    return errorMessage;
+}
 
 - (instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                               inThread:(TSThread *)thread
-                                    incomingPushSignal:(NSData *)signal {
+                                  incomingEnvelopeData:(NSData *)envelopeData
+{
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
-
-    if (self) {
-        self.pushSignal = signal;
+    if (!self) {
+        return self;
     }
+
+    _envelopeData = envelopeData;
 
     return self;
 }
 
-+ (instancetype)untrustedKeyWithSignal:(IncomingPushMessageSignal *)preKeyMessage
-                       withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:preKeyMessage.source transaction:transaction];
-    TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
-        [[self alloc] initForUnknownIdentityKeyWithTimestamp:preKeyMessage.timestamp
-                                                    inThread:contactThread
-                                          incomingPushSignal:preKeyMessage.data];
-    return errorMessage;
+- (OWSSignalServiceProtosEnvelope *)envelope
+{
+    if (!_envelope) {
+        _envelope = [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
+    }
+    return _envelope;
 }
 
-- (void)acceptNewIdentityKey {
-    if (self.errorType != TSErrorMessageWrongTrustedIdentityKey || !self.pushSignal) {
+
+- (void)acceptNewIdentityKey
+{
+    if (self.errorType != TSErrorMessageWrongTrustedIdentityKey) {
+        DDLogError(@"Refusing to accept identity key for anything but a Key error.");
         return;
     }
 
-    TSStorageManager *storage         = [TSStorageManager sharedManager];
-    IncomingPushMessageSignal *signal = [IncomingPushMessageSignal parseFromData:self.pushSignal];
-    PreKeyWhisperMessage *message     = [[PreKeyWhisperMessage alloc] initWithData:signal.message];
-    NSData *newKey                    = [message.identityKey removeKeyType];
+    NSData *newKey = [self newIdentityKey];
+    if (!newKey) {
+        DDLogError(@"Couldn't extract identity key to accept");
+        return;
+    }
 
-    [storage saveRemoteIdentity:newKey recipientId:signal.source];
+    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
 
-    [[TSMessagesManager sharedManager] handleMessageSignal:signal];
-
-    __block NSMutableSet *messagesToDecrypt = [NSMutableSet set];
-
-    [[TSStorageManager sharedManager]
-            .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [[transaction ext:TSMessageDatabaseViewExtensionName]
-          enumerateKeysAndObjectsInGroup:self.uniqueThreadId
-                             withOptions:NSEnumerationReverse
-                              usingBlock:^(
-                                  NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                TSInteraction *interaction = (TSInteraction *)object;
-
-                                DDLogVerbose(@"Interaction type: %@", interaction.debugDescription);
-
-                                if ([interaction isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                    TSInvalidIdentityKeyErrorMessage *invalidKeyMessage =
-                                        (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-                                    IncomingPushMessageSignal *invalidMessageSignal =
-                                        [IncomingPushMessageSignal parseFromData:invalidKeyMessage.pushSignal];
-                                    PreKeyWhisperMessage *pkwm =
-                                        [[PreKeyWhisperMessage alloc] initWithData:invalidMessageSignal.message];
-                                    NSData *newKeyCandidate = [pkwm.identityKey removeKeyType];
-
-                                    if ([newKeyCandidate isEqualToData:newKey]) {
-                                        [messagesToDecrypt addObject:invalidKeyMessage];
-                                    }
-                                }
-                              }];
-    }];
-
+    // Decrypt this and any old messages for the newly accepted key
+    NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
+        [self.thread receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [[TSMessagesManager sharedManager]
-            handleMessageSignal:[IncomingPushMessageSignal parseFromData:errorMessage.pushSignal]];
+        [[TSMessagesManager sharedManager] handleReceivedEnvelope:errorMessage.envelope];
 
-        [[TSStorageManager sharedManager]
-                .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-          [errorMessage removeWithTransaction:transaction];
-        }];
+        // Here we remove the existing error message because handleReceivedEnvelope will either
+        //  1.) succeed and create a new successful message in the thread or...
+        //  2.) fail and create a new identical error message in the thread.
+        [errorMessage remove];
     }
 }
 
-- (NSString *)newIdentityKey {
-    if (!self.pushSignal) {
-        return @"";
+- (NSData *)newIdentityKey
+{
+    if (!self.envelope) {
+        DDLogError(@"Error message had no envelope data to extract key from");
+        return nil;
     }
 
-    IncomingPushMessageSignal *signal = [IncomingPushMessageSignal parseFromData:self.pushSignal];
-    PreKeyWhisperMessage *message     = [[PreKeyWhisperMessage alloc] initWithData:signal.message];
-    NSData *identityKey               = [message.identityKey removeKeyType];
+    if (self.envelope.type != OWSSignalServiceProtosEnvelopeTypePrekeyBundle) {
+        DDLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
+        return nil;
+    }
 
-    return [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
+    // DEPRECATED - Remove after all clients have been upgraded.
+    NSData *pkwmData = self.envelope.hasContent ? self.envelope.content : self.envelope.legacyMessage;
+    if (!pkwmData) {
+        DDLogError(@"Ignoring acceptNewIdentityKey for empty message");
+        return nil;
+    }
+
+    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:pkwmData];
+    return [message.identityKey removeKeyType];
+}
+
+- (NSString *)newIdentityFingerprint
+{
+    return [TSFingerprintGenerator getFingerprintForDisplay:[self newIdentityKey]];
 }
 
 @end

@@ -8,17 +8,6 @@
 
 @implementation TSInteraction
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread {
-    self = [super initWithUniqueId:nil];
-
-    if (self) {
-        _timestamp      = timestamp;
-        _uniqueThreadId = thread.uniqueId;
-    }
-
-    return self;
-}
-
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
     __block int counter = 0;
@@ -28,14 +17,14 @@
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 
-                               if (counter != 0) {
-                                   DDLogWarn(@"The database contains two colliding timestamps at: %lld.", timestamp);
-                                   return;
-                               }
+                                 if (counter != 0) {
+                                     DDLogWarn(@"The database contains two colliding timestamps at: %lld.", timestamp);
+                                     return;
+                                 }
 
-                               interaction = [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                 interaction = [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
 
-                               counter++;
+                                 counter++;
                              }
                       usingTransaction:transaction];
 
@@ -44,6 +33,25 @@
 
 + (NSString *)collection {
     return @"TSInteraction";
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+{
+    self = [super initWithUniqueId:nil];
+
+    if (!self) {
+        return self;
+    }
+
+    _timestamp = timestamp;
+    _uniqueThreadId = thread.uniqueId;
+
+    return self;
+}
+
+- (TSThread *)thread
+{
+    return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
 }
 
 #pragma mark Date operations
