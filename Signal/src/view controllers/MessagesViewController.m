@@ -80,7 +80,7 @@ typedef enum : NSUInteger {
     NSUInteger _unreadCount;
 }
 
-@property (nonatomic, readwrite) TSThread *thread;
+@property TSThread *thread;
 @property (nonatomic, weak) UIView *navView;
 @property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
