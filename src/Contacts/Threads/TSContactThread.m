@@ -4,6 +4,7 @@
 #import "TSContactThread.h"
 #import "ContactsUpdater.h"
 #import "TextSecureKitEnv.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,6 +52,16 @@ NS_ASSUME_NONNULL_BEGIN
         thread = [[TSContactThread alloc] initWithContactId:contactId];
         [thread saveWithTransaction:transaction];
     }
+
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
+{
+    __block TSContactThread *thread;
+    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
+    }];
 
     return thread;
 }

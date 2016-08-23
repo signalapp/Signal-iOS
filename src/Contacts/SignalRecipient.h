@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        relay:(nullable NSString *)relay
                                supportsVoice:(BOOL)voiceCapable;
 
++ (instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
 + (instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
                                   withTransaction:(YapDatabaseReadTransaction *)transaction;
 

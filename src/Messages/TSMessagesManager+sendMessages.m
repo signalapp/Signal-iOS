@@ -3,6 +3,9 @@
 
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "OWSLegacyMessageServiceParams.h"
+#import "OWSMessageServiceParams.h"
+#import "OWSOutgoingSentMessageTranscript.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
@@ -11,7 +14,6 @@
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "TSNetworkManager.h"
-#import "TSServerMessage.h"
 #import "TSStorageHeaders.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
@@ -228,13 +230,13 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
 }
 
-
 - (void)sendMessage:(TSOutgoingMessage *)message
         toRecipient:(SignalRecipient *)recipient
            inThread:(TSThread *)thread
         withAttemps:(int)remainingAttempts
             success:(successSendingCompletionBlock)successBlock
-            failure:(failedSendingCompletionBlock)failureBlock {
+            failure:(failedSendingCompletionBlock)failureBlock
+{
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
 
@@ -247,11 +249,11 @@ dispatch_queue_t sendingQueue() {
 
         [[TSNetworkManager sharedManager] makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient saveWithTransaction:transaction];
-                }];
-                [self handleMessageSent:message];
-                BLOCK_SAFE_RUN(successBlock);
+                dispatch_async(sendingQueue(), ^{
+                    [recipient save];
+                    [self handleMessageSent:message];
+                    BLOCK_SAFE_RUN(successBlock);
+                });
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -349,8 +351,31 @@ dispatch_queue_t sendingQueue() {
     }];
 }
 
-- (void)handleMessageSent:(TSOutgoingMessage *)message {
+- (void)handleMessageSent:(TSOutgoingMessage *)message
+{
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
+    if (message.shouldSyncTranscript) {
+        message.hasSyncedTranscript = YES;
+        [self sendSyncTranscriptForMessage:message];
+    }
+}
+
+- (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
+{
+    OWSOutgoingSentMessageTranscript *sentMessageTranscript =
+        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
+
+    SignalRecipient *localUser = [SignalRecipient recipientWithTextSecureIdentifier:[TSStorageManager localNumber]];
+    [self sendMessage:sentMessageTranscript
+        toRecipient:localUser
+        inThread:message.thread
+        withAttemps:RETRY_ATTEMPTS
+        success:^{
+            DDLogInfo(@"Succesfully sent sync transcript.");
+        }
+        failure:^{
+            DDLogInfo(@"Failed to send sync transcript.");
+        }];
 }
 
 - (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
@@ -358,15 +383,18 @@ dispatch_queue_t sendingQueue() {
                                    inThread:(TSThread *)thread
 {
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
-    TSStorageManager *storage     = [TSStorageManager sharedManager];
-    NSData *plainText             = [self plainTextForMessage:message inThread:thread];
+    NSData *plainText = [message buildPlainTextData];
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
+            // DEPRECATED - Remove after all clients have been upgraded.
+            BOOL isLegacyMessage = ![message isKindOfClass:[OWSOutgoingSyncMessage class]];
+
             NSDictionary *messageDict = [self encryptedMessageWithPlaintext:plainText
                                                                 toRecipient:recipient.uniqueId
                                                                    deviceId:deviceNumber
-                                                              keyingStorage:storage];
+                                                              keyingStorage:[TSStorageManager sharedManager]
+                                                                     legacy:isLegacyMessage];
             if (messageDict) {
                 [messagesArray addObject:messageDict];
             } else {
@@ -390,7 +418,9 @@ dispatch_queue_t sendingQueue() {
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
-                                  keyingStorage:(TSStorageManager *)storage {
+                                  keyingStorage:(TSStorageManager *)storage
+                                         legacy:(BOOL)isLegacymessage
+{
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *bundle;
@@ -450,15 +480,24 @@ dispatch_queue_t sendingQueue() {
     NSData *serializedMessage          = encryptedMessage.serialized;
     TSWhisperMessageType messageType   = [self messageTypeForCipherMessage:encryptedMessage];
 
-
-    TSServerMessage *serverMessage = [[TSServerMessage alloc] initWithType:messageType
-                                                               destination:identifier
-                                                                    device:[deviceNumber intValue]
-                                                                      body:serializedMessage
-                                                            registrationId:cipher.remoteRegistrationId];
+    OWSMessageServiceParams *messageParams;
+    // DEPRECATED - Remove after all clients have been upgraded.
+    if (isLegacymessage) {
+        messageParams = [[OWSLegacyMessageServiceParams alloc] initWithType:messageType
+                                                                recipientId:identifier
+                                                                     device:[deviceNumber intValue]
+                                                                       body:serializedMessage
+                                                             registrationId:cipher.remoteRegistrationId];
+    } else {
+        messageParams = [[OWSMessageServiceParams alloc] initWithType:messageType
+                                                          recipientId:identifier
+                                                               device:[deviceNumber intValue]
+                                                              content:serializedMessage
+                                                       registrationId:cipher.remoteRegistrationId];
+    }
 
     NSError *error;
-    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:serverMessage error:&error];
+    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
 
     if (error) {
         DDLogError(@"Error while making JSON dictionary of message: %@", error.debugDescription);
@@ -504,68 +543,6 @@ dispatch_queue_t sendingQueue() {
                                         messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
         }];
     }
-}
-
-
-- (NSData *)plainTextForMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread {
-    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
-    [builder setBody:message.body];
-    BOOL processAttachments = YES;
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread                              = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-
-        switch (message.groupMetaMessage) {
-            case TSGroupMessageQuit:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
-                break;
-            case TSGroupMessageUpdate:
-            case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && [message.attachmentIds count] == 1) {
-                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds[0]];
-                    if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-                        OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                            [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                        [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                        [attachmentbuilder setContentType:attachment.contentType];
-                        [attachmentbuilder setKey:attachment.encryptionKey];
-                        [groupBuilder setAvatar:[attachmentbuilder build]];
-                        processAttachments = NO;
-                    }
-                }
-                [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
-                [groupBuilder setName:gThread.groupModel.groupName];
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
-                break;
-            }
-            default:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
-                break;
-        }
-        [groupBuilder setId:gThread.groupModel.groupId];
-        [builder setGroup:groupBuilder.build];
-    }
-    if (processAttachments) {
-        NSMutableArray *attachments = [NSMutableArray new];
-        for (NSString *attachmentId in message.attachmentIds) {
-            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-
-            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-
-                OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                    [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                [attachmentbuilder setContentType:attachment.contentType];
-                [attachmentbuilder setKey:attachment.encryptionKey];
-
-                [attachments addObject:[attachmentbuilder build]];
-            }
-        }
-        [builder setAttachmentsArray:attachments];
-    }
-    return [builder.build data];
 }
 
 - (void)handleStaleDevicesWithResponse:(NSData *)responseData recipientId:(NSString *)identifier {

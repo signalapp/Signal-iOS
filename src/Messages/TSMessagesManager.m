@@ -3,6 +3,7 @@
 
 #import "TSMessagesManager.h"
 #import "NSData+messagePadding.h"
+#import "OWSIncomingSentMessageTranscript.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -128,20 +129,20 @@
             return;
         }
 
-        OWSSignalServiceProtosDataMessage *dataMessage;
-        if (messageEnvelope.hasContent) { // New style content payload
+        if (messageEnvelope.hasContent) {
             OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            dataMessage = content.dataMessage;
+            if (content.hasSyncMessage) {
+                [self handleIncomingEnvelope:messageEnvelope withSyncMessage:content.syncMessage];
+            } else if (content.dataMessage) {
+                [self handleIncomingEnvelope:messageEnvelope withDataMessage:content.dataMessage];
+            }
         } else if (messageEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
-            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            OWSSignalServiceProtosDataMessage *dataMessage =
+                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
+        } else {
+            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
         }
-
-        if (!dataMessage) {
-            DDLogWarn(@"Ignoring content that has no dataMessage.");
-            return;
-        }
-
-        [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
     }
 }
 
@@ -175,23 +176,20 @@
             return;
         }
 
-        OWSSignalServiceProtosDataMessage *dataMessage;
         if (preKeyEnvelope.hasContent) {
             OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            if (content.hasDataMessage) {
-                dataMessage = content.dataMessage;
+            if (content.hasSyncMessage) {
+                [self handleIncomingEnvelope:preKeyEnvelope withSyncMessage:content.syncMessage];
+            } else if (content.dataMessage) {
+                [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:content.dataMessage];
             }
-        } else if (preKeyEnvelope.hasLegacyMessage) {
-            // DEPRECATED - Remove after all clients have been upgraded.
-            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        } else if (preKeyEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+            OWSSignalServiceProtosDataMessage *dataMessage =
+                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
+        } else {
+            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
         }
-
-        if (!dataMessage) {
-            DDLogError(@"unable to ascertain decrypted dataMessage from preKeyEnvelope");
-            return;
-        }
-
-        [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
     }
 }
 
@@ -229,6 +227,19 @@
     }
 }
 
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+               withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
+{
+    if (syncMessage.hasSent) {
+        DDLogInfo(@"Received sent message transcription");
+        OWSIncomingSentMessageTranscript *transcript =
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
+        [transcript record];
+    } else {
+        DDLogWarn(@"Ignoring unsupported sync message.");
+    }
+}
+
 - (void)handleEndSessionMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)endSessionEnvelope
                                 dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
@@ -250,7 +261,7 @@
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[] completionBlock:nil];
+    [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
@@ -267,17 +278,17 @@
     }];
 }
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock
+- (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     uint64_t timeStamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
+    __block TSIncomingMessage *incomingMessage;
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSIncomingMessage *incomingMessage;
       TSThread *thread;
       if (groupId) {
           NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
@@ -377,10 +388,6 @@
           [incomingMessage saveWithTransaction:transaction];
       }
 
-      if (completionBlock) {
-          completionBlock(incomingMessage.uniqueId);
-      }
-
       NSString *name = [thread name];
 
       if (incomingMessage && thread) {
@@ -390,6 +397,8 @@
                                                             inThread:thread];
       }
     }];
+
+    return incomingMessage;
 }
 
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope

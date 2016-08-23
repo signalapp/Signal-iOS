@@ -33,6 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
 }
 
++ (instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
+{
+    __block SignalRecipient *recipient;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        recipient = [self recipientWithTextSecureIdentifier:textSecureIdentifier withTransaction:transaction];
+    }];
+    return recipient;
+}
+
 - (NSMutableOrderedSet *)devices {
     return [_devices copy];
 }

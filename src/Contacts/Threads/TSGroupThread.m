@@ -10,17 +10,49 @@
 
 #define TSGroupThreadPrefix @"g"
 
-- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel {
+- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel
+{
     NSString *uniqueIdentifier = [[self class] threadIdFromGroupId:groupModel.groupId];
+    self = [super initWithUniqueId:uniqueIdentifier];
+    if (!self) {
+        return self;
+    }
 
-    self        = [super initWithUniqueId:uniqueIdentifier];
     _groupModel = groupModel;
+
     return self;
 }
 
+- (instancetype)initWithGroupIdData:(NSData *)groupId
+{
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:groupId];
 
-+ (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction {
+    self = [self initWithGroupModel:groupModel];
+    if (!self) {
+        return self;
+    }
+
+    return self;
+}
+
++ (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction
+{
     return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
+}
+
++ (instancetype)fetchWithGroupIdData:(NSData *)groupId
+{
+    return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId]];
+}
+
++ (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId
+{
+    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId]];
+    if (!thread) {
+        thread = [[self alloc] initWithGroupIdData:groupId];
+        [thread save];
+    }
+    return thread;
 }
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
@@ -35,24 +67,24 @@
     return thread;
 }
 
-- (BOOL)isGroupThread {
-    return true;
-}
-
-- (NSData *)groupId {
-    return [[self class] groupIdFromThreadId:self.uniqueId];
-}
-
-- (NSString *)name {
-    return self.groupModel.groupName;
-}
-
-+ (NSString *)threadIdFromGroupId:(NSData *)groupId {
++ (NSString *)threadIdFromGroupId:(NSData *)groupId
+{
     return [TSGroupThreadPrefix stringByAppendingString:[groupId base64EncodedString]];
 }
 
-+ (NSData *)groupIdFromThreadId:(NSString *)threadId {
++ (NSData *)groupIdFromThreadId:(NSString *)threadId
+{
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length - 1)]];
+}
+
+- (BOOL)isGroupThread
+{
+    return true;
+}
+
+- (NSString *)name
+{
+    return self.groupModel.groupName;
 }
 
 @end

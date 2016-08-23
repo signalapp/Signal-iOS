@@ -7,14 +7,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSContactThread : TSThread
 
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId;
+
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
                                          relay:(nullable NSString *)relay;
-
-- (NSString *)contactIdentifier;
 
 - (NSString *)contactIdentifier;
 
