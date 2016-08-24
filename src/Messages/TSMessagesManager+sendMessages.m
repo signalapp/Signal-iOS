@@ -236,94 +236,89 @@ dispatch_queue_t sendingQueue() {
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
 
-        [self outgoingMessages:message
-                   toRecipient:recipient
-                      inThread:thread
-                    completion:^(NSArray *messages) {
-                      TSSubmitMessageRequest *request =
-                          [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
-                                                                   messages:messages
-                                                                      relay:recipient.relay
-                                                                  timeStamp:message.timestamp];
+        NSArray<NSDictionary *> *deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
 
-                      [[TSNetworkManager sharedManager] makeRequest:request
-                          success:^(NSURLSessionDataTask *task, id responseObject) {
-                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                              [recipient saveWithTransaction:transaction];
-                            }];
-                            [self handleMessageSent:message];
-                            BLOCK_SAFE_RUN(successBlock);
-                          }
-                          failure:^(NSURLSessionDataTask *task, NSError *error) {
-                            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                            long statuscode             = response.statusCode;
-                            NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
+                                                                                   messages:deviceMessages
+                                                                                      relay:recipient.relay
+                                                                                  timeStamp:message.timestamp];
 
-                            switch (statuscode) {
-                                case 404: {
-                                    [self unregisteredRecipient:recipient message:message inThread:thread];
-                                    BLOCK_SAFE_RUN(failureBlock);
-                                    break;
-                                }
-                                case 409: {
-                                    // Mismatched devices
-                                    DDLogWarn(@"Mismatch Devices.");
+        [[TSNetworkManager sharedManager] makeRequest:request
+            success:^(NSURLSessionDataTask *task, id responseObject) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient saveWithTransaction:transaction];
+                }];
+                [self handleMessageSent:message];
+                BLOCK_SAFE_RUN(successBlock);
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                long statuscode = response.statusCode;
+                NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
-                                    NSError *e;
-                                    NSDictionary *serializedResponse =
-                                        [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
+                switch (statuscode) {
+                    case 404: {
+                        [self unregisteredRecipient:recipient message:message inThread:thread];
+                        BLOCK_SAFE_RUN(failureBlock);
+                        break;
+                    }
+                    case 409: {
+                        // Mismatched devices
+                        DDLogWarn(@"Mismatch Devices.");
 
-                                    if (e) {
-                                        DDLogError(@"Failed to serialize response of mismatched devices: %@",
-                                                   e.description);
-                                    } else {
-                                        [self handleMismatchedDevices:serializedResponse recipient:recipient];
-                                    }
+                        NSError *e;
+                        NSDictionary *serializedResponse =
+                            [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
 
-                                    dispatch_async(sendingQueue(), ^{
-                                      [self sendMessage:message
-                                            toRecipient:recipient
-                                               inThread:thread
-                                            withAttemps:remainingAttempts
-                                                success:successBlock
-                                                failure:failureBlock];
-                                    });
+                        if (e) {
+                            DDLogError(@"Failed to serialize response of mismatched devices: %@", e.description);
+                        } else {
+                            [self handleMismatchedDevices:serializedResponse recipient:recipient];
+                        }
 
-                                    break;
-                                }
-                                case 410: {
-                                    // staledevices
-                                    DDLogWarn(@"Stale devices");
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
+                        });
 
-                                    if (!responseData) {
-                                        DDLogWarn(@"Stale devices but server didn't specify devices in response.");
-                                        return;
-                                    }
+                        break;
+                    }
+                    case 410: {
+                        // staledevices
+                        DDLogWarn(@"Stale devices");
 
-                                    [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
+                        if (!responseData) {
+                            DDLogWarn(@"Stale devices but server didn't specify devices in response.");
+                            return;
+                        }
 
-                                    dispatch_async(sendingQueue(), ^{
-                                      [self sendMessage:message
-                                            toRecipient:recipient
-                                               inThread:thread
-                                            withAttemps:remainingAttempts
-                                                success:successBlock
-                                                failure:failureBlock];
-                                    });
+                        [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
 
-                                    break;
-                                }
-                                default:
-                                    [self sendMessage:message
-                                          toRecipient:recipient
-                                             inThread:thread
-                                          withAttemps:remainingAttempts
-                                              success:successBlock
-                                              failure:failureBlock];
-                                    break;
-                            }
-                          }];
-                    }];
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
+                        });
+
+                        break;
+                    }
+                    default:
+                        [self sendMessage:message
+                              toRecipient:recipient
+                                 inThread:thread
+                              withAttemps:remainingAttempts
+                                  success:successBlock
+                                  failure:failureBlock];
+                        break;
+                }
+            }];
     } else {
         [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
         BLOCK_SAFE_RUN(failureBlock);
@@ -356,10 +351,10 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
 }
 
-- (void)outgoingMessages:(TSOutgoingMessage *)message
-             toRecipient:(SignalRecipient *)recipient
-                inThread:(TSThread *)thread
-              completion:(messagesQueue)sendMessages {
+- (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
+                               forRecipient:(SignalRecipient *)recipient
+                                   inThread:(TSThread *)thread
+{
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     TSStorageManager *storage     = [TSStorageManager sharedManager];
     NSData *plainText             = [self plainTextForMessage:message inThread:thread];
@@ -381,13 +376,13 @@ dispatch_queue_t sendingQueue() {
             if ([exception.name isEqualToString:InvalidDeviceException]) {
                 [recipient removeDevices:[NSSet setWithObject:deviceNumber]];
             } else {
+                DDLogWarn(@"Failed building message for device: %@ withe error %@", deviceNumber, exception);
                 [self processException:exception outgoingMessage:message inThread:thread];
-                return;
             }
         }
     }
 
-    sendMessages(messagesArray);
+    return [messagesArray copy];
 }
 
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
