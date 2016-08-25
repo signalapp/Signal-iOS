@@ -205,10 +205,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     [message setResponse:response.build];
     [message setType:WebSocketMessageTypeResponse];
 
-    @try {
-        [self.websocket send:message.build.data];
-    } @catch (NSException *exception) {
-        DDLogWarn(@"Caught exception while trying to write on the socket %@", exception.debugDescription);
+    NSError *error;
+    [self.websocket sendDataNoCopy:message.build.data error:&error];
+    if (error) {
+        DDLogWarn(@"Error while trying to write on websocket %@", error);
     }
 }
 
