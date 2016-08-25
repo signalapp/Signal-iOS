@@ -39,25 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
+    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
     [sentBuilder setDestination:self.message.recipientIdentifier];
+    [sentBuilder setMessage:[self.message buildDataMessage]];
 
-    OWSSignalServiceProtosDataMessage *dataMessage = [self.message buildDataMessage];
-    [sentBuilder setMessage:dataMessage];
-
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     [syncMessageBuilder setSent:[sentBuilder build]];
 
     return [syncMessageBuilder build];
-}
-
-- (NSData *)buildPlainTextData
-{
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setSyncMessage:[self buildSyncMessage]];
-
-    return [[contentBuilder build] data];
 }
 
 @end

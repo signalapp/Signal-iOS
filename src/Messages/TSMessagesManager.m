@@ -2,8 +2,11 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSMessagesManager.h"
+#import "ContactsManagerProtocol.h"
+#import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "OWSIncomingSentMessageTranscript.h"
+#import "OWSSyncContactsMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -18,10 +21,6 @@
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
-
-@interface TSMessagesManager ()
-
-@end
 
 @implementation TSMessagesManager
 
@@ -231,10 +230,33 @@
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
     if (syncMessage.hasSent) {
-        DDLogInfo(@"Received sent message transcription");
+        DDLogInfo(@"Received `sent` syncMessage, recording message transcript.");
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
         [transcript record];
+    }
+    if (syncMessage.hasRequest) {
+        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
+            DDLogInfo(@"Received Contacts `request` syncMessage.");
+
+            OWSSyncContactsMessage *syncContactsMessage =
+                [[OWSSyncContactsMessage alloc] initWithContactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
+
+            [self sendAttachment:[syncContactsMessage buildPlainTextAttachmentData]
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncContactsMessage
+                thread:nil
+                success:^{
+                    DDLogInfo(@"Successfully sent Contacts response syncMessage.");
+                }
+                failure:^{
+                    DDLogError(@"Failed to send Contacts response syncMessage.");
+                }];
+
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
+            DDLogInfo(@"Received Contacts `groups` syncMessage.");
+            // TODO
+        }
     } else {
         DDLogWarn(@"Ignoring unsupported sync message.");
     }

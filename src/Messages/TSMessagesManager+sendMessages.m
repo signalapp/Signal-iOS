@@ -122,16 +122,23 @@ dispatch_queue_t sendingQueue() {
                 [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
               }];
 
-      } else if ([thread isKindOfClass:[TSContactThread class]]) {
+      } else if ([thread isKindOfClass:[TSContactThread class]] ||
+          [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
           TSContactThread *contactThread = (TSContactThread *)thread;
 
           [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
 
-          if (![contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
+          if (![contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]] ||
+              [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+
+              NSString *recipientContactId = [message isKindOfClass:[OWSOutgoingSyncMessage class]]
+                  ? [TSAccountManager localNumber]
+                  : contactThread.contactIdentifier;
+
               __block SignalRecipient *recipient;
               [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                recipient = [SignalRecipient recipientWithTextSecureIdentifier:contactThread.contactIdentifier
-                                                               withTransaction:transaction];
+                  recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId
+                                                                 withTransaction:transaction];
               }];
 
               if (!recipient) {

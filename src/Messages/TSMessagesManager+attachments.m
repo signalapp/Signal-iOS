@@ -85,25 +85,19 @@ dispatch_queue_t attachmentsQueue() {
 
                 TSAttachmentEncryptionResult *result =
                     [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachmentId];
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                  result.pointer.isDownloaded = NO;
-                  [result.pointer saveWithTransaction:transaction];
-                }];
+                result.pointer.isDownloaded = NO;
+                [result.pointer save];
                 outgoingMessage.body = nil;
                 [outgoingMessage.attachmentIds addObject:attachmentId];
                 if (outgoingMessage.groupMetaMessage != TSGroupMessageNew &&
                     outgoingMessage.groupMetaMessage != TSGroupMessageUpdate) {
                     [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      [outgoingMessage saveWithTransaction:transaction];
-                    }];
+                    [outgoingMessage save];
                 }
                 BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachmentId];
                 if (success) {
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      result.pointer.isDownloaded = YES;
-                      [result.pointer saveWithTransaction:transaction];
-                    }];
+                    result.pointer.isDownloaded = YES;
+                    [result.pointer save];
                     [self sendMessage:outgoingMessage
                         inThread:thread
                         success:^{
@@ -248,7 +242,7 @@ dispatch_queue_t attachmentsQueue() {
 
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer     = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue    = dispatch_get_main_queue();
 
@@ -285,7 +279,7 @@ dispatch_queue_t attachmentsQueue() {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:location]];
     request.HTTPMethod           = @"PUT";
     request.HTTPBody             = cipherText;
-    [request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
 
     AFURLSessionManager *manager = [[AFURLSessionManager alloc]
         initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
