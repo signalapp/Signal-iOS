@@ -59,7 +59,7 @@ dispatch_queue_t sendingQueue() {
                   [recipients addObject:newRecipient];
                 }
                 failure:^(NSError *error) {
-#warning Ignore sending message to him?
+                    DDLogWarn(@"Not sending message to unknown recipient with error: %@", error);
                     latestError = error;
                 }];
         } else {
