@@ -1,13 +1,10 @@
-//
-//  TSRecipient.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 17/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "SignalRecipient.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalRecipient
 
@@ -16,15 +13,17 @@
 }
 
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                       relay:(NSString *)relay
-                               supportsVoice:(BOOL)voiceCapable {
+                                       relay:(nullable NSString *)relay
+                               supportsVoice:(BOOL)voiceCapable
+{
     self = [super initWithUniqueId:textSecureIdentifier];
-
-    if (self) {
-        _devices       = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
-        _relay         = relay;
-        _supportsVoice = voiceCapable;
+    if (!self) {
+        return self;
     }
+
+    _devices = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
+    _relay = [relay isEqualToString:@""] ? nil : relay;
+    _supportsVoice = voiceCapable;
 
     return self;
 }
@@ -55,3 +54,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

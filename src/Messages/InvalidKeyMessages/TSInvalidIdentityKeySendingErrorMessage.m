@@ -1,22 +1,16 @@
-//
-//  TSInvalidIdentityKeySendingErrorMessage.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 15/02/15.
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
-//
 
-#import "TSOutgoingMessage.h"
-
-#import <AxolotlKit/NSData+keyVersionByte.h>
-
+#import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSFingerprintGenerator.h"
-#import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSMessagesManager+sendMessages.h"
+#import "TSOutgoingMessage.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
 
 @interface TSInvalidIdentityKeySendingErrorMessage ()
 

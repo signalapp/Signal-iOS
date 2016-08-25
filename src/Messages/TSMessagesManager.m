@@ -341,7 +341,7 @@
       } else {
           TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
                                                                          transaction:transaction
-                                                                            envelope:envelope];
+                                                                               relay:envelope.relay];
 
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                 inThread:cThread
