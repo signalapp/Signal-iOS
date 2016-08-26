@@ -139,9 +139,11 @@ dispatch_queue_t sendingQueue() {
                       }
                       failure:^(NSError *error) {
                         if (error.code == NOTFOUND_ERROR) {
+                            DDLogWarn(@"recipient contact not found with error: %@", error);
                             [self unregisteredRecipient:recipient message:message inThread:thread];
                             return;
                         } else {
+                            DDLogError(@"contact lookup failed with error: %@", error);
                             [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
                             return;
                         }

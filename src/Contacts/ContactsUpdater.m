@@ -1,16 +1,12 @@
-//
-//  ContactsManager+updater.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 21/11/15.
 //  Copyright © 2015 Open Whisper Systems. All rights reserved.
-//
 
 #import "ContactsUpdater.h"
 
 #import "Contact.h"
 #import "Cryptography.h"
 #import "PhoneNumber.h"
+#import "OWSError.h"
 #import "TSContactsIntersectionRequest.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
@@ -63,7 +59,14 @@
 
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(NSSet<NSString *> *matchedIds))success
-                 failure:(void (^)(NSError *error))failure {
+                 failure:(void (^)(NSError *error))failure
+{
+    if(!identifier) {
+        NSError *error = OWSErrorWithCodeDescription(1, @"Cannot lookup nil identifier");
+        BLOCK_SAFE_RUN(failure, error);
+        return;
+    }
+
     [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
         success:^(NSSet<NSString *> *matchedIds) {
           BLOCK_SAFE_RUN(success, matchedIds);
