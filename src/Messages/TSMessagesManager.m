@@ -7,6 +7,7 @@
 #import "NSData+messagePadding.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSSyncContactsMessage.h"
+#import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -255,7 +256,19 @@
 
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             DDLogInfo(@"Received Contacts `groups` syncMessage.");
-            // TODO
+
+            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+
+            [self sendAttachment:[syncGroupsMessage buildPlainTextAttachmentData]
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncGroupsMessage
+                thread:nil
+                success:^{
+                    DDLogInfo(@"Successfully sent Groups response syncMessage.");
+                }
+                failure:^{
+                    DDLogError(@"Failed to send Groups response syncMessage.");
+                }];
         }
     } else {
         DDLogWarn(@"Ignoring unsupported sync message.");

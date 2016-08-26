@@ -1,32 +1,11 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
-#import "OWSSyncContactsMessage.h"
-#import "Contact.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "OWSSyncGroupsMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "TSAttachment.h"
-#import "TSAttachmentStream.h"
-#import <ProtocolBuffers/CodedOutputStream.h>
 
-@interface OWSSyncContactsMessage ()
+NS_ASSUME_NONNULL_BEGIN
 
-@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
-
-@end
-
-@implementation OWSSyncContactsMessage
-
-- (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
-{
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil messageBody:nil attachmentIds:@[]];
-    if (!self) {
-        return self;
-    }
-
-    _contactsManager = contactsManager;
-
-    return self;
-}
+@implementation OWSSyncGroupsMessage
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -55,7 +34,7 @@
 
     OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
         [OWSSignalServiceProtosSyncMessageContactsBuilder new];
-    [contactsBuilder setBlob:[attachmentBuilder build]];
+    [contactsBuilder setBlobBuilder:attachmentBuilder];
 
     [syncMessageBuilder setContacts:[contactsBuilder build]];
 
@@ -122,3 +101,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
