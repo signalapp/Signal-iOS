@@ -87,8 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         uint64_t textMessageTimestamp = self.timestamp + 1000;
         TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                              inThread:thread
-                                                                          messageBody:self.dataMessage.body
-                                                                        attachmentIds:nil];
+                                                                          messageBody:self.dataMessage.body];
         textMessage.messageState = TSOutgoingMessageStateDelivered;
         [textMessage save];
     }

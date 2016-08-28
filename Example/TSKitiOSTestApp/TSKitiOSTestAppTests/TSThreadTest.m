@@ -37,14 +37,12 @@
 
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
-                                                                          messageBody:@"incoming message body"
-                                                                        attachmentIds:nil];
+                                                                          messageBody:@"incoming message body"];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:20000
                                                                              inThread:thread
-                                                                          messageBody:@"outgoing message body"
-                                                                        attachmentIds:nil];
+                                                                          messageBody:@"outgoing message body"];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);

@@ -12,8 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation TSOutgoingMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageBody:(NSString *)body
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+{
+   return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[]];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
 {
     self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:attachmentIds];

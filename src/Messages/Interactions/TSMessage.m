@@ -5,6 +5,8 @@
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 static const NSUInteger OWSMessageSchemaVersion = 2;
 
 @interface TSMessage ()
@@ -33,8 +35,25 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
 @implementation TSMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageBody:(NSString *)body
+{
+    return [self initWithTimestamp:timestamp inThread:nil messageBody:nil];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+{
+    return [self initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:@[]];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+{
+    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[]];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
@@ -44,7 +63,7 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
     }
 
     _body = body;
-    _attachmentIds = [attachmentIds mutableCopy];
+    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
 
     return self;
 }
@@ -57,9 +76,15 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
     }
 
     if (_schemaVersion < 2) {
+        // renamed _attachments to _attachmentIds
         if (!_attachmentIds) {
             _attachmentIds = [coder decodeObjectForKey:@"attachments"];
         }
+    }
+
+    if (!_attachmentIds) {
+        // used to allow nil _attachmentIds
+        _attachmentIds = [NSMutableArray new];
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -69,7 +94,7 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
 
 - (BOOL)hasAttachments
 {
-    return self.attachmentIds ? (self.attachmentIds.count > 0) : false;
+    return self.attachmentIds ? (self.attachmentIds.count > 0) : NO;
 }
 
 - (NSString *)debugDescription
@@ -107,3 +132,5 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

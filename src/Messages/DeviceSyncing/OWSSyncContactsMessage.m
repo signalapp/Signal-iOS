@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil messageBody:nil attachmentIds:@[]];
+    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
     if (!self) {
         return self;
     }

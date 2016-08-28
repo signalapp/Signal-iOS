@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil messageBody:nil attachmentIds:@[]];
+    return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

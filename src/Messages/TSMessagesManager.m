@@ -407,15 +407,13 @@
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:gThread
                                                                                        authorId:envelope.source
-                                                                                    messageBody:body
-                                                                                  attachmentIds:nil];
+                                                                                    messageBody:body];
                   [textMessage saveWithTransaction:transaction];
               } else {
                   TSContactThread *cThread = (TSContactThread *)thread;
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:cThread
-                                                                                    messageBody:body
-                                                                                  attachmentIds:nil];
+                                                                                    messageBody:body];
                   [textMessage saveWithTransaction:transaction];
               }
           }

@@ -3,6 +3,8 @@
 
 #import "TSInteraction.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  *  Abstract message class.
  */
@@ -17,14 +19,24 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
-@property (nonatomic) NSString *body;
+@property (nullable, nonatomic) NSString *body;
 @property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageBody:(NSString *)body
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 - (BOOL)hasAttachments;
 
 @end
+
+NS_ASSUME_NONNULL_END
