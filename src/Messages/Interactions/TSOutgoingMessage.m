@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setBody:self.body];
-    BOOL processAttachments = YES;
+    BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
         OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
@@ -56,19 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             case TSGroupMessageUpdate:
             case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && [self.attachmentIds count] == 1) {
-                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:self.attachmentIds[0]];
-                    if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-                        OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                            [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                        [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                        [attachmentbuilder setContentType:attachment.contentType];
-                        [attachmentbuilder setKey:attachment.encryptionKey];
-                        [groupBuilder setAvatar:[attachmentbuilder build]];
-                        processAttachments = NO;
-                    }
+                if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
+                    attachmentWasGroupAvatar = YES;
+                    [groupBuilder setAvatarBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
                 }
+
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
                 [groupBuilder setName:gThread.groupModel.groupName];
                 [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
@@ -81,22 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setId:gThread.groupModel.groupId];
         [builder setGroup:groupBuilder.build];
     }
-    if (processAttachments) {
+    if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-
-            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-
-                OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                    [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                [attachmentbuilder setContentType:attachment.contentType];
-                [attachmentbuilder setKey:attachment.encryptionKey];
-
-                [attachments addObject:[attachmentbuilder build]];
-            }
+            OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
+                [self attachmentBuilderForAttachmentId:attachmentId];
+            [attachments addObject:[attachmentBuilder build]];
         }
         [builder setAttachmentsArray:attachments];
     }
@@ -111,6 +93,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldSyncTranscript
 {
     return !self.hasSyncedTranscript;
+}
+
+- (OWSSignalServiceProtosAttachmentPointerBuilder *)attachmentBuilderForAttachmentId:(NSString *)attachmentId
+{
+    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
+        return nil;
+    }
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+
+    OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
+    [builder setId:[attachmentStream.identifier unsignedLongLongValue]];
+    [builder setContentType:attachmentStream.contentType];
+    [builder setKey:attachmentStream.encryptionKey];
+
+    return builder;
 }
 
 @end

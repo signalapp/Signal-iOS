@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
-    NSAssert(NO, @"buildSyncMessage must be overridden in suclass");
+    NSAssert(NO, @"buildSyncMessage must be overridden in subclass");
 
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     return [syncMessageBuilder build];
@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     return [[contentBuilder build] data];
 }
-
 
 @end
 

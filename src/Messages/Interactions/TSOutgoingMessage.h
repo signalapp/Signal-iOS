@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosAttachmentPointerBuilder;
 
 @interface TSOutgoingMessage : TSMessage
 
@@ -35,6 +35,15 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
  * (so we don't end up in an infinite loop).
  */
 - (BOOL)shouldSyncTranscript;
+
+/**
+ * @param attachmentStream
+ *   Containing the meta data used when populating the attachment proto
+ *
+ * @return
+ *      An attachment builder suitable for including in various container protobuf builders
+ */
+- (OWSSignalServiceProtosAttachmentPointerBuilder *)attachmentBuilderForAttachmentId:(NSString *)attachmentId;
 
 @end
 

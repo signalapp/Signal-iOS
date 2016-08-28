@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setDestination:self.message.recipientIdentifier];
     [sentBuilder setMessage:[self.message buildDataMessage]];
 
-    [syncMessageBuilder setSent:[sentBuilder build]];
+    [syncMessageBuilder setSentBuilder:sentBuilder];
 
     return [syncMessageBuilder build];
 }

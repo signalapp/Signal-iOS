@@ -1,11 +1,20 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSSyncGroupsMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "TSAttachment.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncGroupsMessage
+
+- (instancetype)init
+{
+    return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil messageBody:nil attachmentIds:@[]];
+}
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -18,25 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
+        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
+    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
 
     if (self.attachmentIds.count != 1) {
-        DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
+        DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:self.attachmentIds[0]];
-
-    OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
-        [OWSSignalServiceProtosAttachmentPointerBuilder new];
-
-    [attachmentBuilder setId:[attachment.identifier unsignedLongLongValue]];
-    [attachmentBuilder setContentType:attachment.contentType];
-    [attachmentBuilder setKey:attachment.encryptionKey];
-
-    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
-        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
-    [contactsBuilder setBlobBuilder:attachmentBuilder];
-
-    [syncMessageBuilder setContacts:[contactsBuilder build]];
+    [groupsBuilder setBlobBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
 
     return [syncMessageBuilder build];
 }
@@ -50,35 +49,39 @@ NS_ASSUME_NONNULL_BEGIN
     [fileOutputStream open];
 
     PBCodedOutputStream *outputStream = [PBCodedOutputStream streamWithOutputStream:fileOutputStream];
-    DDLogInfo(@"Writing contacts data to %@", fileURL);
-    for (Contact *contact in self.contactsManager.signalContacts) {
-        OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
-
-        [contactBuilder setName:contact.fullName];
-        [contactBuilder setNumber:contact.textSecureIdentifiers.firstObject];
+    DDLogInfo(@"Writing groups data to %@", fileURL);
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            DDLogError(@"Unexpected class in group collection: %@", obj);
+            return;
+        }
+        TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
+        OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
+        [groupBuilder setId:group.groupId];
+        [groupBuilder setName:group.groupName];
+        [groupBuilder setMembersArray:group.groupMemberIds];
 
         NSData *avatarPng;
-        if (contact.image) {
-            OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
-                [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
+        if (group.groupImage) {
+            OWSSignalServiceProtosGroupDetailsAvatarBuilder *avatarBuilder =
+                [OWSSignalServiceProtosGroupDetailsAvatarBuilder new];
 
             [avatarBuilder setContentType:@"image/png"];
-            avatarPng = UIImagePNGRepresentation(contact.image);
-            // TODO check datasize and safely cast to int
+            avatarPng = UIImagePNGRepresentation(group.groupImage);
             [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [contactBuilder setAvatar:[avatarBuilder build]];
+            [groupBuilder setAvatarBuilder:avatarBuilder];
         }
 
-        NSData *contactData = [[contactBuilder build] data];
+        NSData *groupData = [[groupBuilder build] data];
+        uint32_t groupDataLength = (uint32_t)groupData.length;
+        [outputStream writeRawVarint32:groupDataLength];
+        [outputStream writeRawData:groupData];
 
-        uint32_t contactDataLength = (uint32_t)contactData.length;
-        [outputStream writeRawVarint32:contactDataLength];
-        [outputStream writeRawData:contactData];
-
-        if (contact.image) {
+        if (avatarPng) {
             [outputStream writeRawData:avatarPng];
         }
-    }
+    }];
+
     [outputStream flush];
     [fileOutputStream close];
 

@@ -31,36 +31,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // no-op
-
-    // There's no need to save this message, since it's not displayed to the user.
-    // Furthermore if we did save it, we probably don't want to save the conctactsManager property.
-}
-
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
+        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
+    [syncMessageBuilder setContactsBuilder:contactsBuilder];
 
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:self.attachmentIds[0]];
-
-    OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
-        [OWSSignalServiceProtosAttachmentPointerBuilder new];
-
-    [attachmentBuilder setId:[attachment.identifier unsignedLongLongValue]];
-    [attachmentBuilder setContentType:attachment.contentType];
-    [attachmentBuilder setKey:attachment.encryptionKey];
-
-    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
-        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
-    [contactsBuilder setBlobBuilder:attachmentBuilder];
-
-    [syncMessageBuilder setContacts:[contactsBuilder build]];
+    [contactsBuilder setBlobBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
 
     return [syncMessageBuilder build];
 }
@@ -88,9 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             [avatarBuilder setContentType:@"image/png"];
             avatarPng = UIImagePNGRepresentation(contact.image);
-            // TODO check datasize and safely cast to int
             [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [contactBuilder setAvatar:[avatarBuilder build]];
+            [contactBuilder setAvatarBuilder:avatarBuilder];
         }
 
         NSData *contactData = [[contactBuilder build] data];
