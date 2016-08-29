@@ -4,6 +4,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
-extern NSError *OWSErrorWithCodeDescription(NSInteger code, NSString *description);
+typedef NS_ENUM(NSInteger, OWSErrorCode) {
+    OWSErrorCodeInvalidMethodParameters = 11,
+    OWSErrorCodeUnableToProcessServerResponse = 12,
+    OWSErrorCodeFailedToDecodeJson = 13,
+    OWSErrorCodeFailedToEncodeJson = 14
+};
+
+extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
 
 NS_ASSUME_NONNULL_END

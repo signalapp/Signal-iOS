@@ -62,7 +62,8 @@
                  failure:(void (^)(NSError *error))failure
 {
     if(!identifier) {
-        NSError *error = OWSErrorWithCodeDescription(1, @"Cannot lookup nil identifier");
+        NSError *error
+            = OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier");
         BLOCK_SAFE_RUN(failure, error);
         return;
     }

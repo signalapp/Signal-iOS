@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSSignalServiceKitErrorDomain = @"OWSSignalServiceKitErrorDomain";
 
-NSError *OWSErrorWithCodeDescription(NSInteger code, NSString *description)
+NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description)
 {
     return [NSError errorWithDomain:OWSSignalServiceKitErrorDomain
                                code:code

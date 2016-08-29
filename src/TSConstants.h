@@ -38,6 +38,7 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureAttachmentsAPI @"v1/attachments"
 #define textSecureDeviceProvisioningCodeAPI @"v1/devices/provisioning/code"
 #define textSecureDeviceProvisioningAPIFormat @"v1/provisioning/%@"
+#define textSecureDevicesAPIFormat @"v1/devices/%@"
 
 typedef void (^successCompletionBlock)(void);
 typedef void (^failedRegistrationRequestBlock)(void);
