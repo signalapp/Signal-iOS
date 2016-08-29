@@ -2,6 +2,10 @@
 
 #import "OWSQRCodeScanningViewController.h"
 
+@class OWSLinkedDevicesTableViewController;
+
 @interface OWSLinkDeviceViewController : OWSQRCodeScanningViewController
+
+@property OWSLinkedDevicesTableViewController *linkedDevicesTableViewController;
 
 @end
