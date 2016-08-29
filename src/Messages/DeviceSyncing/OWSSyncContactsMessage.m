@@ -4,10 +4,10 @@
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSContactsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
-#import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,60 +54,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)buildPlainTextAttachmentData
 {
-    NSString *fileName =
-        [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"contacts.dat"];
-    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
-    NSOutputStream *fileOutputStream = [NSOutputStream outputStreamWithURL:fileURL append:NO];
-    [fileOutputStream open];
+    // TODO use temp file stream to avoid loading everything into memory at once
+    // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
+    // and uploading with streams).
+    NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
+    [dataOutputStream open];
+    OWSContactsOutputStream *contactsOutputStream = [OWSContactsOutputStream streamWithOutputStream:dataOutputStream];
 
-    PBCodedOutputStream *outputStream = [PBCodedOutputStream streamWithOutputStream:fileOutputStream];
-    DDLogInfo(@"Writing contacts data to %@", fileURL);
     for (Contact *contact in self.contactsManager.signalContacts) {
-        OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
-
-        [contactBuilder setName:contact.fullName];
-        [contactBuilder setNumber:contact.textSecureIdentifiers.firstObject];
-
-        NSData *avatarPng;
-        if (contact.image) {
-            OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
-                [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
-
-            [avatarBuilder setContentType:@"image/png"];
-            avatarPng = UIImagePNGRepresentation(contact.image);
-            [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [contactBuilder setAvatarBuilder:avatarBuilder];
-        }
-
-        NSData *contactData = [[contactBuilder build] data];
-
-        uint32_t contactDataLength = (uint32_t)contactData.length;
-        [outputStream writeRawVarint32:contactDataLength];
-        [outputStream writeRawData:contactData];
-
-        if (contact.image) {
-            [outputStream writeRawData:avatarPng];
-        }
+        [contactsOutputStream writeContact:contact];
     }
-    [outputStream flush];
-    [fileOutputStream close];
 
-    // TODO pass stream to builder rather than data as a singular hulk.
-    [NSInputStream inputStreamWithURL:fileURL];
-    NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:fileURL options:NSDataReadingMappedIfSafe error:&error];
-    if (error) {
-        DDLogError(@"Failed to read back contact data after writing it to %@ with error:%@", fileURL, error);
-    }
-    return data;
+    [contactsOutputStream flush];
+    [dataOutputStream close];
 
-    //    TODO delete contacts file.
-    //    NSError *error;
-    //    NSFileManager *manager = [NSFileManager defaultManager];
-    //    [manager removeItemAtURL:fileURL error:&error];
-    //    if (error) {
-    //        DDLogError(@"Failed removing temp file at url:%@ with error:%@", fileURL, error);
-    //    }
+    return [dataOutputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 }
 
 @end

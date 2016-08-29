@@ -2,6 +2,7 @@
 
 #import "OWSSyncGroupsMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSGroupsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import "TSGroupModel.h"
@@ -47,65 +48,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)buildPlainTextAttachmentData
 {
-    NSString *fileName =
-        [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"contacts.dat"];
-    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
-    NSOutputStream *fileOutputStream = [NSOutputStream outputStreamWithURL:fileURL append:NO];
-    [fileOutputStream open];
+    // TODO use temp file stream to avoid loading everything into memory at once
+    // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
+    // and uploading with streams).
+    NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
+    [dataOutputStream open];
+    OWSGroupsOutputStream *groupsOutputStream = [OWSGroupsOutputStream streamWithOutputStream:dataOutputStream];
 
-    PBCodedOutputStream *outputStream = [PBCodedOutputStream streamWithOutputStream:fileOutputStream];
-    DDLogInfo(@"Writing groups data to %@", fileURL);
     [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         if (![obj isKindOfClass:[TSGroupThread class]]) {
             DDLogError(@"Unexpected class in group collection: %@", obj);
             return;
         }
         TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
-        OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
-        [groupBuilder setId:group.groupId];
-        [groupBuilder setName:group.groupName];
-        [groupBuilder setMembersArray:group.groupMemberIds];
-
-        NSData *avatarPng;
-        if (group.groupImage) {
-            OWSSignalServiceProtosGroupDetailsAvatarBuilder *avatarBuilder =
-                [OWSSignalServiceProtosGroupDetailsAvatarBuilder new];
-
-            [avatarBuilder setContentType:@"image/png"];
-            avatarPng = UIImagePNGRepresentation(group.groupImage);
-            [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [groupBuilder setAvatarBuilder:avatarBuilder];
-        }
-
-        NSData *groupData = [[groupBuilder build] data];
-        uint32_t groupDataLength = (uint32_t)groupData.length;
-        [outputStream writeRawVarint32:groupDataLength];
-        [outputStream writeRawData:groupData];
-
-        if (avatarPng) {
-            [outputStream writeRawData:avatarPng];
-        }
+        [groupsOutputStream writeGroup:group];
     }];
 
-    [outputStream flush];
-    [fileOutputStream close];
+    [groupsOutputStream flush];
+    [dataOutputStream close];
 
-    // TODO pass stream to builder rather than data as a singular hulk.
-    [NSInputStream inputStreamWithURL:fileURL];
-    NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:fileURL options:NSDataReadingMappedIfSafe error:&error];
-    if (error) {
-        DDLogError(@"Failed to read back contact data after writing it to %@ with error:%@", fileURL, error);
-    }
-    return data;
-
-    //    TODO delete contacts file.
-    //    NSError *error;
-    //    NSFileManager *manager = [NSFileManager defaultManager];
-    //    [manager removeItemAtURL:fileURL error:&error];
-    //    if (error) {
-    //        DDLogError(@"Failed removing temp file at url:%@ with error:%@", fileURL, error);
-    //    }
+    return [dataOutputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 }
 
 @end
