@@ -17,6 +17,9 @@
 @import YapDatabase.YapDatabaseCloudKit;
 @import YapDatabase.YapDatabaseRTreeIndex;
 @import YapDatabase.YapDatabaseConnectionProxy;
+#if !TARGET_OS_TV
+@import YapDatabase.YapDatabaseActionManager;
+#endif
 
 @implementation CompileTest
 
@@ -44,6 +47,10 @@
 	YapDatabaseCloudKit *cloudKit;
 	YapDatabaseRTreeIndex *rTreeIndex;
 	YapDatabaseConnectionProxy *connectionProxy;
+	
+#if !TARGET_OS_TV
+	YapDatabaseActionManager *actionManager;
+#endif
 	
 #pragma clang diagnostic pop
 }

@@ -1,0 +1,148 @@
+framework module YapDatabase {
+	
+	header "YapDatabase.h"
+	header "YapDatabaseConnection.h"
+	header "YapDatabaseTransaction.h"
+	header "YapDatabaseOptions.h"
+	header "YapDatabaseExtension.h"
+	header "YapDatabaseExtensionConnection.h"
+	header "YapDatabaseExtensionTransaction.h"
+	header "YapDatabaseExtensionTypes.h"
+	
+	module Utilities {
+		header "YapCache.h"
+		header "YapCollectionKey.h"
+		header "YapDatabaseQuery.h"
+		header "YapMurmurHash.h"
+		header "YapProxyObject.h"
+		header "YapSet.h"
+		header "YapWhitelistBlacklist.h"
+		header "YapMutationStack.h"
+	}
+	
+	// Extension: View
+	
+	explicit module YapDatabaseView {
+		header "YapDatabaseView.h"
+		header "YapDatabaseViewTypes.h"
+		header "YapDatabaseViewOptions.h"
+		header "YapDatabaseViewConnection.h"
+		header "YapDatabaseViewTransaction.h"
+		header "YapDatabaseViewMappings.h"
+		header "YapDatabaseViewChange.h"
+		header "YapDatabaseViewRangeOptions.h"
+	}
+	
+	// Extension: FilteredView
+	
+	explicit module YapDatabaseFilteredView {
+		header "YapDatabaseFilteredView.h"
+		header "YapDatabaseFilteredViewTypes.h"
+		header "YapDatabaseFilteredViewConnection.h"
+		header "YapDatabaseFilteredViewTransaction.h"
+		
+		export YapDatabaseView
+	}
+	
+	// Extension: Relationship
+	
+	explicit module YapDatabaseRelationship {
+		header "YapDatabaseRelationship.h"
+		header "YapDatabaseRelationshipNode.h"
+		header "YapDatabaseRelationshipEdge.h"
+		header "YapDatabaseRelationshipOptions.h"
+		header "YapDatabaseRelationshipConnection.h"
+		header "YapDatabaseRelationshipTransaction.h"
+	}
+	
+	// Extension: SecondaryIndex
+	
+	explicit module YapDatabaseSecondaryIndex {
+		header "YapDatabaseSecondaryIndex.h"
+		header "YapDatabaseSecondaryIndexSetup.h"
+		header "YapDatabaseSecondaryIndexHandler.h"
+		header "YapDatabaseSecondaryIndexOptions.h"
+		header "YapDatabaseSecondaryIndexConnection.h"
+		header "YapDatabaseSecondaryIndexTransaction.h"
+	}
+	
+	// Extension: FullTextSearch
+	
+	explicit module YapDatabaseFullTextSearch {
+		header "YapDatabaseFullTextSearch.h"
+		header "YapDatabaseFullTextSearchHandler.h"
+		header "YapDatabaseFullTextSearchConnection.h"
+		header "YapDatabaseFullTextSearchTransaction.h"
+		header "YapDatabaseFullTextSearchSnippetOptions.h"
+	}
+	
+	// Extension: SearchResultsView
+	
+	explicit module YapDatabaseSearchResultsView {
+		header "YapDatabaseSearchResultsView.h"
+		header "YapDatabaseSearchResultsViewOptions.h"
+		header "YapDatabaseSearchResultsViewConnection.h"
+		header "YapDatabaseSearchResultsViewTransaction.h"
+		header "YapDatabaseSearchQueue.h"
+		
+		export YapDatabaseView
+		export YapDatabaseFullTextSearch
+	}
+	
+	// Extension: Hooks
+	
+	explicit module YapDatabaseHooks {
+		header "YapDatabaseHooks.h"
+		header "YapDatabaseHooksConnection.h"
+		header "YapDatabaseHooksTransaction.h"
+	}
+	
+	// Extension: CloudKit
+	
+	explicit module YapDatabaseCloudKit {
+		header "YapDatabaseCloudKit.h"
+		header "YapDatabaseCloudKitTypes.h"
+		header "YapDatabaseCloudKitOptions.h"
+		header "YapDatabaseCloudKitConnection.h"
+		header "YapDatabaseCloudKitTransaction.h"
+		header "YDBCKChangeSet.h"
+		header "YDBCKMergeInfo.h"
+		header "YDBCKRecordInfo.h"
+		header "YDBCKRecord.h"
+	}
+	
+	// Extension: RTree
+	
+	explicit module YapDatabaseRTreeIndex {
+		header "YapDatabaseRTreeIndex.h"
+		header "YapDatabaseRTreeIndexSetup.h"
+		header "YapDatabaseRTreeIndexHandler.h"
+		header "YapDatabaseRTreeIndexOptions.h"
+		header "YapDatabaseRTreeIndexConnection.h"
+		header "YapDatabaseRTreeIndexTransaction.h"
+	}
+	
+	// Extension: ConnectionProxy
+	
+	explicit module YapDatabaseConnectionProxy {
+		header "YapDatabaseConnectionProxy.h"
+	}
+	
+	// Extension: ActionManager
+	
+	explicit module YapDatabaseActionManager {
+		header "YapActionable.h"
+		header "YapActionItem.h"
+		header "YapDatabaseActionManager.h"
+		header "YapDatabaseActionManagerConnection.h"
+		header "YapDatabaseActionManagerTransaction.h"
+	}
+	
+	// Extension: CrossProcessNotification
+	
+	explicit module YapDatabaseCrossProcessNotification {
+		header "YapDatabaseCrossProcessNotification.h"
+		header "YapDatabaseCrossProcessNotificationConnection.h"
+		header "YapDatabaseCrossProcessNotificationTransaction.h"
+	}
+}

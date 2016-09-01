@@ -18,7 +18,9 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
   
-  s.module_map = "Framework/module.modulemap"
+  s.osx.module_map = "Framework/Mac/module.modulemap"
+  s.ios.module_map = "Framework/iOS/module.modulemap"
+  s.tvos.module_map = "Framework/tvOSc/module.modulemap"
   s.libraries  = 'c++'
   
   s.default_subspecs = 'Standard'
