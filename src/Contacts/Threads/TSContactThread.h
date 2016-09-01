@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)contactIdentifier;
 
++ (NSString *)contactIdFromThreadId:(NSString *)threadId;
+
 @end
 
 NS_ASSUME_NONNULL_END

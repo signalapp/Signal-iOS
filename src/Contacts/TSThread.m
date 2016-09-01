@@ -178,8 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
                   }];
 
     for (TSIncomingMessage *message in array) {
-        message.read = YES;
-        [message saveWithTransaction:transaction];
+        [message markAsReadWithTransaction:transaction];
     }
 }
 

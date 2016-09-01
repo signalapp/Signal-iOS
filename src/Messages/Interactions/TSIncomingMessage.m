@@ -3,7 +3,9 @@
 
 #import "TSIncomingMessage.h"
 #import "TSContactThread.h"
+#import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,6 +61,55 @@ NS_ASSUME_NONNULL_BEGIN
     _receivedAt = [NSDate date];
 
     return self;
+}
+
++ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp
+{
+    __block TSIncomingMessage *foundMessage;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
+        // be *very* few (millisecond) timestamps with multiple authors.
+        [TSDatabaseSecondaryIndexes
+            enumerateMessagesWithTimestamp:timestamp
+                                 withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+                                     TSInteraction *interaction =
+                                         [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                         TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+
+                                         // Only groupthread sets authorId, thus this crappy code.
+                                         // TODO ALL incoming messages should have an authorId.
+                                         NSString *messageAuthorId;
+                                         if (message.authorId) { // Group Thread
+                                             messageAuthorId = message.authorId;
+                                         } else { // Contact Thread
+                                             messageAuthorId =
+                                                 [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
+                                         }
+
+                                         if ([messageAuthorId isEqualToString:authorId]) {
+                                             foundMessage = message;
+                                         }
+                                     }
+                                 }
+                          usingTransaction:transaction];
+    }];
+
+    return foundMessage;
+}
+
+- (void)markAsRead
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsReadWithTransaction:transaction];
+    }];
+}
+
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    _read = YES;
+    [self saveWithTransaction:transaction];
+    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
 }
 
 @end

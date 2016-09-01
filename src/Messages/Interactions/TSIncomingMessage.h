@@ -88,9 +88,26 @@ NS_ASSUME_NONNULL_BEGIN
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
+/*
+ * Find a message matching the senderId and timestamp, if any.
+ *
+ * @param authorId
+ *   Signal ID (i.e. e164) of the user who sent the message
+ * @params timestamp
+ *   When the message was created in milliseconds since epoch
+ *
+ */
++ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp;
+
 @property (nonatomic, readonly) NSString *authorId;
-@property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, readonly, getter=wasRead) BOOL read;
 @property (nonatomic, readonly) NSDate *receivedAt;
+
+/*
+ * Marks a message as having been read and broadcasts a TSIncomingMessageWasReadNotification
+ */
+- (void)markAsRead;
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

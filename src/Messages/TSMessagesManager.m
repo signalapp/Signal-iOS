@@ -6,6 +6,7 @@
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "OWSIncomingSentMessageTranscript.h"
+#import "OWSReadReceiptsProcessor.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
@@ -235,8 +236,7 @@
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
         [transcript record];
-    }
-    if (syncMessage.hasRequest) {
+    } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             DDLogInfo(@"Received request `Contacts` syncMessage.");
 
@@ -270,6 +270,12 @@
                     DDLogError(@"Failed to send Groups response syncMessage.");
                 }];
         }
+    } else if (syncMessage.read.count > 0) {
+        DDLogInfo(@"Received %ld read receipt(s)", (u_long)syncMessage.read.count);
+
+        OWSReadReceiptsProcessor *readReceiptsProcessor =
+            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read];
+        [readReceiptsProcessor process];
     } else {
         DDLogWarn(@"Ignoring unsupported sync message.");
     }
