@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSyncContactsMessage : OWSOutgoingSyncMessage
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager;
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (NSData *)buildPlainTextAttachmentData;
 
 @end

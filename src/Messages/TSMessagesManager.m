@@ -69,7 +69,7 @@
                 DDLogWarn(@"Received an unknown message type");
                 break;
             default:
-                DDLogWarn(@"Received unhandled envelope type: %d", envelope.type);
+                DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
         }
     } @catch (NSException *exception) {

@@ -45,13 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)process
 {
-    DDLogInfo(@"Processing %ld read receipts.", self.readReceipts.count);
+    DDLogInfo(@"Processing %ld read receipts.", (unsigned long)self.readReceipts.count);
     for (OWSReadReceipt *readReceipt in self.readReceipts) {
         TSIncomingMessage *message =
             [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId timestamp:readReceipt.timestamp];
         if (message) {
-            [message markAsRead];
+            [message markAsReadFromReadReceipt];
         } else {
+            // TODO keep read receipts around so that if we get the receipt before the message,
+            //      we can immediately mark the message as read once we get it.
             DDLogWarn(@"Couldn't find message for read receipt. Message not synced?");
         }
     }

@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSContactThread;
 @class TSGroupThread;
 
+extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
+
 @interface TSIncomingMessage : TSMessage
 
 /**
@@ -104,10 +106,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *receivedAt;
 
 /*
- * Marks a message as having been read and broadcasts a TSIncomingMessageWasReadNotification
+ * Marks a message as having been read on this device (as opposed to responding to a remote read receipt).
+ *
  */
-- (void)markAsRead;
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ * Similar to markAsReadWithTransaction, but doesn't send out read receipts.
+ * Used for *responding* to a remote read receipt.
+ */
+- (void)markAsReadFromReadReceipt;
 
 @end
 

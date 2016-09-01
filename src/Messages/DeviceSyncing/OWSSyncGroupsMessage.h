@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncGroupsMessage : OWSOutgoingSyncMessage
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (NSData *)buildPlainTextAttachmentData;
 
 @end

@@ -17,14 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // no-op
-
-    // There's no need to save this message, since it's not displayed to the user.
-    // Furthermore if we did save it, we probably don't want to save the conctactsManager property.
-}
-
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
 

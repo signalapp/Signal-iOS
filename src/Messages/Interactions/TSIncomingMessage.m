@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingMessageWasReadOnThisDeviceNotification";
+
 @implementation TSIncomingMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -98,14 +100,21 @@ NS_ASSUME_NONNULL_BEGIN
     return foundMessage;
 }
 
-- (void)markAsRead
+- (void)markAsReadFromReadReceipt
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self markAsReadWithTransaction:transaction];
+        [self markAsReadWithoutNotificationWithTransaction:transaction];
     }];
 }
 
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self markAsReadWithoutNotificationWithTransaction:transaction];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
+                                                        object:self];
+}
+
+- (void)markAsReadWithoutNotificationWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     _read = YES;
     [self saveWithTransaction:transaction];

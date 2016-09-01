@@ -7,6 +7,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingSyncMessage
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    // override superclass with no-op.
+    //
+    // There's no need to save this message, since it's not displayed to the user.
+}
+
 - (BOOL)shouldSyncTranscript
 {
     return NO;
