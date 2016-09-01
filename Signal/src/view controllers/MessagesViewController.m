@@ -717,8 +717,7 @@ typedef enum : NSUInteger {
 
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:self.thread
-                                                                      messageBody:text
-                                                                    attachmentIds:nil];
+                                                                      messageBody:text];
 
         [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
         [self finishSendingMessage];
