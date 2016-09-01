@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   
   s.osx.module_map = "Framework/Mac/module.modulemap"
   s.ios.module_map = "Framework/iOS/module.modulemap"
-  s.tvos.module_map = "Framework/tvOSc/module.modulemap"
+  s.tvos.module_map = "Framework/tvOS/module.modulemap"
   s.libraries  = 'c++'
   
   s.default_subspecs = 'Standard'
