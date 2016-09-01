@@ -400,6 +400,10 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
                                                                         forNotifications:notifications
                                                                             withMappings:self.threadMappings];
 
+    // We want this regardless of if we're currently viewing the archive.
+    // So we run it before the early return
+    [self updateInboxCountLabel];
+
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         return;
     }
@@ -454,7 +458,6 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     }
 
     [self.tableView endUpdates];
-    [self updateInboxCountLabel];
     [self checkIfEmptyView];
 }
 
