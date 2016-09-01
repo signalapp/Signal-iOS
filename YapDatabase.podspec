@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
   s.osx.module_map = "Framework/Mac/module.modulemap"
   s.ios.module_map = "Framework/iOS/module.modulemap"
   s.tvos.module_map = "Framework/tvOS/module.modulemap"
+  s.watchos.module_map = "Framework/watchOS/module.modulemap"
   s.libraries  = 'c++'
   
   s.default_subspecs = 'Standard'
@@ -80,6 +81,9 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'CloudKit' do |ssee|
+        ssee.osx.deployment_target = '10.8'
+        ssee.ios.deployment_target = '6.0'
+        ssee.tvos.deployment_target = '9.0'
         ssee.source_files = 'YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}'
       end
       
@@ -153,6 +157,9 @@ Pod::Spec.new do |s|
       end
       
       sse.subspec 'CloudKit' do |ssee|
+        ssee.osx.deployment_target = '10.8'
+        ssee.ios.deployment_target = '6.0'
+        ssee.tvos.deployment_target = '9.0'
         ssee.source_files = 'YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}'
       end
       
