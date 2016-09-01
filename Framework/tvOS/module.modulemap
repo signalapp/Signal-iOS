@@ -140,9 +140,9 @@ framework module YapDatabase {
 	
 	// Extension: CrossProcessNotification
 	
-//	explicit module YapDatabaseCrossProcessNotification {
-//		header "YapDatabaseCrossProcessNotification.h"
-//		header "YapDatabaseCrossProcessNotificationConnection.h"
-//		header "YapDatabaseCrossProcessNotificationTransaction.h"
-//	}
+	explicit module YapDatabaseCrossProcessNotification {
+		header "YapDatabaseCrossProcessNotification.h"
+		header "YapDatabaseCrossProcessNotificationConnection.h"
+		header "YapDatabaseCrossProcessNotificationTransaction.h"
+	}
 }
