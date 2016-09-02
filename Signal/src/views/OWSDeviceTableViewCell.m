@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithDevice:(OWSDevice *)device
 {
-    self.nameLabel.text = device.name;
+    self.nameLabel.text = device.displayName;
 
     NSString *linkedFormatString = NSLocalizedString(@"Linked: %@", @"{Short Date} when device was linked.");
     self.linkedLabel.text =

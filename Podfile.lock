@@ -42,7 +42,7 @@ PODS:
     - CocoaLumberjack (~> 2.0)
   - ProtocolBuffers (1.9.11)
   - Reachability (3.2)
-  - SAMKeychain (1.5.0)
+  - SAMKeychain (1.5.1)
   - SCWaveformView (1.0.0)
   - SignalServiceKit (0.2.0):
     - '25519'
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: e61d89666e408d3a9d124f897ee2bf274b45712e
+    :commit: 55db30ecf65491557afafdf105391ac730bb3334
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
@@ -153,7 +153,7 @@ SPEC CHECKSUMS:
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SAMKeychain: 1fc9ae02f576365395758b12888c84704eebc423
+  SAMKeychain: 6b04852a20684167aea97bdf8ba12c95d3616376
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SignalServiceKit: 4e7a552635e10f4d94f0a047fc6554e932340b30
   SocketRocket: 3f77ec2104cc113add553f817ad90a77114f5d43
