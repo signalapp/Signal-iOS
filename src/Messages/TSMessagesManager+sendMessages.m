@@ -372,9 +372,8 @@ dispatch_queue_t sendingQueue() {
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
 
-    SignalRecipient *localUser = [SignalRecipient recipientWithTextSecureIdentifier:[TSStorageManager localNumber]];
     [self sendMessage:sentMessageTranscript
-        toRecipient:localUser
+        toRecipient:[SignalRecipient selfRecipient]
         inThread:message.thread
         withAttemps:RETRY_ATTEMPTS
         success:^{

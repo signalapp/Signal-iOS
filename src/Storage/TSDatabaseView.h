@@ -14,14 +14,16 @@
 extern NSString *TSInboxGroup;
 extern NSString *TSArchiveGroup;
 extern NSString *TSUnreadIncomingMessagesGroup;
+extern NSString *TSSecondaryDevicesGroup;
 
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
+extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
 + (BOOL)registerUnreadDatabaseView;
-
++ (BOOL)registerSecondaryDevicesDatabaseView;
 
 @end

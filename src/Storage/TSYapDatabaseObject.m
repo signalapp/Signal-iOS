@@ -69,9 +69,14 @@
 {
     __block NSUInteger count;
     [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        count = [transaction numberOfKeysInCollection:[self collection]];
+        count = [self numberOfKeysInCollectionWithTransaction:transaction];
     }];
     return count;
+}
+
++ (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [transaction numberOfKeysInCollection:[self collection]];
 }
 
 + (NSArray *)allObjectsInCollection

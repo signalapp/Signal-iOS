@@ -2,6 +2,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "SignalRecipient.h"
+#import "TSStorageHeaders.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,18 +29,28 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                  withTransaction:(YapDatabaseReadTransaction *)transaction {
++ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
+                                           withTransaction:(YapDatabaseReadTransaction *)transaction
+{
     return [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
 }
 
-+ (instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
++ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
 {
     __block SignalRecipient *recipient;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         recipient = [self recipientWithTextSecureIdentifier:textSecureIdentifier withTransaction:transaction];
     }];
     return recipient;
+}
+
++ (instancetype)selfRecipient
+{
+    SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSStorageManager localNumber]];
+    if (!myself) {
+        myself = [[self alloc] initWithTextSecureIdentifier:[TSStorageManager localNumber] relay:nil supportsVoice:YES];
+    }
+    return myself;
 }
 
 - (NSMutableOrderedSet *)devices {

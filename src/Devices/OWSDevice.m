@@ -12,6 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 static MTLValueTransformer *_millisecondTimestampToDateTransformer;
 static int const OWSDevicePrimaryDeviceId = 1;
 
+@interface OWSDevice ()
+
+@property NSString *name;
+@property NSDate *createdAt;
+@property NSDate *lastSeenAt;
+
+@end
+
 @implementation OWSDevice
 
 @synthesize name = _name;
@@ -41,14 +49,27 @@ static int const OWSDevicePrimaryDeviceId = 1;
     return self.millisecondTimestampToDateTransformer;
 }
 
-+ (void)replaceAll:(NSArray<OWSDevice *> *)devices
++ (void)replaceAll:(NSArray<OWSDevice *> *)currentDevices
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:[self collection]];
-        for (OWSDevice *device in devices) {
-            [device saveWithTransaction:transaction];
+    NSMutableArray<OWSDevice *> *existingDevices = [[self allObjectsInCollection] mutableCopy];
+    for (OWSDevice *currentDevice in currentDevices) {
+        NSUInteger existingDeviceIndex = [existingDevices indexOfObject:currentDevice];
+        if (existingDeviceIndex == NSNotFound) {
+            // New Device
+            [currentDevice save];
+        } else {
+            OWSDevice *existingDevice = existingDevices[existingDeviceIndex];
+            if ([existingDevice updateAttributesWithDevice:currentDevice]) {
+                [existingDevice save];
+            }
+            [existingDevices removeObjectAtIndex:existingDeviceIndex];
         }
-    }];
+    }
+
+    // Since we removed existing devices as we went, only stale devices remain
+    for (OWSDevice *staleDevice in existingDevices) {
+        [staleDevice remove];
+    }
 }
 
 + (MTLValueTransformer *)millisecondTimestampToDateTransformer
@@ -87,32 +108,65 @@ static int const OWSDevicePrimaryDeviceId = 1;
     return _millisecondTimestampToDateTransformer;
 }
 
-+ (NSArray<OWSDevice *> *)secondaryDevices
+- (BOOL)isPrimaryDevice
 {
-    NSMutableArray<OWSDevice *> *devices = [NSMutableArray new];
-
-    [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if ([obj isKindOfClass:[OWSDevice class]]) {
-            OWSDevice *device = (OWSDevice *)obj;
-            if (device.deviceId != OWSDevicePrimaryDeviceId) {
-                [devices addObject:device];
-            }
-        }
-    }];
-
-    return [devices copy];
+    return self.deviceId == OWSDevicePrimaryDeviceId;
 }
 
-- (nullable NSString *)name
+- (NSString *)displayName
 {
-    if (_name) {
-        return _name;
+    if (self.name) {
+        return self.name;
     }
 
     if (self.deviceId == OWSDevicePrimaryDeviceId) {
         return @"This Device";
     }
     return NSLocalizedString(@"UNNAMED_DEVICE", @"Label text in device manager for a device with no name");
+}
+
+- (BOOL)updateAttributesWithDevice:(OWSDevice *)other
+{
+    BOOL changed = NO;
+    if (![self.lastSeenAt isEqual:other.lastSeenAt]) {
+        self.lastSeenAt = other.lastSeenAt;
+        changed = YES;
+    }
+
+    if (![self.createdAt isEqual:other.createdAt]) {
+        self.createdAt = other.createdAt;
+        changed = YES;
+    }
+
+    if (![self.name isEqual:other.name]) {
+        self.name = other.name;
+        changed = YES;
+    }
+
+    return changed;
+}
+
++ (BOOL)hasSecondaryDevicesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self numberOfKeysInCollectionWithTransaction:transaction] > 1;
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (self == object) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[OWSDevice class]]) {
+        return NO;
+    }
+
+    return [self isEqualToDevice:(OWSDevice *)object];
+}
+
+- (BOOL)isEqualToDevice:(OWSDevice *)device
+{
+    return self.deviceId == device.deviceId;
 }
 
 @end

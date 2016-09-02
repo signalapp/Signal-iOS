@@ -58,6 +58,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
+    [TSDatabaseView registerSecondaryDevicesDatabaseView];
 
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
 }

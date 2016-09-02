@@ -100,7 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
     return !self.hasSyncedTranscript;
 }
 
-
 - (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
 {
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];

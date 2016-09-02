@@ -23,6 +23,7 @@
 		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
+		6323E339D5B8F4CB77EB3ED4 /* SignalRecipientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */; };
 		B6273DD61C13A2E500738558 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD51C13A2E500738558 /* main.m */; };
 		B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD81C13A2E500738558 /* AppDelegate.m */; };
 		B6273DDC1C13A2E500738558 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DDB1C13A2E500738558 /* ViewController.m */; };
@@ -60,6 +61,7 @@
 		45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttributesTest.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisionerTest.m; path = ../../../tests/Devices/OWSDeviceProvisionerTest.m; sourceTree = "<group>"; };
+		6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalRecipientTest.m; path = ../../tests/Contacts/SignalRecipientTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD51C13A2E500738558 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B6273DD71C13A2E500738558 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				B6273DD21C13A2E500738558 /* Products */,
 				5183572EFCE99F6F1791272A /* Pods */,
 				AD6EE8912464E5C2A7FF5BA1 /* Frameworks */,
+				6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */,
 			);
 			sourceTree = "<group>";
 		};
@@ -475,6 +478,7 @@
 				45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */,
 				45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */,
 				45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */,
+				6323E339D5B8F4CB77EB3ED4 /* SignalRecipientTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

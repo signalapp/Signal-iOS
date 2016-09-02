@@ -33,6 +33,7 @@
  * @return The number of keys in the classes collection.
  */
 + (NSUInteger)numberOfKeysInCollection;
++ (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * Removes all objects in the classes collection.
