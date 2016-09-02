@@ -1,11 +1,7 @@
-//
-//  UIImage+contentTypes.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 21/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
+#import "MIMETypeUtil.h"
 #import "UIImage+contentTypes.h"
 
 @implementation UIImage (contentTypes)
@@ -18,7 +14,7 @@
         case 0xFF:
             return @"image/jpeg";
         case 0x89:
-            return @"image/png";
+            return OWSMimeTypeImagePng;
         case 0x47:
             return @"image/gif";
         case 0x49:

@@ -2,6 +2,7 @@
 
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
+#import "MIMETypeUtil.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
             [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
 
-        [avatarBuilder setContentType:@"image/png"];
+        [avatarBuilder setContentType:OWSMimeTypeImagePng];
         avatarPng = UIImagePNGRepresentation(contact.image);
         [avatarBuilder setLength:(uint32_t)avatarPng.length];
         [contactBuilder setAvatarBuilder:avatarBuilder];

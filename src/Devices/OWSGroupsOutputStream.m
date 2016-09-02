@@ -1,6 +1,7 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSGroupsOutputStream.h"
+#import "MIMETypeUtil.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSGroupModel.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosGroupDetailsAvatarBuilder *avatarBuilder =
             [OWSSignalServiceProtosGroupDetailsAvatarBuilder new];
 
-        [avatarBuilder setContentType:@"image/png"];
+        [avatarBuilder setContentType:OWSMimeTypeImagePng];
         avatarPng = UIImagePNGRepresentation(group.groupImage);
         [avatarBuilder setLength:(uint32_t)avatarPng.length];
         [groupBuilder setAvatarBuilder:avatarBuilder];

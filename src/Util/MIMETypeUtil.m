@@ -4,6 +4,7 @@
 #endif
 
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
+NSString *const OWSMimeTypeImagePng = @"image/png";
 
 @implementation MIMETypeUtil
 
@@ -43,7 +44,7 @@ NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
     return @{
         @"image/jpeg" : @"jpeg",
         @"image/pjpeg" : @"jpeg",
-        @"image/png" : @"png",
+        OWSMimeTypeImagePng : @"png",
         @"image/tiff" : @"tif",
         @"image/x-tiff" : @"tif",
         @"image/bmp" : @"bmp",
@@ -102,8 +103,8 @@ NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 
 + (NSDictionary *)supportedImageExtensionTypesToMIMETypes {
     return @{
-        @"png" : @"image/png",
-        @"x-png" : @"image/png",
+        @"png" : OWSMimeTypeImagePng,
+        @"x-png" : OWSMimeTypeImagePng,
         @"jfif" : @"image/jpeg",
         @"jfif" : @"image/pjpeg",
         @"jfif-tbnl" : @"image/jpeg",

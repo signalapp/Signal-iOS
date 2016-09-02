@@ -1,6 +1,7 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
+extern NSString *const OWSMimeTypeImagePng;
 
 @interface MIMETypeUtil : NSObject
 
