@@ -35,7 +35,7 @@ PODS:
   - ProtocolBuffers (1.9.10)
   - Reachability (3.2)
   - SAMKeychain (1.5.0)
-  - SignalServiceKit (0.1.0):
+  - SignalServiceKit (0.2.0):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -130,7 +130,7 @@ SPEC CHECKSUMS:
   ProtocolBuffers: d088180c10072b3d24a9939a6314b7b9bcc2340b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1fc9ae02f576365395758b12888c84704eebc423
-  SignalServiceKit: 84781a0e45a7eead501a3e35065a1b32dcbbe0ac
+  SignalServiceKit: 4e7a552635e10f4d94f0a047fc6554e932340b30
   SocketRocket: 3f77ec2104cc113add553f817ad90a77114f5d43
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
