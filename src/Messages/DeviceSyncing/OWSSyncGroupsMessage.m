@@ -26,16 +26,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
-        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
-    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
 
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    [groupsBuilder setBlobBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
+    OWSSignalServiceProtosAttachmentPointer *attachmentProto =
+        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]];
+
+    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
+        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
+
+    [groupsBuilder setBlob:attachmentProto];
+
+    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
 
     return [syncMessageBuilder build];
 }

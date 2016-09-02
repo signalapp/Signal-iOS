@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
             case TSGroupMessageNew: {
                 if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                     attachmentWasGroupAvatar = YES;
-                    [groupBuilder setAvatarBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
+                    [groupBuilder setAvatar:[self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]]];
                 }
 
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
@@ -76,9 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
-                [self attachmentBuilderForAttachmentId:attachmentId];
-            [attachments addObject:[attachmentBuilder build]];
+            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId]];
         }
         [builder setAttachmentsArray:attachments];
     }
@@ -95,7 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
     return !self.hasSyncedTranscript;
 }
 
-- (OWSSignalServiceProtosAttachmentPointerBuilder *)attachmentBuilderForAttachmentId:(NSString *)attachmentId
+
+- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
 {
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -109,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setContentType:attachmentStream.contentType];
     [builder setKey:attachmentStream.encryptionKey];
 
-    return builder;
+    return [builder build];
 }
 
 @end

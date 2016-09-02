@@ -33,16 +33,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
-        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
-    [syncMessageBuilder setContactsBuilder:contactsBuilder];
-
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    [contactsBuilder setBlobBuilder:[self attachmentBuilderForAttachmentId:self.attachmentIds[0]]];
+
+    OWSSignalServiceProtosAttachmentPointer *attachmentProto =
+        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]];
+
+    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
+        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
+
+    [contactsBuilder setBlob:attachmentProto];
+
+    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    [syncMessageBuilder setContactsBuilder:contactsBuilder];
 
     return [syncMessageBuilder build];
 }

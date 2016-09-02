@@ -238,7 +238,7 @@
     }
     if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
-            DDLogInfo(@"Received Contacts `request` syncMessage.");
+            DDLogInfo(@"Received request `Contacts` syncMessage.");
 
             OWSSyncContactsMessage *syncContactsMessage =
                 [[OWSSyncContactsMessage alloc] initWithContactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
@@ -255,7 +255,7 @@
                 }];
 
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
-            DDLogInfo(@"Received Contacts `groups` syncMessage.");
+            DDLogInfo(@"Received request `groups` syncMessage.");
 
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
 
