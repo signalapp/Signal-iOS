@@ -6,22 +6,23 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSMessagesManager+attachments.h>
-#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
-#import "OWSContactsManager.h"
+#import "NewGroupViewController.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
-#import "NewGroupViewController.h"
+#import "OWSContactsManager.h"
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
 #import "TSOutgoingMessage.h"
 #import "UIImage+normalizeImage.h"
 #import "UIUtil.h"
+#import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager+attachments.h>
+#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
 
 static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 
@@ -139,7 +140,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                        message.groupMetaMessage = TSGroupMessageNew;
                        if (model.groupImage != nil) {
                            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
-                               contentType:@"image/png"
+                               contentType:OWSMimeTypeImagePng
                                inMessage:message
                                thread:self.thread
                                success:^{

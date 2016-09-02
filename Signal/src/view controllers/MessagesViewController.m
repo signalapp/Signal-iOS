@@ -8,48 +8,50 @@
 
 #import "AppDelegate.h"
 
-#import <AddressBookUI/AddressBookUI.h>
-#import <ContactsUI/CNContactViewController.h>
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <YapDatabase/YapDatabaseView.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
-#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
-#import <JSQMessagesViewController/UIColor+JSQMessages.h>
-#import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
-#import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
-#import <JSQSystemSoundPlayer.h>
-#import "OWSContactsManager.h"
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "OWSCallCollectionViewCell.h"
-#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
+#import "OWSCall.h"
+#import "OWSCallCollectionViewCell.h"
+#import "OWSContactsManager.h"
+#import "OWSDisplayedMessageCollectionViewCell.h"
+#import "OWSErrorMessage.h"
+#import "OWSInfoMessage.h"
+#import "OWSMessagesBubblesSizeCalculator.h"
 #import "PhoneManager.h"
 #import "PreferencesUtil.h"
 #import "ShowGroupMembersViewController.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
+#import "TSCall.h"
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
-#import "OWSMessagesBubblesSizeCalculator.h"
-#import "OWSInfoMessage.h"
-#import "TSInfoMessage.h"
-#import "OWSErrorMessage.h"
 #import "TSErrorMessage.h"
-#import "OWSCall.h"
-#import "TSCall.h"
 #import "TSIncomingMessage.h"
+#import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import <AddressBookUI/AddressBookUI.h>
+#import <ContactsUI/CNContactViewController.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
+#import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
+#import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
+#import <JSQMessagesViewController/UIColor+JSQMessages.h>
+#import <JSQSystemSoundPlayer.h>
+#import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/SignalRecipient.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <YapDatabase/YapDatabaseView.h>
 
 @import Photos;
 
@@ -2019,7 +2021,7 @@ typedef enum : NSUInteger {
 
     if (newGroupModel.groupImage != nil) {
         [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
-                                              contentType:@"image/png"
+                                              contentType:OWSMimeTypeImagePng
                                                 inMessage:message
                                                    thread:groupThread
                                                   success:nil
