@@ -303,6 +303,7 @@ typedef enum : NSUInteger {
 
     [self initializeTitleLabelGestureRecognizer];
 
+    // TODO prep this sync one time before view loads so we don't have to repaint.
     [self updateBackButtonAsync];
 
     [self.inputToolbar.contentView.textView endEditing:YES];

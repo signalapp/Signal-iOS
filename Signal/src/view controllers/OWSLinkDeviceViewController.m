@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     [provisioner provisionWithSuccess:^{
         DDLogInfo(@"Successfully provisioned device.");
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.linkedDevicesTableViewController.expectMoreDevices = YES;
+            [self.linkedDevicesTableViewController expectMoreDevices];
             [self.navigationController popToViewController:self.linkedDevicesTableViewController animated:YES];
         });
     }

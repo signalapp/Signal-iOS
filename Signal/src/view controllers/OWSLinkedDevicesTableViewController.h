@@ -4,6 +4,9 @@
 
 @interface OWSLinkedDevicesTableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property BOOL expectMoreDevices;
+/**
+ * This is used to show the user there is a device provisioning in-progress.
+ */
+- (void)expectMoreDevices;
 
 @end
