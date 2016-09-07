@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C54F99A8E50521C356790A6 /* libPods-watchOS-YapDatabaseTesting WatchKit Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 670538964F3F4DE0C22B26A3 /* libPods-watchOS-YapDatabaseTesting WatchKit Extension.a */; };
+		760D710F5CE9EF5EA99815C8 /* libPods-watchOS-YapDatabaseTesting WatchKit App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B19CE0AE6CDC7552D99871D1 /* libPods-watchOS-YapDatabaseTesting WatchKit App.a */; };
 		92607ABC9FD5AE627933EECE /* libPods-YapDatabaseTesting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */; };
 		DC842FF91D414231002F2ED8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC842FF81D414231002F2ED8 /* main.m */; };
 		DC842FFC1D414231002F2ED8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC842FFB1D414231002F2ED8 /* AppDelegate.m */; };
@@ -67,8 +69,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		670538964F3F4DE0C22B26A3 /* libPods-watchOS-YapDatabaseTesting WatchKit Extension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-watchOS-YapDatabaseTesting WatchKit Extension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YapDatabaseTesting.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		747B643333389FA2CDBB467A /* Pods-YapDatabaseTesting.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YapDatabaseTesting.release.xcconfig"; path = "Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting.release.xcconfig"; sourceTree = "<group>"; };
+		B08AA507FA5D2EEE7A75DDC7 /* Pods-watchOS-YapDatabaseTesting WatchKit App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-watchOS-YapDatabaseTesting WatchKit App.release.xcconfig"; path = "Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit App/Pods-watchOS-YapDatabaseTesting WatchKit App.release.xcconfig"; sourceTree = "<group>"; };
+		B19CE0AE6CDC7552D99871D1 /* libPods-watchOS-YapDatabaseTesting WatchKit App.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-watchOS-YapDatabaseTesting WatchKit App.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEE3B58705FC379F2E1E336E /* Pods-watchOS-YapDatabaseTesting WatchKit App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-watchOS-YapDatabaseTesting WatchKit App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit App/Pods-watchOS-YapDatabaseTesting WatchKit App.debug.xcconfig"; sourceTree = "<group>"; };
+		DA75717E8E7B5E8EFB84553A /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-watchOS-YapDatabaseTesting WatchKit Extension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit Extension/Pods-watchOS-YapDatabaseTesting WatchKit Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		DC842FF41D414231002F2ED8 /* YapDatabaseTesting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YapDatabaseTesting.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC842FF81D414231002F2ED8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DC842FFA1D414231002F2ED8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -93,6 +100,7 @@
 		DC8430281D414231002F2ED8 /* NotificationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationController.m; sourceTree = "<group>"; };
 		DC84302A1D414231002F2ED8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC84302C1D414231002F2ED8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E6781E04B2562308CA273BBF /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-watchOS-YapDatabaseTesting WatchKit Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit Extension/Pods-watchOS-YapDatabaseTesting WatchKit Extension.release.xcconfig"; sourceTree = "<group>"; };
 		EF39F31C30B59E1952C6B9B3 /* Pods-YapDatabaseTesting.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YapDatabaseTesting.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				760D710F5CE9EF5EA99815C8 /* libPods-watchOS-YapDatabaseTesting WatchKit App.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C54F99A8E50521C356790A6 /* libPods-watchOS-YapDatabaseTesting WatchKit Extension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +136,8 @@
 			isa = PBXGroup;
 			children = (
 				6DAF9E6263F0FD1A4A72A3D5 /* libPods-YapDatabaseTesting.a */,
+				B19CE0AE6CDC7552D99871D1 /* libPods-watchOS-YapDatabaseTesting WatchKit App.a */,
+				670538964F3F4DE0C22B26A3 /* libPods-watchOS-YapDatabaseTesting WatchKit Extension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -215,6 +227,10 @@
 			children = (
 				EF39F31C30B59E1952C6B9B3 /* Pods-YapDatabaseTesting.debug.xcconfig */,
 				747B643333389FA2CDBB467A /* Pods-YapDatabaseTesting.release.xcconfig */,
+				CEE3B58705FC379F2E1E336E /* Pods-watchOS-YapDatabaseTesting WatchKit App.debug.xcconfig */,
+				B08AA507FA5D2EEE7A75DDC7 /* Pods-watchOS-YapDatabaseTesting WatchKit App.release.xcconfig */,
+				DA75717E8E7B5E8EFB84553A /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.debug.xcconfig */,
+				E6781E04B2562308CA273BBF /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -248,9 +264,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DC8430331D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit App" */;
 			buildPhases = (
+				B39BE2C1AD505B87AFC41C58 /* [CP] Check Pods Manifest.lock */,
 				DC8430091D414231002F2ED8 /* Resources */,
 				DC8430321D414231002F2ED8 /* Embed App Extensions */,
 				C7DD4B59F67483CA5E4CF5DA /* Frameworks */,
+				EDF13F39D0AD6027099411CD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -266,9 +284,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DC84302F1D414231002F2ED8 /* Build configuration list for PBXNativeTarget "YapDatabaseTesting WatchKit Extension" */;
 			buildPhases = (
+				E0B253BEE193695972CE0AED /* [CP] Check Pods Manifest.lock */,
 				DC8430161D414231002F2ED8 /* Sources */,
 				DC8430171D414231002F2ED8 /* Frameworks */,
 				DC8430181D414231002F2ED8 /* Resources */,
+				25482F23F921701228560A9D /* [CP] Embed Pods Frameworks */,
+				988AB24193336083E8735B6C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -350,6 +371,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		25482F23F921701228560A9D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit Extension/Pods-watchOS-YapDatabaseTesting WatchKit Extension-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3FA73C8C042E613D9612306F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -362,7 +398,52 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		988AB24193336083E8735B6C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit Extension/Pods-watchOS-YapDatabaseTesting WatchKit Extension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B39BE2C1AD505B87AFC41C58 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E0B253BEE193695972CE0AED /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		EAD01AC8E836A0F17344BA11 /* [CP] Embed Pods Frameworks */ = {
@@ -378,6 +459,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-YapDatabaseTesting/Pods-YapDatabaseTesting-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EDF13F39D0AD6027099411CD /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-watchOS-YapDatabaseTesting WatchKit App/Pods-watchOS-YapDatabaseTesting WatchKit App-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F7E86F8E4525E024DCFFA3AC /* [CP] Copy Pods Resources */ = {
@@ -547,6 +643,7 @@
 		};
 		DC8430301D414231002F2ED8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA75717E8E7B5E8EFB84553A /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.debug.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = "YapDatabaseTesting WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -561,6 +658,7 @@
 		};
 		DC8430311D414231002F2ED8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E6781E04B2562308CA273BBF /* Pods-watchOS-YapDatabaseTesting WatchKit Extension.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = "YapDatabaseTesting WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -575,6 +673,7 @@
 		};
 		DC8430341D414231002F2ED8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CEE3B58705FC379F2E1E336E /* Pods-watchOS-YapDatabaseTesting WatchKit App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				IBSC_MODULE = YapDatabaseTesting_WatchKit_Extension;
@@ -590,6 +689,7 @@
 		};
 		DC8430351D414231002F2ED8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B08AA507FA5D2EEE7A75DDC7 /* Pods-watchOS-YapDatabaseTesting WatchKit App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				IBSC_MODULE = YapDatabaseTesting_WatchKit_Extension;

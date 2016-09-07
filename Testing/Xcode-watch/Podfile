@@ -6,32 +6,15 @@ project 'YapDatabaseTesting.xcodeproj'
 
 target :'YapDatabaseTesting' do
 
-	platform :ios, '9.3'
-	platform :ios, :deployment_target => "9.0"
+	platform :ios, '9.0'
 
 	pod "YapDatabase", path: '../../'
-	
-	pod 'CocoaLumberjack'
 	pod 'Reachability',  :git => 'https://github.com/tonymillion/Reachability.git', :commit => 'c4d225a479379f9998dbd5b55070427373d20574'
 end
 	
 abstract_target 'watchOS' do
 	
-	pod "YapDatabase/Standard/Core", path: '../../'
-	pod "YapDatabase/Standard/Extensions/Views", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/SecondaryIndex", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/CrossProcessNotification", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/Relationships", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/FullTextSearch", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/Hooks", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/FilteredViews", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/SearchResults", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/CloudKit", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/RTreeIndex", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/ConnectionProxy", path: '../../'
-#	pod "YapDatabase/Standard/Extensions/ActionManager", path: '../../'
-	
-	pod 'CocoaLumberjack'
+	pod "YapDatabase", path: '../../'
 #	pod 'Reachability',  :git => 'https://github.com/tonymillion/Reachability.git', :commit => 'c4d225a479379f9998dbd5b55070427373d20574'
 
 	target :'YapDatabaseTesting WatchKit App' do

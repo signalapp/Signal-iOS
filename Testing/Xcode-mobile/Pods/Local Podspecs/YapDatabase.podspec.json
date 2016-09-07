@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.8.3",
+  "version": "2.9.2",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -9,14 +9,14 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.8.3"
+    "tag": "2.9.2"
   },
   "platforms": {
     "osx": "10.8",
     "ios": "6.0",
-    "tvos": "9.0"
+    "tvos": "9.0",
+    "watchos": "2.0"
   },
-  "module_map": "Framework/module.modulemap",
   "libraries": "c++",
   "default_subspecs": "Standard",
   "subspecs": [
@@ -39,7 +39,10 @@
             "YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}",
             "YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}"
           ],
-          "private_header_files": "YapDatabase/**/Internal/*.h"
+          "private_header_files": [
+            "YapDatabase/Internal/*.h",
+            "YapDatabase/Extensions/Protocol/Internal/*.h"
+          ]
         },
         {
           "name": "Extensions",
@@ -51,27 +54,33 @@
           "subspecs": [
             {
               "name": "Views",
-              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Views/Internal/*.h"
             },
             {
               "name": "SecondaryIndex",
-              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/SecondaryIndex/Internal/*.h"
             },
             {
               "name": "CrossProcessNotification",
-              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CrossProcessNotification/Internal/*.h"
             },
             {
               "name": "Relationships",
-              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Relationships/Internal/*.h"
             },
             {
               "name": "FullTextSearch",
-              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/FullTextSearch/Internal/*.h"
             },
             {
               "name": "Hooks",
-              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Hooks/Internal/*.h"
             },
             {
               "name": "FilteredViews",
@@ -80,7 +89,8 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/FilteredViews/Internal/*.h"
             },
             {
               "name": "SearchResults",
@@ -92,22 +102,35 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/SearchResults/Internal/*.h"
             },
             {
               "name": "CloudKit",
-              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}"
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0",
+                "tvos": "9.0"
+              },
+              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CloudKit/Internal/*.h"
             },
             {
               "name": "RTreeIndex",
-              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/RTreeIndex/Internal/*.h"
             },
             {
               "name": "ConnectionProxy",
-              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/ConnectionProxy/Internal/*.h"
             },
             {
               "name": "ActionManager",
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0"
+              },
               "dependencies": {
                 "Reachability": [
                   "~> 3"
@@ -116,7 +139,8 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/ActionManager/Internal/*.h"
             }
           ]
         }
@@ -143,7 +167,10 @@
             "YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}",
             "YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}"
           ],
-          "private_header_files": "YapDatabase/**/Internal/*.h"
+          "private_header_files": [
+            "YapDatabase/Internal/*.h",
+            "YapDatabase/Extensions/Protocol/Internal/*.h"
+          ]
         },
         {
           "name": "Extensions",
@@ -155,27 +182,33 @@
           "subspecs": [
             {
               "name": "Views",
-              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Views/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Views/Internal/*.h"
             },
             {
               "name": "SecondaryIndex",
-              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SecondaryIndex/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/SecondaryIndex/Internal/*.h"
             },
             {
               "name": "CrossProcessNotification",
-              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/CrossProcessNotification/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CrossProcessNotification/Internal/*.h"
             },
             {
               "name": "Relationships",
-              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Relationships/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Relationships/Internal/*.h"
             },
             {
               "name": "FullTextSearch",
-              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FullTextSearch/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/FullTextSearch/Internal/*.h"
             },
             {
               "name": "Hooks",
-              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/Hooks/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/Hooks/Internal/*.h"
             },
             {
               "name": "FilteredViews",
@@ -184,7 +217,8 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/FilteredViews/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/FilteredViews/Internal/*.h"
             },
             {
               "name": "SearchResults",
@@ -196,22 +230,35 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/SearchResults/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/SearchResults/Internal/*.h"
             },
             {
               "name": "CloudKit",
-              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}"
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0",
+                "tvos": "9.0"
+              },
+              "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CloudKit/Internal/*.h"
             },
             {
               "name": "RTreeIndex",
-              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/RTreeIndex/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/RTreeIndex/Internal/*.h"
             },
             {
               "name": "ConnectionProxy",
-              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/ConnectionProxy/Internal/*.h"
             },
             {
               "name": "ActionManager",
+              "platforms": {
+                "osx": "10.8",
+                "ios": "6.0"
+              },
               "dependencies": {
                 "Reachability": [
                   "~> 3"
@@ -220,7 +267,8 @@
 
                 ]
               },
-              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}"
+              "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/ActionManager/Internal/*.h"
             }
           ]
         }

@@ -1,0 +1,1 @@
+../../../../../../YapDatabase/Extensions/FullTextSearch/YapDatabaseFullTextSearchSnippetOptions.h
