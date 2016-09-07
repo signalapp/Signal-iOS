@@ -14,10 +14,12 @@
 @import YapDatabase.YapDatabaseFullTextSearch;
 @import YapDatabase.YapDatabaseSearchResultsView;
 @import YapDatabase.YapDatabaseHooks;
-@import YapDatabase.YapDatabaseCloudKit;
 @import YapDatabase.YapDatabaseRTreeIndex;
 @import YapDatabase.YapDatabaseConnectionProxy;
-#if !TARGET_OS_TV
+#if !TARGET_OS_WATCH
+@import YapDatabase.YapDatabaseCloudKit;
+#endif
+#if !TARGET_OS_TV && !TARGET_OS_WATCH
 @import YapDatabase.YapDatabaseActionManager;
 #endif
 
@@ -44,11 +46,12 @@
 	YapDatabaseFullTextSearch *fullTextSearch;
 	YapDatabaseSearchResultsView *searchResultsView;
 	YapDatabaseHooks *hooks;
-	YapDatabaseCloudKit *cloudKit;
 	YapDatabaseRTreeIndex *rTreeIndex;
 	YapDatabaseConnectionProxy *connectionProxy;
-	
-#if !TARGET_OS_TV
+#if !TARGET_OS_WATCH
+	YapDatabaseCloudKit *cloudKit;
+#endif
+#if !TARGET_OS_TV && !TARGET_OS_WATCH
 	YapDatabaseActionManager *actionManager;
 #endif
 	

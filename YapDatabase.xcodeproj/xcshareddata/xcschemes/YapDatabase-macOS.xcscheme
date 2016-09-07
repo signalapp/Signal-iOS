@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "DCF7C2AD1BCC8E610087ED39"
                BuildableName = "YapDatabase.framework"
-               BlueprintName = "YapDatabase"
+               BlueprintName = "YapDatabase-macOS"
                ReferencedContainer = "container:YapDatabase.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,7 +47,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DCF7C2AD1BCC8E610087ED39"
             BuildableName = "YapDatabase.framework"
-            BlueprintName = "YapDatabase"
+            BlueprintName = "YapDatabase-macOS"
             ReferencedContainer = "container:YapDatabase.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,7 +65,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "DCF7C2AD1BCC8E610087ED39"
             BuildableName = "YapDatabase.framework"
-            BlueprintName = "YapDatabase"
+            BlueprintName = "YapDatabase-macOS"
             ReferencedContainer = "container:YapDatabase.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
