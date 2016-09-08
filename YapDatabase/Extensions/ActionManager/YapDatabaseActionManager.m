@@ -268,6 +268,18 @@
 	// We're all ready to go.
 	// Start the engine !
 	
+	[self startIfPossible];
+}
+
+- (void)startIfPossible
+{
+	// self.registeredName is set just before `didRegisterExtension` is called.
+	BOOL isNotRegistered = (self.registeredName == nil);
+	
+	if (self.isSuspended || isNotRegistered) {
+		return;
+	}
+	
 	if (!useWeakDbConnection) {
 		self.strongDbConnection = [self.registeredDatabase newConnection];
 	}
@@ -364,10 +376,7 @@
 	
 	if ((oldSuspendCount > 0) && (newSuspendCount == 0))
 	{
-		if (!useWeakDbConnection) {
-			self.strongDbConnection = [self.registeredDatabase newConnection];
-		}
-		[self checkForActions_init];
+		[self startIfPossible];
 	}
 	
 	return newSuspendCount;
