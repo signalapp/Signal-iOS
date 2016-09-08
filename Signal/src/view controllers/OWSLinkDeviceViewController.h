@@ -4,7 +4,7 @@
 
 @class OWSLinkedDevicesTableViewController;
 
-@interface OWSLinkDeviceViewController : OWSQRCodeScanningViewController
+@interface OWSLinkDeviceViewController : UIViewController <OWSQRScannerDelegate>
 
 @property OWSLinkedDevicesTableViewController *linkedDevicesTableViewController;
 

@@ -10,7 +10,6 @@
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"SCAN_KEY", @"");
-
     self.highlightView = [[UIView alloc] init];
     self.highlightView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin
         | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -36,15 +35,29 @@
     self.output.metadataObjectTypes = [self.output availableMetadataObjectTypes];
 
     self.prevLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
-    self.prevLayer.frame = self.view.bounds;
+
     self.prevLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     [self.view.layer insertSublayer:self.prevLayer atIndex:0];
-
-    [self.session startRunning];
 
     [self.view bringSubviewToFront:self.highlightView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self resizeViews];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.session startRunning];
+}
+
+- (void)resizeViews
+{
+    self.prevLayer.frame = self.view.bounds;
+}
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
     didOutputMetadataObjects:(NSArray *)metadataObjects
@@ -77,8 +90,10 @@
 
 - (void)didDetectQRCodeWithString:(NSString *)string
 {
-    // Override in subclass. Subclass is responsible for dismissing this view controller.
-    DDLogInfo(@"Scanned QRCode with string value: %@", string);
+    DDLogDebug(@"Scanned QRCode with string value: %@", string);
+    if (self.scanDelegate) {
+        [self.scanDelegate controller:self didDetectQRCodeWithString:string];
+    }
 }
 
 

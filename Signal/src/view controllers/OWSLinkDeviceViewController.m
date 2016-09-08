@@ -11,20 +11,50 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSLinkDeviceViewController ()
+
+@property (strong, nonatomic) IBOutlet UIView *qrScanningView;
+@property (strong, nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
+@property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+
+@end
+
 @implementation OWSLinkDeviceViewController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    // HACK to get full width preview layer
+    CGRect oldFrame = self.qrScanningView.frame;
+    self.qrScanningView.frame = CGRectMake(
+        oldFrame.origin.x, oldFrame.origin.y, self.view.frame.size.width, self.view.frame.size.height / 2.0 - 32.0);
+    [self.qrScanningController resizeViews];
+    // END HACK to get full width preview layer
+
+    self.scanningInstructionsLabel.text = NSLocalizedString(
+        @"Scan the QR code displayed on the device to link.", @"QR Scanning screen instructions label");
     self.title = NSLocalizedString(@"Link New Device", "Navigation title when scanning QR code to add new device.");
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewWillAppear:animated];
 }
 
-- (void)didDetectQRCodeWithString:(NSString *)string
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
+{
+    if ([segue.identifier isEqualToString:@"embedDeviceQRScanner"]) {
+        OWSQRCodeScanningViewController *qrScanningController
+            = (OWSQRCodeScanningViewController *)segue.destinationViewController;
+        qrScanningController.scanDelegate = self;
+        self.qrScanningController = qrScanningController;
+    }
+}
+
+
+// pragma mark - OWSQRScannerDelegate
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
     NSString *title = NSLocalizedString(@"Link this device?", @"Alert title");
     NSString *linkingDescription = NSLocalizedString(@"This device will be able to see your groups and contacts, read "
