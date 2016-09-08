@@ -59,21 +59,21 @@ extern NSString *const kYapReachabilityChangedNotification;
 
 typedef NS_ENUM(NSInteger, YapReachabilityStatus) {
     // Apple NetworkStatus Compatible Names.
-    NotReachable = 0,
-    ReachableViaWiFi = 2,
-    ReachableViaWWAN = 1
+    YapReachabilityStatus_NotReachable = 0,
+    YapReachabilityStatus_ReachableViaWiFi = 2,
+    YapReachabilityStatus_ReachableViaWWAN = 1
 };
 
 @class YapReachability;
 
-typedef void (^NetworkReachable)(YapReachability * reachability);
-typedef void (^NetworkUnreachable)(YapReachability * reachability);
+typedef void (^NetworkReachableBlock)(YapReachability * reachability);
+typedef void (^NetworkUnreachableBlock)(YapReachability * reachability);
 
 
 @interface YapReachability : NSObject
 
-@property (nonatomic, copy) NetworkReachable    reachableBlock;
-@property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) NetworkReachableBlock    reachableBlock;
+@property (nonatomic, copy) NetworkUnreachableBlock  unreachableBlock;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
