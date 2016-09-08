@@ -7,7 +7,6 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.3.0):
     - CocoaLumberjack/Default
-  - Reachability (3.2)
   - YapDatabase (2.9.2):
     - YapDatabase/Standard (= 2.9.2)
   - YapDatabase/Standard (2.9.2):
@@ -30,7 +29,6 @@ PODS:
     - YapDatabase/Standard/Extensions/SecondaryIndex (= 2.9.2)
     - YapDatabase/Standard/Extensions/Views (= 2.9.2)
   - YapDatabase/Standard/Extensions/ActionManager (2.9.2):
-    - Reachability (~> 3)
     - YapDatabase/Standard/Core
     - YapDatabase/Standard/Extensions/Views
   - YapDatabase/Standard/Extensions/CloudKit (2.9.2):
@@ -60,26 +58,16 @@ PODS:
     - YapDatabase/Standard/Core
 
 DEPENDENCIES:
-  - Reachability (from `https://github.com/tonymillion/Reachability.git`, commit `c4d225a479379f9998dbd5b55070427373d20574`)
   - YapDatabase (from `../../`)
 
 EXTERNAL SOURCES:
-  Reachability:
-    :commit: c4d225a479379f9998dbd5b55070427373d20574
-    :git: https://github.com/tonymillion/Reachability.git
   YapDatabase:
     :path: ../../
 
-CHECKOUT OPTIONS:
-  Reachability:
-    :commit: c4d225a479379f9998dbd5b55070427373d20574
-    :git: https://github.com/tonymillion/Reachability.git
-
 SPEC CHECKSUMS:
   CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
-  Reachability: a439150119232b740e0b708aed6760a5965b858d
-  YapDatabase: 624588b1d9d68df08d1f4528a2c311e7a9efd5fb
+  YapDatabase: 29bc55b61783a795476a7b9e460af5e6e702183d
 
-PODFILE CHECKSUM: d5fe41b7486bc39d824f4453500dbf3433967471
+PODFILE CHECKSUM: 04694c918fe21fe3424d42f0be326c98e8bd911e
 
 COCOAPODS: 1.1.0.beta.2

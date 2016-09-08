@@ -78,6 +78,8 @@ typedef void (^YapActionItemBlock)(NSString *collection, NSString *key, id objec
  * 
  * In other words, when the network is down, the DatabaseActionManager will simply queue
  * all items that require internet. And when the network comes back up, it will dequeue them.
+ * 
+ * Note: Not available on watchOS (due to lack of SystemConfiguration framework).
 **/
 @property (nonatomic, assign, readonly) BOOL requiresInternet;
 

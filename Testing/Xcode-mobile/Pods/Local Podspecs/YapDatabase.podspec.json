@@ -25,10 +25,10 @@
       "subspecs": [
         {
           "name": "Core",
-          "libraries": "sqlite3",
           "xcconfig": {
             "OTHER_CFLAGS": "$(inherited) -DYAP_STANDARD_SQLITE"
           },
+          "libraries": "sqlite3",
           "dependencies": {
             "CocoaLumberjack": [
               "~> 2"
@@ -122,19 +122,20 @@
             },
             {
               "name": "ConnectionProxy",
-              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}",
-              "private_header_files": "YapDatabase/Extensions/ConnectionProxy/Internal/*.h"
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
             },
             {
               "name": "ActionManager",
-              "platforms": {
-                "osx": "10.8",
-                "ios": "6.0"
+              "osx": {
+                "frameworks": "SystemConfiguration"
+              },
+              "ios": {
+                "frameworks": "SystemConfiguration"
+              },
+              "tvos": {
+                "frameworks": "SystemConfiguration"
               },
               "dependencies": {
-                "Reachability": [
-                  "~> 3"
-                ],
                 "YapDatabase/Standard/Extensions/Views": [
 
                 ]
@@ -151,6 +152,9 @@
       "subspecs": [
         {
           "name": "Core",
+          "xcconfig": {
+            "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
+          },
           "dependencies": {
             "SQLCipher/fts": [
 
@@ -158,9 +162,6 @@
             "CocoaLumberjack": [
               "~> 2"
             ]
-          },
-          "xcconfig": {
-            "OTHER_CFLAGS": "$(inherited) -DSQLITE_HAS_CODEC"
           },
           "source_files": [
             "YapDatabase/*.{h,m,mm,c}",
@@ -250,19 +251,20 @@
             },
             {
               "name": "ConnectionProxy",
-              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}",
-              "private_header_files": "YapDatabase/Extensions/ConnectionProxy/Internal/*.h"
+              "source_files": "YapDatabase/Extensions/ConnectionProxy/**/*.{h,m,mm,c}"
             },
             {
               "name": "ActionManager",
-              "platforms": {
-                "osx": "10.8",
-                "ios": "6.0"
+              "osx": {
+                "frameworks": "SystemConfiguration"
+              },
+              "ios": {
+                "frameworks": "SystemConfiguration"
+              },
+              "tvos": {
+                "frameworks": "SystemConfiguration"
               },
               "dependencies": {
-                "Reachability": [
-                  "~> 3"
-                ],
                 "YapDatabase/SQLCipher/Extensions/Views": [
 
                 ]

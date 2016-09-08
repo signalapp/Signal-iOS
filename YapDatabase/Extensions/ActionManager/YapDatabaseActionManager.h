@@ -5,8 +5,7 @@
 #import "YapDatabaseActionManagerConnection.h"
 #import "YapDatabaseActionManagerTransaction.h"
 #import "YapDatabaseView.h"
-
-@class Reachability;
+#import "YapReachability.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,14 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init;
 - (instancetype)initWithOptions:(nullable YapDatabaseViewOptions *)options;
 
+#if !TARGET_OS_WATCH
 /**
  * YapDatabaseActionManager relies on a reachability instance to monitory for internet connectivity.
  * This is to support the YapActionItem.requiresInternet property.
  * 
  * If an instance is not assigned, then one will be automatically created (after registration)
- * via [Reachability reachabilityForInternetConnection].
+ * via [YapReachability reachabilityForInternetConnection].
 **/
-@property (atomic, strong, readwrite, nullable) Reachability *reachability;
+@property (atomic, strong, readwrite, nullable) YapReachability *reachability;
+#endif
 
 @end
 

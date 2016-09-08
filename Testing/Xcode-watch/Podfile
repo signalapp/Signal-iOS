@@ -9,13 +9,11 @@ target :'YapDatabaseTesting' do
 	platform :ios, '9.0'
 
 	pod "YapDatabase", path: '../../'
-	pod 'Reachability',  :git => 'https://github.com/tonymillion/Reachability.git', :commit => 'c4d225a479379f9998dbd5b55070427373d20574'
 end
 	
 abstract_target 'watchOS' do
 	
 	pod "YapDatabase", path: '../../'
-#	pod 'Reachability',  :git => 'https://github.com/tonymillion/Reachability.git', :commit => 'c4d225a479379f9998dbd5b55070427373d20574'
 
 	target :'YapDatabaseTesting WatchKit App' do
 		platform :watchos, '2.0'

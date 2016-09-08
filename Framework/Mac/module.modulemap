@@ -136,6 +136,7 @@ framework module YapDatabase {
 		header "YapDatabaseActionManager.h"
 		header "YapDatabaseActionManagerConnection.h"
 		header "YapDatabaseActionManagerTransaction.h"
+		header "YapReachability.h"
 	}
 	
 	// Extension: CrossProcessNotification

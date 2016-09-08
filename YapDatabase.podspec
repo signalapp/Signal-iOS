@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
-  s.libraries  = 'c++'
+  s.libraries = 'c++'
 
   s.default_subspecs = 'Standard'
 
@@ -31,8 +31,8 @@ Pod::Spec.new do |s|
   s.subspec 'Standard' do |ss|
 
     ss.subspec 'Core' do |ssc|
-      ssc.library = 'sqlite3'
       ssc.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DYAP_STANDARD_SQLITE' }
+      ssc.library = 'sqlite3'
       ssc.dependency 'CocoaLumberjack', '~> 2'
       ssc.source_files = 'YapDatabase/*.{h,m,mm,c}', 'YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}', 'YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}'
       ssc.private_header_files = 'YapDatabase/Internal/*.h', 'YapDatabase/Extensions/Protocol/Internal/*.h'
@@ -102,9 +102,9 @@ Pod::Spec.new do |s|
       end
 
       sse.subspec 'ActionManager' do |ssee|
-        ssee.osx.deployment_target = '10.8'
-        ssee.ios.deployment_target = '6.0'
-        ssee.dependency 'Reachability', '~> 3'
+        ssee.osx.framework   = 'SystemConfiguration'
+        ssee.ios.framework   = 'SystemConfiguration'
+        ssee.tvos.framework  = 'SystemConfiguration'
         ssee.dependency 'YapDatabase/Standard/Extensions/Views'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'
@@ -118,8 +118,8 @@ Pod::Spec.new do |s|
   s.subspec 'SQLCipher' do |ss|
 
     ss.subspec 'Core' do |ssc|
-      ssc.dependency 'SQLCipher/fts'
       ssc.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+      ssc.dependency 'SQLCipher/fts'
       ssc.dependency 'CocoaLumberjack', '~> 2'
       ssc.source_files = 'YapDatabase/*.{h,m,mm,c}', 'YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}', 'YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}'
       ssc.private_header_files = 'YapDatabase/Internal/*.h', 'YapDatabase/Extensions/Protocol/Internal/*.h'
@@ -189,9 +189,9 @@ Pod::Spec.new do |s|
       end
 
       sse.subspec 'ActionManager' do |ssee|
-        ssee.osx.deployment_target = '10.8'
-        ssee.ios.deployment_target = '6.0'
-        ssee.dependency 'Reachability', '~> 3'
+        ssee.osx.framework   = 'SystemConfiguration'
+        ssee.ios.framework   = 'SystemConfiguration'
+        ssee.tvos.framework  = 'SystemConfiguration'
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/Views'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'

@@ -7,7 +7,6 @@
 #import "NSDate+YapDatabase.h"
 
 #import <libkern/OSAtomic.h>
-#import <Reachability/Reachability.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
@@ -36,7 +35,9 @@
 	BOOL timerSuspended;
 }
 
+#if !TARGET_OS_WATCH
 @synthesize reachability = _mustGoThroughAtomicProperty_reachability;
+#endif
 @synthesize hasInternet = _mustGoThroughAtomicGetter_hasInternet;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,10 +214,13 @@
 **/
 - (void)didRegisterExtension
 {
-	Reachability *reachability = self.reachability;
+#if TARGET_OS_WATCH
+	self.hasInternet = YES;
+#else
+	YapReachability *reachability = self.reachability;
 	if (reachability == nil)
 	{
-		reachability = [Reachability reachabilityForInternetConnection];
+		reachability = [YapReachability reachabilityForInternetConnection];
 		self.reachability = reachability;
 	}
 	
@@ -225,8 +229,9 @@
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 	                                         selector:@selector(reachabilityChanged:)
-	                                             name:kReachabilityChangedNotification
+	                                             name:kYapReachabilityChangedNotification
 	                                           object:reachability];
+#endif
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 	                                         selector:@selector(databaseModified:)
@@ -264,11 +269,13 @@
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
-	Reachability *reachability = self.reachability;
+#if !TARGET_OS_WATCH
+	YapReachability *reachability = self.reachability;
 	if (reachability)
 		self.hasInternet = reachability.isReachable;
 	else
 		self.hasInternet = YES; // safety net
+#endif
 	
 	if (notification) {
 		[self checkForActions_reachabilityChanged];

@@ -16,12 +16,11 @@
 @import YapDatabase.YapDatabaseHooks;
 @import YapDatabase.YapDatabaseRTreeIndex;
 @import YapDatabase.YapDatabaseConnectionProxy;
+@import YapDatabase.YapDatabaseActionManager;
 #if !TARGET_OS_WATCH
 @import YapDatabase.YapDatabaseCloudKit;
 #endif
-#if !TARGET_OS_TV && !TARGET_OS_WATCH
-@import YapDatabase.YapDatabaseActionManager;
-#endif
+
 
 @implementation CompileTest
 
@@ -48,11 +47,9 @@
 	YapDatabaseHooks *hooks;
 	YapDatabaseRTreeIndex *rTreeIndex;
 	YapDatabaseConnectionProxy *connectionProxy;
+	YapDatabaseActionManager *actionManager;
 #if !TARGET_OS_WATCH
 	YapDatabaseCloudKit *cloudKit;
-#endif
-#if !TARGET_OS_TV && !TARGET_OS_WATCH
-	YapDatabaseActionManager *actionManager;
 #endif
 	
 #pragma clang diagnostic pop

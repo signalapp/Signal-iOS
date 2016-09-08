@@ -130,13 +130,14 @@ framework module YapDatabase {
 	
 	// Extension: ActionManager
 	
-//	explicit module YapDatabaseActionManager {
-//		header "YapActionable.h"
-//		header "YapActionItem.h"
-//		header "YapDatabaseActionManager.h"
-//		header "YapDatabaseActionManagerConnection.h"
-//		header "YapDatabaseActionManagerTransaction.h"
-//	}
+	explicit module YapDatabaseActionManager {
+		header "YapActionable.h"
+		header "YapActionItem.h"
+		header "YapDatabaseActionManager.h"
+		header "YapDatabaseActionManagerConnection.h"
+		header "YapDatabaseActionManagerTransaction.h"
+		header "YapReachability.h"
+	}
 	
 	// Extension: CrossProcessNotification
 	
