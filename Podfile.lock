@@ -62,54 +62,54 @@ PODS:
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UnionFind (1.0.1)
-  - YapDatabase/SQLCipher (2.9.1):
-    - YapDatabase/SQLCipher/Core (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions (= 2.9.1)
-  - YapDatabase/SQLCipher/Core (2.9.1):
+  - YapDatabase/SQLCipher (2.9.2):
+    - YapDatabase/SQLCipher/Core (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions (= 2.9.2)
+  - YapDatabase/SQLCipher/Core (2.9.2):
     - CocoaLumberjack (~> 2)
     - SQLCipher/fts
-  - YapDatabase/SQLCipher/Extensions (2.9.1):
+  - YapDatabase/SQLCipher/Extensions (2.9.2):
     - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/ActionManager (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/CloudKit (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/ConnectionProxy (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/FilteredViews (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/FullTextSearch (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/Hooks (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/Relationships (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/RTreeIndex (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/SearchResults (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/SecondaryIndex (= 2.9.1)
-    - YapDatabase/SQLCipher/Extensions/Views (= 2.9.1)
-  - YapDatabase/SQLCipher/Extensions/ActionManager (2.9.1):
+    - YapDatabase/SQLCipher/Extensions/ActionManager (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/CloudKit (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/ConnectionProxy (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/FilteredViews (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/FullTextSearch (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/Hooks (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/Relationships (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/RTreeIndex (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/SearchResults (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/SecondaryIndex (= 2.9.2)
+    - YapDatabase/SQLCipher/Extensions/Views (= 2.9.2)
+  - YapDatabase/SQLCipher/Extensions/ActionManager (2.9.2):
     - Reachability (~> 3)
     - YapDatabase/SQLCipher/Core
     - YapDatabase/SQLCipher/Extensions/Views
-  - YapDatabase/SQLCipher/Extensions/CloudKit (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/CloudKit (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/ConnectionProxy (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/ConnectionProxy (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/FilteredViews (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/FilteredViews (2.9.2):
     - YapDatabase/SQLCipher/Core
     - YapDatabase/SQLCipher/Extensions/Views
-  - YapDatabase/SQLCipher/Extensions/FullTextSearch (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/FullTextSearch (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/Hooks (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/Hooks (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/Relationships (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/Relationships (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/RTreeIndex (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/RTreeIndex (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/SearchResults (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/SearchResults (2.9.2):
     - YapDatabase/SQLCipher/Core
     - YapDatabase/SQLCipher/Extensions/FullTextSearch
     - YapDatabase/SQLCipher/Extensions/Views
-  - YapDatabase/SQLCipher/Extensions/SecondaryIndex (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/SecondaryIndex (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/Views (2.9.1):
+  - YapDatabase/SQLCipher/Extensions/Views (2.9.2):
     - YapDatabase/SQLCipher/Core
 
 DEPENDENCIES:
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 0eec84feb71955147cfebaebc5dd0aad5adf0cda
+    :commit: e9c54b52a88b094e7b6deafdfda6704be5721f3c
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
@@ -160,7 +160,7 @@ SPEC CHECKSUMS:
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
-  YapDatabase: 713d4018cfacbd6e77dd430710ca84730e450980
+  YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
 PODFILE CHECKSUM: bcac03a0ce180ba50c3467068062f8e55e11e778
 
