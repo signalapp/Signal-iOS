@@ -85,6 +85,14 @@ typedef enum {
                                forState:UIControlStateNormal];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    // HACK to unselect rows when swiping back
+    // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketOpenedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketClosedNotification object:nil];
