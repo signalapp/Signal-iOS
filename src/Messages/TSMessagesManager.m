@@ -243,7 +243,7 @@
             OWSSyncContactsMessage *syncContactsMessage =
                 [[OWSSyncContactsMessage alloc] initWithContactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
 
-            [self sendAttachment:[syncContactsMessage buildPlainTextAttachmentData]
+            [self sendTemporaryAttachment:[syncContactsMessage buildPlainTextAttachmentData]
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncContactsMessage
                 thread:nil
@@ -259,7 +259,7 @@
 
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
 
-            [self sendAttachment:[syncGroupsMessage buildPlainTextAttachmentData]
+            [self sendTemporaryAttachment:[syncGroupsMessage buildPlainTextAttachmentData]
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
                 thread:nil

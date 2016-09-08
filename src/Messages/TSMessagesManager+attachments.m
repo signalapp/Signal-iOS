@@ -68,6 +68,37 @@ dispatch_queue_t attachmentsQueue() {
     }
 }
 
+- (void)sendTemporaryAttachment:(NSData *)attachmentData
+                    contentType:(NSString *)contentType
+                      inMessage:(TSOutgoingMessage *)outgoingMessage
+                         thread:(TSThread *)thread
+                        success:(successSendingCompletionBlock)successCompletionBlock
+                        failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
+    void (^successBlockWithDelete)() = ^{
+        if (successCompletionBlock) {
+            successCompletionBlock();
+        }
+        DDLogDebug(@"Removing temporary attachment message.");
+        [outgoingMessage remove];
+    };
+
+    void (^failureBlockWithDelete)() = ^{
+        if (failedCompletionBlock) {
+            failedCompletionBlock();
+        }
+        DDLogDebug(@"Removing temporary attachment message.");
+        [outgoingMessage remove];
+    };
+
+    [self sendAttachment:attachmentData
+             contentType:contentType
+               inMessage:outgoingMessage
+                  thread:thread
+                 success:successBlockWithDelete
+                 failure:failureBlockWithDelete];
+}
+
 - (void)sendAttachment:(NSData *)attachmentData
            contentType:(NSString *)contentType
              inMessage:(TSOutgoingMessage *)outgoingMessage
