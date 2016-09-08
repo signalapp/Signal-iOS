@@ -1,4 +1,4 @@
-xcodeproj 'YapDatabaseTesting.xcodeproj'
+project 'YapDatabaseTesting.xcodeproj'
 platform :tvos, '9.0'
 
 target 'YapDatabase' do
