@@ -3,6 +3,7 @@
 
 #import "TSStorageManager.h"
 #import "NSData+Base64.h"
+#import "OWSReadReceipt.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -61,6 +62,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerSecondaryDevicesDatabaseView];
 
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSReadReceipt registerIndexOnSenderIdAndTimestampWithDatabase:self.database];
 }
 
 

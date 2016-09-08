@@ -1,8 +1,12 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
+#import "TSYapDatabaseObject.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSReadReceipt : NSObject
+@class YapDatabase;
+
+@interface OWSReadReceipt : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSString *senderId;
 @property (nonatomic, readonly) uint64_t timestamp;
@@ -10,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<NSString *> *validationErrorMessages;
 
 - (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
+
++ (nullable instancetype)firstWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
++ (void)registerIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database;
 
 @end
 

@@ -3,11 +3,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosSyncMessageRead;
+@class OWSReadReceipt;
+@class TSIncomingMessage;
 
 @interface OWSReadReceiptsProcessor : NSObject
 
-- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos;
+- (instancetype)initWithIncomingMessage:(TSIncomingMessage *)incomingMessage;
+- (instancetype)initWithReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (void)process;
 
 @end

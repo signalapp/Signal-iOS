@@ -430,6 +430,12 @@
       NSString *name = [thread name];
 
       if (incomingMessage && thread) {
+          // TODO Delay by 100ms?
+
+          OWSReadReceiptsProcessor *readReceiptsProcessor =
+              [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage];
+          [readReceiptsProcessor process];
+
           [[TextSecureKitEnv sharedEnv]
                   .notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                 from:name

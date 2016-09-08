@@ -3,6 +3,7 @@
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,27 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReadReceiptsProcessor
 
-- (instancetype)init
-{
-    return [self initWithReadReceiptProtos:@[]];
-}
-
-- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+- (instancetype)initWithReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts
 {
     self = [super init];
     if (!self) {
         return self;
-    }
-
-    NSMutableArray<OWSReadReceipt *> *readReceipts = [NSMutableArray new];
-    for (OWSSignalServiceProtosSyncMessageRead *readReceiptProto in readReceiptProtos) {
-        OWSReadReceipt *readReceipt =
-            [[OWSReadReceipt alloc] initWithSenderId:readReceiptProto.sender timestamp:readReceiptProto.timestamp];
-        if (readReceipt.isValid) {
-            [readReceipts addObject:readReceipt];
-        } else {
-            DDLogError(@"Received invalid read receipt: %@", readReceipt.validationErrorMessages);
-        }
     }
 
     _readReceipts = [readReceipts copy];
@@ -43,20 +28,67 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+{
+    NSMutableArray<OWSReadReceipt *> *readReceipts = [NSMutableArray new];
+    for (OWSSignalServiceProtosSyncMessageRead *readReceiptProto in readReceiptProtos) {
+        OWSReadReceipt *readReceipt =
+            [[OWSReadReceipt alloc] initWithSenderId:readReceiptProto.sender timestamp:readReceiptProto.timestamp];
+        if (readReceipt.isValid) {
+            [readReceipts addObject:readReceipt];
+        } else {
+            DDLogError(@"%@ Received invalid read receipt: %@", self.tag, readReceipt.validationErrorMessages);
+        }
+    }
+
+    return [self initWithReadReceipts:[readReceipts copy]];
+}
+
+- (instancetype)initWithIncomingMessage:(TSIncomingMessage *)message
+{
+    // Only groupthread sets authorId, thus this crappy code.
+    // TODO ALL incoming messages should have an authorId.
+    NSString *messageAuthorId;
+    if (message.authorId) { // Group Thread
+        messageAuthorId = message.authorId;
+    } else { // Contact Thread
+        messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
+    }
+
+    OWSReadReceipt *readReceipt = [OWSReadReceipt firstWithSenderId:messageAuthorId timestamp:message.timestamp];
+    if (readReceipt) {
+        DDLogInfo(@"%@ Found prior read receipt for incoming message.", self.tag);
+        return [self initWithReadReceipts:@[ readReceipt ]];
+    } else {
+        return [self initWithReadReceipts:@[]];
+    }
+}
+
 - (void)process
 {
-    DDLogInfo(@"Processing %ld read receipts.", (unsigned long)self.readReceipts.count);
+    DDLogDebug(@"%@ Processing %ld read receipts.", self.tag, (unsigned long)self.readReceipts.count);
     for (OWSReadReceipt *readReceipt in self.readReceipts) {
         TSIncomingMessage *message =
             [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId timestamp:readReceipt.timestamp];
         if (message) {
             [message markAsReadFromReadReceipt];
+            // If it was previously saved, no need to keep it around any longer.
+            [readReceipt remove];
         } else {
-            // TODO keep read receipts around so that if we get the receipt before the message,
-            //      we can immediately mark the message as read once we get it.
-            DDLogWarn(@"Couldn't find message for read receipt. Message not synced?");
+            DDLogDebug(@"%@ Received read receipt for an unkown message. Saving it for later.", self.tag);
+            [readReceipt save];
         }
     }
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
