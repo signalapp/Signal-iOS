@@ -2,7 +2,18 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "btnAttachments--blue.pdf"
+      "filename" : "btnAttachments--blue.png",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "btnAttachments--blue@2x.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "btnAttachments--blue@3x.png",
+      "scale" : "3x"
     }
   ],
   "info" : {
