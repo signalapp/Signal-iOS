@@ -534,6 +534,8 @@
 		458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisioningURLParserTest.m; path = Models/OWSDeviceProvisioningURLParserTest.m; sourceTree = "<group>"; };
 		459311FA1D75C948008DD4F0 /* OWSDeviceTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceTableViewCell.h; sourceTree = "<group>"; };
 		459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceTableViewCell.m; sourceTree = "<group>"; };
+		4597E94E1D8313C100040CDE /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = translations/sq.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
 		459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageAdapterTest.m; path = "view controllers/Signals/TSMessageAdapters/TSMessageAdapterTest.m"; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
 		45C681B61D305A580050903A /* OWSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCall.m; sourceTree = "<group>"; };
@@ -921,7 +923,6 @@
 		B68EF9B81C0B1EBD009C3DCD /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLAnimatedImageView.h; path = Libraries/FLAnimatedImage/FLAnimatedImageView.h; sourceTree = SOURCE_ROOT; };
 		B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImageView.m; path = Libraries/FLAnimatedImage/FLAnimatedImageView.m; sourceTree = SOURCE_ROOT; };
 		B69C2D171AA5445000A640C2 /* az_AZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az_AZ; path = translations/az_AZ.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B69C2D181AA5445F00A640C2 /* bg_BG */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg_BG; path = translations/bg_BG.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D191AA5446C00A640C2 /* bs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bs; path = translations/bs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D1A1AA5447600A640C2 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = translations/ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69C2D1B1AA5448300A640C2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = translations/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2431,6 +2432,8 @@
 				id,
 				gl,
 				mk,
+				sq,
+				bg,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3044,7 +3047,6 @@
 			children = (
 				B6F509961AA53F760068F56A /* en */,
 				B69C2D171AA5445000A640C2 /* az_AZ */,
-				B69C2D181AA5445F00A640C2 /* bg_BG */,
 				B69C2D191AA5446C00A640C2 /* bs */,
 				B69C2D1A1AA5447600A640C2 /* ca */,
 				B69C2D1B1AA5448300A640C2 /* cs */,
@@ -3077,6 +3079,8 @@
 				45E282DE1D08E67800ADD4C8 /* gl */,
 				45E282DF1D08E6CC00ADD4C8 /* id */,
 				454B35071D08EED80026D658 /* mk */,
+				4597E94E1D8313C100040CDE /* sq */,
+				4597E94F1D8313CB00040CDE /* bg */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

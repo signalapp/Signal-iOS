@@ -32,9 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.qrScanningController resizeViews];
     // END HACK to get full width preview layer
 
-    self.scanningInstructionsLabel.text = NSLocalizedString(
-        @"Scan the QR code displayed on the device to link.", @"QR Scanning screen instructions label");
-    self.title = NSLocalizedString(@"Link New Device", "Navigation title when scanning QR code to add new device.");
+    self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
+        @"QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes");
+    self.title
+        = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -56,10 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
 // pragma mark - OWSQRScannerDelegate
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
-    NSString *title = NSLocalizedString(@"Link this device?", @"Alert title");
-    NSString *linkingDescription = NSLocalizedString(@"This device will be able to see your groups and contacts, read "
-                                                     @"all your messages, and send messages in your name.",
-        @"Alert body confirmation when linking a new device");
+    NSString *title
+        = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
+    NSString *linkingDescription
+        = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
 
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                              message:linkingDescription
@@ -75,11 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
     [alertController addAction:cancelAction];
 
-    UIAlertAction *proceedAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Link New Device", nil)
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {
-                                                              [self provisionWithString:string];
-                                                          }];
+    UIAlertAction *proceedAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self provisionWithString:string];
+                               }];
     [alertController addAction:proceedAction];
 
     [self presentViewController:alertController animated:YES completion:nil];
@@ -126,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIAlertController *)retryAlertControllerWithError:(NSError *)error retryBlock:(void (^)())retryBlock
 {
-    NSString *title = NSLocalizedString(@"Linking Device Failed", @"Alert Title");
+    NSString *title = NSLocalizedString(@"LINKING_DEVICE_FAILED_TITLE", @"Alert Title");
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                              message:error.localizedDescription
                                                                       preferredStyle:UIAlertControllerStyleAlert];

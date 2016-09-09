@@ -11,12 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.nameLabel.text = device.displayName;
 
-    NSString *linkedFormatString = NSLocalizedString(@"Linked: %@", @"{{Short Date}} when device was linked.");
+    NSString *linkedFormatString
+        = NSLocalizedString(@"DEVICE_LINKED_AT_LABEL", @"{{Short Date}} when device was linked.");
     self.linkedLabel.text =
         [NSString stringWithFormat:linkedFormatString, [DateUtil.dateFormatter stringFromDate:device.createdAt]];
 
-    NSString *lastSeenFormatString
-        = NSLocalizedString(@"Last active: %@", @"{{Short Date}} when device last communicated with Signal Server.");
+    NSString *lastSeenFormatString = NSLocalizedString(
+        @"DEVICE_LAST_ACTIVE_AT_LABEL", @"{{Short Date}} when device last communicated with Signal Server.");
     self.lastSeenLabel.text =
         [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:device.createdAt]];
 }

@@ -79,8 +79,8 @@ typedef enum {
     self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     self.aboutLabel.text = NSLocalizedString(@"SETTINGS_ABOUT", @"");
     self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
-    self.linkedDevicesLabel.text = NSLocalizedString(
-        @"LINKED_DEVICES_LABEL", @"table cell label, when pressed takes you to manage your linked devices.");
+    self.linkedDevicesLabel.text
+        = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];
 }

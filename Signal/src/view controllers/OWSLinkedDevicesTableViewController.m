@@ -35,6 +35,8 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
+
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 70;
@@ -103,9 +105,9 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                               userInfo:nil
                                                                repeats:YES];
 
-    NSString *progressText = NSLocalizedString(@"Complete setup on Signal Desktop.",
-        @"Activity indicator title, shown upon returning to the device manager, "
-        @"until you complete the provisioning process on desktop");
+    NSString *progressText = NSLocalizedString(@"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
+        @"Activity indicator title, shown upon returning to the device "
+        @"manager, until you complete the provisioning process on desktop");
     NSAttributedString *progressTitle = [[NSAttributedString alloc] initWithString:progressText];
 
     // HACK to get refreshControl title to align properly.
@@ -146,7 +148,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                 DDLogError(@"Failed to fetch devices in linkedDevices controller with error: %@", error);
 
                 NSString *alertTitle = NSLocalizedString(
-                    @"Failed to update device list.", @"Alert title that can occur when viewing device manager.");
+                    @"DEVICE_LIST_UPDATE_FAILED_TITLE", @"Alert title that can occur when viewing device manager.");
 
                 UIAlertController *alertController =
                     [UIAlertController alertControllerWithTitle:alertTitle
@@ -251,7 +253,13 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {
-        return [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
+        UITableViewCell *addNewDeviceCell =
+            [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
+        addNewDeviceCell.textLabel.text
+            = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", @"Navigation title when scanning QR code to add new device.");
+        addNewDeviceCell.detailTextLabel.text
+            = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
+        return addNewDeviceCell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =
             [tableView dequeueReusableCellWithIdentifier:@"ExistingDevice" forIndexPath:indexPath];
@@ -288,7 +296,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (nullable NSString *)tableView:(UITableView *)tableView
     titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return NSLocalizedString(@"Unlink", "Action title for unlinking a device");
+    return NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device");
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -308,11 +316,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (void)touchedUnlinkControlForDevice:(OWSDevice *)device success:(void (^)())successCallback
 {
     NSString *confirmationTitleFormat
-        = NSLocalizedString(@"Unlink \"%@\"?", @"Alert title for confirming device deletion");
+        = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_TITLE", @"Alert title for confirming device deletion");
     NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.name];
     NSString *confirmationMessage
-        = NSLocalizedString(@"By unlinking this device, it will no longer be able to send or receive messages.",
-            @"Alert description shown to confirm unlinking a device.");
+        = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_BODY", @"Alert message to confirm unlinking a device");
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:confirmationTitle
                                                                              message:confirmationMessage
                                                                       preferredStyle:UIAlertControllerStyleAlert];
@@ -323,7 +330,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [alertController addAction:cancelAction];
 
     UIAlertAction *unlinkAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"Unlink", "Action title for unlinking a device")
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *action) {
                                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -342,8 +349,8 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [[OWSDevicesService new] unlinkDevice:device
                                   success:successCallback
                                   failure:^(NSError *error) {
-                                      NSString *title = NSLocalizedString(@"Signal was unable to delete your device.",
-                                          @"Alert title when unlinking device fails");
+                                      NSString *title = NSLocalizedString(
+                                          @"UNLINKING_FAILED_ALERT_TITLE", @"Alert title when unlinking device fails");
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:title
                                                                               message:error.localizedDescription
