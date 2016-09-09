@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     // END HACK to get full width preview layer
 
     self.scanningInstructionsLabel.text = NSLocalizedString(
-        @"Scan the QR code displayed on the device to link.", @"QR Scanning screen instructions label");
+        @"Scan the QR code displayed on the device to link", @"QR Scanning screen instructions label");
     self.title = NSLocalizedString(@"Link New Device", "Navigation title when scanning QR code to add new device.");
 }
 
