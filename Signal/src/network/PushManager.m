@@ -184,8 +184,7 @@
             TSOutgoingMessage *message =
                 [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                     inThread:thread
-                                                 messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]
-                                               attachmentIds:nil];
+                                                 messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]];
             [[TSMessagesManager sharedManager] sendMessage:message
                 inThread:thread
                 success:^{

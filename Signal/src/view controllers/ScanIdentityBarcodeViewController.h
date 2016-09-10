@@ -4,18 +4,11 @@
 //
 //  Created by Christine Corbett Moran on 3/29/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
-#import <AVFoundation/AVFoundation.h>
-#import <UIKit/UIKit.h>
-@interface ScanIdentityBarcodeViewController : UIViewController <AVCaptureMetadataOutputObjectsDelegate>
+#import "OWSQRCodeScanningViewController.h"
 
-@property (nonatomic, strong) AVCaptureSession *session;
-@property (nonatomic, strong) AVCaptureDevice *device;
-@property (nonatomic, strong) AVCaptureDeviceInput *input;
-@property (nonatomic, strong) AVCaptureMetadataOutput *output;
-@property (nonatomic, strong) AVCaptureVideoPreviewLayer *prevLayer;
+@interface ScanIdentityBarcodeViewController : OWSQRCodeScanningViewController
 
-@property (nonatomic, strong) UIView *highlightView;
 @property (nonatomic, strong) NSData *identityKey;
+
 @end

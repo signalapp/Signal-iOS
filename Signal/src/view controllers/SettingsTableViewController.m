@@ -33,16 +33,16 @@
 #define kRegisteredNumberRow 0
 #define kPrivacyRow 0
 #define kNotificationRow 1
-#define kAdvancedRow 2
-#define kAboutRow 3
+#define kAdvancedRow 3
+#define kAboutRow 4
 #define kNetworkRow 0
 #define kUnregisterRow 0
 
 typedef enum {
-    kRegisteredRows    = 1,
-    kGeneralRows       = 4,
+    kRegisteredRows = 1,
+    kGeneralRows = 5,
     kNetworkStatusRows = 1,
-    kUnregisterRows    = 1,
+    kUnregisterRows = 1,
 } kRowsForSection;
 
 typedef enum {
@@ -79,8 +79,18 @@ typedef enum {
     self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     self.aboutLabel.text = NSLocalizedString(@"SETTINGS_ABOUT", @"");
     self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
+    self.linkedDevicesLabel.text
+        = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    // HACK to unselect rows when swiping back
+    // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
 }
 
 - (void)dealloc {

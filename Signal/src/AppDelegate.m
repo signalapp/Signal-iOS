@@ -2,10 +2,10 @@
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
 #import "CodeVerificationViewController.h"
-#import "OWSContactsManager.h"
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
+#import "OWSContactsManager.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Release.h"
@@ -15,6 +15,7 @@
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import <SignalServiceKit/OWSReadReceiptObserver.h>
 
 static NSString *const kStoryboardName                  = @"Storyboard";
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
@@ -24,6 +25,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow *screenProtectionWindow;
+@property (nonatomic) OWSReadReceiptObserver *readReceiptObserver;
 
 @end
 
@@ -117,6 +119,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
     [[TSStorageManager sharedManager] setupDatabase];
     [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
+    self.readReceiptObserver =
+        [[OWSReadReceiptObserver alloc] initWithMessagesManager:[TSMessagesManager sharedManager]];
+    [self.readReceiptObserver startObserving];
 }
 
 - (void)application:(UIApplication *)application
