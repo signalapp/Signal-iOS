@@ -25,7 +25,7 @@
 - (void)testDescription {
     TSThread *thread = [[TSThread alloc] init];
     TSMessage *message =
-        [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body" attachmentIds:nil];
+        [[TSMessage alloc] initWithTimestamp:1 inThread:thread messageBody:@"My message body"];
     XCTAssertEqualObjects(@"My message body", [message description]);
 }
 

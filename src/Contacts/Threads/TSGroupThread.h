@@ -10,11 +10,15 @@
 #import "TSThread.h"
 
 @interface TSGroupThread : TSThread
+
 @property (nonatomic, strong) TSGroupModel *groupModel;
+
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
++ (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId;
+
++ (instancetype)fetchWithGroupIdData:(NSData *)groupId;
 + (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction;
-- (NSData *)groupId;
 
 @end

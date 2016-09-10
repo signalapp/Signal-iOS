@@ -18,7 +18,7 @@
                          inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:nil];
+    self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

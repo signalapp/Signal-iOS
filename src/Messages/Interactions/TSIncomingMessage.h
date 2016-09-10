@@ -1,23 +1,22 @@
-//
-//  TSIncomingMessage.h
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 15/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "TSMessage.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class TSContactThread;
 @class TSGroupThread;
 
+extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
+
 @interface TSIncomingMessage : TSMessage
 
 /**
- *  Initiates an incoming message
+ *  Inits an incoming (non-group) message with no attachments.
  *
  *  @param timestamp
- *    Timestamp of the message in milliseconds since epoch
+ *    When the message was created in milliseconds since epoch
  *  @param thread
  *    Thread to which the message belongs
  *  @param body
@@ -27,21 +26,57 @@
  *
  *  @return initiated incoming message
  */
-
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSContactThread *)thread
-                      messageBody:(NSString *)body
+                         inThread:(nullable TSContactThread *)thread
+                      messageBody:(nullable NSString *)body;
+
+/**
+ *  Inits an incoming (non-group) message with attachments.
+ *
+ *  @param timestamp
+ *    When the message was created in milliseconds since epoch
+ *  @param thread
+ *    Thread to which the message belongs
+ *  @param body
+ *    Body of the message
+ *  @param attachmentIds
+ *    The uniqueIds for the message's attachments
+ *
+ *  @return initiated incoming message
+ */
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSContactThread *)thread
+                      messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 /**
- *  Initiates an incoming group message
+ *  Inits an incoming group message without attachments
  *
  *  @param timestamp
- *    Timestamp of the message in milliseconds since epoch
+ *    When the message was created in milliseconds since epoch
  *  @param thread
  *    Thread to which the message belongs
  *  @param authorId
- *    Author identifier of the user in the group that sent the message
+ *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param body
+ *    Body of the message
+ *
+ *  @return initiated incoming group message
+ */
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSGroupThread *)thread
+                         authorId:(nullable NSString *)authorId
+                      messageBody:(nullable NSString *)body;
+
+/**
+ *  Inits an incoming group message with attachments
+ *
+ *  @param timestamp
+ *    When the message was created in milliseconds since epoch
+ *  @param thread
+ *    Thread to which the message belongs
+ *  @param authorId
+ *    Signal ID (i.e. e164) of the user who sent the message
  *  @param body
  *    Body of the message
  *  @param attachmentIds
@@ -49,15 +84,39 @@
  *
  *  @return initiated incoming group message
  */
-
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSGroupThread *)thread
-                         authorId:(NSString *)authorId
-                      messageBody:(NSString *)body
+                         inThread:(nullable TSGroupThread *)thread
+                         authorId:(nullable NSString *)authorId
+                      messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
+/*
+ * Find a message matching the senderId and timestamp, if any.
+ *
+ * @param authorId
+ *   Signal ID (i.e. e164) of the user who sent the message
+ * @params timestamp
+ *   When the message was created in milliseconds since epoch
+ *
+ */
++ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp;
+
 @property (nonatomic, readonly) NSString *authorId;
-@property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, readonly, getter=wasRead) BOOL read;
 @property (nonatomic, readonly) NSDate *receivedAt;
 
+/*
+ * Marks a message as having been read on this device (as opposed to responding to a remote read receipt).
+ *
+ */
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ * Similar to markAsReadWithTransaction, but doesn't send out read receipts.
+ * Used for *responding* to a remote read receipt.
+ */
+- (void)markAsReadFromReadReceipt;
+
 @end
+
+NS_ASSUME_NONNULL_END

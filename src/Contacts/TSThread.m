@@ -9,6 +9,8 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSThread ()
 
 @property (nonatomic, retain) NSDate *creationDate;
@@ -73,12 +75,19 @@
     return FALSE;
 }
 
+// Override in ContactThread
+- (nullable NSString *)contactIdentifier
+{
+    return nil;
+}
+
 - (NSString *)name {
     NSAssert(FALSE, @"Should be implemented in subclasses");
     return nil;
 }
 
-- (UIImage *)image {
+- (nullable UIImage *)image
+{
     return nil;
 }
 
@@ -169,8 +178,7 @@
                   }];
 
     for (TSIncomingMessage *message in array) {
-        message.read = YES;
-        [message saveWithTransaction:transaction];
+        [message markAsReadWithTransaction:transaction];
     }
 }
 
@@ -215,7 +223,8 @@
 
 #pragma mark Archival
 
-- (NSDate *)archivalDate {
+- (nullable NSDate *)archivalDate
+{
     return _archivalDate;
 }
 
@@ -253,3 +262,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

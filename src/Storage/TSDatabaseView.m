@@ -10,6 +10,7 @@
 
 #import <YapDatabase/YapDatabaseView.h>
 
+#import "OWSDevice.h"
 #import "TSIncomingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
@@ -18,10 +19,12 @@ NSString *TSInboxGroup   = @"TSInboxGroup";
 NSString *TSArchiveGroup = @"TSArchiveGroup";
 
 NSString *TSUnreadIncomingMessagesGroup = @"TSUnreadIncomingMessagesGroup";
+NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
+NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
@@ -204,6 +207,61 @@ NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionNa
 
       return NSOrderedSame;
     }];
+}
+
++ (BOOL)registerSecondaryDevicesDatabaseView
+{
+    YapDatabaseView *existingView =
+        [[TSStorageManager sharedManager].database registeredExtension:TSSecondaryDevicesDatabaseViewExtensionName];
+    if (existingView) {
+        return YES;
+    }
+
+    YapDatabaseViewGrouping *viewGrouping =
+        [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
+            NSString *_Nonnull collection,
+            NSString *_Nonnull key,
+            id _Nonnull object) {
+            if ([object isKindOfClass:[OWSDevice class]]) {
+                OWSDevice *device = (OWSDevice *)object;
+                if (![device isPrimaryDevice]) {
+                    return TSSecondaryDevicesGroup;
+                }
+            }
+            return nil;
+        }];
+
+    YapDatabaseViewSorting *viewSorting =
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *_Nonnull transaction,
+            NSString *_Nonnull group,
+            NSString *_Nonnull collection1,
+            NSString *_Nonnull key1,
+            id _Nonnull object1,
+            NSString *_Nonnull collection2,
+            NSString *_Nonnull key2,
+            id _Nonnull object2) {
+
+            if ([object1 isKindOfClass:[OWSDevice class]] && [object2 isKindOfClass:[OWSDevice class]]) {
+                OWSDevice *device1 = (OWSDevice *)object1;
+                OWSDevice *device2 = (OWSDevice *)object2;
+
+                return [device2.createdAt compare:device1.createdAt];
+            }
+
+            return NSOrderedSame;
+        }];
+
+    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
+    options.isPersistent = YES;
+
+    NSSet *deviceCollection = [NSSet setWithObject:[OWSDevice collection]];
+    options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:deviceCollection];
+
+    YapDatabaseView *view =
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+
+    return [[TSStorageManager sharedManager].database registerExtension:view
+                                                               withName:TSSecondaryDevicesDatabaseViewExtensionName];
 }
 
 + (NSDate *)localTimeReceiveDateForInteraction:(TSInteraction *)interaction {

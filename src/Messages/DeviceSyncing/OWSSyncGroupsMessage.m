@@ -1,0 +1,67 @@
+//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+
+#import "OWSSyncGroupsMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import "OWSGroupsOutputStream.h"
+#import "OWSSignalServiceProtos.pb.h"
+#import "TSAttachment.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@implementation OWSSyncGroupsMessage
+
+- (instancetype)init
+{
+    return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
+}
+
+- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+{
+
+    if (self.attachmentIds.count != 1) {
+        DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
+            (unsigned long)self.attachmentIds.count);
+    }
+    OWSSignalServiceProtosAttachmentPointer *attachmentProto =
+        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]];
+
+    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
+        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
+
+    [groupsBuilder setBlob:attachmentProto];
+
+    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
+
+    return [syncMessageBuilder build];
+}
+
+- (NSData *)buildPlainTextAttachmentData
+{
+    // TODO use temp file stream to avoid loading everything into memory at once
+    // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
+    // and uploading with streams).
+    NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
+    [dataOutputStream open];
+    OWSGroupsOutputStream *groupsOutputStream = [OWSGroupsOutputStream streamWithOutputStream:dataOutputStream];
+
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            DDLogError(@"Unexpected class in group collection: %@", obj);
+            return;
+        }
+        TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
+        [groupsOutputStream writeGroup:group];
+    }];
+
+    [groupsOutputStream flush];
+    [dataOutputStream close];
+
+    return [dataOutputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
+}
+
+@end
+
+NS_ASSUME_NONNULL_END

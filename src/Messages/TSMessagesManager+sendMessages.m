@@ -3,6 +3,9 @@
 
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "OWSLegacyMessageServiceParams.h"
+#import "OWSMessageServiceParams.h"
+#import "OWSOutgoingSentMessageTranscript.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
@@ -11,7 +14,6 @@
 #import "TSInfoMessage.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "TSNetworkManager.h"
-#import "TSServerMessage.h"
 #import "TSStorageHeaders.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
@@ -59,7 +61,7 @@ dispatch_queue_t sendingQueue() {
                   [recipients addObject:newRecipient];
                 }
                 failure:^(NSError *error) {
-#warning Ignore sending message to him?
+                    DDLogWarn(@"Not sending message to unknown recipient with error: %@", error);
                     latestError = error;
                 }];
         } else {
@@ -120,16 +122,23 @@ dispatch_queue_t sendingQueue() {
                 [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
               }];
 
-      } else if ([thread isKindOfClass:[TSContactThread class]]) {
+      } else if ([thread isKindOfClass:[TSContactThread class]] ||
+          [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
           TSContactThread *contactThread = (TSContactThread *)thread;
 
           [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
 
-          if (![contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
+          if (![contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]] ||
+              [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+
+              NSString *recipientContactId = [message isKindOfClass:[OWSOutgoingSyncMessage class]]
+                  ? [TSAccountManager localNumber]
+                  : contactThread.contactIdentifier;
+
               __block SignalRecipient *recipient;
               [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                recipient = [SignalRecipient recipientWithTextSecureIdentifier:contactThread.contactIdentifier
-                                                               withTransaction:transaction];
+                  recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId
+                                                                 withTransaction:transaction];
               }];
 
               if (!recipient) {
@@ -139,9 +148,11 @@ dispatch_queue_t sendingQueue() {
                       }
                       failure:^(NSError *error) {
                         if (error.code == NOTFOUND_ERROR) {
+                            DDLogWarn(@"recipient contact not found with error: %@", error);
                             [self unregisteredRecipient:recipient message:message inThread:thread];
                             return;
                         } else {
+                            DDLogError(@"contact lookup failed with error: %@", error);
                             [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
                             return;
                         }
@@ -226,104 +237,99 @@ dispatch_queue_t sendingQueue() {
     [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
 }
 
-
 - (void)sendMessage:(TSOutgoingMessage *)message
         toRecipient:(SignalRecipient *)recipient
            inThread:(TSThread *)thread
         withAttemps:(int)remainingAttempts
             success:(successSendingCompletionBlock)successBlock
-            failure:(failedSendingCompletionBlock)failureBlock {
+            failure:(failedSendingCompletionBlock)failureBlock
+{
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
 
-        [self outgoingMessages:message
-                   toRecipient:recipient
-                      inThread:thread
-                    completion:^(NSArray *messages) {
-                      TSSubmitMessageRequest *request =
-                          [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
-                                                                   messages:messages
-                                                                      relay:recipient.relay
-                                                                  timeStamp:message.timestamp];
+        NSArray<NSDictionary *> *deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
 
-                      [[TSNetworkManager sharedManager] makeRequest:request
-                          success:^(NSURLSessionDataTask *task, id responseObject) {
-                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                              [recipient saveWithTransaction:transaction];
-                            }];
-                            [self handleMessageSent:message];
-                            BLOCK_SAFE_RUN(successBlock);
-                          }
-                          failure:^(NSURLSessionDataTask *task, NSError *error) {
-                            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                            long statuscode             = response.statusCode;
-                            NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
+                                                                                   messages:deviceMessages
+                                                                                      relay:recipient.relay
+                                                                                  timeStamp:message.timestamp];
 
-                            switch (statuscode) {
-                                case 404: {
-                                    [self unregisteredRecipient:recipient message:message inThread:thread];
-                                    BLOCK_SAFE_RUN(failureBlock);
-                                    break;
-                                }
-                                case 409: {
-                                    // Mismatched devices
-                                    DDLogWarn(@"Mismatch Devices.");
+        [[TSNetworkManager sharedManager] makeRequest:request
+            success:^(NSURLSessionDataTask *task, id responseObject) {
+                dispatch_async(sendingQueue(), ^{
+                    [recipient save];
+                    [self handleMessageSent:message];
+                    BLOCK_SAFE_RUN(successBlock);
+                });
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                long statuscode = response.statusCode;
+                NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
-                                    NSError *e;
-                                    NSDictionary *serializedResponse =
-                                        [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
+                switch (statuscode) {
+                    case 404: {
+                        [self unregisteredRecipient:recipient message:message inThread:thread];
+                        BLOCK_SAFE_RUN(failureBlock);
+                        break;
+                    }
+                    case 409: {
+                        // Mismatched devices
+                        DDLogWarn(@"Mismatch Devices.");
 
-                                    if (e) {
-                                        DDLogError(@"Failed to serialize response of mismatched devices: %@",
-                                                   e.description);
-                                    } else {
-                                        [self handleMismatchedDevices:serializedResponse recipient:recipient];
-                                    }
+                        NSError *e;
+                        NSDictionary *serializedResponse =
+                            [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
 
-                                    dispatch_async(sendingQueue(), ^{
-                                      [self sendMessage:message
-                                            toRecipient:recipient
-                                               inThread:thread
-                                            withAttemps:remainingAttempts
-                                                success:successBlock
-                                                failure:failureBlock];
-                                    });
+                        if (e) {
+                            DDLogError(@"Failed to serialize response of mismatched devices: %@", e.description);
+                        } else {
+                            [self handleMismatchedDevices:serializedResponse recipient:recipient];
+                        }
 
-                                    break;
-                                }
-                                case 410: {
-                                    // staledevices
-                                    DDLogWarn(@"Stale devices");
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
+                        });
 
-                                    if (!responseData) {
-                                        DDLogWarn(@"Stale devices but server didn't specify devices in response.");
-                                        return;
-                                    }
+                        break;
+                    }
+                    case 410: {
+                        // staledevices
+                        DDLogWarn(@"Stale devices");
 
-                                    [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
+                        if (!responseData) {
+                            DDLogWarn(@"Stale devices but server didn't specify devices in response.");
+                            return;
+                        }
 
-                                    dispatch_async(sendingQueue(), ^{
-                                      [self sendMessage:message
-                                            toRecipient:recipient
-                                               inThread:thread
-                                            withAttemps:remainingAttempts
-                                                success:successBlock
-                                                failure:failureBlock];
-                                    });
+                        [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
 
-                                    break;
-                                }
-                                default:
-                                    [self sendMessage:message
-                                          toRecipient:recipient
-                                             inThread:thread
-                                          withAttemps:remainingAttempts
-                                              success:successBlock
-                                              failure:failureBlock];
-                                    break;
-                            }
-                          }];
-                    }];
+                        dispatch_async(sendingQueue(), ^{
+                            [self sendMessage:message
+                                  toRecipient:recipient
+                                     inThread:thread
+                                  withAttemps:remainingAttempts
+                                      success:successBlock
+                                      failure:failureBlock];
+                        });
+
+                        break;
+                    }
+                    default:
+                        [self sendMessage:message
+                              toRecipient:recipient
+                                 inThread:thread
+                              withAttemps:remainingAttempts
+                                  success:successBlock
+                                  failure:failureBlock];
+                        break;
+                }
+            }];
     } else {
         [self saveMessage:message withState:TSOutgoingMessageStateUnsent];
         BLOCK_SAFE_RUN(failureBlock);
@@ -352,24 +358,49 @@ dispatch_queue_t sendingQueue() {
     }];
 }
 
-- (void)handleMessageSent:(TSOutgoingMessage *)message {
+- (void)handleMessageSent:(TSOutgoingMessage *)message
+{
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
+    if (message.shouldSyncTranscript) {
+        message.hasSyncedTranscript = YES;
+        [self sendSyncTranscriptForMessage:message];
+    }
 }
 
-- (void)outgoingMessages:(TSOutgoingMessage *)message
-             toRecipient:(SignalRecipient *)recipient
-                inThread:(TSThread *)thread
-              completion:(messagesQueue)sendMessages {
+- (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
+{
+    OWSOutgoingSentMessageTranscript *sentMessageTranscript =
+        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
+
+    [self sendMessage:sentMessageTranscript
+        toRecipient:[SignalRecipient selfRecipient]
+        inThread:message.thread
+        withAttemps:RETRY_ATTEMPTS
+        success:^{
+            DDLogInfo(@"Succesfully sent sync transcript.");
+        }
+        failure:^{
+            DDLogInfo(@"Failed to send sync transcript.");
+        }];
+}
+
+- (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
+                               forRecipient:(SignalRecipient *)recipient
+                                   inThread:(TSThread *)thread
+{
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
-    TSStorageManager *storage     = [TSStorageManager sharedManager];
-    NSData *plainText             = [self plainTextForMessage:message inThread:thread];
+    NSData *plainText = [message buildPlainTextData];
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
+            // DEPRECATED - Remove after all clients have been upgraded.
+            BOOL isLegacyMessage = ![message isKindOfClass:[OWSOutgoingSyncMessage class]];
+
             NSDictionary *messageDict = [self encryptedMessageWithPlaintext:plainText
                                                                 toRecipient:recipient.uniqueId
                                                                    deviceId:deviceNumber
-                                                              keyingStorage:storage];
+                                                              keyingStorage:[TSStorageManager sharedManager]
+                                                                     legacy:isLegacyMessage];
             if (messageDict) {
                 [messagesArray addObject:messageDict];
             } else {
@@ -381,19 +412,21 @@ dispatch_queue_t sendingQueue() {
             if ([exception.name isEqualToString:InvalidDeviceException]) {
                 [recipient removeDevices:[NSSet setWithObject:deviceNumber]];
             } else {
+                DDLogWarn(@"Failed building message for device: %@ withe error %@", deviceNumber, exception);
                 [self processException:exception outgoingMessage:message inThread:thread];
-                return;
             }
         }
     }
 
-    sendMessages(messagesArray);
+    return [messagesArray copy];
 }
 
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
-                                  keyingStorage:(TSStorageManager *)storage {
+                                  keyingStorage:(TSStorageManager *)storage
+                                         legacy:(BOOL)isLegacymessage
+{
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *bundle;
@@ -453,15 +486,24 @@ dispatch_queue_t sendingQueue() {
     NSData *serializedMessage          = encryptedMessage.serialized;
     TSWhisperMessageType messageType   = [self messageTypeForCipherMessage:encryptedMessage];
 
-
-    TSServerMessage *serverMessage = [[TSServerMessage alloc] initWithType:messageType
-                                                               destination:identifier
-                                                                    device:[deviceNumber intValue]
-                                                                      body:serializedMessage
-                                                            registrationId:cipher.remoteRegistrationId];
+    OWSMessageServiceParams *messageParams;
+    // DEPRECATED - Remove after all clients have been upgraded.
+    if (isLegacymessage) {
+        messageParams = [[OWSLegacyMessageServiceParams alloc] initWithType:messageType
+                                                                recipientId:identifier
+                                                                     device:[deviceNumber intValue]
+                                                                       body:serializedMessage
+                                                             registrationId:cipher.remoteRegistrationId];
+    } else {
+        messageParams = [[OWSMessageServiceParams alloc] initWithType:messageType
+                                                          recipientId:identifier
+                                                               device:[deviceNumber intValue]
+                                                              content:serializedMessage
+                                                       registrationId:cipher.remoteRegistrationId];
+    }
 
     NSError *error;
-    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:serverMessage error:&error];
+    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
 
     if (error) {
         DDLogError(@"Error while making JSON dictionary of message: %@", error.debugDescription);
@@ -507,68 +549,6 @@ dispatch_queue_t sendingQueue() {
                                         messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
         }];
     }
-}
-
-
-- (NSData *)plainTextForMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread {
-    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
-    [builder setBody:message.body];
-    BOOL processAttachments = YES;
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread                              = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-
-        switch (message.groupMetaMessage) {
-            case TSGroupMessageQuit:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
-                break;
-            case TSGroupMessageUpdate:
-            case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && [message.attachmentIds count] == 1) {
-                    id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds[0]];
-                    if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-                        OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                            [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                        [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                        [attachmentbuilder setContentType:attachment.contentType];
-                        [attachmentbuilder setKey:attachment.encryptionKey];
-                        [groupBuilder setAvatar:[attachmentbuilder build]];
-                        processAttachments = NO;
-                    }
-                }
-                [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
-                [groupBuilder setName:gThread.groupModel.groupName];
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
-                break;
-            }
-            default:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
-                break;
-        }
-        [groupBuilder setId:gThread.groupModel.groupId];
-        [builder setGroup:groupBuilder.build];
-    }
-    if (processAttachments) {
-        NSMutableArray *attachments = [NSMutableArray new];
-        for (NSString *attachmentId in message.attachmentIds) {
-            id dbObject = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-
-            if ([dbObject isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachment = (TSAttachmentStream *)dbObject;
-
-                OWSSignalServiceProtosAttachmentPointerBuilder *attachmentbuilder =
-                    [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                [attachmentbuilder setId:[attachment.identifier unsignedLongLongValue]];
-                [attachmentbuilder setContentType:attachment.contentType];
-                [attachmentbuilder setKey:attachment.encryptionKey];
-
-                [attachments addObject:[attachmentbuilder build]];
-            }
-        }
-        [builder setAttachmentsArray:attachments];
-    }
-    return [builder.build data];
 }
 
 - (void)handleStaleDevicesWithResponse:(NSData *)responseData recipientId:(NSString *)identifier {

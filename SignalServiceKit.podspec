@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SignalServiceKit"
-  s.version          = "0.1.0"
+  s.version          = "0.2.0"
   s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC

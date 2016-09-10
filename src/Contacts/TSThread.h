@@ -4,6 +4,8 @@
 #import "TSYapDatabaseObject.h"
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -27,13 +29,15 @@
  */
 - (NSString *)name;
 
+- (nullable NSString *)contactIdentifier;
+
 #if TARGET_OS_IOS
 /**
  *  Returns the image representing the thread. Nil if not available.
  *
  *  @return UIImage of the thread, or nil.
  */
-- (UIImage *)image;
+- (nullable UIImage *)image;
 #endif
 
 #pragma mark Interactions
@@ -89,7 +93,7 @@
  *
  *  @return Last archival date.
  */
-- (NSDate *)archivalDate;
+- (nullable NSDate *)archivalDate;
 
 /**
  *  Archives a thread with the current date.
@@ -134,3 +138,5 @@
 - (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END

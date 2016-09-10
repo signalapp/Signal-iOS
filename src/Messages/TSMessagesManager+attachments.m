@@ -4,6 +4,7 @@
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSAttachmentsProcessor.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
@@ -34,65 +35,68 @@ dispatch_queue_t attachmentsQueue() {
 - (void)handleReceivedMediaWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                             dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    // TODO extract group avatar handling rather than checking message type multiple times and forking logic.
-
-    NSArray *attachmentsToRetrieve
-        = (dataMessage.hasGroup && (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate))
-        ? [NSArray arrayWithObject:dataMessage.group.avatar]
-        : dataMessage.attachments;
-
-    NSMutableArray *retrievedAttachments = [NSMutableArray array];
-    __block BOOL shouldProcessMessage    = YES;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (OWSSignalServiceProtosAttachmentPointer *pointer in attachmentsToRetrieve) {
-            TSAttachmentPointer *attachmentPointer
-                = (dataMessage.hasGroup && (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate))
-                ? [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
-                                                              key:pointer.key
-                                                      contentType:pointer.contentType
-                                                            relay:envelope.relay
-                                                  avatarOfGroupId:dataMessage.group.id]
-                : [[TSAttachmentPointer alloc] initWithIdentifier:pointer.id
-                                                              key:pointer.key
-                                                      contentType:pointer.contentType
-                                                            relay:envelope.relay];
-
-            if ([MIMETypeUtil isSupportedMIMEType:attachmentPointer.contentType]) {
-                [attachmentPointer saveWithTransaction:transaction];
-                [retrievedAttachments addObject:attachmentPointer.uniqueId];
-                shouldProcessMessage = YES;
-            } else {
-                TSThread *thread =
-                    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-                TSInfoMessage *infoMessage =
-                    [[TSInfoMessage alloc] initWithTimestamp:envelope.timestamp
-                                                    inThread:thread
-                                                 messageType:TSInfoMessageTypeUnsupportedMessage];
-                [infoMessage saveWithTransaction:transaction];
-                shouldProcessMessage = NO;
-            }
-        }
-    }];
-
-    if (shouldProcessMessage) {
-        [self handleReceivedEnvelope:envelope
-                     withDataMessage:dataMessage
-                       attachmentIds:retrievedAttachments
-                     completionBlock:^(NSString *messageIdentifier) {
-                         for (NSString *pointerId in retrievedAttachments) {
-                             dispatch_async(attachmentsQueue(), ^{
-                                 __block TSAttachmentPointer *pointer;
-
-                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                     pointer = [TSAttachmentPointer fetchObjectWithUniqueID:pointerId
-                                                                                transaction:transaction];
-                                 }];
-
-                                 [self retrieveAttachment:pointer messageId:messageIdentifier];
-                             });
-                         }
-                     }];
+    NSData *avatarGroupId;
+    NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
+    if (dataMessage.hasGroup && (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate)) {
+        avatarGroupId = dataMessage.group.id;
+        attachmentPointerProtos = @[ dataMessage.group.avatar ];
+    } else {
+        attachmentPointerProtos = dataMessage.attachments;
     }
+
+    TSThread *thread;
+    if (dataMessage.hasGroup) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupIdData:dataMessage.group.id];
+    } else {
+        thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
+    }
+
+    OWSAttachmentsProcessor *attachmentsProcessor =
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointersProtos:attachmentPointerProtos
+                                                                timestamp:envelope.timestamp
+                                                                    relay:envelope.relay
+                                                            avatarGroupId:avatarGroupId
+                                                                 inThread:thread
+                                                          messagesManager:[TSMessagesManager sharedManager]];
+
+    if (attachmentsProcessor.hasSupportedAttachments) {
+        TSIncomingMessage *possiblyCreatedMessage =
+            [self handleReceivedEnvelope:envelope
+                         withDataMessage:dataMessage
+                           attachmentIds:attachmentsProcessor.supportedAttachmentIds];
+        [attachmentsProcessor fetchAttachmentsForMessageId:possiblyCreatedMessage.uniqueId];
+    }
+}
+
+- (void)sendTemporaryAttachment:(NSData *)attachmentData
+                    contentType:(NSString *)contentType
+                      inMessage:(TSOutgoingMessage *)outgoingMessage
+                         thread:(TSThread *)thread
+                        success:(successSendingCompletionBlock)successCompletionBlock
+                        failure:(failedSendingCompletionBlock)failedCompletionBlock
+{
+    void (^successBlockWithDelete)() = ^{
+        if (successCompletionBlock) {
+            successCompletionBlock();
+        }
+        DDLogDebug(@"Removing temporary attachment message.");
+        [outgoingMessage remove];
+    };
+
+    void (^failureBlockWithDelete)() = ^{
+        if (failedCompletionBlock) {
+            failedCompletionBlock();
+        }
+        DDLogDebug(@"Removing temporary attachment message.");
+        [outgoingMessage remove];
+    };
+
+    [self sendAttachment:attachmentData
+             contentType:contentType
+               inMessage:outgoingMessage
+                  thread:thread
+                 success:successBlockWithDelete
+                 failure:failureBlockWithDelete];
 }
 
 - (void)sendAttachment:(NSData *)attachmentData
@@ -112,25 +116,19 @@ dispatch_queue_t attachmentsQueue() {
 
                 TSAttachmentEncryptionResult *result =
                     [Cryptography encryptAttachment:attachmentData contentType:contentType identifier:attachmentId];
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                  result.pointer.isDownloaded = NO;
-                  [result.pointer saveWithTransaction:transaction];
-                }];
+                result.pointer.isDownloaded = NO;
+                [result.pointer save];
                 outgoingMessage.body = nil;
                 [outgoingMessage.attachmentIds addObject:attachmentId];
                 if (outgoingMessage.groupMetaMessage != TSGroupMessageNew &&
                     outgoingMessage.groupMetaMessage != TSGroupMessageUpdate) {
                     [outgoingMessage setMessageState:TSOutgoingMessageStateAttemptingOut];
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      [outgoingMessage saveWithTransaction:transaction];
-                    }];
+                    [outgoingMessage save];
                 }
                 BOOL success = [self uploadDataWithProgress:result.body location:location attachmentID:attachmentId];
                 if (success) {
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      result.pointer.isDownloaded = YES;
-                      [result.pointer saveWithTransaction:transaction];
-                    }];
+                    result.pointer.isDownloaded = YES;
+                    [result.pointer save];
                     [self sendMessage:outgoingMessage
                         inThread:thread
                         success:^{
@@ -253,9 +251,11 @@ dispatch_queue_t attachmentsQueue() {
                   [TSGroupThread getOrCreateThreadWithGroupModel:emptyModelToFillOutId transaction:transaction];
 
               gThread.groupModel.groupImage = [stream image];
-              // No need to keep the attachment around after assigning the image.
+              // Avatars are stored directly in the database, so there's no need to keep the attachment around after
+              // assigning the image.
               [stream removeWithTransaction:transaction];
 
+              [[TSMessage fetchObjectWithUniqueID:messageId] saveWithTransaction:transaction];
               [gThread saveWithTransaction:transaction];
           } else {
               // Causing message to be reloaded in view.
@@ -273,7 +273,7 @@ dispatch_queue_t attachmentsQueue() {
 
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer     = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue    = dispatch_get_main_queue();
 
@@ -310,7 +310,7 @@ dispatch_queue_t attachmentsQueue() {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:location]];
     request.HTTPMethod           = @"PUT";
     request.HTTPBody             = cipherText;
-    [request setValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
 
     AFURLSessionManager *manager = [[AFURLSessionManager alloc]
         initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];

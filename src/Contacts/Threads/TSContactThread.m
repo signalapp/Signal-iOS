@@ -3,9 +3,11 @@
 
 #import "TSContactThread.h"
 #import "ContactsUpdater.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TextSecureKitEnv.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 #define TSContactThreadPrefix @"c"
 
@@ -21,13 +23,12 @@
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-                                      envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                         relay:(nullable NSString *)relay
 {
     SignalRecipient *recipient =
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
     if (!recipient) {
-        NSString *relay = envelope.hasRelay && ![envelope.relay isEqualToString:@""] ? envelope.relay : nil;
         recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay supportsVoice:YES];
 
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
@@ -55,6 +56,16 @@
     return thread;
 }
 
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
+{
+    __block TSContactThread *thread;
+    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
+    }];
+
+    return thread;
+}
+
 - (NSString *)contactIdentifier {
     return [[self class] contactIdFromThreadId:self.uniqueId];
 }
@@ -76,7 +87,8 @@
 
 #if TARGET_OS_IPHONE
 
-- (UIImage *)image {
+- (nullable UIImage *)image
+{
     UIImage *image = [[TextSecureKitEnv sharedEnv].contactsManager imageForPhoneIdentifier:self.contactIdentifier];
     return image;
 }
@@ -92,3 +104,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

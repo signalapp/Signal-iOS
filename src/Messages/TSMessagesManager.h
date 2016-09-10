@@ -22,10 +22,16 @@
          outgoingMessage:(TSOutgoingMessage *)message
                 inThread:(TSThread *)thread;
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock;
+/**
+ * Processes all kinds of incoming envelopes with a data message, along with any attachments.
+ *
+ * @returns
+ *   If an incoming message is created, it will be returned. If it is, for example, a group update,
+ *   no incoming message is created, so nil will be returned.
+ */
+- (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage;
 

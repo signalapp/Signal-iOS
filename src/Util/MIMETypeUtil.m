@@ -3,6 +3,8 @@
 #import "UIImage+contentTypes.h"
 #endif
 
+NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
+NSString *const OWSMimeTypeImagePng = @"image/png";
 
 @implementation MIMETypeUtil
 
@@ -42,7 +44,7 @@
     return @{
         @"image/jpeg" : @"jpeg",
         @"image/pjpeg" : @"jpeg",
-        @"image/png" : @"png",
+        OWSMimeTypeImagePng : @"png",
         @"image/tiff" : @"tif",
         @"image/x-tiff" : @"tif",
         @"image/bmp" : @"bmp",
@@ -53,6 +55,13 @@
 + (NSDictionary *)supportedAnimatedMIMETypesToExtensionTypes {
     return @{
         @"image/gif" : @"gif",
+    };
+}
+
++ (NSDictionary *)supportedBinaryDataMIMETypesToExtensionTypes
+{
+    return @{
+        OWSMimeTypeApplicationOctetStream : @"dat",
     };
 }
 
@@ -94,8 +103,8 @@
 
 + (NSDictionary *)supportedImageExtensionTypesToMIMETypes {
     return @{
-        @"png" : @"image/png",
-        @"x-png" : @"image/png",
+        @"png" : OWSMimeTypeImagePng,
+        @"x-png" : OWSMimeTypeImagePng,
         @"jfif" : @"image/jpeg",
         @"jfif" : @"image/pjpeg",
         @"jfif-tbnl" : @"image/jpeg",
@@ -128,6 +137,11 @@
 
 + (BOOL)isSupportedAnimatedMIMEType:(NSString *)contentType {
     return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+}
+
++ (BOOL)isSupportedBinaryDataMIMEType:(NSString *)contentType
+{
+    return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isSupportedMIMEType:(NSString *)contentType {
@@ -167,6 +181,11 @@
     return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
++ (NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
+{
+    return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+}
+
 + (NSString *)getSupportedMIMETypeFromVideoFile:(NSString *)supportedVideoFile {
     return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:[supportedVideoFile pathExtension]];
 }
@@ -187,6 +206,12 @@
 + (BOOL)isAnimated:(NSString *)contentType {
     return [MIMETypeUtil isSupportedAnimatedMIMEType:contentType];
 }
+
++ (BOOL)isBinaryData:(NSString *)contentType
+{
+    return [MIMETypeUtil isSupportedBinaryDataMIMEType:contentType];
+}
+
 + (BOOL)isImage:(NSString *)contentType {
     return [MIMETypeUtil isSupportedImageMIMEType:contentType];
 }
@@ -210,6 +235,8 @@
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isAnimated:contentType]) {
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
+    } else if ([self isBinaryData:contentType]) {
+        return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
     }
 
     DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
@@ -255,6 +282,12 @@
 + (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
     return [[folder stringByAppendingFormat:@"/%@", uniqueId]
         stringByAppendingPathExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]];
+}
+
++ (NSString *)filePathForBinaryData:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
+{
+    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
+        stringByAppendingPathExtension:[self getSupportedExtensionFromBinaryDataMIMEType:contentType]];
 }
 
 #if TARGET_OS_IPHONE

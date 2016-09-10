@@ -2,7 +2,13 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSMessagesManager.h"
+#import "ContactsManagerProtocol.h"
+#import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
+#import "OWSIncomingSentMessageTranscript.h"
+#import "OWSReadReceiptsProcessor.h"
+#import "OWSSyncContactsMessage.h"
+#import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -17,10 +23,6 @@
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
-
-@interface TSMessagesManager ()
-
-@end
 
 @implementation TSMessagesManager
 
@@ -67,7 +69,7 @@
                 DDLogWarn(@"Received an unknown message type");
                 break;
             default:
-                DDLogWarn(@"Received unhandled envelope type: %d", envelope.type);
+                DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
         }
     } @catch (NSException *exception) {
@@ -128,20 +130,20 @@
             return;
         }
 
-        OWSSignalServiceProtosDataMessage *dataMessage;
-        if (messageEnvelope.hasContent) { // New style content payload
+        if (messageEnvelope.hasContent) {
             OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            dataMessage = content.dataMessage;
+            if (content.hasSyncMessage) {
+                [self handleIncomingEnvelope:messageEnvelope withSyncMessage:content.syncMessage];
+            } else if (content.dataMessage) {
+                [self handleIncomingEnvelope:messageEnvelope withDataMessage:content.dataMessage];
+            }
         } else if (messageEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
-            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            OWSSignalServiceProtosDataMessage *dataMessage =
+                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
+        } else {
+            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
         }
-
-        if (!dataMessage) {
-            DDLogWarn(@"Ignoring content that has no dataMessage.");
-            return;
-        }
-
-        [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
     }
 }
 
@@ -175,23 +177,20 @@
             return;
         }
 
-        OWSSignalServiceProtosDataMessage *dataMessage;
         if (preKeyEnvelope.hasContent) {
             OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            if (content.hasDataMessage) {
-                dataMessage = content.dataMessage;
+            if (content.hasSyncMessage) {
+                [self handleIncomingEnvelope:preKeyEnvelope withSyncMessage:content.syncMessage];
+            } else if (content.dataMessage) {
+                [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:content.dataMessage];
             }
-        } else if (preKeyEnvelope.hasLegacyMessage) {
-            // DEPRECATED - Remove after all clients have been upgraded.
-            dataMessage = [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        } else if (preKeyEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+            OWSSignalServiceProtosDataMessage *dataMessage =
+                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+            [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
+        } else {
+            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
         }
-
-        if (!dataMessage) {
-            DDLogError(@"unable to ascertain decrypted dataMessage from preKeyEnvelope");
-            return;
-        }
-
-        [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
     }
 }
 
@@ -229,6 +228,59 @@
     }
 }
 
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+               withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
+{
+    if (syncMessage.hasSent) {
+        DDLogInfo(@"Received `sent` syncMessage, recording message transcript.");
+        OWSIncomingSentMessageTranscript *transcript =
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
+        [transcript record];
+    } else if (syncMessage.hasRequest) {
+        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
+            DDLogInfo(@"Received request `Contacts` syncMessage.");
+
+            OWSSyncContactsMessage *syncContactsMessage =
+                [[OWSSyncContactsMessage alloc] initWithContactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
+
+            [self sendTemporaryAttachment:[syncContactsMessage buildPlainTextAttachmentData]
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncContactsMessage
+                thread:nil
+                success:^{
+                    DDLogInfo(@"Successfully sent Contacts response syncMessage.");
+                }
+                failure:^{
+                    DDLogError(@"Failed to send Contacts response syncMessage.");
+                }];
+
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
+            DDLogInfo(@"Received request `groups` syncMessage.");
+
+            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+
+            [self sendTemporaryAttachment:[syncGroupsMessage buildPlainTextAttachmentData]
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncGroupsMessage
+                thread:nil
+                success:^{
+                    DDLogInfo(@"Successfully sent Groups response syncMessage.");
+                }
+                failure:^{
+                    DDLogError(@"Failed to send Groups response syncMessage.");
+                }];
+        }
+    } else if (syncMessage.read.count > 0) {
+        DDLogInfo(@"Received %ld read receipt(s)", (u_long)syncMessage.read.count);
+
+        OWSReadReceiptsProcessor *readReceiptsProcessor =
+            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read];
+        [readReceiptsProcessor process];
+    } else {
+        DDLogWarn(@"Ignoring unsupported sync message.");
+    }
+}
+
 - (void)handleEndSessionMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)endSessionEnvelope
                                 dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
@@ -250,7 +302,7 @@
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[] completionBlock:nil];
+    [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
@@ -267,17 +319,17 @@
     }];
 }
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-               completionBlock:(void (^)(NSString *messageIdentifier))completionBlock
+- (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     uint64_t timeStamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
+    __block TSIncomingMessage *incomingMessage;
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSIncomingMessage *incomingMessage;
       TSThread *thread;
       if (groupId) {
           NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
@@ -341,7 +393,7 @@
       } else {
           TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
                                                                          transaction:transaction
-                                                                            envelope:envelope];
+                                                                               relay:envelope.relay];
 
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
                                                                 inThread:cThread
@@ -361,15 +413,13 @@
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:gThread
                                                                                        authorId:envelope.source
-                                                                                    messageBody:body
-                                                                                  attachmentIds:nil];
+                                                                                    messageBody:body];
                   [textMessage saveWithTransaction:transaction];
               } else {
                   TSContactThread *cThread = (TSContactThread *)thread;
                   TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                        inThread:cThread
-                                                                                    messageBody:body
-                                                                                  attachmentIds:nil];
+                                                                                    messageBody:body];
                   [textMessage saveWithTransaction:transaction];
               }
           }
@@ -377,19 +427,23 @@
           [incomingMessage saveWithTransaction:transaction];
       }
 
-      if (completionBlock) {
-          completionBlock(incomingMessage.uniqueId);
-      }
-
       NSString *name = [thread name];
 
       if (incomingMessage && thread) {
+          // TODO Delay by 100ms?
+
+          OWSReadReceiptsProcessor *readReceiptsProcessor =
+              [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage];
+          [readReceiptsProcessor process];
+
           [[TextSecureKitEnv sharedEnv]
                   .notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                 from:name
                                                             inThread:thread];
       }
     }];
+
+    return incomingMessage;
 }
 
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope

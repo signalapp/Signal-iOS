@@ -15,7 +15,7 @@
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:nil];
+    self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;
