@@ -2,27 +2,23 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
+#import <ZXingObjC/ZXingObjC.h>
 
 @class OWSQRCodeScanningViewController;
 
 @protocol OWSQRScannerDelegate
 
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)scannedString;
+@optional
+
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
 
 @end
 
-@interface OWSQRCodeScanningViewController : UIViewController <AVCaptureMetadataOutputObjectsDelegate>
+@interface OWSQRCodeScanningViewController
+    : UIViewController <AVCaptureMetadataOutputObjectsDelegate, ZXCaptureDelegate>
 
-@property (nonatomic, strong) AVCaptureSession *session;
-@property (nonatomic, strong) AVCaptureDevice *device;
-@property (nonatomic, strong) AVCaptureDeviceInput *input;
-@property (nonatomic, strong) AVCaptureMetadataOutput *output;
-@property (nonatomic, strong) AVCaptureVideoPreviewLayer *prevLayer;
-
-@property (nonatomic, strong) UIView *highlightView;
 @property (nonatomic, weak) UIViewController<OWSQRScannerDelegate> *scanDelegate;
-
-// HACK to resize views after embedding. Better would be to specify layout of preview layer as constraints.
-- (void)resizeViews;
+- (void)startCapture;
 
 @end

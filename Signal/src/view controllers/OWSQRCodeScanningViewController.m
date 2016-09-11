@@ -2,99 +2,172 @@
 
 #import "OWSQRCodeScanningViewController.h"
 #import "UIColor+OWS.h"
+//#import <ZXingObjC/ZXingObjC.h>
+
+
+@interface OWSQRCodeScanningViewController ()
+
+@property (nonatomic) BOOL captureEnabled;
+@property (nonatomic, strong) ZXCapture *capture;
+@property UIView *maskingView;
+@property CALayer *maskingLayer;
+
+
+@end
 
 @implementation OWSQRCodeScanningViewController
+
+- (void)dealloc
+{
+    [self.capture.layer removeFromSuperlayer];
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _captureEnabled = NO;
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _captureEnabled = NO;
+
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    self.title = NSLocalizedString(@"SCAN_KEY", @"");
-    self.highlightView = [[UIView alloc] init];
-    self.highlightView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin
-        | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
-    self.highlightView.layer.borderColor = [UIColor ows_greenColor].CGColor;
-    self.highlightView.layer.borderWidth = 4;
-    [self.view addSubview:self.highlightView];
-
-    self.session = [[AVCaptureSession alloc] init];
-    self.device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    NSError *error = nil;
-
-    self.input = [AVCaptureDeviceInput deviceInputWithDevice:self.device error:&error];
-    if (self.input) {
-        [self.session addInput:self.input];
-    } else {
-        DDLogDebug(@"Error: %@", error);
-    }
-
-    self.output = [[AVCaptureMetadataOutput alloc] init];
-    [self.output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    [self.session addOutput:self.output];
-
-    self.output.metadataObjectTypes = [self.output availableMetadataObjectTypes];
-
-    self.prevLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
-
-    self.prevLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    [self.view.layer insertSublayer:self.prevLayer atIndex:0];
-
-    [self.view bringSubviewToFront:self.highlightView];
+    self.maskingView = [[UIView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:self.maskingView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self resizeViews];
-}
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.session startRunning];
-}
-
-- (void)resizeViews
-{
-    self.prevLayer.frame = self.view.bounds;
-}
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput
-    didOutputMetadataObjects:(NSArray *)metadataObjects
-              fromConnection:(AVCaptureConnection *)connection
-{
-    CGRect highlightViewRect = CGRectZero;
-    AVMetadataMachineReadableCodeObject *barCodeObject;
-    NSString *detectionString = nil;
-    NSArray *barCodeTypes = @[ AVMetadataObjectTypeQRCode ];
-
-    for (AVMetadataObject *metadata in metadataObjects) {
-        for (NSString *type in barCodeTypes) {
-            if ([metadata.type isEqualToString:type]) {
-                barCodeObject = (AVMetadataMachineReadableCodeObject *)[self.prevLayer
-                    transformedMetadataObjectForMetadataObject:(AVMetadataMachineReadableCodeObject *)metadata];
-                highlightViewRect = barCodeObject.bounds;
-                detectionString = [(AVMetadataMachineReadableCodeObject *)metadata stringValue];
-                break;
-            }
-        }
-        if (detectionString != nil) {
-            [self didDetectQRCodeWithString:detectionString];
-            [self.session stopRunning];
-            break;
-        }
+    if (self.captureEnabled) {
+        [self startCapture];
     }
-
-    self.highlightView.frame = highlightViewRect;
 }
 
-- (void)didDetectQRCodeWithString:(NSString *)string
+- (void)viewDidLayoutSubviews
 {
-    DDLogDebug(@"Scanned QRCode with string value: %@", string);
+    [super viewDidLayoutSubviews];
+    [self layoutMaskingView];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self stopCapture];
+}
+
+- (void)layoutMaskingView
+{
+    self.maskingView.frame = self.view.frame;
+    if (self.maskingLayer) {
+        [self.maskingLayer removeFromSuperlayer];
+    }
+    self.maskingLayer = [self buildCircularMaskingLayer];
+    [self.maskingView.layer addSublayer:self.maskingLayer];
+}
+
+- (void)startCapture
+{
+    self.captureEnabled = YES;
+    if (!self.capture) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            self.capture = [[ZXCapture alloc] init];
+            self.capture.camera = self.capture.back;
+            self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+            self.capture.layer.frame = self.view.frame;
+            self.capture.delegate = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.view.layer addSublayer:self.capture.layer];
+                [self.view bringSubviewToFront:self.maskingView];
+            });
+        });
+    }
+    [self.capture start];
+}
+
+- (void)stopCapture
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.capture stop];
+    });
+}
+
+- (CAShapeLayer *)buildCircularMaskingLayer
+{
+    // Add a circular mask
+    UIBezierPath *path = [UIBezierPath
+        bezierPathWithRoundedRect:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)
+                     cornerRadius:0];
+    CGFloat verticalMargin = 8.0;
+    CGFloat radius = self.view.frame.size.height / 2.0f - verticalMargin;
+
+    // Center the circle's bounding rectangle
+    CGFloat horizontalMargin = (self.view.frame.size.width - 2.0f * radius) / 2.0f;
+    UIBezierPath *circlePath = [UIBezierPath
+        bezierPathWithRoundedRect:CGRectMake(horizontalMargin, verticalMargin, 2.0f * radius, 2.0f * radius)
+                     cornerRadius:radius];
+    [path appendPath:circlePath];
+    [path setUsesEvenOddFillRule:YES];
+
+    CAShapeLayer *fillLayer = [CAShapeLayer layer];
+    fillLayer.path = path.CGPath;
+    fillLayer.fillRule = kCAFillRuleEvenOdd;
+    fillLayer.fillColor = [UIColor grayColor].CGColor;
+    fillLayer.opacity = 0.5;
+    return fillLayer;
+}
+
+- (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result
+{
+    [self stopCapture];
+
+    // TODO bounding rectangle
+
+    // Vibrate
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+
     if (self.scanDelegate) {
-        [self.scanDelegate controller:self didDetectQRCodeWithString:string];
+        if ([self.scanDelegate respondsToSelector:@selector(controller:didDetectQRCodeWithData:)]) {
+            DDLogInfo(@"%@ Scanned Data Code.", self.tag);
+            ZXByteArray *byteArray = result.resultMetadata[@(kResultMetadataTypeByteSegments)][0];
+            NSData *decodedData = [NSData dataWithBytes:byteArray.array length:byteArray.length];
+
+            [self.scanDelegate controller:self didDetectQRCodeWithData:decodedData];
+        }
+
+        if ([self.scanDelegate respondsToSelector:@selector(controller:didDetectQRCodeWithString:)]) {
+            DDLogInfo(@"%@ Scanned String Code.", self.tag);
+            [self.scanDelegate controller:self didDetectQRCodeWithString:result.text];
+        }
     }
 }
 
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
 
 @end

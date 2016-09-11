@@ -25,9 +25,9 @@
 
     TSMessageAdapter *message = (TSMessageAdapter *)messageData;
     if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
-
         // Prevent cropping message text by accounting for message container/icon
-        superSize.height = OWSDisplayedMessageCellHeight;
+        // But also allow for multi-line error messages.
+        superSize.height = fmax(superSize.height, OWSDisplayedMessageCellHeight);
     }
 
     return superSize;

@@ -20,6 +20,7 @@
 @interface NotificationsManager ()
 
 @property SystemSoundID newMessageSound;
+@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 
 @end
 
@@ -32,6 +33,8 @@
     if (!self) {
         return self;
     }
+
+    _contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
 
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
@@ -110,12 +113,7 @@
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 
                 if ([thread isGroupThread]) {
-                    NSString *sender =
-                        [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:message.authorId];
-                    if (!sender) {
-                        sender = message.authorId;
-                    }
-
+                    NSString *sender = [self.contactsManager nameStringForPhoneIdentifier:message.authorId];
                     NSString *threadName = [NSString stringWithFormat:@"\"%@\"", name];
                     notification.alertBody =
                         [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
