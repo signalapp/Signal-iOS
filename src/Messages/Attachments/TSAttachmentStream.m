@@ -6,6 +6,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSAttachmentStream
 
 - (instancetype)initWithIdentifier:(NSString *)identifier
@@ -73,15 +75,17 @@
     return count;
 }
 
-- (NSString *)filePath
+- (nullable NSString *)filePath
 {
     return [MIMETypeUtil filePathForAttachment:self.uniqueId
                                     ofMIMEType:self.contentType
                                       inFolder:[[self class] attachmentsFolder]];
 }
 
-- (NSURL *)mediaURL {
-    return [NSURL fileURLWithPath:[self filePath]];
+- (nullable NSURL *)mediaURL
+{
+    NSString *filePath = self.filePath;
+    return filePath ? [NSURL fileURLWithPath:filePath] : nil;
 }
 
 - (BOOL)isAnimated {
@@ -100,7 +104,8 @@
     return [MIMETypeUtil isAudio:self.contentType];
 }
 
-- (UIImage *)image {
+- (nullable UIImage *)image
+{
     if ([self isVideo] || [self isAudio]) {
         return [self videoThumbnail];
     } else {
@@ -109,7 +114,8 @@
     }
 }
 
-- (UIImage *)videoThumbnail {
+- (nullable UIImage *)videoThumbnail
+{
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:self.filePath] options:nil];
     AVAssetImageGenerator *generate         = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     generate.appliesPreferredTrackTransform = YES;
@@ -129,3 +135,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
