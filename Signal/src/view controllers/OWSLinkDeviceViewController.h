@@ -8,4 +8,6 @@
 
 @property OWSLinkedDevicesTableViewController *linkedDevicesTableViewController;
 
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
+
 @end
