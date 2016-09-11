@@ -40,13 +40,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [self setupAppearance];
-    [[PushManager sharedManager] registerPushKitNotificationFuture];
-
-    if (getenv("runningTests_dontStartApp")) {
-        return YES;
-    }
-
     // Initializing logger
     CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
@@ -54,6 +47,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Setting up environment
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
+
+    [self setupAppearance];
+    [[PushManager sharedManager] registerPushKitNotificationFuture];
+
+    if (getenv("runningTests_dontStartApp")) {
+        return YES;
+    }
 
     if ([TSAccountManager isRegistered]) {
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];

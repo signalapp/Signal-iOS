@@ -111,6 +111,9 @@ PODS:
     - YapDatabase/SQLCipher/Core
   - YapDatabase/SQLCipher/Extensions/Views (2.9.2):
     - YapDatabase/SQLCipher/Core
+  - ZXingObjC (3.1.0):
+    - ZXingObjC/All (= 3.1.0)
+  - ZXingObjC/All (3.1.0)
 
 DEPENDENCIES:
   - DJWActionSheet
@@ -119,18 +122,20 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.208)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `new-fingerprint-format`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
+  - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
+    :branch: new-fingerprint-format
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: ce1aa04b6193b47b82b44d529cca12c62fae4c48
+    :commit: 2b612e9ab72b427b310b125b1dc82eef1d3f85ec
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -160,7 +165,8 @@ SPEC CHECKSUMS:
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
+  ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 5dccee4c1c1ba5d4bf9575a81eeede82d1e89e8b
+PODFILE CHECKSUM: d4204cf787649f9512dc74e5844f48d2570d5b2e
 
 COCOAPODS: 1.0.1

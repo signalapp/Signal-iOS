@@ -28,8 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     // HACK to get full width preview layer
     CGRect oldFrame = self.qrScanningView.frame;
     self.qrScanningView.frame = CGRectMake(
-        oldFrame.origin.x, oldFrame.origin.y, self.view.frame.size.width, self.view.frame.size.height / 2.0 - 32.0);
-    [self.qrScanningController resizeViews];
+        oldFrame.origin.x, oldFrame.origin.y, self.view.frame.size.width, self.view.frame.size.height / 2.0f - 32.0f);
     // END HACK to get full width preview layer
 
     self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
@@ -41,6 +40,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.qrScanningController startCapture];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
