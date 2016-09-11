@@ -12,21 +12,13 @@
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "PreferencesUtil.h"
-#import "TSFingerprintGenerator.h"
 #import "UIUtil.h"
 
 @interface PrivacySettingsTableViewController ()
 
 @property (nonatomic, strong) UITableViewCell *enableScreenSecurityCell;
-@property (nonatomic, strong) UITableViewCell *clearHistoryLogCell;
-@property (nonatomic, strong) UITableViewCell *fingerprintCell;
-@property (nonatomic, strong) UITableViewCell *shareFingerprintCell;
-
 @property (nonatomic, strong) UISwitch *enableScreenSecuritySwitch;
-
-@property (nonatomic, strong) UILabel *fingerprintLabel;
-
-@property (nonatomic, strong) NSTimer *copiedTimer;
+@property (nonatomic, strong) UITableViewCell *clearHistoryLogCell;
 
 @end
 
@@ -51,51 +43,25 @@
     // Enable Screen Security Cell
     self.enableScreenSecurityCell                = [[UITableViewCell alloc] init];
     self.enableScreenSecurityCell.textLabel.text = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"");
-
     self.enableScreenSecuritySwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-
     self.enableScreenSecurityCell.accessoryView          = self.enableScreenSecuritySwitch;
     self.enableScreenSecurityCell.userInteractionEnabled = YES;
+    [self.enableScreenSecuritySwitch setOn:[Environment.preferences screenSecurityIsEnabled]];
+    [self.enableScreenSecuritySwitch addTarget:self
+                                        action:@selector(didToggleScreenSecuritySwitch:)
+                              forControlEvents:UIControlEventTouchUpInside];
+
 
     // Clear History Log Cell
     self.clearHistoryLogCell                = [[UITableViewCell alloc] init];
     self.clearHistoryLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"");
     self.clearHistoryLogCell.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
-
-    // Fingerprint Cell
-    self.fingerprintCell =
-        [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Identifier"];
-    self.fingerprintCell.textLabel.text            = NSLocalizedString(@"SETTINGS_FINGERPRINT", @"");
-    self.fingerprintCell.detailTextLabel.text      = NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY", nil);
-    self.fingerprintCell.detailTextLabel.textColor = [UIColor lightGrayColor];
-
-    self.fingerprintLabel               = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 150, 25)];
-    self.fingerprintLabel.textColor     = [UIColor lightGrayColor];
-    self.fingerprintLabel.font          = [UIFont ows_regularFontWithSize:16.0f];
-    self.fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-
-    self.fingerprintCell.accessoryView = self.fingerprintLabel;
-
-    [self setValues];
-    [self subsribeToEvents];
-}
-
-- (void)subsribeToEvents {
-    [self.enableScreenSecuritySwitch addTarget:self
-                                        action:@selector(didToggleSwitch:)
-                              forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)setValues {
-    [self.enableScreenSecuritySwitch setOn:[Environment.preferences screenSecurityIsEnabled]];
-    self.fingerprintLabel.text =
-        [TSFingerprintGenerator getFingerprintForDisplay:[[TSStorageManager sharedManager] identityKeyPair].publicKey];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -104,8 +70,9 @@
             return 1;
         case 1:
             return 1;
-        case 2:
-            return 1;
+        // TODO: optionally non-blocking
+        //        case 2:
+        //            return 1;
         default:
             return 0;
     }
@@ -126,13 +93,9 @@
             return self.enableScreenSecurityCell;
         case 1:
             return self.clearHistoryLogCell;
-        case 2:
-            switch (indexPath.row) {
-                case 0:
-                    return self.fingerprintCell;
-                case 1:
-                    return self.shareFingerprintCell;
-            }
+            //      TODO - safetynumber settings
+            //        case 2:
+            //            return [UITableViewCell new];
     }
 
     return nil;
@@ -141,11 +104,11 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"");
+            return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
         case 1:
-            return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"");
+            return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
         case 2:
-            return NSLocalizedString(@"SETTINGS_FINGERPRINT", @"");
+            return NSLocalizedString(@"SETTINGS_PRIVACY_VERIFICATION_TITLE", @"Section header");
         default:
             return nil;
     }
@@ -174,31 +137,6 @@
 
             break;
         }
-
-        case 2:
-            switch (indexPath.row) {
-                case 0: {
-                    // Timer to change label to copied (NSTextAttachment checkmark)
-                    if (self.copiedTimer == nil) {
-                        self.copiedTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f
-                                                                            target:self
-                                                                          selector:@selector(endTimer:)
-                                                                          userInfo:nil
-                                                                           repeats:NO];
-                        self.fingerprintCell.detailTextLabel.text =
-                            NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY_SUCCESS", @"");
-                    } else {
-                        self.fingerprintCell.detailTextLabel.text =
-                            NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY", nil);
-                    }
-                    [[UIPasteboard generalPasteboard] setString:self.fingerprintLabel.text];
-                    break;
-                }
-
-                default:
-                    break;
-            }
-            break;
         default:
             break;
     }
@@ -206,16 +144,23 @@
 
 #pragma mark - Toggle
 
-- (void)didToggleSwitch:(UISwitch *)sender {
-    [Environment.preferences setScreenSecurity:self.enableScreenSecuritySwitch.isOn];
+- (void)didToggleScreenSecuritySwitch:(UISwitch *)sender
+{
+    BOOL enabled = self.enableScreenSecuritySwitch.isOn;
+    DDLogInfo(@"%@ toggled screen security: %@", self.tag, enabled ? @"ON" : @"OFF");
+    [Environment.preferences setScreenSecurity:enabled];
 }
 
-#pragma mark - Timer
+#pragma mark - Log util
 
-- (void)endTimer:(id)sender {
-    self.fingerprintCell.detailTextLabel.text = NSLocalizedString(@"SETTINGS_FINGERPRINT_COPY", nil);
-    [self.copiedTimer invalidate];
-    self.copiedTimer = nil;
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

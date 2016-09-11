@@ -7,102 +7,112 @@
 //
 
 #import "FingerprintViewController.h"
-
-#import <25519/Curve25519.h>
-#import <AxolotlKit/NSData+keyVersionByte.h>
 #import "DJWActionSheet+OWS.h"
-#import "PresentIdentityQRCodeViewController.h"
-#import "ScanIdentityBarcodeViewController.h"
-#import "SignalsNavigationController.h"
+#import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
+#import <SignalServiceKit/TSStorageManager+SessionStore.h>
+#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
-#import "TSFingerprintGenerator.h"
-#import "TSStorageHeaders.h"
+NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController ()
-@property TSContactThread *thread;
-@property (nonatomic) BOOL isPresentingDialog;
-@end
 
-static NSString *const kPresentIdentityQRCodeViewSegue = @"PresentIdentityQRCodeViewSegue";
-static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeViewSegue";
+@property (strong, nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) BOOL isPresentingDialog;
+@property (strong, atomic) OWSFingerprint *fingerprint;
+@property (strong, atomic) NSString *contactName;
+@property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+
+@property (strong, nonatomic) IBOutlet UIView *qrScanningView;
+@property (strong, nonatomic) IBOutlet UIView *scanningContainer;
+@property (strong, nonatomic) IBOutlet UIView *instructionsContainer;
+@property (strong, nonatomic) IBOutlet UIView *qrContainer;
+@property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
+@property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
+@property (strong, nonatomic) IBOutlet UILabel *privacyVerificationFingerprint;
+@property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
+@property (strong, nonatomic) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UIButton *scanButton;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *qrCodeCenterConstraint;
+
+@end
 
 @implementation FingerprintViewController
 
-- (void)configWithThread:(TSThread *)thread {
-    self.thread = (TSContactThread *)thread;
+- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint contactName:(NSString *)contactName
+{
+    self.fingerprint = fingerprint;
+    self.contactName = contactName;
 }
 
-
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    [self.view setAlpha:0];
+    self.storageManager = [TSStorageManager sharedManager];
+    self.qrScanningView.hidden = YES;
 
+    // HACK to get full width preview layer
+    CGRect oldFrame = self.qrScanningView.frame;
+    CGRect newFrame = CGRectMake(oldFrame.origin.x,
+        oldFrame.origin.y,
+        self.view.frame.size.width,
+        self.view.frame.size.height / 2.0f - oldFrame.origin.y);
+    self.qrScanningView.frame = newFrame;
+    // END HACK to get full width preview layer
+
+    self.titleLabel.text = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
+    NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
+        @"Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}}");
+    self.instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
+
+    self.scanButton.titleLabel.text = NSLocalizedString(@"SCAN_CODE_ACTION",
+        @"Button label presented with camera icon while verifying privacy credentials. Shows the camera interface.");
+
+    // Safety numbers and QR Code
+    self.privacyVerificationFingerprint.text = self.fingerprint.displayableText;
+    self.privacyVerificationQRCode.image = self.fingerprint.image;
+
+    // Don't antialias QRCode
+    self.privacyVerificationQRCode.layer.magnificationFilter = kCAFilterNearest;
+
+    // Add session reset action.
     UILongPressGestureRecognizer *longpressToResetSession =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(shredAndDelete:)];
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(didLongpressToResetSession:)];
     longpressToResetSession.minimumPressDuration = 1.0;
     [self.view addGestureRecognizer:longpressToResetSession];
-    _infoTheirFingerprint.text      = NSLocalizedString(@"FINGERPRINT_INFO_THEIRS", @"");
-    _infoMyFingerprint.text         = NSLocalizedString(@"FINGERPRINT_INFO_YOURS", @"");
-    _presentationLabel.text         = NSLocalizedString(@"FINGERPRINT_INFO_ABOUT", @"");
-    _userFingerprintTitleLabel.text = NSLocalizedString(@"FINGERPRINT_YOURS", @"");
+}
 
-    if ([UIScreen mainScreen].bounds.size.height <= 480) {
-        self.presentationLabel.hidden = YES;
-        self.myFPBorderView.hidden    = YES;
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    self.privacyVerificationQRCodeFrame.layer.masksToBounds = YES;
+    self.privacyVerificationQRCodeFrame.layer.cornerRadius = self.privacyVerificationQRCodeFrame.frame.size.height / 2;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
+{
+    if ([segue.identifier isEqualToString:@"embedIdentityQRScanner"]) {
+        OWSQRCodeScanningViewController *qrScanningController
+            = (OWSQRCodeScanningViewController *)segue.destinationViewController;
+        self.qrScanningController = qrScanningController;
+        qrScanningController.scanDelegate = self;
     }
 }
-
-- (void)viewWillAppear:(BOOL)animated {
-    [self setTheirKeyInformation];
-
-    NSData *myPublicKey            = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
-    self.userFingerprintLabel.text = [TSFingerprintGenerator getFingerprintForDisplay:myPublicKey];
-
-    [UIView animateWithDuration:0.6
-                          delay:0.
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                       [self.view setAlpha:1];
-                     }
-                     completion:nil];
-}
-
-- (void)setTheirKeyInformation {
-    self.contactFingerprintTitleLabel.text = self.thread.name;
-    NSData *identityKey = [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
-    self.contactFingerprintLabel.text = [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
-
-    if ([self.contactFingerprintLabel.text length] == 0) {
-        // no fingerprint, hide this view
-        _presentationLabel.hidden    = YES;
-        _theirFingerprintView.hidden = YES;
-    }
-}
-
-- (NSData *)getMyPublicIdentityKey {
-    return [[TSStorageManager sharedManager] identityKeyPair].publicKey;
-}
-
-- (NSData *)getTheirPublicIdentityKey {
-    return [[TSStorageManager sharedManager] identityKeyForRecipientId:self.thread.contactIdentifier];
-}
-
 
 #pragma mark - Action
-- (IBAction)closeButtonAction:(id)sender {
-    [UIView animateWithDuration:0.6
-        delay:0.
-        options:UIViewAnimationOptionCurveEaseInOut
-        animations:^{
-          [self.view setAlpha:0];
-        }
-        completion:^(BOOL succeeded) {
-          [self dismissViewControllerAnimated:NO completion:nil];
-        }];
+- (IBAction)closeButtonAction:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (IBAction)didTouchUpInsideScanButton:(id)sender
+{
+    [self showScanner];
+}
 
-- (IBAction)shredAndDelete:(id)sender {
+- (IBAction)didLongpressToResetSession:(id)sender
+{
     if (!_isPresentingDialog) {
         _isPresentingDialog = YES;
         [DJWActionSheet showInView:self.view
@@ -119,7 +129,7 @@ static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeVi
                             } else {
                                 switch (tappedButtonIndex) {
                                     case 0:
-                                        [self shredKeyingMaterial];
+                                        [self resetSession];
                                         break;
                                     default:
                                         break;
@@ -129,57 +139,117 @@ static NSString *const kScanIdentityBarcodeViewSegue   = @"ScanIdentityBarcodeVi
     }
 }
 
+- (void)showScanner
+{
+    DDLogInfo(@"%@ Showing Scanner", self.tag);
+    self.qrScanningView.hidden = NO;
 
-- (IBAction)showFingerprint {
-    [self performSegueWithIdentifier:kPresentIdentityQRCodeViewSegue sender:self];
+    // Recommended before animating a constraint.
+    [self.view layoutIfNeeded];
+
+    // Shift QRCode up within it's own frame, while shifting it's whole
+    // frame down.
+    self.qrCodeCenterConstraint.constant = 0.0f;
+    [UIView animateWithDuration:0.4
+                          delay:0.0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+
+                         self.scanningContainer.frame = self.qrContainer.frame;
+                         self.qrContainer.frame = self.instructionsContainer.frame;
+                         self.instructionsContainer.alpha = 0.0f;
+                         // animate constraint smoothly
+                         [self.view layoutIfNeeded];
+                     }
+                     completion:nil];
+
+    [self.qrScanningController startCapture];
 }
 
-
-- (IBAction)scanFingerprint {
-    [self performSegueWithIdentifier:kScanIdentityBarcodeViewSegue sender:self];
+- (void)resetSession
+{
+    [self.storageManager removeIdentityKeyForRecipient:self.fingerprint.theirStableId];
+    [self.storageManager deleteAllSessionsForContact:self.fingerprint.theirStableId];
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:kPresentIdentityQRCodeViewSegue]) {
-        [segue.destinationViewController setIdentityKey:[[self getMyPublicIdentityKey] prependKeyType]];
-    } else if ([[segue identifier] isEqualToString:kScanIdentityBarcodeViewSegue]) {
-        [segue.destinationViewController setIdentityKey:[[self getTheirPublicIdentityKey] prependKeyType]];
+// pragma mark - OWSQRScannerDelegate
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
+{
+    [self verifyCombinedFingerprintData:data];
+}
+
+- (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
+{
+    NSError *error;
+    if ([self.fingerprint matchesCombinedFingerprintData:combinedFingerprintData error:&error]) {
+        DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
+        NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
+        NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
+        NSString *descriptionFormat = NSLocalizedString(
+            @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
+        NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
+        UIAlertController *successAlertController =
+            [UIAlertController alertControllerWithTitle:successTitle
+                                                message:successDescription
+                                         preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:dismissText
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [self dismissViewControllerAnimated:YES completion:nil];
+                                   }];
+        [successAlertController addAction:dismissAction];
+
+        [self presentViewController:successAlertController animated:YES completion:nil];
+    } else {
+        [self failVerificationWithError:error];
     }
 }
 
+- (void)failVerificationWithError:(NSError *)error
+{
+    NSString *failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
+    UIAlertController *failureAlertController =
+        [UIAlertController alertControllerWithTitle:failureTitle
+                                            message:error.localizedDescription
+                                     preferredStyle:UIAlertControllerStyleAlert];
 
-- (IBAction)unwindToIdentityKeyWasVerified:(UIStoryboardSegue *)segue {
-    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+    NSString *cancelText = NSLocalizedString(@"TXT_CANCEL_TITLE", nil);
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:cancelText
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *_Nonnull action) {
+                                                             [self dismissViewControllerAnimated:YES completion:nil];
+                                                         }];
+    [failureAlertController addAction:cancelAction];
+
+    // TODO
+    //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);
+    //        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryText style:UIAlertActionStyleDefault
+    //        handler:^(UIAlertAction * _Nonnull action) {
+    //
+    //        }];
+    //        [failureAlertController addAction:retryAction];
+    [self presentViewController:failureAlertController animated:YES completion:nil];
+
+    DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
 
-
-- (IBAction)unwindIdentityVerificationCancel:(UIStoryboardSegue *)segue {
-    DDLogDebug(@"action cancelled");
-    // Can later be used to mark identity key as verified if we want step above TOFU in UX
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(nullable void (^)(void))completion
+{
+    self.qrScanningView.hidden = YES;
+    [super dismissViewControllerAnimated:flag completion:completion];
 }
 
-#pragma mark - Shredding & Deleting
-
-- (void)shredKeyingMaterial {
-    [[TSStorageManager sharedManager] removeIdentityKeyForRecipient:self.thread.contactIdentifier];
-    [[TSStorageManager sharedManager] deleteAllSessionsForContact:self.thread.contactIdentifier];
-    [self setTheirKeyInformation];
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
-- (void)shredDiscussionsWithContact {
-    UINavigationController *nVC = (UINavigationController *)self.presentingViewController;
-    for (UIViewController __strong *vc in nVC.viewControllers) {
-        if ([vc isKindOfClass:[MessagesViewController class]]) {
-            vc = nil;
-        }
-    }
-
-    [self.thread remove]; // this removes the thread and all it's discussion (YapDatabaseRelationships)
-    __block SignalsNavigationController *vc = (SignalsNavigationController *)[self presentingViewController];
-    [vc dismissViewControllerAnimated:YES
-                           completion:^{
-                             [vc popToRootViewControllerAnimated:YES];
-                           }];
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

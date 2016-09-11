@@ -398,6 +398,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 - (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier {
+    if (!identifier) {
+        return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
+            @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+    }
     for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
@@ -405,7 +409,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             }
         }
     }
-    return nil;
+    return identifier;
 }
 
 - (UIImage *)imageForPhoneIdentifier:(NSString *)identifier {

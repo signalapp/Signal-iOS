@@ -28,6 +28,7 @@
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
+#import "TSContactThread.h"
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
@@ -49,6 +50,7 @@
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
@@ -98,14 +100,16 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
-@property (nonatomic, retain) UIGestureRecognizer *showFingerprintDisplay;
-@property (nonatomic, retain) UITapGestureRecognizer *toggleContactPhoneDisplay;
+@property (nonatomic, retain) UIGestureRecognizer *showFingerprintGesture;
+@property (nonatomic, retain) UITapGestureRecognizer *toggleContactPhoneGesture;
 @property (nonatomic) BOOL displayPhoneAsTitle;
 
 @property NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
+@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property NSCache *messageAdapterCache;
 
 @end
@@ -120,6 +124,32 @@ typedef enum : NSUInteger {
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [[Environment getCurrent] contactsManager];
+    _storageManager = [TSStorageManager sharedManager];
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [[Environment getCurrent] contactsManager];
+    _storageManager = [TSStorageManager sharedManager];
+
+    return self;
 }
 
 - (void)peekSetup {
@@ -187,12 +217,11 @@ typedef enum : NSUInteger {
 
     self.messageAdapterCache = [[NSCache alloc] init];
 
-    _showFingerprintDisplay =
+    self.showFingerprintGesture =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
 
-    _toggleContactPhoneDisplay =
+    self.toggleContactPhoneGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
-    _toggleContactPhoneDisplay.numberOfTapsRequired = 1;
 
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0,
@@ -521,8 +550,8 @@ typedef enum : NSUInteger {
                     if ([label.text isEqualToString:self.title]) {
                         [self.navView setUserInteractionEnabled:YES];
                         [aView setUserInteractionEnabled:YES];
-                        [aView addGestureRecognizer:_showFingerprintDisplay];
-                        [aView addGestureRecognizer:_toggleContactPhoneDisplay];
+                        [aView addGestureRecognizer:self.showFingerprintGesture];
+                        [aView addGestureRecognizer:self.toggleContactPhoneGesture];
                         return;
                     }
                 }
@@ -542,8 +571,8 @@ typedef enum : NSUInteger {
             if ([label.text isEqualToString:self.title]) {
                 [self.navView setUserInteractionEnabled:NO];
                 [aView setUserInteractionEnabled:NO];
-                [aView removeGestureRecognizer:_showFingerprintDisplay];
-                [aView removeGestureRecognizer:_toggleContactPhoneDisplay];
+                [aView removeGestureRecognizer:self.showFingerprintGesture];
+                [aView removeGestureRecognizer:self.toggleContactPhoneGesture];
                 return;
             }
         }
@@ -581,9 +610,25 @@ typedef enum : NSUInteger {
 
 #pragma mark - Fingerprints
 
-- (void)showFingerprint {
+- (void)showFingerprint
+{
+    // Show fingerprint for their most recently accepted identity
+    NSString *theirSignalId = self.thread.contactIdentifier;
+    NSData *theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
+    [self showFingerprintWithTheirIdentityKey:theirIdentityKey theirSignalId:theirSignalId];
+}
+
+- (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
+{
+    NSString *mySignalId = [self.storageManager localNumber];
+    NSData *myIdentityKey = [self.storageManager identityKeyPair].publicKey;
+    OWSFingerprint *fingerprint = [OWSFingerprint fingerprintWithMyStableId:mySignalId
+                                                              myIdentityKey:myIdentityKey
+                                                              theirStableId:theirSignalId
+                                                           theirIdentityKey:theirIdentityKey];
+
     [self markAllMessagesAsRead];
-    [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:self];
+    [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:fingerprint];
 }
 
 
@@ -591,8 +636,7 @@ typedef enum : NSUInteger {
     _displayPhoneAsTitle = !_displayPhoneAsTitle;
 
     if (!_thread.isGroupThread) {
-        Contact *contact =
-            [[[Environment getCurrent] contactsManager] latestContactForPhoneNumber:[self phoneNumberForThread]];
+        Contact *contact = [self.contactsManager latestContactForPhoneNumber:[self phoneNumberForThread]];
         if (!contact) {
             if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(NSFoundationVersionNumber_iOS_9))) {
                 ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
@@ -614,7 +658,7 @@ typedef enum : NSUInteger {
                     [self.navigationController pushViewController:view animated:YES];
                 }
             } else {
-                CNContactStore *contactStore = [Environment getCurrent].contactsManager.contactStore;
+                CNContactStore *contactStore = self.contactsManager.contactStore;
 
                 CNMutableContact *cncontact = [[CNMutableContact alloc] init];
                 cncontact.phoneNumbers      = @[
@@ -697,7 +741,7 @@ typedef enum : NSUInteger {
 - (void)callAction {
     if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
-        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
+        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
@@ -1023,8 +1067,7 @@ typedef enum : NSUInteger {
         }
 
         if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-            NSString *name = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:msg.senderId];
-            name           = name ? name : msg.senderId;
+            NSString *name = [self.contactsManager nameStringForPhoneIdentifier:msg.senderId];
 
             if (!name) {
                 name = @"";
@@ -1391,55 +1434,52 @@ typedef enum : NSUInteger {
                       }];
 }
 
-- (void)handleErrorMessageTap:(TSErrorMessage *)message {
+- (void)handleErrorMessageTap:(TSErrorMessage *)message
+{
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-        TSInvalidIdentityKeyErrorMessage *errorMessage = (TSInvalidIdentityKeyErrorMessage *)message;
-        NSString *newKeyFingerprint = [errorMessage newIdentityFingerprint];
-
-        NSString *keyOwner;
-        if ([message isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
-            TSInvalidIdentityKeySendingErrorMessage *m = (TSInvalidIdentityKeySendingErrorMessage *)message;
-            keyOwner = [[[Environment getCurrent] contactsManager] nameStringForPhoneIdentifier:m.recipientId];
-        } else {
-            keyOwner = [self.thread name];
-        }
-
-        NSString *messageString = [NSString
-            stringWithFormat:NSLocalizedString(@"ACCEPT_IDENTITYKEY_QUESTION", @""), keyOwner, newKeyFingerprint];
-        NSArray *actions = @[
-            NSLocalizedString(@"ACCEPT_IDENTITYKEY_BUTTON", @""),
-            NSLocalizedString(@"COPY_IDENTITYKEY_BUTTON", @"")
-        ];
-
-        [self dismissKeyBoard];
-
-        [DJWActionSheet showInView:self.parentViewController.view
-                         withTitle:messageString
-                 cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-            destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                 otherButtonTitles:actions
-                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                DDLogDebug(@"User Cancelled");
-                            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                [self.editingDatabaseConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                      [message removeWithTransaction:transaction];
-                                    }];
-                            } else {
-                                switch (tappedButtonIndex) {
-                                    case 0:
-                                        [errorMessage acceptNewIdentityKey];
-                                        break;
-                                    case 1:
-                                        [[UIPasteboard generalPasteboard] setString:newKeyFingerprint];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                          }];
+        [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
     }
+}
+
+- (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
+{
+    NSString *keyOwner = [self.contactsManager nameStringForPhoneIdentifier:errorMessage.theirSignalId];
+    NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
+    NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
+    NSArray *actions = @[
+        NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item"),
+        NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+    ];
+
+    [self dismissKeyBoard];
+
+    [DJWActionSheet showInView:self.parentViewController.view
+                     withTitle:titleText
+             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+        destructiveButtonTitle:nil
+             otherButtonTitles:actions
+                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                              DDLogDebug(@"%@ Remote Key Changed actions: Tapped cancel", self.tag);
+                          } else {
+                              switch (tappedButtonIndex) {
+                                  case 0:
+                                      DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
+                                      [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
+                                                                  theirSignalId:errorMessage.theirSignalId];
+                                      break;
+                                  case 1:
+                                      DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+                                      [errorMessage acceptNewIdentityKey];
+                                      break;
+                                  default:
+                                      DDLogInfo(@"%@ Remote Key Changed actions: Unhandled button pressed: %d",
+                                          self.tag,
+                                          (int)tappedButtonIndex);
+                                      break;
+                              }
+                          }
+                      }];
 }
 
 #pragma mark - Navigation
@@ -1447,19 +1487,19 @@ typedef enum : NSUInteger {
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]) {
         FingerprintViewController *vc = [segue destinationViewController];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-          [vc configWithThread:self.thread];
-        }];
+        if ([sender isKindOfClass:[OWSFingerprint class]]) {
+            OWSFingerprint *fingerprint = (OWSFingerprint *)sender;
+            NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:fingerprint.theirStableId];
+            [vc configureWithFingerprint:fingerprint contactName:contactName];
+        } else {
+            DDLogError(@"%@ Attempting to segueu to fingerprint VC without a valid fingerprint: %@", self.tag, sender);
+        }
     } else if ([segue.identifier isEqualToString:kUpdateGroupSegueIdentifier]) {
         NewGroupViewController *vc = [segue destinationViewController];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-          [vc configWithThread:(TSGroupThread *)self.thread];
-        }];
+        [vc configWithThread:(TSGroupThread *)self.thread];
     } else if ([segue.identifier isEqualToString:kShowGroupMembersSegue]) {
         ShowGroupMembersViewController *vc = [segue destinationViewController];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-          [vc configWithThread:(TSGroupThread *)self.thread];
-        }];
+        [vc configWithThread:(TSGroupThread *)self.thread];
     }
 }
 
@@ -1715,7 +1755,7 @@ typedef enum : NSUInteger {
 - (YapDatabaseConnection *)uiDatabaseConnection {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+        _uiDatabaseConnection = [self.storageManager newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
@@ -1723,7 +1763,7 @@ typedef enum : NSUInteger {
 
 - (YapDatabaseConnection *)editingDatabaseConnection {
     if (!_editingDatabaseConnection) {
-        _editingDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+        _editingDatabaseConnection = [self.storageManager newDatabaseConnection];
     }
     return _editingDatabaseConnection;
 }
@@ -2140,6 +2180,16 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
     return @[];
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

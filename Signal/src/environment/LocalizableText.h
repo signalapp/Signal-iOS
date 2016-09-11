@@ -32,7 +32,6 @@
 
 #define TXT_CANCEL_TITLE NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
 #define TXT_SEARCH_PLACEHOLDER_TEXT NSLocalizedString(@"TXT_SEARCH_PLACEHOLDER_TEXT", @"")
-#define UNKNOWN_CONTACT_NAME NSLocalizedString(@"UNKNOWN_CONTACT_NAME", @"")
 
 #pragma mark - Inbox View
 
