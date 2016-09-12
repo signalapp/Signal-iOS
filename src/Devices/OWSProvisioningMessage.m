@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageBuilder setIdentityKeyPrivate:self.myPrivateKey];
     [messageBuilder setNumber:self.accountIdentifier];
     [messageBuilder setProvisioningCode:self.provisioningCode];
+    [messageBuilder setUserAgent:@"OWI"];
 
     NSData *plainTextProvisionMessage = [[messageBuilder build] data];
 
