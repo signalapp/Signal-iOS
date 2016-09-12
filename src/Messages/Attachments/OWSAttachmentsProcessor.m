@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
             [supportedAttachmentPointers addObject:pointer];
             [supportedAttachmentIds addObject:pointer.uniqueId];
         } else {
+            DDLogError(@"%@ Received unsupported attachment of type: %@", self.tag, pointer.contentType);
             TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:timestamp
                                                                          inThread:thread
                                                                       messageType:TSInfoMessageTypeUnsupportedMessage];
@@ -85,6 +86,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasSupportedAttachments
 {
     return self.supportedAttachmentPointers.count > 0;
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

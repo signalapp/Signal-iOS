@@ -6,6 +6,8 @@
 #import <UIKit/UIKit.h>
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSAttachmentStream : TSAttachment
 
 @property (nonatomic) BOOL isDownloaded;
@@ -16,17 +18,19 @@
                        contentType:(NSString *)contentType NS_DESIGNATED_INITIALIZER;
 
 #if TARGET_OS_IPHONE
-- (UIImage *)image;
+- (nullable UIImage *)image;
 #endif
 
 - (BOOL)isAnimated;
 - (BOOL)isImage;
 - (BOOL)isVideo;
-- (NSString *)filePath;
-- (NSURL *)mediaURL;
+- (nullable NSString *)filePath;
+- (nullable NSURL *)mediaURL;
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
 + (NSUInteger)numberOfItemsInAttachmentsFolder;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -20,6 +20,7 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 
 + (NSDictionary *)supportedAudioMIMETypesToExtensionTypes {
     return @{
+        @"audio/aac" : @"m4a",
         @"audio/x-m4p" : @"m4p",
         @"audio/x-m4b" : @"m4b",
         @"audio/x-m4a" : @"m4a",
