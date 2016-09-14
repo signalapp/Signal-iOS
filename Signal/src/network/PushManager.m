@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import <PushKit/PushKit.h>
-
 #import "AppDelegate.h"
 #import "OWSContactsManager.h"
 #import "InCallViewController.h"
@@ -22,7 +20,7 @@
 
 #define pushManagerDomain @"org.whispersystems.pushmanager"
 
-@interface PushManager () <PKPushRegistryDelegate>
+@interface PushManager ()
 
 @property TOCFutureSource *registerWithServerFutureSource;
 @property UIAlertView *missingPermissionsAlertView;
@@ -298,7 +296,8 @@
 
 - (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(failedPushRegistrationBlock)failure {
     if (!self.wantRemoteNotifications) {
-        success(@"FakeToken", @"FakePushToken");
+        DDLogWarn(@"%@ Using fake push tokens", self.tag);
+        success(@"fakePushToken", @"fakeVoipToken");
         return;
     }
 
@@ -449,6 +448,16 @@
       }
     }];
     [self.currentNotifications removeObjectsInArray:toDelete];
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
