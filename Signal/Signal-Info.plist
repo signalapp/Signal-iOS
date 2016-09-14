@@ -38,7 +38,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.5.0.13</string>
+	<string>2.5.0.14</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -71,6 +71,8 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Signal needs to use Apple Music to play media attachments.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Signal will let you take a photo to send to your contacts. You can review it before sending.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSMicrophoneUsageDescription</key>
