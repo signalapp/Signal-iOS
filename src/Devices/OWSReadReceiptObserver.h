@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSReadReceiptObserver : NSObject
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager;
+- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager NS_DESIGNATED_INITIALIZER;
 - (void)startObserving;
 
 @end
