@@ -93,6 +93,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         cell.textLabel.text      = NSLocalizedString(@"GROUP_MEMBERS_HEADER", @"header for table which lists the members of this group thread");
         cell.textLabel.textColor = [UIColor lightGrayColor];
         cell.selectionStyle      = UITableViewCellSelectionStyleNone;
+        cell.userInteractionEnabled = NO;
     }
 
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
