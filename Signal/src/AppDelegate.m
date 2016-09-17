@@ -15,6 +15,7 @@
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import "OWSStaleNotificationObserver.h"
 #import <SignalServiceKit/OWSReadReceiptObserver.h>
 
 static NSString *const kStoryboardName                  = @"Storyboard";
@@ -26,6 +27,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @property (nonatomic, retain) UIWindow *screenProtectionWindow;
 @property (nonatomic) OWSReadReceiptObserver *readReceiptObserver;
+@property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 
 @end
 
@@ -119,20 +121,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
     [[TSStorageManager sharedManager] setupDatabase];
     [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
-    self.readReceiptObserver =
-        [[OWSReadReceiptObserver alloc] initWithMessagesManager:[TSMessagesManager sharedManager]];
+    self.readReceiptObserver = [OWSReadReceiptObserver new];
     [self.readReceiptObserver startObserving];
+
+    self.staleNotificationObserver = [OWSStaleNotificationObserver new];
+    [self.staleNotificationObserver startObserving];
 }
 
-- (void)application:(UIApplication *)application
-    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    DDLogDebug(@"%@ Successfully registered for remote notifications with token: %@", self.tag, deviceToken);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    DDLogError(@"%@ Failed to register for remote notifications with error %@", self.tag, error);
 #ifdef DEBUG
-    DDLogWarn(@"We're in debug mode, and registered a fake push identifier");
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:@"aFakePushIdentifier"];
+    DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[NSData dataWithLength:32]];
 #else
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 #endif
@@ -350,6 +357,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     return NO;
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

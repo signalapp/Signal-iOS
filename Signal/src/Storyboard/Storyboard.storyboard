@@ -1503,19 +1503,20 @@ A0 09 9A FF A8 8A 09 99</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNq-FV-lwt">
-                                                    <rect key="frame" x="15" y="12" width="200" height="20"/>
+                                                    <rect key="frame" x="15" y="0.0" width="200" height="44"/>
                                                     <constraints>
+                                                        <constraint firstAttribute="height" constant="44" id="nOw-0c-lAd"/>
                                                         <constraint firstAttribute="width" constant="200" id="q6L-Sa-lrA"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connected" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tg3-dQ-odw">
-                                                    <rect key="frame" x="105" y="11" width="200" height="21"/>
+                                                    <rect key="frame" x="205" y="-1" width="100" height="45"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="200" id="Lw2-Fv-sOC"/>
-                                                        <constraint firstAttribute="height" constant="21" id="uvH-QZ-iUw"/>
+                                                        <constraint firstAttribute="width" constant="100" id="Lw2-Fv-sOC"/>
+                                                        <constraint firstAttribute="height" constant="44" id="uvH-QZ-iUw"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                     <color key="textColor" red="0.5725490196078431" green="1" blue="0.54117647058823526" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1523,7 +1524,7 @@ A0 09 9A FF A8 8A 09 99</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="tg3-dQ-odw" firstAttribute="top" secondItem="hqv-P5-du9" secondAttribute="topMargin" constant="3" id="C7U-ve-FJA"/>
+                                                <constraint firstItem="tg3-dQ-odw" firstAttribute="centerY" secondItem="hqv-P5-du9" secondAttribute="centerY" id="53z-bi-mXN"/>
                                                 <constraint firstItem="uNq-FV-lwt" firstAttribute="leading" secondItem="hqv-P5-du9" secondAttribute="leadingMargin" constant="7" id="ViZ-i6-VOo"/>
                                                 <constraint firstAttribute="centerY" secondItem="uNq-FV-lwt" secondAttribute="centerY" id="d7b-Jy-1gQ"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="tg3-dQ-odw" secondAttribute="trailing" constant="7" id="xHz-d7-B39"/>

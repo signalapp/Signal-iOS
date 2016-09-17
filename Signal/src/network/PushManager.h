@@ -7,7 +7,7 @@
 //
 
 #import <CollapsingFutures.h>
-#import <Foundation/Foundation.h>
+#import <PushKit/PushKit.h>
 
 #define Signal_Thread_UserInfo_Key @"Signal_Thread_Id"
 #define Signal_Message_UserInfo_Key @"Signal_Message_Id"
@@ -33,7 +33,7 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
  *  The Push Manager is responsible for registering the device for Signal push notifications.
  */
 
-@interface PushManager : NSObject
+@interface PushManager : NSObject <PKPushRegistryDelegate>
 
 + (PushManager *)sharedManager;
 
@@ -65,6 +65,7 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 - (BOOL)supportsVOIPPush;
 - (UILocalNotification *)closeVOIPBackgroundTask;
 - (void)presentNotification:(UILocalNotification *)notification;
+- (void)cancelNotificationsWithThreadId:(NSString *)threadId;
 
 #pragma mark Push Notifications Delegate Methods
 

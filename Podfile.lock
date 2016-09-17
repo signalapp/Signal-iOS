@@ -130,7 +130,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: d802918603158e50987a2a4c74d4174cdc0f72d6
+    :commit: 9821e0c0d03a01f556680a6ae869b70bf5b93681
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
@@ -161,6 +161,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: 547945066e021c3aa0bd6bea018af5e4769a3113
+PODFILE CHECKSUM: 5dccee4c1c1ba5d4bf9575a81eeede82d1e89e8b
 
 COCOAPODS: 1.0.1
