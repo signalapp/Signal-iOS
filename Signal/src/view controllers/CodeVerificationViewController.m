@@ -274,12 +274,12 @@
         return NO;
     }
 
-    if (range.length == 0 && range.location == 3) {
-        textField.text = [NSString stringWithFormat:@"%@-%@", textField.text, string];
+    if (range.length == 0 && range.location == 2) {
+        textField.text = [NSString stringWithFormat:@"%@%@-", textField.text, string];
         return NO;
     }
 
-    if (range.length == 1 && range.location == 4) {
+    if (range.length == 1 && range.location == 3) {
         range.location--;
         range.length   = 2;
         textField.text = [textField.text stringByReplacingCharactersInRange:range withString:@""];
