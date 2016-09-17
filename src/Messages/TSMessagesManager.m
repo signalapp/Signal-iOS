@@ -328,9 +328,9 @@
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
     __block TSIncomingMessage *incomingMessage;
+    __block TSThread *thread;
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSThread *thread;
       if (groupId) {
           NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
           TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
@@ -426,22 +426,20 @@
 
           [incomingMessage saveWithTransaction:transaction];
       }
-
-      NSString *name = [thread name];
-
-      if (incomingMessage && thread) {
-          // TODO Delay by 100ms?
-
-          OWSReadReceiptsProcessor *readReceiptsProcessor =
-              [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage];
-          [readReceiptsProcessor process];
-
-          [[TextSecureKitEnv sharedEnv]
-                  .notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                from:name
-                                                            inThread:thread];
-      }
     }];
+
+    if (incomingMessage && thread) {
+        OWSReadReceiptsProcessor *readReceiptsProcessor =
+            [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage];
+        [readReceiptsProcessor process];
+
+        // TODO Delay notification by 100ms?
+        // It's pretty annoying when you're phone keeps buzzing while you're having a conversation on Desktop.
+        NSString *name = [thread name];
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                                   from:name
+                                                                               inThread:thread];
+    }
 
     return incomingMessage;
 }

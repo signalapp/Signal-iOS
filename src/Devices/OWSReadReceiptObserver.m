@@ -19,6 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReadReceiptObserver
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (instancetype)init
+{
+    return [self initWithMessagesManager:[TSMessagesManager sharedManager]];
+}
+
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
 {
     self = [super init];

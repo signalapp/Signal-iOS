@@ -54,7 +54,10 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 - (void)makeRequest:(TSRequest *)request
             success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failureBlock {
+            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failureBlock
+{
+    DDLogDebug(@"%@ Making request: %@", self.tag, request);
+
     void (^failure)(NSURLSessionDataTask *task, NSError *error) =
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
@@ -225,6 +228,16 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     }
 
     return [NSError errorWithDomain:TSNetworkManagerDomain code:code userInfo:dict];
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSReadReceipt;
 @class TSIncomingMessage;
 
+extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
+
 @interface OWSReadReceiptsProcessor : NSObject
 
 - (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos;

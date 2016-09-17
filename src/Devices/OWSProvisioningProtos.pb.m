@@ -281,6 +281,7 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
 @property (strong) NSData* identityKeyPrivate;
 @property (strong) NSString* number;
 @property (strong) NSString* provisioningCode;
+@property (strong) NSString* userAgent;
 @end
 
 @implementation OWSProvisioningProtosProvisionMessage
@@ -313,12 +314,20 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
   hasProvisioningCode_ = !!_value_;
 }
 @synthesize provisioningCode;
+- (BOOL) hasUserAgent {
+  return !!hasUserAgent_;
+}
+- (void) setHasUserAgent:(BOOL) _value_ {
+  hasUserAgent_ = !!_value_;
+}
+@synthesize userAgent;
 - (instancetype) init {
   if ((self = [super init])) {
     self.identityKeyPublic = [NSData data];
     self.identityKeyPrivate = [NSData data];
     self.number = @"";
     self.provisioningCode = @"";
+    self.userAgent = @"";
   }
   return self;
 }
@@ -350,6 +359,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasProvisioningCode) {
     [output writeString:4 value:self.provisioningCode];
   }
+  if (self.hasUserAgent) {
+    [output writeString:5 value:self.userAgent];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -370,6 +382,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProvisioningCode) {
     size_ += computeStringSize(4, self.provisioningCode);
+  }
+  if (self.hasUserAgent) {
+    size_ += computeStringSize(5, self.userAgent);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -418,6 +433,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasProvisioningCode) {
     [output appendFormat:@"%@%@: %@\n", indent, @"provisioningCode", self.provisioningCode];
   }
+  if (self.hasUserAgent) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"userAgent", self.userAgent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -432,6 +450,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProvisioningCode) {
     [dictionary setObject: self.provisioningCode forKey: @"provisioningCode"];
+  }
+  if (self.hasUserAgent) {
+    [dictionary setObject: self.userAgent forKey: @"userAgent"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -452,6 +473,8 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       (!self.hasNumber || [self.number isEqual:otherMessage.number]) &&
       self.hasProvisioningCode == otherMessage.hasProvisioningCode &&
       (!self.hasProvisioningCode || [self.provisioningCode isEqual:otherMessage.provisioningCode]) &&
+      self.hasUserAgent == otherMessage.hasUserAgent &&
+      (!self.hasUserAgent || [self.userAgent isEqual:otherMessage.userAgent]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -467,6 +490,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProvisioningCode) {
     hashCode = hashCode * 31 + [self.provisioningCode hash];
+  }
+  if (self.hasUserAgent) {
+    hashCode = hashCode * 31 + [self.userAgent hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -523,6 +549,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (other.hasProvisioningCode) {
     [self setProvisioningCode:other.provisioningCode];
   }
+  if (other.hasUserAgent) {
+    [self setUserAgent:other.userAgent];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -558,6 +587,10 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       }
       case 34: {
         [self setProvisioningCode:[input readString]];
+        break;
+      }
+      case 42: {
+        [self setUserAgent:[input readString]];
         break;
       }
     }
@@ -625,6 +658,22 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
 - (OWSProvisioningProtosProvisionMessageBuilder*) clearProvisioningCode {
   resultProvisionMessage.hasProvisioningCode = NO;
   resultProvisionMessage.provisioningCode = @"";
+  return self;
+}
+- (BOOL) hasUserAgent {
+  return resultProvisionMessage.hasUserAgent;
+}
+- (NSString*) userAgent {
+  return resultProvisionMessage.userAgent;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) setUserAgent:(NSString*) value {
+  resultProvisionMessage.hasUserAgent = YES;
+  resultProvisionMessage.userAgent = value;
+  return self;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) clearUserAgent {
+  resultProvisionMessage.hasUserAgent = NO;
+  resultProvisionMessage.userAgent = @"";
   return self;
 }
 @end

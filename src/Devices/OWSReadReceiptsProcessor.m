@@ -8,6 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
+    @"OWSReadReceiptsProcessorMarkedMessageAsReadNotification";
+
 @interface OWSReadReceiptsProcessor ()
 
 @property (nonatomic, readonly) NSArray<OWSReadReceipt *> *readReceipts;
@@ -74,6 +77,9 @@ NS_ASSUME_NONNULL_BEGIN
             [message markAsReadFromReadReceipt];
             // If it was previously saved, no need to keep it around any longer.
             [readReceipt remove];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                              object:message];
         } else {
             DDLogDebug(@"%@ Received read receipt for an unkown message. Saving it for later.", self.tag);
             [readReceipt save];

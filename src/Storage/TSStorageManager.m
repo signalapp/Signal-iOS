@@ -49,10 +49,39 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
       return [self databasePassword];
     };
 
-    _database     = [[YapDatabase alloc] initWithPath:[self dbPath] serializer:NULL deserializer:NULL options:options];
+    _database = [[YapDatabase alloc] initWithPath:[self dbPath]
+                                       serializer:NULL
+                                     deserializer:[[self class] logOnFailureDeserializer]
+                                          options:options];
     _dbConnection = self.newDatabaseConnection;
 
     return self;
+}
+
+/**
+ * NSCoding sometimes throws exceptions killing our app. We want to log that exception.
+ **/
++ (YapDatabaseDeserializer)logOnFailureDeserializer
+{
+    return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
+        if (!data || data.length <= 0) {
+            return nil;
+        }
+        @try {
+            return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        } @catch (NSException *exception) {
+            // Sync log in case we bail.
+            NSLog(@"%@ Unarchiving key:%@ from collection:%@ and data %@ failed with error: %@",
+                [self tag],
+                key,
+                collection,
+                data,
+                exception.reason);
+            // Sync log in case we bail.
+            NSLog(@"%@ Raising exception since deserialization failed", [self tag]);
+            [exception raise];
+        }
+    };
 }
 
 - (void)setupDatabase {
@@ -61,8 +90,20 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
     [TSDatabaseView registerSecondaryDevicesDatabaseView];
 
-    [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    [OWSReadReceipt registerIndexOnSenderIdAndTimestampWithDatabase:self.database];
+    // Seeing this raise an exception-on-boot for some users, making it impossible to get any   good data.
+    @try {
+        [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    } @catch (NSException *exception) {
+        DDLogError(@"%@ Failed to register timetamp index with exception: %@ with reason: %@", self.tag, exception, exception.reason);
+    }
+
+    // Seeing this raise an exception-on-boot for some users, making it impossible to get any good data.
+    @try {
+        [OWSReadReceipt registerIndexOnSenderIdAndTimestampWithDatabase:self.database];
+    }
+    @catch (NSException *exception) {
+        DDLogError(@"%@ Failed to register read receipt index with exception: %@ with reason: %@", self.tag, exception, exception.reason);
+    }
 }
 
 
@@ -278,6 +319,16 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSAttachmentStream deleteAttachments];
 
     [[self init] setupDatabase];
+}
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
