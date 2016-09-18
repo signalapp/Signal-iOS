@@ -45,7 +45,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self enableServerActions:YES];
-    [_phoneNumberEntered setText:_formattedPhoneNumber];
+    [_phoneNumberEntered setText:
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]]];
     [self adjustScreenSizes];
 }
 
