@@ -158,12 +158,13 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([_thread isKindOfClass:[TSGroupThread class]] &&
-        ![((TSGroupThread *)_thread).groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-
-        [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
-        [self.inputToolbar endEditing:TRUE];
-        self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
+    if ([_thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        if (![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+            [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
+            [self.inputToolbar endEditing:TRUE];
+            self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
+        }
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
