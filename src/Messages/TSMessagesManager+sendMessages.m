@@ -247,7 +247,33 @@ dispatch_queue_t sendingQueue() {
     if (remainingAttempts > 0) {
         remainingAttempts -= 1;
 
-        NSArray<NSDictionary *> *deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
+        NSArray<NSDictionary *> *deviceMessages;
+        @try {
+            deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
+        } @catch (NSException *exception) {
+            deviceMessages = @[];
+            if (remainingAttempts == 0) {
+                DDLogWarn(@"%@ Terminal failure to build any device messages. Giving up with exception:%@",
+                    self.tag,
+                    exception);
+                [self processException:exception outgoingMessage:message inThread:thread];
+                return;
+            }
+        }
+
+        if (deviceMessages.count == 0) {
+            DDLogWarn(@"%@ Failed to build any device messages. Not sending.", self.tag);
+            // Retrying incase we fixed our stale devices last time 'round.
+            dispatch_async(sendingQueue(), ^{
+                [self sendMessage:message
+                      toRecipient:recipient
+                         inThread:thread
+                      withAttemps:remainingAttempts
+                          success:successBlock
+                          failure:failureBlock];
+            });
+            return;
+        }
 
         TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                    messages:deviceMessages
@@ -275,14 +301,14 @@ dispatch_queue_t sendingQueue() {
                     }
                     case 409: {
                         // Mismatched devices
-                        DDLogWarn(@"Mismatch Devices.");
+                        DDLogWarn(@"%@ Mismatch Devices.", self.tag);
 
                         NSError *e;
                         NSDictionary *serializedResponse =
                             [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
 
                         if (e) {
-                            DDLogError(@"Failed to serialize response of mismatched devices: %@", e.description);
+                            DDLogError(@"%@ Failed to serialize response of mismatched devices: %@", self.tag, e);
                         } else {
                             [self handleMismatchedDevices:serializedResponse recipient:recipient];
                         }
@@ -412,8 +438,7 @@ dispatch_queue_t sendingQueue() {
             if ([exception.name isEqualToString:InvalidDeviceException]) {
                 [recipient removeDevices:[NSSet setWithObject:deviceNumber]];
             } else {
-                DDLogWarn(@"Failed building message for device: %@ withe error %@", deviceNumber, exception);
-                [self processException:exception outgoingMessage:message inThread:thread];
+                @throw exception;
             }
         }
     }
@@ -566,4 +591,15 @@ dispatch_queue_t sendingQueue() {
       }
     });
 }
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end

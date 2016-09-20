@@ -478,26 +478,26 @@
     DDLogWarn(@"Got exception: %@", exception.description);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSErrorMessage *errorMessage;
+        TSErrorMessage *errorMessage;
 
-      if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-          errorMessage = [TSInvalidIdentityKeySendingErrorMessage
-              untrustedKeyWithOutgoingMessage:message
-                                     inThread:thread
-                                 forRecipient:exception.userInfo[TSInvalidRecipientKey]
-                                 preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey]
-                              withTransaction:transaction];
-          message.messageState = TSOutgoingMessageStateUnsent;
-          [message saveWithTransaction:transaction];
-      } else if (message.groupMetaMessage == TSGroupMessageNone) {
-          // Only update this with exception if it is not a group message as group
-          // messages may except for one group
-          // send but not another and the UI doesn't know how to handle that
-          [message setMessageState:TSOutgoingMessageStateUnsent];
-          [message saveWithTransaction:transaction];
-      }
+        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+            errorMessage = [TSInvalidIdentityKeySendingErrorMessage
+                untrustedKeyWithOutgoingMessage:message
+                                       inThread:thread
+                                   forRecipient:exception.userInfo[TSInvalidRecipientKey]
+                                   preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey]
+                                withTransaction:transaction];
+            message.messageState = TSOutgoingMessageStateUnsent;
+            [message saveWithTransaction:transaction];
+        } else if (message.groupMetaMessage == TSGroupMessageNone) {
+            // Only update this with exception if it is not a group message as group
+            // messages may except for one group
+            // send but not another and the UI doesn't know how to handle that
+            [message setMessageState:TSOutgoingMessageStateUnsent];
+            [message saveWithTransaction:transaction];
+        }
 
-      [errorMessage saveWithTransaction:transaction];
+        [errorMessage saveWithTransaction:transaction];
     }];
 }
 

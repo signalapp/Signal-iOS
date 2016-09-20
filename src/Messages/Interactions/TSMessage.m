@@ -103,7 +103,7 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
-        return [NSString stringWithFormat:@"Message with body:%@", self.body];
+        return [NSString stringWithFormat:@"%@ with body:%@", [self class], self.body];
     }
 }
 

@@ -131,6 +131,19 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+/**
+ * Useful for tests and debugging. In production use an enumeration method.
+ */
+- (NSArray<TSInteraction *> *)allInteractions
+{
+    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+    [self enumerateInteractionsUsingBlock:^(TSInteraction *_Nonnull interaction) {
+        [interactions addObject:interaction];
+    }];
+
+    return [interactions copy];
+}
+
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
