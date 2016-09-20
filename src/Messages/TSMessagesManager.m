@@ -218,7 +218,7 @@
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0
         || (dataMessage.hasGroup && dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate
-               && dataMessage.group.avatar)) {
+               && dataMessage.group.hasAvatar)) {
 
         DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
