@@ -10,11 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSThread;
 @class OWSFingerprint;
 
 @interface FingerprintViewController : UIViewController <OWSQRScannerDelegate>
 
-- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint contactName:(NSString *)contactName;
+- (void)configureWithThread:(TSThread *)thread
+                fingerprint:(OWSFingerprint *)fingerprint
+                contactName:(NSString *)contactName;
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
 
 @end
