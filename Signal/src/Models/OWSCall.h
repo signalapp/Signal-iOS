@@ -1,9 +1,8 @@
 //  Created by Dylan Bourgeois on 20/11/14.
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
+#import "OWSMessageData.h"
 #import "TSMessageAdapter.h"
-#import <Foundation/Foundation.h>
-#import <JSQMessagesViewController/JSQMessageData.h>
 
 typedef enum : NSUInteger {
     kCallOutgoing = 1,
@@ -14,7 +13,7 @@ typedef enum : NSUInteger {
     kGroupUpdate = 6
 } CallStatus;
 
-@interface OWSCall : NSObject <JSQMessageData, NSCoding, NSCopying>
+@interface OWSCall : NSObject <OWSMessageData, NSCoding, NSCopying>
 
 /*
  * Returns the string Id of the user who initiated the call
@@ -36,11 +35,6 @@ typedef enum : NSUInteger {
  * @see CallStatus
  */
 @property (nonatomic) CallStatus status;
-
-/*
- * Returns message type for adapter
- */
-@property (nonatomic) TSMessageAdapterType messageType;
 
 /**
  *  String to be displayed

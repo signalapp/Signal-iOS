@@ -66,7 +66,7 @@
 
         case UIImageOrientationDown: // EXIF = 3
             transform = CGAffineTransformMakeTranslation(srcSize.width, srcSize.height);
-            transform = CGAffineTransformRotate(transform, M_PI);
+            transform = CGAffineTransformRotate(transform, (CGFloat)M_PI);
             break;
 
         case UIImageOrientationDownMirrored: // EXIF = 4
@@ -78,25 +78,25 @@
             dstSize   = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(srcSize.height, srcSize.width);
             transform = CGAffineTransformScale(transform, -1.0, 1.0);
-            transform = CGAffineTransformRotate(transform, 3.0 * M_PI_2);
+            transform = CGAffineTransformRotate(transform, (CGFloat)(3.0f * M_PI_2));
             break;
 
         case UIImageOrientationLeft: // EXIF = 6
             dstSize   = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(0.0, srcSize.width);
-            transform = CGAffineTransformRotate(transform, 3.0 * M_PI_2);
+            transform = CGAffineTransformRotate(transform, (CGFloat)(3.0 * M_PI_2));
             break;
 
         case UIImageOrientationRightMirrored: // EXIF = 7
             dstSize   = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeScale(-1.0, 1.0);
-            transform = CGAffineTransformRotate(transform, M_PI_2);
+            transform = CGAffineTransformRotate(transform, (CGFloat)M_PI_2);
             break;
 
         case UIImageOrientationRight: // EXIF = 8
             dstSize   = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(srcSize.height, 0.0);
-            transform = CGAffineTransformRotate(transform, M_PI_2);
+            transform = CGAffineTransformRotate(transform, (CGFloat)M_PI_2);
             break;
 
         default:
@@ -166,10 +166,10 @@
 
         if (wRatio < hRatio) {
             // NSLog(@"Width imposed, Height scaled ; ratio = %f",wRatio);
-            dstSize = CGSizeMake(boundingSize.width, floor(srcSize.height * wRatio));
+            dstSize = CGSizeMake(boundingSize.width, (CGFloat)floor(srcSize.height * wRatio));
         } else {
             // NSLog(@"Height imposed, Width scaled ; ratio = %f",hRatio);
-            dstSize = CGSizeMake(floor(srcSize.width * hRatio), boundingSize.height);
+            dstSize = CGSizeMake((CGFloat)floor(srcSize.width * hRatio), boundingSize.height);
         }
     }
 

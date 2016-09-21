@@ -4,7 +4,7 @@ set -x
 
 function usage() {
 cat <<EOS
-Extracts string from target file to new.strings
+Extracts string from target file and appends to Localizable.strings
 
     $0 <filename.m>
 
@@ -14,6 +14,9 @@ e.g.
 EOS
 }
 
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $BIN_DIR/..
+
 TARGET=$1
 if [[ -z $TARGET ]]
 then
@@ -22,6 +25,7 @@ then
   exit 1
 fi
 
-OUTPUT_DIR=new_strings
+# pwd.
+OUTPUT_DIR=en.lproj/
 mkdir -p "${OUTPUT_DIR}"
-genstrings -o "${OUTPUT_DIR}" "${TARGET}"
+genstrings -a -o "${OUTPUT_DIR}" "${TARGET}"

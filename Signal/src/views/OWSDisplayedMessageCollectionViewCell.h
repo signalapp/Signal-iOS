@@ -5,12 +5,11 @@
 #import <JSQMessagesViewController/JSQMessagesCollectionViewCell.h>
 #import <UIKit/UIKit.h>
 
-static const CGFloat OWSDisplayedMessageCellHeight = 70.0f;
+extern const CGFloat OWSDisplayedMessageCellMinimumHeight;
 
 @interface OWSDisplayedMessageCollectionViewCell : JSQMessagesCollectionViewCell
 
 @property (weak, nonatomic, readonly) JSQMessagesLabel *cellLabel;
 @property (weak, nonatomic, readonly) UIImageView *headerImageView;
-@property (strong, nonatomic, readonly) UIView *textContainer;
 
 @end

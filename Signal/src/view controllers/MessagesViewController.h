@@ -13,6 +13,8 @@
 #import "TSGroupModel.h"
 @class TSThread;
 
+extern NSString *const OWSMessagesViewControllerDidAppearNotification;
+
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,
                                                                UINavigationControllerDelegate,
                                                                UITextViewDelegate,
