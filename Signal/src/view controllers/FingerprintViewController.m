@@ -8,6 +8,7 @@
 
 #import "FingerprintViewController.h"
 #import "DJWActionSheet+OWS.h"
+#import "OWSConversationSettingsTableViewController.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/TSInfoMessage.h>
@@ -27,7 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSString *contactName;
 @property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 
+@property (strong, nonatomic) IBOutlet UINavigationBar *modalNavigationBar;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *dismissModalButton;
 @property (strong, nonatomic) IBOutlet UIView *qrScanningView;
+@property (strong, nonatomic) IBOutlet UILabel *scanningInstructions;
 @property (strong, nonatomic) IBOutlet UIView *scanningContainer;
 @property (strong, nonatomic) IBOutlet UIView *instructionsContainer;
 @property (strong, nonatomic) IBOutlet UIView *qrContainer;
@@ -35,9 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
 @property (strong, nonatomic) IBOutlet UILabel *privacyVerificationFingerprint;
 @property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
-@property (strong, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UIButton *scanButton;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *qrCodeCenterConstraint;
 
 @end
 
@@ -55,8 +57,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.navigationItem.leftBarButtonItem = self.dismissModalButton;
+    [self.modalNavigationBar pushNavigationItem:self.navigationItem animated:NO];
+
+    // HACK for transparent navigation bar.
+    [self.modalNavigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.modalNavigationBar.shadowImage = [UIImage new];
+    self.modalNavigationBar.translucent = YES;
+
     self.storageManager = [TSStorageManager sharedManager];
-    self.qrScanningView.hidden = YES;
 
     // HACK to get full width preview layer
     CGRect oldFrame = self.qrScanningView.frame;
@@ -67,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.qrScanningView.frame = newFrame;
     // END HACK to get full width preview layer
 
-    self.titleLabel.text = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
+    self.title = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
     NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
         @"Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}}");
     self.instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
@@ -95,6 +105,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.privacyVerificationQRCodeFrame.layer.masksToBounds = YES;
     self.privacyVerificationQRCodeFrame.layer.cornerRadius = self.privacyVerificationQRCodeFrame.frame.size.height / 2;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    if (self.dismissDelegate) {
+        [self.dismissDelegate presentedModalWasDismissed];
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
@@ -150,23 +168,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ Showing Scanner", self.tag);
     self.qrScanningView.hidden = NO;
-
-    // Recommended before animating a constraint.
-    [self.view layoutIfNeeded];
-
-    // Shift QRCode up within it's own frame, while shifting it's whole
-    // frame down.
-    self.qrCodeCenterConstraint.constant = 0.0f;
+    self.scanningInstructions.hidden = NO;
     [UIView animateWithDuration:0.4
                           delay:0.0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
-
                          self.scanningContainer.frame = self.qrContainer.frame;
                          self.qrContainer.frame = self.instructionsContainer.frame;
                          self.instructionsContainer.alpha = 0.0f;
-                         // animate constraint smoothly
-                         [self.view layoutIfNeeded];
                      }
                      completion:nil];
 
@@ -253,6 +262,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.qrScanningView.hidden = YES;
     [super dismissViewControllerAnimated:flag completion:completion];
 }
+
+#pragma mark - Logging
 
 + (NSString *)tag
 {

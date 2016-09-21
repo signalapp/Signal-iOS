@@ -18,13 +18,17 @@
 #import "OWSCall.h"
 #import "OWSCallCollectionViewCell.h"
 #import "OWSContactsManager.h"
+#import "OWSConversationSettingsTableViewController.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSErrorMessage.h"
+#import "OWSExpirableMessageView.h"
+#import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSInfoMessage.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
+#import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
 #import "PreferencesUtil.h"
-#import "ShowGroupMembersViewController.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
@@ -32,6 +36,7 @@
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
+#import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -50,7 +55,9 @@
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
@@ -65,9 +72,10 @@
 #define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
-static NSString *const kUpdateGroupSegueIdentifier             = @"updateGroupSegue";
-static NSString *const kFingerprintSegueIdentifier             = @"fingerprintSegue";
-static NSString *const kShowGroupMembersSegue                  = @"showGroupMembersSegue";
+static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
+static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
+    @"OWSMessagesViewControllerSeguePushConversationSettings";
+NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
 typedef enum : NSUInteger {
     kMediaTypePicture,
@@ -85,24 +93,23 @@ typedef enum : NSUInteger {
 }
 
 @property TSThread *thread;
-@property (nonatomic, weak) UIView *navView;
+@property TSMessage *lastDeliveredMessage;
 @property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
+
 @property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage *incomingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
 @property (nonatomic, retain) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
+
 @property (nonatomic, strong) NSTimer *audioPlayerPoller;
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
+@property (nonatomic, strong) UILabel *navbarTitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
-
 @property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
-@property (nonatomic, retain) UIGestureRecognizer *showFingerprintGesture;
-@property (nonatomic, retain) UITapGestureRecognizer *toggleContactPhoneGesture;
-@property (nonatomic) BOOL displayPhoneAsTitle;
 
 @property NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
@@ -110,13 +117,10 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+
 @property NSCache *messageAdapterCache;
 
-@end
-
-@interface UINavigationItem () {
-    UIView *backButtonView;
-}
 @end
 
 @implementation MessagesViewController
@@ -135,6 +139,7 @@ typedef enum : NSUInteger {
 
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
+    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
 
     return self;
 }
@@ -148,6 +153,7 @@ typedef enum : NSUInteger {
 
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
+    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
 
     return self;
 }
@@ -181,6 +187,16 @@ typedef enum : NSUInteger {
     [self updateLoadEarlierVisible];
 }
 
+- (BOOL)userLeftGroup
+{
+    if (![_thread isKindOfClass:[TSGroupThread class]]) {
+        return NO;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]];
+}
+
 - (void)hideInputIfNeeded {
     if (_peek) {
         [self inputToolbar].hidden = YES;
@@ -188,13 +204,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([_thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        if (![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-            [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
-            [self.inputToolbar endEditing:TRUE];
-            self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-        }
+    if (self.userLeftGroup) {
+        [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
+        [self.inputToolbar endEditing:TRUE];
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
@@ -205,8 +217,6 @@ typedef enum : NSUInteger {
 {
     [super viewDidLoad];
 
-    self.navController = (APNavigationController *)self.navigationController;
-
     // JSQMVC width is 375px at this point (as specified by the xib), but this causes
     // our initial bubble calculations to be off since they happen before the containing
     // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
@@ -216,12 +226,6 @@ typedef enum : NSUInteger {
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.messageAdapterCache = [[NSCache alloc] init];
-
-    self.showFingerprintGesture =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showFingerprint)];
-
-    self.toggleContactPhoneGesture =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleContactPhone)];
 
     _attachButton = [[UIButton alloc] init];
     [_attachButton setFrame:CGRectMake(0,
@@ -249,6 +253,11 @@ typedef enum : NSUInteger {
     [self initializeToolbars];
 }
 
+- (void)didMoveToParentViewController:(UIViewController *)parent
+{
+    [self setupTitleLabelGestureRecognizer];
+}
+
 - (void)registerCustomMessageNibs
 {
     [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
@@ -256,6 +265,22 @@ typedef enum : NSUInteger {
 
     [self.collectionView registerNib:[OWSDisplayedMessageCollectionViewCell nib]
           forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
+
+    self.outgoingCellIdentifier = [OWSOutgoingMessageCollectionViewCell cellReuseIdentifier];
+    [self.collectionView registerNib:[OWSOutgoingMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSOutgoingMessageCollectionViewCell cellReuseIdentifier]];
+
+    self.outgoingMediaCellIdentifier = [OWSOutgoingMessageCollectionViewCell mediaCellReuseIdentifier];
+    [self.collectionView registerNib:[OWSOutgoingMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSOutgoingMessageCollectionViewCell mediaCellReuseIdentifier]];
+
+    self.incomingCellIdentifier = [OWSIncomingMessageCollectionViewCell cellReuseIdentifier];
+    [self.collectionView registerNib:[OWSIncomingMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSIncomingMessageCollectionViewCell cellReuseIdentifier]];
+
+    self.incomingMediaCellIdentifier = [OWSIncomingMessageCollectionViewCell mediaCellReuseIdentifier];
+    [self.collectionView registerNib:[OWSIncomingMessageCollectionViewCell nib]
+          forCellWithReuseIdentifier:[OWSIncomingMessageCollectionViewCell mediaCellReuseIdentifier]];
 }
 
 - (void)toggleObservers:(BOOL)shouldObserve
@@ -303,7 +328,20 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // We need to recheck on every appearance, since the user may have left the group in the settings VC,
+    // or on another device.
+    [self hideInputIfNeeded];
+
     [self toggleObservers:YES];
+
+    // restart any animations that were stopped e.g. while inspecting the contact info screens.
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSMessagesViewControllerDidAppearNotification
+                                                        object:nil];
+
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+    [self setNavigationTitle];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
     if (numberOfMessages > 0) {
@@ -331,15 +369,13 @@ typedef enum : NSUInteger {
     [self dismissKeyBoard];
     [self startReadTimer];
 
-    [self initializeTitleLabelGestureRecognizer];
-
     // TODO prep this sync one time before view loads so we don't have to repaint.
     [self updateBackButtonAsync];
 
     [self.inputToolbar.contentView.textView endEditing:YES];
 
     self.inputToolbar.contentView.textView.editable = YES;
-    if (_composeOnOpen) {
+    if (_composeOnOpen && !self.inputToolbar.hidden) {
         [self popKeyBoard];
     }
 }
@@ -359,11 +395,6 @@ typedef enum : NSUInteger {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
 
-    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
-        // back button was pressed.
-        [self.navController hideDropDown:self];
-    }
-
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
 
@@ -374,12 +405,11 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionView *collectionView = self.collectionView;
     NSInteger num_bubbles                     = [self collectionView:collectionView numberOfItemsInSection:0];
     for (NSInteger i = 0; i < num_bubbles; i++) {
-        NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
-        TSMessageAdapter *msgAdapter =
-            [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:index_path];
-        if (msgAdapter.messageType == TSIncomingMessageAdapter && msgAdapter.isMediaMessage &&
-            [msgAdapter isKindOfClass:[TSVideoAttachmentAdapter class]]) {
-            TSVideoAttachmentAdapter *msgMedia = (TSVideoAttachmentAdapter *)[msgAdapter media];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
+        if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage &&
+            [message isKindOfClass:[TSVideoAttachmentAdapter class]]) {
+            TSVideoAttachmentAdapter *msgMedia = (TSVideoAttachmentAdapter *)message.media;
             if ([msgMedia isAudio]) {
                 msgMedia.isPaused       = NO;
                 msgMedia.isAudioPlaying = NO;
@@ -390,7 +420,6 @@ typedef enum : NSUInteger {
     }
 
     [self cancelReadTimer];
-    [self removeTitleLabelGestureRecognizer];
     [self saveDraft];
 }
 
@@ -401,103 +430,51 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
-
-- (IBAction)didSelectShow:(id)sender {
-    if (isGroupConversation) {
-        UIBarButtonItem *spaceEdge =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-
-        spaceEdge.width = 40;
-
-        UIBarButtonItem *spaceMiddleIcons =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-        spaceMiddleIcons.width = 61;
-
-        UIBarButtonItem *spaceMiddleWords =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                          target:nil
-                                                          action:nil];
-
-        NSDictionary *buttonTextAttributes = @{
-            NSFontAttributeName : [UIFont ows_regularFontWithSize:15.0f],
-            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor]
-        };
-
-
-        UIButton *groupUpdateButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 65, 24)];
-        NSMutableAttributedString *updateTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"UPDATE_BUTTON_TITLE", @"")];
-        [updateTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [updateTitle length])];
-        [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
-        [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
-        [groupUpdateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [groupUpdateButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-        UIBarButtonItem *groupUpdateBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupUpdateBarButton.customView                        = groupUpdateButton;
-        groupUpdateBarButton.customView.userInteractionEnabled = YES;
-
-        UIButton *groupLeaveButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 24)];
-        NSMutableAttributedString *leaveTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"")];
-        [leaveTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [leaveTitle length])];
-        [groupLeaveButton setAttributedTitle:leaveTitle forState:UIControlStateNormal];
-        [groupLeaveButton addTarget:self action:@selector(leaveGroup) forControlEvents:UIControlEventTouchUpInside];
-        [groupLeaveButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        UIBarButtonItem *groupLeaveBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupLeaveBarButton.customView                        = groupLeaveButton;
-        groupLeaveBarButton.customView.userInteractionEnabled = YES;
-        [groupLeaveButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-        UIButton *groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 65, 24)];
-        NSMutableAttributedString *membersTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MEMBERS_BUTTON_TITLE", @"")];
-        [membersTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [membersTitle length])];
-        [groupMembersButton setAttributedTitle:membersTitle forState:UIControlStateNormal];
-        [groupMembersButton addTarget:self
-                               action:@selector(showGroupMembers)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [groupMembersButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        UIBarButtonItem *groupMembersBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupMembersBarButton.customView                        = groupMembersButton;
-        groupMembersBarButton.customView.userInteractionEnabled = YES;
-        [groupMembersButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-
-        self.navController.dropDownToolbar.items = @[
-            spaceEdge,
-            groupUpdateBarButton,
-            spaceMiddleWords,
-            groupLeaveBarButton,
-            spaceMiddleWords,
-            groupMembersBarButton,
-            spaceEdge
-        ];
-
-        for (UIButton *button in self.navController.dropDownToolbar.items) {
-            [button setTintColor:[UIColor ows_materialBlueColor]];
-        }
-        if (self.navController.isDropDownVisible) {
-            [self.navController hideDropDown:sender];
-        } else {
-            [self.navController showDropDown:sender];
-        }
-        // Can also toggle toolbar from current state
-        // [self.navController toggleToolbar:sender];
-        [self setNavigationTitle];
-    }
-}
-
-- (void)setNavigationTitle {
+- (void)setNavigationTitle
+{
     NSString *navTitle = self.thread.name;
     if (isGroupConversation && [navTitle length] == 0) {
         navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
-    self.navController.activeNavigationBarTitle = nil;
-    self.title                                  = navTitle;
+    self.title = navTitle;
+}
+
+- (void)setBarButtonItemsForDisappearingMessagesConfiguration:
+    (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+
+{
+    if (self.userLeftGroup) {
+        self.navigationItem.rightBarButtonItems = @[];
+        return;
+    }
+
+    NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
+    if ([self canCall]) {
+        UIBarButtonItem *callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btnPhone--white"]
+                                                                       style:UIBarButtonItemStylePlain
+                                                                      target:self
+                                                                      action:@selector(callAction)];
+        callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
+        [barButtons addObject:callButton];
+    } else if ([self.thread isGroupThread]) {
+        UIBarButtonItem *manageGroupButton =
+            [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
+                                             style:UIBarButtonItemStylePlain
+                                            target:self
+                                            action:@selector(didTapManageGroupButton:)];
+        // Hack to shrink button image
+        manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+        [barButtons addObject:manageGroupButton];
+    }
+
+    if (disappearingMessagesConfiguration.isEnabled) {
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:self
+                                                              action:@selector(didTapTimerInNavbar)]];
+    }
+
+    self.navigationItem.rightBarButtonItems = [barButtons copy];
 }
 
 - (void)initializeToolbars
@@ -510,73 +487,46 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
-
-    if ([self canCall]) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnPhone--white"]
-                                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(callAction)];
-        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-    } else if ([self.thread isGroupThread]) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"contact-options-action"]
-                                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didSelectShow:)];
-        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
-    } else {
-        self.navigationItem.rightBarButtonItem = nil;
-        DDLogError(@"Thread was neither group thread nor callable");
-    }
-
-    [self hideInputIfNeeded];
-    [self setNavigationTitle];
 }
 
-- (void)initializeTitleLabelGestureRecognizer {
-    if (isGroupConversation) {
+- (void)setupTitleLabelGestureRecognizer
+{
+    // Called on load/unload, but we only want to init once.
+    if (self.navbarTitleLabel) {
         return;
     }
 
+    UILabel *navbarTitleLabel = [self findNavbarTitleLabel];
+    if (!navbarTitleLabel) {
+        DDLogError(@"%@ Unable to find navbar title label. Skipping gesture recognition", self.tag);
+        return;
+    }
+
+    self.navbarTitleLabel = navbarTitleLabel;
+    navbarTitleLabel.userInteractionEnabled = YES;
+    navbarTitleLabel.superview.userInteractionEnabled = YES;
+
+    UITapGestureRecognizer *titleTapRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTitle)];
+    [navbarTitleLabel addGestureRecognizer:titleTapRecognizer];
+}
+
+- (nullable UILabel *)findNavbarTitleLabel
+{
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            self.navView = view;
-            for (UIView *aView in self.navView.subviews) {
+            UIView *navItemView = view;
+            for (UIView *aView in navItemView.subviews) {
                 if ([aView isKindOfClass:[UILabel class]]) {
                     UILabel *label = (UILabel *)aView;
                     if ([label.text isEqualToString:self.title]) {
-                        [self.navView setUserInteractionEnabled:YES];
-                        [aView setUserInteractionEnabled:YES];
-                        [aView addGestureRecognizer:self.showFingerprintGesture];
-                        [aView addGestureRecognizer:self.toggleContactPhoneGesture];
-                        return;
+                        return label;
                     }
                 }
             }
         }
     }
-}
-
-- (void)removeTitleLabelGestureRecognizer {
-    if (isGroupConversation) {
-        return;
-    }
-
-    for (UIView *aView in self.navView.subviews) {
-        if ([aView isKindOfClass:[UILabel class]]) {
-            UILabel *label = (UILabel *)aView;
-            if ([label.text isEqualToString:self.title]) {
-                [self.navView setUserInteractionEnabled:NO];
-                [aView setUserInteractionEnabled:NO];
-                [aView removeGestureRecognizer:self.showFingerprintGesture];
-                [aView removeGestureRecognizer:self.toggleContactPhoneGesture];
-                return;
-            }
-        }
-    }
+    return nil;
 }
 
 // Overiding JSQMVC layout defaults
@@ -610,112 +560,13 @@ typedef enum : NSUInteger {
 
 #pragma mark - Fingerprints
 
-- (void)showFingerprint
-{
-    // Show fingerprint for their most recently accepted identity
-    NSString *theirSignalId = self.thread.contactIdentifier;
-    NSData *theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
-    [self showFingerprintWithTheirIdentityKey:theirIdentityKey theirSignalId:theirSignalId];
-}
-
 - (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
 {
-    NSString *mySignalId = [self.storageManager localNumber];
-    NSData *myIdentityKey = [self.storageManager identityKeyPair].publicKey;
-    OWSFingerprint *fingerprint = [OWSFingerprint fingerprintWithMyStableId:mySignalId
-                                                              myIdentityKey:myIdentityKey
-                                                              theirStableId:theirSignalId
-                                                           theirIdentityKey:theirIdentityKey];
-
+    OWSFingerprintBuilder *builder = [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager];
+    OWSFingerprint *fingerprint =
+        [builder fingerprintWithTheirSignalId:self.thread.contactIdentifier theirIdentityKey:theirIdentityKey];
     [self markAllMessagesAsRead];
-    [self performSegueWithIdentifier:kFingerprintSegueIdentifier sender:fingerprint];
-}
-
-
-- (void)toggleContactPhone {
-    _displayPhoneAsTitle = !_displayPhoneAsTitle;
-
-    if (!_thread.isGroupThread) {
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:[self phoneNumberForThread]];
-        if (!contact) {
-            if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(NSFoundationVersionNumber_iOS_9))) {
-                ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
-
-                ABRecordRef aContact = ABPersonCreate();
-                CFErrorRef anError   = NULL;
-
-                ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-
-                ABMultiValueAddValueAndLabel(
-                    phone, (__bridge CFTypeRef)[self phoneNumberForThread].toE164, kABPersonPhoneMainLabel, NULL);
-
-                ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
-                CFRelease(phone);
-
-                if (!anError && aContact) {
-                    view.displayedPerson           = aContact; // Assume person is already defined.
-                    view.allowsAddingToAddressBook = YES;
-                    [self.navigationController pushViewController:view animated:YES];
-                }
-            } else {
-                CNContactStore *contactStore = self.contactsManager.contactStore;
-
-                CNMutableContact *cncontact = [[CNMutableContact alloc] init];
-                cncontact.phoneNumbers      = @[
-                    [CNLabeledValue
-                        labeledValueWithLabel:nil
-                                        value:[CNPhoneNumber
-                                                  phoneNumberWithStringValue:[self phoneNumberForThread].toE164]]
-                ];
-
-                CNContactViewController *controller =
-                    [CNContactViewController viewControllerForUnknownContact:cncontact];
-                controller.allowsActions = NO;
-                controller.allowsEditing = YES;
-                controller.contactStore  = contactStore;
-
-                [self.navigationController pushViewController:controller animated:YES];
-
-                // The "Add to existing contacts" is known to be destroying the view controller stack on iOS 9
-                // http://stackoverflow.com/questions/32973254/cncontactviewcontroller-forunknowncontact-unusable-destroys-interface
-
-                // Warning the user
-                UIAlertController *alertController = [UIAlertController
-                    alertControllerWithTitle:@"iOS 9 Bug"
-                                     message:@"iOS 9 introduced a bug that prevents us from adding this number to an "
-                                             @"existing contact from the app. You can still create a new contact for "
-                                             @"this number or copy-paste it into an existing contact sheet."
-                              preferredStyle:UIAlertControllerStyleAlert];
-
-
-                [alertController
-                    addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleCancel handler:nil]];
-
-                [alertController
-                    addAction:[UIAlertAction actionWithTitle:@"Copy number"
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *_Nonnull action) {
-                                                       UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-                                                       pasteboard.string        = [self phoneNumberForThread].toE164;
-                                                       [controller.navigationController popViewControllerAnimated:YES];
-                                                     }]];
-
-                [controller presentViewController:alertController animated:YES completion:nil];
-            }
-        }
-    }
-
-    if (_displayPhoneAsTitle) {
-        self.title = [PhoneNumber
-            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[[self phoneNumberForThread] toE164]];
-    } else {
-        [self setNavigationTitle];
-    }
-}
-
-- (void)showGroupMembers {
-    [self.navController hideDropDown:self];
-    [self performSegueWithIdentifier:kShowGroupMembersSegue sender:self];
+    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueShowFingerprint sender:fingerprint];
 }
 
 #pragma mark - Calls
@@ -763,11 +614,29 @@ typedef enum : NSUInteger {
     if (text.length > 0) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
 
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                         inThread:self.thread
-                                                                      messageBody:text];
+        TSOutgoingMessage *message;
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+        if (configuration.isEnabled) {
+            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                          inThread:self.thread
+                                                       messageBody:text
+                                                     attachmentIds:@[]
+                                                  expiresInSeconds:configuration.durationSeconds];
+        } else {
+            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                          inThread:self.thread
+                                                       messageBody:text];
+        }
 
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:self.thread success:nil failure:nil];
+        [[TSMessagesManager sharedManager] sendMessage:message
+            inThread:self.thread
+            success:^{
+                self.lastDeliveredMessage = message;
+            }
+            failure:^{
+                DDLogWarn(@"%@ Failed to deliver message.", self.tag);
+            }];
         [self finishSendingMessage];
     }
 }
@@ -789,7 +658,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - JSQMessages CollectionView DataSource
 
-- (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView
+- (id<OWSMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView
        messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return [self messageAtIndexPath:indexPath];
@@ -825,7 +694,7 @@ typedef enum : NSUInteger {
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter *message = [self messageAtIndexPath:indexPath];
+    id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
     NSParameterAssert(message != nil);
 
     JSQMessagesCollectionViewCell *cell;
@@ -855,12 +724,18 @@ typedef enum : NSUInteger {
     }
     cell.delegate = collectionView;
 
+    if (message.isExpiringMessage && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
+        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
+        [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
+                                         initialDurationSeconds:message.expiresInSeconds];
+    }
+
     return cell;
 }
 
 #pragma mark - Loading message cells
 
-- (JSQMessagesCollectionViewCell *)loadIncomingMessageCellForMessage:(id<JSQMessageData>)message
+- (JSQMessagesCollectionViewCell *)loadIncomingMessageCellForMessage:(id<OWSMessageData>)message
                                                          atIndexPath:(NSIndexPath *)indexPath
 {
     JSQMessagesCollectionViewCell *cell =
@@ -876,11 +751,12 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-- (JSQMessagesCollectionViewCell *)loadOutgoingCellForMessage:(id<JSQMessageData>)message
+- (JSQMessagesCollectionViewCell *)loadOutgoingCellForMessage:(id<OWSMessageData>)message
                                                   atIndexPath:(NSIndexPath *)indexPath
 {
-    JSQMessagesCollectionViewCell *cell =
-        (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    OWSOutgoingMessageCollectionViewCell *cell
+        = (OWSOutgoingMessageCollectionViewCell *)[super collectionView:self.collectionView
+                                                 cellForItemAtIndexPath:indexPath];
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor whiteColor];
         cell.textView.linkTextAttributes = @{
@@ -888,7 +764,6 @@ typedef enum : NSUInteger {
             NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
         };
     }
-
     return cell;
 }
 
@@ -934,9 +809,14 @@ typedef enum : NSUInteger {
                                                              atIndexPath:(NSIndexPath *)indexPath
 {
     OWSDisplayedMessageCollectionViewCell *infoCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+
+    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+
     infoCell.cellLabel.text = [infoMessage text];
-    infoCell.cellLabel.textColor = [UIColor darkGrayColor];
-    infoCell.textContainer.layer.borderColor = infoCell.textContainer.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
+    infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
 
     return infoCell;
@@ -947,8 +827,7 @@ typedef enum : NSUInteger {
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     errorCell.cellLabel.text = [errorMessage text];
-    errorCell.cellLabel.textColor = [UIColor darkGrayColor];
-    errorCell.textContainer.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
+    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
 
     return errorCell;
@@ -995,8 +874,13 @@ typedef enum : NSUInteger {
     return nil;
 }
 
-- (BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath *)indexPath
+{
     TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+
+    if (currentMessage.isExpiringMessage) {
+        return YES;
+    }
 
     // If message failed, say that message should be tapped to retry;
     if (currentMessage.messageType == TSOutgoingMessageAdapter) {
@@ -1050,42 +934,40 @@ typedef enum : NSUInteger {
 
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
-    attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
-    TSMessageAdapter *msg            = [self messageAtIndexPath:indexPath];
-    NSTextAttachment *textAttachment = [[NSTextAttachment alloc] init];
-    textAttachment.bounds            = CGRectMake(0, 0, 11.0f, 10.0f);
-
-    if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
-        if (msg.messageType == TSOutgoingMessageAdapter) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)msg;
-            if(outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-                NSMutableAttributedString *attrStr =
-                [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-                [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-                return attrStr;
-            }
-        }
-
-        if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-            NSString *name = [self.contactsManager nameStringForPhoneIdentifier:msg.senderId];
-
-            if (!name) {
-                name = @"";
-            }
-
-            NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:name];
-            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-
-            return attrStr;
-        } else {
-            _lastDeliveredMessageIndexPath = indexPath;
-            NSMutableAttributedString *attrStr =
-                [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
-            [attrStr appendAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-
-            return attrStr;
-        }
+    attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (![self shouldShowMessageStatusAtIndexPath:indexPath]) {
+        return nil;
     }
+
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    if (![messageData isKindOfClass:[TSMessageAdapter class]]) {
+        return nil;
+    }
+
+    TSMessageAdapter *message = (TSMessageAdapter *)messageData;
+    if (message.messageType == TSOutgoingMessageAdapter) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            NSAttributedString *failedString =
+                [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
+
+            return failedString;
+        } else if ([outgoingMessage isEqual:self.lastDeliveredMessage]) {
+            _lastDeliveredMessageIndexPath = indexPath; // So we can remove it later.
+            NSAttributedString *deliveredString =
+                [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
+
+            return deliveredString;
+        }
+    } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
+        NSString *_Nonnull name = [self.contactsManager nameStringForPhoneIdentifier:incomingMessage.authorId];
+        NSAttributedString *senderNameString = [[NSAttributedString alloc] initWithString:name];
+
+        return senderNameString;
+    }
+
     return nil;
 }
 
@@ -1101,11 +983,38 @@ typedef enum : NSUInteger {
 
 #pragma mark - Actions
 
+- (void)showConversationSettings
+{
+    if (self.userLeftGroup) {
+        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
+        return;
+    }
+    [self performSegueWithIdentifier:OWSMessagesViewControllerSeguePushConversationSettings sender:self];
+}
+
+- (void)didTapTitle
+{
+    DDLogDebug(@"%@ Tapped title in navbar", self.tag);
+    [self showConversationSettings];
+}
+
+- (void)didTapManageGroupButton:(id)sender
+{
+    DDLogDebug(@"%@ Tapped options menu in navbar", self.tag);
+    [self showConversationSettings];
+}
+
+- (void)didTapTimerInNavbar
+{
+    DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
+    [self showConversationSettings];
+}
+
+
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
     didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter *messageItem =
-        [collectionView.dataSource collectionView:collectionView messageDataForItemAtIndexPath:indexPath];
+    id<OWSMessageData> messageItem = [self messageAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
     switch (messageItem.messageType) {
@@ -1220,14 +1129,12 @@ typedef enum : NSUInteger {
                                 // loop through all the other bubbles and set their isPlaying to false
                                 NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
                                 for (NSInteger i = 0; i < num_bubbles; i++) {
-                                    NSIndexPath *index_path = [NSIndexPath indexPathForRow:i inSection:0];
-                                    TSMessageAdapter *msgAdapter =
-                                        [collectionView.dataSource collectionView:collectionView
-                                                    messageDataForItemAtIndexPath:index_path];
-                                    if (msgAdapter.messageType == TSIncomingMessageAdapter &&
-                                        msgAdapter.isMediaMessage) {
-                                        TSVideoAttachmentAdapter *msgMedia =
-                                            (TSVideoAttachmentAdapter *)[msgAdapter media];
+                                    NSIndexPath *indexPathI = [NSIndexPath indexPathForRow:i inSection:0];
+                                    id<OWSMessageData> message = [self messageAtIndexPath:indexPathI];
+
+                                    if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage) {
+                                        TSVideoAttachmentAdapter *msgMedia
+                                            = (TSVideoAttachmentAdapter *)[message media];
                                         if ([msgMedia isAudio]) {
                                             if (msgMedia == messageMedia && messageMedia.isPaused) {
                                                 isResuming = YES;
@@ -1485,22 +1392,27 @@ typedef enum : NSUInteger {
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:kFingerprintSegueIdentifier]) {
-        FingerprintViewController *vc = [segue destinationViewController];
-        if ([sender isKindOfClass:[OWSFingerprint class]]) {
-            OWSFingerprint *fingerprint = (OWSFingerprint *)sender;
-            NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:fingerprint.theirStableId];
-            [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
-        } else {
-            DDLogError(@"%@ Attempting to segueu to fingerprint VC without a valid fingerprint: %@", self.tag, sender);
+    if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueShowFingerprint]) {
+        if (![segue.destinationViewController isKindOfClass:[FingerprintViewController class]]) {
+            DDLogError(@"%@ Expected Fingerprint VC but got: %@", self.tag, segue.destinationViewController);
+            return;
         }
-    } else if ([segue.identifier isEqualToString:kUpdateGroupSegueIdentifier]) {
-        NewGroupViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
-    } else if ([segue.identifier isEqualToString:kShowGroupMembersSegue]) {
-        ShowGroupMembersViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
+        FingerprintViewController *vc = (FingerprintViewController *)segue.destinationViewController;
+
+        if (![sender isKindOfClass:[OWSFingerprint class]]) {
+            DDLogError(@"%@ Attempting to segue to fingerprint VC without a valid fingerprint: %@", self.tag, sender);
+            return;
+        }
+        OWSFingerprint *fingerprint = (OWSFingerprint *)sender;
+
+        NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:fingerprint.theirStableId];
+        [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+    } else if ([segue.destinationViewController isKindOfClass:[OWSConversationSettingsTableViewController class]]) {
+        OWSConversationSettingsTableViewController *controller
+            = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
+        [controller configureWithThread:self.thread];
     }
+
 }
 
 
@@ -1605,7 +1517,8 @@ typedef enum : NSUInteger {
                            if (assetFetchingError || !imageData) {
                                return failedToPickAttachment(assetFetchingError);
                            }
-                           DDLogVerbose(@"Size in bytes: %lu; detected filetype: %@", imageData.length, dataUTI);
+                           DDLogVerbose(
+                               @"Size in bytes: %lu; detected filetype: %@", (unsigned long)imageData.length, dataUTI);
 
                            if ([dataUTI isEqualToString:(__bridge NSString *)kUTTypeGIF]
                                && imageData.length <= 5 * 1024 * 1024) {
@@ -1633,10 +1546,21 @@ typedef enum : NSUInteger {
 
 - (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType
 {
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:self.thread
-                                                                  messageBody:nil
-                                                                attachmentIds:[NSMutableArray new]];
+    TSOutgoingMessage *message;
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    if (configuration.isEnabled) {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:nil
+                                                 attachmentIds:[NSMutableArray new]
+                                              expiresInSeconds:configuration.durationSeconds];
+    } else {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:nil
+                                                 attachmentIds:[NSMutableArray new]];
+    }
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
@@ -1834,8 +1758,9 @@ typedef enum : NSUInteger {
                   if (collectionKey.key) {
                       [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                   }
-                  NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
 
+                  // remove "delivered" from all but final message.
+                  NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
                   if (_lastDeliveredMessageIndexPath) {
                       [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
                   }
@@ -1874,8 +1799,7 @@ typedef enum : NSUInteger {
       NSParameterAssert(indexPath != nil);
       NSUInteger row                    = (NSUInteger)indexPath.row;
       NSUInteger section                = (NSUInteger)indexPath.section;
-      NSUInteger numberOfItemsInSection = [self.messageMappings numberOfItemsInSection:section];
-
+      NSUInteger numberOfItemsInSection __unused = [self.messageMappings numberOfItemsInSection:section];
       NSAssert(row < numberOfItemsInSection,
                @"Cannot fetch message because row %d is >= numberOfItemsInSection %d",
                (int)row,
@@ -1888,13 +1812,13 @@ typedef enum : NSUInteger {
     return message;
 }
 
-// FIXME DANGER this method doesn't always return TSMessageAdapters - it can also return JSQCall!
-- (TSMessageAdapter *)messageAtIndexPath:(NSIndexPath *)indexPath {
+- (id<OWSMessageData>)messageAtIndexPath:(NSIndexPath *)indexPath
+{
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
-    TSMessageAdapter *messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
+    id<OWSMessageData> messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
 
-    if (messageAdapter == nil) {
+    if (!messageAdapter) {
         messageAdapter = [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
         [self.messageAdapterCache setObject:messageAdapter forKey: interaction.uniqueId];
     }
@@ -1989,10 +1913,12 @@ typedef enum : NSUInteger {
                       }];
 }
 
-- (void)markAllMessagesAsRead {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [self.thread markAllAsReadWithTransaction:transaction];
-    }];
+- (void)markAllMessagesAsRead
+{
+    [self.thread markAllAsRead];
+    // In theory this should be unnecessary as read-status starts expiration
+    // but in practice I've seen messages not have their timer started.
+    [self.disappearingMessagesJob setExpirationsForThread:self.thread];
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView
@@ -2017,32 +1943,6 @@ typedef enum : NSUInteger {
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
     [[self messageAtIndexPath:indexPath] performEditingAction:action];
-}
-
-- (void)updateGroup {
-    [self.navController hideDropDown:self];
-
-    [self performSegueWithIdentifier:kUpdateGroupSegueIdentifier sender:self];
-}
-
-- (void)leaveGroup
-{
-    [self.navController hideDropDown:self];
-
-    TSGroupThread *gThread     = (TSGroupThread *)_thread;
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:gThread
-                                                                  messageBody:@""
-                                                                attachmentIds:[NSMutableArray new]];
-    message.groupMetaMessage = TSGroupMessageQuit;
-    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread success:nil failure:nil];
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-      [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
-      gThread.groupModel.groupMemberIds = newGroupMemberIds;
-      [gThread saveWithTransaction:transaction];
-    }];
-    [self hideInputIfNeeded];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
@@ -2164,9 +2064,9 @@ typedef enum : NSUInteger {
 
             _unreadBackground.frame =
                 CGRectMake(offset.x, offset.y, MAX(_unreadLabel.frame.size.width + 8.0f, 17.0f), 17.0f);
-            _unreadLabel.frame = CGRectMake(
-                offset.x +
-                    floor((2.0f * (_unreadBackground.frame.size.width - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
+            _unreadLabel.frame = CGRectMake(offset.x
+                    + (CGFloat)floor(
+                          (2.0 * (_unreadBackground.frame.size.width - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
                 offset.y + 1.0f,
                 _unreadLabel.frame.size.width,
                 _unreadLabel.frame.size.height);
@@ -2181,6 +2081,8 @@ typedef enum : NSUInteger {
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems {
     return @[];
 }
+
+#pragma mark - Logging
 
 + (NSString *)tag
 {

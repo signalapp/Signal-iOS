@@ -3,6 +3,7 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "TSMessageAdapter.h"
+#import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.
 
 @implementation OWSMessagesBubblesSizeCalculator
 
@@ -23,11 +24,19 @@
 {
     CGSize superSize = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
 
-    TSMessageAdapter *message = (TSMessageAdapter *)messageData;
-    if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
-        // Prevent cropping message text by accounting for message container/icon
-        // But also allow for multi-line error messages.
-        superSize.height = fmax(superSize.height, OWSDisplayedMessageCellHeight);
+    if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
+        TSMessageAdapter *message = (TSMessageAdapter *)messageData;
+
+        if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
+            // DDLogVerbose(@"[OWSMessagesBubblesSizeCalculator] superSize.height:%f, superSize.width:%f",
+            //     superSize.height,
+            //     superSize.width);
+
+            // header icon hangs ouside of the frame a bit.
+            CGFloat headerIconProtrusion = 30.0f; // too  much padding with normal font.
+            // CGFloat headerIconProtrusion = 18.0f; // clips
+            superSize.height = superSize.height + headerIconProtrusion;
+        }
     }
 
     return superSize;
