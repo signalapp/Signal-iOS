@@ -222,9 +222,9 @@
     [self.sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
     [self.sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x,
-                                           self.searchController.searchBar.frame.origin.y + 44.0,
-                                           self.searchController.searchBar.frame.size.width,
-                                           44.0);
+        self.searchController.searchBar.frame.origin.y + 44.0f,
+        self.searchController.searchBar.frame.size.width,
+        44.0);
     [self.view addSubview:self.sendTextButton];
     self.sendTextButton.hidden = YES;
 

@@ -59,8 +59,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
 
     [self setupEditButton];
-    // So we can still tap on "add new device"
-    self.tableView.allowsSelectionDuringEditing = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated

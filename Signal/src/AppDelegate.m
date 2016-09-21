@@ -16,7 +16,8 @@
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import "OWSStaleNotificationObserver.h"
-#import <SignalServiceKit/OWSReadReceiptObserver.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 
 static NSString *const kStoryboardName                  = @"Storyboard";
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
@@ -26,7 +27,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic, retain) UIWindow *screenProtectionWindow;
-@property (nonatomic) OWSReadReceiptObserver *readReceiptObserver;
+@property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
 @property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 
 @end
@@ -111,6 +112,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         [[PushManager sharedManager] validateUserNotificationSettings];
         [TSPreKeyManager refreshPreKeys];
+
+        // Clean up any messages that expired since last launch.
+        [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
     }];
 
     [AppStoreRating setupRatingLibrary];
@@ -121,8 +125,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
     [[TSStorageManager sharedManager] setupDatabase];
     [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
-    self.readReceiptObserver = [OWSReadReceiptObserver new];
-    [self.readReceiptObserver startObserving];
+    self.incomingMessageReadObserver = [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
+                                                                                      messagesManager:[TSMessagesManager sharedManager]];
+    [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];
     [self.staleNotificationObserver startObserving];

@@ -4,6 +4,10 @@
 #import <UIKit/UIKit.h>
 #import "TSThread.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class OWSContactsManager;
+
 typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
 
 @interface InboxTableViewCell : UITableViewCell <UIScrollViewDelegate>
@@ -17,7 +21,10 @@ typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
 @property (nonatomic, retain) NSString *threadId;
 
 + (instancetype)inboxTableViewCell;
-- (void)configureWithThread:(TSThread *)thread;
+
+- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 - (void)animateDisappear;
 
 @end
+
+NS_ASSUME_NONNULL_END
