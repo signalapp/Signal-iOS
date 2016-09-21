@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -x
+
+function usage() {
+cat <<EOS
+Extracts string from target file and appends to Localizable.strings
+
+    $0 <filename.m>
+
+e.g.
+
+    $0 path/to/my/ClassName.m
+EOS
+}
+
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $BIN_DIR/..
+
+TARGET=$1
+if [[ -z $TARGET ]]
+then
+  echo "Can't proceed without target"
+  usage
+  exit 1
+fi
+
+if [[ ! -e $TARGET ]]
+then
+  echo "No file exists at ${TARGET}"
+  exit 1
+fi
+
+# pwd.
+OUTPUT_DIR=en.lproj/
+mkdir -p "${OUTPUT_DIR}"
+genstrings -a -o "${OUTPUT_DIR}" "${TARGET}"

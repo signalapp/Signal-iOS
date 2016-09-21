@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
-    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: 'new-fingerprint-format'
+    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: 'release/2.6'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL',                    '~> 1.0.208'
     pod 'PastelogKit',                '~> 1.3'

@@ -1,15 +1,18 @@
 //  Created by Dylan Bourgeois on 27/10/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
-#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
-#import <JSQMessagesViewController/UIImage+JSQMessages.h>
-#import "Environment.h"
 #import "InboxTableViewCell.h"
+#import "Environment.h"
+#import "OWSAvatarBuilder.h"
 #import "PreferencesUtil.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "Util.h"
+#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
+#import <JSQMessagesViewController/UIImage+JSQMessages.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 #define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
 #define DELETE_IMAGE_VIEW_WIDTH 19.0f
@@ -39,86 +42,45 @@
     self.selectionStyle = UITableViewCellSelectionStyleDefault;
 }
 
-- (NSString *)reuseIdentifier {
+- (nullable NSString *)reuseIdentifier
+{
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithThread:(TSThread *)thread {
+- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+{
     if (!_threadId || ![_threadId isEqualToString:thread.uniqueId]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.hidden = YES;
         });
     }
 
-    NSString *name                     = thread.name;
-    _threadId                          = thread.uniqueId;
+    NSString *name = thread.name;
+    if (name.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
+        name = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    }
+    UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
+    self.threadId = thread.uniqueId;
     NSString *snippetLabel             = thread.lastMessageLabel;
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount             = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      _nameLabel.text           = name;
-      _snippetLabel.text        = snippetLabel;
-      _timeLabel.attributedText = attributedDate;
+        self.nameLabel.text = name;
+        self.snippetLabel.text = snippetLabel;
+        self.timeLabel.attributedText = attributedDate;
+        self.contactPictureView.image = avatar;
+        [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
 
-      if ([thread isKindOfClass:[TSGroupThread class]]) {
-          _contactPictureView.contentMode = UIViewContentModeScaleAspectFill;
-          _contactPictureView.image = ((TSGroupThread *)thread).groupModel.groupImage != nil
-                                          ? ((TSGroupThread *)thread).groupModel.groupImage
-                                          : [UIImage imageNamed:@"empty-group-avatar"];
-          if ([_nameLabel.text length] == 0) {
-              _nameLabel.text = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
-          }
-          if (_contactPictureView.image != nil) {
-              dispatch_async(dispatch_get_main_queue(), ^{
-                [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
-              });
-          }
-      } else {
-          NSMutableString *initials = [NSMutableString string];
+        self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
 
-          if ([name length] > 0) {
-              NSArray *words = [name componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-              for (NSString *word in words) {
-                  if ([word length] > 0) {
-                      NSString *firstLetter = [word substringToIndex:1];
-                      [initials appendString:[firstLetter uppercaseString]];
-                  }
-              }
-          }
-
-          NSRange stringRange = {0, MIN([initials length], (NSUInteger)3)}; // Rendering max 3 letters.
-          initials            = [[initials substringWithRange:stringRange] mutableCopy];
-
-          UIColor *backgroundColor =
-              thread.isGroupThread ? [UIColor whiteColor]
-                                   : [UIColor backgroundColorForContact:((TSContactThread *)thread).contactIdentifier];
-          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            UIImage *image =
-                [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
-                                                            backgroundColor:backgroundColor
-                                                                  textColor:[UIColor whiteColor]
-                                                                       font:[UIFont ows_boldFontWithSize:36.0]
-                                                                   diameter:100] avatarImage];
-            dispatch_async(dispatch_get_main_queue(), ^{
-              _contactPictureView.image = thread.image != nil ? thread.image : image;
-
-              if (thread.image != nil) {
-                  [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
-              }
-            });
-          });
-      }
-
-      self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
-
-      if (thread.hasUnreadMessages) {
-          [self updateCellForUnreadMessage];
-      } else {
-          [self updateCellForReadMessage];
-      }
-      [self setUnreadMsgCount:unreadCount];
-      self.hidden = NO;
+        if (thread.hasUnreadMessages) {
+            [self updateCellForUnreadMessage];
+        } else {
+            [self updateCellForReadMessage];
+        }
+        [self setUnreadMsgCount:unreadCount];
+        self.hidden = NO;
     });
 }
 
@@ -202,11 +164,11 @@
             [_unreadLabel sizeToFit];
 
             CGPoint offset = CGPointMake(0.0f, 5.0f);
-            _unreadLabel.frame =
-                CGRectMake(offset.x + floor((2.0f * (25 - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
-                           offset.y,
-                           _unreadLabel.frame.size.width,
-                           _unreadLabel.frame.size.height);
+            _unreadLabel.frame
+                = CGRectMake(offset.x + (CGFloat)floor((2.0f * (25.0f - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
+                    offset.y,
+                    _unreadLabel.frame.size.width,
+                    _unreadLabel.frame.size.height);
             _messageCounter.hidden = NO;
         } else {
             _messageCounter.hidden = YES;
@@ -225,3 +187,5 @@
 
 
 @end
+
+NS_ASSUME_NONNULL_END

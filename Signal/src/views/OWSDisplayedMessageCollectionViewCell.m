@@ -6,12 +6,13 @@
 
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
+const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
+
 @interface OWSDisplayedMessageCollectionViewCell ()
 
 @property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *cellTopLabelHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
-@property (strong, nonatomic) IBOutlet UIView *textContainer;
 
 @end
 
@@ -39,12 +40,10 @@
 
     self.backgroundColor = [UIColor whiteColor];
 
-    self.textContainer.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-    self.textContainer.layer.borderWidth = 0.75f;
-    self.textContainer.layer.cornerRadius = 5.0f;
-    self.cellLabel.textAlignment = NSTextAlignmentCenter;
-    self.cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0f];
-    self.cellLabel.textColor = [UIColor lightGrayColor];
+    self.messageBubbleContainerView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.messageBubbleContainerView.layer.borderWidth = 0.75f;
+    self.messageBubbleContainerView.layer.cornerRadius = 5.0f;
+    self.cellLabel.textColor = [UIColor darkGrayColor];
 }
 
 #pragma mark - Collection view cell
@@ -54,15 +53,6 @@
     [super prepareForReuse];
 
     self.cellLabel.text = nil;
-}
-
-// This subclass does not have a messageBubbleContainerView, so superclass
-// touch calculations will be incorrect. Since this view spans the entire
-// frame, we can override the touch handler to respond to user actions by
-// default.
-- (void)jsq_handleTapGesture:(UITapGestureRecognizer *)tap
-{
-    [self.delegate messagesCollectionViewCellDidTapMessageBubble:self];
 }
 
 @end

@@ -5,6 +5,16 @@
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIImage+JSQMessages.h>
 
+@interface OWSCall ()
+
+// -- Redeclaring properties from OWSMessageData protocol to synthesize variables
+@property (nonatomic) TSMessageAdapterType messageType;
+@property (nonatomic, getter=isExpiringMessage) BOOL expiringMessage;
+@property (nonatomic) uint64_t expiresAtSeconds;
+@property (nonatomic) uint32_t expiresInSeconds;
+
+@end
+
 @implementation OWSCall
 
 #pragma mark - Initialzation
@@ -37,6 +47,7 @@
     _senderDisplayName = [senderDisplayName copy];
     _date = [date copy];
     _status = status;
+    _expiringMessage = NO; // TODO - call notifications should expire too.
     _messageType = TSCallAdapter;
 
     // TODO interpret detailString from status. make sure it works for calls and
@@ -86,6 +97,20 @@
                      self.senderId,
                      self.senderDisplayName,
                      self.date];
+}
+
+#pragma mark - OWSMessageEditing
+
+- (BOOL)canPerformEditingAction:(SEL)action
+{
+    return NO;
+}
+
+- (void)performEditingAction:(SEL)action
+{
+    // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
+    NSString *actionString = NSStringFromSelector(action);
+    DDLogError(@"%@ '%@' action unsupported", self.tag, actionString);
 }
 
 #pragma mark - JSQMessageData
@@ -139,6 +164,18 @@
 - (NSString *)text
 {
     return _detailString;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

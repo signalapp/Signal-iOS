@@ -39,12 +39,39 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) id previewingContext;
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
 @end
 
 @implementation SignalsViewController
 
-- (void)awakeFromNib {
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
     [[Environment getCurrent] setSignalsViewController:self];
 }
 
@@ -172,7 +199,7 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      [cell configureWithThread:thread];
+        [cell configureWithThread:thread contactsManager:self.contactsManager];
     });
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
