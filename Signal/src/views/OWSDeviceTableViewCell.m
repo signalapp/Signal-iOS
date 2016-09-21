@@ -18,8 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *lastSeenFormatString = NSLocalizedString(
         @"DEVICE_LAST_ACTIVE_AT_LABEL", @"{{Short Date}} when device last communicated with Signal Server.");
+
+    NSDate *displayedLastSeenAt;
+    // lastSeenAt is stored at day granularity. At midnight UTC.
+    // Making it likely that when you first link a device it will
+    // be "last seen" the day before it was created, which looks broken.
+    if ([device.lastSeenAt compare:device.createdAt] == NSOrderedDescending) {
+        displayedLastSeenAt = device.lastSeenAt;
+    } else {
+        displayedLastSeenAt = device.createdAt;
+    }
+
     self.lastSeenLabel.text =
-        [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:device.createdAt]];
+        [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:displayedLastSeenAt]];
 }
 
 @end
