@@ -1490,7 +1490,7 @@ typedef enum : NSUInteger {
         if ([sender isKindOfClass:[OWSFingerprint class]]) {
             OWSFingerprint *fingerprint = (OWSFingerprint *)sender;
             NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:fingerprint.theirStableId];
-            [vc configureWithFingerprint:fingerprint contactName:contactName];
+            [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
         } else {
             DDLogError(@"%@ Attempting to segueu to fingerprint VC without a valid fingerprint: %@", self.tag, sender);
         }
