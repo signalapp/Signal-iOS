@@ -8,10 +8,13 @@
 
 #import "FingerprintViewController.h"
 #import "DJWActionSheet+OWS.h"
+#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,8 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) TSStorageManager *storageManager;
 @property (nonatomic) BOOL isPresentingDialog;
-@property (strong, atomic) OWSFingerprint *fingerprint;
-@property (strong, atomic) NSString *contactName;
+@property (strong, nonatomic) TSThread *thread;
+@property (strong, nonatomic) OWSFingerprint *fingerprint;
+@property (strong, nonatomic) NSString *contactName;
 @property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 
 @property (strong, nonatomic) IBOutlet UIView *qrScanningView;
@@ -39,8 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation FingerprintViewController
 
-- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint contactName:(NSString *)contactName
+- (void)configureWithThread:(TSThread *)thread
+                fingerprint:(OWSFingerprint *)fingerprint
+                contactName:(NSString *)contactName
 {
+    self.thread = thread;
     self.fingerprint = fingerprint;
     self.contactName = contactName;
 }
@@ -168,8 +175,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resetSession
 {
+    DDLogInfo(@"%@ local user reset session", self.tag);
     [self.storageManager removeIdentityKeyForRecipient:self.fingerprint.theirStableId];
     [self.storageManager deleteAllSessionsForContact:self.fingerprint.theirStableId];
+
+    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                     inThread:self.thread
+                                  messageType:TSInfoMessageTypeSessionDidEnd] save];
+
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // pragma mark - OWSQRScannerDelegate
