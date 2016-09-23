@@ -3,6 +3,7 @@
 
 #import "TSMessagesManager.h"
 #import "ContactsManagerProtocol.h"
+#import "ContactsUpdater.h"
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -19,6 +20,7 @@
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSMessagesManager+attachments.h"
+#import "TSNetworkManager.h"
 #import "TSStorageHeaders.h"
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -35,12 +37,26 @@
     return sharedMyManager;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
+    return [self initWithNetworkManager:[TSNetworkManager sharedManager]
+                           dbConnection:[TSStorageManager sharedManager].newDatabaseConnection
+                        contactsUpdater:[ContactsUpdater sharedUpdater]];
+}
+
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                          dbConnection:(YapDatabaseConnection *)dbConnection
+                       contactsUpdater:(ContactsUpdater *)contactsUpdater
+{
     self = [super init];
 
-    if (self) {
-        _dbConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    if (!self) {
+        return self;
     }
+
+    _networkManager = networkManager;
+    _dbConnection = dbConnection;
+    _contactsUpdater = contactsUpdater;
 
     return self;
 }

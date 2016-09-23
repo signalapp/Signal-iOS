@@ -51,13 +51,13 @@ dispatch_queue_t attachmentsQueue() {
         thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
     }
 
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointersProtos:attachmentPointerProtos
-                                                                timestamp:envelope.timestamp
-                                                                    relay:envelope.relay
-                                                            avatarGroupId:avatarGroupId
-                                                                 inThread:thread
-                                                          messagesManager:[TSMessagesManager sharedManager]];
+    OWSAttachmentsProcessor *attachmentsProcessor = [[OWSAttachmentsProcessor alloc]
+        initWithAttachmentPointersProtos:attachmentPointerProtos
+                               timestamp:envelope.timestamp
+                                   relay:envelope.relay
+                           avatarGroupId:avatarGroupId
+                                inThread:thread
+                         messagesManager:[TSMessagesManager sharedManager]]; // TODO self?
 
     if (attachmentsProcessor.hasSupportedAttachments) {
         TSIncomingMessage *possiblyCreatedMessage =
@@ -106,7 +106,7 @@ dispatch_queue_t attachmentsQueue() {
                success:(successSendingCompletionBlock)successCompletionBlock
                failure:(failedSendingCompletionBlock)failedCompletionBlock {
     TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
-    [[TSNetworkManager sharedManager] makeRequest:allocateAttachment
+    [self.networkManager makeRequest:allocateAttachment
         success:^(NSURLSessionDataTask *task, id responseObject) {
           dispatch_async(attachmentsQueue(), ^{
             if ([responseObject isKindOfClass:[NSDictionary class]]) {
@@ -187,7 +187,7 @@ dispatch_queue_t attachmentsQueue() {
     TSAttachmentRequest *attachmentRequest =
         [[TSAttachmentRequest alloc] initWithId:[attachment identifier] relay:attachment.relay];
 
-    [[TSNetworkManager sharedManager] makeRequest:attachmentRequest
+    [self.networkManager makeRequest:attachmentRequest
         success:^(NSURLSessionDataTask *task, id responseObject) {
           if ([responseObject isKindOfClass:[NSDictionary class]]) {
               dispatch_async(attachmentsQueue(), ^{

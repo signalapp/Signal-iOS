@@ -7,14 +7,22 @@
 
 @class TSCall;
 @class YapDatabaseConnection;
+@class TSNetworkManager;
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosDataMessage;
+@class ContactsUpdater;
 
 @interface TSMessagesManager : NSObject
+
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                          dbConnection:(YapDatabaseConnection *)dbConnection
+                       contactsUpdater:(ContactsUpdater *)contactsUpdater NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
 @property (readonly) YapDatabaseConnection *dbConnection;
+@property (readonly) TSNetworkManager *networkManager;
+@property (readonly) ContactsUpdater *contactsUpdater;
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
 

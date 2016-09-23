@@ -26,7 +26,10 @@
 #define InvalidDeviceException @"InvalidDeviceException"
 
 @interface TSMessagesManager ()
+
 dispatch_queue_t sendingQueue(void);
+@property TSNetworkManager *networkManager;
+
 @end
 
 typedef void (^messagesQueue)(NSArray *messages);
@@ -56,7 +59,7 @@ dispatch_queue_t sendingQueue() {
 
 
         if (!recipient) {
-            [[self contactUpdater] synchronousLookup:recipientId
+            [self.contactsUpdater synchronousLookup:recipientId
                 success:^(SignalRecipient *newRecipient) {
                   [recipients addObject:newRecipient];
                 }
@@ -76,10 +79,6 @@ dispatch_queue_t sendingQueue() {
     }
 
     return;
-}
-
-- (ContactsUpdater *)contactUpdater {
-    return [ContactsUpdater sharedUpdater];
 }
 
 - (void)resendMessage:(TSOutgoingMessage *)message
@@ -142,7 +141,7 @@ dispatch_queue_t sendingQueue() {
               }];
 
               if (!recipient) {
-                  [[ContactsUpdater sharedUpdater] synchronousLookup:contactThread.contactIdentifier
+                  [self.contactsUpdater synchronousLookup:contactThread.contactIdentifier
                       success:^(SignalRecipient *recip) {
                         recipient = recip;
                       }
@@ -172,7 +171,7 @@ dispatch_queue_t sendingQueue() {
               // Special situation: if we are sending to ourselves in a single thread, we treat this as an incoming
               // message
               [self handleMessageSent:message];
-              [[TSMessagesManager sharedManager] handleSendToMyself:message];
+              [[TSMessagesManager sharedManager] handleSendToMyself:message]; // TODO self?
           }
       }
     });
@@ -261,26 +260,12 @@ dispatch_queue_t sendingQueue() {
             }
         }
 
-        if (deviceMessages.count == 0) {
-            DDLogWarn(@"%@ Failed to build any device messages. Not sending.", self.tag);
-            // Retrying incase we fixed our stale devices last time 'round.
-            dispatch_async(sendingQueue(), ^{
-                [self sendMessage:message
-                      toRecipient:recipient
-                         inThread:thread
-                      withAttemps:remainingAttempts
-                          success:successBlock
-                          failure:failureBlock];
-            });
-            return;
-        }
-
         TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                    messages:deviceMessages
                                                                                       relay:recipient.relay
                                                                                   timeStamp:message.timestamp];
 
-        [[TSNetworkManager sharedManager] makeRequest:request
+        [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 dispatch_async(sendingQueue(), ^{
                     [recipient save];
@@ -456,7 +441,7 @@ dispatch_queue_t sendingQueue() {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *bundle;
 
-        [[TSNetworkManager sharedManager]
+        [self.networkManager
             makeRequest:[[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier
                                                                    deviceId:[deviceNumber stringValue]]
             success:^(NSURLSessionDataTask *task, id responseObject) {
