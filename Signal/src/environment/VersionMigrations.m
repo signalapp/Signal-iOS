@@ -75,6 +75,14 @@
         });
     }
 
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.5.2"] && [TSAccountManager isRegistered]) {
+        [[TSStorageManager sharedManager].dbConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                NSUInteger legacyRecipientCount = [transaction numberOfKeysInCollection:@"TSRecipient"];
+                DDLogWarn(@"Removing %lu objects from TSRecipient collection", (unsigned long)legacyRecipientCount);
+                [transaction removeAllObjectsInCollection:@"TSRecipient"];
+            }];
+    }
     [Environment.preferences setAndGetCurrentVersion];
 }
 
