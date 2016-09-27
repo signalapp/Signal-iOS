@@ -60,8 +60,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
     [Environment.getCurrent initCallListener];
 
-    [self setupTSKitEnv];
-
     BOOL loggingIsEnabled;
 
 #ifdef DEBUG
@@ -77,6 +75,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
+
+    [self setupTSKitEnv];
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:kStoryboardName bundle:[NSBundle mainBundle]];
     UIViewController *viewController =
