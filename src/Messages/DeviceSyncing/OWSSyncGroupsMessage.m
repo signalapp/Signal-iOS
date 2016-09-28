@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         if (![obj isKindOfClass:[TSGroupThread class]]) {
-            DDLogError(@"Unexpected class in group collection: %@", obj);
+            DDLogVerbose(@"Ignoring non group thread in thread collection: %@", obj);
             return;
         }
         TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
