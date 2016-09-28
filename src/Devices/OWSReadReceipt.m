@@ -7,9 +7,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const IndexOnSenderIdAndTimestamp = @"OWSReadReceiptIndexOnSenderIdAndTimestamp";
-NSString *const TimestampColumn = @"timestamp";
-NSString *const SenderIdColumn = @"senderId";
+NSString *const OWSReadReceiptIndexOnSenderIdAndTimestamp = @"OWSReadReceiptIndexOnSenderIdAndTimestamp";
+NSString *const OWSReadReceiptColumnTimestamp = @"timestamp";
+NSString *const OWSReadReceiptColumnSenderId = @"senderId";
 
 @implementation OWSReadReceipt
 
@@ -61,11 +61,11 @@ NSString *const SenderIdColumn = @"senderId";
     return [behaviorsByPropertyKey copy];
 }
 
-+ (void)registerIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database
++ (void)asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database
 {
     YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
-    [setup addColumn:SenderIdColumn withType:YapDatabaseSecondaryIndexTypeText];
-    [setup addColumn:TimestampColumn withType:YapDatabaseSecondaryIndexTypeInteger];
+    [setup addColumn:OWSReadReceiptColumnSenderId withType:YapDatabaseSecondaryIndexTypeText];
+    [setup addColumn:OWSReadReceiptColumnTimestamp withType:YapDatabaseSecondaryIndexTypeInteger];
 
     YapDatabaseSecondaryIndexHandler *handler =
         [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction,
@@ -75,24 +75,38 @@ NSString *const SenderIdColumn = @"senderId";
             id object) {
             if ([object isKindOfClass:[OWSReadReceipt class]]) {
                 OWSReadReceipt *readReceipt = (OWSReadReceipt *)object;
-                dict[SenderIdColumn] = readReceipt.senderId;
-                dict[TimestampColumn] = @(readReceipt.timestamp);
+                dict[OWSReadReceiptColumnSenderId] = readReceipt.senderId;
+                dict[OWSReadReceiptColumnTimestamp] = @(readReceipt.timestamp);
             }
         }];
 
     YapDatabaseSecondaryIndex *index = [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
-    [database registerExtension:index withName:IndexOnSenderIdAndTimestamp];
+
+    [database
+        asyncRegisterExtension:index
+                      withName:OWSReadReceiptIndexOnSenderIdAndTimestamp
+               completionBlock:^(BOOL ready) {
+                   if (ready) {
+                       DDLogDebug(@"%@ Successfully set up extension: %@",
+                           self.tag,
+                           OWSReadReceiptIndexOnSenderIdAndTimestamp);
+                   } else {
+                       DDLogError(
+                           @"%@ Unable to setup extension: %@", self.tag, OWSReadReceiptIndexOnSenderIdAndTimestamp);
+                   }
+               }];
 }
 
 + (nullable instancetype)firstWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp
 {
     __block OWSReadReceipt *foundReadReceipt;
 
-    NSString *queryFormat = [NSString stringWithFormat:@"WHERE %@ = ? AND %@ = ?", SenderIdColumn, TimestampColumn];
+    NSString *queryFormat = [NSString
+        stringWithFormat:@"WHERE %@ = ? AND %@ = ?", OWSReadReceiptColumnSenderId, OWSReadReceiptColumnTimestamp];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:queryFormat, senderId, @(timestamp)];
 
     [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [[transaction ext:IndexOnSenderIdAndTimestamp]
+        [[transaction ext:OWSReadReceiptIndexOnSenderIdAndTimestamp]
             enumerateKeysAndObjectsMatchingQuery:query
                                       usingBlock:^(NSString *collection, NSString *key, id object, BOOL *stop) {
                                           if (![object isKindOfClass:[OWSReadReceipt class]]) {

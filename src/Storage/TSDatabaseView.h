@@ -24,6 +24,6 @@ extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
 + (BOOL)registerUnreadDatabaseView;
-+ (BOOL)registerSecondaryDevicesDatabaseView;
++ (void)asyncRegisterSecondaryDevicesDatabaseView;
 
 @end

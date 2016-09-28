@@ -109,25 +109,17 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     };
 }
 
-- (void)setupDatabase {
+- (void)setupDatabase
+{
+    // Register extensions which are essential for rendering threads synchronously
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerBuddyConversationDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
-    [TSDatabaseView registerSecondaryDevicesDatabaseView];
+    [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
 
-    // Seeing this raise an exception-on-boot for some users, making it impossible to get any   good data.
-    @try {
-        [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    } @catch (NSException *exception) {
-        DDLogError(@"%@ Failed to register timetamp index with exception: %@ with reason: %@", self.tag, exception, exception.reason);
-    }
-
-    // Seeing this raise an exception-on-boot for some users, making it impossible to get any good data.
-    @try {
-        [OWSReadReceipt registerIndexOnSenderIdAndTimestampWithDatabase:self.database];
-    } @catch (NSException *exception) {
-        DDLogError(@"%@ Failed to register read receipt index with exception: %@ with reason: %@", self.tag, exception, exception.reason);
-    }
+    // Register extensions which aren't essential for rendering threads async
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
+    [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
 }
 
 - (void)protectSignalFiles {

@@ -209,14 +209,8 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
     }];
 }
 
-+ (BOOL)registerSecondaryDevicesDatabaseView
++ (void)asyncRegisterSecondaryDevicesDatabaseView
 {
-    YapDatabaseView *existingView =
-        [[TSStorageManager sharedManager].database registeredExtension:TSSecondaryDevicesDatabaseViewExtensionName];
-    if (existingView) {
-        return YES;
-    }
-
     YapDatabaseViewGrouping *viewGrouping =
         [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
             NSString *_Nonnull collection,
@@ -260,8 +254,16 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
     YapDatabaseView *view =
         [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    return [[TSStorageManager sharedManager].database registerExtension:view
-                                                               withName:TSSecondaryDevicesDatabaseViewExtensionName];
+    [[TSStorageManager sharedManager].database
+        asyncRegisterExtension:view
+                      withName:TSSecondaryDevicesGroup
+               completionBlock:^(BOOL ready) {
+                   if (ready) {
+                       DDLogDebug(@"%@ Successfully set up extension: %@", self.tag, TSSecondaryDevicesGroup);
+                   } else {
+                       DDLogError(@"%@ Unable to setup extension: %@", self.tag, TSSecondaryDevicesGroup);
+                   }
+               }];
 }
 
 + (NSDate *)localTimeReceiveDateForInteraction:(TSInteraction *)interaction {
@@ -276,6 +278,18 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
     }
 
     return interactionDate;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

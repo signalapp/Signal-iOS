@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
 
 + (nullable instancetype)firstWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
-+ (void)registerIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database;
++ (void)asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database;
 
 @end
 
