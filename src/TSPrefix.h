@@ -4,7 +4,7 @@
 #ifdef DEBUG
 static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-static const NSUInteger ddLogLevel = DDLogLevelWarning;
+static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
 
 #define BLOCK_SAFE_RUN(block, ...)                                                        \
