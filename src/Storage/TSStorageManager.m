@@ -32,19 +32,39 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 @end
 
-@implementation TSRecipient
+@interface OWSUnknownObject : NSObject <NSCoding>
+
+@end
+
+/**
+ * A default object to returned when we can't deserialize an object from YapDB. This can prevent crashes when
+ * old objects linger after their definition file is removed. The danger is that, the objects can lay in wait
+ * until the next time a DB extension is added and we necessarily enumerate the entire DB.
+ */
+@implementation OWSUnknownObject
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    DDLogWarn(@"Ignoring decoding signal recipient with coder.");
-
-    self = [super init];
     return nil;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    DDLogWarn(@"Ignoring encoding signal recipient with coder.");
+
+}
+
+@end
+
+@interface OWSUnarchiverDelegate : NSObject <NSKeyedUnarchiverDelegate>
+
+@end
+
+@implementation OWSUnarchiverDelegate
+
+- (nullable Class)unarchiver:(NSKeyedUnarchiver *)unarchiver cannotDecodeObjectOfClassName:(NSString *)name originalClasses:(NSArray<NSString *> *)classNames
+{
+    DDLogError(@"[OWSUnarchiverDelegate] Ignoring unknown class name: %@. Was the class definition deleted?", name);
+    return [OWSUnknownObject class];
 }
 
 @end
@@ -86,13 +106,17 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
  **/
 + (YapDatabaseDeserializer)logOnFailureDeserializer
 {
+    OWSUnarchiverDelegate *unarchiverDelegate = [OWSUnarchiverDelegate new];
+
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
             return nil;
         }
 
         @try {
-            return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+            unarchiver.delegate = unarchiverDelegate;
+            return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
             DDLogError(@"%@ Unarchiving key:%@ from collection:%@ and data %@ failed with error: %@",
@@ -103,8 +127,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
                 exception.reason);
             DDLogError(@"%@ Raising exception.", self.tag);
             @throw exception;
-            //            DDLogWarn(@"%@ Ignoring exception.", self.tag);
-            //            return nil;
         }
     };
 }
