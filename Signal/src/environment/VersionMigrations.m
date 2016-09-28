@@ -10,6 +10,7 @@
 
 #import "Environment.h"
 #import "LockInteractionController.h"
+#import "OWSDatabaseMigrationRunner.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "RecentCallManager.h"
@@ -25,6 +26,7 @@
 
 + (void)storeString:(NSString *)string forKey:(NSString *)key;
 + (void)storeData:(NSData *)data forKey:(NSString *)key;
+
 @end
 
 @implementation VersionMigrations
@@ -36,6 +38,9 @@
     NSString *previousVersion = Environment.preferences.lastRanVersion;
     if (!previousVersion) {
         DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
+        OWSDatabaseMigrationRunner *runner =
+            [[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]];
+        [runner assumeAllExistingMigrationsRun];
         [Environment.preferences setAndGetCurrentVersion];
         return;
     }
@@ -75,14 +80,7 @@
         });
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.5.2"] && [TSAccountManager isRegistered]) {
-        [[TSStorageManager sharedManager].dbConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                NSUInteger legacyRecipientCount = [transaction numberOfKeysInCollection:@"TSRecipient"];
-                DDLogWarn(@"Removing %lu objects from TSRecipient collection", (unsigned long)legacyRecipientCount);
-                [transaction removeAllObjectsInCollection:@"TSRecipient"];
-            }];
-    }
+    [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];
     [Environment.preferences setAndGetCurrentVersion];
 }
 
