@@ -99,7 +99,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    if ([TSAccountManager isRegistered]) {
+    // Avoid blocking app launch by putting all possible DB access in async thread.
+    [TSAccountManager runIfRegistered:^{
         if (application.applicationState == UIApplicationStateInactive) {
             [TSSocketManager becomeActiveFromForeground];
         } else if (application.applicationState == UIApplicationStateBackground) {
@@ -110,10 +111,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         [[PushManager sharedManager] validateUserNotificationSettings];
         [TSPreKeyManager refreshPreKeys];
-    }
+    }];
 
     [AppStoreRating setupRatingLibrary];
-
     return YES;
 }
 
@@ -185,12 +185,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if ([TSAccountManager isRegistered]) {
+    [TSAccountManager runIfRegistered:^{
         // We're double checking that the app is active, to be sure since we can't verify in production env due to code
         // signing.
         [TSSocketManager becomeActiveFromForeground];
         [[Environment getCurrent].contactsManager verifyABPermission];
-    }
+    }];
 
     [self removeScreenProtection];
 }
