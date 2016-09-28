@@ -15,6 +15,8 @@
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
+		45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */; };
+		45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */; };
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
@@ -524,6 +526,9 @@
 		453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesBubblesSizeCalculator.h; sourceTree = "<group>"; };
 		453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesBubblesSizeCalculator.m; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		45666F541D9B2827008FE134 /* OWSScrubbingLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScrubbingLogFormatter.h; sourceTree = "<group>"; };
+		45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScrubbingLogFormatter.m; sourceTree = "<group>"; };
+		45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScrubbingLogFormatterTest.m; sourceTree = "<group>"; };
 		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
 		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
 		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
@@ -1666,6 +1671,8 @@
 				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
+				45666F541D9B2827008FE134 /* OWSScrubbingLogFormatter.h */,
+				45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2050,6 +2057,7 @@
 				B660F6B21C29868000687D6E /* QueueTest.m */,
 				B660F6B31C29868000687D6E /* UtilTest.h */,
 				B660F6B41C29868000687D6E /* UtilTest.m */,
+				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2730,6 +2738,7 @@
 				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
+				45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */,
 				45C681C61D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
@@ -2982,6 +2991,7 @@
 				B660F77C1C29988E00687D6E /* Conversions.m in Sources */,
 				B660F77D1C29988E00687D6E /* Crc32.m in Sources */,
 				B660F77E1C29988E00687D6E /* DataUtil.m in Sources */,
+				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F77F1C29988E00687D6E /* DateUtil.m in Sources */,
 				B660F7801C29988E00687D6E /* DictionaryUtil.m in Sources */,
 				B660F7811C29988E00687D6E /* FunctionalUtil.m in Sources */,
