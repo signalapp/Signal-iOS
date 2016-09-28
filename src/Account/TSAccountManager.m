@@ -40,6 +40,11 @@
     return [TSStorageManager localNumber] ? YES : NO;
 }
 
++ (void)runIfRegistered:(void (^)())block
+{
+    [[TSStorageManager sharedManager] runIfHasLocalNumber:block];
+}
+
 + (void)didRegister {
     TSAccountManager *sharedManager = [self sharedInstance];
     __strong NSString *phoneNumber  = sharedManager.phoneNumberAwaitingVerification;

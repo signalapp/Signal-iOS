@@ -21,8 +21,8 @@ typedef void (^failedBlock)(NSError *error);
  *
  *  @return registered or not
  */
-
 + (BOOL)isRegistered;
++ (void)runIfRegistered:(void (^)())block;
 
 /**
  *  Returns registered number

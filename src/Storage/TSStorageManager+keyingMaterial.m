@@ -14,6 +14,17 @@
     return [[self sharedManager] stringForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection];
 }
 
+- (void)runIfHasLocalNumber:(void (^)())block
+{
+    [self.newDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        if ([transaction objectForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection]) {
+            block();
+        } else {
+            DDLogDebug(@"%@ Skipping block since no local number is registered", self.tag);
+        }
+    }];
+}
+
 + (NSString *)signalingKey {
     return [[self sharedManager] stringForKey:TSStorageServerSignalingKey inCollection:TSStorageUserAccountCollection];
 }
@@ -42,6 +53,18 @@
                 inCollection:TSStorageUserAccountCollection];
 
     }];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

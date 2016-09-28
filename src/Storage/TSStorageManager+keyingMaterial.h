@@ -33,8 +33,8 @@
  *
  *  @return E164 string of the registered phone number
  */
-
 + (NSString *)localNumber;
+- (void)runIfHasLocalNumber:(void (^)())block;
 
 + (void)storeServerToken:(NSString *)authToken signalingKey:(NSString *)signalingKey;
 
