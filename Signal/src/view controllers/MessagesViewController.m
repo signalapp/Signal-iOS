@@ -1475,14 +1475,27 @@ typedef enum : NSUInteger {
         DDLogError(@"Camera ImagePicker source not available");
         return;
     }
-
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-    picker.allowsEditing = NO;
-    picker.delegate = self;
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (status == AVAuthorizationStatusDenied) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CAMERA_PERMISSION_TITLE",nil) message:NSLocalizedString(@"CAMERA_PERMISSION_MESSAGE",nil) preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK",nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        }]];        
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE",nil) style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:alert animated:YES completion:[UIUtil modalCompletionBlock]];
+    } else if (status == AVAuthorizationStatusNotDetermined || status == AVAuthorizationStatusAuthorized) {
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+        picker.allowsEditing = NO;
+        picker.delegate = self;
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    } else {
+        DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
+    }
 }
+
 
 - (void)chooseFromLibrary {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
