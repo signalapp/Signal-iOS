@@ -133,7 +133,7 @@ CHECKOUT OPTIONS:
     :commit: ce1aa04b6193b47b82b44d529cca12c62fae4c48
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
-    :commit: 8096fef47d582bff8ae3758c9ae7af1d55ea53d6
+    :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
 
 SPEC CHECKSUMS:
@@ -155,7 +155,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SignalServiceKit: 4e7a552635e10f4d94f0a047fc6554e932340b30
-  SocketRocket: 3f77ec2104cc113add553f817ad90a77114f5d43
+  SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
