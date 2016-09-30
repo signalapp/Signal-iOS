@@ -256,7 +256,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
 
     [[TSStorageManager sharedManager].database
         asyncRegisterExtension:view
-                      withName:TSSecondaryDevicesGroup
+                      withName:TSSecondaryDevicesDatabaseViewExtensionName
                completionBlock:^(BOOL ready) {
                    if (ready) {
                        DDLogDebug(@"%@ Successfully set up extension: %@", self.tag, TSSecondaryDevicesGroup);
