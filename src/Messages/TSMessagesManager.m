@@ -26,6 +26,12 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 
+@interface TSMessagesManager ()
+
+@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+
+@end
+
 @implementation TSMessagesManager
 
 + (instancetype)sharedManager {
@@ -41,11 +47,14 @@
 {
     return [self initWithNetworkManager:[TSNetworkManager sharedManager]
                            dbConnection:[TSStorageManager sharedManager].newDatabaseConnection
+                        contactsManager:[TextSecureKitEnv sharedEnv].contactsManager
                         contactsUpdater:[ContactsUpdater sharedUpdater]];
+
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                           dbConnection:(YapDatabaseConnection *)dbConnection
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
 {
     self = [super init];
@@ -56,6 +65,7 @@
 
     _networkManager = networkManager;
     _dbConnection = dbConnection;
+    _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
 
     return self;
@@ -257,7 +267,7 @@
             DDLogInfo(@"Received request `Contacts` syncMessage.");
 
             OWSSyncContactsMessage *syncContactsMessage =
-                [[OWSSyncContactsMessage alloc] initWithContactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
+                [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
 
             [self sendTemporaryAttachment:[syncContactsMessage buildPlainTextAttachmentData]
                 contentType:OWSMimeTypeApplicationOctetStream
@@ -378,12 +388,7 @@
                                             messageType:TSInfoMessageTypeGroupUpdate
                                           customMessage:updateGroupInfo] saveWithTransaction:transaction];
           } else if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeQuit) {
-              NSString *nameString =
-                  [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:envelope.source];
-
-              if (!nameString) {
-                  nameString = envelope.source;
-              }
+              NSString *nameString = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
 
               NSString *updateGroupInfo =
                   [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];

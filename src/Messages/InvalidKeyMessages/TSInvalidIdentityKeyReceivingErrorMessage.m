@@ -2,10 +2,10 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
+#import "OWSFingerprint.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSFingerprintGenerator.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager.h"
@@ -13,6 +13,14 @@
 #import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseView.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface TSInvalidIdentityKeyReceivingErrorMessage ()
+
+@property (nonatomic, readonly, copy) NSString *authorId;
+
+@end
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
@@ -29,20 +37,21 @@
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
         [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
                                                     inThread:contactThread
-                                        incomingEnvelopeData:envelope.data];
+                                            incomingEnvelope:envelope];
     return errorMessage;
 }
 
 - (instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                               inThread:(TSThread *)thread
-                                  incomingEnvelopeData:(NSData *)envelopeData
+                                      incomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
         return self;
     }
 
-    _envelopeData = envelopeData;
+    _envelopeData = envelope.data;
+    _authorId = envelope.source;
 
     return self;
 }
@@ -108,9 +117,16 @@
     return [message.identityKey removeKeyType];
 }
 
-- (NSString *)newIdentityFingerprint
+- (NSString *)theirSignalId
 {
-    return [TSFingerprintGenerator getFingerprintForDisplay:[self newIdentityKey]];
+    if (self.authorId) {
+        return self.authorId;
+    } else {
+        // for existing messages before we were storing author id.
+        return self.envelope.source;
+    }
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

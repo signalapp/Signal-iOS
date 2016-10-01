@@ -24,6 +24,7 @@
 		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
+		6323E1F7730289398452E5C5 /* OWSFingerprintTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */; };
 		6323E339D5B8F4CB77EB3ED4 /* SignalRecipientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */; };
 		B6273DD61C13A2E500738558 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD51C13A2E500738558 /* main.m */; };
 		B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273DD81C13A2E500738558 /* AppDelegate.m */; };
@@ -63,6 +64,7 @@
 		45A856AB1D220BFF0056CD4D /* TSAttributesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttributesTest.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisionerTest.m; path = ../../../tests/Devices/OWSDeviceProvisionerTest.m; sourceTree = "<group>"; };
+		6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFingerprintTest.m; path = ../../../tests/Security/OWSFingerprintTest.m; sourceTree = "<group>"; };
 		6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalRecipientTest.m; path = ../../tests/Contacts/SignalRecipientTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6273DD51C13A2E500738558 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -141,6 +143,14 @@
 			);
 			name = Util;
 			path = ../../../tests/Util;
+			sourceTree = "<group>";
+		};
+		454AB2261D89CC6E006325C9 /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */,
+			);
+			name = Security;
 			sourceTree = "<group>";
 		};
 		459850BF1D22C6C4006FFEDB /* Contacts */ = {
@@ -251,6 +261,7 @@
 				459850BF1D22C6C4006FFEDB /* Contacts */,
 				45D7243D1D67894100E0CA54 /* Devices */,
 				45C6A0971D2F0254007D8AC0 /* Messages */,
+				454AB2261D89CC6E006325C9 /* Security */,
 				45458B6D1CC342B600A02153 /* Storage */,
 				45458B721CC342B600A02153 /* Util */,
 				B6273DF01C13A2E500738558 /* Info.plist */,
@@ -313,6 +324,7 @@
 				TargetAttributes = {
 					B6273DD01C13A2E500738558 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = U68MSDN6DR;
 					};
 					B6273DE91C13A2E500738558 = {
 						CreatedOnToolsVersion = 7.1.1;
@@ -483,6 +495,7 @@
 				45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */,
 				45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */,
 				6323E339D5B8F4CB77EB3ED4 /* SignalRecipientTest.m in Sources */,
+				6323E1F7730289398452E5C5 /* OWSFingerprintTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -603,6 +616,7 @@
 			baseConfigurationReference = 31DFDA8F9523F5B15EA2376B /* Pods-TSKitiOSTestApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
 				INFOPLIST_FILE = TSKitiOSTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.TSKitiOSTestApp;
@@ -615,6 +629,7 @@
 			baseConfigurationReference = 1A50A62A8930EE2BC9B8AC11 /* Pods-TSKitiOSTestApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
 				INFOPLIST_FILE = TSKitiOSTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.TSKitiOSTestApp;

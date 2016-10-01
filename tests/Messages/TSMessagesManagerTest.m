@@ -8,6 +8,7 @@
 #import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
+#import "ContactsManagerProtocol.h"
 #import "objc/runtime.h"
 
 @interface TSMessagesManagerTest : XCTestCase
@@ -139,6 +140,38 @@
 
 @end
 
+@interface OWSFakeContactsManager : NSObject <ContactsManagerProtocol>
+
+@end
+
+/**
+ * I don't know that this test relys on any of the specific behavior in this implementation.
+ * We're just trying to avoid setting up/accessing the TSEnv global. ~mjk
+ */
+@implementation OWSFakeContactsManager
+
+- (NSString *)nameStringForPhoneIdentifier:(NSString *)phoneNumber
+{
+    return @"Fake name";
+}
+
+- (NSArray<Contact *> *)signalContacts
+{
+    return @[];
+}
+
++ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString
+{
+    return YES;
+}
+
+- (UIImage *)imageForPhoneIdentifier:(NSString *)phoneNumber
+{
+    return nil;
+}
+
+@end
+
 @implementation TSMessagesManagerTest
 
 - (void)testIncomingSyncContactMessage
@@ -147,9 +180,11 @@
     XCTestExpectation *messageWasSubmitted = [self expectationWithDescription:@"message was submitted"];
     OWSTSMessagesManagerTestNetworkManager *fakeNetworkManager =
         [[OWSTSMessagesManagerTestNetworkManager alloc] initWithExpectation:messageWasSubmitted];
+    OWSFakeContactsManager *fakeContactsManager = [OWSFakeContactsManager new];
     TSMessagesManager *messagesManager =
         [[TSMessagesManager alloc] initWithNetworkManager:fakeNetworkManager
                                              dbConnection:[TSStorageManager sharedManager].newDatabaseConnection
+                                          contactsManager:fakeContactsManager
                                           contactsUpdater:fakeContactsUpdater];
 
     OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];

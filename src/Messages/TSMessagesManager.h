@@ -11,11 +11,13 @@
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosDataMessage;
 @class ContactsUpdater;
+@protocol ContactsManagerProtocol;
 
 @interface TSMessagesManager : NSObject
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                           dbConnection:(YapDatabaseConnection *)dbConnection
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;

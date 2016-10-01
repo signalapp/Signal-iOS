@@ -7,9 +7,12 @@
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSOutgoingMessage.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class PreKeyBundle;
+@class TSOutgoingMessage;
+@class TSThread;
 
 @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
@@ -22,6 +25,8 @@
                                    preKeyBundle:(PreKeyBundle *)preKeyBundle
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (NSString *)recipientId;
+@property (nonatomic, readonly) NSString *recipientId;
 
 @end
+
+NS_ASSUME_NONNULL_END

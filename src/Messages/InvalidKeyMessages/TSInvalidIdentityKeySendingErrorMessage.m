@@ -2,20 +2,21 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
+#import "OWSFingerprint.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSFingerprintGenerator.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSInvalidIdentityKeySendingErrorMessage ()
 
 @property (nonatomic, readonly) PreKeyBundle *preKeyBundle;
-@property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSString *messageId;
 
 @end
@@ -55,9 +56,9 @@
 
 - (void)acceptNewIdentityKey
 {
-    [[TSStorageManager sharedManager] saveRemoteIdentity:[self newKey] recipientId:self.recipientId];
+    [[TSStorageManager sharedManager] saveRemoteIdentity:self.newIdentityKey recipientId:self.recipientId];
 
-    __block TSOutgoingMessage *message;
+    __block TSOutgoingMessage *_Nullable message;
     __block TSThread *thread;
     __block SignalRecipient *recipient;
 
@@ -89,15 +90,16 @@
     }
 }
 
-- (NSString *)newIdentityFingerprint
+- (NSData *)newIdentityKey
 {
-    NSData *identityKey = [self newKey];
-
-    return [TSFingerprintGenerator getFingerprintForDisplay:identityKey];
-}
-
-- (NSData *)newKey {
     return [self.preKeyBundle.identityKey removeKeyType];
 }
 
+- (NSString *)theirSignalId
+{
+    return self.recipientId;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

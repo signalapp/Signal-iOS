@@ -10,8 +10,14 @@
 
 @implementation TSStorageManager (keyingMaterial)
 
-+ (NSString *)localNumber {
-    return [[self sharedManager] stringForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection];
++ (NSString *)localNumber
+{
+    return [[self sharedManager] localNumber];
+}
+
+- (NSString *)localNumber
+{
+    return [self stringForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection];
 }
 
 - (void)runIfHasLocalNumber:(void (^)())block

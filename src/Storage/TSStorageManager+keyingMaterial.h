@@ -33,6 +33,7 @@
  *
  *  @return E164 string of the registered phone number
  */
+- (NSString *)localNumber;
 + (NSString *)localNumber;
 - (void)runIfHasLocalNumber:(void (^)())block;
 
