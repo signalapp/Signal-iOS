@@ -307,7 +307,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
         OWSDevice *device = [self deviceForRowAtIndexPath:indexPath];
         [self touchedUnlinkControlForDevice:device
                                     success:^{
-                                        DDLogInfo(@"Removing unlinked device with deviceId: %ld", device.deviceId);
+                                        DDLogInfo(@"Removing unlinked device with deviceId: %ld", (long)device.deviceId);
                                         [device remove];
                                     }];
     }

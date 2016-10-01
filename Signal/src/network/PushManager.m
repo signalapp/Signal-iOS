@@ -28,6 +28,7 @@
 @property UILocalNotification *lastCallNotification;
 @property (nonatomic, retain) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
 @end
 
@@ -44,17 +45,20 @@
 
 - (instancetype)init {
     self = [super init];
-    if (self) {
-        self.notificationTracker = [NotificationTracker notificationTracker];
-        self.missingPermissionsAlertView =
-            [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                       message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
-                                      delegate:nil
-                             cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                             otherButtonTitles:nil, nil];
-        _callBackgroundTask       = UIBackgroundTaskInvalid;
-        self.currentNotifications = [NSMutableArray array];
+    if (!self) {
+        return self;
     }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _notificationTracker = [NotificationTracker notificationTracker];
+    _missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                                                              message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
+                                                             delegate:nil
+                                                    cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                    otherButtonTitles:nil, nil];
+    _callBackgroundTask = UIBackgroundTaskInvalid;
+    _currentNotifications = [NSMutableArray array];
+
     return self;
 }
 
@@ -86,9 +90,7 @@
             UILocalNotification *notification = [[UILocalNotification alloc] init];
 
             NSString *callerId   = call.initiatorNumber.toE164;
-            NSString *nameString = [[Environment getCurrent].contactsManager nameStringForPhoneIdentifier:callerId];
-
-            NSString *displayName          = nameString ? nameString : callerId;
+            NSString *displayName = [self.contactsManager nameStringForPhoneIdentifier:callerId];
             PropertyListPreferences *prefs = [Environment preferences];
 
             notification.alertBody = @"☎️ ";
@@ -211,7 +213,7 @@
     } else if ([identifier isEqualToString:Signal_CallBack_Identifier]) {
         NSString *contactId = notification.userInfo[Signal_Call_UserInfo_Key];
         PhoneNumber *number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-        Contact *contact    = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:number];
+        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
         [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]) {
         [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
