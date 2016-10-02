@@ -43,9 +43,7 @@ const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
     self.messageBubbleContainerView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.messageBubbleContainerView.layer.borderWidth = 0.75f;
     self.messageBubbleContainerView.layer.cornerRadius = 5.0f;
-    self.cellLabel.textAlignment = NSTextAlignmentCenter;
-    self.cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0f];
-    self.cellLabel.textColor = [UIColor lightGrayColor];
+    self.cellLabel.textColor = [UIColor darkGrayColor];
 }
 
 #pragma mark - Collection view cell

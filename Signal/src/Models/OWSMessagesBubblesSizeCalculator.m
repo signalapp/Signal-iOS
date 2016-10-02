@@ -28,8 +28,14 @@
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
 
         if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
-            // One-line error messages feel a little cramped, but multiline are OK as is.
-            superSize.height = fmax(superSize.height, OWSDisplayedMessageCellMinimumHeight);
+            // DDLogVerbose(@"[OWSMessagesBubblesSizeCalculator] superSize.height:%f, superSize.width:%f",
+            //     superSize.height,
+            //     superSize.width);
+
+            // header icon hangs ouside of the frame a bit.
+            CGFloat headerIconProtrusion = 30.0f; // too  much padding with normal font.
+            // CGFloat headerIconProtrusion = 18.0f; // clips
+            superSize.height = superSize.height + headerIconProtrusion;
         }
     }
 

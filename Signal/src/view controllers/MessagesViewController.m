@@ -1010,7 +1010,6 @@ typedef enum : NSUInteger {
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 
     infoCell.cellLabel.text = [infoMessage text];
-    infoCell.cellLabel.textColor = [UIColor darkGrayColor];
     infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
 
@@ -1022,7 +1021,6 @@ typedef enum : NSUInteger {
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     errorCell.cellLabel.text = [errorMessage text];
-    errorCell.cellLabel.textColor = [UIColor darkGrayColor];
     errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
 
