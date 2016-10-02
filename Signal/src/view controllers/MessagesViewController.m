@@ -19,6 +19,7 @@
 #import "OWSCallCollectionViewCell.h"
 #import "OWSContactInfoTableViewController.h"
 #import "OWSContactsManager.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSErrorMessage.h"
 #import "OWSExpirableMessageView.h"
@@ -118,6 +119,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+
 @property NSCache *messageAdapterCache;
 
 @end
@@ -138,6 +141,7 @@ typedef enum : NSUInteger {
 
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
+    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
 
     return self;
 }
@@ -151,6 +155,7 @@ typedef enum : NSUInteger {
 
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
+    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
 
     return self;
 }
@@ -2131,6 +2136,9 @@ typedef enum : NSUInteger {
 - (void)markAllMessagesAsRead
 {
     [self.thread markAllAsRead];
+    // In theory this should be unnecessary as read-status starts expiration
+    // but in practice I've seen messages not have their timer started.
+    [self.disappearingMessagesJob setExpirationsForThread:self.thread];
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView
