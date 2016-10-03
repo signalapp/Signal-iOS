@@ -111,6 +111,11 @@
      */
     size_t bufferSize = [dataToEncrypt length] + kCCBlockSizeAES128;
     void *buffer      = malloc(bufferSize);
+    
+    if (buffer == NULL) {
+        DDLogError(@"Failed to allocate memory.");
+        return nil;
+    }
 
     size_t bytesEncrypted       = 0;
     CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
@@ -189,6 +194,11 @@
     // decrypt
     size_t bufferSize = [dataToDecrypt length] + kCCBlockSizeAES128;
     void *buffer      = malloc(bufferSize);
+    
+    if (buffer == NULL) {
+        DDLogError(@"Failed to allocate memory.");
+        return nil;
+    }
 
     size_t bytesDecrypted       = 0;
     CCCryptorStatus cryptStatus = CCCrypt(kCCDecrypt,
