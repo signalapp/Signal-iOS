@@ -8,7 +8,7 @@
 
 #import "FingerprintViewController.h"
 #import "DJWActionSheet+OWS.h"
-#import "OWSContactInfoTableViewController.h"
+#import "OWSConversationSettingsTableViewController.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/TSInfoMessage.h>

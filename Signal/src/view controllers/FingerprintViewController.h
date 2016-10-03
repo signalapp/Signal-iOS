@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 @class OWSFingerprint;
-@class OWSContactInfoTableViewController;
+@class OWSConversationSettingsTableViewController;
 
 @interface FingerprintViewController : UIViewController <OWSQRScannerDelegate>
 
-@property (nullable) OWSContactInfoTableViewController *dismissDelegate;
+@property (nullable) OWSConversationSettingsTableViewController *dismissDelegate;
 
 - (void)configureWithThread:(TSThread *)thread
                 fingerprint:(OWSFingerprint *)fingerprint

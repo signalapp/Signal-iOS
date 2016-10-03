@@ -25,6 +25,12 @@ then
   exit 1
 fi
 
+if [[ ! -e $TARGET ]]
+then
+  echo "No file exists at ${TARGET}"
+  exit 1
+fi
+
 # pwd.
 OUTPUT_DIR=en.lproj/
 mkdir -p "${OUTPUT_DIR}"

@@ -14,8 +14,8 @@
 		450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
 		450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
-		452E3C8E1D935C77002A45B0 /* OWSContactInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSContactInfoTableViewController.m */; };
-		452E3C8F1D935C77002A45B0 /* OWSContactInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSContactInfoTableViewController.m */; };
+		452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
+		452E3C8F1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
 		453D28B31D32B87100D523F0 /* OWSErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B01D32B87100D523F0 /* OWSErrorMessage.m */; };
 		453D28B41D32B87100D523F0 /* OWSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B21D32B87100D523F0 /* OWSInfoMessage.m */; };
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
@@ -405,7 +405,6 @@
 		B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */; };
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; };
-		B6B2269A1BE4C59200860F4D /* APNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B226991BE4C59200860F4D /* APNavigationController.m */; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */; };
 		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
@@ -535,8 +534,8 @@
 		450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSExpirableMessageView.h; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
-		452E3C8C1D935C77002A45B0 /* OWSContactInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactInfoTableViewController.h; sourceTree = "<group>"; };
-		452E3C8D1D935C77002A45B0 /* OWSContactInfoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactInfoTableViewController.m; sourceTree = "<group>"; };
+		452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsTableViewController.h; sourceTree = "<group>"; };
+		452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = OWSConversationSettingsTableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		453D28AF1D32B87100D523F0 /* OWSErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSErrorMessage.h; sourceTree = "<group>"; };
 		453D28B01D32B87100D523F0 /* OWSErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSErrorMessage.m; sourceTree = "<group>"; };
@@ -975,8 +974,6 @@
 		B6B1013A196D213F007E3930 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
 		B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
 		B6B226961BE4B7D200860F4D /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
-		B6B226981BE4C59200860F4D /* APNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APNavigationController.h; sourceTree = "<group>"; };
-		B6B226991BE4C59200860F4D /* APNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APNavigationController.m; sourceTree = "<group>"; };
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushManager.h; sourceTree = "<group>"; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManager.m; sourceTree = "<group>"; };
 		B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockInteractionController.h; sourceTree = "<group>"; };
@@ -1078,8 +1075,8 @@
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
-		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
-		FC31962C1A06A2190094C78E /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
+		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FingerprintViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		FC31962C1A06A2190094C78E /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FingerprintViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		FC31962E1A0814130094C78E /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
 		FC31962F1A0814130094C78E /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -1093,7 +1090,7 @@
 		FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InboxTableViewCell.h; path = "../view controllers/InboxTableViewCell.h"; sourceTree = "<group>"; };
 		FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InboxTableViewCell.m; path = "../view controllers/InboxTableViewCell.m"; sourceTree = "<group>"; };
 		FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
-		FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
+		FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = MessagesViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FCB11D911A12A4AA002F93FB /* FullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullImageViewController.h; sourceTree = "<group>"; };
 		FCB11D921A12A4AA002F93FB /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
@@ -1768,8 +1765,6 @@
 				FC3196311A08141D0094C78E /* Settings */,
 				FC3196321A08142D0094C78E /* Signals */,
 				FCFD25791A1543D500F4C644 /* Signup */,
-				B6B226981BE4C59200860F4D /* APNavigationController.h */,
-				B6B226991BE4C59200860F4D /* APNavigationController.m */,
 				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
 				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
 				76EB050B18170B33006006FC /* InCallViewController.h */,
@@ -2358,8 +2353,8 @@
 				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
 				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
-				452E3C8C1D935C77002A45B0 /* OWSContactInfoTableViewController.h */,
-				452E3C8D1D935C77002A45B0 /* OWSContactInfoTableViewController.m */,
+				452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */,
+				452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */,
 			);
 			name = Signals;
 			sourceTree = "<group>";
@@ -2839,7 +2834,7 @@
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
 				76EB05F018170B33006006FC /* PhoneManager.m in Sources */,
-				452E3C8E1D935C77002A45B0 /* OWSContactInfoTableViewController.m in Sources */,
+				452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */,
 				E197B60F18BBEC1A00F073E5 /* EncodedAudioFrame.m in Sources */,
 				76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */,
 				76EB05E618170B33006006FC /* CallController.m in Sources */,
@@ -2897,7 +2892,6 @@
 				76EB059218170B33006006FC /* UnrecognizedRequestFailure.m in Sources */,
 				76EB05F818170B33006006FC /* CallConnectUtil_Initiator.m in Sources */,
 				B62F5E101C2980B4000D370C /* NSData+ows_StripToken.m in Sources */,
-				B6B2269A1BE4C59200860F4D /* APNavigationController.m in Sources */,
 				45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */,
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
@@ -3097,7 +3091,7 @@
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				B660F6CF1C29868000687D6E /* SessionDescriptorTest.m in Sources */,
 				B660F6C81C29868000687D6E /* PregeneratedKeyAgreementParticipantProtocol.m in Sources */,
-				452E3C8F1D935C77002A45B0 /* OWSContactInfoTableViewController.m in Sources */,
+				452E3C8F1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */,
 				B660F6BC1C29868000687D6E /* DnsManagerTest.m in Sources */,
 				B660F6B61C29868000687D6E /* AudioRemoteIOTest.m in Sources */,
 				B660F6D71C29868000687D6E /* Crc32Test.m in Sources */,

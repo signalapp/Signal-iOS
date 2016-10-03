@@ -17,8 +17,8 @@
 #import "NewGroupViewController.h"
 #import "OWSCall.h"
 #import "OWSCallCollectionViewCell.h"
-#import "OWSContactInfoTableViewController.h"
 #import "OWSContactsManager.h"
+#import "OWSConversationSettingsTableViewController.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSErrorMessage.h"
@@ -29,7 +29,6 @@
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
 #import "PreferencesUtil.h"
-#import "ShowGroupMembersViewController.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
@@ -37,6 +36,7 @@
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
+#import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -72,9 +72,7 @@
 #define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
-static NSString *const OWSMessagesViewControllerSegueUpdateGroup = @"updateGroupSegue";
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
-static NSString *const OWSMessagesViewControllerSegueShowGroupMembers = @"showGroupMembersSegue";
 static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
     @"OWSMessagesViewControllerSeguePushConversationSettings";
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
@@ -209,7 +207,6 @@ typedef enum : NSUInteger {
     if (self.userLeftGroup) {
         [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
         [self.inputToolbar endEditing:TRUE];
-        self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
@@ -219,8 +216,6 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    self.navController = (APNavigationController *)self.navigationController;
 
     // JSQMVC width is 375px at this point (as specified by the xib), but this causes
     // our initial bubble calculations to be off since they happen before the containing
@@ -333,6 +328,10 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // We need to recheck on every appearance, since the user may have left the group in the settings VC,
+    // or on another device.
+    [self hideInputIfNeeded];
+
     [self toggleObservers:YES];
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
@@ -376,7 +375,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar.contentView.textView endEditing:YES];
 
     self.inputToolbar.contentView.textView.editable = YES;
-    if (_composeOnOpen) {
+    if (_composeOnOpen && !self.inputToolbar.hidden) {
         [self popKeyBoard];
     }
 }
@@ -395,11 +394,6 @@ typedef enum : NSUInteger {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
-
-    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
-        // back button was pressed.
-        [self.navController hideDropDown:self];
-    }
 
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
@@ -436,109 +430,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
-// Group update menu
-- (void)didTapManageGroupButton:(id)sender
-{
-    if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring group manage tap since user left group", self.tag);
-        return;
-    }
-
-    if (isGroupConversation) {
-        UIBarButtonItem *spaceEdge =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-
-        spaceEdge.width = 40;
-
-        UIBarButtonItem *spaceMiddleIcons =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-        spaceMiddleIcons.width = 61;
-
-        UIBarButtonItem *spaceMiddleWords =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                          target:nil
-                                                          action:nil];
-
-        NSDictionary *buttonTextAttributes = @{
-            NSFontAttributeName : [UIFont ows_regularFontWithSize:15.0f],
-            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor]
-        };
-
-
-        UIButton *groupUpdateButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 65, 24)];
-        NSMutableAttributedString *updateTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"UPDATE_BUTTON_TITLE", @"")];
-        [updateTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [updateTitle length])];
-        [groupUpdateButton setAttributedTitle:updateTitle forState:UIControlStateNormal];
-        [groupUpdateButton addTarget:self action:@selector(updateGroup) forControlEvents:UIControlEventTouchUpInside];
-        [groupUpdateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [groupUpdateButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-        UIBarButtonItem *groupUpdateBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupUpdateBarButton.customView                        = groupUpdateButton;
-        groupUpdateBarButton.customView.userInteractionEnabled = YES;
-
-        UIButton *groupLeaveButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 24)];
-        NSMutableAttributedString *leaveTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"")];
-        [leaveTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [leaveTitle length])];
-        [groupLeaveButton setAttributedTitle:leaveTitle forState:UIControlStateNormal];
-        [groupLeaveButton addTarget:self action:@selector(leaveGroup) forControlEvents:UIControlEventTouchUpInside];
-        [groupLeaveButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        UIBarButtonItem *groupLeaveBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupLeaveBarButton.customView                        = groupLeaveButton;
-        groupLeaveBarButton.customView.userInteractionEnabled = YES;
-        [groupLeaveButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-        UIButton *groupMembersButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 65, 24)];
-        NSMutableAttributedString *membersTitle =
-            [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"MEMBERS_BUTTON_TITLE", @"")];
-        [membersTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [membersTitle length])];
-        [groupMembersButton setAttributedTitle:membersTitle forState:UIControlStateNormal];
-        [groupMembersButton addTarget:self
-                               action:@selector(showGroupMembers)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [groupMembersButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        UIBarButtonItem *groupMembersBarButton =
-            [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil];
-        groupMembersBarButton.customView                        = groupMembersButton;
-        groupMembersBarButton.customView.userInteractionEnabled = YES;
-        [groupMembersButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
-
-
-        self.navController.dropDownToolbar.items = @[
-            spaceEdge,
-            groupUpdateBarButton,
-            spaceMiddleWords,
-            groupLeaveBarButton,
-            spaceMiddleWords,
-            groupMembersBarButton,
-            spaceEdge
-        ];
-
-        for (UIButton *button in self.navController.dropDownToolbar.items) {
-            [button setTintColor:[UIColor ows_materialBlueColor]];
-        }
-        if (self.navController.isDropDownVisible) {
-            [self.navController hideDropDown:sender];
-        } else {
-            [self.navController showDropDown:sender];
-        }
-        // Can also toggle toolbar from current state
-        // [self.navController toggleToolbar:sender];
-        [self setNavigationTitle];
-    }
-}
-
 - (void)setNavigationTitle
 {
     NSString *navTitle = self.thread.name;
     if (isGroupConversation && [navTitle length] == 0) {
         navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
-    self.navController.activeNavigationBarTitle = nil;
     self.title = navTitle;
 }
 
@@ -546,8 +443,12 @@ typedef enum : NSUInteger {
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 
 {
-    NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
+    if (self.userLeftGroup) {
+        self.navigationItem.rightBarButtonItems = @[];
+        return;
+    }
 
+    NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
     if ([self canCall]) {
         UIBarButtonItem *callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btnPhone--white"]
                                                                        style:UIBarButtonItemStylePlain
@@ -564,8 +465,6 @@ typedef enum : NSUInteger {
         // Hack to shrink button image
         manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
         [barButtons addObject:manageGroupButton];
-    } else {
-        DDLogError(@"Thread was neither group thread nor callable");
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
@@ -588,8 +487,6 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
-
-    [self hideInputIfNeeded];
 }
 
 - (void)setupTitleLabelGestureRecognizer
@@ -670,89 +567,6 @@ typedef enum : NSUInteger {
         [builder fingerprintWithTheirSignalId:self.thread.contactIdentifier theirIdentityKey:theirIdentityKey];
     [self markAllMessagesAsRead];
     [self performSegueWithIdentifier:OWSMessagesViewControllerSegueShowFingerprint sender:fingerprint];
-}
-
-// TODO deprecated. Move this functionality into conversation settings controller.
-- (void)toggleContactPhone {
-    // disabled since we're going to settings.
-    //    _displayPhoneAsTitle = !_displayPhoneAsTitle;
-
-    if (!_thread.isGroupThread) {
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:[self phoneNumberForThread]];
-        if (!contact) {
-            if (!(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(NSFoundationVersionNumber_iOS_9))) {
-                ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
-
-                ABRecordRef aContact = ABPersonCreate();
-                CFErrorRef anError   = NULL;
-
-                ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-
-                ABMultiValueAddValueAndLabel(
-                    phone, (__bridge CFTypeRef)[self phoneNumberForThread].toE164, kABPersonPhoneMainLabel, NULL);
-
-                ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
-                CFRelease(phone);
-
-                if (!anError && aContact) {
-                    view.displayedPerson           = aContact; // Assume person is already defined.
-                    view.allowsAddingToAddressBook = YES;
-                    [self.navigationController pushViewController:view animated:YES];
-                }
-            } else {
-                CNContactStore *contactStore = self.contactsManager.contactStore;
-
-                CNMutableContact *cncontact = [[CNMutableContact alloc] init];
-                cncontact.phoneNumbers      = @[
-                    [CNLabeledValue
-                        labeledValueWithLabel:nil
-                                        value:[CNPhoneNumber
-                                                  phoneNumberWithStringValue:[self phoneNumberForThread].toE164]]
-                ];
-
-                CNContactViewController *controller =
-                    [CNContactViewController viewControllerForUnknownContact:cncontact];
-                controller.allowsActions = NO;
-                controller.allowsEditing = YES;
-                controller.contactStore  = contactStore;
-
-                [self.navigationController pushViewController:controller animated:YES];
-
-                // The "Add to existing contacts" is known to be destroying the view controller stack on iOS 9
-                // http://stackoverflow.com/questions/32973254/cncontactviewcontroller-forunknowncontact-unusable-destroys-interface
-
-                // Warning the user
-                UIAlertController *alertController = [UIAlertController
-                    alertControllerWithTitle:@"iOS 9 Bug"
-                                     message:@"iOS 9 introduced a bug that prevents us from adding this number to an "
-                                             @"existing contact from the app. You can still create a new contact for "
-                                             @"this number or copy-paste it into an existing contact sheet."
-                              preferredStyle:UIAlertControllerStyleAlert];
-
-
-                [alertController
-                    addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleCancel handler:nil]];
-
-                [alertController
-                    addAction:[UIAlertAction actionWithTitle:@"Copy number"
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *_Nonnull action) {
-                                                       UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-                                                       pasteboard.string        = [self phoneNumberForThread].toE164;
-                                                       [controller.navigationController popViewControllerAnimated:YES];
-                                                     }]];
-
-                [controller presentViewController:alertController animated:YES completion:nil];
-            }
-        }
-    }
-
-    [self setNavigationTitle];
-}
-
-- (void)showGroupMembers {
-    [self.navController hideDropDown:self];
-    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueShowGroupMembers sender:self];
 }
 
 #pragma mark - Calls
@@ -1199,28 +1013,28 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettings
 {
+    if (self.userLeftGroup) {
+        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
+        return;
+    }
     [self performSegueWithIdentifier:OWSMessagesViewControllerSeguePushConversationSettings sender:self];
 }
 
 - (void)didTapTitle
 {
-    if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring title tap since user left group", self.tag);
-        return;
-    }
+    DDLogDebug(@"%@ Tapped title in navbar", self.tag);
+    [self showConversationSettings];
+}
 
-    DDLogDebug(@"%@ Tapped title", self.tag);
+- (void)didTapManageGroupButton:(id)sender
+{
+    DDLogDebug(@"%@ Tapped options menu in navbar", self.tag);
     [self showConversationSettings];
 }
 
 - (void)didTapTimerInNavbar
 {
-    if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring timer tap since user left group", self.tag);
-        return;
-    }
-
-    DDLogDebug(@"%@ Tapped navbar title", self.tag);
+    DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
     [self showConversationSettings];
 }
 
@@ -1621,20 +1435,9 @@ typedef enum : NSUInteger {
 
         NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:fingerprint.theirStableId];
         [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
-    } else if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueUpdateGroup]) {
-        NewGroupViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
-    } else if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueShowGroupMembers]) {
-        ShowGroupMembersViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
-    } else if ([segue.destinationViewController isKindOfClass:[OWSContactInfoTableViewController class]]) {
-        // TODO flesh this out. reduce duplication... can this stuff be wrapped up in a recipient object?
-        OWSContactInfoTableViewController *controller = (OWSContactInfoTableViewController *)segue.destinationViewController;
-
-        if (![self.thread isKindOfClass:[TSContactThread class]]) {
-            DDLogError(
-                @"%@ Unexpectedly segueing to show contact info with non-contact thread: %@", self.tag, self.thread);
-        }
+    } else if ([segue.destinationViewController isKindOfClass:[OWSConversationSettingsTableViewController class]]) {
+        OWSConversationSettingsTableViewController *controller
+            = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
         [controller configureWithThread:self.thread];
     }
 
@@ -2185,32 +1988,6 @@ typedef enum : NSUInteger {
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
     [[self messageAtIndexPath:indexPath] performEditingAction:action];
-}
-
-- (void)updateGroup {
-    [self.navController hideDropDown:self];
-
-    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueUpdateGroup sender:self];
-}
-
-- (void)leaveGroup
-{
-    [self.navController hideDropDown:self];
-
-    TSGroupThread *gThread     = (TSGroupThread *)_thread;
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:gThread
-                                                                  messageBody:@""
-                                                                attachmentIds:[NSMutableArray new]];
-    message.groupMetaMessage = TSGroupMessageQuit;
-    [[TSMessagesManager sharedManager] sendMessage:message inThread:gThread success:nil failure:nil];
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-      [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
-      gThread.groupModel.groupMemberIds = newGroupMemberIds;
-      [gThread saveWithTransaction:transaction];
-    }];
-    [self hideInputIfNeeded];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
