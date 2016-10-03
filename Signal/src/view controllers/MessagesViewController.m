@@ -189,6 +189,16 @@ typedef enum : NSUInteger {
     [self updateLoadEarlierVisible];
 }
 
+- (BOOL)userLeftGroup
+{
+    if (![_thread isKindOfClass:[TSGroupThread class]]) {
+        return NO;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]];
+}
+
 - (void)hideInputIfNeeded {
     if (_peek) {
         [self inputToolbar].hidden = YES;
@@ -196,13 +206,10 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([_thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        if (![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-            [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
-            [self.inputToolbar endEditing:TRUE];
-            self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
-        }
+    if (self.userLeftGroup) {
+        [self inputToolbar].hidden = YES; // user has requested they leave the group. further sends disallowed
+        [self.inputToolbar endEditing:TRUE];
+        self.navigationItem.rightBarButtonItem = nil; // further group action disallowed
     } else {
         [self inputToolbar].hidden = NO;
         [self loadDraftInCompose];
@@ -432,6 +439,11 @@ typedef enum : NSUInteger {
 // Group update menu
 - (void)didTapManageGroupButton:(id)sender
 {
+    if (self.userLeftGroup) {
+        DDLogDebug(@"%@ Ignoring group manage tap since user left group", self.tag);
+        return;
+    }
+
     if (isGroupConversation) {
         UIBarButtonItem *spaceEdge =
             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -1192,12 +1204,22 @@ typedef enum : NSUInteger {
 
 - (void)didTapTitle
 {
+    if (self.userLeftGroup) {
+        DDLogDebug(@"%@ Ignoring title tap since user left group", self.tag);
+        return;
+    }
+
     DDLogDebug(@"%@ Tapped title", self.tag);
     [self showConversationSettings];
 }
 
 - (void)didTapTimerInNavbar
 {
+    if (self.userLeftGroup) {
+        DDLogDebug(@"%@ Ignoring timer tap since user left group", self.tag);
+        return;
+    }
+
     DDLogDebug(@"%@ Tapped navbar title", self.tag);
     [self showConversationSettings];
 }
