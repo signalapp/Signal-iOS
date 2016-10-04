@@ -129,14 +129,6 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 {
     [super viewDidLoad];
 
-    // Only show fingerprint for contact threads
-    self.verifyPrivacyCell.hidden = self.isGroupThread;
-
-    // Only show group management cells for group thread
-    self.updateGroupCell.hidden = !self.isGroupThread;
-    self.leaveGroupCell.hidden = !self.isGroupThread;
-    self.listGroupMembersCell.hidden = !self.isGroupThread;
-
     self.nameLabel.text = self.contactName;
     if (self.signalId) {
         self.signalIdLabel.text =
@@ -223,13 +215,52 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 #pragma mark - UITableViewDelegate
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSInteger baseCount = [super tableView:tableView numberOfRowsInSection:section];
+
+    if (section == OWSConversationSettingsTableViewControllerSectionGroup) {
+        if (self.isGroupThread) {
+            return baseCount;
+        } else {
+            return 0;
+        }
+    }
+
+    if (section == OWSConversationSettingsTableViewControllerSectionContact) {
+        if (self.isGroupThread) {
+            // No fingerprint for group thread.
+            baseCount -= 1;
+        }
+
+        if (!self.disappearingMessagesSwitch.isOn) {
+            // hide duration slider when disappearing messages is off.
+            baseCount -= 1;
+        }
+    }
+    return baseCount;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+    if (self.isGroupThread && indexPath.section == OWSConversationSettingsTableViewControllerSectionContact) {
+
+        // Since fingerprint cell is hidden for group threads we offset our index path
+        NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
+        return [super tableView:tableView cellForRowAtIndexPath:offsetIndexPath];
+    }
+
+    return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
-    if (cell.hidden) {
-        return 0;
-    } else if (cell == self.disappearingMessagesDurationCell && !self.disappearingMessagesSwitch.isOn) {
-        return 0;
+    if (cell == self.disappearingMessagesDurationCell) {
+        NSIndexPath *originalDurationSliderIndexPath = [NSIndexPath
+            indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration
+                  inSection:OWSConversationSettingsTableViewControllerSectionContact];
+        return [super tableView:tableView heightForRowAtIndexPath:originalDurationSliderIndexPath];
     } else {
         return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
@@ -338,15 +369,35 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    // Animate show/hide of duration settings.
-    [self.tableView beginUpdates];
     self.disappearingMessagesConfiguration.enabled = flag;
 
-    // Normally, this is a no-op, but it allows us to use this method to set the switch programatically.
+    // When this message is called as a result of the switch being flipped, this will be a no-op
+    // but it allows us to resuse the method to set the switch programmatically in view setup.
     self.disappearingMessagesSwitch.on = flag;
-
     [self durationSliderDidChange:self.disappearingMessagesDurationSlider];
-    [self.tableView endUpdates];
+
+    // Animate show/hide of duration settings.
+    if (flag) {
+        [self.tableView insertRowsAtIndexPaths:@[ self.indexPathForDurationSlider ]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else {
+
+        [self.tableView deleteRowsAtIndexPaths:@[ self.indexPathForDurationSlider ]
+                              withRowAnimation:UITableViewRowAnimationTop];
+    }
+}
+
+- (NSIndexPath *)indexPathForDurationSlider
+{
+    if (self.isGroupThread) {
+        return [NSIndexPath
+            indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration - 1
+                  inSection:OWSConversationSettingsTableViewControllerSectionContact];
+    } else {
+        return [NSIndexPath
+            indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration
+                  inSection:OWSConversationSettingsTableViewControllerSectionContact];
+    }
 }
 
 - (IBAction)durationSliderDidChange:(UISlider *)slider
