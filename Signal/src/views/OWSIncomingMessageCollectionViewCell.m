@@ -31,8 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
                                       initialDurationSeconds:initialDurationSeconds];
 }
 
-- (void)endAnyExpirationTimer
+- (void)prepareForReuse
 {
+    [super prepareForReuse];
+    [self.expirationTimerView stopBlinking];
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
 }
 

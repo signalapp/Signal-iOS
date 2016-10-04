@@ -658,18 +658,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - JSQMessages CollectionView DataSource
 
-- (void)collectionView:(UICollectionView *)collectionView
-    didEndDisplayingCell:(UICollectionViewCell *)cell
-      forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Stop any expiration timers running for removed cells.
-    if (![cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
-        return;
-    }
-    id<OWSExpirableMessageView> expirableMessageView = (id<OWSExpirableMessageView>)cell;
-    [expirableMessageView endAnyExpirationTimer];
-}
-
 - (id<OWSMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView
        messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {

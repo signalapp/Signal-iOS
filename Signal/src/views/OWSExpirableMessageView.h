@@ -15,8 +15,6 @@ static const CGFloat OWSExpirableMessageViewTimerWidth = 10.0f;
 - (void)startExpirationTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
                           initialDurationSeconds:(uint32_t)initialDurationSeconds;
 
-- (void)endAnyExpirationTimer;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -86,7 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
                 initialDurationSeconds:(uint32_t)initialDurationSeconds
 {
-    self.alpha = 1;
     if (expiresAtSeconds == 0) {
         DDLogWarn(@"%@ Asked to animate expiration for message with expiresAtSeconds:0 intitialDurationSeconds:%u",
             self.logTag,
@@ -111,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
         secondsLeft = 0;
     }
 
+    // Get hourglass frames to the proper size.
     [self setNeedsLayout];
     [self layoutIfNeeded];
 
@@ -145,16 +145,26 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, ((long long)secondsLeft - 2) * (long long)NSEC_PER_SEC),
         dispatch_get_main_queue(),
         ^{
-            [UIView animateWithDuration:0.5
-                                  delay:0.0
-                                options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAutoreverse
-                                | UIViewAnimationOptionRepeat
-                             animations:^{
-                                 [UIView setAnimationRepeatCount:4]; // extra cycle to give time for delete to occur.
-                                 self.alpha = 0;
-                             }
-                             completion:nil];
+            [self startBlinking];
         });
+}
+
+- (void)startBlinking
+{
+    CABasicAnimation *blinkAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    blinkAnimation.duration = 0.5;
+    blinkAnimation.fromValue = @(1.0);
+    blinkAnimation.toValue = @(0.0);
+    blinkAnimation.repeatCount = 4;
+    blinkAnimation.autoreverses = YES;
+    blinkAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [self.layer addAnimation:blinkAnimation forKey:@"alphaBlink"];
+}
+
+- (void)stopBlinking
+{
+    [self.layer removeAnimationForKey:@"alphaBlink"];
+    self.layer.opacity = 1;
 }
 
 #pragma mark - Logging
