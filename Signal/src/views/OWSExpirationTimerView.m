@@ -86,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
                 initialDurationSeconds:(uint32_t)initialDurationSeconds
 {
+    self.alpha = 1;
     if (expiresAtSeconds == 0) {
         DDLogWarn(@"%@ Asked to animate expiration for message with expiresAtSeconds:0 intitialDurationSeconds:%u",
             self.logTag,
@@ -140,6 +141,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     [maskLayer addAnimation:revealAnimation forKey:@"revealAnimation"];
     maskLayer.position = finalPosition; // don't snap back
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, ((long long)secondsLeft - 2) * (long long)NSEC_PER_SEC),
+        dispatch_get_main_queue(),
+        ^{
+            [UIView animateWithDuration:0.5
+                                  delay:0.0
+                                options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAutoreverse
+                                | UIViewAnimationOptionRepeat
+                             animations:^{
+                                 [UIView setAnimationRepeatCount:4]; // extra cycle to give time for delete to occur.
+                                 self.alpha = 0;
+                             }
+                             completion:nil];
+        });
 }
 
 #pragma mark - Logging
