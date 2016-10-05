@@ -3,6 +3,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosSyncMessageSent;
+@class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosAttachmentPointer;
+@class TSThread;
 
 /**
  * Represents notification of a message sent on our behalf from another device.
@@ -12,10 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto relay:(NSString *)relay;
 
-/**
- * Record an outgoing message based on the transcription
- */
-- (void)record;
+@property (nonatomic, readonly) NSString *relay;
+@property (nonatomic, readonly) OWSSignalServiceProtosDataMessage *dataMessage;
+@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) uint64_t timestamp;
+@property (nonatomic, readonly) uint64_t expirationStartedAt;
+@property (nonatomic, readonly) uint32_t expirationDuration;
+@property (nonatomic, readonly) TSThread *thread;
+@property (nonatomic, readonly) BOOL isGroupUpdate;
+@property (nonatomic, readonly) BOOL isExpirationTimerUpdate;
+@property (nullable, nonatomic, readonly) NSData *groupId;
+@property (nonatomic, readonly) NSString *body;
+@property (nonatomic, readonly) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
 
 @end
 

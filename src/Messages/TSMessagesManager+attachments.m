@@ -44,12 +44,7 @@ dispatch_queue_t attachmentsQueue() {
         attachmentPointerProtos = dataMessage.attachments;
     }
 
-    TSThread *thread;
-    if (dataMessage.hasGroup) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupIdData:dataMessage.group.id];
-    } else {
-        thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
-    }
+    TSThread *thread = [self threadForEnvelope:envelope dataMessage:dataMessage];
 
     OWSAttachmentsProcessor *attachmentsProcessor = [[OWSAttachmentsProcessor alloc]
         initWithAttachmentPointersProtos:attachmentPointerProtos

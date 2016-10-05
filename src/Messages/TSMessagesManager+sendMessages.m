@@ -3,6 +3,9 @@
 
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import "OWSDisappearingMessagesConfiguration.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSLegacyMessageServiceParams.h"
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -25,7 +28,7 @@
 
 #define InvalidDeviceException @"InvalidDeviceException"
 
-@interface TSMessagesManager ()
+@interface TSMessagesManager (sendMessagesPrivate)
 
 dispatch_queue_t sendingQueue(void);
 @property TSNetworkManager *networkManager;
@@ -170,8 +173,7 @@ dispatch_queue_t sendingQueue() {
           } else {
               // Special situation: if we are sending to ourselves in a single thread, we treat this as an incoming
               // message
-              [self handleMessageSent:message];
-              [[TSMessagesManager sharedManager] handleSendToMyself:message]; // TODO self?
+              [self handleSendToMyself:message];
           }
       }
     });
@@ -253,7 +255,7 @@ dispatch_queue_t sendingQueue() {
             deviceMessages = @[];
             if (remainingAttempts == 0) {
                 DDLogWarn(@"%@ Terminal failure to build any device messages. Giving up with exception:%@",
-                    self.tag,
+                    self.logTag,
                     exception);
                 [self processException:exception outgoingMessage:message inThread:thread];
                 return;
@@ -269,7 +271,7 @@ dispatch_queue_t sendingQueue() {
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 dispatch_async(sendingQueue(), ^{
                     [recipient save];
-                    [self handleMessageSent:message];
+                    [self handleMessageSentLocally:message];
                     BLOCK_SAFE_RUN(successBlock);
                 });
             }
@@ -286,14 +288,14 @@ dispatch_queue_t sendingQueue() {
                     }
                     case 409: {
                         // Mismatched devices
-                        DDLogWarn(@"%@ Mismatch Devices.", self.tag);
+                        DDLogWarn(@"%@ Mismatch Devices.", self.logTag);
 
                         NSError *e;
                         NSDictionary *serializedResponse =
                             [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&e];
 
                         if (e) {
-                            DDLogError(@"%@ Failed to serialize response of mismatched devices: %@", self.tag, e);
+                            DDLogError(@"%@ Failed to serialize response of mismatched devices: %@", self.logTag, e);
                         } else {
                             [self handleMismatchedDevices:serializedResponse recipient:recipient];
                         }
@@ -369,13 +371,40 @@ dispatch_queue_t sendingQueue() {
     }];
 }
 
-- (void)handleMessageSent:(TSOutgoingMessage *)message
+- (void)handleMessageSentLocally:(TSOutgoingMessage *)message
 {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
     if (message.shouldSyncTranscript) {
         message.hasSyncedTranscript = YES;
         [self sendSyncTranscriptForMessage:message];
     }
+
+    [self.disappearingMessagesJob setExpirationForMessage:message];
+}
+
+- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
+{
+    [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+
+    [self becomeConsistentWithDisappearingConfigurationForMessage:message];
+    [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
+}
+
+- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSContactThread *cThread =
+            [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
+        [cThread saveWithTransaction:transaction];
+        TSIncomingMessage *incomingMessage =
+            [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
+                                                inThread:cThread
+                                             messageBody:outgoingMessage.body
+                                           attachmentIds:outgoingMessage.attachmentIds
+                                        expiresInSeconds:outgoingMessage.expiresInSeconds];
+        [incomingMessage saveWithTransaction:transaction];
+    }];
+    [self handleMessageSentLocally:outgoingMessage];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
@@ -577,14 +606,14 @@ dispatch_queue_t sendingQueue() {
     });
 }
 
-+ (NSString *)tag
++ (NSString *)logTag
 {
     return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
-- (NSString *)tag
+- (NSString *)logTag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

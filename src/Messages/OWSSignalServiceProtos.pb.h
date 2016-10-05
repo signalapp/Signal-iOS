@@ -23,6 +23,8 @@
 @class OWSSignalServiceProtosGroupDetailsAvatarBuilder;
 @class OWSSignalServiceProtosGroupDetailsBuilder;
 @class OWSSignalServiceProtosSyncMessage;
+@class OWSSignalServiceProtosSyncMessageBlocked;
+@class OWSSignalServiceProtosSyncMessageBlockedBuilder;
 @class OWSSignalServiceProtosSyncMessageBuilder;
 @class OWSSignalServiceProtosSyncMessageContacts;
 @class OWSSignalServiceProtosSyncMessageContactsBuilder;
@@ -93,6 +95,7 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
 
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageFlags) {
   OWSSignalServiceProtosDataMessageFlagsEndSession = 1,
+  OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate = 2,
 };
 
 BOOL OWSSignalServiceProtosDataMessageFlagsIsValidValue(OWSSignalServiceProtosDataMessageFlags value);
@@ -102,6 +105,7 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosSyncMessageRequestType) {
   OWSSignalServiceProtosSyncMessageRequestTypeUnknown = 0,
   OWSSignalServiceProtosSyncMessageRequestTypeContacts = 1,
   OWSSignalServiceProtosSyncMessageRequestTypeGroups = 2,
+  OWSSignalServiceProtosSyncMessageRequestTypeBlocked = 3,
 };
 
 BOOL OWSSignalServiceProtosSyncMessageRequestTypeIsValidValue(OWSSignalServiceProtosSyncMessageRequestType value);
@@ -302,23 +306,28 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define DataMessage_attachments @"attachments"
 #define DataMessage_group @"group"
 #define DataMessage_flags @"flags"
+#define DataMessage_expireTimer @"expireTimer"
 @interface OWSSignalServiceProtosDataMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasBody_:1;
   BOOL hasGroup_:1;
   BOOL hasFlags_:1;
+  BOOL hasExpireTimer_:1;
   NSString* body;
   OWSSignalServiceProtosGroupContext* group;
   UInt32 flags;
+  UInt32 expireTimer;
   NSMutableArray * attachmentsArray;
 }
 - (BOOL) hasBody;
 - (BOOL) hasGroup;
 - (BOOL) hasFlags;
+- (BOOL) hasExpireTimer;
 @property (readonly, strong) NSString* body;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosAttachmentPointer*> * attachments;
 @property (readonly, strong) OWSSignalServiceProtosGroupContext* group;
 @property (readonly) UInt32 flags;
+@property (readonly) UInt32 expireTimer;
 - (OWSSignalServiceProtosAttachmentPointer*)attachmentsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -378,6 +387,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (UInt32) flags;
 - (OWSSignalServiceProtosDataMessageBuilder*) setFlags:(UInt32) value;
 - (OWSSignalServiceProtosDataMessageBuilder*) clearFlags;
+
+- (BOOL) hasExpireTimer;
+- (UInt32) expireTimer;
+- (OWSSignalServiceProtosDataMessageBuilder*) setExpireTimer:(UInt32) value;
+- (OWSSignalServiceProtosDataMessageBuilder*) clearExpireTimer;
 @end
 
 #define SyncMessage_sent @"sent"
@@ -385,27 +399,32 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define SyncMessage_groups @"groups"
 #define SyncMessage_request @"request"
 #define SyncMessage_read @"read"
+#define SyncMessage_blocked @"blocked"
 @interface OWSSignalServiceProtosSyncMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasSent_:1;
   BOOL hasContacts_:1;
   BOOL hasGroups_:1;
   BOOL hasRequest_:1;
+  BOOL hasBlocked_:1;
   OWSSignalServiceProtosSyncMessageSent* sent;
   OWSSignalServiceProtosSyncMessageContacts* contacts;
   OWSSignalServiceProtosSyncMessageGroups* groups;
   OWSSignalServiceProtosSyncMessageRequest* request;
+  OWSSignalServiceProtosSyncMessageBlocked* blocked;
   NSMutableArray * readArray;
 }
 - (BOOL) hasSent;
 - (BOOL) hasContacts;
 - (BOOL) hasGroups;
 - (BOOL) hasRequest;
+- (BOOL) hasBlocked;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageSent* sent;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageGroups* groups;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageRequest* request;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageRead*> * read;
+@property (readonly, strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 - (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -429,21 +448,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Sent_destination @"destination"
 #define Sent_timestamp @"timestamp"
 #define Sent_message @"message"
+#define Sent_expirationStartTimestamp @"expirationStartTimestamp"
 @interface OWSSignalServiceProtosSyncMessageSent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasTimestamp_:1;
+  BOOL hasExpirationStartTimestamp_:1;
   BOOL hasDestination_:1;
   BOOL hasMessage_:1;
   UInt64 timestamp;
+  UInt64 expirationStartTimestamp;
   NSString* destination;
   OWSSignalServiceProtosDataMessage* message;
 }
 - (BOOL) hasDestination;
 - (BOOL) hasTimestamp;
 - (BOOL) hasMessage;
+- (BOOL) hasExpirationStartTimestamp;
 @property (readonly, strong) NSString* destination;
 @property (readonly) UInt64 timestamp;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* message;
+@property (readonly) UInt64 expirationStartTimestamp;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -496,6 +520,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageSentBuilder*) setMessageBuilder:(OWSSignalServiceProtosDataMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosSyncMessageSentBuilder*) mergeMessage:(OWSSignalServiceProtosDataMessage*) value;
 - (OWSSignalServiceProtosSyncMessageSentBuilder*) clearMessage;
+
+- (BOOL) hasExpirationStartTimestamp;
+- (UInt64) expirationStartTimestamp;
+- (OWSSignalServiceProtosSyncMessageSentBuilder*) setExpirationStartTimestamp:(UInt64) value;
+- (OWSSignalServiceProtosSyncMessageSentBuilder*) clearExpirationStartTimestamp;
 @end
 
 #define Contacts_blob @"blob"
@@ -600,6 +629,56 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageGroupsBuilder*) setBlobBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
 - (OWSSignalServiceProtosSyncMessageGroupsBuilder*) mergeBlob:(OWSSignalServiceProtosAttachmentPointer*) value;
 - (OWSSignalServiceProtosSyncMessageGroupsBuilder*) clearBlob;
+@end
+
+#define Blocked_numbers @"numbers"
+@interface OWSSignalServiceProtosSyncMessageBlocked : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  NSMutableArray * numbersArray;
+}
+@property (readonly, strong) NSArray * numbers;
+- (NSString*)numbersAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builder;
++ (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builder;
++ (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageBlocked*) prototype;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosSyncMessageBlockedBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosSyncMessageBlocked* resultBlocked;
+}
+
+- (OWSSignalServiceProtosSyncMessageBlocked*) defaultInstance;
+
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) clear;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) clone;
+
+- (OWSSignalServiceProtosSyncMessageBlocked*) build;
+- (OWSSignalServiceProtosSyncMessageBlocked*) buildPartial;
+
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageBlocked*) other;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (NSMutableArray *)numbers;
+- (NSString*)numbersAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)addNumbers:(NSString*)value;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)setNumbersArray:(NSArray *)array;
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)clearNumbers;
 @end
 
 #define Request_type @"type"
@@ -762,6 +841,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageBuilder *)addRead:(OWSSignalServiceProtosSyncMessageRead*)value;
 - (OWSSignalServiceProtosSyncMessageBuilder *)setReadArray:(NSArray<OWSSignalServiceProtosSyncMessageRead*> *)array;
 - (OWSSignalServiceProtosSyncMessageBuilder *)clearRead;
+
+- (BOOL) hasBlocked;
+- (OWSSignalServiceProtosSyncMessageBlocked*) blocked;
+- (OWSSignalServiceProtosSyncMessageBuilder*) setBlocked:(OWSSignalServiceProtosSyncMessageBlocked*) value;
+- (OWSSignalServiceProtosSyncMessageBuilder*) setBlockedBuilder:(OWSSignalServiceProtosSyncMessageBlockedBuilder*) builderForValue;
+- (OWSSignalServiceProtosSyncMessageBuilder*) mergeBlocked:(OWSSignalServiceProtosSyncMessageBlocked*) value;
+- (OWSSignalServiceProtosSyncMessageBuilder*) clearBlocked;
 @end
 
 #define AttachmentPointer_id @"id"
@@ -949,21 +1035,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define ContactDetails_number @"number"
 #define ContactDetails_name @"name"
 #define ContactDetails_avatar @"avatar"
+#define ContactDetails_color @"color"
 @interface OWSSignalServiceProtosContactDetails : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasNumber_:1;
   BOOL hasName_:1;
+  BOOL hasColor_:1;
   BOOL hasAvatar_:1;
   NSString* number;
   NSString* name;
+  NSString* color;
   OWSSignalServiceProtosContactDetailsAvatar* avatar;
 }
 - (BOOL) hasNumber;
 - (BOOL) hasName;
 - (BOOL) hasAvatar;
+- (BOOL) hasColor;
 @property (readonly, strong) NSString* number;
 @property (readonly, strong) NSString* name;
 @property (readonly, strong) OWSSignalServiceProtosContactDetailsAvatar* avatar;
+@property (readonly, strong) NSString* color;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1076,6 +1167,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContactDetailsBuilder*) setAvatarBuilder:(OWSSignalServiceProtosContactDetailsAvatarBuilder*) builderForValue;
 - (OWSSignalServiceProtosContactDetailsBuilder*) mergeAvatar:(OWSSignalServiceProtosContactDetailsAvatar*) value;
 - (OWSSignalServiceProtosContactDetailsBuilder*) clearAvatar;
+
+- (BOOL) hasColor;
+- (NSString*) color;
+- (OWSSignalServiceProtosContactDetailsBuilder*) setColor:(NSString*) value;
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearColor;
 @end
 
 #define GroupDetails_id @"id"

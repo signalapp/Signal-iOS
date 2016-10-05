@@ -36,6 +36,13 @@
     }];
 }
 
+- (void)touch
+{
+    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction touchObjectForKey:self.uniqueId inCollection:[self.class collection]];
+    }];
+}
+
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];

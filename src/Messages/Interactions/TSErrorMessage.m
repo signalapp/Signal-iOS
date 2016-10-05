@@ -14,11 +14,21 @@
 
 @implementation TSErrorMessage
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initWithTimestamp:timestamp
+                           inThread:thread
+                        messageBody:nil
+                      attachmentIds:@[]
+                   expiresInSeconds:0
+                    expireStartedAt:0];
 
     if (!self) {
         return self;

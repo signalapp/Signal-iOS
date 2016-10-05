@@ -50,15 +50,14 @@ NSString *const OWSReadReceiptColumnSenderId = @"senderId";
     return self;
 }
 
-+ (NSDictionary *)encodingBehaviorsByPropertyKey
++ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
 {
-    NSMutableDictionary *behaviorsByPropertyKey = [[super encodingBehaviorsByPropertyKey] mutableCopy];
-
-    // Don't persist transient properties used in validation.
-    behaviorsByPropertyKey[@"valid"] = @(MTLModelEncodingBehaviorExcluded);
-    behaviorsByPropertyKey[@"validationErrorMessages"] = @(MTLModelEncodingBehaviorExcluded);
-
-    return [behaviorsByPropertyKey copy];
+    // Don't store ephemeral properties.
+    if ([propertyKey isEqualToString:@"valid"] || [propertyKey isEqualToString:@"validationErrorMessages"]) {
+        return MTLPropertyStorageNone;
+    } else {
+        return [super storageBehaviorForPropertyWithKey:propertyKey];
+    }
 }
 
 + (void)asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:(YapDatabase *)database
@@ -121,6 +120,8 @@ NSString *const OWSReadReceiptColumnSenderId = @"senderId";
 
     return foundReadReceipt;
 }
+
+#pragma mark - Logging
 
 + (NSString *)tag
 {

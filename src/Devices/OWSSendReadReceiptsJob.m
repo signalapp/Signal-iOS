@@ -1,6 +1,7 @@
+//  Created by Michael Kirk on 9/24/16.
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
-#import "OWSReadReceiptObserver.h"
+#import "OWSSendReadReceiptsJob.h"
 #import "OWSReadReceipt.h"
 #import "OWSReadReceiptsMessage.h"
 #import "TSContactThread.h"
@@ -9,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSReadReceiptObserver ()
+@interface OWSSendReadReceiptsJob ()
 
 @property (atomic) NSMutableArray<OWSReadReceipt *> *readReceiptsQueue;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
@@ -17,16 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation OWSReadReceiptObserver
+@implementation OWSSendReadReceiptsJob
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (instancetype)init
-{
-    return [self initWithMessagesManager:[TSMessagesManager sharedManager]];
 }
 
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
@@ -43,30 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)startObserving
+- (void)runWith:(TSIncomingMessage *)message
 {
-    if (self.isObserving) {
-        return;
-    }
-
-    self.isObserving = true;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleReadNotification:)
-                                                 name:TSIncomingMessageWasReadOnThisDeviceNotification
-                                               object:nil];
-}
-
-- (void)handleReadNotification:(NSNotification *)notification
-{
-    if (![notification.object isKindOfClass:[TSIncomingMessage class]]) {
-        DDLogError(@"Read receipt notifier got unexpected object: %@", notification.object);
-        return;
-    }
-
-    TSIncomingMessage *message = (TSIncomingMessage *)notification.object;
-
     // Only groupthread sets authorId, thus this crappy code.
-    // TODO ALL incoming messages should have an authorId.
+    // TODO Refactor so that ALL incoming messages have an authorId.
     NSString *messageAuthorId;
     if (message.authorId) { // Group Thread
         messageAuthorId = message.authorId;
@@ -85,11 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendAllReadReceiptsInQueue
 {
     // Synchronized so we don't lose any read receipts while replacing the queue
-    __block NSArray<OWSReadReceipt *> *receiptsToSend;
+    __block NSArray<OWSReadReceipt *> *_Nullable receiptsToSend;
     @synchronized(self)
     {
         if (self.readReceiptsQueue.count > 0) {
-            receiptsToSend = [self.readReceiptsQueue copy];
+            receiptsToSend = self.readReceiptsQueue;
             self.readReceiptsQueue = [NSMutableArray new];
         }
     }

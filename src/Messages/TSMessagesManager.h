@@ -5,26 +5,29 @@
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSOutgoingMessage.h"
 
-@class TSCall;
-@class YapDatabaseConnection;
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSNetworkManager;
+@class TSStorageManager;
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosDataMessage;
 @class ContactsUpdater;
+@class OWSDisappearingMessagesJob;
 @protocol ContactsManagerProtocol;
 
 @interface TSMessagesManager : NSObject
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                          dbConnection:(YapDatabaseConnection *)dbConnection
+                        storageManager:(TSStorageManager *)storageManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
-@property (readonly) YapDatabaseConnection *dbConnection;
-@property (readonly) TSNetworkManager *networkManager;
-@property (readonly) ContactsUpdater *contactsUpdater;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
+@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
@@ -43,10 +46,27 @@
                               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                 attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
-- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage;
+/**
+ * @returns
+ *   Group or Contact thread for message, creating a new one if necessary.
+ */
+- (TSThread *)threadForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
+
+/**
+ * Synchronize our disappearing messages settings with that of the given message. Useful so we can
+ * become eventually consistent with remote senders.
+ *
+ * @param message
+ *   Can be an expiring or non expiring message. We match the expiration timer of the message, including disabling
+ *   expiring messages if the message is not an expiring message.
+ */
+- (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSMessage *)message;
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -26,4 +26,6 @@ typedef void (^failedSendingCompletionBlock)();
               success:(successSendingCompletionBlock)successCompletionBlock
               failure:(failedSendingCompletionBlock)failedCompletionBlock;
 
+- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt;
+
 @end

@@ -16,6 +16,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageInvalidVersion,
 };
 
+-(instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageBody:(NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
+
 + (instancetype)corruptedMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

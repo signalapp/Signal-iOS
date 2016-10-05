@@ -183,7 +183,7 @@
     OWSFakeContactsManager *fakeContactsManager = [OWSFakeContactsManager new];
     TSMessagesManager *messagesManager =
         [[TSMessagesManager alloc] initWithNetworkManager:fakeNetworkManager
-                                             dbConnection:[TSStorageManager sharedManager].newDatabaseConnection
+                                           storageManager:[TSStorageManager sharedManager]
                                           contactsManager:fakeContactsManager
                                           contactsUpdater:fakeContactsUpdater];
 

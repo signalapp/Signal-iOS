@@ -3,6 +3,7 @@
 
 #import "TSStorageManager.h"
 #import "NSData+Base64.h"
+#import "OWSDisappearingMessagesFinder.h"
 #import "OWSReadReceipt.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
@@ -142,6 +143,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     // Register extensions which aren't essential for rendering threads async
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
     [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
+    OWSDisappearingMessagesFinder *finder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:self];
+    [finder asyncRegisterDatabaseExtensions];
 }
 
 - (void)protectSignalFiles {

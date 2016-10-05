@@ -14,15 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSIncomingSentMessageTranscript ()
-
-@property (nonatomic, readonly) NSString *relay;
-@property (nonatomic, readonly) OWSSignalServiceProtosDataMessage *dataMessage;
-@property (nonatomic, readonly) NSString *recipientId;
-@property (nonatomic, readonly) uint64_t timestamp;
-
-@end
-
 @implementation OWSIncomingSentMessageTranscript
 
 - (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto relay:(NSString *)relay
@@ -36,60 +27,31 @@ NS_ASSUME_NONNULL_BEGIN
     _dataMessage = sentProto.message;
     _recipientId = sentProto.destination;
     _timestamp = sentProto.timestamp;
+    _expirationStartedAt = sentProto.expirationStartTimestamp;
+    _expirationDuration = sentProto.message.expireTimer;
+    _body = _dataMessage.body;
+    _groupId = _dataMessage.group.id;
+    _isGroupUpdate = _dataMessage.hasGroup && (_dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate);
+    _isExpirationTimerUpdate = (_dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0;
 
     return self;
 }
 
-
-- (void)record
+- (NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentPointerProtos
 {
-    TSThread *thread;
+    if (self.isGroupUpdate && self.dataMessage.group.hasAvatar) {
+        return @[ self.dataMessage.group.avatar ];
+    } else {
+        return self.dataMessage.attachments;
+    }
+}
 
+- (TSThread *)thread
+{
     if (self.dataMessage.hasGroup) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupIdData:self.dataMessage.group.id];
+        return [TSGroupThread getOrCreateThreadWithGroupIdData:self.dataMessage.group.id];
     } else {
-        thread = [TSContactThread getOrCreateThreadWithContactId:self.recipientId];
-    }
-
-    NSData *avatarGroupId;
-    NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
-    if (self.dataMessage.hasGroup && (self.dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate)) {
-        avatarGroupId = self.dataMessage.group.id;
-        attachmentPointerProtos = @[ self.dataMessage.group.avatar ];
-    } else {
-        attachmentPointerProtos = self.dataMessage.attachments;
-    }
-
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointersProtos:attachmentPointerProtos
-                                                                timestamp:self.timestamp
-                                                                    relay:self.relay
-                                                            avatarGroupId:avatarGroupId
-                                                                 inThread:thread
-                                                          messagesManager:[TSMessagesManager sharedManager]];
-
-    // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initWithTimestamp:self.timestamp
-                                            inThread:thread
-                                         messageBody:self.dataMessage.body
-                                       attachmentIds:attachmentsProcessor.attachmentIds];
-    outgoingMessage.messageState = TSOutgoingMessageStateDelivered;
-    [outgoingMessage save];
-
-    [attachmentsProcessor fetchAttachmentsForMessageId:outgoingMessage.uniqueId];
-
-    // If there is an attachment + text, render the text here, as Signal-iOS renders two messages.
-    if (attachmentsProcessor.hasSupportedAttachments && self.dataMessage.body != nil
-        && ![self.dataMessage.body isEqualToString:@""]) {
-
-        // render text *after* the attachment
-        uint64_t textMessageTimestamp = self.timestamp + 1000;
-        TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                             inThread:thread
-                                                                          messageBody:self.dataMessage.body];
-        textMessage.messageState = TSOutgoingMessageStateDelivered;
-        [textMessage save];
+        return [TSContactThread getOrCreateThreadWithContactId:self.recipientId];
     }
 }
 

@@ -90,6 +90,31 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
+/**
+ *  Inits an incoming group message that expires.
+ *
+ *  @param timestamp
+ *    When the message was created in milliseconds since epoch
+ *  @param thread
+ *    Thread to which the message belongs
+ *  @param authorId
+ *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param body
+ *    Body of the message
+ *  @param attachmentIds
+ *    The uniqueIds for the message's attachments, possibly an empty list.
+ *  @param expiresInSeconds
+ *    Seconds from when the message is read until it is deleted.
+ *
+ *  @return initiated incoming group message
+ */
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSGroupThread *)thread
+                         authorId:(nullable NSString *)authorId
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds;
+
 /*
  * Find a message matching the senderId and timestamp, if any.
  *
@@ -109,7 +134,9 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  * Marks a message as having been read on this device (as opposed to responding to a remote read receipt).
  *
  */
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAsReadLocally;
+// TODO possible to remove?
+- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  * Similar to markAsReadWithTransaction, but doesn't send out read receipts.

@@ -2,12 +2,15 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "TSAttachment.h"
+#import "TSThread.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static const NSUInteger OWSMessageSchemaVersion = 2;
+static const NSUInteger OWSMessageSchemaVersion = 3;
 
 @interface TSMessage ()
 
@@ -56,23 +59,62 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:attachmentIds
+                  expiresInSeconds:0];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:attachmentIds
+                  expiresInSeconds:expiresInSeconds
+                   expireStartedAt:0];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+{
     self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;
     }
 
+    _schemaVersion = OWSMessageSchemaVersion;
+
     _body = body;
     _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
+    _expiresInSeconds = expiresInSeconds;
+    _expireStartedAt = expireStartedAt;
+    [self updateExpiresAt];
 
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
+    }
+
+    if (_schemaVersion < 3) {
+        _expiresInSeconds = 0;
+        _expireStartedAt = 0;
+        _expiresAt = 0;
     }
 
     if (_schemaVersion < 2) {
@@ -83,7 +125,7 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
     }
 
     if (!_attachmentIds) {
-        // used to allow nil _attachmentIds
+        // previously allowed nil _attachmentIds
         _attachmentIds = [NSMutableArray new];
     }
 
@@ -91,6 +133,28 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
     return self;
 }
 
+// Seconds.
+- (void)setexpiresInSeconds:(uint32_t)expiresInSeconds
+{
+    _expiresInSeconds = expiresInSeconds;
+    [self updateExpiresAt];
+}
+
+- (void)setExpireStartedAt:(uint64_t)expireStartedAt
+{
+    _expireStartedAt = expireStartedAt;
+    [self updateExpiresAt];
+}
+
+// TODO a downloaded media doesn't start counting until download is complete.
+- (void)updateExpiresAt
+{
+    if (_expiresInSeconds > 0 && _expireStartedAt > 0) {
+        _expiresAt = _expireStartedAt + _expiresInSeconds * 1000;
+    } else {
+        _expiresAt = 0;
+    }
+}
 
 - (BOOL)hasAttachments
 {
@@ -125,10 +189,24 @@ static const NSUInteger OWSMessageSchemaVersion = 2;
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];
+
     for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         [attachment removeWithTransaction:transaction];
     };
+
+    // Updates inbox thread preview
+    [self touchThreadWithTransaction:transaction];
+}
+
+- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
+}
+
+- (BOOL)isExpiringMessage
+{
+    return self.expiresInSeconds > 0;
 }
 
 @end

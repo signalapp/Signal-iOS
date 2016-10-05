@@ -29,9 +29,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)name;
 
+/**
+ * @returns
+ *   Signal Id (e164) of the contact if it's a contact thread.
+ */
 - (nullable NSString *)contactIdentifier;
 
 #if TARGET_OS_IOS
+
 /**
  *  Returns the image representing the thread. Nil if not available.
  *
@@ -59,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)hasUnreadMessages;
 
+- (void)markAllAsRead;
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**

@@ -180,18 +180,44 @@ NS_ASSUME_NONNULL_BEGIN
     return hasUnread;
 }
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSUnreadDatabaseViewExtensionName];
-    NSMutableArray *array                       = [NSMutableArray array];
-    [viewTransaction
+- (NSArray<TSIncomingMessage *> *)unreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
+    [[transaction ext:TSUnreadDatabaseViewExtensionName]
         enumerateRowsInGroup:self.uniqueId
                   usingBlock:^(
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-                    [array addObject:object];
+
+                      if (![object isKindOfClass:[TSIncomingMessage class]]) {
+                          DDLogError(@"%@ Unexpected object in unread messages: %@", self.tag, object);
+                      }
+                      [messages addObject:(TSIncomingMessage *)object];
                   }];
 
-    for (TSIncomingMessage *message in array) {
-        [message markAsReadWithTransaction:transaction];
+    return [messages copy];
+}
+
+- (NSArray<TSIncomingMessage *> *)unreadMessages
+{
+    __block NSArray<TSIncomingMessage *> *messages;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        messages = [self unreadMessagesWithTransaction:transaction];
+    }];
+
+    return messages;
+}
+
+- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    for (TSIncomingMessage *message in [self unreadMessagesWithTransaction:transaction]) {
+        [message markAsReadLocallyWithTransaction:transaction];
+    }
+}
+
+- (void)markAllAsRead
+{
+    for (TSIncomingMessage *message in [self unreadMessages]) {
+        [message markAsReadLocally];
     }
 }
 
@@ -272,6 +298,18 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread    = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     thread.messageDraft = draftString;
     [thread saveWithTransaction:transaction];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

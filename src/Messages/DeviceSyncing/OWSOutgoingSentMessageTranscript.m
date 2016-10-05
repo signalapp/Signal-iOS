@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setTimestamp:self.message.timestamp];
     [sentBuilder setDestination:self.message.recipientIdentifier];
     [sentBuilder setMessage:[self.message buildDataMessage]];
+    [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];
 

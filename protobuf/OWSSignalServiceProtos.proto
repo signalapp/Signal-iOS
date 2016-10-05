@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014-2016 Open Whisper Systems
+ *
+ * Licensed according to the LICENSE file in this repository.
+ */
+
 package signalservice;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
@@ -32,19 +38,22 @@ message Content {
 message DataMessage {
   enum Flags {
     END_SESSION = 1;
+    EXPIRATION_TIMER_UPDATE = 2;
   }
 
   optional string             body        = 1;
   repeated AttachmentPointer  attachments = 2;
   optional GroupContext       group       = 3;
   optional uint32             flags       = 4;
+  optional uint32             expireTimer = 5;
 }
 
 message SyncMessage {
   message Sent {
-    optional string      destination = 1;
-    optional uint64      timestamp   = 2;
-    optional DataMessage message     = 3;
+    optional string      destination              = 1;
+    optional uint64      timestamp                = 2;
+    optional DataMessage message                  = 3;
+    optional uint64      expirationStartTimestamp = 4;
   }
 
   message Contacts {
@@ -55,11 +64,16 @@ message SyncMessage {
     optional AttachmentPointer blob = 1;
   }
 
+  message Blocked {
+    repeated string numbers = 1;
+  }
+
   message Request {
     enum Type {
       UNKNOWN  = 0;
       CONTACTS = 1;
       GROUPS   = 2;
+      BLOCKED  = 3;
     }
 
     optional Type type = 1;
@@ -75,6 +89,7 @@ message SyncMessage {
   optional Groups   groups   = 3;
   optional Request  request  = 4;
   repeated Read     read     = 5;
+  optional Blocked  blocked  = 6;
 }
 
 message AttachmentPointer {
@@ -105,9 +120,10 @@ message ContactDetails {
     optional uint32 length      = 2;
   }
 
-  optional string number = 1;
-  optional string name   = 2;
-  optional Avatar avatar = 3;
+  optional string number  = 1;
+  optional string name    = 2;
+  optional Avatar avatar  = 3;
+  optional string color   = 4;
 }
 
 message GroupDetails {

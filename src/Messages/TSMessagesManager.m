@@ -6,8 +6,13 @@
 #import "ContactsUpdater.h"
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import "OWSDisappearingConfigurationUpdateInfoMessage.h"
+#import "OWSDisappearingMessagesConfiguration.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReadReceiptsProcessor.h"
+#import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
@@ -26,9 +31,12 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSMessagesManager ()
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 
 @end
 
@@ -46,14 +54,13 @@
 - (instancetype)init
 {
     return [self initWithNetworkManager:[TSNetworkManager sharedManager]
-                           dbConnection:[TSStorageManager sharedManager].newDatabaseConnection
+                         storageManager:[TSStorageManager sharedManager]
                         contactsManager:[TextSecureKitEnv sharedEnv].contactsManager
                         contactsUpdater:[ContactsUpdater sharedUpdater]];
-
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                          dbConnection:(YapDatabaseConnection *)dbConnection
+                        storageManager:(TSStorageManager *)storageManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
 {
@@ -63,10 +70,13 @@
         return self;
     }
 
+    _storageManager = storageManager;
     _networkManager = networkManager;
-    _dbConnection = dbConnection;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
+
+    _dbConnection = storageManager.newDatabaseConnection;
+    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
 
     return self;
 }
@@ -234,22 +244,25 @@
             }
         }];
         if (ignoreMessage) {
-            DDLogDebug(@"Received message from group that I left or don't know "
-                       @"about, ignoring");
+            // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
+            DDLogDebug(@"%@ Received message from group that I left or don't know about, ignoring", self.tag);
             return;
         }
     }
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
-        DDLogVerbose(@"Received end session message...");
+        DDLogVerbose(@"%@ Received end session message", self.tag);
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
+        DDLogVerbose(@"%@ Received expiration timer update message", self.tag);
+        [self handleExpirationTimerUpdateMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0
         || (dataMessage.hasGroup && dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate
                && dataMessage.group.hasAvatar)) {
 
-        DDLogVerbose(@"Received push media message (attachment) or group with an avatar...");
+        DDLogVerbose(@"%@ Received push media message (attachment) or group with an avatar", self.tag);
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
-        DDLogVerbose(@"Received individual push text message...");
+        DDLogVerbose(@"%@ Received data message.", self.tag);
         [self handleReceivedTextMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     }
 }
@@ -258,13 +271,13 @@
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
     if (syncMessage.hasSent) {
-        DDLogInfo(@"Received `sent` syncMessage, recording message transcript.");
+        DDLogInfo(@"%@ Received `sent` syncMessage, recording message transcript.", self.tag);
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
-        [transcript record];
+        [[[OWSRecordTranscriptJob alloc] initWithMessagesManager:self incomingSentMessageTranscript:transcript] run];
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
-            DDLogInfo(@"Received request `Contacts` syncMessage.");
+            DDLogInfo(@"%@ Received request `Contacts` syncMessage.", self.tag);
 
             OWSSyncContactsMessage *syncContactsMessage =
                 [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
@@ -274,14 +287,14 @@
                 inMessage:syncContactsMessage
                 thread:nil
                 success:^{
-                    DDLogInfo(@"Successfully sent Contacts response syncMessage.");
+                    DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.tag);
                 }
                 failure:^{
-                    DDLogError(@"Failed to send Contacts response syncMessage.");
+                    DDLogError(@"%@ Failed to send Contacts response syncMessage.", self.tag);
                 }];
 
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
-            DDLogInfo(@"Received request `groups` syncMessage.");
+            DDLogInfo(@"%@ Received request `groups` syncMessage.", self.tag);
 
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
 
@@ -290,20 +303,21 @@
                 inMessage:syncGroupsMessage
                 thread:nil
                 success:^{
-                    DDLogInfo(@"Successfully sent Groups response syncMessage.");
+                    DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.tag);
                 }
                 failure:^{
-                    DDLogError(@"Failed to send Groups response syncMessage.");
+                    DDLogError(@"%@ Failed to send Groups response syncMessage.", self.tag);
                 }];
         }
     } else if (syncMessage.read.count > 0) {
-        DDLogInfo(@"Received %ld read receipt(s)", (u_long)syncMessage.read.count);
+        DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
 
         OWSReadReceiptsProcessor *readReceiptsProcessor =
-            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read];
+            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read
+                                                         storageManager:self.storageManager];
         [readReceiptsProcessor process];
     } else {
-        DDLogWarn(@"Ignoring unsupported sync message.");
+        DDLogWarn(@"%@ Ignoring unsupported sync message.", self.tag);
     }
 }
 
@@ -315,7 +329,7 @@
             [TSContactThread getOrCreateThreadWithContactId:endSessionEnvelope.source transaction:transaction];
         uint64_t timeStamp = endSessionEnvelope.timestamp;
 
-        if (thread) {
+        if (thread) { // TODO thread should always be nonnull.
             [[[TSInfoMessage alloc] initWithTimestamp:timeStamp
                                              inThread:thread
                                           messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
@@ -325,35 +339,53 @@
     [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
 }
 
+- (void)handleExpirationTimerUpdateMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                           dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    TSThread *thread = [self threadForEnvelope:envelope dataMessage:dataMessage];
+
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
+    if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
+        DDLogInfo(@"%@ Expiring messages duration turned to %u for thread %@",
+            self.tag,
+            (unsigned int)dataMessage.expireTimer,
+            thread);
+        disappearingMessagesConfiguration =
+            [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                   enabled:YES
+                                                           durationSeconds:dataMessage.expireTimer];
+    } else {
+        DDLogInfo(@"%@ Expiring messages have been turned off for thread %@", self.tag, thread);
+        disappearingMessagesConfiguration = [[OWSDisappearingMessagesConfiguration alloc]
+            initWithThreadId:thread.uniqueId
+                     enabled:NO
+             durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+    }
+    [disappearingMessagesConfiguration save];
+    NSString *name = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
+    OWSDisappearingConfigurationUpdateInfoMessage *message =
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:envelope.timestamp
+                                                                          thread:thread
+                                                                   configuration:disappearingMessagesConfiguration
+                                                             createdByRemoteName:name];
+    [message save];
+}
+
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
-- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSContactThread *cThread =
-          [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
-      [cThread saveWithTransaction:transaction];
-      TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
-                                                                               inThread:cThread
-                                                                            messageBody:outgoingMessage.body
-                                                                          attachmentIds:outgoingMessage.attachmentIds];
-      [incomingMessage saveWithTransaction:transaction];
-    }];
-}
-
 - (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    uint64_t timeStamp = envelope.timestamp;
+    uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
-    __block TSIncomingMessage *incomingMessage;
+    __block TSIncomingMessage *_Nullable incomingMessage;
     __block TSThread *thread;
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -383,7 +415,7 @@
               NSString *updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model];
               gThread.groupModel        = model;
               [gThread saveWithTransaction:transaction];
-              [[[TSInfoMessage alloc] initWithTimestamp:timeStamp
+              [[[TSInfoMessage alloc] initWithTimestamp:timestamp
                                                inThread:gThread
                                             messageType:TSInfoMessageTypeGroupUpdate
                                           customMessage:updateGroupInfo] saveWithTransaction:transaction];
@@ -397,16 +429,18 @@
               gThread.groupModel.groupMemberIds = newGroupMembers;
 
               [gThread saveWithTransaction:transaction];
-              [[[TSInfoMessage alloc] initWithTimestamp:timeStamp
+              [[[TSInfoMessage alloc] initWithTimestamp:timestamp
                                                inThread:gThread
                                             messageType:TSInfoMessageTypeGroupUpdate
                                           customMessage:updateGroupInfo] saveWithTransaction:transaction];
           } else {
-              incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
+              incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                     inThread:gThread
                                                                     authorId:envelope.source
                                                                  messageBody:body
-                                                               attachmentIds:attachmentIds];
+                                                               attachmentIds:attachmentIds
+                                                            expiresInSeconds:dataMessage.expireTimer];
+
               [incomingMessage saveWithTransaction:transaction];
           }
 
@@ -416,43 +450,51 @@
                                                                          transaction:transaction
                                                                                relay:envelope.relay];
 
-          incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timeStamp
+          incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                 inThread:cThread
                                                              messageBody:body
-                                                           attachmentIds:attachmentIds];
+                                                           attachmentIds:attachmentIds
+                                                        expiresInSeconds:dataMessage.expireTimer];
           thread = cThread;
       }
 
       if (thread && incomingMessage) {
-          // Android allows attachments to be sent with body.
-          // We want the text to be displayed under the attachment
-          if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
-              uint64_t textMessageTimestamp = timeStamp + 1000;
+          [incomingMessage saveWithTransaction:transaction];
 
+          // Android allows attachments to be sent with body.
+          if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
+              // We want the text to be displayed under the attachment
+              uint64_t textMessageTimestamp = timestamp + 1;
+              TSIncomingMessage *textMessage;
               if ([thread isGroupThread]) {
                   TSGroupThread *gThread = (TSGroupThread *)thread;
-                  TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                                       inThread:gThread
-                                                                                       authorId:envelope.source
-                                                                                    messageBody:body];
-                  [textMessage saveWithTransaction:transaction];
+                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                    inThread:gThread
+                                                                    authorId:envelope.source
+                                                                 messageBody:body];
               } else {
                   TSContactThread *cThread = (TSContactThread *)thread;
-                  TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                                       inThread:cThread
-                                                                                    messageBody:body];
-                  [textMessage saveWithTransaction:transaction];
+                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                    inThread:cThread
+                                                                 messageBody:body];
               }
+              textMessage.expiresInSeconds = dataMessage.expireTimer;
+              [textMessage saveWithTransaction:transaction];
           }
-
-          [incomingMessage saveWithTransaction:transaction];
       }
     }];
 
     if (incomingMessage && thread) {
+        // In case we already have a read receipt for this new message (happens sometimes).
         OWSReadReceiptsProcessor *readReceiptsProcessor =
-            [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage];
+            [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
+                                                       storageManager:self.storageManager];
         [readReceiptsProcessor process];
+
+        [self becomeConsistentWithDisappearingConfigurationForMessage:incomingMessage];
+
+        // Update thread preview in inbox
+        [thread touch];
 
         // TODO Delay notification by 100ms?
         // It's pretty annoying when you're phone keeps buzzing while you're having a conversation on Desktop.
@@ -465,9 +507,56 @@
     return incomingMessage;
 }
 
+- (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSMessage *)message
+{
+    // Become eventually consistent in the case that the remote changed their settings at the same time.
+    // Also in case remote doesn't support expiring messages
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:message.uniqueThreadId];
+
+    BOOL changed = NO;
+    if (message.expiresInSeconds == 0) {
+        if (disappearingMessagesConfiguration.isEnabled) {
+            changed = YES;
+            DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
+                      @"consistent.",
+                self.tag);
+            disappearingMessagesConfiguration.enabled = NO;
+            [disappearingMessagesConfiguration save];
+        }
+    } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
+        changed = YES;
+        DDLogInfo(
+            @"%@ Received remote message with different expiration set, updating our expiration to become consistent.",
+            self.tag);
+        disappearingMessagesConfiguration.enabled = YES;
+        disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
+        [disappearingMessagesConfiguration save];
+    }
+
+    if (!changed) {
+        return;
+    }
+
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        NSString *contactName = [self.contactsManager nameStringForPhoneIdentifier:incomingMessage.authorId];
+
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration
+                                                              createdByRemoteName:contactName] save];
+    } else {
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration]
+            save];
+    }
+}
+
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
-    DDLogError(@"Got exception: %@ of type: %@", exception.description, exception.name);
+    DDLogError(@"%@ Got exception: %@ of type: %@", self.tag, exception.description, exception.name);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSErrorMessage *errorMessage;
 
@@ -495,8 +584,9 @@
 
 - (void)processException:(NSException *)exception
          outgoingMessage:(TSOutgoingMessage *)message
-                inThread:(TSThread *)thread {
-    DDLogWarn(@"Got exception: %@", exception.description);
+                inThread:(TSThread *)thread
+{
+    DDLogWarn(@"%@ Got exception: %@", self.tag, exception);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
@@ -520,6 +610,16 @@
 
         [errorMessage saveWithTransaction:transaction];
     }];
+}
+
+- (TSThread *)threadForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    if (dataMessage.hasGroup) {
+        return [TSGroupThread getOrCreateThreadWithGroupIdData:dataMessage.group.id];
+    } else {
+        return [TSContactThread getOrCreateThreadWithContactId:envelope.source];
+    }
 }
 
 - (NSUInteger)unreadMessagesCount {
@@ -550,4 +650,18 @@
     return numberOfItems;
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

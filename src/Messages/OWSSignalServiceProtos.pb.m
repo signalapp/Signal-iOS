@@ -863,6 +863,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 @property (strong) NSMutableArray<OWSSignalServiceProtosAttachmentPointer*> * attachmentsArray;
 @property (strong) OWSSignalServiceProtosGroupContext* group;
 @property UInt32 flags;
+@property UInt32 expireTimer;
 @end
 
 @implementation OWSSignalServiceProtosDataMessage
@@ -890,11 +891,19 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   hasFlags_ = !!_value_;
 }
 @synthesize flags;
+- (BOOL) hasExpireTimer {
+  return !!hasExpireTimer_;
+}
+- (void) setHasExpireTimer:(BOOL) _value_ {
+  hasExpireTimer_ = !!_value_;
+}
+@synthesize expireTimer;
 - (instancetype) init {
   if ((self = [super init])) {
     self.body = @"";
     self.group = [OWSSignalServiceProtosGroupContext defaultInstance];
     self.flags = 0;
+    self.expireTimer = 0;
   }
   return self;
 }
@@ -932,6 +941,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasFlags) {
     [output writeUInt32:4 value:self.flags];
   }
+  if (self.hasExpireTimer) {
+    [output writeUInt32:5 value:self.expireTimer];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -952,6 +964,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   }
   if (self.hasFlags) {
     size_ += computeUInt32Size(4, self.flags);
+  }
+  if (self.hasExpireTimer) {
+    size_ += computeUInt32Size(5, self.expireTimer);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1006,6 +1021,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasFlags) {
     [output appendFormat:@"%@%@: %@\n", indent, @"flags", [NSNumber numberWithInteger:self.flags]];
   }
+  if (self.hasExpireTimer) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expireTimer", [NSNumber numberWithInteger:self.expireTimer]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1025,6 +1043,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasFlags) {
     [dictionary setObject: [NSNumber numberWithInteger:self.flags] forKey: @"flags"];
   }
+  if (self.hasExpireTimer) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.expireTimer] forKey: @"expireTimer"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1043,6 +1064,8 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
       (!self.hasGroup || [self.group isEqual:otherMessage.group]) &&
       self.hasFlags == otherMessage.hasFlags &&
       (!self.hasFlags || self.flags == otherMessage.flags) &&
+      self.hasExpireTimer == otherMessage.hasExpireTimer &&
+      (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1059,6 +1082,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasFlags) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.flags] hash];
   }
+  if (self.hasExpireTimer) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.expireTimer] hash];
+  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -1067,6 +1093,7 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
 BOOL OWSSignalServiceProtosDataMessageFlagsIsValidValue(OWSSignalServiceProtosDataMessageFlags value) {
   switch (value) {
     case OWSSignalServiceProtosDataMessageFlagsEndSession:
+    case OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate:
       return YES;
     default:
       return NO;
@@ -1076,6 +1103,8 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   switch (value) {
     case OWSSignalServiceProtosDataMessageFlagsEndSession:
       return @"OWSSignalServiceProtosDataMessageFlagsEndSession";
+    case OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate:
+      return @"OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate";
     default:
       return nil;
   }
@@ -1135,6 +1164,9 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   if (other.hasFlags) {
     [self setFlags:other.flags];
   }
+  if (other.hasExpireTimer) {
+    [self setExpireTimer:other.expireTimer];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1177,6 +1209,10 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
       }
       case 32: {
         [self setFlags:[input readUInt32]];
+        break;
+      }
+      case 40: {
+        [self setExpireTimer:[input readUInt32]];
         break;
       }
     }
@@ -1265,6 +1301,22 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   resultDataMessage.flags = 0;
   return self;
 }
+- (BOOL) hasExpireTimer {
+  return resultDataMessage.hasExpireTimer;
+}
+- (UInt32) expireTimer {
+  return resultDataMessage.expireTimer;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) setExpireTimer:(UInt32) value {
+  resultDataMessage.hasExpireTimer = YES;
+  resultDataMessage.expireTimer = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) clearExpireTimer {
+  resultDataMessage.hasExpireTimer = NO;
+  resultDataMessage.expireTimer = 0;
+  return self;
+}
 @end
 
 @interface OWSSignalServiceProtosSyncMessage ()
@@ -1273,6 +1325,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 @property (strong) OWSSignalServiceProtosSyncMessageGroups* groups;
 @property (strong) OWSSignalServiceProtosSyncMessageRequest* request;
 @property (strong) NSMutableArray<OWSSignalServiceProtosSyncMessageRead*> * readArray;
+@property (strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @end
 
 @implementation OWSSignalServiceProtosSyncMessage
@@ -1307,12 +1360,20 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 @synthesize request;
 @synthesize readArray;
 @dynamic read;
+- (BOOL) hasBlocked {
+  return !!hasBlocked_;
+}
+- (void) setHasBlocked:(BOOL) _value_ {
+  hasBlocked_ = !!_value_;
+}
+@synthesize blocked;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sent = [OWSSignalServiceProtosSyncMessageSent defaultInstance];
     self.contacts = [OWSSignalServiceProtosSyncMessageContacts defaultInstance];
     self.groups = [OWSSignalServiceProtosSyncMessageGroups defaultInstance];
     self.request = [OWSSignalServiceProtosSyncMessageRequest defaultInstance];
+    self.blocked = [OWSSignalServiceProtosSyncMessageBlocked defaultInstance];
   }
   return self;
 }
@@ -1353,6 +1414,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
     [output writeMessage:5 value:element];
   }];
+  if (self.hasBlocked) {
+    [output writeMessage:6 value:self.blocked];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1377,6 +1441,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
     size_ += computeMessageSize(5, element);
   }];
+  if (self.hasBlocked) {
+    size_ += computeMessageSize(6, self.blocked);
+  }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
   return size_;
@@ -1442,6 +1509,12 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
                      withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }];
+  if (self.hasBlocked) {
+    [output appendFormat:@"%@%@ {\n", indent, @"blocked"];
+    [self.blocked writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1470,6 +1543,11 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
     [element storeInDictionary:elementDictionary];
     [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"read"];
   }
+  if (self.hasBlocked) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.blocked storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"blocked"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1490,6 +1568,8 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
       self.hasRequest == otherMessage.hasRequest &&
       (!self.hasRequest || [self.request isEqual:otherMessage.request]) &&
       [self.readArray isEqualToArray:otherMessage.readArray] &&
+      self.hasBlocked == otherMessage.hasBlocked &&
+      (!self.hasBlocked || [self.blocked isEqual:otherMessage.blocked]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1509,6 +1589,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
     hashCode = hashCode * 31 + [element hash];
   }];
+  if (self.hasBlocked) {
+    hashCode = hashCode * 31 + [self.blocked hash];
+  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -1518,6 +1601,7 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
 @property (strong) NSString* destination;
 @property UInt64 timestamp;
 @property (strong) OWSSignalServiceProtosDataMessage* message;
+@property UInt64 expirationStartTimestamp;
 @end
 
 @implementation OWSSignalServiceProtosSyncMessageSent
@@ -1543,11 +1627,19 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   hasMessage_ = !!_value_;
 }
 @synthesize message;
+- (BOOL) hasExpirationStartTimestamp {
+  return !!hasExpirationStartTimestamp_;
+}
+- (void) setHasExpirationStartTimestamp:(BOOL) _value_ {
+  hasExpirationStartTimestamp_ = !!_value_;
+}
+@synthesize expirationStartTimestamp;
 - (instancetype) init {
   if ((self = [super init])) {
     self.destination = @"";
     self.timestamp = 0L;
     self.message = [OWSSignalServiceProtosDataMessage defaultInstance];
+    self.expirationStartTimestamp = 0L;
   }
   return self;
 }
@@ -1576,6 +1668,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
   if (self.hasMessage) {
     [output writeMessage:3 value:self.message];
   }
+  if (self.hasExpirationStartTimestamp) {
+    [output writeUInt64:4 value:self.expirationStartTimestamp];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1593,6 +1688,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
   }
   if (self.hasMessage) {
     size_ += computeMessageSize(3, self.message);
+  }
+  if (self.hasExpirationStartTimestamp) {
+    size_ += computeUInt64Size(4, self.expirationStartTimestamp);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1641,6 +1739,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasExpirationStartTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expirationStartTimestamp", [NSNumber numberWithLongLong:self.expirationStartTimestamp]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1654,6 +1755,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
    [self.message storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"message"];
+  }
+  if (self.hasExpirationStartTimestamp) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.expirationStartTimestamp] forKey: @"expirationStartTimestamp"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1672,6 +1776,8 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
       (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
       self.hasMessage == otherMessage.hasMessage &&
       (!self.hasMessage || [self.message isEqual:otherMessage.message]) &&
+      self.hasExpirationStartTimestamp == otherMessage.hasExpirationStartTimestamp &&
+      (!self.hasExpirationStartTimestamp || self.expirationStartTimestamp == otherMessage.expirationStartTimestamp) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1684,6 +1790,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
   }
   if (self.hasMessage) {
     hashCode = hashCode * 31 + [self.message hash];
+  }
+  if (self.hasExpirationStartTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.expirationStartTimestamp] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1737,6 +1846,9 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
   if (other.hasMessage) {
     [self mergeMessage:other.message];
   }
+  if (other.hasExpirationStartTimestamp) {
+    [self setExpirationStartTimestamp:other.expirationStartTimestamp];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1773,6 +1885,10 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setMessage:[subBuilder buildPartial]];
+        break;
+      }
+      case 32: {
+        [self setExpirationStartTimestamp:[input readUInt64]];
         break;
       }
     }
@@ -1838,6 +1954,22 @@ static OWSSignalServiceProtosSyncMessageSent* defaultOWSSignalServiceProtosSyncM
 - (OWSSignalServiceProtosSyncMessageSentBuilder*) clearMessage {
   resultSent.hasMessage = NO;
   resultSent.message = [OWSSignalServiceProtosDataMessage defaultInstance];
+  return self;
+}
+- (BOOL) hasExpirationStartTimestamp {
+  return resultSent.hasExpirationStartTimestamp;
+}
+- (UInt64) expirationStartTimestamp {
+  return resultSent.expirationStartTimestamp;
+}
+- (OWSSignalServiceProtosSyncMessageSentBuilder*) setExpirationStartTimestamp:(UInt64) value {
+  resultSent.hasExpirationStartTimestamp = YES;
+  resultSent.expirationStartTimestamp = value;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageSentBuilder*) clearExpirationStartTimestamp {
+  resultSent.hasExpirationStartTimestamp = NO;
+  resultSent.expirationStartTimestamp = 0L;
   return self;
 }
 @end
@@ -2302,6 +2434,224 @@ static OWSSignalServiceProtosSyncMessageGroups* defaultOWSSignalServiceProtosSyn
 }
 @end
 
+@interface OWSSignalServiceProtosSyncMessageBlocked ()
+@property (strong) NSMutableArray * numbersArray;
+@end
+
+@implementation OWSSignalServiceProtosSyncMessageBlocked
+
+@synthesize numbersArray;
+@dynamic numbers;
+- (instancetype) init {
+  if ((self = [super init])) {
+  }
+  return self;
+}
+static OWSSignalServiceProtosSyncMessageBlocked* defaultOWSSignalServiceProtosSyncMessageBlockedInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosSyncMessageBlocked class]) {
+    defaultOWSSignalServiceProtosSyncMessageBlockedInstance = [[OWSSignalServiceProtosSyncMessageBlocked alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosSyncMessageBlockedInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosSyncMessageBlockedInstance;
+}
+- (NSArray *)numbers {
+  return numbersArray;
+}
+- (NSString*)numbersAtIndex:(NSUInteger)index {
+  return [numbersArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  [self.numbersArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    [output writeString:1 value:element];
+  }];
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  {
+    __block SInt32 dataSize = 0;
+    const NSUInteger count = self.numbersArray.count;
+    [self.numbersArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+      dataSize += computeStringSizeNoTag(element);
+    }];
+    size_ += dataSize;
+    size_ += (SInt32)(1 * count);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlocked*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageBlocked*)[[[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builder {
+  return [[OWSSignalServiceProtosSyncMessageBlockedBuilder alloc] init];
+}
++ (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageBlocked*) prototype {
+  return [[OWSSignalServiceProtosSyncMessageBlocked builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) builder {
+  return [OWSSignalServiceProtosSyncMessageBlocked builder];
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) toBuilder {
+  return [OWSSignalServiceProtosSyncMessageBlocked builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  [self.numbersArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"numbers", obj];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  [dictionary setObject:self.numbers forKey: @"numbers"];
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosSyncMessageBlocked class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosSyncMessageBlocked *otherMessage = other;
+  return
+      [self.numbersArray isEqualToArray:otherMessage.numbersArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  [self.numbersArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosSyncMessageBlockedBuilder()
+@property (strong) OWSSignalServiceProtosSyncMessageBlocked* resultBlocked;
+@end
+
+@implementation OWSSignalServiceProtosSyncMessageBlockedBuilder
+@synthesize resultBlocked;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultBlocked = [[OWSSignalServiceProtosSyncMessageBlocked alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultBlocked;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) clear {
+  self.resultBlocked = [[OWSSignalServiceProtosSyncMessageBlocked alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) clone {
+  return [OWSSignalServiceProtosSyncMessageBlocked builderWithPrototype:resultBlocked];
+}
+- (OWSSignalServiceProtosSyncMessageBlocked*) defaultInstance {
+  return [OWSSignalServiceProtosSyncMessageBlocked defaultInstance];
+}
+- (OWSSignalServiceProtosSyncMessageBlocked*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosSyncMessageBlocked*) buildPartial {
+  OWSSignalServiceProtosSyncMessageBlocked* returnMe = resultBlocked;
+  self.resultBlocked = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageBlocked*) other {
+  if (other == [OWSSignalServiceProtosSyncMessageBlocked defaultInstance]) {
+    return self;
+  }
+  if (other.numbersArray.count > 0) {
+    if (resultBlocked.numbersArray == nil) {
+      resultBlocked.numbersArray = [[NSMutableArray alloc] initWithArray:other.numbersArray];
+    } else {
+      [resultBlocked.numbersArray addObjectsFromArray:other.numbersArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self addNumbers:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (NSMutableArray *)numbers {
+  return resultBlocked.numbersArray;
+}
+- (NSString*)numbersAtIndex:(NSUInteger)index {
+  return [resultBlocked numbersAtIndex:index];
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)addNumbers:(NSString*)value {
+  if (resultBlocked.numbersArray == nil) {
+    resultBlocked.numbersArray = [[NSMutableArray alloc]init];
+  }
+  [resultBlocked.numbersArray addObject:value];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)setNumbersArray:(NSArray *)array {
+  resultBlocked.numbersArray = [[NSMutableArray alloc] initWithArray:array];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBlockedBuilder *)clearNumbers {
+  resultBlocked.numbersArray = nil;
+  return self;
+}
+@end
+
 @interface OWSSignalServiceProtosSyncMessageRequest ()
 @property OWSSignalServiceProtosSyncMessageRequestType type;
 @end
@@ -2426,6 +2776,7 @@ BOOL OWSSignalServiceProtosSyncMessageRequestTypeIsValidValue(OWSSignalServicePr
     case OWSSignalServiceProtosSyncMessageRequestTypeUnknown:
     case OWSSignalServiceProtosSyncMessageRequestTypeContacts:
     case OWSSignalServiceProtosSyncMessageRequestTypeGroups:
+    case OWSSignalServiceProtosSyncMessageRequestTypeBlocked:
       return YES;
     default:
       return NO;
@@ -2439,6 +2790,8 @@ NSString *NSStringFromOWSSignalServiceProtosSyncMessageRequestType(OWSSignalServ
       return @"OWSSignalServiceProtosSyncMessageRequestTypeContacts";
     case OWSSignalServiceProtosSyncMessageRequestTypeGroups:
       return @"OWSSignalServiceProtosSyncMessageRequestTypeGroups";
+    case OWSSignalServiceProtosSyncMessageRequestTypeBlocked:
+      return @"OWSSignalServiceProtosSyncMessageRequestTypeBlocked";
     default:
       return nil;
   }
@@ -2848,6 +3201,9 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
       [resultSyncMessage.readArray addObjectsFromArray:other.readArray];
     }
   }
+  if (other.hasBlocked) {
+    [self mergeBlocked:other.blocked];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -2909,6 +3265,15 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
         OWSSignalServiceProtosSyncMessageReadBuilder* subBuilder = [OWSSignalServiceProtosSyncMessageRead builder];
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self addRead:[subBuilder buildPartial]];
+        break;
+      }
+      case 50: {
+        OWSSignalServiceProtosSyncMessageBlockedBuilder* subBuilder = [OWSSignalServiceProtosSyncMessageBlocked builder];
+        if (self.hasBlocked) {
+          [subBuilder mergeFrom:self.blocked];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setBlocked:[subBuilder buildPartial]];
         break;
       }
     }
@@ -3053,6 +3418,36 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 }
 - (OWSSignalServiceProtosSyncMessageBuilder *)clearRead {
   resultSyncMessage.readArray = nil;
+  return self;
+}
+- (BOOL) hasBlocked {
+  return resultSyncMessage.hasBlocked;
+}
+- (OWSSignalServiceProtosSyncMessageBlocked*) blocked {
+  return resultSyncMessage.blocked;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) setBlocked:(OWSSignalServiceProtosSyncMessageBlocked*) value {
+  resultSyncMessage.hasBlocked = YES;
+  resultSyncMessage.blocked = value;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) setBlockedBuilder:(OWSSignalServiceProtosSyncMessageBlockedBuilder*) builderForValue {
+  return [self setBlocked:[builderForValue build]];
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) mergeBlocked:(OWSSignalServiceProtosSyncMessageBlocked*) value {
+  if (resultSyncMessage.hasBlocked &&
+      resultSyncMessage.blocked != [OWSSignalServiceProtosSyncMessageBlocked defaultInstance]) {
+    resultSyncMessage.blocked =
+      [[[OWSSignalServiceProtosSyncMessageBlocked builderWithPrototype:resultSyncMessage.blocked] mergeFrom:value] buildPartial];
+  } else {
+    resultSyncMessage.blocked = value;
+  }
+  resultSyncMessage.hasBlocked = YES;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) clearBlocked {
+  resultSyncMessage.hasBlocked = NO;
+  resultSyncMessage.blocked = [OWSSignalServiceProtosSyncMessageBlocked defaultInstance];
   return self;
 }
 @end
@@ -3932,6 +4327,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (strong) NSString* number;
 @property (strong) NSString* name;
 @property (strong) OWSSignalServiceProtosContactDetailsAvatar* avatar;
+@property (strong) NSString* color;
 @end
 
 @implementation OWSSignalServiceProtosContactDetails
@@ -3957,11 +4353,19 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   hasAvatar_ = !!_value_;
 }
 @synthesize avatar;
+- (BOOL) hasColor {
+  return !!hasColor_;
+}
+- (void) setHasColor:(BOOL) _value_ {
+  hasColor_ = !!_value_;
+}
+@synthesize color;
 - (instancetype) init {
   if ((self = [super init])) {
     self.number = @"";
     self.name = @"";
     self.avatar = [OWSSignalServiceProtosContactDetailsAvatar defaultInstance];
+    self.color = @"";
   }
   return self;
 }
@@ -3990,6 +4394,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   if (self.hasAvatar) {
     [output writeMessage:3 value:self.avatar];
   }
+  if (self.hasColor) {
+    [output writeString:4 value:self.color];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4007,6 +4414,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasAvatar) {
     size_ += computeMessageSize(3, self.avatar);
+  }
+  if (self.hasColor) {
+    size_ += computeStringSize(4, self.color);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -4055,6 +4465,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasColor) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"color", self.color];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4068,6 +4481,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
    [self.avatar storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"avatar"];
+  }
+  if (self.hasColor) {
+    [dictionary setObject: self.color forKey: @"color"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -4086,6 +4502,8 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
       (!self.hasName || [self.name isEqual:otherMessage.name]) &&
       self.hasAvatar == otherMessage.hasAvatar &&
       (!self.hasAvatar || [self.avatar isEqual:otherMessage.avatar]) &&
+      self.hasColor == otherMessage.hasColor &&
+      (!self.hasColor || [self.color isEqual:otherMessage.color]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4098,6 +4516,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasAvatar) {
     hashCode = hashCode * 31 + [self.avatar hash];
+  }
+  if (self.hasColor) {
+    hashCode = hashCode * 31 + [self.color hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -4406,6 +4827,9 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
   if (other.hasAvatar) {
     [self mergeAvatar:other.avatar];
   }
+  if (other.hasColor) {
+    [self setColor:other.color];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -4442,6 +4866,10 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setAvatar:[subBuilder buildPartial]];
+        break;
+      }
+      case 34: {
+        [self setColor:[input readString]];
         break;
       }
     }
@@ -4507,6 +4935,22 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
 - (OWSSignalServiceProtosContactDetailsBuilder*) clearAvatar {
   resultContactDetails.hasAvatar = NO;
   resultContactDetails.avatar = [OWSSignalServiceProtosContactDetailsAvatar defaultInstance];
+  return self;
+}
+- (BOOL) hasColor {
+  return resultContactDetails.hasColor;
+}
+- (NSString*) color {
+  return resultContactDetails.color;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) setColor:(NSString*) value {
+  resultContactDetails.hasColor = YES;
+  resultContactDetails.color = value;
+  return self;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearColor {
+  resultContactDetails.hasColor = NO;
+  resultContactDetails.color = @"";
   return self;
 }
 @end

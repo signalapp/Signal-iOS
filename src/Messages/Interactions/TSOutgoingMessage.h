@@ -6,6 +6,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosAttachmentPointer;
+@class OWSSignalServiceProtosDataMessageBuilder;
 
 @interface TSOutgoingMessage : TSMessage
 
@@ -28,6 +29,12 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
  * The data representation of this message, to be encrypted, before being sent.
  */
 - (NSData *)buildPlainTextData;
+
+/**
+ * Intermediate protobuf representation
+ * Subclasses can augment if they want to manipulate the data message before building.
+ */
+- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder;
 
 /**
  * Should this message be synced to the users other registered devices? This is

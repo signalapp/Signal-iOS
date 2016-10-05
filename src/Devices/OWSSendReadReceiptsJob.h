@@ -1,13 +1,17 @@
+//  Created by Michael Kirk on 9/24/16.
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSMessagesManager;
+@class TSIncomingMessage;
 
-@interface OWSReadReceiptObserver : NSObject
+@interface OWSSendReadReceiptsJob : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager NS_DESIGNATED_INITIALIZER;
-- (void)startObserving;
+- (void)runWith:(TSIncomingMessage *)message;
+
 
 @end
 

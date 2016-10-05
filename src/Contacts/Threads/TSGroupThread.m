@@ -84,7 +84,7 @@
 
 - (NSString *)name
 {
-    return self.groupModel.groupName;
+    return self.groupModel.groupName ? self.groupModel.groupName : NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
 @end

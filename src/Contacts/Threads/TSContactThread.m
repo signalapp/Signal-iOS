@@ -74,9 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
     return false;
 }
 
-- (NSString *)name {
-    NSString *contactId = [self contactIdentifier];
-    return [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:contactId];
+- (NSString *)name
+{
+    return [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:self.contactIdentifier];
 }
 
 #if TARGET_OS_IPHONE

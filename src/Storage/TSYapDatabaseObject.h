@@ -84,6 +84,8 @@
  */
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)touch;
+
 /**
  *  The unique identifier of the stored object
  */

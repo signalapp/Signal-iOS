@@ -2,6 +2,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSOutgoingMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -23,8 +24,23 @@ NS_ASSUME_NONNULL_BEGIN
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:attachmentIds];
 
+    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[] expiresInSeconds:0];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    self = [super initWithTimestamp:timestamp
+                           inThread:thread
+                        messageBody:body
+                      attachmentIds:attachmentIds
+                   expiresInSeconds:expiresInSeconds
+                    expireStartedAt:now];
     if (!self) {
         return self;
     }
@@ -46,10 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self.thread.contactIdentifier;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage
+- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     TSThread *thread = self.thread;
-
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setBody:self.body];
     BOOL attachmentWasGroupAvatar = NO;
@@ -87,7 +102,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [builder setAttachmentsArray:attachments];
     }
-    return [builder build];
+    [builder setExpireTimer:self.expiresInSeconds];
+    return builder;
+}
+
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage
+{
+    return [[self dataMessageBuilder] build];
 }
 
 - (NSData *)buildPlainTextData

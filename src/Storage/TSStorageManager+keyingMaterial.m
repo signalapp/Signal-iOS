@@ -26,7 +26,7 @@
         if ([transaction objectForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection]) {
             block();
         } else {
-            DDLogDebug(@"%@ Skipping block since no local number is registered", self.tag);
+            DDLogDebug(@"%@ Skipping block since no local number is registered", self.logTag);
         }
     }];
 }
@@ -63,14 +63,14 @@
 
 #pragma mark - Logging
 
-+ (NSString *)tag
++ (NSString *)logTag
 {
     return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
-- (NSString *)tag
+- (NSString *)logTag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end
