@@ -12,12 +12,5 @@ before_install:
 
 install: travis_wait 30 pod install # OpenSSL takes a long time to compile
 
-script:
-- |
-  set -o pipefail
-  # default xctool was hanging. see https://github.com/travis-ci/travis-ci/issues/3986
-  xcodebuild -workspace Signal.xcworkspace -scheme Signal \
-    -sdk iphonesimulator \
-    -destination 'platform=iOS Simulator,name=iPhone 6,OS=10.0' \
-    build test | xcpretty
+script: make
 
