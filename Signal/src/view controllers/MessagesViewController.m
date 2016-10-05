@@ -167,7 +167,6 @@ typedef enum : NSUInteger {
         }
     } else {
         [self inputToolbar].hidden = NO;
-        [self loadDraftInCompose];
     }
 }
 
@@ -299,17 +298,17 @@ typedef enum : NSUInteger {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self dismissKeyBoard];
+    
     [self startReadTimer];
 
     [self initializeTitleLabelGestureRecognizer];
 
     // TODO prep this sync one time before view loads so we don't have to repaint.
     [self updateBackButtonAsync];
-
-    [self.inputToolbar.contentView.textView endEditing:YES];
-
+    //[self.inputToolbar.contentView.textView endEditing:YES];
     self.inputToolbar.contentView.textView.editable = YES;
+    [self loadDraftInCompose];
+    
     if (_composeOnOpen) {
         [self popKeyBoard];
     }
@@ -2066,6 +2065,9 @@ typedef enum : NSUInteger {
           dispatch_async(dispatch_get_main_queue(), ^{
             [self.inputToolbar.contentView.textView setText:placeholder];
             [self textViewDidChange:self.inputToolbar.contentView.textView];
+              if(self.inputToolbar.contentView.textView.text.length>0) {
+                  [self popKeyBoard];
+              }
           });
         }];
 }
