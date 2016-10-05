@@ -109,7 +109,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, retain) NSTimer *readTimer;
 @property (nonatomic, strong) UILabel *navbarTitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
-@property (nonatomic, retain) NSIndexPath *lastDeliveredMessageIndexPath;
 
 @property NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
@@ -172,7 +171,6 @@ typedef enum : NSUInteger {
     _thread                        = thread;
     isGroupConversation            = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen                 = keyboardAppearing;
-    _lastDeliveredMessageIndexPath = nil;
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     self.messageMappings =
@@ -632,7 +630,10 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message
             inThread:self.thread
             success:^{
+                TSMessage *penultimateMessage = self.lastDeliveredMessage;
                 self.lastDeliveredMessage = message;
+                // Touch the old one to remove "delivered" label
+                [penultimateMessage touch];
             }
             failure:^{
                 DDLogWarn(@"%@ Failed to deliver message.", self.tag);
@@ -954,7 +955,6 @@ typedef enum : NSUInteger {
 
             return failedString;
         } else if ([outgoingMessage isEqual:self.lastDeliveredMessage]) {
-            _lastDeliveredMessageIndexPath = indexPath; // So we can remove it later.
             NSAttributedString *deliveredString =
                 [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
 
@@ -1758,13 +1758,7 @@ typedef enum : NSUInteger {
                   if (collectionKey.key) {
                       [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                   }
-
-                  // remove "delivered" from all but final message.
-                  NSMutableArray *rowsToUpdate = [@[ rowChange.indexPath ] mutableCopy];
-                  if (_lastDeliveredMessageIndexPath) {
-                      [rowsToUpdate addObject:_lastDeliveredMessageIndexPath];
-                  }
-                  [self.collectionView reloadItemsAtIndexPaths:rowsToUpdate];
+                  [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                   scrollToBottom = YES;
                   break;
               }
