@@ -101,10 +101,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self prepareScreenProtection];
 
     // Avoid blocking app launch by putting all possible DB access in async thread.
+    UIApplicationState launchState = application.applicationState;
     [TSAccountManager runIfRegistered:^{
-        if (application.applicationState == UIApplicationStateInactive) {
+        if (launchState == UIApplicationStateInactive) {
+            DDLogWarn(@"The app was launched from inactive");
             [TSSocketManager becomeActiveFromForeground];
-        } else if (application.applicationState == UIApplicationStateBackground) {
+        } else if (launchState == UIApplicationStateBackground) {
+            DDLogWarn(@"The app was launched from being backgrounded");
             [TSSocketManager becomeActiveFromBackgroundExpectMessage:NO];
         } else {
             DDLogWarn(@"The app was launched in an unknown way");
