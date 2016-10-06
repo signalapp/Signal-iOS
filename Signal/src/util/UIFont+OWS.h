@@ -24,5 +24,6 @@
 #pragma mark Dynamic Type
 
 + (UIFont *)ows_dynamicTypeBodyFont;
++ (UIFont *)ows_dynamicTypeTitle2Font;
 
 @end

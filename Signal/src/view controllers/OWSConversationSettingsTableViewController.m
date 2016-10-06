@@ -10,6 +10,7 @@
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "UIUtil.h"
+#import "UIFont+OWS.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -138,6 +139,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         self.signalIdLabel.text = nil;
     }
     self.avatar.image = [OWSAvatarBuilder buildImageForThread:self.thread contactsManager:self.contactsManager];
+    self.nameLabel.font = [UIFont ows_dynamicTypeTitle2Font];
 
     // Translations
     self.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
@@ -255,6 +257,8 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
+
+    // group vs. contact thread has duration slider at different index.
     if (cell == self.disappearingMessagesDurationCell) {
         NSIndexPath *originalDurationSliderIndexPath = [NSIndexPath
             indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration
@@ -380,10 +384,10 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     // Animate show/hide of duration settings.
     if (flag) {
         [self.tableView insertRowsAtIndexPaths:@[ self.indexPathForDurationSlider ]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                              withRowAnimation:UITableViewRowAnimationFade];
     } else {
         [self.tableView deleteRowsAtIndexPaths:@[ self.indexPathForDurationSlider ]
-                              withRowAnimation:UITableViewRowAnimationTop];
+                              withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
