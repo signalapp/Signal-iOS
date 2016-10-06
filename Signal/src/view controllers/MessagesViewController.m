@@ -741,6 +741,9 @@ typedef enum : NSUInteger {
 {
     JSQMessagesCollectionViewCell *cell =
         (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
+    [self fixupiOS10EmojiBugForTextView:cell.textView];
+    // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor ows_blackColor];
         cell.textView.linkTextAttributes = @{
@@ -758,6 +761,11 @@ typedef enum : NSUInteger {
     OWSOutgoingMessageCollectionViewCell *cell
         = (OWSOutgoingMessageCollectionViewCell *)[super collectionView:self.collectionView
                                                  cellForItemAtIndexPath:indexPath];
+
+    // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
+    [self fixupiOS10EmojiBugForTextView:cell.textView];
+    // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
+
     if (!message.isMediaMessage) {
         cell.textView.textColor          = [UIColor whiteColor];
         cell.textView.linkTextAttributes = @{
@@ -767,6 +775,28 @@ typedef enum : NSUInteger {
     }
     return cell;
 }
+
+// BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
+- (void)fixupiOS10EmojiBugForTextView:(UITextView *)textView
+{
+    BOOL isIOS10OrGreater =
+    [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){.majorVersion = 10 }];
+    if (isIOS10OrGreater) {
+        [textView.textStorage enumerateAttribute:NSFontAttributeName
+                                         inRange:NSMakeRange(0, textView.textStorage.length)
+                                         options:0
+                                      usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                                          UIFont *font = (UIFont *)value;
+                                          if ([font.fontName isEqualToString:@".AppleColorEmojiUI"]) {
+                                              [textView.textStorage addAttribute:NSFontAttributeName
+                                                                           value:[UIFont fontWithName:@"AppleColorEmoji"
+                                                                                                 size:font.pointSize]
+                                                                           range:range];
+                                          }
+                                      }];
+    }
+}
+// END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
 - (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
 {
