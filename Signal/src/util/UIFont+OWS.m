@@ -37,6 +37,11 @@
     return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
++ (UIFont *)ows_infoMessageFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
 + (UIFont *)ows_dynamicTypeTitle2Font {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
         return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];

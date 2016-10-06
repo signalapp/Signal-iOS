@@ -110,6 +110,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) UILabel *navbarTitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
 
+@property (nonatomic) CGFloat previousCollectionViewFrameWidth;
+
 @property NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
@@ -215,12 +217,6 @@ typedef enum : NSUInteger {
 {
     [super viewDidLoad];
 
-    // JSQMVC width is 375px at this point (as specified by the xib), but this causes
-    // our initial bubble calculations to be off since they happen before the containing
-    // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
-    // Resetting here makes sure we've got a good initial width.
-    [self resetFrame];
-
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.messageAdapterCache = [[NSCache alloc] init];
@@ -249,6 +245,23 @@ typedef enum : NSUInteger {
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
     [self initializeToolbars];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    // JSQMVC width is initially 375px on iphone6/ios9 (as specified by the xib), which causes
+    // our initial bubble calculations to be off since they happen before the containing
+    // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
+    if (CGRectGetWidth(self.collectionView.frame) != self.previousCollectionViewFrameWidth) {
+        // save frame value from next comparison
+        self.previousCollectionViewFrameWidth = CGRectGetWidth(self.collectionView.frame);
+
+        // invalidate layout
+        [self.collectionView.collectionViewLayout
+            invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+    }
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent
@@ -619,7 +632,7 @@ typedef enum : NSUInteger {
             message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:self.thread
                                                        messageBody:text
-                                                     attachmentIds:@[]
+                                                     attachmentIds:[NSMutableArray new]
                                                   expiresInSeconds:configuration.durationSeconds];
         } else {
             message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -831,6 +844,7 @@ typedef enum : NSUInteger {
                                                                                                         forIndexPath:indexPath];
     messageCell.layer.shouldRasterize = YES;
     messageCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    messageCell.textView.textColor = [UIColor darkGrayColor];
     messageCell.cellTopLabel.attributedText = [self.collectionView.dataSource collectionView:self.collectionView attributedTextForCellTopLabelAtIndexPath:indexPath];
 
     return messageCell;
@@ -846,7 +860,7 @@ typedef enum : NSUInteger {
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 
-    infoCell.cellLabel.text = [infoMessage text];
+    infoCell.textView.text = [infoMessage text];
     infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
 
@@ -857,7 +871,7 @@ typedef enum : NSUInteger {
                                                               atIndexPath:(NSIndexPath *)indexPath
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
-    errorCell.cellLabel.text = [errorMessage text];
+    errorCell.textView.text = [errorMessage text];
     errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
 

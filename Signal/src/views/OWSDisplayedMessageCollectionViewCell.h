@@ -9,7 +9,6 @@ extern const CGFloat OWSDisplayedMessageCellMinimumHeight;
 
 @interface OWSDisplayedMessageCollectionViewCell : JSQMessagesCollectionViewCell
 
-@property (weak, nonatomic, readonly) JSQMessagesLabel *cellLabel;
 @property (weak, nonatomic, readonly) UIImageView *headerImageView;
 
 @end

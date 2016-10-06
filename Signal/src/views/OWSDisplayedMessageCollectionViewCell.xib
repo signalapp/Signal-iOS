@@ -27,21 +27,18 @@
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qCf-bs-dBd" userLabel="Bubble container">
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info Message" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="OVa-Xw-5vl" customClass="JSQMessagesLabel">
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="14" id="fed-2c-dqd"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Lorem ipsum dolor sit er elit lamet" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="gbd-vF-h3e" customClass="JSQMessagesCellTextView">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="OVa-Xw-5vl" firstAttribute="leading" secondItem="qCf-bs-dBd" secondAttribute="leading" constant="8" id="2IE-8k-czI"/>
-                            <constraint firstAttribute="bottom" secondItem="OVa-Xw-5vl" secondAttribute="bottom" constant="8" id="MtI-jW-t1x"/>
-                            <constraint firstAttribute="trailing" secondItem="OVa-Xw-5vl" secondAttribute="trailing" constant="8" id="Y8z-8G-PLt"/>
-                            <constraint firstItem="OVa-Xw-5vl" firstAttribute="top" secondItem="qCf-bs-dBd" secondAttribute="top" constant="12" id="v5B-tB-pOB"/>
+                            <constraint firstAttribute="trailing" secondItem="gbd-vF-h3e" secondAttribute="trailing" constant="6" id="WME-2Q-rFT"/>
+                            <constraint firstItem="gbd-vF-h3e" firstAttribute="top" secondItem="qCf-bs-dBd" secondAttribute="top" constant="6" id="Zee-be-E6m"/>
+                            <constraint firstAttribute="bottom" secondItem="gbd-vF-h3e" secondAttribute="bottom" id="aCy-5N-gI4"/>
+                            <constraint firstItem="gbd-vF-h3e" firstAttribute="leading" secondItem="qCf-bs-dBd" secondAttribute="leading" constant="6" id="wL5-SN-GFl"/>
                         </constraints>
                     </view>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="warning_white.png" translatesAutoresizingMaskIntoConstraints="NO" id="ePO-Cy-jUE">
@@ -65,11 +62,11 @@
             </constraints>
             <size key="customSize" width="320" height="55"/>
             <connections>
-                <outlet property="cellLabel" destination="OVa-Xw-5vl" id="7PC-oj-dQZ"/>
                 <outlet property="cellTopLabel" destination="gcR-Rk-KDC" id="Ogk-hD-ge8"/>
                 <outlet property="cellTopLabelHeightConstraint" destination="ckj-xD-FJI" id="wBH-pQ-Wc7"/>
                 <outlet property="headerImageView" destination="ePO-Cy-jUE" id="4uq-2C-V7U"/>
                 <outlet property="messageBubbleContainerView" destination="qCf-bs-dBd" id="WMx-Di-LZG"/>
+                <outlet property="textView" destination="gbd-vF-h3e" id="Ynt-WC-VrK"/>
             </connections>
             <point key="canvasLocation" x="219" y="433"/>
         </collectionViewCell>
