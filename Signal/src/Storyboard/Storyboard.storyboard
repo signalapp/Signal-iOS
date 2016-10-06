@@ -191,7 +191,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="k9r-Fg-1QJ"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="24"/>
+                                        <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="23"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -318,7 +318,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+13235551234" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmV-r0-09O" userLabel="Signal ID">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+1 323-555-1234" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmV-r0-09O" userLabel="Signal ID">
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -405,11 +405,11 @@
                                             <outlet property="accessoryView" destination="0dO-mx-W3I" id="1np-R6-rf7"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="84" id="3dL-aW-P1A">
-                                        <rect key="frame" x="0.0" y="188" width="375" height="84"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="88" id="3dL-aW-P1A">
+                                        <rect key="frame" x="0.0" y="188" width="375" height="88"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3dL-aW-P1A" id="2a2-Po-p8O">
-                                            <frame key="frameInset" width="375" height="83"/>
+                                            <frame key="frameInset" width="375" height="87"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_hourglass_empty" translatesAutoresizingMaskIntoConstraints="NO" id="X7n-1t-1Q7">
@@ -446,7 +446,7 @@
                                                 <constraint firstItem="X7n-1t-1Q7" firstAttribute="trailing" secondItem="4Hn-9p-qsR" secondAttribute="leading" constant="-22" id="BIH-vZ-UBx"/>
                                                 <constraint firstItem="atL-Pg-VhA" firstAttribute="leading" secondItem="4Hn-9p-qsR" secondAttribute="trailing" constant="22" id="Bbq-jp-v8d"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="atL-Pg-VhA" secondAttribute="trailing" id="JtZ-TH-VqO"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="4Hn-9p-qsR" secondAttribute="bottom" id="OrV-vw-IeD"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="4Hn-9p-qsR" secondAttribute="bottom" constant="4" id="OrV-vw-IeD"/>
                                                 <constraint firstItem="atL-Pg-VhA" firstAttribute="centerY" secondItem="4Hn-9p-qsR" secondAttribute="centerY" id="SNj-vr-psP"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="c6Q-rV-1LO" secondAttribute="trailing" id="Td0-xm-0jB"/>
                                                 <constraint firstItem="4Hn-9p-qsR" firstAttribute="top" secondItem="c6Q-rV-1LO" secondAttribute="bottom" constant="8" id="cFF-k2-V3P"/>
@@ -460,7 +460,7 @@
                             <tableViewSection headerTitle="Group Management" id="z5m-Fe-GK8">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="NxZ-wa-xV9" style="IBUITableViewCellStyleDefault" id="XHr-b6-Gvn" userLabel="Update Group">
-                                        <rect key="frame" x="0.0" y="328" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="333" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XHr-b6-Gvn" id="Epj-vT-UYL">
                                             <frame key="frameInset" width="342" height="43"/>
@@ -480,7 +480,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="geN-YN-TQg" style="IBUITableViewCellStyleDefault" id="w57-rz-BWN" userLabel="Leave Group">
-                                        <rect key="frame" x="0.0" y="372" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="377" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w57-rz-BWN" id="Pgy-Fc-U25">
                                             <frame key="frameInset" width="342" height="43"/>
@@ -497,7 +497,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Zml-Zn-2fd" style="IBUITableViewCellStyleDefault" id="Dnq-Ko-46l" userLabel="Group Members">
-                                        <rect key="frame" x="0.0" y="416" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="421" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Dnq-Ko-46l" id="VRQ-31-E5Y">
                                             <frame key="frameInset" width="342" height="43"/>

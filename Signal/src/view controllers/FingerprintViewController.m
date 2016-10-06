@@ -103,6 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLayoutSubviews];
 
+    // On iOS8, the QRCodeFrame hasn't been layed out yet (causing the QRCode to be hidden), force it here.
+    [self.privacyVerificationQRCodeFrame setNeedsLayout];
+    [self.privacyVerificationQRCodeFrame layoutIfNeeded];
+    // Round QR Code.
     self.privacyVerificationQRCodeFrame.layer.masksToBounds = YES;
     self.privacyVerificationQRCodeFrame.layer.cornerRadius = self.privacyVerificationQRCodeFrame.frame.size.height / 2;
 }
