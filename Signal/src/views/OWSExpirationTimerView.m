@@ -8,6 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+double const OWSExpirationTimerViewBlinkingSeconds = 2;
+
 @interface OWSExpirationTimerView ()
 
 @property (nonatomic) uint32_t initialDurationSeconds;
@@ -142,15 +145,27 @@ NS_ASSUME_NONNULL_BEGIN
     [maskLayer addAnimation:revealAnimation forKey:@"revealAnimation"];
     maskLayer.position = finalPosition; // don't snap back
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, ((long long)secondsLeft - 2) * (long long)NSEC_PER_SEC),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                       (long long)((secondsLeft - OWSExpirationTimerViewBlinkingSeconds) * NSEC_PER_SEC)),
         dispatch_get_main_queue(),
         ^{
             [self startBlinking];
         });
 }
 
+- (BOOL)itIsTimeToBlink
+{
+    double secondsLeft = (double)self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
+    return secondsLeft <= OWSExpirationTimerViewBlinkingSeconds;
+}
+
 - (void)startBlinking
 {
+    if (![self itIsTimeToBlink]) {
+        DDLogVerbose(@"Refusing to start blinking too early. Reused cell?");
+        return;
+    }
+
     CABasicAnimation *blinkAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
     blinkAnimation.duration = 0.5;
     blinkAnimation.fromValue = @(1.0);
