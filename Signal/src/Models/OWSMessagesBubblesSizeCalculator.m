@@ -3,6 +3,7 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "TSMessageAdapter.h"
+#import "UIFont+OWS.h"
 #import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayout.h>
 
@@ -41,8 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
                               atIndexPath:(NSIndexPath *)indexPath
                                withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    CGSize size;
+    if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
+        TSMessageAdapter *message = (TSMessageAdapter *)messageData;
+        if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
+            return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
+        }
+    }
 
+    CGSize size;
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
     BOOL isIOS10OrGreater =
         [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){.majorVersion = 10 }];
@@ -55,21 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
-    if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
-        TSMessageAdapter *message = (TSMessageAdapter *)messageData;
 
-
-        if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
-            // DDLogVerbose(@"[OWSMessagesBubblesSizeCalculator] superSize.height:%f, superSize.width:%f",
-            //     superSize.height,
-            //     superSize.width);
-
-            // header icon hangs ouside of the frame a bit.
-            CGFloat headerIconProtrusion = 30.0f; // too  much padding with normal font.
-            // CGFloat headerIconProtrusion = 18.0f; // clips
-            size.height += headerIconProtrusion;
-        }
-    }
 
     return size;
 }
@@ -156,6 +149,83 @@ NS_ASSUME_NONNULL_BEGIN
             + layout.messageBubbleTextViewTextContainerInsets.bottom;
         CGFloat verticalFrameInsets
             = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
+
+        //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
+        //  not sure why. magix. (shrug) if you know, submit a PR
+        CGFloat verticalInsets = verticalContainerInsets + verticalFrameInsets + self.additionalInset;
+
+        //  same as above, an extra 2 points of magix
+        CGFloat finalWidth
+            = MAX(stringSize.width + horizontalInsetsTotal, self.minimumBubbleWidth) + self.additionalInset;
+
+        finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
+    }
+
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+
+    return finalSize;
+}
+
+
+- (CGSize)messageBubbleSizeForInfoMessageData:(id<JSQMessageData>)messageData
+                                  atIndexPath:(NSIndexPath *)indexPath
+                                   withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize finalSize = CGSizeZero;
+
+    if ([messageData isMediaMessage]) {
+        finalSize = [[messageData media] mediaViewDisplaySize];
+    } else {
+        ///////////////////
+        // BEGIN InfoMessage sizing HACK
+        // Braindead, and painstakingly produced.
+        // If you want to change, check for clipping / excess space on 1, 2, and 3 line messages with short and long
+        // words very near the edge.
+
+//      CGSize avatarSize = [self jsq_avatarSizeForMessageData:messageData withLayout:layout];
+//      //  from the cell xibs, there is a 2 point space between avatar and bubble
+//      CGFloat spacingBetweenAvatarAndBubble = 2.0f;
+//      CGFloat horizontalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.left + layout.messageBubbleTextViewTextContainerInsets.right;
+//      CGFloat horizontalFrameInsets = layout.messageBubbleTextViewFrameInsets.left + layout.messageBubbleTextViewFrameInsets.right;
+//      CGFloat horizontalInsetsTotal = horizontalContainerInsets + horizontalFrameInsets + spacingBetweenAvatarAndBubble;
+//      CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - avatarSize.width - layout.messageBubbleLeftRightMargin - horizontalInsetsTotal;
+
+        // The full layout width, less the textView margins from xib.
+//        CGFloat horizontalInsetsTotal = 12.0; cropped 3rd line
+        CGFloat horizontalInsetsTotal = 50.0;
+        CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - horizontalInsetsTotal;
+
+        CGRect stringRect = [[messageData text]
+            boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
+                         options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                      attributes:@{
+                                   NSFontAttributeName : [UIFont ows_dynamicTypeBodyFont]
+                      } // Hack to use a slightly larger than actual font, because I'm seeing messages with higher line count get clipped.
+                         context:nil];
+        // END InfoMessage sizing HACK
+        ////////////////////
+
+        CGSize stringSize = CGRectIntegral(stringRect).size;
+
+        CGFloat verticalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.top
+            + layout.messageBubbleTextViewTextContainerInsets.bottom;
+
+        CGFloat verticalFrameInsets
+            = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
+        ///////////////////
+        // BEGIN InfoMessage sizing HACK
+
+        CGFloat topIconPortrusion = 28;
+
+        verticalFrameInsets += topIconPortrusion;
+
+        // END InfoMessage sizing HACK
+        ///////////////////
 
         //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
         //  not sure why. magix. (shrug) if you know, submit a PR

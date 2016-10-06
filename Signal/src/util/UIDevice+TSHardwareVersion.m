@@ -158,6 +158,8 @@
     return UIDeviceFamilyUnknown;
 }
 
+// FIXME this is probably broken for new iPhones =(
+// Who could have guessed that there would ever be a new iPhone model?
 - (BOOL)isiPhoneVersionSixOrMore {
     return
         [[self modelIdentifier] isEqualToString:@"iPhone7,1"] || [[self modelIdentifier] isEqualToString:@"iPhone7,2"];

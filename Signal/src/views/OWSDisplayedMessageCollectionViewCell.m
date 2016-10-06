@@ -3,14 +3,13 @@
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSDisplayedMessageCollectionViewCell.h"
-
+#import "UIFont+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
 const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
 
 @interface OWSDisplayedMessageCollectionViewCell ()
 
-@property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *cellTopLabelHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
 
@@ -43,7 +42,8 @@ const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
     self.messageBubbleContainerView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.messageBubbleContainerView.layer.borderWidth = 0.75f;
     self.messageBubbleContainerView.layer.cornerRadius = 5.0f;
-    self.cellLabel.textColor = [UIColor darkGrayColor];
+    self.textView.font = [UIFont ows_infoMessageFont];
+    self.textView.textColor = [UIColor darkGrayColor];
 }
 
 #pragma mark - Collection view cell
@@ -52,7 +52,7 @@ const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
 {
     [super prepareForReuse];
 
-    self.cellLabel.text = nil;
+    self.textView.text = nil;
 }
 
 @end
