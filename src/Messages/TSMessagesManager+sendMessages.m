@@ -399,6 +399,7 @@ dispatch_queue_t sendingQueue() {
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
                                                 inThread:cThread
+                                                authorId:[cThread contactIdentifier]
                                              messageBody:outgoingMessage.body
                                            attachmentIds:outgoingMessage.attachmentIds
                                         expiresInSeconds:outgoingMessage.expiresInSeconds];

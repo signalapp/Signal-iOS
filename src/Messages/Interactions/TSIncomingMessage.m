@@ -13,91 +13,36 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 
 @implementation TSIncomingMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSContactThread *)thread
-                      messageBody:(nullable NSString *)body
+- (instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[]];
-
-    if (!self) {
-        return self;
-    }
-
-    // _authorId was nil for contact thread messages prior to 2.6.0
-    _authorId = [thread contactIdentifier];
-    _read = NO;
-    _receivedAt = [NSDate date];
-
-    return self;
+    return [super initWithCoder:coder];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    self = [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-    if (!self) {
-        return self;
-    }
-
-    // _authorId was nil for contact thread messages prior to 2.6.0
-    _authorId = [thread contactIdentifier];
-    _read = NO;
-    _receivedAt = [NSDate date];
-
-    return self;
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSContactThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-{
-    self = [super initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:attachmentIds];
-
-    if (!self) {
-        return self;
-    }
-
-    // _authorId was nil for contact thread messages prior to 2.6.0
-    _authorId = [thread contactIdentifier];
-    _read = NO;
-    _receivedAt = [NSDate date];
-
-    return self;
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body
 {
     return [self initWithTimestamp:timestamp inThread:thread authorId:authorId messageBody:body attachmentIds:@[]];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     return [self initWithTimestamp:timestamp
                           inThread:thread
+                          authorId:authorId
                        messageBody:body
                      attachmentIds:attachmentIds
                   expiresInSeconds:0];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
@@ -106,7 +51,8 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
                            inThread:thread
                         messageBody:body
                       attachmentIds:attachmentIds
-                   expiresInSeconds:expiresInSeconds];
+                   expiresInSeconds:expiresInSeconds
+                    expireStartedAt:0];
 
     if (!self) {
         return self;

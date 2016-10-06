@@ -13,43 +13,6 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 @interface TSIncomingMessage : TSMessage
 
 /**
- *  Inits an incoming (non-group) message with no attachments.
- *
- *  @param timestamp
- *    When the message was created in milliseconds since epoch
- *  @param thread
- *    Thread to which the message belongs
- *  @param body
- *    Body of the message
- *  @param attachmentIds
- *    The uniqueIds for the message's attachments
- *
- *  @return initiated incoming message
- */
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSContactThread *)thread
-                      messageBody:(nullable NSString *)body;
-
-/**
- *  Inits an incoming (non-group) message with attachments.
- *
- *  @param timestamp
- *    When the message was created in milliseconds since epoch
- *  @param thread
- *    Thread to which the message belongs
- *  @param body
- *    Body of the message
- *  @param attachmentIds
- *    The uniqueIds for the message's attachments
- *
- *  @return initiated incoming message
- */
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSContactThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
-
-/**
  *  Inits an incoming group message without attachments
  *
  *  @param timestamp
@@ -64,8 +27,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *  @return initiated incoming group message
  */
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body;
 
 /**
@@ -85,8 +48,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *  @return initiated incoming group message
  */
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
@@ -109,11 +72,39 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *  @return initiated incoming group message
  */
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSGroupThread *)thread
-                         authorId:(nullable NSString *)authorId
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds;
+                 expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+
+/**
+ * For sake of a smaller API, you must specify an author id for all incoming messages
+ * though we technically could get the author id from a contact thread.
+ */
+- (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
 /*
  * Find a message matching the senderId and timestamp, if any.

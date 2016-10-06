@@ -48,12 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                           messagesManager:self.messagesManager];
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
-    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:transcript.timestamp
-                                                                             inThread:thread
-                                                                          messageBody:transcript.body
-                                                                        attachmentIds:attachmentsProcessor.attachmentIds
-                                                                     expiresInSeconds:transcript.expirationDuration
-                                                                      expireStartedAt:transcript.expirationStartedAt];
+    TSOutgoingMessage *outgoingMessage =
+        [[TSOutgoingMessage alloc] initWithTimestamp:transcript.timestamp
+                                            inThread:thread
+                                         messageBody:transcript.body
+                                       attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
+                                    expiresInSeconds:transcript.expirationDuration
+                                     expireStartedAt:transcript.expirationStartedAt];
 
     if (transcript.isExpirationTimerUpdate) {
         [self.messagesManager becomeConsistentWithDisappearingConfigurationForMessage:outgoingMessage];
@@ -71,7 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
         uint64_t textMessageTimestamp = transcript.timestamp + 1;
         TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                              inThread:thread
-                                                                          messageBody:transcript.body];
+                                                                          messageBody:transcript.body
+                                                                        attachmentIds:[NSMutableArray new]
+                                                                     expiresInSeconds:transcript.expirationDuration
+                                                                      expireStartedAt:transcript.expirationStartedAt];
         textMessage.messageState = TSOutgoingMessageStateDelivered;
         [textMessage save];
     }

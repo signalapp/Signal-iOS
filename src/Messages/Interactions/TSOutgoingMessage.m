@@ -12,11 +12,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSOutgoingMessage
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+{
+    return [self initWithTimestamp:timestamp inThread:nil];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+{
+    return [self initWithTimestamp:timestamp inThread:nil messageBody:nil];
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                       messageBody:(nullable NSString *)body
 {
-   return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[]];
+    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:[NSMutableArray new]];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -24,8 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
 {
-
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[] expiresInSeconds:0];
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:[NSMutableArray new]
+                  expiresInSeconds:0];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -35,12 +53,27 @@ NS_ASSUME_NONNULL_BEGIN
                  expiresInSeconds:(uint32_t)expiresInSeconds
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:attachmentIds
+                  expiresInSeconds:expiresInSeconds
+                   expireStartedAt:now];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+{
     self = [super initWithTimestamp:timestamp
                            inThread:thread
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:now];
+                    expireStartedAt:expireStartedAt];
     if (!self) {
         return self;
     }

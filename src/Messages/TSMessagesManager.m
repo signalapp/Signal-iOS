@@ -452,6 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
 
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                 inThread:cThread
+                                                                authorId:[cThread contactIdentifier]
                                                              messageBody:body
                                                            attachmentIds:attachmentIds
                                                         expiresInSeconds:dataMessage.expireTimer];
@@ -476,6 +477,7 @@ NS_ASSUME_NONNULL_BEGIN
                   TSContactThread *cThread = (TSContactThread *)thread;
                   textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                     inThread:cThread
+                                                                    authorId:[cThread contactIdentifier]
                                                                  messageBody:body];
               }
               textMessage.expiresInSeconds = dataMessage.expireTimer;
