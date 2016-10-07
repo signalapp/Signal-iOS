@@ -42,8 +42,10 @@
     // properly deleting it's interactions.
     TSContactThread *unsavedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-does-not-exist"];
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:unsavedThread messageBody:@"footch"];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
+                                                                             inThread:unsavedThread
+                                                                             authorId:@"fake-author-id"
+                                                                          messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
@@ -56,8 +58,10 @@
     TSContactThread *savedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-exists"];
     [savedThread save];
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:1 inThread:savedThread messageBody:@"footch"];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
+                                                                             inThread:savedThread
+                                                                             authorId:@"fake-author-id"
+                                                                          messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
@@ -97,6 +101,7 @@
 
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
+                                                                             authorId:@"fake-author-id"
                                                                           messageBody:@"footch"
                                                                         attachmentIds:@[ attachmentStream.uniqueId ]];
     [incomingMessage save];

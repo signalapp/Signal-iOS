@@ -41,13 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)remove
-{
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self removeWithTransaction:transaction];
-    }];
-}
-
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];

@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithTimestamp:timestamp
                           inThread:thread
                        messageBody:body
-                     attachmentIds:[NSMutableArray new]
+                     attachmentIds:attachmentIds
                   expiresInSeconds:0];
 }
 

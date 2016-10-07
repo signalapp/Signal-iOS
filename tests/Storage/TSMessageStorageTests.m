@@ -15,8 +15,9 @@
 
 #import "TSStorageManager.h"
 
-#import "TSMessage.h"
 #import "TSIncomingMessage.h"
+#import "TSMessage.h"
+#import "TSOutgoingMessage.h"
 
 
 @interface TSMessageStorageTests : XCTestCase
@@ -56,8 +57,8 @@
         NSString* messageId;
         
         for (uint64_t i = 0; i<50; i++) {
-            TSIncomingMessage *newMessage =
-                [[TSIncomingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
+            TSOutgoingMessage *newMessage =
+                [[TSOutgoingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
             [newMessage saveWithTransaction:transaction];
             if (i == 0) {
                 messageId = newMessage.uniqueId;
@@ -67,25 +68,28 @@
         messageInt = [messageId integerValue];
         
         for (NSInteger i = messageInt; i < messageInt+50; i++) {
-            TSIncomingMessage *message = [TSIncomingMessage fetchObjectWithUniqueID:[@(i) stringValue] transaction:transaction];
+            TSOutgoingMessage *message =
+                [TSOutgoingMessage fetchObjectWithUniqueID:[@(i) stringValue] transaction:transaction];
             XCTAssert(message != nil);
             XCTAssert(message.body == body);
         }
     }];
-    
-    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSIncomingMessage *deletedmessage = [TSIncomingMessage fetchObjectWithUniqueID:[@(messageInt+49) stringValue]];
-        [deletedmessage removeWithTransaction:transaction];
-        
-        uint64_t uniqueNewTimestamp = 985439854983;
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:uniqueNewTimestamp
-                                                                            inThread:self.thread
-                                                                         messageBody:body];
-        [newMessage saveWithTransaction:transaction];
-        
-        TSIncomingMessage *retrieved = [TSIncomingMessage fetchObjectWithUniqueID:[@(messageInt+50) stringValue] transaction:transaction];
-        XCTAssertEqual(uniqueNewTimestamp, retrieved.timestamp);
-    }];
+
+    [[TSStorageManager sharedManager].newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            TSOutgoingMessage *deletedmessage =
+                [TSOutgoingMessage fetchObjectWithUniqueID:[@(messageInt + 49) stringValue]];
+            [deletedmessage removeWithTransaction:transaction];
+
+            uint64_t uniqueNewTimestamp = 985439854983;
+            TSOutgoingMessage *newMessage =
+                [[TSOutgoingMessage alloc] initWithTimestamp:uniqueNewTimestamp inThread:self.thread messageBody:body];
+            [newMessage saveWithTransaction:transaction];
+
+            TSOutgoingMessage *retrieved =
+                [TSOutgoingMessage fetchObjectWithUniqueID:[@(messageInt + 50) stringValue] transaction:transaction];
+            XCTAssertEqual(uniqueNewTimestamp, retrieved.timestamp);
+        }];
 }
 
 - (void)testStoreIncomingMessage
@@ -95,8 +99,10 @@
     
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
-    TSIncomingMessage *newMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:timestamp inThread:self.thread messageBody:body];
+    TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
+                                                                        inThread:self.thread
+                                                                        authorId:[self.thread contactIdentifier]
+                                                                     messageBody:body];
     [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
         messageId = newMessage.uniqueId;
@@ -117,8 +123,10 @@
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
     
     for (uint64_t i = timestamp; i<100; i++) {
-        TSIncomingMessage *newMessage =
-            [[TSIncomingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
+        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
+                                                                            inThread:self.thread
+                                                                            authorId:[self.thread contactIdentifier]
+                                                                         messageBody:body];
         [newMessage save];
     }
     
