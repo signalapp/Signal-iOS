@@ -52,13 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
 {
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
     return [self initWithTimestamp:timestamp
                           inThread:thread
                        messageBody:body
                      attachmentIds:attachmentIds
                   expiresInSeconds:expiresInSeconds
-                   expireStartedAt:now];
+                   expireStartedAt:0];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -93,6 +92,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)recipientIdentifier
 {
     return self.thread.contactIdentifier;
+}
+
+- (BOOL)shouldStartExpireTimer
+{
+    switch (self.messageState) {
+        case TSOutgoingMessageStateSent:
+        case TSOutgoingMessageStateDelivered:
+            return self.isExpiringMessage;
+        case TSOutgoingMessageStateAttemptingOut:
+        case TSOutgoingMessageStateUnsent:
+            return NO;
+    }
 }
 
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder

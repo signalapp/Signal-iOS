@@ -4,6 +4,7 @@
 #import "OWSDisappearingMessagesFinder.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSMessage.h"
+#import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const OWSDisappearingMessageFinderThreadIdColumn = @"thread_id";
 static NSString *const OWSDisappearingMessageFinderExpiresAtColumn = @"expires_at";
-static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_messages_on_expires_at_and_thread_id";
+static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_messages_on_expires_at_and_thread_id_v2";
 
 @interface OWSDisappearingMessagesFinder ()
 
@@ -184,13 +185,17 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             NSString *collection,
             NSString *key,
             id object) {
-            if ([object isKindOfClass:[TSMessage class]]) {
-                TSMessage *message = (TSMessage *)object;
-                if (message.expiresInSeconds > 0) {
-                    dict[OWSDisappearingMessageFinderExpiresAtColumn] = @(message.expiresAt);
-                    dict[OWSDisappearingMessageFinderThreadIdColumn] = message.uniqueThreadId;
-                } // else don't index non-expiring messages.
+            if (![object isKindOfClass:[TSMessage class]]) {
+                return;
             }
+            TSMessage *message = (TSMessage *)object;
+
+            if (!message.shouldStartExpireTimer) {
+                return;
+            }
+
+            dict[OWSDisappearingMessageFinderExpiresAtColumn] = @(message.expiresAt);
+            dict[OWSDisappearingMessageFinderThreadIdColumn] = message.uniqueThreadId;
         }];
 
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];

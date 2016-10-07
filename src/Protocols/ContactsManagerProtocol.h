@@ -3,6 +3,7 @@
 
 @class PhoneNumber;
 @class Contact;
+@class UIImage;
 
 @protocol ContactsManagerProtocol <NSObject>
 

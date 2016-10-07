@@ -146,6 +146,11 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     [self updateExpiresAt];
 }
 
+- (BOOL)shouldStartExpireTimer
+{
+    return self.isExpiringMessage;
+}
+
 // TODO a downloaded media doesn't start counting until download is complete.
 - (void)updateExpiresAt
 {

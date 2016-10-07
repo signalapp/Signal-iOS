@@ -3,12 +3,14 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
+#import "OWSFakeContactsManager.h"
+#import "OWSFakeContactsUpdater.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
-#import "ContactsManagerProtocol.h"
 #import "objc/runtime.h"
 
 @interface TSMessagesManagerTest : XCTestCase
@@ -93,15 +95,15 @@
 
 - (instancetype)initWithExpectation:(XCTestExpectation *)messageWasSubmitted;
 
-@property XCTestExpectation *messageWasSubmitted;
+@property XCTestExpectation *expectation;
 
 @end
 
 @implementation OWSTSMessagesManagerTestNetworkManager
 
-- (instancetype)initWithExpectation:(XCTestExpectation *)messageWasSubmitted
+- (instancetype)initWithExpectation:(XCTestExpectation *)expectation
 {
-    _messageWasSubmitted = messageWasSubmitted;
+    _expectation = expectation;
 
     return self;
 }
@@ -114,60 +116,10 @@
         NSDictionary *fakeResponse = @{ @"id" : @(1234), @"location" : @"fake-location" };
         success(nil, fakeResponse);
     } else if ([request isKindOfClass:[TSSubmitMessageRequest class]]) {
-        [self.messageWasSubmitted fulfill];
+        [self.expectation fulfill];
     } else {
         NSLog(@"Ignoring unhandled request: %@", request);
     }
-}
-
-@end
-
-@interface OWSFakeContactsUpdater : ContactsUpdater
-
-@end
-
-@implementation OWSFakeContactsUpdater
-
-- (void)synchronousLookup:(NSString *)identifier
-                  success:(void (^)(SignalRecipient *))success
-                  failure:(void (^)(NSError *error))failure
-{
-    NSLog(@"Fake contact lookup.");
-    SignalRecipient *fakeRecipient =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil supportsVoice:YES];
-    success(fakeRecipient);
-}
-
-@end
-
-@interface OWSFakeContactsManager : NSObject <ContactsManagerProtocol>
-
-@end
-
-/**
- * I don't know that this test relys on any of the specific behavior in this implementation.
- * We're just trying to avoid setting up/accessing the TSEnv global. ~mjk
- */
-@implementation OWSFakeContactsManager
-
-- (NSString *)nameStringForPhoneIdentifier:(NSString *)phoneNumber
-{
-    return @"Fake name";
-}
-
-- (NSArray<Contact *> *)signalContacts
-{
-    return @[];
-}
-
-+ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString
-{
-    return YES;
-}
-
-- (UIImage *)imageForPhoneIdentifier:(NSString *)phoneNumber
-{
-    return nil;
 }
 
 @end
@@ -201,6 +153,5 @@
                                      NSLog(@"No message submitted.");
                                  }];
 }
-
 
 @end

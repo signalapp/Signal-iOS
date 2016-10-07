@@ -137,12 +137,8 @@ dispatch_queue_t sendingQueue() {
                   ? [TSAccountManager localNumber]
                   : contactThread.contactIdentifier;
 
-              __block SignalRecipient *recipient;
-              [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                  recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId
-                                                                 withTransaction:transaction];
-              }];
-
+              __block SignalRecipient *recipient =
+                  [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId];
               if (!recipient) {
                   [self.contactsUpdater synchronousLookup:contactThread.contactIdentifier
                       success:^(SignalRecipient *recip) {
@@ -258,7 +254,7 @@ dispatch_queue_t sendingQueue() {
                     self.logTag,
                     exception);
                 [self processException:exception outgoingMessage:message inThread:thread];
-                return;
+                BLOCK_SAFE_RUN(failureBlock);
             }
         }
 
@@ -317,6 +313,7 @@ dispatch_queue_t sendingQueue() {
 
                         if (!responseData) {
                             DDLogWarn(@"Stale devices but server didn't specify devices in response.");
+                            BLOCK_SAFE_RUN(failureBlock);
                             return;
                         }
 
