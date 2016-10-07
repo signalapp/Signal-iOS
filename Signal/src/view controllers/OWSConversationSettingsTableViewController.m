@@ -51,6 +51,8 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 @property (strong, nonatomic) IBOutlet UITableViewCell *verifyPrivacyCell;
 @property (strong, nonatomic) IBOutlet UITableViewCell *toggleDisappearingMessagesCell;
+@property (strong, nonatomic) IBOutlet UILabel *toggleDisappearingMessagesTitleLabel;
+@property (strong, nonatomic) IBOutlet UILabel *toggleDisappearingMessagesDescriptionLabel;
 @property (strong, nonatomic) IBOutlet UISwitch *disappearingMessagesSwitch;
 @property (strong, nonatomic) IBOutlet UITableViewCell *disappearingMessagesDurationCell;
 @property (strong, nonatomic) IBOutlet UILabel *disappearingMessagesDurationLabel;
@@ -145,8 +147,10 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     self.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
     self.verifyPrivacyCell.textLabel.text
         = NSLocalizedString(@"VERIFY_PRIVACY", @"table cell label in conversation settings");
-    self.toggleDisappearingMessagesCell.textLabel.text
+    self.toggleDisappearingMessagesTitleLabel.text
         = NSLocalizedString(@"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
+    self.toggleDisappearingMessagesDescriptionLabel.text
+        = NSLocalizedString(@"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
     self.updateGroupCell.textLabel.text
         = NSLocalizedString(@"EDIT_GROUP_ACTION", @"table cell label in conversation settings");
     self.leaveGroupCell.textLabel.text
@@ -258,12 +262,20 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 {
     UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
 
-    // group vs. contact thread has duration slider at different index.
+    // group vs. contact thread have some cells slider at different index.
     if (cell == self.disappearingMessagesDurationCell) {
-        NSIndexPath *originalDurationSliderIndexPath = [NSIndexPath
+        NSIndexPath *originalIndexPath = [NSIndexPath
             indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration
                   inSection:OWSConversationSettingsTableViewControllerSectionContact];
-        return [super tableView:tableView heightForRowAtIndexPath:originalDurationSliderIndexPath];
+
+        return [super tableView:tableView heightForRowAtIndexPath:originalIndexPath];
+    }
+    if (cell == self.toggleDisappearingMessagesCell) {
+        NSIndexPath *originalIndexPath =
+            [NSIndexPath indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexToggleDisappearingMessages
+                               inSection:OWSConversationSettingsTableViewControllerSectionContact];
+
+        return [super tableView:tableView heightForRowAtIndexPath:originalIndexPath];
     } else {
         return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
