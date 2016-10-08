@@ -33,7 +33,7 @@
 
 // for InfoMessages
 
-@property NSInteger infoMessageType;
+@property TSInfoMessageType infoMessageType;
 
 // for ErrorMessages
 

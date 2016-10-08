@@ -6,7 +6,7 @@
 
 @implementation OWSInfoMessage
 
-- (instancetype)initWithInfoType:(OWSInfoMessageType)messageType
+- (instancetype)initWithInfoType:(TSInfoMessageType)messageType
                         senderId:(NSString *)senderId
                senderDisplayName:(NSString *)senderDisplayName
                             date:(NSDate *)date
@@ -27,7 +27,7 @@
 - (NSString *)text
 {
     switch (self.infoMessageType) {
-        case OWSInfoMessageTypeSessionDidEnd:
+        case TSInfoMessageTypeSessionDidEnd:
             return [NSString stringWithFormat:@"Session with %@ ended.", self.senderDisplayName];
             break;
 
