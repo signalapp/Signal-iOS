@@ -3,20 +3,17 @@
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSDisplayedMessage.h"
+#import "TSInfoMessage.h"
 #import "TSMessageAdapter.h"
-
-typedef NS_ENUM(NSInteger, OWSInfoMessageType) {
-    OWSInfoMessageTypeSessionDidEnd,
-};
 
 @interface OWSInfoMessage : OWSDisplayedMessage
 
-@property (nonatomic) OWSInfoMessageType infoMessageType;
+@property (nonatomic) TSInfoMessageType infoMessageType;
 @property (nonatomic) TSMessageAdapterType messageType;
 
 #pragma mark - Initialization
 
-- (instancetype)initWithInfoType:(OWSInfoMessageType)messageType
+- (instancetype)initWithInfoType:(TSInfoMessageType)messageType
                         senderId:(NSString *)senderId
                senderDisplayName:(NSString *)senderDisplayName
                             date:(NSDate *)date;
