@@ -738,7 +738,7 @@ typedef enum : NSUInteger {
     }
     cell.delegate = collectionView;
 
-    if (message.isExpiringMessage && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
+    if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
         id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
         [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
                                          initialDurationSeconds:message.expiresInSeconds];
@@ -1864,9 +1864,6 @@ typedef enum : NSUInteger {
     return messageAdapter;
 }
 
-#pragma mark group action view
-
-
 #pragma mark - Audio
 
 - (void)recordAudio {
@@ -1963,7 +1960,6 @@ typedef enum : NSUInteger {
       canPerformAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender {
-
     TSMessageAdapter *messageAdapter = [self messageAtIndexPath:indexPath];
     // HACK make sure method exists before calling since messageAtIndexPath doesn't
     // always return TSMessageAdapters - it can also return JSQCall!

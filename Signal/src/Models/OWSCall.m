@@ -9,7 +9,8 @@
 
 // -- Redeclaring properties from OWSMessageData protocol to synthesize variables
 @property (nonatomic) TSMessageAdapterType messageType;
-@property (nonatomic, getter=isExpiringMessage) BOOL expiringMessage;
+@property (nonatomic) BOOL isExpiringMessage;
+@property (nonatomic) BOOL shouldStartExpireTimer;
 @property (nonatomic) uint64_t expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
@@ -47,7 +48,8 @@
     _senderDisplayName = [senderDisplayName copy];
     _date = [date copy];
     _status = status;
-    _expiringMessage = NO; // TODO - call notifications should expire too.
+    _isExpiringMessage = NO; // TODO - call notifications should expire too.
+    _shouldStartExpireTimer = NO; // TODO - call notifications should expire too.
     _messageType = TSCallAdapter;
 
     // TODO interpret detailString from status. make sure it works for calls and

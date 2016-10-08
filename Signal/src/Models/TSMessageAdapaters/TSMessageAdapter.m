@@ -50,7 +50,8 @@
 
 // -- Redeclaring properties from OWSMessageData protocol to synthesize variables
 @property (nonatomic) TSMessageAdapterType messageType;
-@property (nonatomic, getter=isExpiringMessage) BOOL expiringMessage;
+@property (nonatomic) BOOL isExpiringMessage;
+@property (nonatomic) BOOL shouldStartExpireTimer;
 @property (nonatomic) uint64_t expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
@@ -79,11 +80,12 @@
 
     if ([interaction isKindOfClass:[TSMessage class]]) {
         TSMessage *message = (TSMessage *)interaction;
-        _expiringMessage = message.isExpiringMessage;
+        _isExpiringMessage = message.isExpiringMessage;
         _expiresAtSeconds = message.expiresAt / 1000;
         _expiresInSeconds = message.expiresInSeconds;
+        _shouldStartExpireTimer = message.shouldStartExpireTimer;
     } else {
-        _expiringMessage = NO;
+        _isExpiringMessage = NO;
     }
 
     return self;
