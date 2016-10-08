@@ -2,8 +2,13 @@
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSCall.h"
+#import "TSCall.h"
+#import "TSContactThread.h"
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIImage+JSQMessages.h>
+#import <SignalServiceKit/TSCall.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSCall ()
 
@@ -13,6 +18,7 @@
 @property (nonatomic) BOOL shouldStartExpireTimer;
 @property (nonatomic) uint64_t expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
+@property (nonatomic) TSInteraction *interaction;
 
 @end
 
@@ -20,19 +26,68 @@
 
 #pragma mark - Initialzation
 
-- (id)init
+- (instancetype)initWithCallRecord:(TSCall *)callRecord
 {
-    NSAssert(NO,
-        @"%s is not a valid initializer for %@. Use %@ instead",
-        __PRETTY_FUNCTION__,
-        [self class],
-        NSStringFromSelector(@selector(initWithCallerId:callerDisplayName:date:status:displayString:)));
-    return [self initWithCallerId:nil callerDisplayName:nil date:nil status:0 displayString:nil];
+    TSThread *thread = callRecord.thread;
+    TSContactThread *contactThread;
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)thread;
+    } else {
+        DDLogError(@"%@ Unexpected thread type: %@", self.tag, thread);
+    }
+
+
+    CallStatus status = 0;
+    switch (callRecord.callType) {
+        case RPRecentCallTypeOutgoing:
+            status = kCallOutgoing;
+            break;
+        case RPRecentCallTypeMissed:
+            status = kCallMissed;
+            break;
+        case RPRecentCallTypeIncoming:
+            status = kCallIncoming;
+            break;
+        default:
+            status = kCallIncoming;
+            break;
+    }
+
+    NSString *name = contactThread.name;
+    NSString *detailString;
+    switch (status) {
+        case kCallMissed:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
+            break;
+        case kCallIncoming:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
+            break;
+        case kCallOutgoing:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_CALLED", nil), name];
+            break;
+        default:
+            detailString = @"";
+            break;
+    }
+
+    self = [self initWithCallerId:contactThread.contactIdentifier
+                callerDisplayName:name
+                             date:callRecord.date
+                           status:status
+                    displayString:detailString];
+
+    if (!self) {
+        return self;
+    }
+
+    _interaction = callRecord;
+
+    return self;
 }
 
 - (instancetype)initWithCallerId:(NSString *)senderId
                callerDisplayName:(NSString *)senderDisplayName
-                            date:(NSDate *)date
+                            date:(nullable NSDate *)date
                           status:(CallStatus)status
                    displayString:(NSString *)detailString
 {
@@ -105,11 +160,18 @@
 
 - (BOOL)canPerformEditingAction:(SEL)action
 {
-    return NO;
+    return action == @selector(delete:);
 }
 
 - (void)performEditingAction:(SEL)action
 {
+    // Deletes are always handled by TSMessageAdapter
+    if (action == @selector(delete:)) {
+        DDLogDebug(@"%@ Deleting interaction with uniqueId: %@", self.tag, self.interaction.uniqueId);
+        [self.interaction remove];
+        return;
+    }
+
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     NSString *actionString = NSStringFromSelector(action);
     DDLogError(@"%@ '%@' action unsupported", self.tag, actionString);
@@ -124,7 +186,7 @@
 
 #pragma mark - NSCoding
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     NSString *senderId = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderId))];
     NSString *senderDisplayName = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderDisplayName))];
@@ -149,7 +211,7 @@
 
 #pragma mark - NSCopying
 
-- (instancetype)copyWithZone:(NSZone *)zone
+- (instancetype)copyWithZone:(nullable NSZone *)zone
 {
     return [[[self class] allocWithZone:zone] initWithCallerId:self.senderId
                                              callerDisplayName:self.senderDisplayName
@@ -181,3 +243,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

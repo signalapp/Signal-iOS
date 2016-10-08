@@ -169,10 +169,8 @@
             }
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        adapter.messageBody = @"Placeholder for TSCalls";
-        adapter.messageType = TSCallAdapter;
-        OWSCall *call       = [self owsCallForTSCall:(TSCall *)interaction thread:(TSContactThread *)thread];
-        return call;
+        TSCall *callRecord = (TSCall *)interaction;
+        return [[OWSCall alloc] initWithCallRecord:callRecord];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
         adapter.infoMessageType    = infoMessage.messageType;
@@ -207,48 +205,6 @@
     }
 
     return adapter;
-}
-
-+ (OWSCall *)owsCallForTSCall:(TSCall *)call thread:(TSContactThread *)thread {
-    CallStatus status      = 0;
-    NSString *name         = thread.name;
-    NSString *detailString = @"";
-
-    switch (call.callType) {
-        case RPRecentCallTypeOutgoing:
-            status = kCallOutgoing;
-            break;
-        case RPRecentCallTypeMissed:
-            status = kCallMissed;
-            break;
-        case RPRecentCallTypeIncoming:
-            status = kCallIncoming;
-            break;
-        default:
-            status = kCallIncoming;
-            break;
-    }
-
-    switch (status) {
-        case kCallMissed:
-            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
-            break;
-        case kCallIncoming:
-            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
-            break;
-        case kCallOutgoing:
-            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_CALLED", nil), name];
-            break;
-        default:
-            break;
-    }
-
-    OWSCall *owsCall = [[OWSCall alloc] initWithCallerId:thread.contactIdentifier
-                                       callerDisplayName:thread.name
-                                                    date:call.date
-                                                  status:status
-                                           displayString:detailString];
-    return owsCall;
 }
 
 - (NSString *)senderId {
