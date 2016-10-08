@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
 
-@property TSInteraction *interaction;
+@property (nonatomic) TSInteraction *interaction;
 
 @end
 

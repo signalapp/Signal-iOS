@@ -2,6 +2,8 @@
 //  Portions Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "OWSCallCollectionViewCell.h"
+#import "UIColor+OWS.h"
+#import <JSQMessagesViewController/JSQMessagesCollectionViewLayoutAttributes.h>
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
 @interface OWSCallCollectionViewCell ()
@@ -31,23 +33,19 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
+    self.textView.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-    self.backgroundColor = [UIColor whiteColor];
-
-    self.cellLabel.textAlignment = NSTextAlignmentCenter;
-    self.cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14.0f];
-    self.cellLabel.textColor = [UIColor lightGrayColor];
 }
-
-
-#pragma mark - Collection view cell
 
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    self.cellLabel.text = nil;
+}
+
+- (void)applyLayoutAttributes:(UICollectionViewLayoutAttributes *)layoutAttributes
+{
+    // override superclass with no-op which resets our attributed font on layout.
 }
 
 @end
