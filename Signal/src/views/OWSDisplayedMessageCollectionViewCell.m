@@ -51,7 +51,6 @@ const CGFloat OWSDisplayedMessageCellMinimumHeight = 70.0;
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-
     self.textView.text = nil;
 }
 
