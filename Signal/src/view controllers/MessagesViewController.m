@@ -345,6 +345,9 @@ typedef enum : NSUInteger {
 
     [self toggleObservers:YES];
 
+    // Triggering modified notification renders "call notification" when leaving full screen call view
+    [self.thread touch];
+
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSMessagesViewControllerDidAppearNotification
                                                         object:nil];
