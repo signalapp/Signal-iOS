@@ -876,7 +876,15 @@ typedef enum : NSUInteger {
     infoCell.textView.selectable = NO;
 
     infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
-    infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
+    if (infoMessage.infoMessageType == TSInfoMessageTypeDisappearingMessagesUpdate) {
+        infoCell.headerImageView.image = [UIImage imageNamed:@"ic_timer"];
+        infoCell.headerImageView.backgroundColor = [UIColor whiteColor];
+        // Lighten up the broad stroke header icon to match the perceived color of the border.
+        infoCell.headerImageView.tintColor = [UIColor ows_infoMessageBorderColor];
+    } else {
+        infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
+    }
+
 
     return infoCell;
 }
