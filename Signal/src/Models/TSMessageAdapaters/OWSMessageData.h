@@ -19,7 +19,8 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
 @protocol OWSMessageData <JSQMessageData, OWSMessageEditing>
 
 @property (nonatomic, readonly) TSMessageAdapterType messageType;
-@property (nonatomic, readonly, getter=isExpiringMessage) BOOL expiringMessage;
+@property (nonatomic, readonly) BOOL isExpiringMessage;
+@property (nonatomic, readonly) BOOL shouldStartExpireTimer;
 @property (nonatomic, readonly) uint64_t expiresAtSeconds;
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 
