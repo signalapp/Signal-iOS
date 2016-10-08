@@ -186,11 +186,12 @@
             } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
                 status = kGroupUpdate;
             }
-            OWSCall *call = [[OWSCall alloc] initWithCallerId:@""
-                                            callerDisplayName:adapter.messageBody
-                                                         date:nil
-                                                       status:status
-                                                displayString:@""];
+            OWSCall *call = [[OWSCall alloc] initWithInteraction:interaction
+                                                        callerId:@""
+                                               callerDisplayName:adapter.messageBody
+                                                            date:nil
+                                                          status:status
+                                                   displayString:@""];
             return call;
         }
     } else {
