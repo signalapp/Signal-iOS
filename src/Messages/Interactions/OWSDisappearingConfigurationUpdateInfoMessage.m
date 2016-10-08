@@ -21,14 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration
               createdByRemoteName:(NSString *)name
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [self initWithTimestamp:timestamp thread:thread configuration:configuration];
+
     if (!self) {
         return self;
     }
 
     _createdByRemoteName = name;
-    _configurationIsEnabled = configuration.isEnabled;
-    _configurationDurationSeconds = configuration.durationSeconds;
 
     return self;
 }
@@ -37,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                            thread:(TSThread *)thread
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
     if (!self) {
         return self;
     }
@@ -47,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     return self;
 }
-
 
 - (NSString *)description
 {

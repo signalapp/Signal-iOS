@@ -15,7 +15,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageUserNotRegistered,
     TSInfoMessageTypeUnsupportedMessage,
     TSInfoMessageTypeGroupUpdate,
-    TSInfoMessageTypeGroupQuit
+    TSInfoMessageTypeGroupQuit,
+    TSInfoMessageTypeDisappearingMessagesUpdate
 };
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread
@@ -26,10 +27,11 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)contact
-                      messageType:(TSInfoMessageType)infoMessage;
+                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-                    customMessage:(NSString *)customMessage;
+                    customMessage:(NSString *)customMessage NS_DESIGNATED_INITIALIZER;
 
 @end
