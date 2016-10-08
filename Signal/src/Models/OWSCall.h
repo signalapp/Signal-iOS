@@ -2,11 +2,11 @@
 //  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSMessageData.h"
-#import "TSMessageAdapter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSCall;
+@class TSInteraction;
 
 typedef enum : NSUInteger {
     kCallOutgoing = 1,
@@ -17,17 +17,18 @@ typedef enum : NSUInteger {
     kGroupUpdate = 6
 } CallStatus;
 
-@interface OWSCall : NSObject <OWSMessageData, NSCoding, NSCopying>
+@interface OWSCall : NSObject <OWSMessageData>
 
 #pragma mark - Initialization
 
 - (instancetype)initWithCallRecord:(TSCall *)callRecord;
 
-- (instancetype)initWithCallerId:(NSString *)callerId
-               callerDisplayName:(NSString *)callerDisplayName
-                            date:(nullable NSDate *)date
-                          status:(CallStatus)status
-                   displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithInteraction:(TSInteraction *)interaction
+                           callerId:(NSString *)senderId
+                  callerDisplayName:(NSString *)senderDisplayName
+                               date:(nullable NSDate *)date
+                             status:(CallStatus)status
+                      displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

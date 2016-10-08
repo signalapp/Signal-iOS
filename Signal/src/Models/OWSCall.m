@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogError(@"%@ Unexpected thread type: %@", self.tag, thread);
     }
 
-
     CallStatus status = 0;
     switch (callRecord.callType) {
         case RPRecentCallTypeOutgoing:
@@ -70,26 +69,20 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    self = [self initWithCallerId:contactThread.contactIdentifier
-                callerDisplayName:name
-                             date:callRecord.date
-                           status:status
-                    displayString:detailString];
-
-    if (!self) {
-        return self;
-    }
-
-    _interaction = callRecord;
-
-    return self;
+    return [self initWithInteraction:callRecord
+                            callerId:contactThread.contactIdentifier
+                   callerDisplayName:name
+                                date:callRecord.date
+                              status:status
+                       displayString:detailString];
 }
 
-- (instancetype)initWithCallerId:(NSString *)senderId
-               callerDisplayName:(NSString *)senderDisplayName
-                            date:(nullable NSDate *)date
-                          status:(CallStatus)status
-                   displayString:(NSString *)detailString
+- (instancetype)initWithInteraction:(TSInteraction *)interaction
+                           callerId:(NSString *)senderId
+                  callerDisplayName:(NSString *)senderDisplayName
+                               date:(nullable NSDate *)date
+                             status:(CallStatus)status
+                      displayString:(NSString *)detailString
 {
     NSParameterAssert(senderId != nil);
     NSParameterAssert(senderDisplayName != nil);
@@ -99,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _interaction = interaction;
     _senderId = [senderId copy];
     _senderDisplayName = [senderDisplayName copy];
     _date = [date copy];
@@ -182,42 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isMediaMessage
 {
     return NO;
-}
-
-#pragma mark - NSCoding
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    NSString *senderId = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderId))];
-    NSString *senderDisplayName = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(senderDisplayName))];
-    NSDate *date = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(date))];
-    CallStatus status = (CallStatus)[aDecoder decodeIntegerForKey:NSStringFromSelector(@selector(status))];
-    NSString *displayString = @""; // FIXME what should this be?
-
-    return [self initWithCallerId:senderId
-                callerDisplayName:senderDisplayName
-                             date:date
-                           status:status
-                    displayString:displayString];
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [aCoder encodeObject:self.senderId forKey:NSStringFromSelector(@selector(senderId))];
-    [aCoder encodeObject:self.senderDisplayName forKey:NSStringFromSelector(@selector(senderDisplayName))];
-    [aCoder encodeObject:self.date forKey:NSStringFromSelector(@selector(date))];
-    [aCoder encodeDouble:self.status forKey:NSStringFromSelector(@selector(status))];
-}
-
-#pragma mark - NSCopying
-
-- (instancetype)copyWithZone:(nullable NSZone *)zone
-{
-    return [[[self class] allocWithZone:zone] initWithCallerId:self.senderId
-                                             callerDisplayName:self.senderDisplayName
-                                                          date:self.date
-                                                        status:self.status
-                                                 displayString:self.detailString];
 }
 
 - (NSUInteger)messageHash
