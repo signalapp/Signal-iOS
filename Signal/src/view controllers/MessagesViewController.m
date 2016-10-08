@@ -861,6 +861,10 @@ typedef enum : NSUInteger {
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 
     infoCell.textView.text = [infoMessage text];
+
+    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+    infoCell.textView.userInteractionEnabled = NO;
+    infoCell.textView.selectable = NO;
     infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
 
@@ -872,6 +876,9 @@ typedef enum : NSUInteger {
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     errorCell.textView.text = [errorMessage text];
+    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+    errorCell.textView.userInteractionEnabled = NO;
+    errorCell.textView.selectable = NO;
     errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
 
