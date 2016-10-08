@@ -1,6 +1,7 @@
 //  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSMessagesBubblesSizeCalculator.h"
+#import "OWSCall.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "TSMessageAdapter.h"
 #import "UIFont+OWS.h"
@@ -47,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
             return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
         }
+    }
+
+    if ([messageData isKindOfClass:[OWSCall class]]) {
+        return [self messageBubbleSizeForCallData:messageData atIndexPath:indexPath withLayout:layout];
     }
 
     CGSize size;
@@ -237,6 +242,39 @@ NS_ASSUME_NONNULL_BEGIN
 
         finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
     }
+
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+
+    return finalSize;
+}
+
+- (CGSize)messageBubbleSizeForCallData:(id<JSQMessageData>)messageData
+                           atIndexPath:(NSIndexPath *)indexPath
+                            withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGFloat horizontalInsetsTotal = 0.0;
+    CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - horizontalInsetsTotal;
+
+    CGRect stringRect = [[messageData text]
+        boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
+                     options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                  attributes:@{
+                      NSFontAttributeName : [UIFont ows_dynamicTypeBodyFont]
+                  } // Hack to use a slightly larger than actual font, because I'm seeing messages with higher line
+                    // count get clipped.
+                     context:nil];
+
+    CGSize stringSize = CGRectIntegral(stringRect).size;
+
+    CGFloat verticalInsets = 0;
+    CGFloat finalWidth = maximumTextWidth + horizontalInsetsTotal;
+
+    CGSize finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
 
     [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
 

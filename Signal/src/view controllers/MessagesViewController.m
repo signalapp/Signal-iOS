@@ -829,12 +829,18 @@ typedef enum : NSUInteger {
         [attributedText setAttributes:@{ NSFontAttributeName: regularFont }
                                 range:range];
     }
-    callCell.cellLabel.attributedText = attributedText;
-    callCell.cellLabel.numberOfLines = 0; // uses as many lines as it needs
-    callCell.cellLabel.textColor = [UIColor ows_materialBlueColor];
+    callCell.textView.text = nil;
+    callCell.textView.attributedText = attributedText;
 
+    callCell.textView.textAlignment = NSTextAlignmentCenter;
+    callCell.textView.textColor = [UIColor ows_materialBlueColor];
     callCell.layer.shouldRasterize = YES;
     callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+
+    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+    callCell.textView.userInteractionEnabled = NO;
+    callCell.textView.selectable = NO;
+
     return callCell;
 }
 
@@ -865,6 +871,7 @@ typedef enum : NSUInteger {
     // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
     infoCell.textView.userInteractionEnabled = NO;
     infoCell.textView.selectable = NO;
+
     infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
     infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
 
@@ -876,9 +883,11 @@ typedef enum : NSUInteger {
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
     errorCell.textView.text = [errorMessage text];
+
     // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
     errorCell.textView.userInteractionEnabled = NO;
     errorCell.textView.selectable = NO;
+
     errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
     errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
 

@@ -4,6 +4,10 @@
 #import "OWSMessageData.h"
 #import "TSMessageAdapter.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class TSCall;
+
 typedef enum : NSUInteger {
     kCallOutgoing = 1,
     kCallIncoming = 2,
@@ -14,6 +18,18 @@ typedef enum : NSUInteger {
 } CallStatus;
 
 @interface OWSCall : NSObject <OWSMessageData, NSCoding, NSCopying>
+
+#pragma mark - Initialization
+
+- (instancetype)initWithCallRecord:(TSCall *)callRecord;
+
+- (instancetype)initWithCallerId:(NSString *)callerId
+               callerDisplayName:(NSString *)callerDisplayName
+                            date:(nullable NSDate *)date
+                          status:(CallStatus)status
+                   displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 /*
  * Returns the string Id of the user who initiated the call
@@ -41,14 +57,8 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic, copy) NSString *detailString;
 
-#pragma mark - Initialization
-
-- (instancetype)initWithCallerId:(NSString *)callerId
-               callerDisplayName:(NSString *)callerDisplayName
-                            date:(NSDate *)date
-                          status:(CallStatus)status
-                   displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
-
 - (NSString *)dateText;
 
 @end
+
+NS_ASSUME_NONNULL_END
