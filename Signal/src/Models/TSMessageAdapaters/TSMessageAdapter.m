@@ -283,6 +283,8 @@
     // Delegate other actions for media items
     if (self.isMediaMessage) {
         return [self.mediaItem canPerformEditingAction:action];
+    } else if (self.messageType == TSInfoMessageAdapter || self.messageType == TSErrorMessageAdapter) {
+        return NO;
     } else {
         // Text message - no media attachment
         if (action == @selector(copy:)) {
