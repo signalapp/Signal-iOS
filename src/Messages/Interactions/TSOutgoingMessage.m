@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
-    return [self initWithTimestamp:timestamp inThread:nil messageBody:nil];
+    return [self initWithTimestamp:timestamp inThread:thread messageBody:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
