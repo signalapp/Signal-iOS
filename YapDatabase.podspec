@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
     :tag => s.version.to_s
   }
 
-  s.osx.deployment_target = '10.8'
-  s.ios.deployment_target = '6.0'
+  s.osx.deployment_target = '10.9'
+  s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
@@ -119,7 +119,7 @@ Pod::Spec.new do |s|
 
     ss.subspec 'Core' do |ssc|
       ssc.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
-      ssc.dependency 'SQLCipher/fts'
+      ssc.dependency 'SQLCipher', '>= 3.4.0'
       ssc.dependency 'CocoaLumberjack', '~> 2'
       ssc.source_files = 'YapDatabase/*.{h,m,mm,c}', 'YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}', 'YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}'
       ssc.private_header_files = 'YapDatabase/Internal/*.h', 'YapDatabase/Extensions/Protocol/Internal/*.h'
