@@ -1,24 +1,33 @@
 # Make sure we're failing even though we pipe to xcpretty
-SHELL=/bin/bash -o pipefail
+SHELL=/bin/bash -o pipefail -o errexit
 
-BUILD_PLATFORM=iOS Simulator,name=iPhone 6,OS=10.0
+BUILD_DESTINATION = platform=iOS Simulator,name=iPhone 6,OS=9.3
 WORKING_DIR = ./
+SCHEME = Signal
+XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
+
+.PHONY: build test retest clean
 
 default: test
 
-build_signal:
+test: pod_install retest
+
+pod_install:
 	cd $(WORKING_DIR) && \
-		pod install && \
-		xcodebuild -workspace Signal.xcworkspace -scheme Signal \
-		-sdk iphonesimulator \
-		build | xcpretty
+		pod install
+
+build: pod_install
+	cd $(WORKING_DIR) && \
+		$(XCODE_BUILD) build | xcpretty
 
 retest:
 	cd $(WORKING_DIR) && \
-	xcodebuild -workspace Signal.xcworkspace -scheme Signal \
-		-sdk iphonesimulator \
-		-destination 'platform=${BUILD_PLATFORM}' \
-		test | xcpretty
+		$(XCODE_BUILD) \
+			-destination '${BUILD_DESTINATION}' \
+			build test | xcpretty
 
-test: build_signal retest
+clean:
+	cd $(WORKING_DIR) && \
+		$(XCODE_BUILD) \
+			clean | xcpretty
 
