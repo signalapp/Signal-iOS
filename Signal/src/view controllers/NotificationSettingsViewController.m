@@ -10,7 +10,7 @@
 
 #import "Environment.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 
 @interface NotificationSettingsViewController ()
 

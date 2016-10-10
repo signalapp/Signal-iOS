@@ -11,7 +11,7 @@
 #import "Environment.h"
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RecentCallManager.h"
 #import "SignalKeyingStorage.h"
@@ -102,16 +102,17 @@
 #pragma mark Upgrading to 2.1 - Needs to register VOIP token + Removing video cache folder
 
 + (void)nonBlockingPushRegistration {
-    __block failedBlock failedBlock = ^(NSError *error) {
-      DDLogError(@"Failed to register VOIP push token: %@", error.debugDescription);
+    void (^failedBlock)(NSError *) = ^(NSError *error) {
+        DDLogError(@"Failed to register VOIP push token: %@", error.debugDescription);
     };
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-      [TSAccountManager registerForPushNotifications:pushToken
-                                           voipToken:voipToken
-                                             success:^{
-                                               DDLogWarn(@"Registered for VOIP Push.");
-                                             }
-                                             failure:failedBlock];
+        [[TSAccountManager sharedInstance]
+            registerForPushNotificationsWithPushToken:pushToken
+                                            voipToken:voipToken
+                                              success:^{
+                                                  DDLogWarn(@"Registered for VOIP Push.");
+                                              }
+                                              failure:failedBlock];
     }
                                                      failure:failedBlock];
 }

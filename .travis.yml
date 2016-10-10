@@ -15,5 +15,5 @@ before_install:
 
 install: travis_wait 30 pod install # OpenSSL takes a long time to compile
 
-script: make
+script: make ci
 
