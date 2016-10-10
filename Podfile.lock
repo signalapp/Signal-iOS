@@ -122,21 +122,17 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.208)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `release/2.6`)
+  - SignalServiceKit (from `../SignalServiceKit`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :branch: release/2.6
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :path: "../SignalServiceKit"
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
-  SignalServiceKit:
-    :commit: deb577af7b8b60629ca93cc4042531de62dc2e6e
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
@@ -167,6 +163,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 1e76310fe364da5f11d50ef76ccf13714b52926b
+PODFILE CHECKSUM: b114f88b272c3f9b6b308b96a89d1ae9f9319f68
 
 COCOAPODS: 1.0.1

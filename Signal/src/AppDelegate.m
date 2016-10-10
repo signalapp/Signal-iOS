@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
+#import "OWSStaleNotificationObserver.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Release.h"
@@ -15,7 +16,7 @@
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
-#import "OWSStaleNotificationObserver.h"
+#import <PastelogKit/Pastelog.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 
@@ -99,6 +100,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [self prepareScreenProtection];
+
+    UITapGestureRecognizer *debugGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
+    debugGesture.numberOfTapsRequired = 8;
+    [self.window addGestureRecognizer:debugGesture];
 
     // Avoid blocking app launch by putting all possible DB access in async thread.
     UIApplicationState launchState = application.applicationState;
