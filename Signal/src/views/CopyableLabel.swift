@@ -3,6 +3,7 @@
 
 import UIKit
 
+@objc(OWSCopyableLabel)
 class CopyableLabel : UILabel {
 
     deinit {

@@ -22,7 +22,7 @@
 - (void)testRequestToInitiate {
     [SignalKeyingStorage storeString:@"shall_not_password" forKey:SAVED_PASSWORD_KEY];
     [SignalKeyingStorage storeString:[@2356 stringValue] forKey:PASSWORD_COUNTER_KEY];
-    [TSStorageManager storePhoneNumber:@"+19027778888"];
+    [[TSStorageManager sharedManager] storePhoneNumber:@"+19027778888"];
 
     HttpRequest *h =
         [HttpRequest httpRequestToInitiateToRemoteNumber:[PhoneNumber phoneNumberFromE164:@"+19023334444"]];
@@ -51,7 +51,7 @@
 
 - (void)testRequestToRing {
     [Environment setCurrent:testEnv];
-    [TSStorageManager storePhoneNumber:@"+19025555555"];
+    [[TSStorageManager sharedManager] storePhoneNumber:@"+19025555555"];
     [SignalKeyingStorage storeString:@"shall_not_password" forKey:SAVED_PASSWORD_KEY];
     [SignalKeyingStorage storeString:@"-1" forKey:PASSWORD_COUNTER_KEY];
     HttpRequest *h = [HttpRequest httpRequestToRingWithSessionId:458847238];

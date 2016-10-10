@@ -6,19 +6,22 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "InboxTableViewCell.h"
-#import "UIUtil.h"
-
+#import "SignalsViewController.h"
+#import "AppDelegate.h"
 #import "InCallViewController.h"
+#import "InboxTableViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
-#import "PreferencesUtil.h"
-#import "SignalsViewController.h"
+#import "PropertyListPreferences.h"
+#import "PushManager.h"
+#import "RPAccountManager.h"
+#import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
+#import "UIUtil.h"
 #import "VersionMigrations.h"
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -28,8 +31,6 @@
 
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
-
-static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 @interface SignalsViewController ()
 
@@ -183,9 +184,60 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if (![TSAccountManager isRegistered]) {
-        [self performSegueWithIdentifier:kShowSignupFlowSegue sender:self];
+    if (self.newlyRegisteredUser) {
+        [self didAppearForNewlyRegisteredUser];
     }
+}
+
+- (void)didAppearForNewlyRegisteredUser
+{
+    [self promptNewUserForContactsWithCompletion:^{
+        [self ensureNotificationsUpToDate];
+    }];
+}
+
+- (void)promptNewUserForContactsWithCompletion:(void (^)())completionHandler
+{
+    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+    switch (status) {
+        case kABAuthorizationStatusNotDetermined:
+        case kABAuthorizationStatusRestricted: {
+            UIAlertController *controller =
+                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                    message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
+                                             preferredStyle:UIAlertControllerStyleAlert];
+
+            [controller
+                addAction:[UIAlertAction
+                              actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
+                                        style:UIAlertActionStyleCancel
+                                      handler:^(UIAlertAction *action) {
+                                          [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
+                                      }]];
+
+            [self presentViewController:controller animated:YES completion:completionHandler];
+            break;
+        }
+        default: {
+            DDLogError(@"%@ Unexpected for new user to have kABAuthorizationStatus:%ld", self.tag, status);
+            [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
+            completionHandler();
+            break;
+        }
+    }
+}
+
+- (void)ensureNotificationsUpToDate
+{
+    OWSAccountManager *accountManager =
+        [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                             redPhoneAccountManager:[RPAccountManager sharedInstance]];
+
+    OWSSyncPushTokensJob *syncPushTokensJob =
+        [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
+                                           accountManager:accountManager
+                                              preferences:[Environment preferences]];
+    [syncPushTokensJob run];
 }
 
 - (void)tableViewSetUp {
@@ -363,16 +415,16 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 
 - (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
     dispatch_async(dispatch_get_main_queue(), ^{
-      MessagesViewController *mvc = [[UIStoryboard storyboardWithName:@"Storyboard" bundle:NULL]
-                instantiateViewControllerWithIdentifier:@"MessagesViewController"];
+        MessagesViewController *mvc = [[UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:NULL]
+            instantiateViewControllerWithIdentifier:@"MessagesViewController"];
 
-      if (self.presentedViewController) {
-          [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-      }
-      [self.navigationController popToRootViewControllerAnimated:YES];
+        if (self.presentedViewController) {
+            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        }
+        [self.navigationController popToRootViewControllerAnimated:YES];
 
-      [mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
-      [self.navigationController pushViewController:mvc animated:YES];
+        [mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
+        [self.navigationController pushViewController:mvc animated:YES];
     });
 }
 
@@ -563,6 +615,18 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
                             value:[UIColor ows_darkGrayColor]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

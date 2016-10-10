@@ -17,7 +17,6 @@
 
 @end
 
-
 @implementation RPServerRequestsManager
 
 + (instancetype)sharedManager {
@@ -45,7 +44,10 @@
 
 - (void)performRequest:(RPAPICall *)apiCall
                success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-               failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+               failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure
+{
+    DDLogInfo(@"%@ Making request: %@", self.tag, apiCall);
+
     self.operationManager.requestSerializer  = apiCall.requestSerializer;
     self.operationManager.responseSerializer = apiCall.responseSerializer;
 
@@ -87,18 +89,16 @@
     }
 }
 
-- (TOCFuture *)futureForRequest:(RPAPICall *)apiCall {
-    TOCFutureSource *requestFutureSource = [TOCFutureSource new];
+#pragma mark - Logging
 
-    [self performRequest:apiCall
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-          [requestFutureSource trySetResult:task.response];
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-          [requestFutureSource trySetFailure:error];
-        }];
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
 
-    return [requestFutureSource future];
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

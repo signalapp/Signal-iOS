@@ -26,7 +26,7 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"

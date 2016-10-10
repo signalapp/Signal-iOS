@@ -6,16 +6,16 @@
 //  Copyright © 2015 Open Whisper Systems. All rights reserved.
 //
 
+#import "NotificationsManager.h"
+#import "Environment.h"
+#import "PropertyListPreferences.h"
+#import "PushManager.h"
 #import <AudioToolbox/AudioServices.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
-#import "Environment.h"
-#import "NotificationsManager.h"
-#import "PreferencesUtil.h"
-#import "PushManager.h"
 
 @interface NotificationsManager ()
 

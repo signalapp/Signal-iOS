@@ -4,7 +4,7 @@
 #import "InboxTableViewCell.h"
 #import "Environment.h"
 #import "OWSAvatarBuilder.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"

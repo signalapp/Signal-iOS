@@ -10,7 +10,7 @@ if [ ! -d "Signal/src" ]; then
 fi
 
 # Search directories for .m & .h files and collect string definitions with genstrings
-find $TARGETS -name "*.m" -print0 -name "*.h" -print0 | xargs -0 genstrings -o $TMP
+find $TARGETS -name "*.m" -print0 -o -name "*.h" -print0 -o -name "*.swift" -print0 | xargs -0 genstrings -o $TMP
 
 # We have to convert the old and new .strings files to UTF-8 in order to deal with them
 OLDUTF8=$(iconv -f UTF-16 -t UTF-8 $STRINGFILE)
