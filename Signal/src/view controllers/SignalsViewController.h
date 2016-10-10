@@ -18,7 +18,7 @@
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
-
+@property (nonatomic) BOOL newlyRegisteredUser;
 @property (nonatomic, retain) CallState *latestCall;
 
 - (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing;

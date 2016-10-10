@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import "Environment.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "PreferencesUtil.h"
+#import "Environment.h"
+#import "PropertyListPreferences.h"
 
 @interface NotificationSettingsOptionsViewController ()
 @property NSArray *options;
