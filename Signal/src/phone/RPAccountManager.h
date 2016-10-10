@@ -6,14 +6,27 @@
 //  Copyright © 2015 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RPAccountManager : NSObject
 
-+ (void)registrationWithTsToken:(NSString *)tsToken
-                      pushToken:(NSString *)pushToken
-                      voipToken:(NSString *)voipPushToken
-                        success:(void (^)())success
-                        failure:(void (^)(NSError *))failure;
++ (instancetype)sharedInstance;
+
+- (void)registerWithTsToken:(NSString *)tsToken
+                    success:(void (^)())success
+                    failure:(void (^)(NSError *))failure;
+
+/**
+ *  Register's the device's push notification token with the server
+ *
+ *  @param pushToken Apple's Push Token
+ */
+- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
+                                        voipToken:(NSString *)voipToken
+                                          success:(void (^)())successHandler
+                                          failure:(void (^)(NSError *error))failureHandler
+    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
 
 @end
+
+NS_ASSUME_NONNULL_END

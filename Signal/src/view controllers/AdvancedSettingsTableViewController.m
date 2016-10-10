@@ -8,20 +8,20 @@
 
 #import "AdvancedSettingsTableViewController.h"
 
-#import <PastelogKit/Pastelog.h>
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "RPAccountManager.h"
+#import "Signal-Swift.h"
 #import "TSAccountManager.h"
-
+#import <PastelogKit/Pastelog.h>
 
 @interface AdvancedSettingsTableViewController ()
 
 @property NSArray *sectionsArray;
 @property (strong, nonatomic) UITableViewCell *enableLogCell;
 @property (strong, nonatomic) UITableViewCell *submitLogCell;
-@property (strong, nonatomic) UITableViewCell *registerPushCell;
 
 @property (strong, nonatomic) UISwitch *enableLogSwitch;
 @end
@@ -62,9 +62,6 @@
     // Send Log
     self.submitLogCell                = [[UITableViewCell alloc] init];
     self.submitLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"");
-
-    self.registerPushCell                = [[UITableViewCell alloc] init];
-    self.registerPushCell.textLabel.text = NSLocalizedString(@"REREGISTER_FOR_PUSH", nil);
 }
 
 #pragma mark - Table view data source
@@ -77,8 +74,6 @@
     switch (section) {
         case 0:
             return self.enableLogSwitch.isOn ? 2 : 1;
-        case 1:
-            return 1;
         default:
             return 0;
     }
@@ -94,10 +89,8 @@
             case 0:
                 return self.enableLogCell;
             case 1:
-                return self.enableLogSwitch.isOn ? self.submitLogCell : self.registerPushCell;
+                return self.enableLogSwitch.isOn ? self.submitLogCell : nil;
         }
-    } else {
-        return self.registerPushCell;
     }
 
     NSAssert(false, @"No Cell configured");
@@ -110,21 +103,8 @@
 
     if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
         [Pastelog submitLogs];
-    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        __block failedPushRegistrationBlock failure = ^(NSError *error) {
-          SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_TITLE", nil), NSLocalizedString(@"REGISTRATION_BODY", nil));
-        };
-
-        [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-          [TSAccountManager registerForPushNotifications:pushToken
-                                               voipToken:voipToken
-                                                 success:^{
-                                                   SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_TITLE", nil),
-                                                                   NSLocalizedString(@"PUSH_REGISTER_SUCCESS", nil));
-                                                 }
-                                                 failure:failure];
-        }
-                                                         failure:failure];
+    } else {
+        DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }
 }
 
@@ -140,6 +120,18 @@
 
     [Environment.preferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

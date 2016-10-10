@@ -13,7 +13,7 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationTracker.h"
 #import "OWSContactsManager.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "RPServerRequestsManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSSocketManager.h"
@@ -346,20 +346,6 @@
     }];
 }
 
-- (TOCFuture *)registerForUserNotificationsFuture {
-    self.userNotificationFutureSource = [TOCFutureSource new];
-
-    UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                          categories:[NSSet setWithObjects:[self userNotificationsCallCategory],
-                                                                           [self fullNewMessageNotificationCategory],
-                                                                           [self userNotificationsCallBackCategory],
-                                                                           nil]];
-
-    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
-    return self.userNotificationFutureSource.future;
-}
-
 - (UIUserNotificationCategory *)fullNewMessageNotificationCategory {
     UIMutableUserNotificationAction *action_markRead = [UIMutableUserNotificationAction new];
     action_markRead.identifier                       = Signal_Message_MarkAsRead_Identifier;
@@ -443,10 +429,16 @@
     return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
-- (void)validateUserNotificationSettings {
-    [[self registerForUserNotificationsFuture] thenDo:^(id value){
-        // Nothing to do, just making sure we are registered for User Notifications.
-    }];
+- (void)validateUserNotificationSettings
+{
+    UIUserNotificationSettings *settings =
+        [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+                                          categories:[NSSet setWithObjects:[self userNotificationsCallCategory],
+                                                            [self fullNewMessageNotificationCategory],
+                                                            [self userNotificationsCallBackCategory],
+                                                            nil]];
+
+    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
 }
 
 - (BOOL)applicationIsActive {

@@ -12,17 +12,19 @@ XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME
 
 default: test
 
-test: pod_install retest
+ci: build_dependencies test
 
-pod_install:
+build_dependencies:
 	cd $(WORKING_DIR) && \
+		git submodule update --init
 		pod install
+		carthage build --platform iOS
 
-build: pod_install
+build: build_dependencies
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) build | xcpretty
 
-retest: optional_early_start_simulator
+test: optional_early_start_simulator
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) \
 			-destination '${BUILD_DESTINATION}' \
