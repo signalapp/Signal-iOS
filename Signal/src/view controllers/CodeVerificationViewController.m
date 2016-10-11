@@ -54,46 +54,65 @@
     [_challengeTextField resignFirstResponder];
 
     [self registerWithSuccess:^{
-      [_submitCodeSpinner stopAnimating];
+        [_submitCodeSpinner stopAnimating];
 
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [TSAccountManager didRegister];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [self.navigationController
-              dismissViewControllerAnimated:YES
-                                 completion:^{
-                                   if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined ||
-                                       ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusRestricted) {
-                                       UIAlertController *controller = [UIAlertController
-                                           alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                            message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
-                                                     preferredStyle:UIAlertControllerStyleAlert];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [TSAccountManager didRegister];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.navigationController
+                    dismissViewControllerAnimated:YES
+                                       completion:^{
+                                           if (ABAddressBookGetAuthorizationStatus()
+                                                   == kABAuthorizationStatusNotDetermined
+                                               || ABAddressBookGetAuthorizationStatus()
+                                                   == kABAuthorizationStatusRestricted) {
+                                               UIAlertController *controller = [UIAlertController
+                                                   alertControllerWithTitle:NSLocalizedString(
+                                                                                @"REGISTER_CONTACTS_WELCOME", nil)
+                                                                    message:NSLocalizedString(
+                                                                                @"REGISTER_CONTACTS_BODY", nil)
+                                                             preferredStyle:UIAlertControllerStyleAlert];
 
-                                       [controller addAction:[UIAlertAction
+                                               [controller
+                                                   addAction:[UIAlertAction
                                                                  actionWithTitle:NSLocalizedString(
                                                                                      @"REGISTER_CONTACTS_CONTINUE", nil)
-                                                                           style:UIAlertActionStyleDefault
+                                                                           style:UIAlertActionStyleCancel
                                                                          handler:^(UIAlertAction *action) {
-                                                                           [self setupContacts];
+                                                                             [self setupContacts];
                                                                          }]];
 
-                                       [[UIApplication sharedApplication]
-                                               .keyWindow.rootViewController presentViewController:controller
-                                                                                          animated:YES
-                                                                                        completion:nil];
+                                               [[UIApplication sharedApplication].keyWindow.rootViewController
+                                                   presentViewController:controller
+                                                                animated:YES
+                                                              completion:nil];
 
-                                   } else {
-                                       [self setupContacts];
-                                   }
+                                           } else {
+                                               [self setupContacts];
+                                           }
 
-                                 }];
+                                       }];
+            });
         });
-      });
     }
         failure:^(NSError *error) {
-          [self enableServerActions:YES];
-          [_submitCodeSpinner stopAnimating];
-          DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
+            UIAlertController *alertController = [UIAlertController
+                alertControllerWithTitle:NSLocalizedString(@"VERIFICATION_FAILED_TITLE", @"Alert view title")
+                                 message:error.localizedDescription
+                          preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:nil];
+            [alertController addAction:dismissAction];
+
+            [self presentViewController:alertController
+                               animated:YES
+                             completion:^{
+                                 [self enableServerActions:YES];
+                                 [_submitCodeSpinner stopAnimating];
+                             }];
+
+            DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
         }];
 }
 
