@@ -372,6 +372,7 @@
 					};
 					B6273DE91C13A2E500738558 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = U68MSDN6DR;
 						TestTargetID = B6273DD01C13A2E500738558;
 					};
 				};
@@ -694,6 +695,7 @@
 			baseConfigurationReference = 36DA6C703F99948D553F4E3F /* Pods-TSKitiOSTestAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = U68MSDN6DR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/TSKitiOSTestApp-Prefix.pch";
 				INFOPLIST_FILE = TSKitiOSTestAppTests/Info.plist;
@@ -709,6 +711,7 @@
 			baseConfigurationReference = D3737F7A041D7147015C02C2 /* Pods-TSKitiOSTestAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = U68MSDN6DR;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/$(PROJECT_NAME)/TSKitiOSTestApp-Prefix.pch";
 				INFOPLIST_FILE = TSKitiOSTestAppTests/Info.plist;

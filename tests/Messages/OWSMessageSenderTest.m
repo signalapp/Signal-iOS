@@ -8,6 +8,7 @@
 #import "TSContactThread.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
+#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager.h"
 #import <XCTest/XCTest.h>
 
@@ -93,6 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
+
+    // Hack to make sure we don't explode when sending sync message.
+    [TSStorageManager storePhoneNumber:@"+13231231234"];
 
     self.thread = [[TSContactThread alloc] initWithUniqueId:@"fake-thread-id"];
     [self.thread save];

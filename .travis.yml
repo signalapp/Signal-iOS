@@ -1,27 +1,14 @@
 language: objective-c
 
-osx_image: xcode7.3
-env:
-  - TEST_DIR=Example/TSKitiOSTestApp
+osx_image: xcode8
 
 before_install:
-  - cd $TEST_DIR
   - brew update
-  - brew outdated xctool || brew upgrade xctool
   - gem install cocoapods xcpretty --no-ri --no-rdoc
   - pod repo update --silent
 
-install: pod install
+after_failure:
+    - sleep 10 # This prevents the occasional output truncation that happens when piping to xcpretty.
 
-script:
-- |
-  set -o pipefail
-  xcodebuild -workspace TSKitiOSTestApp.xcworkspace \
-             -scheme TSKitiOSTestApp \
-             -sdk iphonesimulator \
-             -destination 'platform=iOS Simulator,name=iPhone 6' \
-             build test | xcpretty
-
-xcode_workspace: TSKitiOSTestApp.xcworkspace
-xcode_scheme: TSKitiOSTestApp
+script: make
 
