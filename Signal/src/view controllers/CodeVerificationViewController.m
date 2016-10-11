@@ -93,7 +93,7 @@
         failure:^(NSError *error) {
           [self enableServerActions:YES];
           [_submitCodeSpinner stopAnimating];
-          DDLogError(@"Error: %@", error.localizedDescription);
+          DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
         }];
 }
 
@@ -109,7 +109,7 @@
 
 - (TOCFuture *)pushRegistration {
     TOCFutureSource *pushAndRegisterFuture = [[TOCFutureSource alloc] init];
-    ;
+
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
       NSMutableArray *pushTokens = [NSMutableArray arrayWithObject:pushToken];
 
@@ -208,13 +208,15 @@
 
     [_requestCodeAgainSpinner startAnimating];
     [TSAccountManager rerequestSMSWithSuccess:^{
-      [self enableServerActions:YES];
-      [_requestCodeAgainSpinner stopAnimating];
+        DDLogInfo(@"%@ Successfully requested SMS code", self.tag);
+        [self enableServerActions:YES];
+        [_requestCodeAgainSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-          [self showRegistrationErrorMessage:error];
-          [self enableServerActions:YES];
-          [_requestCodeAgainSpinner stopAnimating];
+            DDLogError(@"%@ Failed to request SMS code with error: %@", self.tag, error);
+            [self showRegistrationErrorMessage:error];
+            [self enableServerActions:YES];
+            [_requestCodeAgainSpinner stopAnimating];
         }];
 }
 
@@ -223,13 +225,16 @@
 
     [_requestCallSpinner startAnimating];
     [TSAccountManager rerequestVoiceWithSuccess:^{
-      [self enableServerActions:YES];
-      [_requestCallSpinner stopAnimating];
+        DDLogInfo(@"%@ Successfully requested voice code", self.tag);
+
+        [self enableServerActions:YES];
+        [_requestCallSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-          [self showRegistrationErrorMessage:error];
-          [self enableServerActions:YES];
-          [_requestCallSpinner stopAnimating];
+            DDLogError(@"%@ Failed to request voice code with error: %@", self.tag, error);
+            [self showRegistrationErrorMessage:error];
+            [self enableServerActions:YES];
+            [_requestCallSpinner stopAnimating];
         }];
 }
 
@@ -301,6 +306,18 @@
     }
 
     _headerConstraint.constant = blueHeaderHeight;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
