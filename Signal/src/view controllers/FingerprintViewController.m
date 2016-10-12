@@ -9,6 +9,7 @@
 #import "FingerprintViewController.h"
 #import "DJWActionSheet+OWS.h"
 #import "OWSConversationSettingsTableViewController.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/TSInfoMessage.h>
@@ -37,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIView *qrContainer;
 @property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
 @property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
-@property (strong, nonatomic) IBOutlet UILabel *privacyVerificationFingerprint;
+@property (strong, nonatomic) IBOutlet CopyableLabel *privacyVerificationFingerprint;
 @property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (strong, nonatomic) IBOutlet UIButton *scanButton;
 
