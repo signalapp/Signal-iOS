@@ -306,6 +306,10 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(startExpirationTimerAnimations)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
@@ -349,8 +353,7 @@ typedef enum : NSUInteger {
     [self.thread touch];
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSMessagesViewControllerDidAppearNotification
-                                                        object:nil];
+    [self startExpirationTimerAnimations];
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
@@ -435,6 +438,12 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
+}
+
+- (void)startExpirationTimerAnimations
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSMessagesViewControllerDidAppearNotification
+                                                        object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
