@@ -39,6 +39,7 @@
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
 		459C3F0D1C9B3A1B003ACF51 /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */; };
+		45B201761DAECBFE00C461E0 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B201751DAECBFE00C461E0 /* CopyableLabel.swift */; };
 		45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
 		45BFFFA91D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
 		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
@@ -577,6 +578,8 @@
 		4597E94E1D8313C100040CDE /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = translations/sq.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
 		459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageAdapterTest.m; path = "view controllers/Signals/TSMessageAdapters/TSMessageAdapterTest.m"; sourceTree = "<group>"; };
+		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
+		45B201751DAECBFE00C461E0 /* CopyableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		45BFFFA61D898AF0004A12A7 /* OWSStaleNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSStaleNotificationObserver.h; path = Observers/OWSStaleNotificationObserver.h; sourceTree = "<group>"; };
 		45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSStaleNotificationObserver.m; path = Observers/OWSStaleNotificationObserver.m; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
@@ -1287,6 +1290,7 @@
 				76EB052B18170B33006006FC /* Views */,
 				76EB04FE18170B33006006FC /* View Controllers */,
 				45BFFFA51D898AB8004A12A7 /* Observers */,
+				45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1779,6 +1783,7 @@
 		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45B201751DAECBFE00C461E0 /* CopyableLabel.swift */,
 				45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */,
 				45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */,
 				45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */,
@@ -2447,6 +2452,7 @@
 				TargetAttributes = {
 					D221A088169C9E5E00537ABF = {
 						DevelopmentTeam = U68MSDN6DR;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
 								enabled = 1;
@@ -2907,6 +2913,7 @@
 				76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */,
 				76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB05FA18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
+				45B201761DAECBFE00C461E0 /* CopyableLabel.swift in Sources */,
 				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
@@ -3353,7 +3360,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal;
 				PRODUCT_NAME = Signal;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Signal/src/Signal-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TEST_AFTER_BUILD = YES;
 				VALID_ARCHS = "arm64 armv7 armv7s i386";
 				WRAPPER_EXTENSION = app;
@@ -3410,6 +3419,8 @@
 				PRODUCT_NAME = Signal;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Signal/src/Signal-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 				TEST_AFTER_BUILD = YES;
 				VALID_ARCHS = "arm64 armv7 armv7s i386";
 				WRAPPER_EXTENSION = app;
@@ -3420,6 +3431,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AD2AB1207E8888E4262D781B /* Pods-SignalTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3472,6 +3484,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
