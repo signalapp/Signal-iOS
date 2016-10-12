@@ -93,7 +93,7 @@ typedef enum : NSUInteger {
 }
 
 @property TSThread *thread;
-@property TSMessage *lastDeliveredMessage;
+@property TSMessageAdapter *lastDeliveredMessage;
 @property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
@@ -646,10 +646,7 @@ typedef enum : NSUInteger {
         [[TSMessagesManager sharedManager] sendMessage:message
             inThread:self.thread
             success:^{
-                TSMessage *penultimateMessage = self.lastDeliveredMessage;
-                self.lastDeliveredMessage = message;
-                // Touch the old one to remove "delivered" label
-                [penultimateMessage touch];
+                DDLogInfo(@"%@ Successfully sent message.", self.tag);
             }
             failure:^{
                 DDLogWarn(@"%@ Failed to deliver message.", self.tag);
@@ -954,28 +951,7 @@ typedef enum : NSUInteger {
         return YES;
     }
 
-    // If message failed, say that message should be tapped to retry;
-    if (currentMessage.messageType == TSOutgoingMessageAdapter) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)currentMessage;
-        if(outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            return YES;
-        }
-    }
-
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        return currentMessage.messageType == TSIncomingMessageAdapter;
-    } else {
-        if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
-            return [self isMessageOutgoingAndDelivered:currentMessage];
-        }
-
-        if (![self isMessageOutgoingAndDelivered:currentMessage]) {
-            return NO;
-        }
-
-        TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
-        return ![self isMessageOutgoingAndDelivered:nextMessage];
-    }
+    return !![self collectionView:self.collectionView attributedTextForCellBottomLabelAtIndexPath:indexPath];
 }
 
 - (TSMessageAdapter *)nextOutgoingMessage:(NSIndexPath *)indexPath {
@@ -1008,10 +984,6 @@ typedef enum : NSUInteger {
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
     attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (![self shouldShowMessageStatusAtIndexPath:indexPath]) {
-        return nil;
-    }
-
     id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
     if (![messageData isKindOfClass:[TSMessageAdapter class]]) {
         return nil;
@@ -1025,11 +997,22 @@ typedef enum : NSUInteger {
                 [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
 
             return failedString;
-        } else if ([outgoingMessage isEqual:self.lastDeliveredMessage]) {
+        } else if ([self isMessageOutgoingAndDelivered:message]) {
             NSAttributedString *deliveredString =
                 [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
 
-            return deliveredString;
+            // Show when it's the last message in the thread
+            if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
+                [self updateLastDeliveredMessage:message];
+                return deliveredString;
+            }
+
+            // Or when the next message is *not* an outgoing delivered message.
+            TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
+            if (![self isMessageOutgoingAndDelivered:nextMessage]) {
+                [self updateLastDeliveredMessage:message];
+                return deliveredString;
+            }
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
@@ -1042,9 +1025,19 @@ typedef enum : NSUInteger {
     return nil;
 }
 
+- (void)updateLastDeliveredMessage:(TSMessageAdapter *)newLastDeliveredMessage
+{
+    if (newLastDeliveredMessage.interaction.timestamp > self.lastDeliveredMessage.interaction.timestamp) {
+        TSMessageAdapter *penultimateDeliveredMessage = self.lastDeliveredMessage;
+        self.lastDeliveredMessage = newLastDeliveredMessage;
+        [penultimateDeliveredMessage.interaction touch];
+    }
+}
+
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                                  layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
-    heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
+    heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
+{
     if ([self shouldShowMessageStatusAtIndexPath:indexPath]) {
         return 16.0f;
     }
