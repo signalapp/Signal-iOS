@@ -24,6 +24,11 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 
 @implementation OWSExpirationTimerView
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
