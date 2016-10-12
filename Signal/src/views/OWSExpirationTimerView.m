@@ -125,7 +125,9 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     CAGradientLayer *maskLayer = [CAGradientLayer new];
     self.fullHourglassImageView.layer.mask = maskLayer;
 
-    maskLayer.frame = self.fullHourglassImageView.frame;
+    // Without this the hourglass appears empty too soon.
+    CGFloat borderOffset = 2.0;
+    maskLayer.frame = CGRectInset(self.fullHourglassImageView.frame, 0, -borderOffset);
 
     // Blur the top of the mask a bit with gradient
     maskLayer.colors = @[ (id)[UIColor clearColor].CGColor, (id)[UIColor blackColor].CGColor ];
@@ -137,9 +139,11 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
         ratioRemaining = 0.0;
     }
     CGPoint defaultPosition = maskLayer.position;
-    CGPoint finalPosition = CGPointMake(defaultPosition.x, defaultPosition.y + maskLayer.bounds.size.height);
-    CGPoint startingPosition
-        = CGPointMake(defaultPosition.x, finalPosition.y - maskLayer.bounds.size.height * ratioRemaining);
+
+    CGPoint finalPosition
+        = CGPointMake(defaultPosition.x, defaultPosition.y + maskLayer.bounds.size.height - 2 * borderOffset);
+    CGPoint startingPosition = CGPointMake(
+        defaultPosition.x, finalPosition.y - maskLayer.bounds.size.height * ratioRemaining + borderOffset);
     maskLayer.position = startingPosition;
 
     CABasicAnimation *revealAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
