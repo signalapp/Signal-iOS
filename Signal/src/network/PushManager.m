@@ -305,21 +305,27 @@
 
     TOCFuture *requestPushTokenFuture = [self registerPushNotificationFuture];
 
+    DDLogInfo(@"%@ Requesting push token", self.tag);
     [requestPushTokenFuture thenDo:^(NSData *pushTokenData) {
-      NSString *pushToken = [pushTokenData ows_tripToken];
-      TOCFuture *pushKit  = [self registerPushKitNotificationFuture];
+        DDLogInfo(@"%@ Requested push token", self.tag);
+        NSString *pushToken = [pushTokenData ows_tripToken];
+        TOCFuture *pushKit = [self registerPushKitNotificationFuture];
 
-      [pushKit thenDo:^(NSString *voipToken) {
-        success(pushToken, voipToken);
-      }];
+        DDLogInfo(@"%@ Requesting voip tokens", self.tag);
+        [pushKit thenDo:^(NSString *voipToken) {
+            DDLogInfo(@"%@ Requested voip tokens", self.tag);
+            success(pushToken, voipToken);
+        }];
 
-      [pushKit catchDo:^(NSError *error) {
-        failure(error);
-      }];
+        [pushKit catchDo:^(NSError *error) {
+            DDLogInfo(@"%@ Error while requesting pushkit tokens: %@", self.tag, error);
+            failure(error);
+        }];
     }];
 
     [requestPushTokenFuture catchDo:^(NSError *error) {
-      failure(error);
+        DDLogInfo(@"%@ Error while requesting push tokens: %@", self.tag, error);
+        failure(error);
     }];
 }
 

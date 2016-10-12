@@ -129,17 +129,19 @@
 - (TOCFuture *)pushRegistration {
     TOCFutureSource *pushAndRegisterFuture = [[TOCFutureSource alloc] init];
 
+    DDLogInfo(@"%@ Requesting push tokens started", self.tag);
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-      NSMutableArray *pushTokens = [NSMutableArray arrayWithObject:pushToken];
+        DDLogInfo(@"%@ Requesting push tokens finished", self.tag);
+        NSMutableArray *pushTokens = [NSMutableArray arrayWithObject:pushToken];
 
-      if (voipToken) {
-          [pushTokens addObject:voipToken];
-      }
+        if (voipToken) {
+            [pushTokens addObject:voipToken];
+        }
 
-      [pushAndRegisterFuture trySetResult:pushTokens];
+        [pushAndRegisterFuture trySetResult:pushTokens];
     }
         failure:^(NSError *error) {
-          [pushAndRegisterFuture trySetFailure:error];
+            [pushAndRegisterFuture trySetFailure:error];
         }];
 
     return pushAndRegisterFuture.future;
@@ -148,14 +150,17 @@
 - (TOCFuture *)textSecureRegistrationFuture:(NSArray *)pushTokens {
     TOCFutureSource *textsecureRegistration = [[TOCFutureSource alloc] init];
 
+    DDLogInfo(@"%@ textSecureRegistrationFuture started", self.tag);
     [TSAccountManager verifyAccountWithCode:[self validationCodeFromTextField]
         pushToken:pushTokens[0]
         voipToken:([pushTokens count] == 2) ? pushTokens.lastObject : nil
         success:^{
-          [textsecureRegistration trySetResult:@YES];
+            DDLogInfo(@"%@ textSecureRegistrationFuture succeeded", self.tag);
+            [textsecureRegistration trySetResult:@YES];
         }
         failure:^(NSError *error) {
-          [textsecureRegistration trySetFailure:error];
+            DDLogError(@"%@ textSecureRegistrationFuture failed", self.tag);
+            [textsecureRegistration trySetFailure:error];
         }];
 
     return textsecureRegistration.future;
@@ -164,28 +169,34 @@
 
 - (void)registerWithSuccess:(void (^)())success failure:(void (^)(NSError *))failure {
     [_submitCodeSpinner startAnimating];
+    DDLogInfo(@"%@ begin registerWithSuccess", self.tag);
 
     __block NSArray<NSString *> *pushTokens;
 
     TOCFuture *tsRegistrationFuture = [[self pushRegistration] then:^id(NSArray<NSString *> *tokens) {
-      pushTokens = tokens;
-      return [self textSecureRegistrationFuture:pushTokens];
+        DDLogInfo(@"%@ push registration completed", self.tag);
+        pushTokens = tokens;
+        return [self textSecureRegistrationFuture:pushTokens];
     }];
 
     TOCFuture *redphoneRegistrationFuture = [tsRegistrationFuture then:^id(id value) {
-      return [[self getRPRegistrationToken] then:^(NSString *registrationFuture) {
-        return [self redphoneRegistrationWithTSToken:registrationFuture
-                                           pushToken:pushTokens[0]
-                                           voipToken:([pushTokens count] == 2) ? pushTokens.lastObject : nil];
-      }];
+        DDLogInfo(@"%@ tsRegistrationFuture completed.", self.tag);
+        return [[self getRPRegistrationToken] then:^(NSString *registrationFuture) {
+            DDLogInfo(@"%@ RPRegistrationFuture completed.", self.tag);
+            return [self redphoneRegistrationWithTSToken:registrationFuture
+                                               pushToken:pushTokens[0]
+                                               voipToken:([pushTokens count] == 2) ? pushTokens.lastObject : nil];
+        }];
     }];
 
     [redphoneRegistrationFuture thenDo:^(id value) {
-      success();
+        DDLogInfo(@"%@ redphoneRegistrationFuture registration completed", self.tag);
+        success();
     }];
 
     [redphoneRegistrationFuture catchDo:^(NSError *error) {
-      failure(error);
+        DDLogInfo(@"%@ redphoneRegistrationFuture registration failed with error: %@", self.tag, error);
+        failure(error);
     }];
 }
 
@@ -193,11 +204,14 @@
 - (TOCFuture *)getRPRegistrationToken {
     TOCFutureSource *redPhoneTokenFuture = [[TOCFutureSource alloc] init];
 
+    DDLogInfo(@"%@ getRPRegistrationToken started", self.tag);
     [TSAccountManager obtainRPRegistrationToken:^(NSString *rpRegistrationToken) {
-      [redPhoneTokenFuture trySetResult:rpRegistrationToken];
+        DDLogInfo(@"%@ getRPRegistrationToken succeeded", self.tag);
+        [redPhoneTokenFuture trySetResult:rpRegistrationToken];
     }
         failure:^(NSError *error) {
-          [redPhoneTokenFuture trySetFailure:error];
+            DDLogError(@"%@ getRPRegistrationToken failed with error: %@", self.tag, error);
+            [redPhoneTokenFuture trySetFailure:error];
         }];
 
     return redPhoneTokenFuture.future;
@@ -208,14 +222,17 @@
                                      voipToken:(NSString *)voipToken {
     TOCFutureSource *rpRegistration = [[TOCFutureSource alloc] init];
 
+    DDLogError(@"%@ redphoneRegistrationWithTSToken started", self.tag);
     [RPAccountManager registrationWithTsToken:tsToken
         pushToken:pushToken
         voipToken:voipToken
         success:^{
-          [rpRegistration trySetResult:@YES];
+            DDLogError(@"%@ redphoneRegistrationWithTSToken succeeded", self.tag);
+            [rpRegistration trySetResult:@YES];
         }
         failure:^(NSError *error) {
-          [rpRegistration trySetFailure:error];
+            DDLogError(@"%@ redphoneRegistrationWithTSToken failed with error: %@", self.tag, error);
+            [rpRegistration trySetFailure:error];
         }];
 
     return rpRegistration.future;
@@ -226,13 +243,15 @@
     [self enableServerActions:NO];
 
     [_requestCodeAgainSpinner startAnimating];
+    DDLogInfo(@"%@ sendCodeSMSAction started", self.tag);
+
     [TSAccountManager rerequestSMSWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested SMS code", self.tag);
+        DDLogInfo(@"%@ sendCodeSMSAction succeeded", self.tag);
         [self enableServerActions:YES];
         [_requestCodeAgainSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request SMS code with error: %@", self.tag, error);
+            DDLogError(@"%@ sendCodeSMSAction failed with error: %@", self.tag, error);
             [self showRegistrationErrorMessage:error];
             [self enableServerActions:YES];
             [_requestCodeAgainSpinner stopAnimating];
@@ -242,15 +261,15 @@
 - (IBAction)sendCodeVoiceAction:(id)sender {
     [self enableServerActions:NO];
 
+    DDLogInfo(@"%@ sendCodeVoiceAction started", self.tag);
     [_requestCallSpinner startAnimating];
     [TSAccountManager rerequestVoiceWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested voice code", self.tag);
-
+        DDLogInfo(@"%@ sendCodeVoiceAction succeeded", self.tag);
         [self enableServerActions:YES];
         [_requestCallSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request voice code with error: %@", self.tag, error);
+            DDLogError(@"%@ sendCodeVoiceAction failed with error: %@", self.tag, error);
             [self showRegistrationErrorMessage:error];
             [self enableServerActions:YES];
             [_requestCallSpinner stopAnimating];
