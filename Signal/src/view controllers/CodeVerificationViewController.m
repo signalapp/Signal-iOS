@@ -100,8 +100,6 @@
 
 - (void)setupContacts {
     [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-
-    [[PushManager sharedManager] validateUserNotificationSettings];
 }
 
 - (NSString *)validationCodeFromTextField {
@@ -110,7 +108,8 @@
 
 - (TOCFuture *)pushRegistration {
     TOCFutureSource *pushAndRegisterFuture = [[TOCFutureSource alloc] init];
-    ;
+
+    [[PushManager sharedManager] validateUserNotificationSettings];
     [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
       NSMutableArray *pushTokens = [NSMutableArray arrayWithObject:pushToken];
 
