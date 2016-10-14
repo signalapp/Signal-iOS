@@ -9,17 +9,18 @@
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
-#import "UIUtil.h"
 #import "UIFont+OWS.h"
+#import "UIUtil.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -76,7 +77,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
 
@@ -90,8 +91,11 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     }
 
     _storageManager = [TSStorageManager sharedManager];
-    _contactsManager = [[Environment getCurrent] contactsManager];
-    _messagesManager = [TSMessagesManager sharedManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     return self;
 }
@@ -104,8 +108,11 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     }
 
     _storageManager = [TSStorageManager sharedManager];
-    _contactsManager = [[Environment getCurrent] contactsManager];
-    _messagesManager = [TSMessagesManager sharedManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     return self;
 }
@@ -207,7 +214,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         [OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob
             runWithConfiguration:self.disappearingMessagesConfiguration
                           thread:self.thread
-                 messagesManager:self.messagesManager];
+                   messageSender:self.messageSender];
     }
 }
 
@@ -352,13 +359,12 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
                                                                      inThread:gThread
                                                                   messageBody:@""];
     message.groupMetaMessage = TSGroupMessageQuit;
-    [self.messagesManager sendMessage:message
-        inThread:gThread
+    [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully left group.", self.tag);
         }
-        failure:^{
-            DDLogWarn(@"%@ Failed to leave group", self.tag);
+        failure:^(NSError *error) {
+            DDLogWarn(@"%@ Failed to leave group with error: %@", self.tag, error);
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];

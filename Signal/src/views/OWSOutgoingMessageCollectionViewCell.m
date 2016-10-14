@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    self.mediaView.alpha = 1.0;
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
 }
 

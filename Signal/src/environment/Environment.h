@@ -29,8 +29,28 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @class PhoneManager;
 @class SignalsViewController;
 @class TSGroupThread;
+@class ContactsUpdater;
+@class TSNetworkManager;
 
 @interface Environment : NSObject
+
+- (instancetype)initWithLogging:(id<Logging>)logging
+                     errorNoter:(ErrorHandlerBlock)errorNoter
+                     serverPort:(in_port_t)serverPort
+           masterServerHostName:(NSString *)masterServerHostName
+               defaultRelayName:(NSString *)defaultRelayName
+      relayServerHostNameSuffix:(NSString *)relayServerHostNameSuffix
+                    certificate:(Certificate *)certificate
+ supportedKeyAgreementProtocols:(NSArray *)keyAgreementProtocolsInDescendingPriority
+                   phoneManager:(PhoneManager *)phoneManager
+              recentCallManager:(RecentCallManager *)recentCallManager
+        testingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
+                   zrtpClientId:(NSData *)zrtpClientId
+                  zrtpVersionId:(NSData *)zrtpVersionId
+                contactsManager:(OWSContactsManager *)contactsManager
+                contactsUpdater:(ContactsUpdater *)contactsUpdater
+                 networkManager:(TSNetworkManager *)networkManager;
+
 @property (nonatomic, readonly) in_port_t serverPort;
 @property (nonatomic, readonly) id<Logging> logging;
 @property (nonatomic, readonly) SecureEndPoint *masterServerSecureEndPoint;
@@ -45,6 +65,8 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @property (nonatomic, readonly) NSData *zrtpClientId;
 @property (nonatomic, readonly) NSData *zrtpVersionId;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
 
 @property (nonatomic, readonly) SignalsViewController *signalsViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
@@ -52,21 +74,6 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 + (SecureEndPoint *)getMasterServerSecureEndPoint;
 + (SecureEndPoint *)getSecureEndPointToDefaultRelayServer;
 + (SecureEndPoint *)getSecureEndPointToSignalingServerNamed:(NSString *)name;
-
-+ (Environment *)environmentWithLogging:(id<Logging>)logging
-                          andErrorNoter:(ErrorHandlerBlock)errorNoter
-                          andServerPort:(in_port_t)serverPort
-                andMasterServerHostName:(NSString *)masterServerHostName
-                    andDefaultRelayName:(NSString *)defaultRelayName
-           andRelayServerHostNameSuffix:(NSString *)relayServerHostNameSuffix
-                         andCertificate:(Certificate *)certificate
-      andSupportedKeyAgreementProtocols:(NSArray *)keyAgreementProtocolsInDescendingPriority
-                        andPhoneManager:(PhoneManager *)phoneManager
-                   andRecentCallManager:(RecentCallManager *)recentCallManager
-             andTestingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
-                        andZrtpClientId:(NSData *)zrtpClientId
-                       andZrtpVersionId:(NSData *)zrtpVersionId
-                     andContactsManager:(OWSContactsManager *)contactsManager;
 
 + (Environment *)getCurrent;
 + (void)setCurrent:(Environment *)curEnvironment;

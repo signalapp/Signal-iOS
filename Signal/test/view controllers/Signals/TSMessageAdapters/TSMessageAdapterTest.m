@@ -2,11 +2,9 @@
 
 #import "TSAttachmentStream.h"
 #import "TSContentAdapters.h"
-#import "TSInteraction.h"
+#import "TSOutgoingMessage.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <XCTest/XCTest.h>
-
-static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 @interface TSMessageAdapter (Testing)
 
@@ -19,7 +17,7 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 @interface TSMessageAdapterTest : XCTestCase
 
 @property TSMessageAdapter *messageAdapter;
-@property TSInteraction *interaction;
+@property TSOutgoingMessage *message;
 @property (readonly) NSData *fakeAudioData;
 
 @end
@@ -42,11 +40,11 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 {
     [super setUp];
 
-    self.messageAdapter = [[TSMessageAdapter alloc] init];
+    self.message = [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:nil];
+    [self.message save];
 
-    self.interaction = [[TSInteraction alloc] initWithUniqueId:kTestingInteractionId];
-    [self.interaction save];
-    self.messageAdapter.interaction = self.interaction;
+    self.messageAdapter = [TSMessageAdapter new];
+    self.messageAdapter.interaction = self.message;
 }
 
 - (void)tearDown
@@ -94,7 +92,7 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 - (void)testCanPerformEditingActionWithVideoMessage
 {
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video-message" encryptionKey:nil contentType:@"video/mp4"];
+    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -107,7 +105,7 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 - (void)testCanPerformEditingActionWithAudioMessage
 {
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" encryptionKey:nil contentType:@"audio/mp3"];
+    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -124,53 +122,73 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 - (void)testPerformDeleteEditingActionWithNonMediaMessage
 {
-    XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
     [self.messageAdapter performEditingAction:@selector(delete:)];
-    XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
 }
 
 - (void)testPerformDeleteActionWithPhotoMessage
 {
-    XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
 
     self.messageAdapter.mediaItem = [[TSPhotoAdapter alloc] init];
     [self.messageAdapter performEditingAction:@selector(delete:)];
-    XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
     // TODO assert files are deleted
 }
 
 - (void)testPerformDeleteEditingActionWithAnimatedMessage
 {
-    XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
 
     self.messageAdapter.mediaItem = [[TSAnimatedAdapter alloc] init];
     [self.messageAdapter performEditingAction:@selector(delete:)];
-    XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
     // TODO assert files are deleted
 }
 
 - (void)testPerformDeleteEditingActionWithVideoMessage
 {
-    XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
 
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video-message" encryptionKey:nil contentType:@"video/mp4"];
+    NSError *error;
+    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"];
+    [videoAttachment writeData:[NSData new] error:&error];
+    [videoAttachment save];
+
+    [self.message.attachmentIds addObject:videoAttachment.uniqueId];
+    [self.message save];
+
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
 
+    // Sanity Check
+    XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:videoAttachment.filePath]);
+
     [self.messageAdapter performEditingAction:@selector(delete:)];
-    XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
-    // TODO assert files are deleted
+    XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:videoAttachment.filePath]);
 }
 
 - (void)testPerformDeleteEditingActionWithAudioMessage
 {
-    XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
+    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" encryptionKey:nil contentType:@"audio/mp3"];
+    NSError *error;
+    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"];
+    [audioAttachment writeData:[NSData new] error:&error];
+    [audioAttachment save];
+
+    [self.message.attachmentIds addObject:audioAttachment.uniqueId];
+    [self.message save];
+
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
+    // Sanity Check
+    XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:audioAttachment.filePath]);
+
     [self.messageAdapter performEditingAction:@selector(delete:)];
-    XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
-    // TODO assert files are deleted
+    XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:audioAttachment.filePath]);
 }
 
 // Test Copy
@@ -201,7 +219,10 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 {
     // reset the paste board for clean slate test
     UIPasteboard.generalPasteboard.items = @[];
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video" data:self.fakeVideoData key:nil contentType:@"video/mp4"];
+
+    NSError *error;
+    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"];
+    [videoAttachment writeData:self.fakeVideoData error:&error];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:YES];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -215,7 +236,9 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/mp3"];
+    NSError *error;
+    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"];
+    [audioAttachment writeData:self.fakeAudioData error:&error];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -227,7 +250,9 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4Audio]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/x-m4a"];
+    NSError *error;
+    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/x-m4a"];
+    [audioAttachment writeData:self.fakeAudioData error:&error];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -239,7 +264,9 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeAudio]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/wav"];
+    NSError *error;
+    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/wav"];
+    [audioAttachment writeData:self.fakeAudioData error:&error];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];

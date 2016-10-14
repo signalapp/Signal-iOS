@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
 
 @property (nonatomic) TSInteraction *interaction;
+@property (nonatomic, readonly) CGFloat mediaViewAlpha;
+@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
+@property (nonatomic, readonly) BOOL isMediaBeingSent;
 
 @end
 

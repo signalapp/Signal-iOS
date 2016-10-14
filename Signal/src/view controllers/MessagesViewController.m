@@ -40,8 +40,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSMessagesManager+attachments.h"
-#import "TSMessagesManager+sendMessages.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -55,11 +53,16 @@
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
+#import <SignalServiceKit/TSMessagesManager.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
 @import Photos;
@@ -118,7 +121,11 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @property NSCache *messageAdapterCache;
 
@@ -138,9 +145,16 @@ typedef enum : NSUInteger {
         return self;
     }
 
-    _contactsManager = [[Environment getCurrent] contactsManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
+    _messagesManager = [TSMessagesManager sharedManager];
+    _networkManager = [TSNetworkManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:_contactsUpdater];
 
     return self;
 }
@@ -152,9 +166,16 @@ typedef enum : NSUInteger {
         return self;
     }
 
-    _contactsManager = [[Environment getCurrent] contactsManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
+    _messagesManager = [TSMessagesManager sharedManager];
+    _networkManager = [TSNetworkManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:_contactsUpdater];
 
     return self;
 }
@@ -399,12 +420,12 @@ typedef enum : NSUInteger {
 
 - (void)updateBackButtonAsync {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSUInteger count = [[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread];
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (self) {
-            [self setUnreadCount:count];
-        }
-      });
+        NSUInteger count = [self.messagesManager unreadMessagesCountExcept:self.thread];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self) {
+                [self setUnreadCount:count];
+            }
+        });
     });
 }
 
@@ -652,13 +673,12 @@ typedef enum : NSUInteger {
                                                        messageBody:text];
         }
 
-        [[TSMessagesManager sharedManager] sendMessage:message
-            inThread:self.thread
+        [self.messageSender sendMessage:message
             success:^{
                 DDLogInfo(@"%@ Successfully sent message.", self.tag);
             }
-            failure:^{
-                DDLogWarn(@"%@ Failed to deliver message.", self.tag);
+            failure:^(NSError *error) {
+                DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
             }];
         [self finishSendingMessage];
     }
@@ -801,7 +821,13 @@ typedef enum : NSUInteger {
     [self fixupiOS10EmojiBugForTextView:cell.textView];
     // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
-    if (!message.isMediaMessage) {
+    if (message.isMediaMessage) {
+        if (![message isKindOfClass:[TSMessageAdapter class]]) {
+            DDLogError(@"%@ Unexpected media message:%@", self.tag, message.class);
+        }
+        TSMessageAdapter *messageAdapter = (TSMessageAdapter *)message;
+        cell.mediaView.alpha = messageAdapter.mediaViewAlpha;
+    } else {
         cell.textView.textColor          = [UIColor whiteColor];
         cell.textView.linkTextAttributes = @{
             NSForegroundColorAttributeName : cell.textView.textColor,
@@ -941,9 +967,9 @@ typedef enum : NSUInteger {
     if (indexPath.row == 0) {
         showDate = YES;
     } else {
-        TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+        id<OWSMessageData> currentMessage = [self messageAtIndexPath:indexPath];
 
-        TSMessageAdapter *previousMessage =
+        id<OWSMessageData> previousMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section]];
 
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
@@ -957,7 +983,7 @@ typedef enum : NSUInteger {
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
     attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath {
     if ([self showDateAtIndexPath:indexPath]) {
-        TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+        id<OWSMessageData> currentMessage = [self messageAtIndexPath:indexPath];
 
         return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:currentMessage.date];
     }
@@ -967,7 +993,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)shouldShowMessageStatusAtIndexPath:(NSIndexPath *)indexPath
 {
-    TSMessageAdapter *currentMessage = [self messageAtIndexPath:indexPath];
+    id<OWSMessageData> currentMessage = [self messageAtIndexPath:indexPath];
 
     if (currentMessage.isExpiringMessage) {
         return YES;
@@ -976,13 +1002,14 @@ typedef enum : NSUInteger {
     return !![self collectionView:self.collectionView attributedTextForCellBottomLabelAtIndexPath:indexPath];
 }
 
-- (TSMessageAdapter *)nextOutgoingMessage:(NSIndexPath *)indexPath {
-    TSMessageAdapter *nextMessage =
+- (id<OWSMessageData>)nextOutgoingMessage:(NSIndexPath *)indexPath
+{
+    id<OWSMessageData> nextMessage =
         [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
     int i = 1;
 
-    while (indexPath.item + i < [self.collectionView numberOfItemsInSection:indexPath.section] - 1 &&
-           ![self isMessageOutgoingAndDelivered:nextMessage]) {
+    while (indexPath.item + i < [self.collectionView numberOfItemsInSection:indexPath.section] - 1
+        && !nextMessage.isOutgoingAndDelivered) {
         i++;
         nextMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + i inSection:indexPath.section]];
@@ -990,18 +1017,6 @@ typedef enum : NSUInteger {
 
     return nextMessage;
 }
-
-- (BOOL)isMessageOutgoingAndDelivered:(TSMessageAdapter *)message
-{
-    if (message.messageType == TSOutgoingMessageAdapter) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-        if(outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
     attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath
@@ -1015,11 +1030,8 @@ typedef enum : NSUInteger {
     if (message.messageType == TSOutgoingMessageAdapter) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            NSAttributedString *failedString =
-                [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-
-            return failedString;
-        } else if ([self isMessageOutgoingAndDelivered:message]) {
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
+        } else if (message.isOutgoingAndDelivered) {
             NSAttributedString *deliveredString =
                 [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
 
@@ -1031,10 +1043,13 @@ typedef enum : NSUInteger {
 
             // Or when the next message is *not* an outgoing delivered message.
             TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (![self isMessageOutgoingAndDelivered:nextMessage]) {
+            if (!nextMessage.isOutgoingAndDelivered) {
                 [self updateLastDeliveredMessage:message];
                 return deliveredString;
             }
+        } else if (message.isMediaBeingSent) {
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"UPLOADING_MESSAGE_TEXT",
+                                                                  @"message footer while attachment is uploading")];
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
@@ -1105,12 +1120,17 @@ typedef enum : NSUInteger {
 
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter: {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)messageItem;
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
             if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-                [self handleUnsentMessageTap:(TSOutgoingMessage *)interaction];
+                [self handleUnsentMessageTap:outgoingMessage];
+
+                // This `break` is intentionally within the if.
+                // We want to activate fullscreen media view for sent items
+                // but not those which failed-to-send
+                break;
             }
+            // No `break` as we want to fall through to capture tapping on Outgoing media items too
         }
-        // No `break` as we want to fall through to capture tapping on media items
         case TSIncomingMessageAdapter: {
             BOOL isMediaMessage = [messageItem isMediaMessage];
 
@@ -1310,7 +1330,17 @@ typedef enum : NSUInteger {
                 // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
                 // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (!pointer.isDownloading) {
-                    [[TSMessagesManager sharedManager] retrieveAttachment:pointer messageId:message.uniqueId];
+                    OWSAttachmentsProcessor *processor =
+                        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:pointer
+                                                                    networkManager:self.networkManager];
+                    [processor fetchAttachmentsForMessage:message
+                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                            DDLogInfo(
+                                @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);
+                        }
+                        failure:^(NSError *_Nonnull error) {
+                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.tag, error);
+                        }];
                 }
             }
         }
@@ -1405,25 +1435,25 @@ typedef enum : NSUInteger {
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
     [self dismissKeyBoard];
     [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:nil
+                     withTitle:message.mostRecentFailureText
              cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
         destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
              otherButtonTitles:@[ NSLocalizedString(@"SEND_AGAIN_BUTTON", @"") ]
                       tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogDebug(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            [self.editingDatabaseConnection
-                                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                  [message removeWithTransaction:transaction];
-                                }];
-                        } else {
-                            [[TSMessagesManager sharedManager] sendMessage:message
-                                                                  inThread:self.thread
-                                                                   success:nil
-                                                                   failure:nil];
-                            [self finishSendingMessage];
-                        }
+                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                              DDLogDebug(@"%@ User cancelled unsent dialog", self.tag);
+                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                              DDLogInfo(@"%@ User chose to delete unsent message.", self.tag);
+                              [message remove];
+                          } else {
+                              [self.messageSender sendMessage:message
+                                  success:^{
+                                      DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
+                                  }
+                                  failure:^(NSError *_Nonnull error) {
+                                      DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
+                                  }];
+                          }
                       }];
 }
 
@@ -1463,7 +1493,21 @@ typedef enum : NSUInteger {
                                       break;
                                   case 1:
                                       DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+
                                       [errorMessage acceptNewIdentityKey];
+                                      if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+                                          [self.messageSender
+                                              resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)
+                                                                            errorMessage
+                                              success:^{
+                                                  DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
+                                              }
+                                              failure:^(NSError *_Nonnull error) {
+                                                  DDLogError(@"%@ Failed to resend key-error message with error:%@",
+                                                      self.tag,
+                                                      error);
+                                              }];
+                                      }
                                       break;
                                   default:
                                       DDLogInfo(@"%@ Remote Key Changed actions: Unhandled button pressed: %d",
@@ -1568,7 +1612,7 @@ typedef enum : NSUInteger {
         // Video picked from library or captured with camera
 
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        [self sendQualityAdjustedAttachment:videoURL];
+        [self sendQualityAdjustedAttachmentForVideo:videoURL];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
 
@@ -1653,13 +1697,16 @@ typedef enum : NSUInteger {
                                  DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
                                               (unsigned long)attachmentData.length,
                                               attachmentType);
-
-                               [[TSMessagesManager sharedManager] sendAttachment:attachmentData
-                                                                     contentType:attachmentType
-                                                                       inMessage:message
-                                                                          thread:self.thread
-                                                                         success:nil
-                                                                         failure:nil];
+                                 [self.messageSender sendAttachmentData:attachmentData
+                                     contentType:attachmentType
+                                     inMessage:message
+                                     success:^{
+                                         DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
+                                     }
+                                     failure:^(NSError *error) {
+                                         DDLogError(
+                                             @"%@ Failed to send message attachment with error: %@", self.tag, error);
+                                     }];
                              }];
 }
 
@@ -1676,7 +1723,7 @@ typedef enum : NSUInteger {
     return [NSURL fileURLWithPath:basePath];
 }
 
-- (void)sendQualityAdjustedAttachment:(NSURL *)movieURL {
+- (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL {
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession =
         [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
@@ -1845,7 +1892,6 @@ typedef enum : NSUInteger {
                       [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                   }
                   [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                  scrollToBottom = YES;
                   break;
               }
           }
@@ -1858,7 +1904,9 @@ typedef enum : NSUInteger {
               [self.collectionView reloadData];
           }
           if (scrollToBottom) {
-              [self scrollToBottomAnimated:YES];
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  [self scrollToBottomAnimated:YES];
+              });
           }
         }];
 }
@@ -2001,24 +2049,19 @@ typedef enum : NSUInteger {
 - (BOOL)collectionView:(UICollectionView *)collectionView
       canPerformAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender {
-    TSMessageAdapter *messageAdapter = [self messageAtIndexPath:indexPath];
-    // HACK make sure method exists before calling since messageAtIndexPath doesn't
-    // always return TSMessageAdapters - it can also return JSQCall!
-    if ([messageAdapter respondsToSelector:@selector(canPerformEditingAction:)]) {
-        return [messageAdapter canPerformEditingAction:action];
-    }
-    else {
-        return NO;
-    }
-
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    return [messageData canPerformEditingAction:action];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView
          performAction:(SEL)action
     forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender {
-    [[self messageAtIndexPath:indexPath] performEditingAction:action];
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    [messageData performEditingAction:action];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
@@ -2041,15 +2084,24 @@ typedef enum : NSUInteger {
         message.customMessage = updateGroupInfo;
     }];
 
-    if (newGroupModel.groupImage != nil) {
-        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
-                                              contentType:OWSMimeTypeImagePng
-                                                inMessage:message
-                                                   thread:groupThread
-                                                  success:nil
-                                                  failure:nil];
+    if (newGroupModel.groupImage) {
+        [self.messageSender sendAttachmentData:UIImagePNGRepresentation(newGroupModel.groupImage)
+            contentType:OWSMimeTypeImagePng
+            inMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
+            }];
     } else {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread success:nil failure:nil];
+        [self.messageSender sendMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update", self.tag);
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
+            }];
     }
 
     self.thread = groupThread;
