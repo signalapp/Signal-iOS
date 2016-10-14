@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSInteraction *interaction;
 @property (readonly) TSInfoMessageType infoMessageType;
+@property (nonatomic, readonly) CGFloat mediaViewAlpha;
+@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
+@property (nonatomic, readonly) BOOL isMediaBeingSent;
 
 @end
 

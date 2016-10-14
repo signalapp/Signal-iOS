@@ -305,4 +305,31 @@
     return self.outgoingMessageStatus;
 }
 
+- (CGFloat)mediaViewAlpha
+{
+    return (CGFloat)(self.isMediaBeingSent ? 0.75 : 1);
+}
+
+- (BOOL)isMediaBeingSent
+{
+    if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
+        if (outgoingMessage.hasAttachments && outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)isOutgoingAndDelivered
+{
+    if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
+#import "OWSStaleNotificationObserver.h"
 #import "PreferencesUtil.h"
 #import "PushManager.h"
 #import "Release.h"
@@ -15,9 +16,9 @@
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
-#import "OWSStaleNotificationObserver.h"
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 
 static NSString *const kStoryboardName                  = @"Storyboard";
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
@@ -128,8 +129,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
     [[TSStorageManager sharedManager] setupDatabase];
     [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
-    self.incomingMessageReadObserver = [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
-                                                                                      messagesManager:[TSMessagesManager sharedManager]];
+
+    OWSMessageSender *messageSender =
+        [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                          storageManager:[TSStorageManager sharedManager]
+                                         contactsManager:[Environment getCurrent].contactsManager
+                                         contactsUpdater:[Environment getCurrent].contactsUpdater];
+
+    self.incomingMessageReadObserver =
+        [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
+                                                         messageSender:messageSender];
     [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];

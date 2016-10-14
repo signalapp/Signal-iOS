@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
 @property (nonatomic, readonly) TSMessageAdapterType messageType;
 @property (nonatomic, readonly) TSInteraction *interaction;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
+@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
 @property (nonatomic, readonly) BOOL shouldStartExpireTimer;
 @property (nonatomic, readonly) uint64_t expiresAtSeconds;
 @property (nonatomic, readonly) uint32_t expiresInSeconds;

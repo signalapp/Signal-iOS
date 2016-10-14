@@ -1,7 +1,7 @@
+#import "Environment.h"
 #import "Constraints.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "DebugLogger.h"
-#import "Environment.h"
 #import "FunctionalUtil.h"
 #import "KeyAgreementProtocol.h"
 #import "MessagesViewController.h"
@@ -10,16 +10,13 @@
 #import "SignalsViewController.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import <SignalServiceKit/ContactsUpdater.h>
 
 #define isRegisteredUserDefaultString @"isRegistered"
 
 static Environment *environment = nil;
 
 @implementation Environment
-
-@synthesize testingAndLegacyOptions, errorNoter, keyAgreementProtocolsInDescendingPriority, logging,
-    masterServerSecureEndPoint, defaultRelayName, relayServerHostNameSuffix, certificate, serverPort, zrtpClientId,
-    zrtpVersionId, phoneManager, recentCallManager, contactsManager;
 
 + (Environment *)getCurrent {
     NSAssert((environment != nil), @"Environment is not defined.");
@@ -54,20 +51,23 @@ static Environment *environment = nil;
     return [SecureEndPoint secureEndPointForHost:location identifiedByCertificate:env.certificate];
 }
 
-+ (Environment *)environmentWithLogging:(id<Logging>)logging
-                          andErrorNoter:(ErrorHandlerBlock)errorNoter
-                          andServerPort:(in_port_t)serverPort
-                andMasterServerHostName:(NSString *)masterServerHostName
-                    andDefaultRelayName:(NSString *)defaultRelayName
-           andRelayServerHostNameSuffix:(NSString *)relayServerHostNameSuffix
-                         andCertificate:(Certificate *)certificate
-      andSupportedKeyAgreementProtocols:(NSArray *)keyAgreementProtocolsInDescendingPriority
-                        andPhoneManager:(PhoneManager *)phoneManager
-                   andRecentCallManager:(RecentCallManager *)recentCallManager
-             andTestingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
-                        andZrtpClientId:(NSData *)zrtpClientId
-                       andZrtpVersionId:(NSData *)zrtpVersionId
-                     andContactsManager:(OWSContactsManager *)contactsManager {
+- (instancetype)initWithLogging:(id<Logging>)logging
+                     errorNoter:(ErrorHandlerBlock)errorNoter
+                     serverPort:(in_port_t)serverPort
+           masterServerHostName:(NSString *)masterServerHostName
+               defaultRelayName:(NSString *)defaultRelayName
+      relayServerHostNameSuffix:(NSString *)relayServerHostNameSuffix
+                    certificate:(Certificate *)certificate
+ supportedKeyAgreementProtocols:(NSArray *)keyAgreementProtocolsInDescendingPriority
+                   phoneManager:(PhoneManager *)phoneManager
+              recentCallManager:(RecentCallManager *)recentCallManager
+        testingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
+                   zrtpClientId:(NSData *)zrtpClientId
+                  zrtpVersionId:(NSData *)zrtpVersionId
+                contactsManager:(OWSContactsManager *)contactsManager
+                contactsUpdater:(ContactsUpdater *)contactsUpdater
+                 networkManager:(TSNetworkManager *)networkManager
+{
     ows_require(errorNoter != nil);
     ows_require(zrtpClientId != nil);
     ows_require(zrtpVersionId != nil);
@@ -82,23 +82,29 @@ static Environment *environment = nil;
       return [p isKindOfClass:DH3KKeyAgreementProtocol.class];
     }]);
 
-    Environment *e                = [Environment new];
-    e->errorNoter                 = errorNoter;
-    e->logging                    = logging;
-    e->testingAndLegacyOptions    = testingAndLegacyOptions;
-    e->serverPort                 = serverPort;
-    e->masterServerSecureEndPoint = [SecureEndPoint
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _errorNoter = errorNoter;
+    _logging = logging;
+    _testingAndLegacyOptions = testingAndLegacyOptions;
+    _serverPort = serverPort;
+    _masterServerSecureEndPoint = [SecureEndPoint
           secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:masterServerHostName andPort:serverPort]
         identifiedByCertificate:certificate];
-    e->defaultRelayName                          = defaultRelayName;
-    e->certificate                               = certificate;
-    e->relayServerHostNameSuffix                 = relayServerHostNameSuffix;
-    e->keyAgreementProtocolsInDescendingPriority = keyAgreementProtocolsInDescendingPriority;
-    e->phoneManager                              = phoneManager;
-    e->recentCallManager                         = recentCallManager;
-    e->zrtpClientId                              = zrtpClientId;
-    e->zrtpVersionId                             = zrtpVersionId;
-    e->contactsManager                           = contactsManager;
+
+    _defaultRelayName = defaultRelayName;
+    _certificate = certificate;
+    _relayServerHostNameSuffix = relayServerHostNameSuffix;
+    _keyAgreementProtocolsInDescendingPriority = keyAgreementProtocolsInDescendingPriority;
+    _phoneManager = phoneManager;
+    _recentCallManager = recentCallManager;
+    _zrtpClientId = zrtpClientId;
+    _zrtpVersionId = zrtpVersionId;
+    _contactsManager = contactsManager;
+    _networkManager = networkManager;
 
     if (recentCallManager != nil) {
         // recentCallManagers are nil in unit tests because they would require unnecessary allocations. Detailed
@@ -107,12 +113,13 @@ static Environment *environment = nil;
         [recentCallManager watchForCallsThrough:phoneManager untilCancelled:nil];
     }
 
-    return e;
+    return self;
 }
 
 + (PhoneManager *)phoneManager {
     return Environment.getCurrent.phoneManager;
 }
+
 + (id<Logging>)logging {
     // Many tests create objects that rely on Environment only for logging.
     // So we bypass the nil check in getCurrent and silently don't log during unit testing, instead of failing hard.

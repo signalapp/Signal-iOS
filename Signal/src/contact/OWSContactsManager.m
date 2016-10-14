@@ -91,13 +91,16 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 - (void)intersectContacts {
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
         success:^{
+            DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
         }
         failure:^(NSError *error) {
-          [NSTimer scheduledTimerWithTimeInterval:60
-                                           target:self
-                                         selector:@selector(intersectContacts)
-                                         userInfo:nil
-                                          repeats:NO];
+            DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+
+            [NSTimer scheduledTimerWithTimeInterval:60
+                                             target:self
+                                           selector:@selector(intersectContacts)
+                                           userInfo:nil
+                                            repeats:NO];
         }];
 }
 
@@ -421,6 +424,18 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     }
     return nil;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
