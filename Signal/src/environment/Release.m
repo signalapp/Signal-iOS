@@ -1,8 +1,10 @@
+#import "Release.h"
 #import "DiscardingLog.h"
 #import "PhoneManager.h"
 #import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
-#import "Release.h"
+#import <SignalServiceKit/ContactsUpdater.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 #define RELEASE_ZRTP_CLIENT_ID @"Whisper 000     ".encodedAsAscii
 #define RELEASE_ZRTP_VERSION_ID @"1.10".encodedAsAscii
@@ -42,23 +44,22 @@ static unsigned char DH3K_PRIME[] = {
       DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination);
     };
 
-    return [Environment
-                   environmentWithLogging:logging
-                            andErrorNoter:errorNoter
-                            andServerPort:31337
-                  andMasterServerHostName:@"master.whispersystems.org"
-                      andDefaultRelayName:@"relay"
-             andRelayServerHostNameSuffix:@"whispersystems.org"
-                           andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-        andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                          andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
-                     andRecentCallManager:[RecentCallManager new]
-               andTestingAndLegacyOptions:@[
-                   ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER
-               ]
-                          andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
-                         andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                       andContactsManager:[OWSContactsManager new]];
+    return [[Environment alloc] initWithLogging:logging
+                                     errorNoter:errorNoter
+                                     serverPort:31337
+                           masterServerHostName:@"master.whispersystems.org"
+                               defaultRelayName:@"relay"
+                      relayServerHostNameSuffix:@"whispersystems.org"
+                                    certificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+                 supportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                                   phoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
+                              recentCallManager:[RecentCallManager new]
+                        testingAndLegacyOptions:@[ ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER ]
+                                   zrtpClientId:RELEASE_ZRTP_CLIENT_ID
+                                  zrtpVersionId:RELEASE_ZRTP_VERSION_ID
+                                contactsManager:[OWSContactsManager new]
+                                contactsUpdater:[ContactsUpdater sharedUpdater]
+                                 networkManager:[TSNetworkManager sharedManager]];
 }
 
 + (Environment *)stagingEnvironmentWithLogging:(id<Logging>)logging {
@@ -66,23 +67,22 @@ static unsigned char DH3K_PRIME[] = {
       DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination);
     };
 
-    return [Environment
-                   environmentWithLogging:logging
-                            andErrorNoter:errorNoter
-                            andServerPort:31337
-                  andMasterServerHostName:@"redphone-staging.whispersystems.org"
-                      andDefaultRelayName:@"redphone-staging-relay"
-             andRelayServerHostNameSuffix:@"whispersystems.org"
-                           andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-        andSupportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
-                          andPhoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
-                     andRecentCallManager:[RecentCallManager new]
-               andTestingAndLegacyOptions:@[
-                   ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER
-               ]
-                          andZrtpClientId:RELEASE_ZRTP_CLIENT_ID
-                         andZrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                       andContactsManager:[OWSContactsManager new]];
+    return [[Environment alloc] initWithLogging:logging
+                                     errorNoter:errorNoter
+                                     serverPort:31337
+                           masterServerHostName:@"redphone-staging.whispersystems.org"
+                               defaultRelayName:@"redphone-staging-relay"
+                      relayServerHostNameSuffix:@"whispersystems.org"
+                                    certificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+                 supportedKeyAgreementProtocols:[self supportedKeyAgreementProtocols]
+                                   phoneManager:[PhoneManager phoneManagerWithErrorHandler:errorNoter]
+                              recentCallManager:[RecentCallManager new]
+                        testingAndLegacyOptions:@[ ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER ]
+                                   zrtpClientId:RELEASE_ZRTP_CLIENT_ID
+                                  zrtpVersionId:RELEASE_ZRTP_VERSION_ID
+                                contactsManager:[OWSContactsManager new]
+                                contactsUpdater:[ContactsUpdater sharedUpdater]
+                                 networkManager:[TSNetworkManager sharedManager]];
 }
 
 + (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions {
@@ -91,21 +91,23 @@ static unsigned char DH3K_PRIME[] = {
         keyAgreementProtocols = @[ [Release supportedDH3KKeyAgreementProtocol] ];
     }
 
-    return [Environment environmentWithLogging:[DiscardingLog discardingLog]
-                                 andErrorNoter:^(id error, id relatedInfo, bool causedTermination) {
-                                 }
-                                 andServerPort:31337
-                       andMasterServerHostName:@"master.whispersystems.org"
-                           andDefaultRelayName:@"relay"
-                  andRelayServerHostNameSuffix:@"whispersystems.org"
-                                andCertificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
-             andSupportedKeyAgreementProtocols:keyAgreementProtocols
-                               andPhoneManager:nil
-                          andRecentCallManager:nil
-                    andTestingAndLegacyOptions:testingAndLegacyOptions
-                               andZrtpClientId:TESTING_ZRTP_CLIENT_ID
-                              andZrtpVersionId:TESTING_ZRTP_VERSION_ID
-                            andContactsManager:nil];
+    return [[Environment alloc] initWithLogging:[DiscardingLog discardingLog]
+                                     errorNoter:^(id error, id relatedInfo, bool causedTermination) {
+                                     }
+                                     serverPort:31337
+                           masterServerHostName:@"master.whispersystems.org"
+                               defaultRelayName:@"relay"
+                      relayServerHostNameSuffix:@"whispersystems.org"
+                                    certificate:[Certificate certificateFromResourcePath:@"redphone" ofType:@"cer"]
+                 supportedKeyAgreementProtocols:keyAgreementProtocols
+                                   phoneManager:nil
+                              recentCallManager:nil
+                        testingAndLegacyOptions:testingAndLegacyOptions
+                                   zrtpClientId:TESTING_ZRTP_CLIENT_ID
+                                  zrtpVersionId:TESTING_ZRTP_VERSION_ID
+                                contactsManager:nil
+                                contactsUpdater:[ContactsUpdater sharedUpdater]
+                                 networkManager:[TSNetworkManager sharedManager]];
 }
 
 + (NSArray *)supportedKeyAgreementProtocols {

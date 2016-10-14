@@ -18,12 +18,13 @@
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
-#import "TSMessagesManager+sendMessages.h"
 #import "TSStorageManager.h"
 #import "VersionMigrations.h"
-
+#import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/TSMessagesManager.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
-#import "YapDatabaseViewConnection.h"
+#import <YapDatabase/YapDatabaseViewConnection.h>
 
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
@@ -40,6 +41,8 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) id previewingContext;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
 
@@ -53,6 +56,11 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     }
 
     _contactsManager = [Environment getCurrent].contactsManager;
+    _messagesManager = [TSMessagesManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:[TSStorageManager sharedManager]
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     return self;
 }
@@ -65,6 +73,11 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
     }
 
     _contactsManager = [Environment getCurrent].contactsManager;
+    _messagesManager = [TSMessagesManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:[TSStorageManager sharedManager]
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     return self;
 }
@@ -284,20 +297,19 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
                                                                       messageBody:@""
                                                                     attachmentIds:[NSMutableArray new]];
         message.groupMetaMessage = TSGroupMessageQuit;
-        [[TSMessagesManager sharedManager] sendMessage:message
-            inThread:thread
+        [self.messageSender sendMessage:message
             success:^{
-              [self dismissViewControllerAnimated:YES
-                                       completion:^{
-                                         [self deleteThread:thread];
-                                       }];
+                [self dismissViewControllerAnimated:YES
+                                         completion:^{
+                                             [self deleteThread:thread];
+                                         }];
             }
-            failure:^{
-              [self dismissViewControllerAnimated:YES
-                                       completion:^{
-                                         SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
-                                                         NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                       }];
+            failure:^(NSError *error) {
+                [self dismissViewControllerAnimated:YES
+                                         completion:^{
+                                             SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
+                                                 error.localizedRecoverySuggestion);
+                                         }];
             }];
     } else {
         [self deleteThread:thread];
@@ -326,7 +338,7 @@ static NSString *const kShowSignupFlowSegue = @"showSignupFlow";
 }
 
 - (NSNumber *)updateInboxCountLabel {
-    NSUInteger numberOfItems = [[TSMessagesManager sharedManager] unreadMessagesCount];
+    NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
     NSNumber *badgeNumber    = [NSNumber numberWithUnsignedInteger:numberOfItems];
     NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
