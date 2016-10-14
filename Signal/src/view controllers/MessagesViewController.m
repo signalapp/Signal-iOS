@@ -1568,7 +1568,7 @@ typedef enum : NSUInteger {
         // Video picked from library or captured with camera
 
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        [self sendQualityAdjustedAttachment:videoURL];
+        [self sendQualityAdjustedAttachmentForVideo:videoURL];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
 
@@ -1676,7 +1676,7 @@ typedef enum : NSUInteger {
     return [NSURL fileURLWithPath:basePath];
 }
 
-- (void)sendQualityAdjustedAttachment:(NSURL *)movieURL {
+- (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL {
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession =
         [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
