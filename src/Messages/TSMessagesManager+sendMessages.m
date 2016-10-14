@@ -389,6 +389,14 @@ dispatch_queue_t sendingQueue() {
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
 {
+    [self handleMessageSentLocally:outgoingMessage];
+
+    if (!(outgoingMessage.body || outgoingMessage.hasAttachments)) {
+        DDLogDebug(
+            @"%@ Refusing to make incoming copy of non-standard message sent to self:%@", self.logTag, outgoingMessage);
+        return;
+    }
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *cThread =
             [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
@@ -402,7 +410,6 @@ dispatch_queue_t sendingQueue() {
                                         expiresInSeconds:outgoingMessage.expiresInSeconds];
         [incomingMessage saveWithTransaction:transaction];
     }];
-    [self handleMessageSentLocally:outgoingMessage];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
