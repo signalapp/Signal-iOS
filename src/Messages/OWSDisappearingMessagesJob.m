@@ -2,9 +2,12 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSDisappearingMessagesJob.h"
+#import "ContactsManagerProtocol.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
+#import "TSIncomingMessage.h"
 #import "TSMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -152,6 +155,55 @@ NS_ASSUME_NONNULL_BEGIN
         ^{
             [self runLoop];
         });
+}
+
+
+- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
+                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager
+{
+    // Become eventually consistent in the case that the remote changed their settings at the same time.
+    // Also in case remote doesn't support expiring messages
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:message.uniqueThreadId];
+
+    BOOL changed = NO;
+    if (message.expiresInSeconds == 0) {
+        if (disappearingMessagesConfiguration.isEnabled) {
+            changed = YES;
+            DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
+                      @"consistent.",
+                self.tag);
+            disappearingMessagesConfiguration.enabled = NO;
+            [disappearingMessagesConfiguration save];
+        }
+    } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
+        changed = YES;
+        DDLogInfo(
+            @"%@ Received remote message with different expiration set, updating our expiration to become consistent.",
+            self.tag);
+        disappearingMessagesConfiguration.enabled = YES;
+        disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
+        [disappearingMessagesConfiguration save];
+    }
+
+    if (!changed) {
+        return;
+    }
+
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        NSString *contactName = [contactsManager nameStringForPhoneIdentifier:incomingMessage.authorId];
+
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration
+                                                              createdByRemoteName:contactName] save];
+    } else {
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration]
+            save];
+    }
 }
 
 #pragma mark - Logging

@@ -11,8 +11,9 @@
 
 @implementation TSAttachmentRequest
 
-- (TSRequest *)initWithId:(NSNumber *)attachmentId relay:(NSString *)relay {
-    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAttachmentsAPI, attachmentId];
+- (TSRequest *)initWithId:(UInt64)attachmentId relay:(NSString *)relay
+{
+    NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
 
     if (relay && ![relay isEqualToString:@""]) {
         path = [path stringByAppendingFormat:@"?relay=%@", relay];

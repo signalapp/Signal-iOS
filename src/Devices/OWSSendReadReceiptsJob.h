@@ -3,13 +3,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSMessagesManager;
+@class OWSMessageSender;
 @class TSIncomingMessage;
 
 @interface OWSSendReadReceiptsJob : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
 - (void)runWith:(TSIncomingMessage *)message;
 
 

@@ -4,15 +4,18 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
-@class TSMessagesManager;
+@class OWSMessageSender;
+@class TSNetworkManager;
+@class TSAttachmentStream;
 
 @interface OWSRecordTranscriptJob : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
-          incomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSendtMessageTranscript NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
+                                        messageSender:(OWSMessageSender *)messageSender
+                                       networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
-- (void)run;
+- (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler;
 
 @end
 

@@ -14,10 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSThread;
 
-@interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
+extern NSString *TSInvalidPreKeyBundleKey;
+extern NSString *TSInvalidRecipientKey;
 
-#define TSInvalidPreKeyBundleKey @"TSInvalidPreKeyBundleKey"
-#define TSInvalidRecipientKey @"TSInvalidRecipientKey"
+@interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 + (instancetype)untrustedKeyWithOutgoingMessage:(TSOutgoingMessage *)outgoingMessage
                                        inThread:(TSThread *)thread
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) NSString *messageId;
 
 @end
 

@@ -24,8 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
             if (devices) {
                 successCallback(devices);
             } else {
-                failureCallback(OWSErrorWithCodeDescription(
-                    OWSErrorCodeUnableToProcessServerResponse, @"Unable to parse server response"));
+                DDLogError(@"%@ unable to parse devices response:%@", self.tag, responseObject);
+                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                failureCallback(error);
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -77,6 +78,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [devices copy];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

@@ -4,7 +4,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSDisappearingMessagesConfiguration;
-@class TSMessagesManager;
+@class OWSMessageSender;
 @class TSThread;
 
 @interface OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob : NSObject
@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration
                                thread:(TSThread *)thread
-                      messagesManager:(TSMessagesManager *)messagesManager NS_DESIGNATED_INITIALIZER;
+                        messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
 
 + (void)runWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration
                       thread:(TSThread *)thread
-             messagesManager:(TSMessagesManager *)messagesManager;
+               messageSender:(OWSMessageSender *)messageSender;
 
 - (void)run;
 

@@ -4,29 +4,58 @@
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+NSUInteger const TSAttachmentSchemaVersion = 2;
+
+@interface TSAttachment ()
+
+@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
+
+@end
+
 @implementation TSAttachment
 
-- (instancetype)initWithIdentifier:(NSString *)identifier
-                     encryptionKey:(NSData *)encryptionKey
-                       contentType:(NSString *)contentType {
-    self = [super initWithUniqueId:identifier];
-
-    if (self) {
-        _encryptionKey = encryptionKey;
-        _contentType   = contentType;
+- (instancetype)initWithServerId:(UInt64)serverId
+                   encryptionKey:(NSData *)encryptionKey
+                     contentType:(NSString *)contentType
+{
+    self = [super init];
+    if (!self) {
+        return self;
     }
+
+    _serverId = serverId;
+    _encryptionKey = encryptionKey;
+    _contentType = contentType;
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_attachmentSchemaVersion < 2) {
+        if (!_serverId) {
+            _serverId = [self.uniqueId integerValue];
+            if (!_serverId) {
+                DDLogError(@"%@ failed to parse legacy uniqueId:%@ as integer.", self.tag, self.uniqueId);
+            }
+        }
+    }
+
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
     return self;
 }
 
 + (NSString *)collection {
     return @"TSAttachements";
-}
-
-- (NSNumber *)identifier {
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    return [f numberFromString:self.uniqueId];
 }
 
 - (NSString *)description {
@@ -45,4 +74,18 @@
     return attachmentString;
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

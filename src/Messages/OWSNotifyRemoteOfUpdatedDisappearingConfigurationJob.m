@@ -3,14 +3,14 @@
 
 #import "OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h"
 #import "OWSDisappearingMessagesConfigurationMessage.h"
-#import "TSMessagesManager+sendMessages.h"
+#import "OWSMessageSender.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob ()
 
 @property (nonatomic, readonly) OWSDisappearingMessagesConfiguration *configuration;
-@property (nonatomic, readonly) TSMessagesManager *messageManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSThread *thread;
 
 @end
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration
                                thread:(TSThread *)thread
-                      messagesManager:(TSMessagesManager *)messagesManager
+                        messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
@@ -28,17 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     _thread = thread;
     _configuration = configuration;
-    _messageManager = messagesManager;
+    _messageSender = messageSender;
 
     return self;
 }
 
 + (void)runWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration
                       thread:(TSThread *)thread
-             messagesManager:(TSMessagesManager *)messagesManager
+               messageSender:(OWSMessageSender *)messageSender
 {
     OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob *job =
-        [[self alloc] initWithConfiguration:configuration thread:thread messagesManager:messagesManager];
+        [[self alloc] initWithConfiguration:configuration thread:thread messageSender:messageSender];
     [job run];
 }
 
@@ -48,14 +48,16 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingMessagesConfigurationMessage alloc] initWithConfiguration:self.configuration
                                                                             thread:self.thread];
 
-    [self.messageManager sendMessage:message
-        inThread:self.thread
+    [self.messageSender sendMessage:message
         success:^{
             DDLogDebug(
                 @"%@ Successfully notified %@ of new disappearing messages configuration", self.tag, self.thread);
         }
-        failure:^{
-            DDLogError(@"%@ Failed to notify %@ of new disappearing messages configuration", self.tag, self.thread);
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to notify %@ of new disappearing messages configuration with error: %@",
+                self.tag,
+                self.thread,
+                error);
         }];
 }
 

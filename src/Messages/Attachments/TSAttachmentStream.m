@@ -3,6 +3,7 @@
 
 #import "TSAttachmentStream.h"
 #import "MIMETypeUtil.h"
+#import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -10,23 +11,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSAttachmentStream
 
-- (instancetype)initWithIdentifier:(NSString *)identifier
-                              data:(NSData *)data
-                               key:(NSData *)key
-                       contentType:(NSString *)contentType
+- (instancetype)initWithContentType:(NSString *)contentType
 {
-    self = [super initWithIdentifier:identifier encryptionKey:key contentType:contentType];
+    self = [super init];
     if (!self) {
         return self;
     }
 
-    // TODO move this to save?
-    [[NSFileManager defaultManager] createFileAtPath:[self filePath] contents:data attributes:nil];
-    DDLogInfo(@"Created file at %@", [self filePath]);
+    _contentType = contentType;
     _isDownloaded = YES;
 
     return self;
 }
+
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
+{
+    // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
+    self = [super initWithUniqueId:pointer.uniqueId];
+    if (!self) {
+        return self;
+    }
+
+    _contentType = pointer.contentType;
+    _isDownloaded = YES;
+
+    return self;
+}
+
+#pragma mark - TSYapDatabaseModel overrides
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -34,14 +46,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self removeFile];
 }
 
-- (void)removeFile
-{
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self filePath] error:&error];
+#pragma mark - File Management
 
-    if (error) {
-        DDLogError(@"remove file errored with: %@", error);
-    }
+- (nullable NSData *)readDataFromFileWithError:(NSError **)error
+{
+    return [NSData dataWithContentsOfFile:self.filePath options:0 error:error];
+}
+
+- (BOOL)writeData:(NSData *)data error:(NSError **)error
+{
+    DDLogInfo(@"%@ Created file at %@", self.tag, self.filePath);
+    return [data writeToFile:self.filePath options:0 error:error];
 }
 
 + (NSString *)attachmentsFolder
@@ -88,6 +103,16 @@ NS_ASSUME_NONNULL_BEGIN
     return filePath ? [NSURL fileURLWithPath:filePath] : nil;
 }
 
+- (void)removeFile
+{
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:[self filePath] error:&error];
+
+    if (error) {
+        DDLogError(@"%@ remove file errored with: %@", self.tag, error);
+    }
+}
+
 - (BOOL)isAnimated {
     return [MIMETypeUtil isAnimated:self.contentType];
 }
@@ -132,6 +157,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (error) {
         DDLogError(@"Failed to delete attachment folder with error: %@", error.debugDescription);
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

@@ -8,14 +8,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSAttachmentPointer;
+
 @interface TSAttachmentStream : TSAttachment
 
-@property (nonatomic) BOOL isDownloaded;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithContentType:(NSString *)contentType NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithIdentifier:(NSString *)identifier
-                              data:(NSData *)data
-                               key:(NSData *)key
-                       contentType:(NSString *)contentType NS_DESIGNATED_INITIALIZER;
+@property (atomic, readwrite) BOOL isDownloaded;
 
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
@@ -26,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isVideo;
 - (nullable NSString *)filePath;
 - (nullable NSURL *)mediaURL;
+- (nullable NSData *)readDataFromFileWithError:(NSError **)error;
+- (BOOL)writeData:(NSData *)data error:(NSError **)error;
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;

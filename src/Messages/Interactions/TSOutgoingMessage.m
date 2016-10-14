@@ -89,6 +89,16 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (!(self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageNone)) {
+        DDLogDebug(@"%@ Skipping save for group meta message.", self.tag);
+        return;
+    }
+
+    [super saveWithTransaction:transaction];
+}
+
 - (nullable NSString *)recipientIdentifier
 {
     return self.thread.contactIdentifier;
@@ -104,6 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
         case TSOutgoingMessageStateUnsent:
             return NO;
     }
+}
+
+- (void)setSendingError:(NSError *)error
+{
+    _mostRecentFailureText = error.localizedDescription;
 }
 
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
@@ -175,11 +190,23 @@ NS_ASSUME_NONNULL_BEGIN
     TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
 
     OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
-    [builder setId:[attachmentStream.identifier unsignedLongLongValue]];
+    [builder setId:attachmentStream.serverId];
     [builder setContentType:attachmentStream.contentType];
     [builder setKey:attachmentStream.encryptionKey];
 
     return [builder build];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

@@ -47,6 +47,9 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 @property (nonatomic) TSOutgoingMessageState messageState;
 @property BOOL hasSyncedTranscript;
 @property NSString *customMessage;
+@property (atomic, readonly) NSString *mostRecentFailureText;
+
+- (void)setSendingError:(NSError *)error;
 
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.

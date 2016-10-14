@@ -5,6 +5,7 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "TSAttachment.h"
+#import "TSAttachmentPointer.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -133,7 +134,6 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return self;
 }
 
-// Seconds.
 - (void)setexpiresInSeconds:(uint32_t)expiresInSeconds
 {
     _expiresInSeconds = expiresInSeconds;

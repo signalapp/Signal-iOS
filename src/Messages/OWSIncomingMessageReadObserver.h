@@ -4,13 +4,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSStorageManager;
-@class TSMessagesManager;
+@class OWSMessageSender;
 
 @interface OWSIncomingMessageReadObserver : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
-                       messagesManager:(TSMessagesManager *)messagesManager NS_DESIGNATED_INITIALIZER;
+                         messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
 
 - (void)startObserving;
 

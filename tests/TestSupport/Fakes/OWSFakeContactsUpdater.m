@@ -8,14 +8,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeContactsUpdater
 
-- (void)synchronousLookup:(NSString *)identifier
-                  success:(void (^)(SignalRecipient *))success
-                  failure:(void (^)(NSError *error))failure
+- (SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
 {
     NSLog(@"[OWSFakeContactsUpdater] Faking contact lookup.");
-    SignalRecipient *fakeRecipient =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil supportsVoice:YES];
-    success(fakeRecipient);
+    return [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil supportsVoice:YES];
 }
 
 @end

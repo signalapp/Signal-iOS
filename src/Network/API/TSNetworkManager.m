@@ -34,19 +34,31 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     static TSNetworkManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedMyManager = [[self alloc] init];
+        sharedMyManager = [[self alloc] initWithDefaultOperationManager];
     });
     return sharedMyManager;
 }
 
-- (id)init {
-    if (self = [super init]) {
-        NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-        self.operationManager =
-            [[AFHTTPSessionManager alloc] initWithBaseURL:[[NSURL alloc] initWithString:textSecureServerURL]
-                                     sessionConfiguration:sessionConf];
-        self.operationManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+- (instancetype)initWithDefaultOperationManager
+{
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
+    AFHTTPSessionManager *operationManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+    operationManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+
+    return [self initWithOperationManager:operationManager];
+}
+
+- (instancetype)initWithOperationManager:(AFHTTPSessionManager *)operationManager
+{
+    self = [super init];
+    if (!self) {
+        return self;
     }
+
+    _operationManager = operationManager;
+
     return self;
 }
 

@@ -1,15 +1,12 @@
-//
-//  TSAttachementsTest.m
-//  Signal
-//
 //  Created by Frederic Jacobs on 21/12/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import <XCTest/XCTest.h>
 
 #import "TSAttachmentStream.h"
 #import "Cryptography.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAttachmentsTest : XCTestCase
 
@@ -17,27 +14,17 @@
 
 @implementation TSAttachmentsTest
 
-- (void)setUp {
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
-
-- (void)testAttachmentEncryptionDecryption {
+- (void)testAttachmentEncryptionDecryption
+{
     NSData *plaintext = [Cryptography generateRandomBytes:100];
-    NSString *contentType = @"img/jpg";
-    uint64_t identifier   = 3063578577793591963;
-    NSNumber *number      = [NSNumber numberWithUnsignedLongLong:identifier];
-    
-    TSAttachmentEncryptionResult *encryptionResult = [Cryptography encryptAttachment:plaintext contentType:contentType identifier:[number stringValue]];
-    
-    NSData *plaintextBis = [Cryptography decryptAttachment:encryptionResult.body withKey:encryptionResult.pointer.encryptionKey];
-    
+
+    NSData *encryptionKey;
+    NSData *encryptedData = [Cryptography encryptAttachmentData:plaintext outKey:&encryptionKey];
+    NSData *plaintextBis = [Cryptography decryptAttachment:encryptedData withKey:encryptionKey];
+
     XCTAssert([plaintext isEqualToData:plaintextBis], @"Attachments encryption failed");
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

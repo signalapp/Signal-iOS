@@ -3,26 +3,22 @@
 
 #import "TSAttachment.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * A TSAttachmentPointer is a yet-to-be-downloaded attachment.
  */
 @interface TSAttachmentPointer : TSAttachment
 
-- (instancetype)initWithIdentifier:(uint64_t)identifier
-                               key:(NSData *)key
-                       contentType:(NSString *)contentType
-                             relay:(NSString *)relay NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithServerId:(UInt64)serverId
+                             key:(NSData *)key
+                     contentType:(NSString *)contentType
+                           relay:(NSString *)relay NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithIdentifier:(uint64_t)identifier
-                               key:(NSData *)key
-                       contentType:(NSString *)contentType
-                             relay:(NSString *)relay
-                   avatarOfGroupId:(NSData *)avatarOfGroupId;
-
-@property NSString *relay;
-@property NSData *avatarOfGroupId;
-
-@property (getter=isDownloading) BOOL downloading;
-@property (getter=hasFailed) BOOL failed;
+@property (nonatomic, readonly) NSString *relay;
+@property (atomic, readwrite, getter=isDownloading) BOOL downloading;
+@property (atomic, readwrite, getter=hasFailed) BOOL failed;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -3,6 +3,7 @@
 #import "OWSDeviceProvisioner.h"
 #import "OWSDeviceProvisioningCodeService.h"
 #import "OWSDeviceProvisioningService.h"
+#import "OWSFakeNetworkManager.h"
 #import "TSNetworkManager.h"
 
 #import <XCTest/XCTest.h>
@@ -46,22 +47,6 @@
 
 @end
 
-@interface OWSFakeNetworkManager : TSNetworkManager
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initFake;
-
-@end
-
-@implementation OWSFakeNetworkManager
-
-- (instancetype)initFake
-{
-    return self;
-}
-
-@end
-
 @interface OWSDeviceProvisionerTest : XCTestCase
 
 @end
@@ -80,7 +65,7 @@
     NSString *accountIdentifier;
     NSString *theirEphemeralDeviceId;
 
-    OWSFakeNetworkManager *networkManager = [[OWSFakeNetworkManager alloc] initFake];
+    OWSFakeNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc]
             initWithMyPublicKey:myPublicKey
                    myPrivateKey:myPrivateKey

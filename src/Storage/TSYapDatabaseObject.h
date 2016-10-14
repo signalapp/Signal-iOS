@@ -84,7 +84,11 @@
  */
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+/**
+ * `touch` is a cheap way to fire a YapDatabaseModified notification to redraw anythign depending on the model.
+ */
 - (void)touch;
+- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  *  The unique identifier of the stored object

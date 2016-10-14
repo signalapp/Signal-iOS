@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
-                       messagesManager:(TSMessagesManager *)messagesManager;
+                         messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _isObserving = NO;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
-    _sendReadReceiptsJob = [[OWSSendReadReceiptsJob alloc] initWithMessagesManager:messagesManager];
+    _sendReadReceiptsJob = [[OWSSendReadReceiptsJob alloc] initWithMessageSender:messageSender];
 
     return self;
 }

@@ -278,20 +278,20 @@
                            matchingHMAC:hmac];
 }
 
-+ (TSAttachmentEncryptionResult *)encryptAttachment:(NSData *)attachment
-                                        contentType:(NSString *)contentType
-                                         identifier:(NSString *)identifier {
++ (NSData *)encryptAttachmentData:(NSData *)attachmentData outKey:(NSData **)outKey
+{
     NSData *iv            = [Cryptography generateRandomBytes:AES_CBC_IV_LENGTH];
     NSData *encryptionKey = [Cryptography generateRandomBytes:AES_KEY_SIZE];
     NSData *hmacKey       = [Cryptography generateRandomBytes:HMAC256_KEY_LENGTH];
 
     // The concatenated key for storage
-    NSMutableData *outKey = [NSMutableData data];
-    [outKey appendData:encryptionKey];
-    [outKey appendData:hmacKey];
+    NSMutableData *key = [NSMutableData data];
+    [key appendData:encryptionKey];
+    [key appendData:hmacKey];
+    *outKey = [key copy];
 
     NSData *computedHMAC;
-    NSData *ciphertext = [Cryptography encryptCBCMode:attachment
+    NSData *ciphertext = [Cryptography encryptCBCMode:attachmentData
                                               withKey:encryptionKey
                                                withIV:iv
                                           withVersion:nil
@@ -299,15 +299,12 @@
                                          withHMACType:TSHMACSHA256AttachementType
                                          computedHMAC:&computedHMAC];
 
-    NSMutableData *encryptedAttachment = [NSMutableData data];
-    [encryptedAttachment appendData:iv];
-    [encryptedAttachment appendData:ciphertext];
-    [encryptedAttachment appendData:computedHMAC];
+    NSMutableData *encryptedAttachmentData = [NSMutableData data];
+    [encryptedAttachmentData appendData:iv];
+    [encryptedAttachmentData appendData:ciphertext];
+    [encryptedAttachmentData appendData:computedHMAC];
 
-    TSAttachmentStream *pointer =
-        [[TSAttachmentStream alloc] initWithIdentifier:identifier data:attachment key:outKey contentType:contentType];
-
-    return [[TSAttachmentEncryptionResult alloc] initWithPointer:pointer body:encryptedAttachment];
+    return encryptedAttachmentData;
 }
 
 @end

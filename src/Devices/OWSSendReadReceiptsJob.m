@@ -2,18 +2,18 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSSendReadReceiptsJob.h"
+#import "OWSMessageSender.h"
 #import "OWSReadReceipt.h"
 #import "OWSReadReceiptsMessage.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
-#import "TSMessagesManager+sendMessages.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSendReadReceiptsJob ()
 
 @property (atomic) NSMutableArray<OWSReadReceipt *> *readReceiptsQueue;
-@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property BOOL isObserving;
 
 @end
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
+- (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _readReceiptsQueue = [NSMutableArray new];
-    _messagesManager = messagesManager;
+    _messageSender = messageSender;
     _isObserving = NO;
 
     return self;
@@ -81,14 +81,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceipts];
 
-    [self.messagesManager sendMessage:message
-        inThread:nil
+    [self.messageSender sendMessage:message
         success:^{
-            DDLogInfo(@"Successfully sent %ld read receipt", (unsigned long)readReceipts.count);
+            DDLogInfo(@"%@ Successfully sent %ld read receipt", self.tag, (unsigned long)readReceipts.count);
         }
-        failure:^{
-            DDLogError(@"Failed to send read receipt");
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to send read receipt with error: %@", self.tag, error);
         }];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

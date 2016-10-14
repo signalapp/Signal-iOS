@@ -11,9 +11,12 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToEncodeJson = 14,
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
-    OWSErrorCodeFailedToSendOutgoingMessage = 30
+    OWSErrorCodeFailedToSendOutgoingMessage = 30,
+    OWSErrorCodeFailedToDecryptMessage = 100
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
+extern NSError *OWSErrorMakeUnableToProcessServerResponseError();
+extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
 
 NS_ASSUME_NONNULL_END

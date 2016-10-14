@@ -13,27 +13,25 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosDataMessage;
 @class ContactsUpdater;
 @class OWSDisappearingMessagesJob;
+@class OWSMessageSender;
 @protocol ContactsManagerProtocol;
 
 @interface TSMessagesManager : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       contactsUpdater:(ContactsUpdater *)contactsUpdater NS_DESIGNATED_INITIALIZER;
+                       contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
-@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
-
-- (void)processException:(NSException *)exception
-         outgoingMessage:(TSOutgoingMessage *)message
-                inThread:(TSThread *)thread;
 
 /**
  * Processes all kinds of incoming envelopes with a data message, along with any attachments.
@@ -52,16 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (TSThread *)threadForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                     dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
-
-/**
- * Synchronize our disappearing messages settings with that of the given message. Useful so we can
- * become eventually consistent with remote senders.
- *
- * @param message
- *   Can be an expiring or non expiring message. We match the expiration timer of the message, including disabling
- *   expiring messages if the message is not an expiring message.
- */
-- (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSMessage *)message;
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;

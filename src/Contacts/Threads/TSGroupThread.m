@@ -4,7 +4,10 @@
 #import "TSGroupThread.h"
 #import "NSData+Base64.h"
 #import "SignalRecipient.h"
+#import "TSAttachmentStream.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSGroupThread
 
@@ -38,11 +41,6 @@
 + (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction
 {
     return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
-}
-
-+ (instancetype)fetchWithGroupIdData:(NSData *)groupId
-{
-    return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId]];
 }
 
 + (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId
@@ -87,4 +85,16 @@
     return self.groupModel.groupName ? self.groupModel.groupName : NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
+- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    self.groupModel.groupImage = [attachmentStream image];
+    [self save];
+
+    // Avatars are stored directly in the database, so there's no need
+    // to keep the attachment around after assigning the image.
+    [attachmentStream remove];
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

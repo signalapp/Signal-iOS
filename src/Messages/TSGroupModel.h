@@ -23,5 +23,4 @@
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 #endif
 
-
 @end

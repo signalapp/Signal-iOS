@@ -7,17 +7,18 @@
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSMessagesManager+sendMessages.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *TSInvalidPreKeyBundleKey = @"TSInvalidPreKeyBundleKey";
+NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
+
 @interface TSInvalidIdentityKeySendingErrorMessage ()
 
 @property (nonatomic, readonly) PreKeyBundle *preKeyBundle;
-@property (nonatomic, readonly) NSString *messageId;
 
 @end
 
@@ -57,37 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)acceptNewIdentityKey
 {
     [[TSStorageManager sharedManager] saveRemoteIdentity:self.newIdentityKey recipientId:self.recipientId];
-
-    __block TSOutgoingMessage *_Nullable message;
-    __block TSThread *thread;
-    __block SignalRecipient *recipient;
-
-    [[TSStorageManager sharedManager].newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSContactThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
-            message = [TSOutgoingMessage fetchObjectWithUniqueID:self.messageId transaction:transaction];
-            recipient = [SignalRecipient fetchObjectWithUniqueID:self.recipientId transaction:transaction];
-
-            [self removeWithTransaction:transaction];
-        }];
-
-
-    if (message) {
-
-        void (^logSuccess)() = ^void() {
-            DDLogInfo(@"Successfully redelivered message to recipient after accepting new key.");
-        };
-
-        void (^logFailure)() = ^void() {
-            DDLogWarn(@"Failed to redeliver message to recipient after accepting new key.");
-        };
-        // Resend to single recipient
-        [[TSMessagesManager sharedManager] resendMessage:message
-                                             toRecipient:recipient
-                                                inThread:thread
-                                                 success:logSuccess
-                                                 failure:logFailure];
-    }
 }
 
 - (NSData *)newIdentityKey

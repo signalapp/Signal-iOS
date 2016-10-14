@@ -11,9 +11,7 @@
 
 + (instancetype)sharedUpdater;
 
-- (void)synchronousLookup:(NSString *)identifier
-                  success:(void (^)(SignalRecipient *))success
-                  failure:(void (^)(NSError *error))failure;
+- (SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
 
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(NSSet<NSString *> *matchedIds))success

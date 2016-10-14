@@ -13,4 +13,16 @@ NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description)
                            userInfo:@{ NSLocalizedDescriptionKey: description }];
 }
 
+NSError *OWSErrorMakeUnableToProcessServerResponseError()
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeUnableToProcessServerResponse,
+        NSLocalizedString(@"ERROR_DESCRIPTION_SERVER_FAILURE", @"Generic server error"));
+}
+
+NSError *OWSErrorMakeFailedToSendOutgoingMessageError()
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
+        NSLocalizedString(@"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE", @"Generic notice when message failed to send."));
+}
+
 NS_ASSUME_NONNULL_END

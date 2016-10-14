@@ -22,38 +22,27 @@
     return sharedInstance;
 }
 
-- (void)synchronousLookup:(NSString *)identifier
-                  success:(void (^)(SignalRecipient *))success
-                  failure:(void (^)(NSError *error))failure {
-    __block dispatch_semaphore_t sema  = dispatch_semaphore_create(0);
-    __block SignalRecipient *recipient = nil;
-    __block NSError *error             = nil;
+- (SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
+{
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
+    __block SignalRecipient *recipient;
     [self lookupIdentifier:identifier
         success:^(NSSet<NSString *> *matchedIds) {
-          if ([matchedIds count] == 1) {
-              [[TSStorageManager sharedManager]
-                      .dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
-              }];
-          } else {
-              error = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
-          }
-          dispatch_semaphore_signal(sema);
+            if (matchedIds.count == 1) {
+                recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier];
+            } else {
+                *error = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
+            }
+            dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *blockerror) {
-          error = blockerror;
-          dispatch_semaphore_signal(sema);
+            *error = blockerror;
+            dispatch_semaphore_signal(sema);
         }];
 
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    if (error) {
-        SYNC_BLOCK_SAFE_RUN(failure, error);
-    } else {
-        SYNC_BLOCK_SAFE_RUN(success, recipient);
-    }
-
-    return;
+    return recipient;
 }
 
 

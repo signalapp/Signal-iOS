@@ -1,13 +1,5 @@
-//
-//  Cryptography.h
-//  TextSecureiOS
-//
 //  Created by Christine Corbett Moran on 3/26/13.
 //  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
-//
-
-#import <Foundation/Foundation.h>
-#import "TSAttachmentEncryptionResult.h"
 
 @interface Cryptography : NSObject
 
@@ -34,7 +26,6 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 #pragma mark encrypt and decrypt attachment data
 + (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key;
 
-+ (TSAttachmentEncryptionResult *)encryptAttachment:(NSData *)attachment
-                                        contentType:(NSString *)contentType
-                                         identifier:(NSString *)identifier;
++ (NSData *)encryptAttachmentData:(NSData *)attachmentData outKey:(NSData **)outKey;
+
 @end
