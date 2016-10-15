@@ -664,6 +664,9 @@ typedef enum : NSUInteger {
     }
 }
 
+#pragma mark - UICollectionViewDelegate
+
+// Override JSQMVC
 - (BOOL)collectionView:(JSQMessagesCollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath == nil) {
@@ -677,6 +680,16 @@ typedef enum : NSUInteger {
 
     // Super method returns false for media methods. We want menu for *all* items
     return YES;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView
+    didEndDisplayingCell:(nonnull UICollectionViewCell *)cell
+      forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+    if ([cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
+        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
+        [expirableView stopExpirationTimer];
+    }
 }
 
 #pragma mark - JSQMessages CollectionView DataSource
