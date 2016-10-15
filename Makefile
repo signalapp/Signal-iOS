@@ -1,7 +1,7 @@
 # Make sure we're failing even though we pipe to xcpretty
 SHELL=/bin/bash -o pipefail -o errexit
 
-BUILD_DESTINATION = platform=iOS Simulator,name=iPhone 6,OS=9.3
+BUILD_DESTINATION = platform=iOS Simulator,name=iPhone SE,OS=10.0
 WORKING_DIR = ./
 SCHEME = Signal
 XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
