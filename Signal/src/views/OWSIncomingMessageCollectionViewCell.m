@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    [self.expirationTimerView stopBlinking];
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
 }
 
@@ -36,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.expirationTimerViewWidthConstraint.constant = OWSExpirableMessageViewTimerWidth;
     [self.expirationTimerView startTimerWithExpiresAtSeconds:expiresAtSeconds
                                       initialDurationSeconds:initialDurationSeconds];
+}
+
+- (void)stopExpirationTimer
+{
+    [self.expirationTimerView stopTimer];
 }
 
 @end

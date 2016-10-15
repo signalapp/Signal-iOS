@@ -122,13 +122,12 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.208)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/empty-bubble-disappearing-self#1393`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :branch: mkirk/empty-bubble-disappearing-self#1393
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -167,6 +166,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: e8495fa75a157c62674121b7f0faf30ee7542ec6
+PODFILE CHECKSUM: f5e3e3b84c4c471518f4e3a32746e6a0e13808f6
 
 COCOAPODS: 1.0.1

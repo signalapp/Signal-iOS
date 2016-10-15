@@ -85,9 +85,10 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     self.fullHourglassImageView.bounds = hourglassFrame;
 }
 
-- (void)restartAnimation:(NSNotification *)notification
+- (void)handleReappearNotification:(NSNotification *)notification
 {
-    [self startTimerWithExpiresAtSeconds:self.expiresAtSeconds initialDurationSeconds:self.initialDurationSeconds];
+    DDLogVerbose(@"%@ handleReappearNotification", self.logTag);
+    [self startAnimation];
 }
 
 - (void)startTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
@@ -100,7 +101,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
             initialDurationSeconds);
     }
 
-    DDLogVerbose(@"%@ Starting animation timer with expiresAtSeconds: %llu initialDurationSeconds: %d",
+    DDLogVerbose(@"%@ Starting timer with expiresAtSeconds: %llu initialDurationSeconds: %d",
         self.logTag,
         expiresAtSeconds,
         initialDurationSeconds);
@@ -108,9 +109,18 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     self.expiresAtSeconds = expiresAtSeconds;
     self.initialDurationSeconds = initialDurationSeconds;
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(restartAnimation:)
+                                             selector:@selector(handleReappearNotification:)
                                                  name:OWSMessagesViewControllerDidAppearNotification
                                                object:nil];
+    [self startAnimation];
+}
+
+- (void)startAnimation
+{
+    DDLogVerbose(@"%@ Starting animation with expiresAtSeconds: %llu initialDurationSeconds: %d",
+        self.logTag,
+        self.expiresAtSeconds,
+        self.initialDurationSeconds);
 
     double secondsLeft = (double)self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
 
@@ -154,12 +164,24 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     [maskLayer addAnimation:revealAnimation forKey:@"revealAnimation"];
     maskLayer.position = finalPosition; // don't snap back
 
+    __weak typeof(self) wself = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                        (long long)((secondsLeft - OWSExpirationTimerViewBlinkingSeconds) * NSEC_PER_SEC)),
         dispatch_get_main_queue(),
         ^{
-            [self startBlinking];
+            [wself startBlinking];
         });
+}
+
+- (void)stopTimer
+{
+    DDLogVerbose(@"%@ Stopping Timer.", self.logTag);
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:OWSMessagesViewControllerDidAppearNotification
+                                                  object:nil];
+
+    [self.layer removeAnimationForKey:@"alphaBlink"];
+    self.layer.opacity = 1;
 }
 
 - (BOOL)itIsTimeToBlink
@@ -183,12 +205,6 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     blinkAnimation.autoreverses = YES;
     blinkAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     [self.layer addAnimation:blinkAnimation forKey:@"alphaBlink"];
-}
-
-- (void)stopBlinking
-{
-    [self.layer removeAnimationForKey:@"alphaBlink"];
-    self.layer.opacity = 1;
 }
 
 #pragma mark - Logging
