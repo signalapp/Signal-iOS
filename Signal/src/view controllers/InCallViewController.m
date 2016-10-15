@@ -110,9 +110,9 @@
 }
 
 - (void)localizeButtons {
-    [_endButton setTitle:END_CALL_BUTTON_TITLE forState:UIControlStateNormal];
-    [_answerButton setTitle:ANSWER_CALL_BUTTON_TITLE forState:UIControlStateNormal];
-    [_rejectButton setTitle:REJECT_CALL_BUTTON_TITLE forState:UIControlStateNormal];
+    [_endButton setTitle:NSLocalizedString(@"END_CALL_BUTTON_TITLE", @"") forState:UIControlStateNormal];
+    [_answerButton setTitle:NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"") forState:UIControlStateNormal];
+    [_rejectButton setTitle:NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"") forState:UIControlStateNormal];
 }
 
 - (void)setPotentiallyKnownContact:(Contact *)potentiallyKnownContact {

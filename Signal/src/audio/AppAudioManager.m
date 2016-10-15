@@ -154,12 +154,12 @@ AppAudioManager *sharedAppAudioManager;
 - (void)requestRequiredPermissionsIfNeededWithCompletion:(PermissionBlock)permissionBlock incoming:(BOOL)isIncoming {
     [AVAudioSession.sharedInstance requestRecordPermission:^(BOOL granted) {
       if (!granted) {
-          UIAlertView *alertView =
-              [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                         message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"")
-                                        delegate:nil
-                               cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                               otherButtonTitles:NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", nil), nil];
+          UIAlertView *alertView = [[UIAlertView alloc]
+                  initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
+                        message:NSLocalizedString(@"AUDIO_PERMISSION_MESSAGE", @"")
+                       delegate:nil
+              cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+              otherButtonTitles:NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity"), nil];
 
           [alertView setDelegate:self];
 
