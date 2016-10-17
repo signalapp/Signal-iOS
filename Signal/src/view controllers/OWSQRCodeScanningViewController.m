@@ -105,6 +105,7 @@
 
 - (void)stopCapture
 {
+    self.captureEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.capture stop];
     });
@@ -137,6 +138,8 @@
 
 - (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result
 {
+    if (!self.captureEnabled)
+        return;
     [self stopCapture];
 
     // TODO bounding rectangle
