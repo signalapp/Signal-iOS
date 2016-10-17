@@ -2,6 +2,7 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSYapDatabaseObject.h"
+#import "ContactsManagerProtocol.h"
 
 @interface TSGroupModel : TSYapDatabaseObject
 
@@ -19,7 +20,7 @@
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
-- (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model;
+- (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 #endif
 
 

@@ -583,14 +583,16 @@ dispatch_queue_t sendingQueue() {
 
           [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                            inThread:thread
-                                        messageType:TSInfoMessageTypeGroupQuit] saveWithTransaction:transaction];
+                                        messageType:TSInfoMessageTypeGroupQuit
+                                      customMessage:message.customMessage] saveWithTransaction:transaction];
         }];
     } else {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 
           [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                            inThread:thread
-                                        messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
+                                        messageType:TSInfoMessageTypeGroupUpdate
+                                      customMessage:message.customMessage] saveWithTransaction:transaction];
         }];
     }
 }
