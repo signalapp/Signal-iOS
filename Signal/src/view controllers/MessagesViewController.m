@@ -119,6 +119,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) TSMessagesManager *messagesManager;
 
 @property NSCache *messageAdapterCache;
 
@@ -141,6 +142,7 @@ typedef enum : NSUInteger {
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
+    _messagesManager = [TSMessagesManager sharedManager];
 
     return self;
 }
@@ -155,6 +157,7 @@ typedef enum : NSUInteger {
     _contactsManager = [[Environment getCurrent] contactsManager];
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
+    _messagesManager = [TSMessagesManager sharedManager];
 
     return self;
 }
@@ -399,12 +402,12 @@ typedef enum : NSUInteger {
 
 - (void)updateBackButtonAsync {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSUInteger count = [[TSMessagesManager sharedManager] unreadMessagesCountExcept:self.thread];
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (self) {
-            [self setUnreadCount:count];
-        }
-      });
+        NSUInteger count = [self.messagesManager unreadMessagesCountExcept:self.thread];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self) {
+                [self setUnreadCount:count];
+            }
+        });
     });
 }
 
@@ -652,7 +655,7 @@ typedef enum : NSUInteger {
                                                        messageBody:text];
         }
 
-        [[TSMessagesManager sharedManager] sendMessage:message
+        [self.messagesManager sendMessage:message
             inThread:self.thread
             success:^{
                 DDLogInfo(@"%@ Successfully sent message.", self.tag);
@@ -1310,7 +1313,7 @@ typedef enum : NSUInteger {
                 // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
                 // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (!pointer.isDownloading) {
-                    [[TSMessagesManager sharedManager] retrieveAttachment:pointer messageId:message.uniqueId];
+                    [self.messagesManager retrieveAttachment:pointer messageId:message.uniqueId];
                 }
             }
         }
@@ -1418,10 +1421,7 @@ typedef enum : NSUInteger {
                                   [message removeWithTransaction:transaction];
                                 }];
                         } else {
-                            [[TSMessagesManager sharedManager] sendMessage:message
-                                                                  inThread:self.thread
-                                                                   success:nil
-                                                                   failure:nil];
+                            [self.messagesManager sendMessage:message inThread:self.thread success:nil failure:nil];
                             [self finishSendingMessage];
                         }
                       }];
@@ -1654,12 +1654,12 @@ typedef enum : NSUInteger {
                                               (unsigned long)attachmentData.length,
                                               attachmentType);
 
-                               [[TSMessagesManager sharedManager] sendAttachment:attachmentData
-                                                                     contentType:attachmentType
-                                                                       inMessage:message
-                                                                          thread:self.thread
-                                                                         success:nil
-                                                                         failure:nil];
+                                 [self.messagesManager sendAttachment:attachmentData
+                                                          contentType:attachmentType
+                                                            inMessage:message
+                                                               thread:self.thread
+                                                              success:nil
+                                                              failure:nil];
                              }];
 }
 
@@ -2042,14 +2042,14 @@ typedef enum : NSUInteger {
     }];
 
     if (newGroupModel.groupImage != nil) {
-        [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
-                                              contentType:OWSMimeTypeImagePng
-                                                inMessage:message
-                                                   thread:groupThread
-                                                  success:nil
-                                                  failure:nil];
+        [self.messagesManager sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
+                                 contentType:OWSMimeTypeImagePng
+                                   inMessage:message
+                                      thread:groupThread
+                                     success:nil
+                                     failure:nil];
     } else {
-        [[TSMessagesManager sharedManager] sendMessage:message inThread:groupThread success:nil failure:nil];
+        [self.messagesManager sendMessage:message inThread:groupThread success:nil failure:nil];
     }
 
     self.thread = groupThread;
