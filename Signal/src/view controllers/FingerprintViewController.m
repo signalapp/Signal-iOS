@@ -17,7 +17,7 @@
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <SignalServiceKit/TSThread.h>
-
+#import "UIViewController+CameraPermissions.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController ()
@@ -171,20 +171,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
-    DDLogInfo(@"%@ Showing Scanner", self.tag);
-    self.qrScanningView.hidden = NO;
-    self.scanningInstructions.hidden = NO;
-    [UIView animateWithDuration:0.4
-                          delay:0.0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         self.scanningContainer.frame = self.qrContainer.frame;
-                         self.qrContainer.frame = self.instructionsContainer.frame;
-                         self.instructionsContainer.alpha = 0.0f;
-                     }
-                     completion:nil];
-
-    [self.qrScanningController startCapture];
+    [self askForCameraPermissions:^{
+        DDLogInfo(@"%@ Showing Scanner", self.tag);
+        self.qrScanningView.hidden = NO;
+        self.scanningInstructions.hidden = NO;
+        [UIView animateWithDuration:0.4
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.scanningContainer.frame = self.qrContainer.frame;
+                             self.qrContainer.frame = self.instructionsContainer.frame;
+                             self.instructionsContainer.alpha = 0.0f;
+                         }
+                         completion:nil];
+        
+        [self.qrScanningController startCapture];
+    }];
 }
 
 - (void)resetSession

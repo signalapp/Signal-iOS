@@ -1456,9 +1456,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="tWr-1v-Sq9" kind="push" id="23M-9X-9xV"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -1467,10 +1464,13 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Linked Devices" id="HAh-b7-E4Q"/>
+                    <connections>
+                        <segue destination="tWr-1v-Sq9" kind="push" identifier="LinkDeviceSegue" id="zMV-AS-COl"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tUY-HM-TQP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2400" y="-3228"/>
+            <point key="canvasLocation" x="-2404" y="-3229"/>
         </scene>
         <!--_7.0 - Settings-->
         <scene sceneID="BD7-1h-slc">
@@ -2088,7 +2088,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="xo7-5J-BJb"/>
-        <segue reference="wgA-Oo-kKq"/>
+        <segue reference="tfr-ZV-qWs"/>
         <segue reference="E8S-Yc-X7E"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -10,6 +10,7 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>
+#import "UIViewController+CameraPermissions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -248,6 +249,15 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     }
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice)
+    {
+        [self askForCameraPermissions:^{
+            [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
+        }];
+    }
+}
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {

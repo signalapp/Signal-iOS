@@ -61,6 +61,7 @@
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseView.h>
+#import "UIViewController+CameraPermissions.h"
 
 @import Photos;
 
@@ -1509,19 +1510,16 @@ typedef enum : NSUInteger {
  */
 
 - (void)takePictureOrVideo {
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        DDLogError(@"Camera ImagePicker source not available");
-        return;
-    }
+    [self askForCameraPermissions:^{
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+        picker.allowsEditing = NO;
+        picker.delegate = self;
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-    picker.allowsEditing = NO;
-    picker.delegate = self;
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    }];
 }
-
 - (void)chooseFromLibrary {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         DDLogError(@"PhotoLibrary ImagePicker source not available");
