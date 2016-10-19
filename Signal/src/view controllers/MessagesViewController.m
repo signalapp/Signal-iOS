@@ -25,6 +25,7 @@
 #import "OWSExpirableMessageView.h"
 #import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSInfoMessage.h"
+#import "OWSMessageSender.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
@@ -60,6 +61,7 @@
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
 @import Photos;
@@ -118,8 +120,11 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @property NSCache *messageAdapterCache;
 
@@ -139,10 +144,16 @@ typedef enum : NSUInteger {
         return self;
     }
 
-    _contactsManager = [[Environment getCurrent] contactsManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
+    _networkManager = [TSNetworkManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:_contactsUpdater];
 
     return self;
 }
@@ -154,10 +165,16 @@ typedef enum : NSUInteger {
         return self;
     }
 
-    _contactsManager = [[Environment getCurrent] contactsManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
+    _networkManager = [TSNetworkManager sharedManager];
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
+                                                       storageManager:_storageManager
+                                                      contactsManager:_contactsManager
+                                                      contactsUpdater:_contactsUpdater];
 
     return self;
 }
@@ -1421,7 +1438,13 @@ typedef enum : NSUInteger {
                                   [message removeWithTransaction:transaction];
                                 }];
                         } else {
-                            [self.messagesManager sendMessage:message inThread:self.thread success:nil failure:nil];
+                            [self.messageSender sendMessage:message
+                                success:^{
+                                    DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
+                                }
+                                failure:^(NSError *_Nonnull error) {
+                                    DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
+                                }];
                             [self finishSendingMessage];
                         }
                       }];
@@ -1653,13 +1676,16 @@ typedef enum : NSUInteger {
                                  DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
                                               (unsigned long)attachmentData.length,
                                               attachmentType);
-
-                                 [self.messagesManager sendAttachment:attachmentData
-                                                          contentType:attachmentType
-                                                            inMessage:message
-                                                               thread:self.thread
-                                                              success:nil
-                                                              failure:nil];
+                                 [self.messageSender sendAttachmentData:attachmentData
+                                     contentType:attachmentType
+                                     inMessage:message
+                                     success:^{
+                                         DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
+                                     }
+                                     failure:^(NSError *error) {
+                                         DDLogError(
+                                             @"%@ Failed to send message attachment with error: %@", self.tag, error);
+                                     }];
                              }];
 }
 
@@ -2042,14 +2068,23 @@ typedef enum : NSUInteger {
     }];
 
     if (newGroupModel.groupImage != nil) {
-        [self.messagesManager sendAttachment:UIImagePNGRepresentation(newGroupModel.groupImage)
-                                 contentType:OWSMimeTypeImagePng
-                                   inMessage:message
-                                      thread:groupThread
-                                     success:nil
-                                     failure:nil];
+        [self.messageSender sendAttachmentData:UIImagePNGRepresentation(newGroupModel.groupImage)
+            contentType:OWSMimeTypeImagePng
+            inMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group avatar update", self.tag);
+            }
+            failure:^(NSError *error) {
+                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
+            }];
     } else {
-        [self.messagesManager sendMessage:message inThread:groupThread success:nil failure:nil];
+        [self.messageSender sendMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update", self.tag);
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
+            }];
     }
 
     self.thread = groupThread;

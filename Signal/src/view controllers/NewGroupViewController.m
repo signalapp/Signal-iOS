@@ -20,6 +20,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSMessagesManager+attachments.h>
 #import <SignalServiceKit/TSMessagesManager+sendMessages.h>
@@ -29,10 +30,41 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 @interface NewGroupViewController () {
     NSArray *contacts;
 }
+
 @property TSGroupThread *thread;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
+
 @implementation NewGroupViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:[TSStorageManager sharedManager]
+                                                      contactsManager:[Environment getCurrent].contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
+                                                       storageManager:[TSStorageManager sharedManager]
+                                                      contactsManager:[Environment getCurrent].contactsManager
+                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    return self;
+}
 
 - (void)configWithThread:(TSGroupThread *)gThread {
     _thread = gThread;
@@ -140,10 +172,9 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                        message.groupMetaMessage = TSGroupMessageNew;
                        message.customMessage = NSLocalizedString(@"GROUP_CREATED", nil);
                        if (model.groupImage != nil) {
-                           [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
+                           [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
                                contentType:OWSMimeTypeImagePng
                                inMessage:message
-                               thread:self.thread
                                success:^{
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        [self dismissViewControllerAnimated:YES
@@ -153,7 +184,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
                                    });
                                }
-                               failure:^{
+                               failure:^(NSError *error) {
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        [self
                                            dismissViewControllerAnimated:YES
@@ -162,8 +193,9 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                                        [self.thread removeWithTransaction:transaction];
                                                                    }];
 
-                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
+                                                                  SignalAlertView(
+                                                                      NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
+                                                                      error.localizedRecoverySuggestion);
                                                               }];
                                    });
                                }];
