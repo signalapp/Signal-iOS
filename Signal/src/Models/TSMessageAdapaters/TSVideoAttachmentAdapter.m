@@ -6,6 +6,7 @@
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import "JSQMediaItem+OWS.h"
 #import <FFCircularProgressView.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -200,6 +201,8 @@
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
         size.height = AUDIO_BAR_HEIGHT;
+    } else if ([self isVideo]) {
+        return [self ows_adjustBubbleSize:size forImage:self.image];
     }
     return size;
 }
