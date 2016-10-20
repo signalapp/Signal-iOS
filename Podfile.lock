@@ -33,10 +33,10 @@ PODS:
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.16)
-  - Mantle (2.0.7):
-    - Mantle/extobjc (= 2.0.7)
-  - Mantle/extobjc (2.0.7)
+  - libPhoneNumber-iOS (0.8.17)
+  - Mantle (2.1.0):
+    - Mantle/extobjc (= 2.1.0)
+  - Mantle/extobjc (2.1.0)
   - OpenSSL (1.0.208)
   - PastelogKit (1.3):
     - CocoaLumberjack (~> 2.0)
@@ -122,20 +122,21 @@ DEPENDENCIES:
   - OpenSSL (~> 1.0.208)
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/mdouglass/SignalServiceKit.git`, branch `fix-signal-ios-issue-757-take-2`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :branch: fix-signal-ios-issue-757-take-2
+    :git: https://github.com/mdouglass/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 91fcd01632a81f2aa67d2d94b97c68d519e6881a
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :commit: 80e3b2e73f2a79ffe41776e530b267825b647b60
+    :git: https://github.com/mdouglass/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
@@ -150,8 +151,8 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: acb5805f67892db37adc3440290a367923672b51
-  Mantle: bc40bb061d8c2c6fb48d5083e04d928c3b7f73d9
+  libPhoneNumber-iOS: 9f083847f8cb9b81064cff2ed2c98cbf18d9f9f2
+  Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: b187269d386b07452f56af273764ea0636dd5da8
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
@@ -166,6 +167,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: f5e3e3b84c4c471518f4e3a32746e6a0e13808f6
+PODFILE CHECKSUM: e008f9d199bf3f60405b03f83d1153fab1d9190b
 
 COCOAPODS: 1.0.1
