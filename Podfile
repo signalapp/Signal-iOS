@@ -5,7 +5,7 @@ target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
-    pod 'OpenSSL',                    '~> 1.0.208'
+    pod 'OpenSSL'
     pod 'PastelogKit',                '~> 1.3'
     pod 'FFCircularProgressView',     '~> 0.5'
     pod 'SCWaveformView',             '~> 1.0'
