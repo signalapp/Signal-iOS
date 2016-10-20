@@ -238,7 +238,7 @@
     UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:registrationError.localizedDescription
                                                                   message:registrationError.localizedRecoverySuggestion
                                                                  delegate:nil
-                                                        cancelButtonTitle:REGISTER_ERROR_ALERT_VIEW_DISMISS
+                                                        cancelButtonTitle:NSLocalizedString(@"OK", @"")
                                                         otherButtonTitles:nil, nil];
 
     [registrationErrorAV show];

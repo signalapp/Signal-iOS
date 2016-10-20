@@ -73,7 +73,7 @@ typedef enum {
     [self initializeObserver];
     [TSSocketManager sendNotification];
 
-    self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"");
+    self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
     self.networkStatusHeader.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
     self.privacyLabel.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
     self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");

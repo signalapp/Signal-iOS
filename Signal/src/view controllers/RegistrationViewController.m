@@ -108,11 +108,13 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 - (void)presentInvalidCountryCodeError {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:REGISTER_CC_ERR_ALERT_VIEW_TITLE
-                                                        message:REGISTER_CC_ERR_ALERT_VIEW_MESSAGE
-                                                       delegate:nil
-                                              cancelButtonTitle:REGISTER_CC_ERR_ALERT_VIEW_DISMISS
-                                              otherButtonTitles:nil];
+    UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
+                                   message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
+                                  delegate:nil
+                         cancelButtonTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
+                                               @"Generic short text for button to dismiss a dialog")
+                         otherButtonTitles:nil];
     [alertView show];
 }
 

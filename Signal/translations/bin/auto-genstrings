@@ -1,0 +1,33 @@
+#!/bin/bash
+TARGETS="Signal/src Pods/SignalServiceKit Pods/JSQMessagesViewController"
+TMP="$(mktemp -d)"
+STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
+
+# Make sure we are in the right place
+if [ ! -d "Signal/src" ]; then
+  echo "Please run this tool from the repository's base directory"
+  exit 1
+fi
+
+# Search directories for .m & .h files and collect string definitions with genstrings
+find $TARGETS -name "*.m" -print0 -name "*.h" -print0 | xargs -0 genstrings -o $TMP
+
+# We have to convert the old and new .strings files to UTF-8 in order to deal with them
+OLDUTF8=$(iconv -f UTF-16 -t UTF-8 $STRINGFILE)
+NEWUTF8=$(iconv -f UTF-16 -t UTF-8 $TMP/Localizable.strings)
+
+# Let's merge the old with the new .strings file:
+#	1. Select old string definition lines
+#	2. Setup field separators
+#	3. Read old string definitions as associative array
+#	4. In new file, if possible, insert old definition
+#	5. Add separator and semicolon only for string definition lines
+#	6. Convert output back to UTF-16 to final location
+echo "$OLDUTF8" | grep -Eo '^".*"' | \
+	awk 'BEGIN {FS = "[ ]*=[ ]*"; OFS = ""} \
+		NR == FNR {a[$1] = $2; next} \
+		{$2 = ($1 in a ? a[$1] : $2); \
+		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
+		if($2 ~ /"$/){$2 = $2";"}; \
+		print}' - <(echo "$NEWUTF8") | \
+	iconv -f UTF-8 -t UTF-16 > $STRINGFILE

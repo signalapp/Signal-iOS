@@ -474,14 +474,15 @@
         }
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:TIMEOUT
-                                                                message:TIMEOUT_CONTACTS_DETAIL
-                                                               delegate:nil
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                      otherButtonTitles:nil];
+                UIAlertView *alert =
+                    [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"")
+                                               message:NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
+                                              delegate:nil
+                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                     otherButtonTitles:nil];
                 [alert show];
                 [self updateAfterRefreshTry];
-          });
+            });
         }];
 
     if ([self.contacts count] == 0) {
