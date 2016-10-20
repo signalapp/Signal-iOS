@@ -26,7 +26,7 @@ retest: optional_early_start_simulator
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) \
 			-destination '${BUILD_DESTINATION}' \
-			build test | xcpretty
+			test | xcpretty
 
 clean:
 	cd $(WORKING_DIR) && \
