@@ -36,8 +36,7 @@ clean:
 optional_early_start_simulator:
 ifdef EARLY_START_SIMULATOR
 		echo "Waiting for simulator to start to help with testing timeouts" &&\
-		xcrun instruments -w '${DEVICE_UUID}' || \
-		sleep 15;
+		xcrun instruments -w '${DEVICE_UUID}' || true # xcrun can return irrelevant non-zeroes.
 else
 		echo "Not waiting for simulator."
 endif
