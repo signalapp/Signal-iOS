@@ -22,7 +22,6 @@
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSMessagesManager+attachments.h>
 #import <SignalServiceKit/TSMessagesManager+sendMessages.h>
 
 static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";

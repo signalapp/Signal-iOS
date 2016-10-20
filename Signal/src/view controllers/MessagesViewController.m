@@ -41,7 +41,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSMessagesManager+attachments.h"
 #import "TSMessagesManager+sendMessages.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
@@ -56,11 +55,14 @@
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
+
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
@@ -672,13 +674,12 @@ typedef enum : NSUInteger {
                                                        messageBody:text];
         }
 
-        [self.messagesManager sendMessage:message
-            inThread:self.thread
+        [self.messageSender sendMessage:message
             success:^{
                 DDLogInfo(@"%@ Successfully sent message.", self.tag);
             }
-            failure:^{
-                DDLogWarn(@"%@ Failed to deliver message.", self.tag);
+            failure:^(NSError *error) {
+                DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
             }];
         [self finishSendingMessage];
     }
@@ -1330,7 +1331,17 @@ typedef enum : NSUInteger {
                 // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
                 // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (!pointer.isDownloading) {
-                    [self.messagesManager retrieveAttachment:pointer messageId:message.uniqueId];
+                    OWSAttachmentsProcessor *processor =
+                        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:pointer
+                                                                    networkManager:self.networkManager];
+                    [processor fetchAttachmentsForMessage:message
+                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                            DDLogInfo(
+                                @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);
+                        }
+                        failure:^(NSError *_Nonnull error) {
+                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.tag, error);
+                        }];
                 }
             }
         }
@@ -1486,7 +1497,11 @@ typedef enum : NSUInteger {
                                       break;
                                   case 1:
                                       DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+
                                       [errorMessage acceptNewIdentityKey];
+                                      if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+                                          [self.messageSender resendMessageFromKeyError:errorMessage];
+                                      }
                                       break;
                                   default:
                                       DDLogInfo(@"%@ Remote Key Changed actions: Unhandled button pressed: %d",
