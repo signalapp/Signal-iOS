@@ -8,6 +8,7 @@
 
 #import "OWSMessageData.h"
 #import "OWSMessageEditing.h"
+#import "TSInfoMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
 
 @property (nonatomic) TSInteraction *interaction;
+@property (readonly) TSInfoMessageType infoMessageType;
 
 @end
 
