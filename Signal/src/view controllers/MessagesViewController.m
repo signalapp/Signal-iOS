@@ -2027,19 +2027,14 @@ typedef enum : NSUInteger {
     __block TSOutgoingMessage *message;
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
-
-        NSString *updateGroupInfo =
-            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
-
-        groupThread.groupModel = newGroupModel;
-        [groupThread saveWithTransaction:transaction];
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:groupThread
-                                                   messageBody:@""
-                                                 attachmentIds:[NSMutableArray new]];
-        message.groupMetaMessage = TSGroupMessageUpdate;
-        message.customMessage = updateGroupInfo;
+      groupThread            = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+      groupThread.groupModel = newGroupModel;
+      [groupThread saveWithTransaction:transaction];
+      message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                    inThread:groupThread
+                                                 messageBody:@""
+                                               attachmentIds:[NSMutableArray new]];
+      message.groupMetaMessage = TSGroupMessageUpdate;
     }];
 
     if (newGroupModel.groupImage != nil) {

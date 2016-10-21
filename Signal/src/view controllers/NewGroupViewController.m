@@ -138,7 +138,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                             messageBody:@""
                                                           attachmentIds:[NSMutableArray new]];
                        message.groupMetaMessage = TSGroupMessageNew;
-                       message.customMessage = NSLocalizedString(@"GROUP_CREATED", nil);
                        if (model.groupImage != nil) {
                            [[TSMessagesManager sharedManager] sendAttachment:UIImagePNGRepresentation(model.groupImage)
                                contentType:OWSMimeTypeImagePng
