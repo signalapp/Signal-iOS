@@ -225,7 +225,7 @@
             _maskLayer.hidden        = YES;
             _progressView.hidden     = YES;
             _videoPlayButton.hidden  = NO;
-            _attachment.isDownloaded = YES;
+            _attachment.isDownloaded = YES; // TODO isn't this redundant with attachment processor?
             [[TSMessagesManager sharedManager]
                     .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
               [_attachment saveWithTransaction:transaction];

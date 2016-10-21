@@ -22,7 +22,6 @@
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSMessagesManager+sendMessages.h>
 
 static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 
@@ -199,8 +198,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                    });
                                }];
                        } else {
-                           [[TSMessagesManager sharedManager] sendMessage:message
-                               inThread:self.thread
+                           [self.messageSender sendMessage:message
                                success:^{
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        [self dismissViewControllerAnimated:YES
@@ -209,17 +207,21 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                                 }];
                                    });
                                }
-                               failure:^{
+                               failure:^(NSError *error) {
                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                       [self
-                                           dismissViewControllerAnimated:YES
-                                                              completion:^{
-                                                                  [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction){
-                                                                      [self.thread removeWithTransaction:transaction];
-                                                                  }];
-                                                                  SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                                                                  NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil));
-                                                              }];
+                                       [self dismissViewControllerAnimated:YES
+                                                                completion:^{
+                                                                    [TSStorageManager.sharedManager.dbConnection
+                                                                        readWriteWithBlock:^(
+                                                                            YapDatabaseReadWriteTransaction
+                                                                                *_Nonnull transaction) {
+                                                                            [self.thread
+                                                                                removeWithTransaction:transaction];
+                                                                        }];
+                                                                    SignalAlertView(NSLocalizedString(
+                                                                                        @"GROUP_CREATING_FAILED", nil),
+                                                                        error.localizedRecoverySuggestion);
+                                                                }];
                                    });
 
                                }];

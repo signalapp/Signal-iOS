@@ -94,7 +94,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 - (void)testCanPerformEditingActionWithVideoMessage
 {
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video-message" encryptionKey:nil contentType:@"video/mp4"];
+    TSAttachmentStream *videoAttachment =
+        [[TSAttachmentStream alloc] initWithData:[NSData new] contentType:@"video/mp4"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -107,7 +108,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 
 - (void)testCanPerformEditingActionWithAudioMessage
 {
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" encryptionKey:nil contentType:@"audio/mp3"];
+    TSAttachmentStream *audioAttachment =
+        [[TSAttachmentStream alloc] initWithData:[NSData new] contentType:@"audio/mp3"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -153,24 +155,32 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 {
     XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
 
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video-message" encryptionKey:nil contentType:@"video/mp4"];
+    TSAttachmentStream *videoAttachment =
+        [[TSAttachmentStream alloc] initWithData:[NSData new] contentType:@"video/mp4"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
+
+    // Sanity Check
+    XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:videoAttachment.filePath]);
 
     [self.messageAdapter performEditingAction:@selector(delete:)];
     XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
-    // TODO assert files are deleted
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:videoAttachment.filePath]);
 }
 
 - (void)testPerformDeleteEditingActionWithAudioMessage
 {
     XCTAssertNotNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" encryptionKey:nil contentType:@"audio/mp3"];
+    TSAttachmentStream *audioAttachment =
+        [[TSAttachmentStream alloc] initWithData:[NSData new] contentType:@"audio/mp3"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
+
+    // Sanity Check
+    XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:audioAttachment.filePath]);
 
     [self.messageAdapter performEditingAction:@selector(delete:)];
     XCTAssertNil([TSInteraction fetchObjectWithUniqueID:kTestingInteractionId]);
-    // TODO assert files are deleted
+    XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:audioAttachment.filePath]);
 }
 
 // Test Copy
@@ -201,7 +211,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
 {
     // reset the paste board for clean slate test
     UIPasteboard.generalPasteboard.items = @[];
-    TSAttachmentStream *videoAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-video" data:self.fakeVideoData key:nil contentType:@"video/mp4"];
+    TSAttachmentStream *videoAttachment =
+        [[TSAttachmentStream alloc] initWithData:self.fakeVideoData contentType:@"video/mp4"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:YES];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -215,7 +226,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/mp3"];
+    TSAttachmentStream *audioAttachment =
+        [[TSAttachmentStream alloc] initWithData:self.fakeAudioData contentType:@"audio/mp3"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -227,7 +239,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4Audio]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/x-m4a"];
+    TSAttachmentStream *audioAttachment =
+        [[TSAttachmentStream alloc] initWithData:self.fakeAudioData contentType:@"audio/x-m4a"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -239,7 +252,8 @@ static NSString * const kTestingInteractionId = @"some-fake-testing-id";
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeAudio]);
 
-    TSAttachmentStream *audioAttachment = [[TSAttachmentStream alloc] initWithIdentifier:@"fake-audio-message" data:self.fakeAudioData key:nil contentType:@"audio/wav"];
+    TSAttachmentStream *audioAttachment =
+        [[TSAttachmentStream alloc] initWithData:self.fakeAudioData contentType:@"audio/wav"];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];

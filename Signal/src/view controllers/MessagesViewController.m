@@ -41,7 +41,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSMessagesManager+sendMessages.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -62,6 +61,7 @@
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
+#import <SignalServiceKit/TSMessagesManager.h>
 
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
@@ -1500,7 +1500,17 @@ typedef enum : NSUInteger {
 
                                       [errorMessage acceptNewIdentityKey];
                                       if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
-                                          [self.messageSender resendMessageFromKeyError:errorMessage];
+                                          [self.messageSender
+                                              resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)
+                                                                            errorMessage
+                                              success:^{
+                                                  DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
+                                              }
+                                              failure:^(NSError *_Nonnull error) {
+                                                  DDLogError(@"%@ Failed to resend key-error message with error:%@",
+                                                      self.tag,
+                                                      error);
+                                              }];
                                       }
                                       break;
                                   default:

@@ -6,17 +6,18 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "PushManager.h"
 #import "AppDelegate.h"
-#import "OWSContactsManager.h"
 #import "InCallViewController.h"
 #import "NSData+ows_StripToken.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationTracker.h"
+#import "OWSContactsManager.h"
 #import "PreferencesUtil.h"
-#import "PushManager.h"
 #import "RPServerRequestsManager.h"
-#import "TSMessagesManager+sendMessages.h"
+#import "TSOutgoingMessage.h"
 #import "TSSocketManager.h"
+#import <SignalServiceKit/OWSMessageSender.h>
 
 #define pushManagerDomain @"org.whispersystems.pushmanager"
 
@@ -29,6 +30,7 @@
 @property (nonatomic, retain) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
 
@@ -38,19 +40,38 @@
     static PushManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedManager = [self new];
+        sharedManager = [[self alloc] initDefault];
     });
     return sharedManager;
 }
 
-- (instancetype)init {
+- (instancetype)initDefault
+{
+    return [self initWithContactsManager:[Environment getCurrent].contactsManager
+                     notificationTracker:[NotificationTracker notificationTracker]
+                          networkManager:[Environment getCurrent].networkManager
+                          storageManager:[TSStorageManager sharedManager]
+                         contactsUpdater:[Environment getCurrent].contactsUpdater];
+}
+
+- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+                    notificationTracker:(NotificationTracker *)notificationTracker
+                         networkManager:(TSNetworkManager *)networkManager
+                         storageManager:(TSStorageManager *)storageManager
+                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+{
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _notificationTracker = [NotificationTracker notificationTracker];
+    _contactsManager = contactsManager;
+    _notificationTracker = notificationTracker;
+    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
+                                                       storageManager:storageManager
+                                                      contactsManager:contactsManager
+                                                      contactsUpdater:contactsUpdater];
+
     _missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
                                                               message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
                                                              delegate:nil
@@ -185,19 +206,21 @@
                 [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                     inThread:thread
                                                  messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]];
-            [[TSMessagesManager sharedManager] sendMessage:message
-                inThread:thread
+            [self.messageSender sendMessage:message
                 success:^{
-                  [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
-                  [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
+                    [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
+                    [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
                 }
-                failure:^{
-                  UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
-                  failedSendNotif.alertBody =
-                      [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
-                  failedSendNotif.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
-                  [[PushManager sharedManager] presentNotification:failedSendNotif];
-                  completionHandler();
+                failure:^(NSError *error) {
+                    // TODO Surface the specific error in the notification?
+                    DDLogError(@"Message send failed with error: %@", error);
+
+                    UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
+                    failedSendNotif.alertBody =
+                        [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
+                    failedSendNotif.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
+                    [[PushManager sharedManager] presentNotification:failedSendNotif];
+                    completionHandler();
                 }];
         }
     } else if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {

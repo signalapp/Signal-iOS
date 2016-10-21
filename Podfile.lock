@@ -33,10 +33,10 @@ PODS:
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.16)
-  - Mantle (2.0.7):
-    - Mantle/extobjc (= 2.0.7)
-  - Mantle/extobjc (2.0.7)
+  - libPhoneNumber-iOS (0.8.17)
+  - Mantle (2.1.0):
+    - Mantle/extobjc (= 2.1.0)
+  - Mantle/extobjc (2.1.0)
   - OpenSSL (1.0.210)
   - PastelogKit (1.3):
     - CocoaLumberjack (~> 2.0)
@@ -133,9 +133,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
-  SignalServiceKit:
-    :commit: d4c55d69404c99927da716c443997415ad7bc6ba
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
@@ -150,8 +147,8 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: acb5805f67892db37adc3440290a367923672b51
-  Mantle: bc40bb061d8c2c6fb48d5083e04d928c3b7f73d9
+  libPhoneNumber-iOS: 9f083847f8cb9b81064cff2ed2c98cbf18d9f9f2
+  Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
