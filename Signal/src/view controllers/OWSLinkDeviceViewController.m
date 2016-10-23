@@ -62,16 +62,18 @@ NS_ASSUME_NONNULL_BEGIN
 // pragma mark - OWSQRScannerDelegate
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
-    NSString *title
-        = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
-    NSString *linkingDescription
-        = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
-
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                             message:linkingDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction *cancelAction =
+    OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
+    if (!parser.isValid) {
+        DDLogError(@"Unable to parse provisioning params from QRCode: %@", string);
+        
+        NSString* title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
+        NSString* body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                                 message:body
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *cancelAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
                                  style:UIAlertActionStyleCancel
                                handler:^(UIAlertAction *action) {
@@ -79,28 +81,51 @@ NS_ASSUME_NONNULL_BEGIN
                                        [self.navigationController popViewControllerAnimated:YES];
                                    });
                                }];
-    [alertController addAction:cancelAction];
-
-    UIAlertAction *proceedAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+        [alertController addAction:cancelAction];
+        
+        UIAlertAction *proceedAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
-                                   [self provisionWithString:string];
+                                   [self.qrScanningController startCapture];
                                }];
-    [alertController addAction:proceedAction];
+        [alertController addAction:proceedAction];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+        [self presentViewController:alertController animated:YES completion:nil];
+    } else {
+        NSString *title
+            = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
+        NSString *linkingDescription
+            = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
+
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                                 message:linkingDescription
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *cancelAction =
+            [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self.navigationController popViewControllerAnimated:YES];
+                                       });
+                                   }];
+        [alertController addAction:cancelAction];
+
+        UIAlertAction *proceedAction =
+            [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *action) {
+                                       [self provisionWithParser:parser];
+                                   }];
+        [alertController addAction:proceedAction];
+
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
-- (void)provisionWithString:(NSString *)string
+- (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
 {
-    OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
-
-    if (!parser.isValid) {
-        DDLogError(@"Unable to parse provisioning params from QRCode: %@", string);
-        return;
-    }
-
     NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
     NSData *myPrivateKey = [[TSStorageManager sharedManager] identityKeyPair].ows_privateKey;
     NSString *accountIdentifier = [TSStorageManager localNumber];
@@ -123,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self presentViewController:[self retryAlertControllerWithError:error
                                                                      retryBlock:^{
-                                                                         [self provisionWithString:string];
+                                                                         [self provisionWithParser:parser];
                                                                      }]
                                    animated:YES
                                  completion:nil];

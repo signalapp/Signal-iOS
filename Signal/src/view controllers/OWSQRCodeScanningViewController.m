@@ -8,7 +8,7 @@
 @interface OWSQRCodeScanningViewController ()
 
 @property (nonatomic) BOOL captureEnabled;
-@property (nonatomic, strong) ZXCapture *capture;
+@property (atomic, strong) ZXCapture *capture;
 @property UIView *maskingView;
 @property CALayer *maskingLayer;
 
@@ -97,14 +97,17 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
+                [self.capture start];
             });
         });
+    } else {
+        [self.capture start];
     }
-    [self.capture start];
 }
 
 - (void)stopCapture
 {
+    self.captureEnabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.capture stop];
     });
@@ -137,6 +140,8 @@
 
 - (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result
 {
+    if (!self.captureEnabled)
+        return;
     [self stopCapture];
 
     // TODO bounding rectangle
