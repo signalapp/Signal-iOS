@@ -21,10 +21,8 @@
 #import "OWSConversationSettingsTableViewController.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
-#import "OWSErrorMessage.h"
 #import "OWSExpirableMessageView.h"
 #import "OWSIncomingMessageCollectionViewCell.h"
-#import "OWSInfoMessage.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
@@ -740,12 +738,10 @@ typedef enum : NSUInteger {
             cell = [self loadCallCellForCall:call atIndexPath:indexPath];
         } break;
         case TSInfoMessageAdapter: {
-            OWSInfoMessage *infoMessage = (OWSInfoMessage *)message;
-            cell = [self loadInfoMessageCellForMessage:infoMessage atIndexPath:indexPath];
+            cell = [self loadInfoMessageCellForMessage:(TSMessageAdapter *)message atIndexPath:indexPath];
         } break;
         case TSErrorMessageAdapter: {
-            OWSErrorMessage *errorMessage = (OWSErrorMessage *)message;
-            cell = [self loadErrorMessageCellForMessage:errorMessage atIndexPath:indexPath];
+            cell = [self loadErrorMessageCellForMessage:(TSMessageAdapter *)message atIndexPath:indexPath];
         } break;
         case TSIncomingMessageAdapter: {
             cell = [self loadIncomingMessageCellForMessage:message atIndexPath:indexPath];
@@ -878,7 +874,7 @@ typedef enum : NSUInteger {
     return messageCell;
 }
 
-- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(OWSInfoMessage *)infoMessage
+- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(TSMessageAdapter *)infoMessage
                                                              atIndexPath:(NSIndexPath *)indexPath
 {
     OWSDisplayedMessageCollectionViewCell *infoCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
@@ -908,7 +904,7 @@ typedef enum : NSUInteger {
     return infoCell;
 }
 
-- (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(OWSErrorMessage *)errorMessage
+- (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(TSMessageAdapter *)errorMessage
                                                               atIndexPath:(NSIndexPath *)indexPath
 {
     OWSDisplayedMessageCollectionViewCell *errorCell = [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
