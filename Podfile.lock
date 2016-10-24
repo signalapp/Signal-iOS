@@ -122,20 +122,20 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/outgoing-media-status#1231`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/fix-group-send-keychange-error`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :branch: mkirk/outgoing-media-status#1231
+    :branch: mkirk/fix-group-send-keychange-error
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 4ba1e86ec12c4e28de264fea59bd57af0aa3edea
+    :commit: dd5e7f99528c5db9145322243c7d7789ed986ba7
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -167,6 +167,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 7dfde19734213e4ff876efa2ea10d536da2e0b47
+PODFILE CHECKSUM: 00a353dbe3312f9b4d29e36ce07215e1e8f8328b
 
 COCOAPODS: 1.0.1
