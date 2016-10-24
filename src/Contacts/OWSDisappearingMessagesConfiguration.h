@@ -20,7 +20,10 @@ extern const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDurat
 @property (nonatomic, readonly) BOOL dictionaryValueDidChange;
 @property (readonly, getter=isNewRecord) BOOL newRecord;
 
++ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId;
+
 + (NSArray<NSNumber *> *)validDurationsSeconds;
+
 + (NSString *)stringForDurationSeconds:(uint32_t)durationSeconds;
 
 @end

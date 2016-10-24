@@ -2,6 +2,7 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "Cryptography.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
@@ -173,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSOutgoingMessage *expiringMessage;
+@property (nonatomic) TSOutgoingMessage *unexpiringMessage;
 @property (nonatomic) OWSMessageSenderFakeNetworkManager *networkManager;
 @property (nonatomic) OWSMessageSender *successfulMessageSender;
 @property (nonatomic) OWSMessageSender *unsuccessfulMessageSender;
@@ -190,6 +192,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.thread = [[TSContactThread alloc] initWithUniqueId:@"fake-thread-id"];
     [self.thread save];
+
+    self.unexpiringMessage = [[TSOutgoingMessage alloc] initWithTimestamp:1
+                                                                 inThread:self.thread
+                                                              messageBody:@"outgoing message"
+                                                            attachmentIds:[NSMutableArray new]
+                                                         expiresInSeconds:0];
+    [self.unexpiringMessage save];
 
     self.expiringMessage = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                inThread:self.thread
@@ -217,8 +226,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       contactsUpdater:contactsUpdater];
 }
 
-- (void)testExpiringMessageTimerStartsOnSuccess
+- (void)testExpiringMessageTimerStartsOnSuccessWhenDisappearingMessagesEnabled
 {
+    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:YES durationSeconds:10]
+        save];
+
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
     // Sanity Check
@@ -231,6 +243,32 @@ NS_ASSUME_NONNULL_BEGIN
                 [messageStartedExpiration fulfill];
             } else {
                 XCTFail(@"Message expiration was supposed to start.");
+            }
+        }
+        failure:^(NSError *error) {
+            XCTFail(@"Message failed to send");
+        }];
+
+    [self waitForExpectationsWithTimeout:5
+                                 handler:^(NSError *error) {
+                                     NSLog(@"Expiration timer not set in time.");
+                                 }];
+}
+
+- (void)testExpiringMessageTimerDoesNotStartsWhenDisabled
+{
+    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:NO durationSeconds:10]
+        save];
+
+    OWSMessageSender *messageSender = self.successfulMessageSender;
+
+    XCTestExpectation *messageDidNotStartExpiration = [self expectationWithDescription:@"messageDidNotStartExpiration"];
+    [messageSender sendMessage:self.unexpiringMessage
+        success:^() {
+            if (self.unexpiringMessage.isExpiringMessage || self.unexpiringMessage.expiresAt > 0) {
+                XCTFail(@"Message expiration was not supposed to start.");
+            } else {
+                [messageDidNotStartExpiration fulfill];
             }
         }
         failure:^(NSError *error) {

@@ -49,6 +49,16 @@ const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = 6
     return self;
 }
 
++ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId
+{
+    OWSDisappearingMessagesConfiguration *savedConfiguration = [self fetchObjectWithUniqueID:threadId];
+    if (savedConfiguration) {
+        return savedConfiguration;
+    } else {
+        return [[self alloc] initDefaultWithThreadId:threadId];
+    }
+}
+
 + (NSString *)stringForDurationSeconds:(uint32_t)durationSeconds
 {
     NSString *amountFormat;
