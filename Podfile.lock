@@ -134,7 +134,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 31bd1d07a39a4fa0260620884e3aa9a0a59e5fde
+    :commit: 3e10a49258dd825462af85e3efbc18676aa3e835
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
