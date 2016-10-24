@@ -348,16 +348,28 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
     }];
 
     [completionFuture catchDo:^(id failure) {
-        if ([failure isKindOfClass:[NSError class]]) {
-            return failureHandler(failure);
-        } else if ([failure isKindOfClass:[NSArray class]]) {
+        // failure from toc_thenAll yeilds an array of failed Futures, rather than the future's failure.
+        if ([failure isKindOfClass:[NSArray class]]) {
             NSArray *errors = (NSArray *)failure;
-            // failure from toc_thenAll is a Future, rather than the future's failure.
-            if ([errors.lastObject isKindOfClass:[TOCFuture class]]) {
-                TOCFuture *lastFailure = (TOCFuture *)errors.lastObject;
-                id failureResult = lastFailure.forceGetFailure;
-                if ([failureResult isKindOfClass:[NSError class]]) {
-                    return failureHandler((NSError *)failureResult);
+            for (TOCFuture *failedFuture in errors) {
+                if (!failedFuture.hasFailed) {
+                    // If at least one send succeeded, don't show message as failed.
+                    // Else user will tap-to-resend to all recipients, including those that already received the
+                    // message.
+                    return successHandler();
+                }
+            }
+
+            // At this point, all recipients must have failed.
+            // But we have all this verbose type checking because TOCFuture doesn't expose type information.
+            id lastError = errors.lastObject;
+            if ([lastError isKindOfClass:[TOCFuture class]]) {
+                TOCFuture *failedFuture = (TOCFuture *)lastError;
+                if (failedFuture.hasFailed) {
+                    id failureResult = failedFuture.forceGetFailure;
+                    if ([failureResult isKindOfClass:[NSError class]]) {
+                        return failureHandler((NSError *)failureResult);
+                    }
                 }
             }
         }
@@ -426,8 +438,17 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
 
             void (^retrySend)() = ^void() {
                 if (remainingAttempts <= 0) {
-                    return failureHandler(error);
+                    NSError *presentedError = error;
+                    if (statuscode == 409) {
+                        presentedError = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
+                            NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
+                                @"action sheet header when re-sending message which failed because of untrusted "
+                                @"identity keys"));
+                    }
+
+                    return failureHandler(presentedError);
                 }
+
                 dispatch_async([OWSDispatch sendingQueue], ^{
                     [self sendMessage:message
                             recipient:recipient

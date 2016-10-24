@@ -1,6 +1,7 @@
 //  Created by Michael Kirk on 10/7/16.
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
+#import "Cryptography.h"
 #import "OWSError.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
@@ -8,11 +9,15 @@
 #import "OWSMessageSender.h"
 #import "OWSUploadingService.h"
 #import "TSContactThread.h"
+#import "TSGroupModel.h"
+#import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager.h"
+#import <AxolotlKit/AxolotlExceptions.h>
+#import <AxolotlKit/SessionBuilder.h>
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -388,6 +393,44 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 XCTFail(@"Unexpected message state");
             }
+        }];
+
+    [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testGroupSend
+{
+    OWSMessageSender *messageSender = self.successfulMessageSender;
+
+
+    NSData *groupIdData = [Cryptography generateRandomBytes:32];
+    SignalRecipient *successfulRecipient =
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil supportsVoice:YES];
+    SignalRecipient *successfulRecipient2 =
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil supportsVoice:YES];
+
+    TSGroupModel *groupModel = [[TSGroupModel alloc]
+        initWithTitle:@"group title"
+            memberIds:[@[ successfulRecipient.uniqueId, successfulRecipient2.uniqueId ] mutableCopy]
+                image:nil
+              groupId:groupIdData];
+    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
+                                                                     inThread:groupThread
+                                                                  messageBody:@"We want punks in the palace."];
+
+    XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
+    [messageSender sendMessage:message
+        success:^{
+            if (message.messageState == TSOutgoingMessageStateSent) {
+                [markedAsSent fulfill];
+            } else {
+                XCTFail(@"Unexpected message state");
+            }
+
+        }
+        failure:^(NSError *_Nonnull error) {
+            XCTFail(@"sendMessage should not fail.");
         }];
 
     [self waitForExpectationsWithTimeout:5 handler:nil];

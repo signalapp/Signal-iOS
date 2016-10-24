@@ -5,6 +5,7 @@
 #import "NSData+Base64.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -62,6 +63,15 @@ NS_ASSUME_NONNULL_BEGIN
         thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
         [thread saveWithTransaction:transaction];
     }
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
+{
+    __block TSGroupThread *thread;
+    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+    }];
     return thread;
 }
 

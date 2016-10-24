@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
