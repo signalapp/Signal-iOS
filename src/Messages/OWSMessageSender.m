@@ -270,9 +270,8 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                 ? self.storageManager.localNumber
                 : contactThread.contactIdentifier;
 
-            __block SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId];
+            SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId];
             if (!recipient) {
-
                 NSError *error;
                 // possibly returns nil.
                 recipient = [self.contactsUpdater synchronousLookup:contactThread.contactIdentifier error:&error];
@@ -281,6 +280,8 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                     if (error.code == NOTFOUND_ERROR) {
                         DDLogWarn(@"recipient contact not found with error: %@", error);
                         [self unregisteredRecipient:recipient message:message thread:thread];
+                        NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
+                        return failureHandler(error);
                     }
                     DDLogError(@"contact lookup failed with error: %@", error);
                     return failureHandler(error);
@@ -462,7 +463,7 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
             switch (statuscode) {
                 case 404: {
                     [self unregisteredRecipient:recipient message:message thread:thread];
-                    NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
                     return failureHandler(error);
                 }
                 case 409: {

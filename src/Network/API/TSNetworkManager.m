@@ -134,11 +134,12 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 0: {
               DDLogWarn(@"The network request failed because of a connectivity error.");
               failureBlock(task,
-                           [self errorWithHTTPCode:statusCode
-                                       description:NSLocalizedString(@"NETWORK_ERROR_DESC", nil)
-                                     failureReason:networkError.localizedFailureReason
-                                recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
-                                     fallbackError:networkError]);
+                  [self errorWithHTTPCode:statusCode
+                              description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
+                                              @"Generic error used whenver Signal can't contact the server")
+                            failureReason:networkError.localizedFailureReason
+                       recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
+                            fallbackError:networkError]);
               break;
           }
           case 400: {

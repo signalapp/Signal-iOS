@@ -19,5 +19,6 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError();
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
+extern NSError *OWSErrorMakeNoSuchSignalRecipientError();
 
 NS_ASSUME_NONNULL_END
