@@ -62,32 +62,38 @@ static double const STALLED_PROGRESS = 0.9;
 }
 
 - (void)socketDidOpen {
-    [_updateStatusTimer invalidate];
-    for (UIView *view in self.navigationBar.subviews) {
-        if ([view isKindOfClass:[UIProgressView class]]) {
-            [view removeFromSuperview];
-            _socketStatusView = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_updateStatusTimer invalidate];
+        for (UIView *view in self.navigationBar.subviews) {
+            if ([view isKindOfClass:[UIProgressView class]]) {
+                [view removeFromSuperview];
+                _socketStatusView = nil;
+            }
         }
-    }
+    });
 }
 
 - (void)socketDidClose {
-    if (_socketStatusView == nil) {
-        [self initializeSocketStatusBar];
-        _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                                                              target:self
-                                                            selector:@selector(updateSocketConnecting)
-                                                            userInfo:nil
-                                                             repeats:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_socketStatusView == nil) {
+            [self initializeSocketStatusBar];
+            _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                                                                  target:self
+                                                                selector:@selector(updateSocketConnecting)
+                                                                userInfo:nil
+                                                                 repeats:YES];
 
-    } else if (_socketStatusView.progress >= STALLED_PROGRESS) {
-        [_updateStatusTimer invalidate];
-    }
+        } else if (_socketStatusView.progress >= STALLED_PROGRESS) {
+            [_updateStatusTimer invalidate];
+        }
+    });
 }
 
 - (void)updateSocketConnecting {
-    double progress            = _socketStatusView.progress + 0.05;
-    _socketStatusView.progress = (float)MIN(progress, STALLED_PROGRESS);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        double progress = _socketStatusView.progress + 0.05;
+        _socketStatusView.progress = (float)MIN(progress, STALLED_PROGRESS);
+    });
 }
 
 - (void)socketIsConnecting {
