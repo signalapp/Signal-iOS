@@ -33,18 +33,18 @@
 	sqlite3_stmt *queueTable_removeStatement;
 	sqlite3_stmt *queueTable_removeAllStatement;
 	
+	sqlite3_stmt *tagTable_setStatement;
+	sqlite3_stmt *tagTable_fetchStatement;
+	sqlite3_stmt *tagTable_removeForBothStatement;
+	sqlite3_stmt *tagTable_removeForCloudURIStatement;
+	sqlite3_stmt *tagTable_removeAllStatement;
+	
 	sqlite3_stmt *mappingTable_insertStatement;
 	sqlite3_stmt *mappingTable_fetchStatement;
 	sqlite3_stmt *mappingTable_fetchForRowidStatement;
 	sqlite3_stmt *mappingTable_fetchForCloudURIStatement;
 	sqlite3_stmt *mappingTable_removeStatement;
 	sqlite3_stmt *mappingTable_removeAllStatement;
-	
-	sqlite3_stmt *tagTable_setStatement;
-	sqlite3_stmt *tagTable_fetchStatement;
-	sqlite3_stmt *tagTable_removeForBothStatement;
-	sqlite3_stmt *tagTable_removeForCloudURIStatement;
-	sqlite3_stmt *tagTable_removeAllStatement;
 }
 
 @synthesize cloudCore = parent;
@@ -58,15 +58,15 @@
 		
 		sharedKeySetForInternalChangeset = [NSDictionary sharedKeySetForKeys:[self internalChangesetKeys]];
 		
-		if (parent->options.enableAttachDetachSupport)
-		{
-			cleanMappingCache = [[YapManyToManyCache alloc] initWithCountLimit:64];
-		}
-		
 		if (parent->options.enableTagSupport)
 		{
 			tagCache = [[YapCache alloc] initWithCountLimit:64];
 			tagCache.allowedKeyClasses = [NSSet setWithObject:[YapCollectionKey class]];
+		}
+		
+		if (parent->options.enableAttachDetachSupport)
+		{
+			cleanMappingCache = [[YapManyToManyCache alloc] initWithCountLimit:64];
 		}
 	}
 	return self;
@@ -88,18 +88,18 @@
 	sqlite_finalize_null(&queueTable_removeStatement);
 	sqlite_finalize_null(&queueTable_removeAllStatement);
 	
+	sqlite_finalize_null(&tagTable_setStatement);
+	sqlite_finalize_null(&tagTable_fetchStatement);
+	sqlite_finalize_null(&tagTable_removeForBothStatement);
+	sqlite_finalize_null(&tagTable_removeForCloudURIStatement);
+	sqlite_finalize_null(&tagTable_removeAllStatement);
+	
 	sqlite_finalize_null(&mappingTable_insertStatement);
 	sqlite_finalize_null(&mappingTable_fetchStatement);
 	sqlite_finalize_null(&mappingTable_fetchForRowidStatement);
 	sqlite_finalize_null(&mappingTable_fetchForCloudURIStatement);
 	sqlite_finalize_null(&mappingTable_removeStatement);
 	sqlite_finalize_null(&mappingTable_removeAllStatement);
-	
-	sqlite_finalize_null(&tagTable_setStatement);
-	sqlite_finalize_null(&tagTable_fetchStatement);
-	sqlite_finalize_null(&tagTable_removeForBothStatement);
-	sqlite_finalize_null(&tagTable_removeForCloudURIStatement);
-	sqlite_finalize_null(&tagTable_removeAllStatement);
 }
 
 /**
@@ -109,8 +109,8 @@
 {
 	if (flags & YapDatabaseConnectionFlushMemoryFlags_Caches)
 	{
-		[cleanMappingCache removeAllItems];
 		[tagCache removeAllObjects];
+		[cleanMappingCache removeAllItems];
 	}
 	
 	if (flags & YapDatabaseConnectionFlushMemoryFlags_Statements)
@@ -142,11 +142,17 @@
 {
 	YDBLogAutoTrace();
 	
-	YapDatabaseCloudCoreTransaction *transaction =
-	  [[YapDatabaseCloudCoreTransaction alloc] initWithParentConnection:self
-	                                               databaseTransaction:databaseTransaction];
+	NSAssert(NO, @"Missing required method(%@) in subclass(%@)", NSStringFromSelector(_cmd), [self class]);
+	return nil;
+	
+/* Subclasses should do something like this:
+ 
+	MYCloudTransaction *transaction =
+	  [[MYCloudTransaction alloc] initWithParentConnection:self
+	                                   databaseTransaction:databaseTransaction];
 	
 	return transaction;
+*/
 }
 
 /**
@@ -156,12 +162,18 @@
 {
 	YDBLogAutoTrace();
 	
-	YapDatabaseCloudCoreTransaction *transaction =
-	  [[YapDatabaseCloudCoreTransaction alloc] initWithParentConnection:self
-	                                               databaseTransaction:databaseTransaction];
+	NSAssert(NO, @"Missing required method(%@) in subclass(%@)", NSStringFromSelector(_cmd), [self class]);
+	return nil;
 	
-	[self prepareForReadWriteTransaction];
+/* Subclasses should do something like this:
+ 
+	MYCloudTransaction *transaction =
+	  [[MYCloudTransaction alloc] initWithParentConnection:self
+	                                   databaseTransaction:databaseTransaction];
+	
+	[self prepareForReadWriteTransaction]; // <-- Do NOT forget this step !!
 	return transaction;
+*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,22 +194,19 @@
 	if (operations_modified == nil)
 		operations_modified = [[NSMutableDictionary alloc] init];
 	
-	if (operations_block == nil)
-		operations_block = [[NSMutableArray alloc] init];
-	
 	if (graphs_added == nil)
 		graphs_added = [[NSMutableDictionary alloc] init];
-	
-	if (parent->options.enableAttachDetachSupport)
-	{
-		if (dirtyMappingInfo == nil)
-			dirtyMappingInfo = [[YapManyToManyCache alloc] initWithCountLimit:0];
-	}
 	
 	if (parent->options.enableTagSupport)
 	{
 		if (dirtyTags == nil)
 			dirtyTags = [[NSMutableDictionary alloc] init];
+	}
+	
+	if (parent->options.enableAttachDetachSupport)
+	{
+		if (dirtyMappingInfo == nil)
+			dirtyMappingInfo = [[YapManyToManyCache alloc] initWithCountLimit:0];
 	}
 }
 
@@ -216,18 +225,16 @@
 	if (operations_modified.count > 0)
 		operations_modified = nil;      // variable passed to pipeline for processing
 	
-	[operations_block removeAllObjects];
-	
 	if (graphs_added.count > 0)
 		graphs_added = nil;             // variable passed to pipeline for processing
 	
 	[pendingAttachRequests removeAllItems];
 	
-	if (dirtyMappingInfo.count > 0)
-		dirtyMappingInfo = nil;      // variable passed to other connections via changeset
-	
 	if (dirtyTags.count > 0)
 		dirtyTags = nil;             // variable passed to other connections via changeset
+	
+	if (dirtyMappingInfo.count > 0)
+		dirtyMappingInfo = nil;      // variable passed to other connections via changeset
 	
 	reset = NO;
 }
@@ -242,14 +249,13 @@
 	[operations_added removeAllObjects];
 	[operations_inserted removeAllObjects];
 	[operations_modified removeAllObjects];
-	[operations_block removeAllObjects];
 	
 	[graphs_added removeAllObjects];
 	
 	[pendingAttachRequests removeAllItems];
 	
-	[dirtyMappingInfo removeAllItems];
 	[dirtyTags removeAllObjects];
+	[dirtyMappingInfo removeAllItems];
 	
 	reset = NO;
 }
@@ -533,6 +539,90 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Statements - Tag Table
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * CREATE TABLE IF NOT EXISTS "tagTableName"
+ *  ("key" TEXT NOT NULL,
+ *   "identifier" TEXT NOT NULL,
+ *   "changeTag" BLOB NOT NULL,
+ *   PRIMARY KEY ("key", "identifier")
+ *  );
+**/
+
+- (sqlite3_stmt *)tagTable_setStatement
+{
+	sqlite3_stmt **statement = &tagTable_setStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"INSERT OR REPLACE INTO \"%@\" (\"key\", \"identifier\", \"tag\") VALUES (?, ?, ?);",
+		  [parent tagTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)tagTable_fetchStatement
+{
+	sqlite3_stmt **statement = &tagTable_fetchStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"SELECT \"tag\" FROM \"%@\" WHERE \"key\" = ? AND \"identifier\" = ?;", [parent tagTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)tagTable_removeForBothStatement
+{
+	sqlite3_stmt **statement = &tagTable_removeForBothStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"key\" = ? AND \"identifier\" = ?;", [parent tagTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)tagTable_removeForCloudURIStatement
+{
+	sqlite3_stmt **statement = &tagTable_removeForCloudURIStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\" WHERE \"key\" = ?;", [parent tagTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+- (sqlite3_stmt *)tagTable_removeAllStatement
+{
+	sqlite3_stmt **statement = &tagTable_removeAllStatement;
+	if (*statement == NULL)
+	{
+		NSString *string = [NSString stringWithFormat:
+		  @"DELETE FROM \"%@\";", [parent tagTableName]];
+		
+		[self prepareStatement:statement withString:string caller:_cmd];
+	}
+	
+	return *statement;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Statements - Mapping Table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -623,90 +713,6 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"DELETE FROM \"%@\";", [parent mappingTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Statements - ChangeTag Table
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * CREATE TABLE IF NOT EXISTS "tagTableName"
- *  ("cloudURI" TEXT NOT NULL,
- *   "identifier" TEXT NOT NULL,
- *   "changeTag" BLOB NOT NULL,
- *   PRIMARY KEY ("cloudURI", "identifier")
- *  );
-**/
-
-- (sqlite3_stmt *)tagTable_setStatement
-{
-	sqlite3_stmt **statement = &tagTable_setStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"INSERT OR REPLACE INTO \"%@\" (\"cloudURI\", \"identifier\", \"tag\") VALUES (?, ?, ?);",
-		  [parent tagTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)tagTable_fetchStatement
-{
-	sqlite3_stmt **statement = &tagTable_fetchStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"SELECT \"tag\" FROM \"%@\" WHERE \"cloudURI\" = ? AND \"identifier\" = ?;", [parent tagTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)tagTable_removeForBothStatement
-{
-	sqlite3_stmt **statement = &tagTable_removeForBothStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"cloudURI\" = ? AND \"identifier\" = ?;", [parent tagTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)tagTable_removeForCloudURIStatement
-{
-	sqlite3_stmt **statement = &tagTable_removeForCloudURIStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\" WHERE \"cloudURI\" = ?;", [parent tagTableName]];
-		
-		[self prepareStatement:statement withString:string caller:_cmd];
-	}
-	
-	return *statement;
-}
-
-- (sqlite3_stmt *)tagTable_removeAllStatement
-{
-	sqlite3_stmt **statement = &tagTable_removeAllStatement;
-	if (*statement == NULL)
-	{
-		NSString *string = [NSString stringWithFormat:
-		  @"DELETE FROM \"%@\";", [parent tagTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];
 	}

@@ -5,8 +5,6 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseCloudCoreOperation.h"
-#import "YapDatabaseCloudCoreFileOperation.h"
-#import "YapDatabaseCloudCoreRecordOperation.h"
 
 
 /**

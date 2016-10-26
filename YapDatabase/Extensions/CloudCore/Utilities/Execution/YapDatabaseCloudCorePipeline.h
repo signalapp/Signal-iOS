@@ -143,7 +143,7 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
 /**
  * Returns the current status for the given operation.
 **/
-- (YDBCloudCoreOperationStatus)statusForOperationUUID:(NSUUID *)opUUID;
+- (YDBCloudCoreOperationStatus)statusForOperationWithUUID:(NSUUID *)opUUID;
 
 /**
  * Typically you are strongly discouraged from manually starting an operation.
@@ -154,14 +154,14 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
  * you'll obviously want to avoid starting the corresponding operation again.
  * In this case, you should use this method to inform the pipeline that the operation is already started.
 **/
-- (void)setStatusAsStartedForOperationUUID:(NSUUID *)opUUID;
+- (void)setStatusAsStartedForOperationWithUUID:(NSUUID *)opUUID;
 
 /**
  * The PipelineDelegate may invoke this method to reset a failed operation.
  * This gives control over the operation back to the pipeline,
  * and it will dispatch it back to the PipelineDelegate again when ready.
 **/
-- (void)setStatusAsPendingForOperationUUID:(NSUUID *)opUUID;
+- (void)setStatusAsPendingForOperationWithUUID:(NSUUID *)opUUID;
 
 /**
  * The PipelineDelegate may invoke this method to reset a failed operation,
@@ -170,15 +170,15 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
  * This is typically used when implementing retry logic such as exponential backoff.
  * It works by setting a hold on the operation to [now dateByAddingTimeInterval:delay].
 **/
-- (void)setStatusAsPendingForOperationUUID:(NSUUID *)opUUID
-                            withRetryDelay:(NSTimeInterval)delay;
+- (void)setStatusAsPendingForOperationWithUUID:(NSUUID *)opUUID
+                                    retryDelay:(NSTimeInterval)delay;
 
 #pragma mark Operation Hold
 
 /**
  * Returns the current hold for the operation, or nil if there is no hold.
 **/
-- (NSDate *)holdForOperationUUID:(NSUUID *)opUUID;
+- (NSDate *)holdDateForOperationWithUUID:(NSUUID *)opUUID;
 
 /**
  * And operation can be put on "hold" until a specified date.
@@ -189,37 +189,7 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
  * 
  * @see setStatusAsPendingForOperation:withRetryDelay:
 **/
-- (void)setHold:(NSDate *)date forOperationUUID:(NSUUID *)opUUID;
-
-#pragma mark Ephemeral Operation Info
-
-/**
- * User-defined information to associate with the operation.
- * This information lives only in memory, and only as long as the operation does.
- * Once the operation has been completed/skipped, the associated ephemeral user info is automatically deleted.
- *
- * Typical ephemeral info includes things such as:
- * - fail count, used to implement things such as exponential backoff algorithm.
- * - tracking information, such as the timestamp of when the operation was started.
- * - NSProgress associated with network operation
- *
- * This method is atomic (thread-safe).
-**/
-- (NSDictionary *)ephemeralInfoForOperationUUID:(NSUUID *)opUUID;
-
-/**
- * Allows you to fetch a particular object from the ephemeral info dictionary.
- *
- * This method is atomic (thread-safe).
-**/
-- (id)ephemeralInfoForKey:(NSString *)key operationUUID:(NSUUID *)opUUID;
-
-/**
- * Allows you to modify the ephemeral info dictionary.
- *
- * This method is atomic (thread-safe).
-**/
-- (void)setEphemeralInfo:(id)object forKey:(NSString *)key operationUUID:(NSUUID *)opUUID;
+- (void)setHoldDate:(NSDate *)date forOperationWithUUID:(NSUUID *)opUUID;
 
 
 #pragma mark Suspend & Resume

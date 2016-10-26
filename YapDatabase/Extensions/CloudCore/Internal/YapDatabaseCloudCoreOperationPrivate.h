@@ -3,8 +3,6 @@
 **/
 
 #import "YapDatabaseCloudCoreOperation.h"
-#import "YapDatabaseCloudCoreFileOperation.h"
-#import "YapDatabaseCloudCoreRecordOperation.h"
 
 #import "YapDatabaseCloudCoreOptions.h"
 #import "YapDatabaseCloudCorePipeline.h"
@@ -20,11 +18,7 @@ NS_INLINE BOOL YDB_IsEqualOrBothNil(id obj1, id obj2)
 		return (obj2 == nil);
 }
 
-@interface YapDatabaseCloudCoreOperation () {
-@protected
-	
-	NSMutableSet *changedProperties;
-}
+@interface YapDatabaseCloudCoreOperation ()
 
 #pragma mark Internal Properties
 
@@ -36,24 +30,6 @@ NS_INLINE BOOL YDB_IsEqualOrBothNil(id obj1, id obj2)
  * It gets it own separate column in the database table (obviously).
 **/
 @property (nonatomic, assign, readwrite) int64_t operationRowid;
-
-
-#pragma mark Import
-
-/**
- * An operation can be imported once, and only once.
- * This thread-safe method will only return YES the very first time it's called.
- * This helps ensure the same operation instance isn't mistakenly submitted multiple times.
- * 
- * Subclasses may optionally override this method to do something with the options parameter.
- * Subclasses must invoke [super import:], and pay attention to the return value.
-**/
-- (BOOL)import:(YapDatabaseCloudCoreOptions *)options;
-
-/**
- * Returns YES once the operation has been imported.
-**/
-@property (atomic, readonly) BOOL isImported;
 
 
 #pragma mark Transactional Changes
@@ -79,110 +55,19 @@ NS_INLINE BOOL YDB_IsEqualOrBothNil(id obj1, id obj2)
 
 - (void)clearTransactionVariables;
 
-#pragma mark Subclass API
+
+#pragma mark Subclass Properties
 
 /**
- * Subclasses MUST override this method.
- *
- * Represents the cloudURI to use if attaching the collection/key tuple.
- *
- * This property is abstract, and must be overriden by subclasses to return a value.
- * This property is optional.
- * If a non-nil value is returned, the cloudURI will be attached to the collection/key tuple.
- * If a nil value is returned, no attaching will occur.
-**/
-- (NSString *)attachCloudURI;
-
-/**
- * Subclasses MUST override this method.
+ * Subclasses may choose to calculate implicit dependencies.
  * 
- * The dependencyUUIDs must generated for each operation prior to handing it to the pipeline/graph.
- * This is typically done in [YapDatabaseCloudCoreTransaction processOperations:::].
-**/
-- (NSSet *)dependencyUUIDs;
-
-/**
- * Subclasses may optionally override this method.
- *
- * This method is used to enforce which type of dependencies are valid.
- * For example, the following classes may be allowed depending on the domain:
- *  - uuid
- *  - string
- *  - url
- *  - CKRecordID
+ * This method is designed to assist in such a process,
+ * as it allows for easier separation between:
+ * - explict dependencies (specified by the user)
+ * - implicit dependencies (calculated by the subclass)
  * 
- * The answer is rather domain dependent, and thus this override provide the opportunity to enforce policy.
+ * The default implementation simply returns the `dependencies` property.
 **/
-- (BOOL)validateDependencies:(NSArray *)dependencies;
-
-#pragma mark Immutability
-
-/**
- * Subclasses should override and add properties that shouldn't be changed after
- * the operation has been marked immutable.
-**/
-+ (NSMutableSet *)monitoredProperties;
-
-@property (nonatomic, readonly) BOOL isImmutable;
-- (void)makeImmutable;
-
-@property (nonatomic, readonly) BOOL hasChanges;
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-typedef NS_ENUM(NSInteger, YDBCloudFileOpProcessResult) {
-	
-	YDBCloudFileOpProcessResult_Continue,
-	YDBCloudFileOpProcessResult_MergedIntoLater,
-	YDBCloudFileOpProcessResult_DependentOnEarlier,
-	YDBCloudFileOpProcessResult_DependentOnLater,
-};
-
-@interface YapDatabaseCloudCoreFileOperation () {
-@protected
-	
-	BOOL implicitAttach;
-}
-
-/**
- * The 'type' & 'cloudPath' may NOT be nil.
-**/
-- (instancetype)initWithType:(NSString *)type
-                   cloudPath:(YapFilePath *)cloudPath
-             targetCloudPath:(YapFilePath *)targetCloudPath;
-
-- (void)clearDependencyUUIDs;
-- (void)addDependencyUUID:(NSUUID *)uuid;
-- (void)replaceDependencyUUID:(NSUUID *)oldUUID with:(NSUUID *)newUUID;
-
-- (YDBCloudFileOpProcessResult)processEarlierOperationFromSameTransaction:(YapDatabaseCloudCoreFileOperation *)earlierOp;
-- (void)mergeEarlierOperationFromSameTransaction:(YapDatabaseCloudCoreFileOperation *)earlierOp;
-
-- (instancetype)updateWithOperationFromLaterTransaction:(YapDatabaseCloudCoreFileOperation *)newOperation;
-
-@end
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-@interface YapDatabaseCloudCoreRecordOperation ()
-
-/**
- * Temporary variable used during extension registartion.
- * Only used to set YDBCloudCoreRestoreInfo.changedKeys property.
-**/
-@property (nonatomic, strong, readwrite) NSArray *restoreInfo_changedKeys;
-
-/**
- * If YES, then the updatedValues dictionary needs to be persisted to disk (during operation serialization).
- * If NO, then only updatedValues.allKeys needs to be persisted to disk,
- * and the values themselves can be restored via YapDatabaseCloudCoreHandler + YDBCloudCoreRestoreInfo.changedKeys.
-**/
-@property (nonatomic, assign, readwrite) BOOL needsStoreFullUpdatedValues;
+- (NSSet<NSUUID *> *)dependencyUUIDs;
 
 @end

@@ -5,10 +5,8 @@
 #import "YapDatabaseCloudCoreOperation.h"
 #import "YapDatabaseCloudCoreOperationPrivate.h"
 #import "YapDatabaseCloudCorePipeline.h"
+#import "YapDatabaseCloudCore.h"
 #import "YapDatabaseLogging.h"
-
-#import <objc/runtime.h>
-#import <libkern/OSAtomic.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
@@ -34,11 +32,7 @@ static NSString *const k_persistentUserInfo = @"persistentUserInfo";
 NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCoreOperationIsReadyToStart";
 
 
-@implementation YapDatabaseCloudCoreOperation {
-@private
-	
-	int32_t isImported;
-}
+@implementation YapDatabaseCloudCoreOperation
 
 // Private properties
 
@@ -48,9 +42,6 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 @synthesize needsModifyDatabaseRow = needsModifyDatabaseRow;
 
 @synthesize pendingStatus = pendingStatus;
-
-@synthesize isImmutable = isImmutable;
-@dynamic hasChanges;
 
 // Public properties
 
@@ -68,20 +59,8 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 	if ((self = [super init]))
 	{
 		uuid = [NSUUID UUID];
-		
-		// Turn on KVO for object.
-		// We do this so we can get notified if the user is about to make changes to one of the object's properties.
-		//
-		// Don't worry, this doesn't create a retain cycle.
-		
-		[self addObserver:self forKeyPath:@"isImmutable" options:0 context:NULL];
 	}
 	return self;
-}
-
-- (void)dealloc
-{
-	[self removeObserver:self forKeyPath:@"isImmutable" context:NULL];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,13 +95,6 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 		}
 		
 		persistentUserInfo = [decoder decodeObjectForKey:k_persistentUserInfo];
-		
-		// Turn on KVO for object.
-		// We do this so we can get notified if the user is about to make changes to one of the object's properties.
-		//
-		// Don't worry, this doesn't create a retain cycle.
-		
-		[self addObserver:self forKeyPath:@"isImmutable" options:0 context:NULL];
 	}
 	return self;
 }
@@ -151,13 +123,6 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 - (instancetype)copyWithZone:(NSZone *)zone
 {
 	YapDatabaseCloudCoreOperation *copy = [[[self class] alloc] init];
-	copy->isImported = self.isImported ? 1 : 0;
-	copy->changedProperties = [changedProperties mutableCopy];
-	
-	copy->operationRowid = operationRowid;
-	copy->needsDeleteDatabaseRow = needsDeleteDatabaseRow;
-	copy->needsModifyDatabaseRow = needsModifyDatabaseRow;
-	copy->pendingStatus = pendingStatus;
 	
 	copy->uuid = uuid;
 	copy->pipeline = pipeline;
@@ -165,43 +130,27 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 	copy->priority = priority;
 	copy->persistentUserInfo = persistentUserInfo;
 	
-	return copy;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Import
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (BOOL)import:(YapDatabaseCloudCoreOptions *)options
-{
-	const int32_t oldValue = 0;
-	const int32_t newValue = 1;
+	copy->operationRowid = operationRowid;
+	copy->needsDeleteDatabaseRow = needsDeleteDatabaseRow;
+	copy->needsModifyDatabaseRow = needsModifyDatabaseRow;
+	copy->pendingStatus = pendingStatus;
 	
-	return OSAtomicCompareAndSwap32(oldValue, newValue, &isImported);
-}
-
-- (BOOL)isImported
-{
-	int32_t value = OSAtomicAdd32(0, &isImported);
-	return (value != 0);
+	return copy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Public API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)setDependencies:(NSArray *)newDependencies
+- (void)setDependencies:(NSSet<NSUUID *> *)newDependencies
 {
-	if (![self validateDependencies:newDependencies]) return;
+	for (id obj in newDependencies)
+	{
+		NSAssert([obj isKindOfClass:[NSUUID class]], @"Bad dependecy object !");
+	}
 	
 	NSString *const propKey = NSStringFromSelector(@selector(dependencies));
 	
-	// Do NOT remove this line of code !
-	//
-	// If you're getting an exception, that means you're attempting to mutate an operation
-	// AFTER you've already passed it to YapDatabaseCloudCore. This mutation is unsupported,
-	// and the exception is here to help you address the root cause of the problem.
-	//
 	[self willChangeValueForKey:propKey];
 	{
 		dependencies = [newDependencies copy];
@@ -212,30 +161,28 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 - (void)addDependency:(id)dependency
 {
 	if (dependency == nil) return;
+		
+	NSUUID *dependencyUUID = nil;
 	
-	if ([dependency isKindOfClass:[YapDatabaseCloudCoreOperation class]])
+	if ([dependency isKindOfClass:[NSUUID class]])
 	{
-		// Auto fix common mistake
-		[self addDependency:[(YapDatabaseCloudCoreOperation *)dependency uuid]];
-		return;
+		dependencyUUID = (NSUUID *)dependency;
+	}
+	else if ([dependency isKindOfClass:[YapDatabaseCloudCoreOperation class]])
+	{
+		dependencyUUID = [(YapDatabaseCloudCoreOperation *)dependency uuid];
 	}
 	
-	if (![self validateDependencies:@[ dependency ]]) return;
+	NSAssert(dependencyUUID != nil, @"Bad dependecy object !");
 	
 	NSString *const propKey = NSStringFromSelector(@selector(dependencies));
 	
-	// Do NOT remove this line of code !
-	//
-	// If you're getting an exception, that means you're attempting to mutate an operation
-	// AFTER you've already passed it to YapDatabaseCloudCore. This mutation is unsupported,
-	// and the exception is here to help you address the root cause of the problem.
-	//
 	[self willChangeValueForKey:propKey];
 	{
 		if (dependencies == nil)
-			dependencies = [NSSet setWithObject:dependency];
+			dependencies = [NSSet setWithObject:dependencyUUID];
 		else
-			dependencies = [dependencies setByAddingObject:dependency];
+			dependencies = [dependencies setByAddingObject:dependencyUUID];
 	}
 	[self didChangeValueForKey:propKey];
 }
@@ -249,33 +196,6 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 	
 	NSString *const propKey = NSStringFromSelector(@selector(persistentUserInfo));
 	
-	// Do NOT remove this line of code !
-	//
-	// If you're getting an exception, that means you're attempting to mutate an operation in an unsupported way.
-	// The exception is here to help you address the root cause of the problem.
-	//
-	// So why the exception ?
-	//
-	// The 'persistentUserInfo' dictionary is designed to be persisted to the database.
-	// Thus you cannot simply change it whenever you want. You need to change it in such a manner
-	// that the new value can be persisted to the database (updating the old value).
-	//
-	// When you first hand the operation to YapDatabaseCloudCore, it makes the operation instance immutable.
-	// This is done to make it explicit that changes to persistent properties can no longer be
-	// performed on the original instance.  So if you want to change a persistent property at any later point in time,
-	// you need to clone the original operation, modify the clone, and then hand the clone to YapDatabaseCloudCore
-	// so that it can persist the changes you've made.
-	//
-	// For example:
-	//
-	// YapDatabaseCloudCore *clone = [operation mutableClone];
-	// [clone setPersistentUserInfoObject:obj forKey:key];
-	//
-	// [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
-	//
-	//     [[transaction ext:@"MyCloud"] modifyOperation:clone];
-	// }];
-	//
 	[self willChangeValueForKey:propKey];
 	{
 		if (persistentUserInfo == nil)
@@ -301,6 +221,21 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Protected API
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Subclasses may choose to calculate implicit dependencies.
+ *
+ * This method is designed to assist in such a process,
+ * as it allows for easier separation between:
+ * - explict dependencies (specified by the user)
+ * - implicit dependencies (calculated by the subclass)
+ *
+ * The default implementation simply returns the `dependencies` property.
+**/
+- (NSSet<NSUUID *> *)dependencyUUIDs
+{
+	return dependencies;
+}
 
 - (BOOL)pendingStatusIsSkippedOrCompleted
 {
@@ -342,52 +277,6 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 	pendingStatus = nil;
 }
 
-/**
- * Abstract property.
- * Designed to be overriden by subclasses.
-**/
-- (NSString *)attachCloudURI
-{
-	NSAssert(NO, @"Missing required override method: %@", NSStringFromSelector(_cmd));
-	return nil;
-}
-
-/**
- * Abstract property.
- * Designed to be overriden by subclasses.
-**/
-- (NSSet *)dependencyUUIDs
-{
-	NSAssert(NO, @"Missing required override method: %@", NSStringFromSelector(_cmd));
-	return nil;
-}
-
-/**
- * This method can be override in order to enforce which type of dependencies are valid.
- * For example, are the following classes ok to add to the dependencies array:
- *  - uuid
- *  - string
- *  - url
- *  - CKRecordID
- * 
- * The answer is rather domain dependent, and thus this override provide the opportunity to enforce policy.
-**/
-- (BOOL)validateDependencies:(NSArray *)inputDependencies
-{
-	// Override me to support more classes besides just NSUUID
-	
-	for (id dependency in inputDependencies)
-	{
-		if (![dependency isKindOfClass:[NSUUID class]])
-		{
-			YDBLogError(@"Invalid dependencies: Bad class: %@", [dependency class]);
-			return NO;
-		}
-	}
-	
-	return YES;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Equality
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,111 +313,21 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Immutability
+#pragma mark General
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Subclasses should override and add properties that shouldn't be changed after
- * the operation has been marked immutable.
-**/
-+ (NSMutableSet *)monitoredProperties
+- (NSString *)debugDescription
 {
-	NSMutableSet *properties = [NSMutableSet setWithCapacity:8];
-	
-	[properties addObject:NSStringFromSelector(@selector(uuid))];
-	[properties addObject:NSStringFromSelector(@selector(pipeline))];
-	[properties addObject:NSStringFromSelector(@selector(dependencies))];
-	[properties addObject:NSStringFromSelector(@selector(priority))];
-	[properties addObject:NSStringFromSelector(@selector(persistentUserInfo))];
-	
-	return properties;
-}
-
-
-+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
-{
-	if ([key isEqualToString:NSStringFromSelector(@selector(isImmutable))])
-		return YES;
-	else
-		return [super automaticallyNotifiesObserversForKey:key];
-}
-
-+ (NSSet *)keyPathsForValuesAffectingIsImmutable
-{
-	// In order for the KVO magic to work, we specify that the isImmutable property is dependent
-	// upon all other properties in the class that should become immutable.
-	
-	return [self monitoredProperties];
-}
-
-- (void)makeImmutable
-{
-	if (!isImmutable)
+	if (!pipeline || [pipeline isEqualToString:YapDatabaseCloudCoreDefaultPipelineName])
 	{
-		// Set immutable flag
-		isImmutable = YES;
-		changedProperties = nil;
+		return [NSString stringWithFormat:@"<YapDatabaseCloudCoreOperation[%p]: uuid=\"%@\", priority=%d>",
+		                                     self, uuid, priority];
 	}
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-					  ofObject:(id)object
-						change:(NSDictionary *)change
-					   context:(void *)context
-{
-	// Nothing to do (but method is required to exist)
-}
-
-- (void)willChangeValueForKey:(NSString *)key
-{
-	if (isImmutable)
-	{
-		if ([[[self class] monitoredProperties] containsObject:key])
-		{
-			@throw [self immutableException:key];
-		}
-	}
-	
-	[super willChangeValueForKey:key];
-}
-
-- (void)didChangeValueForKey:(NSString *)key
-{
-	if (changedProperties == nil)
-		changedProperties = [[NSMutableSet alloc] init];
-	
-	[changedProperties addObject:key];
-	
-	[super didChangeValueForKey:key];
-}
-
-- (BOOL)hasChanges
-{
-	return (changedProperties.count > 0);
-}
-
-- (NSException *)immutableException:(NSString *)key
-{
-	NSString *reason;
-	if (key)
-		reason = [NSString stringWithFormat:
-		    @"Attempting to mutate YapDatabaseCloudCoreOperation object in a non-supported way."
-		    @" Class = %@, property = %@", NSStringFromClass([self class]), key];
 	else
-		reason = [NSString stringWithFormat:
-		    @"Attempting to mutate YapDatabaseCloudCoreOperation object in a non-supported way."
-		    @" Class = %@", NSStringFromClass([self class])];
-	
-	NSString *moreInfo = [NSString stringWithFormat:
-	    @"Persistent properties of the operation become immutable once the operation has been"
-	    @" given to YapDatabaseCloudCore. To modify these persistent properties, you need to copy the operation,"
-	    @" modify the copy, and then hand the copy to YapDatabaseCloudCore via the modifyOperation method."
-	    @" This applies to the following properties: %@",
-	    [[self class] monitoredProperties]];
-	
-	NSDictionary *suggestion = @{ NSLocalizedRecoverySuggestionErrorKey: moreInfo };
-	
-	return [NSException exceptionWithName:@"YapDatabaseCloudCoreOperationException" reason:reason userInfo:suggestion];
+	{
+		return [NSString stringWithFormat:@"<YapDatabaseCloudCoreOperation[%p]: pipeline=\"%@\" uuid=\"%@\", priority=%d>",
+		                                     self, pipeline, uuid, priority];
+	}
 }
 
 @end

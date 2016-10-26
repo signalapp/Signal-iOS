@@ -8,15 +8,12 @@
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 
+#import "YapDatabaseCloudCoreOptions.h"
 #import "YapDatabaseCloudCore.h"
 #import "YapDatabaseCloudCoreConnection.h"
 #import "YapDatabaseCloudCoreTransaction.h"
-#import "YapDatabaseCloudCoreTypes.h"
-#import "YapDatabaseCloudCoreOptions.h"
 
 #import "YapDatabaseCloudCoreOperation.h"
-#import "YapDatabaseCloudCoreFileOperation.h"
-#import "YapDatabaseCloudCoreRecordOperation.h"
 #import "YapDatabaseCloudCoreOperationPrivate.h"
 
 #import "YapDatabaseCloudCoreGraph.h"
@@ -33,7 +30,7 @@
  * If there is a major re-write to this class, then the version number will be incremented,
  * and the class can automatically rebuild the tables as needed.
 **/
-#define YAPDATABASE_OWNCLOUD_CLASS_VERSION 1
+#define YAPDATABASE_CLOUDCORE_CLASS_VERSION 1
 
 static NSString * const YDBCloudCore_DiryMappingMetadata_NeedsRemove = @"NeedsRemove";
 static NSString * const YDBCloudCore_DiryMappingMetadata_NeedsInsert = @"NeedsInsert";
@@ -49,10 +46,6 @@ static NSString *const changeset_key_reset            = @"reset";
 @interface YapDatabaseCloudCore () {
 @public
 	
-	YapDatabaseCloudCoreHandler *handler;
-	YapDatabaseCloudCoreDeleteHandler *deleteHandler;
-	YapDatabaseCloudCoreMergeRecordBlock mergeRecordBlock;
-	
 	YDBCloudCoreOperationSerializer operationSerializer;
 	YDBCloudCoreOperationDeserializer operationDeserializer;
 	
@@ -62,8 +55,8 @@ static NSString *const changeset_key_reset            = @"reset";
 
 - (NSString *)pipelineTableName;
 - (NSString *)queueTableName;
-- (NSString *)mappingTableName;
 - (NSString *)tagTableName;
+- (NSString *)mappingTableName;
 
 - (NSArray *)registeredPipelineNamesExcludingDefault;
 
@@ -98,8 +91,6 @@ static NSString *const changeset_key_reset            = @"reset";
 	// operations_inserted : pipelineName  -> dictionary<graphIdx, @[ inserted ops ]> (new ops, previous graph)
 	// operations_modified : operationUUID -> modified operation (replacement ops, previous graph)
 	
-	NSMutableArray *operations_block; // parameter to YapDatabaseCloudCoreHandler block
-	
 	NSMutableDictionary<NSString *, YapDatabaseCloudCoreGraph *> *graphs_added;
 	
 	YapManyToManyCache *pendingAttachRequests; // unlimited cache size
@@ -115,6 +106,8 @@ static NSString *const changeset_key_reset            = @"reset";
 
 - (id)initWithParent:(YapDatabaseCloudCore *)inParent databaseConnection:(YapDatabaseConnection *)inDbC;
 
+- (void)prepareForReadWriteTransaction;
+
 - (sqlite3_stmt *)pipelineTable_insertStatement;
 - (sqlite3_stmt *)pipelineTable_removeStatement;
 - (sqlite3_stmt *)pipelineTable_removeAllStatement;
@@ -124,18 +117,18 @@ static NSString *const changeset_key_reset            = @"reset";
 - (sqlite3_stmt *)queueTable_removeStatement;
 - (sqlite3_stmt *)queueTable_removeAllStatement;
 
+- (sqlite3_stmt *)tagTable_setStatement;
+- (sqlite3_stmt *)tagTable_fetchStatement;
+- (sqlite3_stmt *)tagTable_removeForBothStatement;
+- (sqlite3_stmt *)tagTable_removeForCloudURIStatement;
+- (sqlite3_stmt *)tagTable_removeAllStatement;
+
 - (sqlite3_stmt *)mappingTable_insertStatement;
 - (sqlite3_stmt *)mappingTable_fetchStatement;
 - (sqlite3_stmt *)mappingTable_fetchForRowidStatement;
 - (sqlite3_stmt *)mappingTable_fetchForCloudURIStatement;
 - (sqlite3_stmt *)mappingTable_removeStatement;
 - (sqlite3_stmt *)mappingTable_removeAllStatement;
-
-- (sqlite3_stmt *)tagTable_setStatement;
-- (sqlite3_stmt *)tagTable_fetchStatement;
-- (sqlite3_stmt *)tagTable_removeForBothStatement;
-- (sqlite3_stmt *)tagTable_removeForCloudURIStatement;
-- (sqlite3_stmt *)tagTable_removeAllStatement;
 
 - (void)postCommitCleanup;
 - (void)postRollbackCleanup;
@@ -145,6 +138,15 @@ static NSString *const changeset_key_reset            = @"reset";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
+	YDBCloudCore_EnumOps_Existing = 1 << 0,
+	YDBCloudCore_EnumOps_Inserted = 1 << 1,
+	YDBCloudCore_EnumOps_Added    = 1 << 2,
+	YDBCloudCore_EnumOps_All      = YDBCloudCore_EnumOps_Existing |
+	                                YDBCloudCore_EnumOps_Inserted |
+	                                YDBCloudCore_EnumOps_Added,
+};
 
 @interface YapDatabaseCloudCoreTransaction () {
 @protected
@@ -156,31 +158,36 @@ static NSString *const changeset_key_reset            = @"reset";
 - (id)initWithParentConnection:(YapDatabaseCloudCoreConnection *)parentConnection
            databaseTransaction:(YapDatabaseReadTransaction *)databaseTransaction;
 
-@end
+/**
+ * All of the public methods that return an operation (directly, or via enumeration block),
+ * always return a copy of the internally held operation.
+ * 
+ * Internal methods can avoid the copy overhead by using the underscore versions below.
+**/
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+- (YapDatabaseCloudCoreOperation *)_operationWithUUID:(NSUUID *)uuid;
+- (YapDatabaseCloudCoreOperation *)_operationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName;
 
-@interface YapDatabaseCloudCoreHandler () {
-@public
-	
-	YapDatabaseCloudCoreHandlerBlock block;
-	YapDatabaseBlockType             blockType;
-	YapDatabaseBlockInvoke           blockInvokeOptions;
-}
+- (void)_enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCorePipeline *pipeline,
+                                                 YapDatabaseCloudCoreOperation *operation,
+                                                 NSUInteger graphIdx, BOOL *stop))enumBlock;
 
-@end
+- (void)_enumerateOperationsInPipeline:(NSString *)pipelineName
+                            usingBlock:(void (^)(YapDatabaseCloudCoreOperation *operation,
+                                                 NSUInteger graphIdx, BOOL *stop))enumBlock;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark -
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)_enumerateAndModifyOperations:(YDBCloudCore_EnumOps)flags
+                           usingBlock:(YapDatabaseCloudCoreOperation *
+                                      (^)(YapDatabaseCloudCorePipeline *pipeline,
+                                          YapDatabaseCloudCoreOperation *operation,
+                                          NSUInteger graphIdx, BOOL *stop))enumBlock;
 
-@interface YapDatabaseCloudCoreDeleteHandler () {
-@public
-	
-	YapDatabaseCloudCoreDeleteHandlerBlock block;
-	YapDatabaseBlockType                   blockType;
-}
+- (void)_enumerateAndModifyOperations:(YDBCloudCore_EnumOps)flags
+                           inPipeline:(YapDatabaseCloudCorePipeline *)pipeline
+                           usingBlock:(YapDatabaseCloudCoreOperation *
+                                      (^)(YapDatabaseCloudCoreOperation *operation,
+                                          NSUInteger graphIdx, BOOL *stop))enumBlock;
+
+- (NSException *)requiresReadWriteTransactionException:(NSString *)methodName;
 
 @end

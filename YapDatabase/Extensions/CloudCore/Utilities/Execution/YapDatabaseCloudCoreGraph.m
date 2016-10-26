@@ -90,7 +90,7 @@
  *   E.g. it may contain a list of every modified/replaced operation from a recent transaction.
  *   Any that don't apply to this graph will be ignored.
  * 
- * @param matchedOperations
+ * @param matchedModifiedOperations
  *   Each modified operation may or may not belong to this graph.
  *   When the method identifies ones that do, they are added to matchedOperations.
 **/
@@ -142,7 +142,7 @@
 	NSUInteger index = 0;
 	for (YapDatabaseCloudCoreOperation *operation in operations)
 	{
-		YDBCloudCoreOperationStatus status = [pipeline statusForOperationUUID:operation.uuid];
+		YDBCloudCoreOperationStatus status = [pipeline statusForOperationWithUUID:operation.uuid];
 		
 		if (status == YDBCloudOperationStatus_Completed ||
 		    status == YDBCloudOperationStatus_Skipped)
@@ -189,7 +189,7 @@
 		{
 			YDBCloudCoreOperationStatus status = YDBCloudOperationStatus_Pending;
 			BOOL isOnHold = NO;
-			[pipeline _getStatus:&status isOnHold:&isOnHold forOperationUUID:opOrDepOp.uuid];
+			[pipeline getStatus:&status isOnHold:&isOnHold forOperationUUID:opOrDepOp.uuid];
 			
 			if ((status == YDBCloudOperationStatus_Pending) && !isOnHold)
 			{
@@ -222,7 +222,7 @@
 		YapDatabaseCloudCoreOperation *dependentOpToStart = nil;
 		YapDatabaseCloudCoreOperation *dependentOpNotDone = nil;
 		
-		for (NSUUID *depUUID in baseOp.dependencyUUIDs)
+		for (NSUUID *depUUID in [baseOp dependencyUUIDs])
 		{
 			YapDatabaseCloudCoreOperation *dependentOp = [self operationWithUUID:depUUID];
 			if (dependentOp)
@@ -236,7 +236,7 @@
 				{
 					YDBCloudCoreOperationStatus status = YDBCloudOperationStatus_Pending;
 					BOOL isOnHold = NO;
-					[pipeline _getStatus:&status isOnHold:&isOnHold forOperationUUID:dependentOp.uuid];
+					[pipeline getStatus:&status isOnHold:&isOnHold forOperationUUID:dependentOp.uuid];
 					
 					if (status == YDBCloudOperationStatus_Pending && !isOnHold)
 					{
@@ -261,7 +261,7 @@
 	{
 		YDBCloudCoreOperationStatus status = YDBCloudOperationStatus_Pending;
 		BOOL isOnHold = NO;
-		[pipeline _getStatus:&status isOnHold:&isOnHold forOperationUUID:baseOp.uuid];
+		[pipeline getStatus:&status isOnHold:&isOnHold forOperationUUID:baseOp.uuid];
 		
 		if (status == YDBCloudOperationStatus_Pending && !isOnHold)
 			return baseOp;
@@ -312,7 +312,7 @@
 		
 		[visitedOps addObject:op.uuid];
 		
-		for (NSUUID *depUUID in op.dependencyUUIDs)
+		for (NSUUID *depUUID in [op dependencyUUIDs])
 		{
 			YapDatabaseCloudCoreOperation *depOp = [self operationWithUUID:depUUID];
 			if (depOp)

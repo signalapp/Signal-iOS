@@ -9,15 +9,13 @@
  * This is the base class for concrete subclasses such as FileOperations & RecordOperations.
  *
  * Do not directly create instances of this class.
- * Instead create instances of concrete subclass such as:
- * - YapDatabaseCloudCoreFileOperation
- * - YapDatabaseCloudCoreRecordOperation
+ * Instead create instances of concrete subclass.
 **/
 @interface YapDatabaseCloudCoreOperation : NSObject <NSCoding, NSCopying>
 
 /**
  * Every operation has a randomly generated UUID.
- * This can be used for dependency references, or for uniquely identifying this specific operation.
+ * This is used for dependency references, and for uniquely identifying this specific operation.
 **/
 @property (nonatomic, readonly) NSUUID *uuid;
 
@@ -36,17 +34,13 @@
  *
  * @see YapDatabaseOnwCloudPipeline
  * @see [YapDatabase registerPipeline]
- * 
- * Mutability:
- *   Before the operation has been handed over to YapDatabaseCloudCore, this property is mutable.
- *   However, once the operation has been handed over to YapDatabaseCloudCore, it becomes immutable.
 **/
 @property (nonatomic, copy, readwrite) NSString *pipeline;
 
 /**
  * At the local level, when dealing with YapDatabase, you have the benefit of atomic transactions.
  * Thus you can make changes to multiple objects, and apply the changes in an atomic fashion.
- * However, the cloud server only supports making "transactions" involving a single file.
+ * However, the cloud server may only support "transactions" involving a single file.
  * 
  * This necessitates certain architectural decisions.
  * One implication is that, when two objects are linked, you'll have to decide which gets uploaded first.
@@ -62,71 +56,46 @@
  *   You have a new customer object, and an associated purchase object (which references the new customer).
  *   So you upload the customer object first, and the purchase second.
  *
- * In order to achieve this, you use the dependencies property, which is simply an array of path's.
- * That is, a reference to the operation.path that should go first.
+ * In order to achieve this, you use the dependencies property, which is simply an array of UUID's.
+ * That is, a reference to any operation.uuid that must go first.
  * 
  * For example 1 we might have:
- * - /users/robbie.json
- * - /avatars/robbie.jpg
+ * - opA : /users/robbie.json
+ * - opB : /avatars/robbie.jpg
  * 
  * And thus, since we want to upload the jpg first, we'd set:
- * userOperation.dependencies = @[ @"/avatars/robbie.jpg" ];
+ * opA.dependencies = @[ opB.uuid ];
  * 
  * For example 2 we might have:
- * - /customers/abc123.json
- * - /purchases/xyz789.json
+ * - opA : /customers/abc123.json
+ * - opB : /purchases/xyz789.json
  * 
  * And thus, since we want to upload the customer first, we'd set:
- * purchaseOperation.dependencies = @[ @"/purchases/xyz789.json" ]
+ * opB.dependencies = @[ opA.uuid ]
  *
  * It's important to understand some of the key concepts that dependencies enforce.
  * 
- * If there are two operations, 'A' & 'B', and B.dependencies=[A], then:
+ * If there are two operations, 'A' & 'B', and B.dependencies=[A.uuid], then:
  *
  * - A is always started and completed before B is started.
  * - This applies regardless of the priority values for A & B.
  * - If a conflict is encountered for A, then B is still delayed until the conflict is resolved.
  *   This means that one of the following must occur:
- *   - A is properly merged with latest remote revision, and the operation is restarted & completed
- *   - A is skipped by marking it as complete (e.g. remote revision wins, local changes abandoned)
- *   - A is skipped by marking it as aborted, in which case B is automatically aborted
+ *   - A is marked as completed
+ *   - A is marked as skipped
  * 
- * Also keep in mind that it's perfectly acceptable to add dependencies that may or may not exist as operations.
- * For example, if you always want to ensure that a customer is uploaded before his/her purchase,
- * then you can always set purchaseOrder.dependencies=["/customers/abc123.json"].
- * 
- * If the customer is created in the same transaction (and thus customer operation created),
- * then the graph system will automatically ensure the customer operations happens first.
- * And if the customer is not created in the same transaction (already existed, already on the server),
- * then the graph system simply ignores the dependency.
- * 
- * Note: Take care not to create circular dependencies.
- * If you do, the graph system will detect it, and throw an exception.
- * AKA - "If you create a circular dependency, you're gonna have a bad time."
+ * If you create a circular dependency, the graph system will detect it and throw an exception.
  * 
  * @see addDependency
- * 
- * Mutability:
- *   Before the operation has been handed over to YapDatabaseCloudCore, this property is mutable.
- *   However, once the operation has been handed over to YapDatabaseCloudCore, it is marked as immutable,
- *   and you can no longer change this propery on the original operation instance.
- *   To make modifications, and properly persist them, you need to copy the operation instance,
- *   modify the copy, and then submit the copy to YapDatabaseCloudCore via 'modifyOperation:'.
- *
- *   For example:
- *   [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
- *       YapDatabaseCloudCoreTransaction *cct = [transaction ext:@"MyCloud"];
- *       YapDatabaseCloudCoreOperation *modifiedOp = [[cct operationWithUUID:op.uuid inPipeline:op.pipeline] copy];
- *       [modifiedOp addDependency:x];
- *       [cct modifyOperation:operation];
- *   }];
 **/
-@property (nonatomic, copy, readwrite) NSSet *dependencies;
+@property (nonatomic, copy, readwrite) NSSet<NSUUID *> *dependencies;
 
 /**
  * Convenience method for adding a dependency to the list.
+ *
+ * @param op - May be either a NSUUID, or a YapDatabaseCloudCoreOperation (for convenience).
 **/
-- (void)addDependency:(id)dependency;
+- (void)addDependency:(id)op;
 
 /**
  * Every operation can optionally be assigned a priority.
@@ -153,21 +122,6 @@
  *    For example, if A is a large record, but B is small record.
  * 
  * Thus it is best to think of dependencies as hard requirements, and priorities as soft hints.
- * 
- * Mutability:
- *   Before the operation has been handed over to YapDatabaseCloudCore, this property is mutable.
- *   However, once the operation has been handed over to YapDatabaseCloudCore, it is marked as immutable,
- *   and you can no longer change this propery on the original operation instance.
- *   To make modifications, and properly persist them, you need to copy the operation instance,
- *   modify the copy, and then submit the copy to YapDatabaseCloudCore via 'modifyOperation:'.
- *
- *   For example:
- *   [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
- *       YapDatabaseCloudCoreTransaction *cct = [transaction ext:@"MyCloud"];
- *       YapDatabaseCloudCoreOperation *modifiedOp = [[cct operationWithUUID:op.uuid inPipeline:op.pipeline] copy];
- *       modifiedOp.priority = 100;
- *       [cct modifyOperation:operation];
- *   }];
 **/
 @property (nonatomic, assign, readwrite) int32_t priority;
 
@@ -184,21 +138,6 @@
  * - information needed after the network operation completes (e.g. collection/key of associated database object)
  * 
  * @see setPersistentUserInfoObject:forKey:
- * 
- * Mutability:
- *   Before the operation has been handed over to YapDatabaseCloudCore, this property is mutable.
- *   However, once the operation has been handed over to YapDatabaseCloudCore, it is marked as immutable,
- *   and you can no longer change this propery on the original operation instance.
- *   To make modifications, and properly persist them, you need to copy the operation instance,
- *   modify the copy, and then submit the copy to YapDatabaseCloudCore via 'modifyOperation:'.
- * 
- *   For example:
- *   [databaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction){
- *       YapDatabaseCloudCoreTransaction *cct = [transaction ext:@"MyCloud"];
- *       YapDatabaseCloudCoreOperation *modifiedOp = [[cct operationWithUUID:op.uuid inPipeline:op.pipeline] copy];
- *       [modifiedOp setPersistentUserInfoObject:obj forKey:key];
- *       [cct modifyOperation:operation];
- *   }];
 **/
 @property (nonatomic, copy, readwrite) NSDictionary *persistentUserInfo;
 

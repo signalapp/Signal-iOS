@@ -7,10 +7,8 @@
 
 @implementation YapDatabaseCloudCoreOptions
 
-@synthesize allowedCollections = allowedCollections;
 @synthesize allowedOperationClasses = allowedOperationClasses;
 @synthesize enableAttachDetachSupport = enableAttachDetachSupport;
-@synthesize implicitAttach = implicitAttach;
 @synthesize enableTagSupport = enableTagSupport;
 
 
@@ -18,9 +16,8 @@
 {
 	if ((self = [super init]))
 	{
-		enableAttachDetachSupport = YES;
-		implicitAttach = YES;
-		enableTagSupport = YES;
+		enableAttachDetachSupport = NO;
+		enableTagSupport = NO;
 	}
 	return self;
 }
@@ -28,10 +25,8 @@
 - (id)copyWithZone:(NSZone *)zone
 {
 	YapDatabaseCloudCoreOptions *copy = [[[self class] alloc] init]; // [self class] required to support subclassing
-	copy->allowedCollections = allowedCollections;
 	copy->allowedOperationClasses = allowedOperationClasses;
 	copy->enableAttachDetachSupport = enableAttachDetachSupport;
-	copy->implicitAttach = implicitAttach;
 	copy->enableTagSupport = enableTagSupport;
 	
 	return copy;

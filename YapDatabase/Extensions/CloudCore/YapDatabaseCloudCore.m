@@ -85,11 +85,6 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 	return [NSString stringWithFormat:@"cloudcore_pipeline_%@", registeredName];
 }
 
-+ (NSString *)mappingTableNameForRegisteredName:(NSString *)registeredName
-{
-	return [NSString stringWithFormat:@"cloudcore_mapping_%@", registeredName];
-}
-
 + (NSString *)queueTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudcore_queue_%@", registeredName];
@@ -98,6 +93,11 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 + (NSString *)tagTableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudcore_tag_%@", registeredName];
+}
+
++ (NSString *)mappingTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"cloudcore_mapping_%@", registeredName];
 }
 
 + (YDBCloudCoreOperationSerializer)defaultOperationSerializer
@@ -132,47 +132,11 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 	return [options copy]; // Our copy must remain immutable
 }
 
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)inHandler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)inDeleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)inMergeRecordBlock
+- (instancetype)initWithVersionTag:(NSString *)inVersionTag
+                           options:(YapDatabaseCloudCoreOptions *)inOptions
 {
-	return [self initWithHandler:inHandler
-	               deleteHandler:inDeleteHandler
-	            mergeRecordBlock:inMergeRecordBlock
-	                  versionTag:nil
-	                     options:nil];
-}
-
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)inHandler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)inDeleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)inMergeRecordBlock
-                     versionTag:(NSString *)inVersionTag
-{
-	return [self initWithHandler:inHandler
-	               deleteHandler:inDeleteHandler
-	            mergeRecordBlock:inMergeRecordBlock
-	                  versionTag:inVersionTag
-	                     options:nil];
-}
-
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)inHandler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)inDeleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)inMergeRecordBlock
-                     versionTag:(NSString *)inVersionTag
-                        options:(YapDatabaseCloudCoreOptions *)inOptions
-{
-	NSParameterAssert(inHandler != nil);
-	NSParameterAssert(inMergeRecordBlock != NULL);
-	
 	if ((self = [super init]))
 	{
-		handler = inHandler;
-		deleteHandler = inDeleteHandler;
-		mergeRecordBlock = inMergeRecordBlock;
-		
-		operationSerializer = [[self class] defaultOperationSerializer];
-		operationDeserializer = [[self class] defaultOperationDeserializer];
-		
 		versionTag = inVersionTag ? [inVersionTag copy] : @"";
 		options = inOptions ? [inOptions copy] : [[YapDatabaseCloudCoreOptions alloc] init];
 		
@@ -182,6 +146,9 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 		dispatch_queue_set_specific(queue, IsOnQueueKey, IsOnQueueKey, NULL);
 		
 		pipelines = [[NSMutableDictionary alloc] initWithCapacity:1];
+		
+		operationSerializer = [[self class] defaultOperationSerializer];
+		operationDeserializer = [[self class] defaultOperationDeserializer];
 	}
 	return self;
 }
@@ -217,7 +184,9 @@ withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 **/
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
 {
-	return [[YapDatabaseCloudCoreConnection alloc] initWithParent:self databaseConnection:databaseConnection];
+	NSAssert(NO, @"Missing required method(%@) in subclass(%@)", NSStringFromSelector(_cmd), [self class]);
+	
+	return nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,14 +203,14 @@ withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 	return [[self class] queueTableNameForRegisteredName:self.registeredName];
 }
 
-- (NSString *)mappingTableName
-{
-	return [[self class] mappingTableNameForRegisteredName:self.registeredName];
-}
-
 - (NSString *)tagTableName
 {
 	return [[self class] tagTableNameForRegisteredName:self.registeredName];
+}
+
+- (NSString *)mappingTableName
+{
+	return [[self class] mappingTableNameForRegisteredName:self.registeredName];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

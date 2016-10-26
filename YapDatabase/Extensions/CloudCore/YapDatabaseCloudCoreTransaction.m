@@ -8,15 +8,13 @@
 
 #import "YapDatabaseString.h"
 #import "YapDatabaseLogging.h"
-#import "LumberjackUser.h"
+
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
  * See YapDatabaseLogging.h for more information.
 **/
-#if DEBUG && robbie_hanson
+#if DEBUG
   static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE; // | YDB_LOG_FLAG_TRACE;
-#elif DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -27,27 +25,6 @@
 **/
 static NSString *const ext_key_classVersion = @"classVersion";
 static NSString *const ext_key_versionTag   = @"versionTag";
-
-
-typedef NS_ENUM(int32_t, YapDatabaseCloudCoreQueueTableType) {
-	YapDatabaseCloudCoreQueueTableType_Record     = 0, // Do NOT change ! Value stored to disk.
-	YapDatabaseCloudCoreQueueTableType_FilePut    = 1, // Do NOT change ! Value stored to disk.
-	YapDatabaseCloudCoreQueueTableType_FileDelete = 2, // Do NOT change ! Value stored to disk.
-};
-
-typedef NS_ENUM(uint8_t, YDBCloudCore_UpdatedValuesPrefix) {
-	YDBCloudCore_UpdatedValuesPrefix_KeysOnly  = 0, // Do NOT change ! Value stored to disk.
-	YDBCloudCore_UpdatedValuesPrefix_Full      = 1, // Do NOT change ! Value stored to disk.
-};
-
-typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
-	YDBCloudCore_EnumOps_Existing = 1 << 0,
-	YDBCloudCore_EnumOps_Inserted = 1 << 1,
-	YDBCloudCore_EnumOps_Added    = 1 << 2,
-	YDBCloudCore_EnumOps_All      = YDBCloudCore_EnumOps_Existing |
-	                                YDBCloudCore_EnumOps_Inserted |
-	                                YDBCloudCore_EnumOps_Added,
-};
 
 
 @implementation YapDatabaseCloudCoreTransaction
@@ -83,7 +60,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	// classVersion - the internal version number of YapDatabaseView implementation
 	// versionTag - user specified versionTag, used to force upgrade mechanisms
 	
-	int classVersion = YAPDATABASE_OWNCLOUD_CLASS_VERSION;
+	int classVersion = YAPDATABASE_CLOUDCORE_CLASS_VERSION;
 	
 	NSString *versionTag = parentConnection->parent->versionTag;
 	
@@ -174,7 +151,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	//
 	// | rowid | name |
 	
-	YDBLogVerbose(@"Creating ownCloud table for registeredName(%@): %@", [self registeredName], pipelineTableName);
+	YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], pipelineTableName);
 	
 	NSString *createPipelineTable = [NSString stringWithFormat:
 	  @"CREATE TABLE IF NOT EXISTS \"%@\""
@@ -195,7 +172,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	//
 	// | rowid | pipelineID | graphID | prevGraphID | operation |
 	
-	YDBLogVerbose(@"Creating ownCloud table for registeredName(%@): %@", [self registeredName], queueTableName);
+	YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], queueTableName);
 	
 	NSString *createQueueTable = [NSString stringWithFormat:
 	  @"CREATE TABLE IF NOT EXISTS \"%@\""
@@ -215,6 +192,32 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return NO;
 	}
 	
+	if (parentConnection->parent->options.enableTagSupport)
+	{
+		// Tag Table
+		//
+		// | key | identifier | tag |
+		
+		YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], tagTableName);
+		
+		NSString *createTagTable = [NSString stringWithFormat:
+		  @"CREATE TABLE IF NOT EXISTS \"%@\""
+		  @" (\"key\" TEXT NOT NULL,"
+		  @"  \"identifier\" TEXT NOT NULL,"
+		  @"  \"tag\" BLOB NOT NULL,"
+		  @"  PRIMARY KEY (\"key\", \"identifier\")"
+		  @" );", tagTableName];
+		
+		YDBLogVerbose(@"%@", createTagTable);
+		status = sqlite3_exec(db, [createTagTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed creating table (%@): %d %s",
+			            THIS_METHOD, createTagTable, status, sqlite3_errmsg(db));
+			return NO;
+		}
+	}
+	
 	if (parentConnection->parent->options.enableAttachDetachSupport)
 	{
 		// Mapping Table
@@ -225,7 +228,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		// - a single database_rowid might map to multiple identifiers
 		// - a single identifier might be retained by multiple database_rowid's
 		
-		YDBLogVerbose(@"Creating ownCloud table for registeredName(%@): %@", [self registeredName], mappingTableName);
+		YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], mappingTableName);
 		
 		NSString *createMappingTable = [NSString stringWithFormat:
 		  @"CREATE TABLE IF NOT EXISTS \"%@\""
@@ -263,32 +266,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		{
 			YDBLogError(@"%@ - Failed creating index (cloudURI) on table (%@): %d %s",
 						THIS_METHOD, mappingTableName, status, sqlite3_errmsg(db));
-			return NO;
-		}
-	}
-	
-	if (parentConnection->parent->options.enableTagSupport)
-	{
-		// Tag Table
-		//
-		// | cloudURI | identifier | tag |
-		
-		YDBLogVerbose(@"Creating ownCloud table for registeredName(%@): %@", [self registeredName], tagTableName);
-		
-		NSString *createTagTable = [NSString stringWithFormat:
-		  @"CREATE TABLE IF NOT EXISTS \"%@\""
-		  @" (\"cloudURI\" TEXT NOT NULL,"
-		  @"  \"identifier\" TEXT NOT NULL,"
-		  @"  \"tag\" BLOB NOT NULL,"
-		  @"  PRIMARY KEY (\"cloudURI\", \"identifier\")"
-		  @" );", tagTableName];
-		
-		YDBLogVerbose(@"%@", createTagTable);
-		status = sqlite3_exec(db, [createTagTable UTF8String], NULL, NULL, NULL);
-		if (status != SQLITE_OK)
-		{
-			YDBLogError(@"%@ - Failed creating table (%@): %d %s",
-			            THIS_METHOD, createTagTable, status, sqlite3_errmsg(db));
 			return NO;
 		}
 	}
@@ -632,9 +609,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	// Step 6 of 7:
 	//
 	// Restore each operation using the handler
-	
-	__unsafe_unretained YapDatabaseCloudCoreOptions *options = parentConnection->parent->options;
-	
+/*
 	[sortedGraphsPerPipeline enumerateKeysAndObjectsUsingBlock:
 	    ^(NSString *pipelineName, NSArray *sortedGraphs, BOOL *stop)
 	{
@@ -642,11 +617,11 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		{
 			for (YapDatabaseCloudCoreOperation *operation in graph.operations)
 			{
-				[operation import:options];
-				[operation makeImmutable];
+				// Maybe add subclass hook here ?
 			}
 		}
 	}];
+*/
 	
 	// Step 7 of 7:
 	//
@@ -659,133 +634,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 
 - (BOOL)populateTables
 {
-	YDBLogAutoTrace();
-	
-	void (^ProcessResultsBlock)(int64_t rowid) = ^(int64_t rowid){ @autoreleasepool {
-	
-		if ([parentConnection->operations_block count] > 0)
-		{
-			for (YapDatabaseCloudCoreOperation *operation in parentConnection->operations_block)
-			{
-				[self importOperation:operation withDatabaseRowid:@(rowid) graphIdx:nil];
-			}
-			
-			[parentConnection->operations_block removeAllObjects];
-		}
-	}};
-	
-	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	if (handler->blockType == YapDatabaseBlockTypeWithKey)
-	{
-		__unsafe_unretained YapDatabaseCloudCoreHandlerWithKeyBlock HandlerBlock =
-		                   (YapDatabaseCloudCoreHandlerWithKeyBlock)handler->block;
-		
-		void (^EnumBlock)(int64_t rowid, NSString *collection, NSString *key, BOOL *stop);
-		EnumBlock = ^(int64_t rowid, NSString *collection, NSString *key, BOOL *stop) {
-			
-			HandlerBlock(databaseTransaction, parentConnection->operations_block, collection, key);
-			ProcessResultsBlock(rowid);
-		};
-		
-		if (allowedCollections)
-		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
-				
-				if ([allowedCollections isAllowed:collection])
-				{
-					[databaseTransaction _enumerateKeysInCollections:@[ collection ] usingBlock:EnumBlock];
-				}
-			}];
-		}
-		else
-		{
-			[databaseTransaction _enumerateKeysInAllCollectionsUsingBlock:EnumBlock];
-		}
-	}
-	else if (handler->blockType == YapDatabaseBlockTypeWithObject)
-	{
-		__unsafe_unretained YapDatabaseCloudCoreHandlerWithObjectBlock HandlerBlock =
-		                   (YapDatabaseCloudCoreHandlerWithObjectBlock)handler->block;
-		
-		void (^EnumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop);
-		EnumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, BOOL *stop) {
-			
-			HandlerBlock(databaseTransaction, parentConnection->operations_block, collection, key, object);
-			ProcessResultsBlock(rowid);
-		};
-		
-		if (allowedCollections)
-		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
-				
-				if ([allowedCollections isAllowed:collection])
-				{
-					[databaseTransaction _enumerateKeysAndObjectsInCollections:@[ collection ] usingBlock:EnumBlock];
-				}
-			}];
-		}
-		else
-		{
-			[databaseTransaction _enumerateKeysAndObjectsInAllCollectionsUsingBlock:EnumBlock];
-		}
-	}
-	else if (handler->blockType == YapDatabaseBlockTypeWithMetadata)
-	{
-		__unsafe_unretained YapDatabaseCloudCoreHandlerWithMetadataBlock HandlerBlock =
-		                   (YapDatabaseCloudCoreHandlerWithMetadataBlock)handler->block;
-		
-		void (^EnumBlock)(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop);
-		EnumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id metadata, BOOL *stop) {
-			
-			HandlerBlock(databaseTransaction, parentConnection->operations_block, collection, key, metadata);
-			ProcessResultsBlock(rowid);
-		};
-		
-		if (allowedCollections)
-		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
-				
-				if ([allowedCollections isAllowed:collection])
-				{
-					[databaseTransaction _enumerateKeysAndMetadataInCollections:@[ collection ] usingBlock:EnumBlock];
-				}
-			}];
-		}
-		else
-		{
-			[databaseTransaction _enumerateKeysAndMetadataInAllCollectionsUsingBlock:EnumBlock];
-		}
-	}
-	else
-	{
-		__unsafe_unretained YapDatabaseCloudCoreHandlerWithRowBlock HandlerBlock =
-		                   (YapDatabaseCloudCoreHandlerWithRowBlock)handler->block;
-		
-		void (^EnumBlock)(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop);
-		EnumBlock = ^(int64_t rowid, NSString *collection, NSString *key, id object, id metadata, BOOL *stop) {
-			
-			HandlerBlock(databaseTransaction, parentConnection->operations_block, collection, key, object, metadata);
-			ProcessResultsBlock(rowid);
-		};
-		
-		if (allowedCollections)
-		{
-			[databaseTransaction enumerateCollectionsUsingBlock:^(NSString *collection, BOOL *stop) {
-				
-				if ([allowedCollections isAllowed:collection])
-				{
-					[databaseTransaction _enumerateRowsInCollections:@[ collection ] usingBlock:EnumBlock];
-				}
-			}];
-		}
-		else
-		{
-			[databaseTransaction _enumerateRowsInAllCollectionsUsingBlock:EnumBlock];
-		}
-	}
+	// Subclasses may wish to override me.
 	
 	return YES;
 }
@@ -836,7 +685,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities - serialization & deserialization
+#pragma mark Utilities - Operations
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSData *)serializeOperation:(YapDatabaseCloudCoreOperation *)operation
@@ -853,25 +702,32 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	return parentConnection->parent->operationDeserializer(operationBlob);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Utilities - Operations
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  * This method sets common properties on an operation, and adds it to the pending array.
 **/
 - (BOOL)importOperation:(YapDatabaseCloudCoreOperation *)operation
-      withDatabaseRowid:(NSNumber *)databaseRowid
-               graphIdx:(NSNumber *)graphIdx
+           withGraphIdx:(NSNumber *)graphIdx
 {
 	__unsafe_unretained YapDatabaseCloudCoreOptions *options = parentConnection->parent->options;
 	
-	if (![operation import:options])
+	NSSet *allowedOperationClasses = options.allowedOperationClasses;
+	if (allowedOperationClasses)
 	{
-		YDBLogError(@"Unable to import operation with name (%@). "
-		            @"The operation has been imported previously.", operation);
+		BOOL allowed = NO;
+		for (Class class in allowedOperationClasses)
+		{
+			if ([operation isKindOfClass:class])
+			{
+				allowed = YES;
+				break;
+			}
+		}
 		
-		return NO;
+		if (!allowed)
+		{
+			@throw [self disallowedOperationClass:operation];
+			return NO;
+		}
 	}
 	
 	// Check to make sure the given pipeline name actually corresponds to a registered pipeline.
@@ -938,476 +794,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		[addedOps addObject:operation];
 	}
 	
-	if (options.enableAttachDetachSupport)
-	{
-		// Attach: rowid <-> cloudURI (if needed)
-		
-		if (databaseRowid)
-		{
-			NSString *attachCloudURI = operation.attachCloudURI;
-			if (attachCloudURI)
-			{
-				[self attachCloudURI:attachCloudURI forRowid:[databaseRowid unsignedLongLongValue]];
-			}
-		}
-	}
-	
-	// Now that the operation is fully imported, mark it as immutable.
-	// This will prevent the user from changing the public properties of the operation instance.
-	
-	[operation makeImmutable];
 	return YES;
-}
-
-/**
- * This method peforms the common task of inspecting parentConnection->operations_block,
- * and importing each one.
-**/
-- (void)importAddedOperations:(int64_t)rowid
-{
-	if ([parentConnection->operations_block count] > 0)
-	{
-		__unsafe_unretained NSSet *allowedOperationClasses = parentConnection->parent->options.allowedOperationClasses;
-		
-		for (YapDatabaseCloudCoreOperation *operation in parentConnection->operations_block)
-		{
-			// Make sure the operation type is allowed (generally enforeced by subclasses)
-			if (allowedOperationClasses)
-			{
-				BOOL allowed = NO;
-				for (Class class in allowedOperationClasses)
-				{
-					if ([operation isKindOfClass:class])
-					{
-						allowed = YES;
-						break;
-					}
-				}
-				
-				if (!allowed)
-				{
-					@throw [self disallowedOperationClass:operation];
-				}
-			}
-			
-			// Invoke import hook (performs all required pre-processing of operation)
-			[self importOperation:operation withDatabaseRowid:@(rowid) graphIdx:nil];
-		}
-		
-		[parentConnection->operations_block removeAllObjects];
-	}
-}
-
-/**
- * Subclasses may override this class to properly handle their specific flavor of operations.
- * 
- * The implementation in the base class ONLY handles YapDatabaseCloudCoreFileOperation's and subclasses
- * (such as YapDatabaseCloudCoreRecordOperation).
- * 
- * Thus, if your subclass also supports these operation types, you may wish to invoke the base class implementation.
- * Otherwise, you should completely override it.
-**/
-- (NSArray *)processOperations:(NSArray *)inOperations
-                    inPipeline:(YapDatabaseCloudCorePipeline *)pipeline
-                  withGraphIdx:(NSUInteger)operationsGraphIdx
-{
-	// Filter all operations, except those supported by this method (file ops).
-	// Also setup a system to find an operation given a dependency uuid/string/url.
-	
-	NSUInteger capacity = inOperations.count;
-	
-	NSMutableArray<YapDatabaseCloudCoreFileOperation *> *operations =
-	  [NSMutableArray arrayWithCapacity:capacity];
-	
-	NSMutableDictionary<NSUUID *, YapDatabaseCloudCoreFileOperation *> *uuidMap =
-	  [NSMutableDictionary dictionaryWithCapacity:capacity];
-	
-	for (YapDatabaseCloudCoreOperation *op in inOperations)
-	{
-		if (!op.pendingStatusIsCompletedOrSkipped)
-		{
-			if ([op isKindOfClass:[YapDatabaseCloudCoreFileOperation class]])
-			{
-				__unsafe_unretained YapDatabaseCloudCoreFileOperation *fileOp = (YapDatabaseCloudCoreFileOperation *)op;
-				
-				[fileOp clearDependencyUUIDs];
-				[operations addObject:fileOp];
-				
-				uuidMap[fileOp.uuid] = fileOp;
-			}
-		}
-	}
-	
-	YapDatabaseCloudCoreFileOperation* (^FindOperationForDependency)(id dependency, NSUInteger srcIndex);
-	FindOperationForDependency = ^YapDatabaseCloudCoreFileOperation* (id dependency, NSUInteger srcIndex){
-		
-		if ([dependency isKindOfClass:[NSUUID class]])
-		{
-			__unsafe_unretained NSUUID *uuid = (NSUUID *)dependency;
-			
-			YapDatabaseCloudCoreFileOperation *srcOp = operations[srcIndex];
-			YapDatabaseCloudCoreFileOperation *dstOp = uuidMap[uuid];
-			
-			if (srcOp == dstOp) // Op cannot depend on itself.
-				return nil;
-			else
-				return dstOp;
-		}
-		else
-		{
-			BOOL (^OperationMatchesDependency)(YapDatabaseCloudCoreFileOperation *op);
-			if ([dependency isKindOfClass:[NSString class]])
-			{
-				OperationMatchesDependency = ^BOOL (YapDatabaseCloudCoreFileOperation *op){
-					
-					return [op.name isEqualToString:(NSString *)dependency];
-				};
-			}
-			else
-			{
-				OperationMatchesDependency = ^BOOL (YapDatabaseCloudCoreFileOperation *op){
-					
-					return NO;
-				};
-			}
-			
-			// Search methodology:
-			//
-			// A 'name' can be ambiguous.
-			// That is, it's technically possible to queue multiple operations with the same name (type + cloudPath)
-			// within a single transaction.
-			//
-			// Doing so is obviously discouraged.
-			// It adds ambiguity to the upload system, and likely results in excessive bandwidth usage.
-			//
-			// Further, it's not possible to properly consolidate every possible combination of ambiguity.
-			// At least not within the context of a generic cloud framework.
-			//
-			// Consider the following list of operations:
-			// 1. upload X
-			// 2. move X -> Y
-			// 3. upload X
-			// 4. move X -> Y
-			//
-			// Is this 2 duplicate multi-step ops? (2 upload + move ops)
-			// Maybe. But probably not if Y is "/printer/queue".
-			// In which case this sequence likely represents the printing of 2 different documents.
-			//
-			// And herein lies the difficulty of providing a generic framework.
-			// There will always be certain trade-offs involved.
-			// The principles chosen to navigate these trade-offs are:
-			//
-			// 1. Strive to achieve flexibility where possible.
-			//    This will allow other developers to utilize the framework in ways you'd never considered.
-			// 2. Strive to reduce the barrier-to-entry for the average user.
-			//    This is done by understanding where/how most developers will use the framework,
-			//    and making these common cases easy to use and understand.
-			//
-			// Now let's re-visit the list of operations from above.
-			// What if both move operations have a dependency of "upload X".
-			// Obviously this ambiguous name can be matched to 2 different operations.
-			// But if we just look at the list it's rather obvious what we should do:
-			//
-			// - Op#2 depends on Op#1
-			// - Op#4 depends on Op#3
-			//
-			// Recall we also tell users that operation order matters.
-			// And that generally (excluding dependencies & priority), operations will be dispatched in the order they
-			// were originally given.
-			//
-			// So our algorithm is:
-			// 1. Look for a matching target operation that comes BEFORE source operation.
-			//    If multiple, pick the nearest match.
-			// 2. Look for a matching target operation that comes AFTER source operation.
-			//    If multiple, pick the nearest match.
-			
-			YapDatabaseCloudCoreFileOperation *match = nil;
-			
-			for (NSUInteger i = srcIndex; i > 0; i--)
-			{
-				YapDatabaseCloudCoreFileOperation *op = [operations objectAtIndex:(i - 1)];
-				
-				if (OperationMatchesDependency(op))
-				{
-					if (match == nil) {
-						match = op;
-					}
-					else {
-						YDBLogWarn(@"Ambiguous dependency! Mutliple matches found for: %@", dependency);
-					}
-				}
-			}
-			
-			for (NSUInteger i = srcIndex + 1; i < operations.count; i++)
-			{
-				YapDatabaseCloudCoreFileOperation *op = [operations objectAtIndex:i];
-				
-				if (OperationMatchesDependency(op))
-				{
-					if (match == nil) {
-						match = op;
-					}
-					else {
-						YDBLogWarn(@"Ambiguous dependency! Mutliple matches found for: %@", dependency);
-					}
-				}
-			}
-			
-			return match;
-		}
-	};
-	
-	// Scan user submitted dependencies
-	
-	NSUInteger index = 0;
-	for (YapDatabaseCloudCoreFileOperation *op in operations)
-	{
-		for (id dependency in op.dependencies)
-		{
-			YapDatabaseCloudCoreFileOperation *depOp = FindOperationForDependency(dependency, index);
-			if (depOp)
-			{
-				[op addDependencyUUID:depOp.uuid];
-			}
-		}
-		
-		index++;
-	}
-	
-	// Automatically add implicit dependencies & merge operations (if possible)
-	
-	NSMutableIndexSet *replacedIndex = [NSMutableIndexSet indexSet];
-	
-	NSMutableArray<NSUUID *> *replacedOpUUID    = [NSMutableArray arrayWithCapacity:1];
-	NSMutableArray<NSUUID *> *replacementOpUUID = [NSMutableArray arrayWithCapacity:1];
-	
-	for (NSUInteger laterIdx = 1; laterIdx < operations.count; laterIdx++)
-	{
-		YapDatabaseCloudCoreFileOperation *laterOp = operations[laterIdx];
-		
-		for (NSUInteger earlierIdx = laterIdx; earlierIdx > 0; earlierIdx--)
-		{
-			YapDatabaseCloudCoreFileOperation *earlierOp = operations[(earlierIdx - 1)];
-			
-			YDBCloudFileOpProcessResult result = [laterOp processEarlierOperationFromSameTransaction:earlierOp];
-			
-			if (result == YDBCloudFileOpProcessResult_MergedIntoLater)
-			{
-				// The 2 operations were merged into 1.
-				// They were merged into the laterOp.
-				// The laterOp will replace the earlierOp in the finalOpsList.
-				
-				[replacedIndex addIndex:earlierIdx];
-				
-				[replacedOpUUID addObject:earlierOp.uuid];
-				[replacementOpUUID addObject:laterOp.uuid];
-			}
-			else if (result == YDBCloudFileOpProcessResult_DependentOnEarlier)
-			{
-				// The laterOp has an implicit dependency on the earlierOp.
-				//
-				// First we check to make sure that adding the implicit dependency won't interfere
-				// with any other dependency. We do this by checking to see if adding the implicit dependency
-				// will create a circular dependency within the graph.
-				
-				if ([self canAddImplicitDependency:earlierOp forOp:laterOp withOperations:operations])
-				{
-					[laterOp addDependencyUUID:earlierOp.uuid];
-				}
-			}
-			else if (result == YDBCloudFileOpProcessResult_DependentOnLater)
-			{
-				// The earlierOp has an implicit dependency on the laterOp.
-				//
-				// First we check to make sure that adding the implicit dependency won't interfere
-				// with any other dependency. We do this by checking to see if adding the implicit dependency
-				// will create a circular dependency within the graph.
-				
-				if ([self canAddImplicitDependency:laterOp forOp:earlierOp withOperations:operations])
-				{
-					[earlierOp addDependencyUUID:laterOp.uuid];
-				}
-			}
-		}
-	}
-	
-	NSMutableArray *finalOpsList = [NSMutableArray arrayWithCapacity:operations.count];
-	
-	index = 0;
-	for (YapDatabaseCloudCoreFileOperation *op in operations)
-	{
-		if (![replacedIndex containsIndex:index])
-		{
-			[finalOpsList addObject:op];
-		}
-		
-		index++;
-	}
-	
-	// Update dependencies.
-	// For example:
-	//
-	// op9.dependencyUUIDs = @[ op1.uuid ] gets changed to
-	// op9.dependencyUUIDs = @[ op2.uuid ] (since op2 replaced op1).
-	
-	for (NSUInteger i = 0; i < replacedOpUUID.count; i++)
-	{
-		NSUUID *oldUUID = replacedOpUUID[i];
-		NSUUID *newUUID = replacementOpUUID[i];
-		
-		for (YapDatabaseCloudCoreFileOperation *op in finalOpsList)
-		{
-			[op replaceDependencyUUID:oldUUID with:newUUID];
-		}
-	}
-	
-	// Modify previous record operations, as needed.
-	
-	YDBCloudCore_EnumOps flags = YDBCloudCore_EnumOps_Existing | YDBCloudCore_EnumOps_Inserted;
-	
-	[self _enumerateOperations:flags
-	                inPipeline:pipeline
-	                usingBlock:
-	  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
-	{
-		if (graphIdx >= operationsGraphIdx)
-		{
-			*stop = YES;
-			return nil;
-		}
-		
-		YapDatabaseCloudCoreOperation *result = nil;
-		
-		if ([operation isKindOfClass:[YapDatabaseCloudCoreRecordOperation class]])
-		{
-			YapDatabaseCloudCoreRecordOperation *recordOperation = (YapDatabaseCloudCoreRecordOperation *)operation;
-			BOOL wasModified = NO;
-			
-			for (YapDatabaseCloudCoreFileOperation *newOperation in finalOpsList)
-			{
-				YapDatabaseCloudCoreRecordOperation *modifiedRecordOperation =
-				  [recordOperation updateWithOperationFromLaterTransaction:newOperation];
-				
-				if (modifiedRecordOperation)
-				{
-					recordOperation = modifiedRecordOperation;
-					wasModified = YES;
-				}
-			}
-			
-			if (wasModified)
-			{
-				recordOperation.needsModifyDatabaseRow = YES;
-				result = recordOperation;
-			}
-		}
-		
-		return result;
-	}];
-	
-	return finalOpsList;
-}
-
-/**
- * Before we add an implicit dependency, we first ensure that doing so won't invalidate any explicit dependencies.
- * We do this by ensuring that the addition of the implicit dependency won't create a circular dependency in the graph.
-**/
-- (BOOL)canAddImplicitDependency:(YapDatabaseCloudCoreFileOperation *)opA
-                           forOp:(YapDatabaseCloudCoreFileOperation *)opB
-                   withOperations:(NSArray *)operations
-{
-	// We want to add an implicit dependency such that opB will depend upon opA. (opA must go first).
-	// But we obviously can't do this if opA already depends upon opB.
-	// Or else we'd end up with a circular dependency.
-	//
-	// So we verify that opA does NOT already depend upon opB.
-	
-	NSMutableSet *visitedOps = [NSMutableSet setWithCapacity:operations.count];
-	[visitedOps addObject:opB.uuid];
-	
-	if ([self hasCircularDependency:opA withOperations:operations visitedOps:visitedOps])
-		return NO;
-	else
-		return YES;
-}
-
-- (BOOL)hasCircularDependency:(YapDatabaseCloudCoreOperation *)op
-               withOperations:(NSArray *)operations
-                   visitedOps:(NSMutableSet<NSUUID *> *)visitedOps
-{
-	YapDatabaseCloudCoreOperation* (^OperationWithUUID)(NSUUID *opUUID);
-	OperationWithUUID = ^YapDatabaseCloudCoreOperation *(NSUUID *opUUID)
-	{
-		for (YapDatabaseCloudCoreOperation *op in operations)
-		{
-			if ([op.uuid isEqual:opUUID])
-			{
-				return op;
-			}
-		}
-		
-		return nil;
-	};
-	
-	if ([visitedOps containsObject:op.uuid])
-	{
-		return YES;
-	}
-	else
-	{
-		BOOL result = NO;
-		
-		[visitedOps addObject:op.uuid];
-		
-		for (NSUUID *depUUID in op.dependencyUUIDs)
-		{
-			YapDatabaseCloudCoreOperation *depOp = OperationWithUUID(depUUID);
-			if (depOp)
-			{
-				if ([self hasCircularDependency:depOp withOperations:operations visitedOps:visitedOps])
-				{
-					result = YES;
-					break;
-				}
-			}
-		}
-		
-		[visitedOps removeObject:op.uuid];
-		
-		return result;
-	}
-}
-
-/**
- * Subclasses may override this class to properly handle their specific flavor of operation.
- * 
- * Subclasses should invoke [super didCompleteOperation:operation].
-**/
-- (void)didCompleteOperation:(YapDatabaseCloudCoreOperation *)operation
-{
-	if (parentConnection->parent->options.enableTagSupport)
-	{
-		if ([operation isKindOfClass:[YapDatabaseCloudCoreFileOperation class]])
-		{
-			__unsafe_unretained YapDatabaseCloudCoreFileOperation *fileOperation =
-			                   (YapDatabaseCloudCoreFileOperation *)operation;
-			
-			if (fileOperation.isDeleteOperation)
-			{
-				[self removeAllTagsForCloudURI:fileOperation.cloudPath.path];
-			}
-		}
-	}
-}
-
-/**
- * Subclasses may override this class to properly handle their specific flavor of operation.
- * 
- * Subclasses should invoke [super didSkipOperation:operation].
-**/
-- (void)didSkipOperation:(YapDatabaseCloudCoreOperation *)operation
-{
-	// Nothing to do here.
 }
 
 /**
@@ -1416,11 +803,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 - (void)addModifiedOperation:(YapDatabaseCloudCoreOperation *)modifiedOp
 {
 	NSParameterAssert(modifiedOp != nil);
-	
-	// First, we make the modifiedOp immutable.
-	// It's either this, or we'd need to make our own copy.
-	
-	[modifiedOp makeImmutable];
 	
 	// Then find the originalOp & replace it.
 	
@@ -1443,6 +825,8 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 				*stop = YES;
 				break;
 			}
+			
+			idx++;
 		}
 		
 		if (found)
@@ -1471,6 +855,8 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 					*outerStop = YES;
 					break;
 				}
+				
+				idx++;
 			}
 			
 			if (found)
@@ -1976,11 +1362,11 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 #pragma mark Utilities - tag
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)tagTable_insertOrUpdateRowWithCloudURI:(NSString *)cloudURI
-                                    identifier:(NSString *)identifier
-                                           tag:(id)tag
+- (void)tagTable_insertOrUpdateRowWithKey:(NSString *)key
+                               identifier:(NSString *)identifier
+                                      tag:(id)tag
 {
-	NSParameterAssert(cloudURI != nil);
+	NSParameterAssert(key != nil);
 	NSParameterAssert(identifier != nil);
 	NSParameterAssert(tag != nil);
 	
@@ -1991,14 +1377,14 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return;
 	}
 	
-	// INSERT OR REPLACE INTO "changeTagTableName" ("cloudURI", "identifier", "changeTag") VALUES (?, ?, ?);
+	// INSERT OR REPLACE INTO "changeTagTableName" ("key", "identifier", "changeTag") VALUES (?, ?, ?);
 	
-	int const bind_idx_cloudURI   = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 0;
 	int const bind_idx_identifier = SQLITE_BIND_START + 1;
 	int const bind_idx_changeTag  = SQLITE_BIND_START + 2;
 	
-	YapDatabaseString _uri; MakeYapDatabaseString(&_uri, cloudURI);
-	sqlite3_bind_text(statement, bind_idx_cloudURI, _uri.str, _uri.length, SQLITE_STATIC);
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	YapDatabaseString _identifier; MakeYapDatabaseString(&_identifier, identifier);
 	sqlite3_bind_text(statement, bind_idx_identifier, _identifier.str, _identifier.length, SQLITE_STATIC);
@@ -2010,10 +1396,10 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		CFNumberType numberType = CFNumberGetType((CFNumberRef)number);
 		
 		if (numberType == kCFNumberFloat32Type ||
-			numberType == kCFNumberFloat64Type ||
-			numberType == kCFNumberFloatType   ||
-			numberType == kCFNumberDoubleType  ||
-			numberType == kCFNumberCGFloatType  )
+		    numberType == kCFNumberFloat64Type ||
+		    numberType == kCFNumberFloatType   ||
+		    numberType == kCFNumberDoubleType  ||
+		    numberType == kCFNumberCGFloatType  )
 		{
 			double value = [number doubleValue];
 			sqlite3_bind_double(statement, bind_idx_changeTag, value);
@@ -2046,13 +1432,13 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_uri);
+	FreeYapDatabaseString(&_key);
 	FreeYapDatabaseString(&_identifier);
 }
 
-- (void)tagTable_removeRowWithCloudURI:(NSString *)cloudURI identifier:(NSString *)identifier
+- (void)tagTable_removeRowWithKey:(NSString *)key identifier:(NSString *)identifier
 {
-	NSParameterAssert(cloudURI != nil);
+	NSParameterAssert(key != nil);
 	NSParameterAssert(identifier != nil);
 	
 	NSAssert(parentConnection->parent->options.enableTagSupport, @"YapDatabaseCloudCoreOptions.enableTagSupport == NO");
@@ -2062,13 +1448,13 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return;
 	}
 	
-	// DELETE FROM "tagTableName" WHERE "cloudURI" = ? AND "identifier" = ?;
+	// DELETE FROM "tagTableName" WHERE "key" = ? AND "identifier" = ?;
 	
-	int const bind_idx_cloudURI   = SQLITE_BIND_START + 0;
+	int const bind_idx_key        = SQLITE_BIND_START + 0;
 	int const bind_idx_identifier = SQLITE_BIND_START + 1;
 	
-	YapDatabaseString _uri; MakeYapDatabaseString(&_uri, cloudURI);
-	sqlite3_bind_text(statement, bind_idx_cloudURI, _uri.str, _uri.length, SQLITE_STATIC);
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	YapDatabaseString _identifier; MakeYapDatabaseString(&_identifier, identifier);
 	sqlite3_bind_text(statement, bind_idx_identifier, _identifier.str, _identifier.length, SQLITE_STATIC);
@@ -2082,13 +1468,13 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_uri);
+	FreeYapDatabaseString(&_key);
 	FreeYapDatabaseString(&_identifier);
 }
 
-- (void)tagTable_removeRowsWithCloudURI:(NSString *)cloudURI
+- (void)tagTable_removeRowsWithKey:(NSString *)key
 {
-	NSParameterAssert(cloudURI != nil);
+	NSParameterAssert(key != nil);
 	
 	NSAssert(parentConnection->parent->options.enableTagSupport, @"YapDatabaseCloudCoreOptions.enableTagSupport == NO");
 	
@@ -2097,12 +1483,12 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return;
 	}
 	
-	// DELETE FROM "tagTableName" WHERE "cloudURI" = ?;
+	// DELETE FROM "tagTableName" WHERE "key" = ?;
 	
-	int const bind_idx_cloudURI   = SQLITE_BIND_START;
+	int const bind_idx_key = SQLITE_BIND_START;
 
-	YapDatabaseString _uri; MakeYapDatabaseString(&_uri, cloudURI);
-	sqlite3_bind_text(statement, bind_idx_cloudURI, _uri.str, _uri.length, SQLITE_STATIC);
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
 	
 	int status = sqlite3_step(statement);
 	if (status != SQLITE_DONE)
@@ -2113,7 +1499,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	sqlite3_clear_bindings(statement);
 	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_uri);
+	FreeYapDatabaseString(&_key);
 }
 
 - (void)tagTable_removeAllRows
@@ -2146,87 +1532,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Internal helper method for other handleX methods.
-**/
-- (void)_handleChangeWithRowid:(int64_t)rowid
-                 collectionKey:(YapCollectionKey *)ck
-                        object:(id)object
-                      metadata:(id)metadata
-{
-	YDBLogAutoTrace();
-	
-	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
-	
-	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
-	{
-		return;
-	}
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	if (handler->blockType == YapDatabaseBlockTypeWithKey)
-	{
-		YapDatabaseCloudCoreHandlerWithKeyBlock block =
-		  (YapDatabaseCloudCoreHandlerWithKeyBlock)handler->block;
-		
-		block(databaseTransaction, parentConnection->operations_block, ck.collection, ck.key);
-	}
-	else if (handler->blockType == YapDatabaseBlockTypeWithObject)
-	{
-		YapDatabaseCloudCoreHandlerWithObjectBlock block =
-		  (YapDatabaseCloudCoreHandlerWithObjectBlock)handler->block;
-		
-		block(databaseTransaction, parentConnection->operations_block, ck.collection, ck.key, object);
-	}
-	else if (handler->blockType == YapDatabaseBlockTypeWithMetadata)
-	{
-		YapDatabaseCloudCoreHandlerWithMetadataBlock block =
-		  (YapDatabaseCloudCoreHandlerWithMetadataBlock)handler->block;
-		
-		block(databaseTransaction, parentConnection->operations_block, ck.collection, ck.key, metadata);
-	}
-	else
-	{
-		YapDatabaseCloudCoreHandlerWithRowBlock block =
-		  (YapDatabaseCloudCoreHandlerWithRowBlock)handler->block;
-		
-		block(databaseTransaction, parentConnection->operations_block, ck.collection, ck.key, object, metadata);
-	}
-	
-	if ([parentConnection->operations_block count] > 0)
-	{
-		NSSet *allowedOperationClasses = parentConnection->parent->options.allowedOperationClasses;
-		
-		for (YapDatabaseCloudCoreOperation *operation in parentConnection->operations_block)
-		{
-			// Make sure the operation type is allowed (generally enforeced by subclasses)
-			if (allowedOperationClasses)
-			{
-				BOOL allowed = NO;
-				for (Class class in allowedOperationClasses)
-				{
-					if ([operation isKindOfClass:class])
-					{
-						allowed = YES;
-						break;
-					}
-				}
-				
-				if (!allowed)
-				{
-					@throw [self disallowedOperationClass:operation];
-				}
-			}
-			
-			// Invoke import hook (performs all required pre-processing of operation)
-			[self importOperation:operation withDatabaseRowid:@(rowid) graphIdx:nil];
-		}
-		
-		[parentConnection->operations_block removeAllObjects];
-	}
-}
-
-/**
  * YapDatabaseReadWriteTransaction Hook, invoked post-op.
  *
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
@@ -2254,14 +1559,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		}];
 		
 		[parentConnection->pendingAttachRequests removeAllItemsWithKey:collectionKey];
-		
-		return;
 	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
 }
 
 /**
@@ -2279,19 +1577,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
               withMetadata:(id)metadata
                      rowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfObjectModified |
-	                                            YapDatabaseBlockInvokeIfMetadataModified;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
+	// Nothing to do here
 }
 
 /**
@@ -2305,24 +1591,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfObjectModified;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	id metadata = nil;
-	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
+	// Nothing to do here
 }
 
 /**
@@ -2336,24 +1605,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfMetadataModified;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	id object = nil;
-	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
+	// Nothing to do here
 }
 
 /**
@@ -2364,30 +1616,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfObjectTouched;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	id object = nil;
-	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
+	// Nothing to do here
 }
 
 /**
@@ -2398,30 +1627,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfMetadataTouched;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	id object = nil;
-	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
+	// Nothing to do here
 }
 
 /**
@@ -2432,130 +1638,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	YDBLogAutoTrace();
-	
-	__unsafe_unretained YapDatabaseCloudCoreHandler *handler = parentConnection->parent->handler;
-	
-	YapDatabaseBlockInvoke blockInvokeBitmask = YapDatabaseBlockInvokeIfObjectTouched |
-	                                            YapDatabaseBlockInvokeIfMetadataTouched;
-	
-	if (!(handler->blockInvokeOptions & blockInvokeBitmask)) return;
-	
-	id object = nil;
-	if (handler->blockType & YapDatabaseBlockType_ObjectFlag)
-	{
-		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	id metadata = nil;
-	if (handler->blockType & YapDatabaseBlockType_MetadataFlag)
-	{
-		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
-	}
-	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata];
-}
-
-
-
-/**
- * Extensions may OPTIONALLY implement this method.
- * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
- *
- * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
- * - removeObjectForKey:inCollection:
-**/
-- (void)handleWillRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
-{
-	YDBLogAutoTrace();
-	
-	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
-	
-	if (allowedCollections && ![allowedCollections isAllowed:ck.collection])
-	{
-		return;
-	}
-	
-	// Update mappings (attach / detach stuff).
-	//
-	// Note: We do this before invoking the delete handler.
-	// This way, should the delete handler query the attach/detach system, it will produce the expected results
-	// (with the deleted item deleted from the mappings system).
-	
-	NSMutableDictionary<NSString *, NSNumber *> *mappings = nil;
-	
-	__unsafe_unretained YapDatabaseCloudCoreOptions *options = parentConnection->parent->options;
-	if (options.enableAttachDetachSupport)
-	{
-		// Detach all (rowid <-> cloudURI) mappings
-		
-		NSSet *attachedCloudURIs = [self allAttachedCloudURIsForRowid:rowid];
-		
-		for (NSString *cloudURI in attachedCloudURIs)
-		{
-			[self detachCloudURI:cloudURI forRowid:rowid];
-		}
-		
-		// See if we need to automatically generate a deleteOperation
-		
-		mappings = [NSMutableDictionary dictionaryWithCapacity:[attachedCloudURIs count]];
-		
-		for (NSString *cloudURI in attachedCloudURIs)
-		{
-			NSUInteger retainCount = [[self allAttachedRowidsForCloudURI:cloudURI] count];
-			
-			mappings[cloudURI] = @(retainCount);
-		}
-	}
-	
-	// Invoke DeleteHandler (if installed)
-	
-	__unsafe_unretained YapDatabaseCloudCoreDeleteHandler *deleteHandler = parentConnection->parent->deleteHandler;
-	if (deleteHandler)
-	{
-		if (deleteHandler->blockType == YapDatabaseBlockTypeWithKey)
-		{
-			YapDatabaseCloudCoreDeleteHandlerWithKeyBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithKeyBlock)deleteHandler->block;
-			
-			block(databaseTransaction, parentConnection->operations_block, mappings, ck.collection, ck.key);
-		}
-		else if (deleteHandler->blockType == YapDatabaseBlockTypeWithObject)
-		{
-			YapDatabaseCloudCoreDeleteHandlerWithObjectBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithObjectBlock)deleteHandler->block;
-			
-			id object = [databaseTransaction objectForCollectionKey:ck withRowid:rowid];
-			
-			block(databaseTransaction, parentConnection->operations_block, mappings, ck.collection, ck.key, object);
-		}
-		else if (deleteHandler->blockType == YapDatabaseBlockTypeWithMetadata)
-		{
-			YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock)deleteHandler->block;
-			
-			id metadata = [databaseTransaction metadataForCollectionKey:ck withRowid:rowid];
-			
-			block(databaseTransaction, parentConnection->operations_block, mappings, ck.collection, ck.key, metadata);
-		}
-		else
-		{
-			YapDatabaseCloudCoreDeleteHandlerWithRowBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithRowBlock)deleteHandler->block;
-			
-			id object = nil;
-			id metadata = nil;
-			[databaseTransaction getObject:&object metadata:&metadata forCollectionKey:ck withRowid:rowid];
-			
-			block(databaseTransaction, parentConnection->operations_block, mappings,
-			      ck.collection, ck.key, object, metadata);
-		}
-		
-		[self importAddedOperations:rowid];
-	}
+	// Nothing to do here
 }
 
 /**
@@ -2565,144 +1648,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
-	// We do everyting in the pre-hook. (^^ the above method ^^)
-	//
-	// @see handleWillRemoveObjectForCollectionKey:withRowid:
-}
-
-/**
- * Extensions may OPTIONALLY implement this method.
- * YapDatabaseReadWriteTransaction Hook, invoked pre-op.
- *
- * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
- * - removeObjectsForKeys:inCollection:
- * - removeAllObjectsInCollection:
- *
- * IMPORTANT:
- *   The number of items passed to this method has the following guarantee:
- *   count <= (SQLITE_LIMIT_VARIABLE_NUMBER - 1)
- *
- * The YapDatabaseReadWriteTransaction will inspect the list of keys that are to be removed,
- * and then loop over them in "chunks" which are readily processable for extensions.
-**/
-- (void)handleWillRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
-{
-	YDBLogAutoTrace();
-	
-	YapWhitelistBlacklist *allowedCollections = parentConnection->parent->options.allowedCollections;
-	
-	if (allowedCollections && ![allowedCollections isAllowed:collection])
-	{
-		return;
-	}
-	
-	// Update mappings (attach / detach stuff).
-	//
-	// Note: We do this before invoking the delete handler.
-	// This way, should the delete handler query the attach/detach system, it will produce the expected results
-	// (with the deleted item deleted from the mappings system).
-	
-	NSMutableDictionary<NSString *, NSNumber *> *mappings = nil;
-	
-	__unsafe_unretained YapDatabaseCloudCoreOptions *options = parentConnection->parent->options;
-	if (options.enableAttachDetachSupport)
-	{
-		// Detach all (rowid <-> cloudURI) mappings
-		
-		for (NSNumber *rowidNum in rowids)
-		{
-			int64_t rowid = [rowidNum unsignedLongLongValue];
-			
-			NSSet *attachedCloudURIs = [self allAttachedCloudURIsForRowid:rowid];
-			
-			for (NSString *cloudURI in attachedCloudURIs)
-			{
-				[self detachCloudURI:cloudURI forRowid:rowid];
-			}
-			
-			// See if we need to automatically generate a deleteOperation
-			
-			mappings = [NSMutableDictionary dictionaryWithCapacity:[attachedCloudURIs count]];
-			
-			for (NSString *cloudURI in attachedCloudURIs)
-			{
-				NSUInteger retainCount = [[self allAttachedRowidsForCloudURI:cloudURI] count];
-				
-				mappings[cloudURI] = @(retainCount);
-			}
-		}
-	}
-	
-	// Invoke DeleteHandler (if installed)
-	
-	__unsafe_unretained YapDatabaseCloudCoreDeleteHandler *deleteHandler = parentConnection->parent->deleteHandler;
-	if (deleteHandler)
-	{
-		void (^InvokeDeleteHandlerBlock)(NSString *key, int64_t rowid);
-		
-		if (deleteHandler->blockType == YapDatabaseBlockTypeWithKey)
-		{
-			__unsafe_unretained YapDatabaseCloudCoreDeleteHandlerWithKeyBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithKeyBlock)deleteHandler->block;
-			
-			InvokeDeleteHandlerBlock = ^(NSString *key, int64_t rowid){
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key);
-			};
-		}
-		else if (deleteHandler->blockType == YapDatabaseBlockTypeWithObject)
-		{
-			__unsafe_unretained YapDatabaseCloudCoreDeleteHandlerWithObjectBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithObjectBlock)deleteHandler->block;
-			
-			InvokeDeleteHandlerBlock = ^(NSString *key, int64_t rowid){
-				
-				id object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, object);
-			};
-		}
-		else if (deleteHandler->blockType == YapDatabaseBlockTypeWithMetadata)
-		{
-			__unsafe_unretained YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock)deleteHandler->block;
-			
-			InvokeDeleteHandlerBlock = ^(NSString *key, int64_t rowid){
-				
-				id metadata = [databaseTransaction metadataForKey:key inCollection:collection withRowid:rowid];
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, metadata);
-			};
-		}
-		else
-		{
-			__unsafe_unretained YapDatabaseCloudCoreDeleteHandlerWithRowBlock block =
-			  (YapDatabaseCloudCoreDeleteHandlerWithRowBlock)deleteHandler->block;
-			
-			InvokeDeleteHandlerBlock = ^(NSString *key, int64_t rowid){
-				
-				YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				
-				id object = nil;
-				id metadata = nil;
-				[databaseTransaction getObject:&object metadata:&metadata forCollectionKey:ck withRowid:rowid];
-			
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, object, metadata);
-			};
-		}
-		
-		NSUInteger count = keys.count;
-		for (NSUInteger i = 0; i < count; i++)
-		{
-			NSString *key = keys[i];
-			int64_t rowid = [rowids[i] longLongValue];
-			
-			InvokeDeleteHandlerBlock(key, rowid);
-			
-			[self importAddedOperations:rowid];
-		}
-	
-	} // end: if (deleteHandler)
+	// Nothing to do here
 }
 
 /**
@@ -2711,9 +1657,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
-	// We do everyting in the pre-hook. (^^ the above method ^^)
-	//
-	// @see handleWillRemoveObjectsForKeys:inCollection:withRowids:
+	// Nothing to do here
 }
 
 /**
@@ -2725,11 +1669,13 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	YDBLogAutoTrace();
 	
 	[self queueTable_removeAllRows];
-	if (parentConnection->parent->options.enableAttachDetachSupport) {
-		[self mappingTable_removeAllRows];
-	}
+	
 	if (parentConnection->parent->options.enableTagSupport) {
 		[self tagTable_removeAllRows];
+	}
+	
+	if (parentConnection->parent->options.enableAttachDetachSupport) {
+		[self mappingTable_removeAllRows];
 	}
 	
 	[parentConnection->pendingAttachRequests removeAllItems];
@@ -2745,6 +1691,36 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	[parentConnection->dirtyTags removeAllObjects];
 	
 	parentConnection->reset = YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Subclass Hooks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Subclasses may override this class to properly handle their specific flavor of operations.
+**/
+- (NSArray *)processOperations:(NSArray *)operations
+                    inPipeline:(YapDatabaseCloudCorePipeline *)pipeline
+                  withGraphIdx:(NSUInteger)operationsGraphIdx
+{
+	return operations;
+}
+
+/**
+ * Subclasses may override this class to properly handle their specific flavor of operation.
+**/
+- (void)didCompleteOperation:(YapDatabaseCloudCoreOperation *)operation
+{
+	// Nothing to do here.
+}
+
+/**
+ * Subclasses may override this class to properly handle their specific flavor of operation.
+**/
+- (void)didSkipOperation:(YapDatabaseCloudCoreOperation *)operation
+{
+	// Nothing to do here.
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2765,33 +1741,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (BOOL)addOperation:(YapDatabaseCloudCoreOperation *)operation
 {
-	return [self addOperation:operation forKey:nil inCollection:nil];
-}
-
-/**
- * Allows you to queue an operation to be executed automatically by the appropriate pipeline.
- * This may be used as an alternative to creating an operation from within the YapDatabaseCloudCoreHandler.
- *
- * @param operation
- *   The operation to be added to the pipeline's queue.
- *   The operation.pipeline property specifies which pipeline to use.
- *   The operation will be added to a new graph for the current commit.
- *
- * @param key
- *   Optional key of a row in YapDatabase.
- *   This is only used if attach/detach support is enabled.
- *
- * @param collection
- *   Optional collection of the row in YapDatabase.
- *   This is only used if attach/detach support is enabled.
- *
- * @return
- *   NO if the operation isn't properly configured for use.
-**/
-- (BOOL)addOperation:(YapDatabaseCloudCoreOperation *)operation
-              forKey:(NSString *)key
-        inCollection:(NSString *)collection
-{
 	YDBLogAutoTrace();
 	
 	// Proper API usage check
@@ -2805,44 +1754,21 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	if (operation == nil) return NO;
 	
-	NSSet *allowedOperationClasses = parentConnection->parent->options.allowedOperationClasses;
-	if (allowedOperationClasses)
+	if ([self _operationWithUUID:operation.uuid inPipeline:operation.pipeline] != nil)
 	{
-		BOOL allowed = NO;
-		for (Class class in allowedOperationClasses)
-		{
-			if ([operation isKindOfClass:class])
-			{
-				allowed = YES;
-				break;
-			}
-		}
-		
-		if (!allowed)
-		{
-			@throw [self disallowedOperationClass:operation];
-			return NO;
-		}
+		// The operation already exists.
+		// Did you mean to use the 'modifyOperation' method?
+		return NO;
 	}
 	
-	// Lookup rowid for key/collection (if given)
+	// Public API safety:
+	// Prevent the user from modifying the operation after import.
 	
-	NSNumber *rowidNum = nil;
-	if (key)
-	{
-		int64_t rowid = 0;
-		if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
-		{
-			// collection/key tuple doesn't exist in database
-			return NO;
-		}
-		
-		rowidNum = @(rowid);
-	}
+	operation = [operation copy];
 	
 	// Standard import logic
 	
-	return [self importOperation:operation withDatabaseRowid:rowidNum graphIdx:nil];
+	return [self importOperation:operation withGraphIdx:nil];
 }
 
 /**
@@ -2872,47 +1798,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (BOOL)insertOperation:(YapDatabaseCloudCoreOperation *)operation inGraph:(NSInteger)graphIdx
 {
-	return [self insertOperation:operation inGraph:graphIdx forKey:nil inCollection:nil];
-}
-
-/**
- * Allows you to insert an operation into an existing graph.
- *
- * For example, say an operation in the currently executing graph (graphIdx = 0) fails due to some conflict.
- * And to resolve the conflict you need to:
- * - execute a different (new operation)
- * - and then re-try the failed operation
- * 
- * What you can do is create & insert the new operation (into graphIdx zero).
- * And modify the old operation to depend on the new operation (@see 'modifyOperation').
- *
- * The dependency graph will automatically be recalculated using the inserted operation.
- *
- * @param operation
- *   The operation to be inserted into the pipeline's queue.
- *   The operation.pipeline property specifies which pipeline to use.
- *   The operation will be inserted into the graph corresponding to the graphIdx parameter.
- * 
- * @param graphIdx
- *   The graph index for the corresponding pipeline.
- *   The currently executing graph index is always zero, which is the most common value.
- *
- * @param key
- *   Optional key of a row in YapDatabase.
- *   This is only used if attach/detach support is enabled.
- *
- * @param collection
- *   Optional collection of the row in YapDatabase.
- *   This is only used if attach/detach support is enabled.
- *
- * @return
- *   NO if the operation isn't properly configured for use.
-**/
-- (BOOL)insertOperation:(YapDatabaseCloudCoreOperation *)operation
-                inGraph:(NSUInteger)graphIdx
-                 forKey:(NSString *)key
-           inCollection:(NSString *)collection
-{
 	YDBLogAutoTrace();
 	
 	// Proper API usage check
@@ -2926,51 +1811,21 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	if (operation == nil) return NO;
 	
-	NSSet *allowedOperationClasses = parentConnection->parent->options.allowedOperationClasses;
-	if (allowedOperationClasses)
-	{
-		BOOL allowed = NO;
-		for (Class class in allowedOperationClasses)
-		{
-			if ([operation isKindOfClass:class])
-			{
-				allowed = YES;
-				break;
-			}
-		}
-		
-		if (!allowed)
-		{
-			@throw [self disallowedOperationClass:operation];
-			return NO;
-		}
-	}
-	
-	if ([self operationWithUUID:operation.uuid inPipeline:operation.pipeline] != nil)
+	if ([self _operationWithUUID:operation.uuid inPipeline:operation.pipeline] != nil)
 	{
 		// The operation already exists.
 		// Did you mean to use the 'modifyOperation' method?
 		return NO;
 	}
 	
-	// Lookup rowid for key/collection (if given)
+	// Public API safety:
+	// Prevent the user from modifying the operation after import.
 	
-	NSNumber *rowidNum = nil;
-	if (key)
-	{
-		int64_t rowid = 0;
-		if (![databaseTransaction getRowid:&rowid forKey:key inCollection:collection])
-		{
-			// collection/key tuple doesn't exist in database
-			return NO;
-		}
-		
-		rowidNum = @(rowid);
-	}
+	operation = [operation copy];
 	
 	// Standard insert logic
 	
-	return [self importOperation:operation withDatabaseRowid:rowidNum graphIdx:@(graphIdx)];
+	return [self importOperation:operation withGraphIdx:@(graphIdx)];
 }
 
 /**
@@ -2993,32 +1848,17 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	if (operation == nil) return NO;
 	
-	NSSet *allowedOperationClasses = parentConnection->parent->options.allowedOperationClasses;
-	if (allowedOperationClasses)
-	{
-		BOOL allowed = NO;
-		for (Class class in allowedOperationClasses)
-		{
-			if ([operation isKindOfClass:class])
-			{
-				allowed = YES;
-				break;
-			}
-		}
-		
-		if (!allowed)
-		{
-			@throw [self disallowedOperationClass:operation];
-			return NO;
-		}
-	}
-	
-	if ([self operationWithUUID:operation.uuid inPipeline:operation.pipeline] == nil)
+	if ([self _operationWithUUID:operation.uuid inPipeline:operation.pipeline] == nil)
 	{
 		// The operation doesn't appear to exist.
 		// It either never existed, or it's already been completed or skipped.
 		return NO;
 	}
+	
+	// Public API safety:
+	// Prevent the user from modifying the operation after import.
+	
+	operation = [operation copy];
 	
 	// Modify logic
 	
@@ -3035,7 +1875,12 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
  * is to use either the completeOperation: or one of the skipOperation methods.
  * These methods allow the system to remove the operation from its internal sqlite table.
 **/
-- (void)completeOperation:(YapDatabaseCloudCoreOperation *)inOp
+- (void)completeOperationWithUUID:(NSUUID *)uuid
+{
+	[self completeOperationWithUUID:uuid inPipeline:nil];
+}
+
+- (void)completeOperationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName
 {
 	YDBLogAutoTrace();
 	
@@ -3046,7 +1891,12 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return;
 	}
 	
-	YapDatabaseCloudCoreOperation *op = [self operationWithUUID:inOp.uuid inPipeline:inOp.pipeline];
+	YapDatabaseCloudCoreOperation *op = nil;
+	if (pipelineName)
+		op = [self _operationWithUUID:uuid inPipeline:pipelineName];
+	else
+		op = [self _operationWithUUID:uuid];
+	
 	if (op && !op.pendingStatusIsCompleted)
 	{
 		op = [op copy];
@@ -3068,7 +1918,12 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
  * is to use either the completeOperation: or one of the skipOperation methods.
  * These methods allow the system to remove the operation from its internal sqlite table.
 **/
-- (void)skipOperation:(YapDatabaseCloudCoreOperation *)inOp
+- (void)skipOperationWithUUID:(NSUUID *)uuid
+{
+	[self skipOperationWithUUID:uuid inPipeline:nil];
+}
+
+- (void)skipOperationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName
 {
 	YDBLogAutoTrace();
 	
@@ -3079,7 +1934,12 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		return;
 	}
 	
-	YapDatabaseCloudCoreOperation *op = [self operationWithUUID:inOp.uuid inPipeline:inOp.pipeline];
+	YapDatabaseCloudCoreOperation *op = nil;
+	if (pipelineName)
+		op = [self _operationWithUUID:uuid inPipeline:pipelineName];
+	else
+		op = [self _operationWithUUID:uuid];
+	
 	if (op && !op.pendingStatusIsCompletedOrSkipped)
 	{
 		op = [op copy];
@@ -3110,28 +1970,30 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	__block NSMutableArray *skippedOps = nil;
 	
-	[self _enumerateOperations:YDBCloudCore_EnumOps_All
-	                usingBlock:
+	[self _enumerateAndModifyOperations:YDBCloudCore_EnumOps_All
+	                         usingBlock:
 	  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCorePipeline *pipeline,
 	                                   YapDatabaseCloudCoreOperation *operation,
 	                                   NSUInteger graphIdx, BOOL *stop)
 	{
-		YapDatabaseCloudCoreOperation *modifiedOp = nil;
+		operation = [operation copy];
+		BOOL shouldSkip = testBlock(pipeline, operation, graphIdx, stop);
 		
-		if (testBlock(pipeline, operation, graphIdx, stop))
+		if (shouldSkip)
 		{
-			modifiedOp = [operation copy];
-			
-			modifiedOp.needsDeleteDatabaseRow = YES;
-			modifiedOp.pendingStatus = @(YDBCloudOperationStatus_Skipped);
+			operation.needsDeleteDatabaseRow = YES;
+			operation.pendingStatus = @(YDBCloudOperationStatus_Skipped);
 			
 			if (skippedOps == nil)
 				skippedOps = [NSMutableArray array];
 			
-			[skippedOps addObject:modifiedOp];
+			[skippedOps addObject:operation];
+			return operation;
 		}
-		
-		return modifiedOp;
+		else
+		{
+			return nil;
+		}
 	}];
 	
 	for (YapDatabaseCloudCoreOperation *op in skippedOps)
@@ -3160,98 +2022,35 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	__block NSMutableArray *skippedOps = nil;
 	
-	[self _enumerateOperations:YDBCloudCore_EnumOps_All
-	                inPipeline:pipeline
-	                usingBlock:
+	[self _enumerateAndModifyOperations:YDBCloudCore_EnumOps_All
+	                         inPipeline:pipeline
+	                         usingBlock:
 	  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
 	{
-		YapDatabaseCloudCoreOperation *modifiedOp = nil;
+		operation = [operation copy];
+		BOOL shouldSkip = testBlock(operation, graphIdx, stop);
 		
-		if (testBlock(operation, graphIdx, stop))
+		if (shouldSkip)
 		{
-			modifiedOp = [operation copy];
-			
-			modifiedOp.needsDeleteDatabaseRow = YES;
-			modifiedOp.pendingStatus = @(YDBCloudOperationStatus_Skipped);
+			operation.needsDeleteDatabaseRow = YES;
+			operation.pendingStatus = @(YDBCloudOperationStatus_Skipped);
 			
 			if (skippedOps == nil)
 				skippedOps = [NSMutableArray array];
 			
-			[skippedOps addObject:modifiedOp];
+			[skippedOps addObject:operation];
+			return operation;
 		}
-		
-		return modifiedOp;
+		else
+		{
+			return nil;
+		}
 	}];
 	
 	for (YapDatabaseCloudCoreOperation *op in skippedOps)
 	{
 		[self didSkipOperation:op];
 	}
-}
-
-/**
- *
-**/
-- (void)mergeRecord:(NSDictionary *)record withCloudURI:(NSString *)cloudURI
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	BOOL isDirectory = [cloudURI hasSuffix:@"/"];
-	YapFilePath *cloudUriPath = [[YapFilePath alloc] initWithPath:cloudURI isDirectory:isDirectory];
-	
-	NSMutableArray<YapDatabaseCloudCoreRecordOperation *> *recordOperations = [NSMutableArray array];
-	
-	[self enumerateOperationsUsingBlock:
-	    ^(YapDatabaseCloudCorePipeline *pipeline,
-			YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
-	{
-		if ([operation isKindOfClass:[YapDatabaseCloudCoreRecordOperation class]])
-		{
-			__unsafe_unretained YapDatabaseCloudCoreRecordOperation *recordOperation =
-			                    (YapDatabaseCloudCoreRecordOperation *)operation;
-			
-			BOOL cloudPathMatches = [recordOperation.cloudPath isEqualToFilePath:cloudUriPath];
-			if (cloudPathMatches)
-			{
-				[recordOperations addObject:recordOperation];
-			}
-		}
-	}];
-	
-//	if (recordOperations.count > 0)
-//	{
-//		__unsafe_unretained YapDatabaseReadWriteTransaction *transaction =
-//		                   (YapDatabaseReadWriteTransaction *)databaseTransaction;
-//	
-//		for (YapDatabaseCloudCoreRecordOperation *immutableRecordOp in recordOperations)
-//		{
-//			YapDatabaseCloudCoreRecordOperation *recordOp = [immutableRecordOp copy];
-//			
-//			YapCollectionKey *ck = nil;
-//			
-//			if (recordOp.databaseRowid)
-//			{
-//				int64_t rowid = [recordOp.databaseRowid longLongValue];
-//				ck = [databaseTransaction collectionKeyForRowid:rowid];
-//			}
-//			
-//			parentConnection->parent->mergeRecordBlock(transaction, ck.collection, ck.key, record, recordOp);
-//			
-//			if (recordOp.hasChanges)
-//			{
-//				recordOp.needsModifyDatabaseRow = YES;
-//				
-//				[self addModifiedOperation:recordOp];
-//			}
-//		}
-//	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3265,13 +2064,41 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 **/
 - (YapDatabaseCloudCoreOperation *)operationWithUUID:(NSUUID *)uuid
 {
+	// Public API safety:
+	// Prevent the user from modifying operations in the pipeline by returning a copy.
+	
+	return [[self _operationWithUUID:uuid] copy];
+}
+
+/**
+ * Searches for an operation with the given UUID and pipeline.
+ * If you know the pipeline, this method is a bit more efficient than 'operationWithUUID'.
+ *
+ * @return The corresponding operation, if found. Otherwise nil.
+**/
+- (YapDatabaseCloudCoreOperation *)operationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName
+{
+	// Public API safety:
+	// Prevent the user from modifying operations in the pipeline by returning a copy.
+	
+	return [[self _operationWithUUID:uuid inPipeline:pipelineName] copy];
+}
+
+/**
+ * Internal version of 'operationWithUUID:'.
+ * 
+ * The public version returns a copy of the operation (for safety).
+ * The internal version returns the operation sans copy (only safe for internal components).
+**/
+- (YapDatabaseCloudCoreOperation *)_operationWithUUID:(NSUUID *)uuid
+{
 	// Search operations from previous commits.
 	
 	NSArray *allPipelines = [parentConnection->parent registeredPipelines];
 	
 	for (YapDatabaseCloudCorePipeline *pipeline in allPipelines)
 	{
-		YapDatabaseCloudCoreOperation *originalOp = [pipeline operationWithUUID:uuid];
+		YapDatabaseCloudCoreOperation *originalOp = [pipeline _operationWithUUID:uuid];
 		if (originalOp)
 		{
 			YapDatabaseCloudCoreOperation *modifiedOp = parentConnection->operations_modified[uuid];
@@ -3330,18 +2157,18 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 }
 
 /**
- * Searches for an operation with the given UUID and pipeline.
- * If you know the pipeline, this method is a bit more efficient than 'operationWithUUID'.
+ * Internal version of 'operationWithUUID:inPipeline:'.
  *
- * @return The corresponding operation, if found. Otherwise nil.
+ * The public version returns a copy of the operation (for safety).
+ * The internal version returns the operation sans copy (only safe for internal components).
 **/
-- (YapDatabaseCloudCoreOperation *)operationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName
+- (YapDatabaseCloudCoreOperation *)_operationWithUUID:(NSUUID *)uuid inPipeline:(NSString *)pipelineName
 {
 	// Search operations from previous commits.
 	
 	YapDatabaseCloudCorePipeline *pipeline = [parentConnection->parent pipelineWithName:pipelineName];
 	
-	YapDatabaseCloudCoreOperation *originalOp = [pipeline operationWithUUID:uuid];
+	YapDatabaseCloudCoreOperation *originalOp = [pipeline _operationWithUUID:uuid];
 	if (originalOp)
 	{
 		YapDatabaseCloudCoreOperation *modifiedOp = parentConnection->operations_modified[uuid];
@@ -3408,7 +2235,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		__block BOOL found = NO;
 		__block NSUInteger foundGraphIdx = 0;
 		
-		[pipeline enumerateOperationsUsingBlock:
+		[pipeline _enumerateOperationsUsingBlock:
 		  ^(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
 		{
 			if ([operation.uuid isEqual:uuid])
@@ -3462,17 +2289,58 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	return foundGraphIdx;
 }
 
-
+/**
+ * Public API
+**/
 - (void)enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCorePipeline *pipeline,
                                                YapDatabaseCloudCoreOperation *operation,
                                                NSUInteger graphIdx, BOOL *stop))enumBlock
+{
+	[self _enumerateOperationsUsingBlock:
+	    ^(YapDatabaseCloudCorePipeline *pipeline,
+	      YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
+	{
+		enumBlock(pipeline, [operation copy], graphIdx, stop);
+	}];
+}
+
+/**
+ * Public API
+**/
+- (void)enumerateOperationsInPipeline:(NSString *)pipelineName
+                           usingBlock:
+    (void (^)(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop))enumBlock
+{
+	[self _enumerateOperationsInPipeline:pipelineName
+									  usingBlock:^(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
+	{
+		enumBlock([operation copy], graphIdx, stop);
+	}];
+}
+
+/**
+ * Internal enumerate method.
+ * 
+ * The public version returns a copy of the operation (for safety).
+ * The internal version returns the operation sans copy (only safe for internal components).
+**/
+- (void)_enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCorePipeline *pipeline,
+                                                 YapDatabaseCloudCoreOperation *operation,
+                                                 NSUInteger graphIdx, BOOL *stop))enumBlock
 {
 	if (enumBlock == nil) return;
 	
 	if (databaseTransaction->isReadWriteTransaction)
 	{
-		[self _enumerateOperations:YDBCloudCore_EnumOps_All
-		                usingBlock:
+		// This is a lot more complicated, as we have to take into account:
+		// - operations that have been added
+		// - operations that have been inserted
+		// - operations that have been modified
+		//
+		// So we use the `_enumerateAndModifyOperations:::` method, which handle all this for us.
+		
+		[self _enumerateAndModifyOperations:YDBCloudCore_EnumOps_All
+		                         usingBlock:
 		  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCorePipeline *pipeline,
 		                                   YapDatabaseCloudCoreOperation *operation,
 		                                   NSUInteger graphIdx, BOOL *stop)
@@ -3488,7 +2356,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		NSArray *allPipelines = [parentConnection->parent registeredPipelines];
 		for (YapDatabaseCloudCorePipeline *pipeline in allPipelines)
 		{
-			[pipeline enumerateOperationsUsingBlock:
+			[pipeline _enumerateOperationsUsingBlock:
 			  ^(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *innerStop)
 			{
 				enumBlock(pipeline, operation, graphIdx, &stop);
@@ -3501,8 +2369,14 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	}
 }
 
-- (void)enumerateOperationsInPipeline:(NSString *)pipelineName
-                           usingBlock:
+/**
+ * Internal enumerate method.
+ *
+ * The public version returns a copy of the operation (for safety).
+ * The internal version returns the operation sans copy (only safe for internal components).
+**/
+- (void)_enumerateOperationsInPipeline:(NSString *)pipelineName
+                            usingBlock:
     (void (^)(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop))enumBlock
 {
 	if (enumBlock == nil) return;
@@ -3511,9 +2385,16 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	if (databaseTransaction->isReadWriteTransaction)
 	{
-		[self _enumerateOperations:YDBCloudCore_EnumOps_All
-		                inPipeline:pipeline
-		                usingBlock:
+		// This is a lot more complicated, as we have to take into account:
+		// - operations that have been added
+		// - operations that have been inserted
+		// - operations that have been modified
+		//
+		// So we use the `_enumerateAndModifyOperations:::` method, which handle all this for us.
+		
+		[self _enumerateAndModifyOperations:YDBCloudCore_EnumOps_All
+		                         inPipeline:pipeline
+		                         usingBlock:
 		  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
 		{
 			enumBlock(operation, graphIdx, stop);
@@ -3522,7 +2403,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	}
 	else
 	{
-		[pipeline enumerateOperationsUsingBlock:enumBlock];
+		[pipeline _enumerateOperationsUsingBlock:enumBlock];
 	}
 }
 
@@ -3532,11 +2413,11 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
  * Allows for enumeration of all existing, inserted & added operations (filtering as needed via parameter),
  * and allows for the modification of any item during enumeration.
 **/
-- (void)_enumerateOperations:(YDBCloudCore_EnumOps)flags
-                  usingBlock:(YapDatabaseCloudCoreOperation *
-                               (^)(YapDatabaseCloudCorePipeline *pipeline,
-                                   YapDatabaseCloudCoreOperation *operation,
-                                   NSUInteger graphIdx, BOOL *stop))enumBlock
+- (void)_enumerateAndModifyOperations:(YDBCloudCore_EnumOps)flags
+                           usingBlock:(YapDatabaseCloudCoreOperation *
+                                      (^)(YapDatabaseCloudCorePipeline *pipeline,
+                                          YapDatabaseCloudCoreOperation *operation,
+                                          NSUInteger graphIdx, BOOL *stop))enumBlock
 {
 	NSAssert(databaseTransaction->isReadWriteTransaction, @"Oops");
 	if (enumBlock == nil) return;
@@ -3545,102 +2426,14 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	
 	for (YapDatabaseCloudCorePipeline *pipeline in allPipelines)
 	{
-		__block BOOL stop = NO;
-		__block BOOL pipelineHasOps = NO;
-		__block NSUInteger lastGraphIdx = 0;
-		
-		[pipeline enumerateOperationsUsingBlock:
-		  ^(YapDatabaseCloudCoreOperation *queuedOp, NSUInteger graphIdx, BOOL *innerStop)
+		[self _enumerateAndModifyOperations:flags
+		                         inPipeline:pipeline
+		                         usingBlock:
+		    ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
 		{
-			pipelineHasOps = YES;
-			
-			if (lastGraphIdx != graphIdx)
-			{
-				if (flags & YDBCloudCore_EnumOps_Inserted)
-				{
-					NSDictionary *insertedGraphs = parentConnection->operations_inserted[pipeline.name];
-					NSMutableArray<YapDatabaseCloudCoreOperation *> *insertedOps = insertedGraphs[@(lastGraphIdx)];
-					
-					for (NSUInteger i = 0; i < insertedOps.count; i++)
-					{
-						YapDatabaseCloudCoreOperation *op = insertedOps[i];
-						
-						if (!op.pendingStatusIsCompletedOrSkipped)
-						{
-							YapDatabaseCloudCoreOperation *modifiedOp = enumBlock(pipeline, op, lastGraphIdx, &stop);
-							
-							if (modifiedOp)
-							{
-								[modifiedOp makeImmutable];
-								insertedOps[i] = modifiedOp;
-							}
-							
-							if (stop) break;
-						}
-					}
-					
-					if (stop) {
-						*innerStop = YES;
-						return;
-					}
-				}
-				
-				lastGraphIdx = graphIdx;
-			}
-			
-			if (flags & YDBCloudCore_EnumOps_Existing)
-			{
-				YapDatabaseCloudCoreOperation *modifiedOp = parentConnection->operations_modified[queuedOp.uuid];
-				
-				if (!modifiedOp || !modifiedOp.pendingStatusIsCompletedOrSkipped)
-				{
-					if (modifiedOp)
-						modifiedOp = enumBlock(pipeline, modifiedOp, graphIdx, &stop);
-					else
-						modifiedOp = enumBlock(pipeline, queuedOp, graphIdx, &stop);
-					
-					if (modifiedOp)
-					{
-						[modifiedOp makeImmutable];
-						parentConnection->operations_modified[modifiedOp.uuid] = modifiedOp;
-					}
-					
-					if (stop) {
-						*innerStop = YES;
-						return;
-					}
-				}
-			}
-			
-		}]; // end [pipeline enumerateOperationsUsingBlock:]
-		
-		if (!stop && (flags & YDBCloudCore_EnumOps_Added))
-		{
-			NSUInteger nextGraphIdx = pipelineHasOps ? (lastGraphIdx + 1) : 0;
-			
-			NSMutableArray<YapDatabaseCloudCoreOperation *> *addedOps =
-			  parentConnection->operations_added[pipeline.name];
-			
-			for (NSUInteger i = 0; i < addedOps.count; i++)
-			{
-				YapDatabaseCloudCoreOperation *op = addedOps[i];
-				
-				if (!op.pendingStatusIsCompletedOrSkipped)
-				{
-					YapDatabaseCloudCoreOperation *modifiedOp = enumBlock(pipeline, op, nextGraphIdx, &stop);
-					
-					if (modifiedOp)
-					{
-						[modifiedOp makeImmutable];
-						addedOps[i] = modifiedOp;
-					}
-					
-					if (stop) break;
-				}
-			}
-		}
-		
-	} // end for (YapDatabaseCloudCorePipeline *pipeline in allPipelines)
+			return enumBlock(pipeline, operation, graphIdx, stop);
+		}];
+	}
 }
 
 /**
@@ -3649,11 +2442,11 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
  * Allows for enumeration of all existing, inserted & added operations (filtering as needed via parameter),
  * and allows for the modification of any item during enumeration.
 **/
-- (void)_enumerateOperations:(YDBCloudCore_EnumOps)flags
-                  inPipeline:(YapDatabaseCloudCorePipeline *)pipeline
-                  usingBlock:(YapDatabaseCloudCoreOperation *
-                               (^)(YapDatabaseCloudCoreOperation *operation,
-                                   NSUInteger graphIdx, BOOL *stop))enumBlock
+- (void)_enumerateAndModifyOperations:(YDBCloudCore_EnumOps)flags
+                           inPipeline:(YapDatabaseCloudCorePipeline *)pipeline
+                           usingBlock:(YapDatabaseCloudCoreOperation *
+                                      (^)(YapDatabaseCloudCoreOperation *operation,
+                                          NSUInteger graphIdx, BOOL *stop))enumBlock
 {
 	NSAssert(databaseTransaction->isReadWriteTransaction, @"Oops");
 	if (enumBlock == nil) return;
@@ -3662,7 +2455,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	__block BOOL pipelineHasOps = NO;
 	__block NSUInteger lastGraphIdx = 0;
 	
-	[pipeline enumerateOperationsUsingBlock:
+	[pipeline _enumerateOperationsUsingBlock:
 	  ^(YapDatabaseCloudCoreOperation *queuedOp, NSUInteger graphIdx, BOOL *innerStop)
 	{
 		pipelineHasOps = YES;
@@ -3682,7 +2475,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 					
 					if (modifiedOp)
 					{
-						[modifiedOp makeImmutable];
 						insertedOps[i] = modifiedOp;
 					}
 					
@@ -3707,7 +2499,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 			
 			if (modifiedOp)
 			{
-				[modifiedOp makeImmutable];
 				parentConnection->operations_modified[modifiedOp.uuid] = modifiedOp;
 			}
 			
@@ -3730,7 +2521,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 			
 			if (modifiedOp)
 			{
-				[modifiedOp makeImmutable];
 				addedOps[i] = modifiedOp;
 			}
 			
@@ -3740,13 +2530,221 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Move Support
+#pragma mark Tag Support
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Returns the currently set tag for the given key/identifier tuple.
  *
+ * @param key
+ *   A unique identifier for the resource.
+ *   E.g. the cloudURI for a remote file.
+ *
+ * @param identifier
+ *   The type of tag being stored.
+ *   E.g. "eTag", "globalFileID"
+ *   If nil, the identifier is automatically converted to the empty string.
+ *
+ * @return
+ *   The most recently assigned tag.
 **/
-- (void)moveCloudPath:(YapFilePath *)srcCloudPath toCloudPath:(YapFilePath *)dstCloudPath
+- (id)tagForKey:(NSString *)key withIdentifier:(NSString *)identifier
+{
+	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!parentConnection->parent->options.enableTagSupport)
+	{
+		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
+		return nil;
+	}
+	
+	if (key == nil) return nil;
+	if (identifier == nil) identifier = @"";
+	
+	YapCollectionKey *tuple = YapCollectionKeyCreate(key, identifier);
+	
+	id tag = nil;
+	
+	// Check dirtyTags (modified values from current transaction)
+	
+	tag = [parentConnection->dirtyTags objectForKey:tuple];
+	if (tag)
+	{
+		if (tag == [NSNull null])
+			return nil;
+		else
+			return tag;
+	}
+	
+	// Check tagCache (cached clean values)
+	
+	tag = [parentConnection->tagCache objectForKey:tuple];
+	if (tag)
+	{
+		if (tag == [NSNull null])
+			return nil;
+		else
+			return tag;
+	}
+	
+	// Fetch from disk
+	
+	sqlite3_stmt *statement = [parentConnection tagTable_fetchStatement];
+	if (statement == NULL) {
+		return nil;
+	}
+	
+	// SELECT "tag" FROM "tagTableName" WHERE "key" = ? AND "identifier" = ?;
+	
+	int const column_idx_changeTag = SQLITE_COLUMN_START;
+	
+	int const bind_idx_key        = SQLITE_BIND_START + 0;
+	int const bind_idx_identifier = SQLITE_BIND_START + 1;
+	
+	YapDatabaseString _key; MakeYapDatabaseString(&_key, key);
+	sqlite3_bind_text(statement, bind_idx_key, _key.str, _key.length, SQLITE_STATIC);
+	
+	YapDatabaseString _identifier; MakeYapDatabaseString(&_identifier, identifier);
+	sqlite3_bind_text(statement, bind_idx_identifier, _identifier.str, _identifier.length, SQLITE_STATIC);
+	
+	int status = sqlite3_step(statement);
+	if (status == SQLITE_ROW)
+	{
+		int column_type = sqlite3_column_type(statement, column_idx_changeTag);
+		
+		if (column_type == SQLITE_INTEGER)
+		{
+			int64_t value = sqlite3_column_int64(statement, column_idx_changeTag);
+			
+			tag = @(value);
+		}
+		else if (column_type == SQLITE_FLOAT)
+		{
+			double value = sqlite3_column_double(statement, column_idx_changeTag);
+			
+			tag = @(value);
+		}
+		else if (column_type == SQLITE_TEXT)
+		{
+			const unsigned char *text = sqlite3_column_text(statement, column_idx_changeTag);
+			int textLen = sqlite3_column_bytes(statement, column_idx_changeTag);
+			
+			tag = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
+		}
+		else if (column_type == SQLITE_BLOB)
+		{
+			const void *blob = sqlite3_column_blob(statement, column_idx_changeTag);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_changeTag);
+			
+			tag = [NSData dataWithBytes:(void *)blob length:blobSize];
+		}
+	}
+	else if (status == SQLITE_ERROR)
+	{
+		YDBLogError(@"Error executing 'recordTable_getInfoForHashStatement': %d %s",
+		            status, sqlite3_errmsg(databaseTransaction->connection->db));
+	}
+	
+	sqlite3_clear_bindings(statement);
+	sqlite3_reset(statement);
+	FreeYapDatabaseString(&_key);
+	FreeYapDatabaseString(&_identifier);
+	
+	if (tag)
+		[parentConnection->tagCache setObject:tag forKey:tuple];
+	else
+		[parentConnection->tagCache setObject:[NSNull null] forKey:tuple];
+	
+	return tag;
+}
+
+/**
+ * Allows you to update the current tag value for the given key/identifier tuple.
+ *
+ * @param tag
+ *   The tag to store.
+ *
+ *   The following classes are supported:
+ *   - NSString
+ *   - NSNumber
+ *   - NSData
+ *
+ * @param key
+ *   A unique identifier for the resource.
+ *   E.g. the cloudURI for a remote file.
+ *
+ * @param identifier
+ *   The type of tag being stored.
+ *   E.g. "eTag", "globalFileID"
+ *   If nil, the identifier is automatically converted to the empty string.
+ *
+ * If the given tag is nil, the effect is the same as invoking removeTagForKey:withIdentifier:.
+ * If the given tag is an unsupported class, throws an exception.
+**/
+- (void)setTag:(id)tag forKey:(NSString *)key withIdentifier:(NSString *)identifier
+{
+	YDBLogAutoTrace();
+	
+	if (tag == nil)
+	{
+		[self removeTagForKey:key withIdentifier:identifier];
+		return;
+	}
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
+	if (!parentConnection->parent->options.enableTagSupport)
+	{
+		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
+	if (key == nil)
+	{
+		YDBLogWarn(@"%@ - Ignoring: key is nil", THIS_METHOD);
+		return;
+	}
+	if (identifier == nil)
+		identifier = @"";
+	
+	if (![tag isKindOfClass:[NSNumber class]] &&
+	    ![tag isKindOfClass:[NSString class]] &&
+	    ![tag isKindOfClass:[NSData class]])
+	{
+		YDBLogWarn(@"%@ - Ignoring: unsupported changeTag class: %@", THIS_METHOD, [tag class]);
+		return;
+	}
+	
+	YapCollectionKey *tuple = YapCollectionKeyCreate(key, identifier);
+	
+	[parentConnection->dirtyTags setObject:tag forKey:tuple];
+	[parentConnection->tagCache removeObjectForKey:tuple];
+}
+
+/**
+ * Removes the tag for the given key/identifier tuple.
+ *
+ * Note that this method only removes the specific key+identifier value.
+ * If there are other tags with the same key, but different identifier, then those values will remain.
+ * To remove all such values, use removeAllTagsForKey.
+ *
+ * @param key
+ *   A unique identifier for the resource.
+ *   E.g. the cloudURI for a remote file.
+ *
+ * @param identifier
+ *   The type of tag being stored.
+ *   E.g. "eTag", "globalFileID"
+ *   If nil, the identifier is automatically converted to the empty string.
+ *
+ * @see removeAllTagsForCloudURI
+**/
+- (void)removeTagForKey:(NSString *)key withIdentifier:(NSString *)identifier
 {
 	YDBLogAutoTrace();
 	
@@ -3756,55 +2754,93 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
 		return;
 	}
-	
-	if (srcCloudPath == nil) {
-		YDBLogWarn(@"%@ - Ignoring request: srcCloudPath is nil", THIS_METHOD);
-		return;
-	}
-	if (dstCloudPath == nil) {
-		YDBLogWarn(@"%@ - Ignoring request: dstCloudPath is nil", THIS_METHOD);
-		return;
-	}
-	
-	[self _enumerateOperations:YDBCloudCore_EnumOps_All
-	                usingBlock:
-	  ^YapDatabaseCloudCoreOperation *(YapDatabaseCloudCorePipeline *pipeline,
-	                                   YapDatabaseCloudCoreOperation *operation,
-	                                   NSUInteger graphIdx, BOOL *stop)
+	if (!parentConnection->parent->options.enableTagSupport)
 	{
-		YapDatabaseCloudCoreFileOperation *modifiedOp = nil;
+		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
+	if (key == nil)
+	{
+		YDBLogWarn(@"%@ - Ignoring: key is nil", THIS_METHOD);
+		return;
+	}
+	if (identifier == nil)
+		identifier = @"";
+	
+	YapCollectionKey *tuple = YapCollectionKeyCreate(key, identifier);
+	
+	[parentConnection->dirtyTags setObject:[NSNull null] forKey:tuple];
+	[parentConnection->tagCache removeObjectForKey:tuple];
+}
+
+/**
+ * Removes all tags with the given key (matching any identifier).
+**/
+- (void)removeAllTagsForKey:(NSString *)key
+{
+	YDBLogAutoTrace();
+	
+	// Proper API usage check
+	if (!databaseTransaction->isReadWriteTransaction)
+	{
+		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
+		return;
+	}
+	if (!parentConnection->parent->options.enableTagSupport)
+	{
+		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
+		return;
+	}
+	
+	if (key == nil)
+	{
+		YDBLogWarn(@"%@ - Ignoring: key is nil", THIS_METHOD);
+		return;
+	}
+	
+	// Remove matching items from dirtyTags (modified values from current transaction)
+	
+	NSMutableArray<YapCollectionKey*> *keysToRemove = [NSMutableArray array];
+	
+	for (YapCollectionKey *tuple in parentConnection->dirtyTags)
+	{
+		__unsafe_unretained NSString *tuple_key        = tuple.collection;
+	//	__unsafe_unretained NSString *tuple_identifier = tuple.key;
 		
-		if ([operation isKindOfClass:[YapDatabaseCloudCoreFileOperation class]])
+		if ([tuple_key isEqualToString:key])
 		{
-			YapDatabaseCloudCoreFileOperation *op = (YapDatabaseCloudCoreFileOperation *)operation;
-			
-			if (op.cloudPath)
-			{
-				YapFilePath *movedSrc = [op.cloudPath filePathByMovingFrom:srcCloudPath to:dstCloudPath];
-				if (movedSrc)
-				{
-					if (modifiedOp == nil)
-						modifiedOp = [op copy];
-					
-					modifiedOp.cloudPath = movedSrc;
-				}
-			}
-			
-			if (op.targetCloudPath)
-			{
-				YapFilePath *movedDst = [op.targetCloudPath filePathByMovingFrom:srcCloudPath to:dstCloudPath];
-				if (movedDst)
-				{
-					if (modifiedOp == nil)
-						modifiedOp = [op copy];
-					
-					modifiedOp.targetCloudPath = movedDst;
-				}
-			}
+			[keysToRemove addObject:tuple];
 		}
+	}
+	
+	if (keysToRemove.count > 0)
+	{
+		[parentConnection->dirtyTags removeObjectsForKeys:keysToRemove];
+		[keysToRemove removeAllObjects];
+	}
+	
+	// Remove matching items from tagCache (cached clean values)
+	
+	[parentConnection->tagCache enumerateKeysWithBlock:^(YapCollectionKey *tuple, BOOL *stop) {
 		
-		return modifiedOp;
+		__unsafe_unretained NSString *tuple_key        = tuple.collection;
+	//	__unsafe_unretained NSString *tuple_identifier = tuple.key;
+		
+		if ([tuple_key isEqualToString:key])
+		{
+			[keysToRemove addObject:tuple];
+		}
 	}];
+	
+	if (keysToRemove.count > 0)
+	{
+		[parentConnection->tagCache removeObjectsForKeys:keysToRemove];
+	}
+	
+	// Hit the disk
+	
+	[self tagTable_removeRowsWithKey:key];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3861,8 +2897,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 - (void)detachCloudURI:(NSString *)inCloudURI
                 forKey:(NSString *)key
           inCollection:(NSString *)collection
-     wasRemoteDeletion:(BOOL)wasRemoteDeletion
-   invokeDeleteHandler:(BOOL)invokeDeleteHandler
 {
 	YDBLogAutoTrace();
 	
@@ -3914,426 +2948,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	// Perform detach
 		
 	[self detachCloudURI:cloudURI forRowid:rowid];
-	
-	// Handle options
-	
-	if (wasRemoteDeletion)
-	{
-		BOOL isDirectory = [cloudURI hasSuffix:@"/"];
-		YapFilePath *cloudUriPath = [[YapFilePath alloc] initWithPath:cloudURI isDirectory:isDirectory];
-		
-		[self skipOperationsPassingTest:
-		    ^BOOL (YapDatabaseCloudCorePipeline *pipeline,
-		           YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
-		{
-			if ([operation isKindOfClass:[YapDatabaseCloudCoreFileOperation class]])
-			{
-				__unsafe_unretained YapDatabaseCloudCoreFileOperation *fileOperation =
-				  (YapDatabaseCloudCoreFileOperation *)operation;
-				
-				BOOL cloudPathMatches = [fileOperation.cloudPath isEqualToFilePath:cloudUriPath];
-				if (cloudPathMatches)
-				{
-					return YES;
-				}
-			}
-			
-			return NO;
-		}];
-		
-		if (parentConnection->parent->options.enableTagSupport)
-		{
-			[self removeAllTagsForCloudURI:cloudURI];
-		}
-	}
-	else if (invokeDeleteHandler)
-	{
-		// Invoke DeleteHandler (if installed)
-	
-		__unsafe_unretained YapDatabaseCloudCoreDeleteHandler *deleteHandler = parentConnection->parent->deleteHandler;
-		if (deleteHandler)
-		{
-			NSUInteger retainCount = [[self allAttachedRowidsForCloudURI:cloudURI] count];
-			NSDictionary *mappings = @{ cloudURI : @(retainCount) };
-			
-			if (deleteHandler->blockType == YapDatabaseBlockTypeWithKey)
-			{
-				YapDatabaseCloudCoreDeleteHandlerWithKeyBlock block =
-				  (YapDatabaseCloudCoreDeleteHandlerWithKeyBlock)deleteHandler->block;
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key);
-			}
-			else if (deleteHandler->blockType == YapDatabaseBlockTypeWithObject)
-			{
-				YapDatabaseCloudCoreDeleteHandlerWithObjectBlock block =
-				  (YapDatabaseCloudCoreDeleteHandlerWithObjectBlock)deleteHandler->block;
-				
-				id object = [databaseTransaction objectForKey:key inCollection:collection withRowid:rowid];
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, object);
-			}
-			else if (deleteHandler->blockType == YapDatabaseBlockTypeWithMetadata)
-			{
-				YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock block =
-				  (YapDatabaseCloudCoreDeleteHandlerWithMetadataBlock)deleteHandler->block;
-				
-				id metadata = [databaseTransaction metadataForKey:key inCollection:collection withRowid:rowid];
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, metadata);
-			}
-			else
-			{
-				YapDatabaseCloudCoreDeleteHandlerWithRowBlock block =
-				  (YapDatabaseCloudCoreDeleteHandlerWithRowBlock)deleteHandler->block;
-				
-				YapCollectionKey *ck = [[YapCollectionKey alloc] initWithCollection:collection key:key];
-				
-				id object = nil;
-				id metadata = nil;
-				[databaseTransaction getObject:&object metadata:&metadata forCollectionKey:ck withRowid:rowid];
-				
-				block(databaseTransaction, parentConnection->operations_block, mappings, collection, key, object, metadata);
-			}
-			
-			[self importAddedOperations:rowid];
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Tag Support
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Returns the currently set tag for the given URI.
- *
- * @param cloudURI
- *   The URI for a remote file / record.
- *   This is typically the relative path of the file on the cloud server.
- *   E.g. "/documents/foo.bar"
- *
- *   Note: The exact format of URI's is defined by the cloud domain. For example:
- *   - Dropbox may use a relative URL format. (/documents/foo.bar)
- *   - Apple's CloudKit may use URIs based upon CKRecordID.
- *
- * @param identifier
- *   The type of tag being stored.
- *   E.g. "eTag", "globalFileID"
- *   If nil, the identifier is automatically converted to the empty string.
- *
- * @return
- *   The most recently assigned tag.
-**/
-- (id)tagForCloudURI:(NSString *)cloudURI withIdentifier:(NSString *)identifier
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!parentConnection->parent->options.enableTagSupport)
-	{
-		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
-		return nil;
-	}
-	
-	if (cloudURI == nil) return nil;
-	if (identifier == nil) identifier = @"";
-	
-	YapCollectionKey *tuple = YapCollectionKeyCreate(cloudURI, identifier);
-	
-	id tag = nil;
-	
-	// Check dirtyTags (modified values from current transaction)
-	
-	tag = [parentConnection->dirtyTags objectForKey:tuple];
-	if (tag)
-	{
-		if (tag == [NSNull null])
-			return nil;
-		else
-			return tag;
-	}
-	
-	// Check tagCache (cached clean values)
-	
-	tag = [parentConnection->tagCache objectForKey:tuple];
-	if (tag)
-	{
-		if (tag == [NSNull null])
-			return nil;
-		else
-			return tag;
-	}
-	
-	// Fetch from disk
-	
-	sqlite3_stmt *statement = [parentConnection tagTable_fetchStatement];
-	if (statement == NULL) {
-		return nil;
-	}
-	
-	// SELECT "tag" FROM "tagTableName" WHERE "cloudURI" = ? AND "identifier" = ?;
-	
-	int const column_idx_changeTag = SQLITE_COLUMN_START;
-	
-	int const bind_idx_cloudURI   = SQLITE_BIND_START + 0;
-	int const bind_idx_identifier = SQLITE_BIND_START + 1;
-	
-	YapDatabaseString _uri; MakeYapDatabaseString(&_uri, cloudURI);
-	sqlite3_bind_text(statement, bind_idx_cloudURI, _uri.str, _uri.length, SQLITE_STATIC);
-	
-	YapDatabaseString _identifier; MakeYapDatabaseString(&_identifier, identifier);
-	sqlite3_bind_text(statement, bind_idx_identifier, _identifier.str, _identifier.length, SQLITE_STATIC);
-	
-	int status = sqlite3_step(statement);
-	if (status == SQLITE_ROW)
-	{
-		int column_type = sqlite3_column_type(statement, column_idx_changeTag);
-		
-		if (column_type == SQLITE_INTEGER)
-		{
-			int64_t value = sqlite3_column_int64(statement, column_idx_changeTag);
-			
-			tag = @(value);
-		}
-		else if (column_type == SQLITE_FLOAT)
-		{
-			double value = sqlite3_column_double(statement, column_idx_changeTag);
-			
-			tag = @(value);
-		}
-		else if (column_type == SQLITE_TEXT)
-		{
-			const unsigned char *text = sqlite3_column_text(statement, column_idx_changeTag);
-			int textLen = sqlite3_column_bytes(statement, column_idx_changeTag);
-			
-			tag = [[NSString alloc] initWithBytes:text length:textLen encoding:NSUTF8StringEncoding];
-		}
-		else if (column_type == SQLITE_BLOB)
-		{
-			const void *blob = sqlite3_column_blob(statement, column_idx_changeTag);
-			int blobSize = sqlite3_column_bytes(statement, column_idx_changeTag);
-			
-			tag = [NSData dataWithBytes:(void *)blob length:blobSize];
-		}
-	}
-	else if (status == SQLITE_ERROR)
-	{
-		YDBLogError(@"Error executing 'recordTable_getInfoForHashStatement': %d %s",
-		            status, sqlite3_errmsg(databaseTransaction->connection->db));
-	}
-	
-	sqlite3_clear_bindings(statement);
-	sqlite3_reset(statement);
-	FreeYapDatabaseString(&_uri);
-	FreeYapDatabaseString(&_identifier);
-	
-	if (tag)
-		[parentConnection->tagCache setObject:tag forKey:tuple];
-	else
-		[parentConnection->tagCache setObject:[NSNull null] forKey:tuple];
-	
-	return tag;
-}
-
-/**
- * Allows you to update the current tag value for the given path.
- * 
- * @param tag
- *   The tag received from the cloud server.
- *
- *   The following classes are supported:
- *   - NSString
- *   - NSNumber
- *   - NSData
- * 
- * @param cloudURI
- *   The URI for a remote file / record.
- *   This is typically the relative path of the file on the cloud server.
- *   E.g. "/documents/foo.bar"
- *
- *   Note: The exact format of URI's is defined by the cloud domain. For example:
- *   - Dropbox may use a relative URL format. (/documents/foo.bar)
- *   - Apple's CloudKit may use URIs based upon CKRecordID
- * 
- * @param identifier
- *   The type of tag being stored.
- *   E.g. "eTag", "globalFileID"
- *   If nil, the identifier is automatically converted to the empty string.
- * 
- * If the given tag is nil, the effect is the same as invoking removeTagForCloudURI:withIdentifier:.
- * If the given changeTag is an unsupported class, throws an exception.
-**/
-- (void)setTag:(id)tag forCloudURI:(NSString *)cloudURI withIdentifier:(NSString *)identifier
-{
-	YDBLogAutoTrace();
-	
-	if (tag == nil)
-	{
-		[self removeTagForCloudURI:cloudURI withIdentifier:identifier];
-		return;
-	}
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	if (!parentConnection->parent->options.enableTagSupport)
-	{
-		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	if (cloudURI == nil)
-	{
-		YDBLogWarn(@"%@ - Ignoring: cloudURI is nil", THIS_METHOD);
-		return;
-	}
-	if (identifier == nil)
-		identifier = @"";
-	
-	if (![tag isKindOfClass:[NSNumber class]] &&
-	    ![tag isKindOfClass:[NSString class]] &&
-	    ![tag isKindOfClass:[NSData class]])
-	{
-		YDBLogWarn(@"%@ - Ignoring: unsupported changeTag class: %@", THIS_METHOD, [tag class]);
-		return;
-	}
-	
-	YapCollectionKey *tuple = YapCollectionKeyCreate(cloudURI, identifier);
-	
-	[parentConnection->dirtyTags setObject:tag forKey:tuple];
-	[parentConnection->tagCache removeObjectForKey:tuple];
-}
-
-/**
- * Removes the tag for the given cloudURI/identifier tuple.
- * 
- * Note that this method only removes the specific cloudURI+identifier value.
- * If there are other tags with the same cloudURI, but different identifier, then those values will remain.
- * To remove all such values, use removeAllTagsForCloudURI.
- *
- * @param cloudURI
- *   The URI for a remote file / record.
- *   This is typically the relative path of the file on the cloud server.
- *   E.g. "/documents/foo.bar"
- *
- *   Note: The exact format of URI's is defined by the cloud domain. For example:
- *   - Dropbox may use a relative URL format. (/documents/foo.bar)
- *   - Apple's CloudKit may use URIs based upon CKRecordID
- * 
- * @param identifier
- *   The type of tag being stored.
- *   E.g. "eTag", "globalFileID"
- *   If nil, the identifier is automatically converted to the empty string.
- * 
- * @see removeAllTagsForCloudURI
-**/
-- (void)removeTagForCloudURI:(NSString *)cloudURI withIdentifier:(NSString *)identifier
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	if (!parentConnection->parent->options.enableTagSupport)
-	{
-		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	if (cloudURI == nil)
-	{
-		YDBLogWarn(@"%@ - Ignoring: cloudURI is nil", THIS_METHOD);
-		return;
-	}
-	if (identifier == nil)
-		identifier = @"";
-	
-	YapCollectionKey *tuple = YapCollectionKeyCreate(cloudURI, identifier);
-	
-	[parentConnection->dirtyTags setObject:[NSNull null] forKey:tuple];
-	[parentConnection->tagCache removeObjectForKey:tuple];
-}
-
-/**
- * Removes all tags with the given cloudURI.
- *
- * IMPORTANT:
- * It is generally not necessary to directly invoke this method.
- * It is invoked automatically when one of the following occurs:
- *
- * - a delete operation for the cloudURI is marked as completed
- * - the cloudURI is detached with the 'wasRemoteDeletion' flag set
-**/
-- (void)removeAllTagsForCloudURI:(NSString *)cloudURI
-{
-	YDBLogAutoTrace();
-	
-	// Proper API usage check
-	if (!databaseTransaction->isReadWriteTransaction)
-	{
-		@throw [self requiresReadWriteTransactionException:NSStringFromSelector(_cmd)];
-		return;
-	}
-	if (!parentConnection->parent->options.enableTagSupport)
-	{
-		@throw [self tagSupportDisabled:NSStringFromSelector(_cmd)];
-		return;
-	}
-	
-	if (cloudURI == nil)
-	{
-		YDBLogWarn(@"%@ - Ignoring: cloudURI is nil", THIS_METHOD);
-		return;
-	}
-	
-	// Remove matching items from dirtyTags (modified values from current transaction)
-	
-	NSMutableArray<YapCollectionKey*> *keysToRemove = [NSMutableArray array];
-	
-	for (YapCollectionKey *tuple in parentConnection->dirtyTags)
-	{
-		__unsafe_unretained NSString *tuple_cloudURI = tuple.collection;
-	//	__unsafe_unretained NSString *tuple_identifier = tuple.key;
-		
-		if ([tuple_cloudURI isEqualToString:cloudURI])
-		{
-			[keysToRemove addObject:tuple];
-		}
-	}
-	
-	if (keysToRemove.count > 0)
-	{
-		[parentConnection->dirtyTags removeObjectsForKeys:keysToRemove];
-		[keysToRemove removeAllObjects];
-	}
-	
-	// Remove matching items from tagCache (cached clean values)
-	
-	[parentConnection->tagCache enumerateKeysWithBlock:^(YapCollectionKey *tuple, BOOL *stop) {
-		
-		__unsafe_unretained NSString *tuple_cloudURI = tuple.collection;
-	//	__unsafe_unretained NSString *tuple_identifier = tuple.key;
-		
-		if ([tuple_cloudURI isEqualToString:cloudURI])
-		{
-			[keysToRemove addObject:tuple];
-		}
-	}];
-	
-	if (keysToRemove.count > 0)
-	{
-		[parentConnection->tagCache removeObjectsForKeys:keysToRemove];
-	}
-	
-	// Hit the disk
-	
-	[self tagTable_removeRowsWithCloudURI:cloudURI];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4362,7 +2976,7 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	// - inserted ops :
 	//     new operations that have been inserted into previous graphs (graphs that were added in previous commits)
 	//
-	// This is a trick step, as a modified/inserted operation may end up modifying
+	// This is a tricky step, as a modified/inserted operation may end up modifying
 	// other operations within the same graph. This is due to dependencies.
 	//
 	// For example, say a graph consists of a single operation: <upload /foo/bar.pdf>
@@ -4451,7 +3065,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 						{
 							newOp.needsModifyDatabaseRow = YES;
 							
-							[newOp makeImmutable];
 							parentConnection->operations_modified[uuid] = newOp;
 						}
 					}
@@ -4462,7 +3075,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 						newOp.needsDeleteDatabaseRow = YES;
 						newOp.pendingStatus = @(YDBCloudOperationStatus_Skipped);
 						
-						[newOp makeImmutable];
 						parentConnection->operations_modified[uuid] = newOp;
 					}
 				}
@@ -4622,16 +3234,16 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 		[parentConnection->dirtyTags enumerateKeysAndObjectsUsingBlock:
 		    ^(YapCollectionKey *tuple, id tag, BOOL *stop)
 		{
-			NSString *cloudURI = tuple.collection;
+			NSString *key        = tuple.collection;
 			NSString *identifier = tuple.key;
 			
 			if (tag == nsnull)
 			{
-				[self tagTable_removeRowWithCloudURI:cloudURI identifier:identifier];
+				[self tagTable_removeRowWithKey:key identifier:identifier];
 			}
 			else
 			{
-				[self tagTable_insertOrUpdateRowWithCloudURI:cloudURI identifier:identifier tag:tag];
+				[self tagTable_insertOrUpdateRowWithKey:key identifier:identifier tag:tag];
 				
 				[parentConnection->tagCache setObject:tag forKey:tuple];
 			}
@@ -4711,18 +3323,6 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	return [NSException exceptionWithName:extName reason:reason userInfo:nil];
 }
 
-- (NSException *)attachDetachSupportDisabled:(NSString *)methodName
-{
-	NSString *extName = NSStringFromClass([[[self extensionConnection] extension] class]);
-	NSString *className = NSStringFromClass([self class]);
-	
-	NSString *reason = [NSString stringWithFormat:
-	  @"Attempting to use attach/detach method ([%@ %@]), but attach/detach support has been disabled"
-	  @" (YapDatabaseCloudCoreOptions.enableAttachDetachSupport == NO).", className, methodName];
-	
-	return [NSException exceptionWithName:extName reason:reason userInfo:nil];
-}
-
 - (NSException *)tagSupportDisabled:(NSString *)methodName
 {
 	NSString *extName = NSStringFromClass([[[self extensionConnection] extension] class]);
@@ -4731,6 +3331,18 @@ typedef NS_OPTIONS(uint8_t, YDBCloudCore_EnumOps) {
 	NSString *reason = [NSString stringWithFormat:
 	  @"Attempting to use tag method ([%@ %@]), but tag support has been disabled"
 	  @" (YapDatabaseCloudCoreOptions.enableTagSupport == NO).", className, methodName];
+	
+	return [NSException exceptionWithName:extName reason:reason userInfo:nil];
+}
+
+- (NSException *)attachDetachSupportDisabled:(NSString *)methodName
+{
+	NSString *extName = NSStringFromClass([[[self extensionConnection] extension] class]);
+	NSString *className = NSStringFromClass([self class]);
+	
+	NSString *reason = [NSString stringWithFormat:
+	  @"Attempting to use attach/detach method ([%@ %@]), but attach/detach support has been disabled"
+	  @" (YapDatabaseCloudCoreOptions.enableAttachDetachSupport == NO).", className, methodName];
 	
 	return [NSException exceptionWithName:extName reason:reason userInfo:nil];
 }

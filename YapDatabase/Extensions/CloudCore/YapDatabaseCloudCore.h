@@ -5,37 +5,32 @@
 #import <Foundation/Foundation.h>
 
 #import "YapDatabaseExtension.h"
-#import "YapDatabaseCloudCoreTypes.h"
 #import "YapDatabaseCloudCoreOptions.h"
 #import "YapDatabaseCloudCoreConnection.h"
 #import "YapDatabaseCloudCoreTransaction.h"
 
 #import "YapDatabaseCloudCoreOperation.h"
-#import "YapDatabaseCloudCoreFileOperation.h"
-#import "YapDatabaseCloudCoreRecordOperation.h"
 
 #import "YapDatabaseCloudCorePipeline.h"
 #import "YapDatabaseCloudCoreGraph.h"
+
+/**
+ * Serialization/Deserialization for operation objects.
+ *
+ * The default version uses NSCoding.
+ * However, an alternative may be substitued if desired.
+**/
+typedef NSData* (^YDBCloudCoreOperationSerializer)(YapDatabaseCloudCoreOperation *operation);
+typedef YapDatabaseCloudCoreOperation* (^YDBCloudCoreOperationDeserializer)(NSData *operationBlob);
+
 
 extern NSString *const YapDatabaseCloudCoreDefaultPipelineName; // = @"default";
 
 
 @interface YapDatabaseCloudCore : YapDatabaseExtension
 
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)handler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)deleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)mergeRecordBlock;
-
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)handler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)deleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)mergeRecordBlock
-                     versionTag:(NSString *)versionTag;
-
-- (instancetype)initWithHandler:(YapDatabaseCloudCoreHandler *)handler
-                  deleteHandler:(YapDatabaseCloudCoreDeleteHandler *)deleteHandler
-               mergeRecordBlock:(YapDatabaseCloudCoreMergeRecordBlock)mergeRecordBlock
-                     versionTag:(NSString *)versionTag
-                        options:(YapDatabaseCloudCoreOptions *)options;
+- (instancetype)initWithVersionTag:(NSString *)versionTag
+                           options:(YapDatabaseCloudCoreOptions *)options;
 
 @property (nonatomic, copy, readonly) NSString *versionTag;
 

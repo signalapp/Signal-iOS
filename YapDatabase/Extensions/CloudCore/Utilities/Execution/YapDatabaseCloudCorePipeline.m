@@ -26,7 +26,6 @@ NSString *const YDBCloudCorePipelineSuspendCountChangedNotification = @"YDBCloud
 
 NSString *const YDBCloudCore_EphemeralKey_Status   = @"status";
 NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
-NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 
 
 @implementation YapDatabaseCloudCorePipeline
@@ -84,8 +83,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 		
 		ephemeralInfoSharedKeySet = [NSDictionary sharedKeySetForKeys:@[
 		  YDBCloudCore_EphemeralKey_Status,
-		  YDBCloudCore_EphemeralKey_Hold,
-		  YDBCloudCore_EphemeralKey_External
+		  YDBCloudCore_EphemeralKey_Hold
 		]];
 		
 		ephemeralInfo    = [[NSMutableDictionary alloc] initWithCapacity:8];
@@ -108,6 +106,11 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (YapDatabaseCloudCoreOperation *)operationWithUUID:(NSUUID *)uuid
+{
+	return [[self _operationWithUUID:uuid] copy];
+}
+
+- (YapDatabaseCloudCoreOperation *)_operationWithUUID:(NSUUID *)uuid
 {
 	if (uuid == nil) return nil;
 	
@@ -138,6 +141,15 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 
 - (void)enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCoreOperation *operation,
                                                 NSUInteger graphIdx, BOOL *stop))enumBlock
+{
+	[self _enumerateOperationsUsingBlock:^(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop) {
+		
+		enumBlock([operation copy], graphIdx, stop);
+	}];
+}
+
+- (void)_enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCoreOperation *operation,
+                                                 NSUInteger graphIdx, BOOL *stop))enumBlock
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
@@ -298,9 +310,9 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 /**
  * Internal method to fetch status & hold in an atomic manner.
 **/
-- (BOOL)_getStatus:(YDBCloudCoreOperationStatus *)statusPtr
-          isOnHold:(BOOL *)isOnHoldPtr
-  forOperationUUID:(NSUUID *)opUUID
+- (BOOL)getStatus:(YDBCloudCoreOperationStatus *)statusPtr
+         isOnHold:(BOOL *)isOnHoldPtr
+ forOperationUUID:(NSUUID *)opUUID
 {
 	__block BOOL found = NO;
 	__block NSNumber *status = nil;
@@ -347,7 +359,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 /**
  * Returns the current status for the given operation.
 **/
-- (YDBCloudCoreOperationStatus)statusForOperationUUID:(NSUUID *)opUUID;
+- (YDBCloudCoreOperationStatus)statusForOperationWithUUID:(NSUUID *)opUUID
 {
 	NSNumber *status = [self _ephemeralInfoForKey:YDBCloudCore_EphemeralKey_Status operationUUID:opUUID];
 	if (status)
@@ -365,7 +377,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
  * you'll obviously want to avoid starting the corresponding operation again.
  * In this case, you should use this method to inform the pipeline that the operation is already started.
 **/
-- (void)setStatusAsStartedForOperationUUID:(NSUUID *)opUUID
+- (void)setStatusAsStartedForOperationWithUUID:(NSUUID *)opUUID
 {
 	if (opUUID == nil) return;
 	
@@ -389,7 +401,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
  * This gives control over the operation back to the pipeline,
  * and it will dispatch it back to the PipelineDelegate again when ready.
 **/
-- (void)setStatusAsPendingForOperationUUID:(NSUUID *)opUUID
+- (void)setStatusAsPendingForOperationWithUUID:(NSUUID *)opUUID
 {
 	if (opUUID == nil) return;
 	
@@ -416,8 +428,8 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
  * This is typically used when implementing retry logic such as exponential backoff.
  * It works by setting a hold on the operation to [now dateByAddingTimeInterval:delay].
 **/
-- (void)setStatusAsPendingForOperationUUID:(NSUUID *)opUUID
-                            withRetryDelay:(NSTimeInterval)delay
+- (void)setStatusAsPendingForOperationWithUUID:(NSUUID *)opUUID
+                                    retryDelay:(NSTimeInterval)delay
 {
 	NSDate *hold = nil;
 	if (delay > 0.0)
@@ -451,7 +463,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 /**
  * Returns the current hold for the operation, or nil if there is no hold.
 **/
-- (NSDate *)holdForOperationUUID:(NSUUID *)opUUID
+- (NSDate *)holdDateForOperationWithUUID:(NSUUID *)opUUID
 {
 	return [self _ephemeralInfoForKey:YDBCloudCore_EphemeralKey_Hold operationUUID:opUUID];
 }
@@ -465,7 +477,7 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
  *
  * @see setStatusAsPendingForOperation:withRetryDelay:
 **/
-- (void)setHold:(NSDate *)date forOperationUUID:(NSUUID *)opUUID
+- (void)setHoldDate:(NSDate *)date forOperationWithUUID:(NSUUID *)opUUID
 {
 	if (opUUID == nil) return;
 	
@@ -598,126 +610,6 @@ NSString *const YDBCloudCore_EphemeralKey_External = @"external";
 	
 	[self updateHoldTimer];
 	[self startNextOperationIfPossible];
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark Ephemeral Info
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * User-defined information to associate with the operation.
- * This information lives only in memory, and only as long as the operation does.
- * Once the operation has been completed/skipped, the ephemeral user info is automatically deleted.
- *
- * Typical ephemeral info includes things such as:
- * - fail count, used to implement things such as exponential backoff algorithm.
- * - tracking information, such as the timestamp of when the operation was started.
- * - NSProgress associated with network operation
- *
- * This method is atomic (thread-safe).
-**/
-- (NSDictionary *)ephemeralInfoForOperationUUID:(NSUUID *)opUUID
-{
-	if (opUUID == nil) return nil;
-	
-	__block NSDictionary *result = nil;
-	
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		NSMutableDictionary *opInfo = ephemeralInfo[opUUID];
-		NSMutableDictionary *extInfo = opInfo[YDBCloudCore_EphemeralKey_External];
-		result = [extInfo copy];
-	}};
-	
-	if (dispatch_get_specific(IsOnQueueKey))
-		block();
-	else
-		dispatch_sync(queue, block);
-	
-	return result;
-}
-
-/**
- * Allows you to fetch a particular object from the ephemeral info dictionary.
- *
- * This method is atomic (thread-safe).
-**/
-- (id)ephemeralInfoForKey:(NSString *)key operationUUID:(NSUUID *)opUUID
-{
-	if (key == nil) return nil;
-	if (opUUID == nil) return nil;
-	
-	__block id result = nil;
-	
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		NSMutableDictionary *opInfo = ephemeralInfo[opUUID];
-		NSMutableDictionary *extInfo = opInfo[YDBCloudCore_EphemeralKey_External];
-		result = extInfo[key];
-	}};
-	
-	if (dispatch_get_specific(IsOnQueueKey))
-		block();
-	else
-		dispatch_sync(queue, block);
-	
-	return result;
-}
-
-/**
- * Allows you to modify the ephemeral info dictionary.
- *
- * This method is atomic (thread-safe).
- *
- * Important:
- *   The pipeline uses the ephemeral info system to store its own information, such as the operation's status.
- *   Therefore the following are reserved keys, and may not be used:
- *   - YDBCloudCore_EphemeralKey_Status (@"status")
- *   - YDBCloudCore_EphemeralKey_Hold   (@"hold")
-**/
-- (void)setEphemeralInfo:(id)object forKey:(NSString *)key operationUUID:(NSUUID *)uuid
-{
-	if (key == nil) return;
-	if (uuid == nil) return;
-	
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		NSMutableDictionary *opInfo = ephemeralInfo[uuid];
-		NSMutableDictionary *extInfo = opInfo[YDBCloudCore_EphemeralKey_External];
-		
-		if (extInfo)
-		{
-			extInfo[key] = object;
-			
-			if (!object && (extInfo.count == 0))
-			{
-				opInfo[YDBCloudCore_EphemeralKey_External] = nil;
-				
-				if (opInfo.count == 0)
-				{
-					ephemeralInfo[uuid] = nil;
-				}
-			}
-		}
-		else if (object)
-		{
-			if (opInfo == nil)
-			{
-				opInfo = [NSMutableDictionary dictionaryWithSharedKeySet:ephemeralInfoSharedKeySet];
-				ephemeralInfo[uuid] = opInfo;
-			}
-			
-			extInfo = [NSMutableDictionary dictionaryWithCapacity:1];
-			opInfo[YDBCloudCore_EphemeralKey_External] = extInfo;
-			
-			extInfo[key] = object;
-		}
-	}};
-	
-	if (dispatch_get_specific(IsOnQueueKey))
-		block();
-	else
-		dispatch_sync(queue, block);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
