@@ -549,6 +549,14 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
 {
+    [self handleMessageSentLocally:outgoingMessage];
+
+    if (!(outgoingMessage.body || outgoingMessage.hasAttachments)) {
+        DDLogDebug(
+            @"%@ Refusing to make incoming copy of non-standard message sent to self:%@", self.tag, outgoingMessage);
+        return;
+    }
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *cThread =
             [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
@@ -562,7 +570,6 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                                         expiresInSeconds:outgoingMessage.expiresInSeconds];
         [incomingMessage saveWithTransaction:transaction];
     }];
-    [self handleMessageSentLocally:outgoingMessage];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
