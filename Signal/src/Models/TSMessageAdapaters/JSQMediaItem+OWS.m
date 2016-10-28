@@ -13,13 +13,20 @@
 @implementation JSQMediaItem (OWS)
 
 - (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImage:(UIImage *)image {
-    if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
-        bubbleSize.width *= 1.1;
-    } else {
-        bubbleSize.width *= 0.7;
-    }
     double aspectRatio = image.size.height / image.size.width;
-    bubbleSize.height = (CGFloat)(bubbleSize.width * [NumberUtil clamp:aspectRatio toMin:0.5 andMax:1.5]);
+    double clampedAspectRatio = [NumberUtil clamp:aspectRatio toMin:0.5 andMax:1.5];
+    
+    if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
+        bubbleSize.width *= 1.2;
+        bubbleSize.height = (CGFloat)(bubbleSize.width * clampedAspectRatio);
+    } else {
+        if (aspectRatio > 1) {
+            bubbleSize.height = bubbleSize.width;
+            bubbleSize.width = (CGFloat)(bubbleSize.height / clampedAspectRatio);
+        } else {
+            bubbleSize.height = (CGFloat)(bubbleSize.width * clampedAspectRatio);
+        }
+    }
     return bubbleSize;
 }
 
