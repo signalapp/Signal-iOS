@@ -1900,9 +1900,7 @@ typedef enum : NSUInteger {
               [self.collectionView reloadData];
           }
           if (scrollToBottom) {
-              dispatch_async(dispatch_get_main_queue(), ^{
-                  [self scrollToBottomAnimated:YES];
-              });
+              [self scrollToBottomAnimated:YES];
           }
         }];
 }
