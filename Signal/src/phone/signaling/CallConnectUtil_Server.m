@@ -175,13 +175,21 @@
     TOCFutureSource *futureResultSource = [TOCFutureSource futureSourceUntil:untilCancelledToken];
 
     PacketHandlerBlock packetHandler = ^(id packet) {
-      if (![futureResultSource trySetResult:packet]) {
-          ;
-          errorHandler([IgnoredPacketFailure
-                           new:@"Received another packet before relay socket events redirected to new handler."],
-                       packet,
-                       false);
-      }
+        bool success = [futureResultSource trySetResult:packet];
+        if (success) {
+            // We were seeing a frequent crash in `if(![futureResultSource trySetResult:packet])`
+            // So I refactored as much to lengthen the retain time of `futureResultSource` as to
+            // provide actual debug information.
+            //
+            // No idea if it will help. ~mjk
+            DDLogDebug(@"Successfully set result for future result source:%@", futureResultSource);
+        } else {
+            DDLogWarn(@"Failed to set result for future result source:%@", futureResultSource);
+            errorHandler([IgnoredPacketFailure
+                             new:@"Received another packet before relay socket events redirected to new handler."],
+                packet,
+                false);
+        }
     };
 
     ErrorHandlerBlock socketErrorHandler = ^(id error, id relatedInfo, bool causedTermination) {
