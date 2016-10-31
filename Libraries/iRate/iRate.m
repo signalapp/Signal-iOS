@@ -134,9 +134,12 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 @implementation iRate
 
-+ (void)load {
-    [self performSelectorOnMainThread:@selector(sharedInstance) withObject:nil waitUntilDone:NO];
-}
+// SIGNAL HACK
+// Disabled in Signal. We don't want to prompt users who haven't registered, even if it has been
+// a while since they installed. ~mjk
+//+ (void)load {
+//    [self performSelectorOnMainThread:@selector(sharedInstance) withObject:nil waitUntilDone:NO];
+//}
 
 + (instancetype)sharedInstance {
     static iRate *sharedInstance = nil;
