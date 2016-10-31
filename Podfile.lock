@@ -118,7 +118,7 @@ PODS:
 DEPENDENCIES:
   - DJWActionSheet
   - FFCircularProgressView (~> 0.5)
-  - JSQMessagesViewController
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `fix-intermittent-crash-on-delete`)
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
@@ -127,12 +127,18 @@ DEPENDENCIES:
   - ZXingObjC
 
 EXTERNAL SOURCES:
+  JSQMessagesViewController:
+    :branch: fix-intermittent-crash-on-delete
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
+  JSQMessagesViewController:
+    :commit: 03cde781234ade464dd26914d87e6e95afde1119
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
     :commit: 9c426e0a4b3b29afe8becbe96c5cf458681489de
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
@@ -166,6 +172,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 93ccdbbb243044904d772ee53e00154890a9f82f
+PODFILE CHECKSUM: 0e619684d8a5fa1ddbab78c0821d74af558fd7df
 
 COCOAPODS: 1.0.1
