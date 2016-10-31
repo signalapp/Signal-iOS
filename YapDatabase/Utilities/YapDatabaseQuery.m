@@ -285,11 +285,14 @@
 		// - outQueryString: @"col1 = ? AND col2 in (?,?)"
 		// - outQueryParmas: @[ @(0), @(1), @(2) ]
 		
-		__block NSUInteger unpackingOffset = 0;
-		
-		[paramIndexToArrayCountMap enumerateKeysAndObjectsUsingBlock:
-		    ^(NSNumber *paramIndexNum, NSNumber *arrayCountNum, BOOL *stop)
+		NSArray *sortedKeys = [paramIndexToArrayCountMap.allKeys sortedArrayUsingDescriptors:({
+			NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"integerValue" ascending:YES];
+			@[sortDescriptor];
+		})];
+		[sortedKeys enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop)
 		{
+			NSNumber *paramIndexNum = obj;
+			NSNumber *arrayCountNum = paramIndexToArrayCountMap[obj];
 			NSUInteger arrayCount = [arrayCountNum unsignedIntegerValue];
 			
 			NSMutableString *unpackedParamsStr = [NSMutableString stringWithCapacity:(arrayCount * 2)];
@@ -304,8 +307,7 @@
 			NSUInteger paramIndex = [paramIndexNum unsignedIntegerValue];
 			NSUInteger paramLocation = [paramLocations[paramIndex] unsignedIntegerValue];
 			
-			NSRange range = NSMakeRange(paramLocation + unpackingOffset, 1);
-			unpackingOffset += [unpackedParamsStr length] - 1;
+			NSRange range = NSMakeRange(paramLocation, 1);
 			
 			[queryString replaceCharactersInRange:range withString:unpackedParamsStr];
 			
