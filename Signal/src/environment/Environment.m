@@ -67,6 +67,7 @@ static Environment *environment = nil;
                 contactsManager:(OWSContactsManager *)contactsManager
                 contactsUpdater:(ContactsUpdater *)contactsUpdater
                  networkManager:(TSNetworkManager *)networkManager
+                  messageSender:(OWSMessageSender *)messageSender
 {
     ows_require(errorNoter != nil);
     ows_require(zrtpClientId != nil);
@@ -105,6 +106,7 @@ static Environment *environment = nil;
     _zrtpVersionId = zrtpVersionId;
     _contactsManager = contactsManager;
     _networkManager = networkManager;
+    _messageSender = messageSender;
 
     if (recentCallManager != nil) {
         // recentCallManagers are nil in unit tests because they would require unnecessary allocations. Detailed

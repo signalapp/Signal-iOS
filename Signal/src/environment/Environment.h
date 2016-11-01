@@ -31,6 +31,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @class TSGroupThread;
 @class ContactsUpdater;
 @class TSNetworkManager;
+@class OWSMessageSender;
 
 @interface Environment : NSObject
 
@@ -49,7 +50,8 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
                   zrtpVersionId:(NSData *)zrtpVersionId
                 contactsManager:(OWSContactsManager *)contactsManager
                 contactsUpdater:(ContactsUpdater *)contactsUpdater
-                 networkManager:(TSNetworkManager *)networkManager;
+                 networkManager:(TSNetworkManager *)networkManager
+                  messageSender:(OWSMessageSender *)messageSender;
 
 @property (nonatomic, readonly) in_port_t serverPort;
 @property (nonatomic, readonly) id<Logging> logging;
@@ -67,6 +69,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @property (nonatomic, readonly) SignalsViewController *signalsViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;

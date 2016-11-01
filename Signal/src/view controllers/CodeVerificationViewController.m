@@ -58,19 +58,19 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initializeKeyboardHandlers];
-    _headerLabel.text               = NSLocalizedString(@"VERIFICATION_HEADER", @"");
-    _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"");
+    _headerLabel.text               = NSLocalizedString(@"VERIFICATION_HEADER", @"Navigation title in the registration flow - during the sms code verification process.");
+    _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"Text field placeholder for SMS verification code during registartion");
     _challengeTextField.delegate    = self;
-    [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"")
+    [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"button text during registration to submit your SMS verification code")
                       forState:UIControlStateNormal];
 
-    [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"")
+    [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"button text during registration to request another SMS code be sent")
                                 forState:UIControlStateNormal];
     [_sendCodeViaVoiceButton
-        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"")]
+        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIAVOICE", @"button text during registration to request phone number verification be done via phone call")]
         forState:UIControlStateNormal];
     [_changeNumberButton
-        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"")]
+        setTitle:[@"     " stringByAppendingString:NSLocalizedString(@"VERIFICATION_CHALLENGE_CHANGE_NUMBER", @"button text during registration to make corrections to your submitted phone number")]
         forState:UIControlStateNormal];
 }
 

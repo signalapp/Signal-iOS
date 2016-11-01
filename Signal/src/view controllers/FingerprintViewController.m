@@ -8,6 +8,7 @@
 
 #import "FingerprintViewController.h"
 #import "DJWActionSheet+OWS.h"
+#import "Environment.h"
 #import "OWSConversationSettingsTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
@@ -23,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FingerprintViewController ()
 
 @property (strong, nonatomic) TSStorageManager *storageManager;
-@property (nonatomic) BOOL isPresentingDialog;
 @property (strong, nonatomic) TSThread *thread;
 @property (strong, nonatomic) OWSFingerprint *fingerprint;
 @property (strong, nonatomic) NSString *contactName;
@@ -92,12 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't antialias QRCode
     self.privacyVerificationQRCode.layer.magnificationFilter = kCAFilterNearest;
-
-    // Add session reset action.
-    UILongPressGestureRecognizer *longpressToResetSession =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(didLongpressToResetSession:)];
-    longpressToResetSession.minimumPressDuration = 1.0;
-    [self.view addGestureRecognizer:longpressToResetSession];
 }
 
 - (void)viewDidLayoutSubviews
@@ -141,34 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self showScanner];
 }
 
-- (IBAction)didLongpressToResetSession:(id)sender
-{
-    if (!_isPresentingDialog) {
-        _isPresentingDialog = YES;
-        [DJWActionSheet showInView:self.view
-                         withTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_CONFIRMATION", @"")
-                 cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-            destructiveButtonTitle:nil
-                 otherButtonTitles:@[ NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"") ]
-                          tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                            _isPresentingDialog = NO;
-                            if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                DDLogDebug(@"User Cancelled");
-                            } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                DDLogDebug(@"Destructive button tapped");
-                            } else {
-                                switch (tappedButtonIndex) {
-                                    case 0:
-                                        [self resetSession];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                          }];
-    }
-}
-
 - (void)showScanner
 {
     DDLogInfo(@"%@ Showing Scanner", self.tag);
@@ -185,19 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
                      completion:nil];
 
     [self.qrScanningController startCapture];
-}
-
-- (void)resetSession
-{
-    DDLogInfo(@"%@ local user reset session", self.tag);
-    [self.storageManager removeIdentityKeyForRecipient:self.fingerprint.theirStableId];
-    [self.storageManager deleteAllSessionsForContact:self.fingerprint.theirStableId];
-
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                     inThread:self.thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] save];
-
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // pragma mark - OWSQRScannerDelegate

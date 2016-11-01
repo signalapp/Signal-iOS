@@ -27,6 +27,7 @@
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
 #import "PropertyListPreferences.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
@@ -117,13 +118,13 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @property NSCache *messageAdapterCache;
 
@@ -143,16 +144,7 @@ typedef enum : NSUInteger {
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _contactsUpdater = [Environment getCurrent].contactsUpdater;
-    _storageManager = [TSStorageManager sharedManager];
-    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
-    _messagesManager = [TSMessagesManager sharedManager];
-    _networkManager = [TSNetworkManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
-                                                       storageManager:_storageManager
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:_contactsUpdater];
+    [self commonInit];
 
     return self;
 }
@@ -164,18 +156,20 @@ typedef enum : NSUInteger {
         return self;
     }
 
+    [self commonInit];
+
+    return self;
+}
+
+- (void)commonInit
+{
     _contactsManager = [Environment getCurrent].contactsManager;
     _contactsUpdater = [Environment getCurrent].contactsUpdater;
+    _messageSender = [Environment getCurrent].messageSender;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:_networkManager
-                                                       storageManager:_storageManager
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:_contactsUpdater];
-
-    return self;
 }
 
 - (void)peekSetup {
@@ -1430,7 +1424,51 @@ typedef enum : NSUInteger {
 {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
+    } else if (message.errorType == TSErrorMessageInvalidMessage) {
+        [self tappedCorruptedMessage:message];
+    } else {
+        DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
     }
+}
+
+- (void)tappedCorruptedMessage:(TSErrorMessage *)message
+{
+
+    NSString *actionSheetTitle = [NSString
+        stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
+
+    [DJWActionSheet showInView:self.view
+                     withTitle:actionSheetTitle
+             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+        destructiveButtonTitle:nil
+             otherButtonTitles:@[ NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", nil) ]
+                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
+                              DDLogDebug(@"User Cancelled");
+                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
+                              DDLogDebug(@"Destructive button tapped");
+                          } else {
+                              switch (tappedButtonIndex) {
+                                  case 0: {
+                                      if (![self.thread isKindOfClass:[TSContactThread class]]) {
+                                          // Corrupt Message errors only appear in contact threads.
+                                          DDLogError(
+                                              @"%@ Unexpected request to reset session in group thread. Refusing",
+                                              self.tag);
+                                          return;
+                                      }
+                                      TSContactThread *contactThread = (TSContactThread *)self.thread;
+                                      [OWSSessionResetJob runWithCorruptedMessage:message
+                                                                    contactThread:contactThread
+                                                                    messageSender:self.messageSender
+                                                                   storageManager:self.storageManager];
+                                      break;
+                                  }
+                                  default:
+                                      break;
+                              }
+                          }
+                      }];
 }
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage

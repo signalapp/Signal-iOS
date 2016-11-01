@@ -4,6 +4,7 @@
 #import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 
 #define RELEASE_ZRTP_CLIENT_ID @"Whisper 000     ".encodedAsAscii
@@ -44,6 +45,13 @@ static unsigned char DH3K_PRIME[] = {
       DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination);
     };
 
+    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
+    OWSContactsManager *contactsManager = [OWSContactsManager new];
+    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
+    OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
+                                                                        storageManager:[TSStorageManager sharedManager]
+                                                                       contactsManager:contactsManager
+                                                                       contactsUpdater:contactsUpdater];
     return [[Environment alloc] initWithLogging:logging
                                      errorNoter:errorNoter
                                      serverPort:31337
@@ -57,9 +65,10 @@ static unsigned char DH3K_PRIME[] = {
                         testingAndLegacyOptions:@[ ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER ]
                                    zrtpClientId:RELEASE_ZRTP_CLIENT_ID
                                   zrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                                contactsManager:[OWSContactsManager new]
-                                contactsUpdater:[ContactsUpdater sharedUpdater]
-                                 networkManager:[TSNetworkManager sharedManager]];
+                                contactsManager:contactsManager
+                                contactsUpdater:contactsUpdater
+                                 networkManager:networkManager
+                                  messageSender:messageSender];
 }
 
 + (Environment *)stagingEnvironmentWithLogging:(id<Logging>)logging {
@@ -67,6 +76,13 @@ static unsigned char DH3K_PRIME[] = {
       DDLogError(@"%@: %@, %d", error, relatedInfo, causedTermination);
     };
 
+    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
+    OWSContactsManager *contactsManager = [OWSContactsManager new];
+    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
+    OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
+                                                                        storageManager:[TSStorageManager sharedManager]
+                                                                       contactsManager:contactsManager
+                                                                       contactsUpdater:contactsUpdater];
     return [[Environment alloc] initWithLogging:logging
                                      errorNoter:errorNoter
                                      serverPort:31337
@@ -80,9 +96,10 @@ static unsigned char DH3K_PRIME[] = {
                         testingAndLegacyOptions:@[ ENVIRONMENT_LEGACY_OPTION_RTP_PADDING_BIT_IMPLIES_EXTENSION_BIT_AND_TWELVE_EXTRA_ZERO_BYTES_IN_HEADER ]
                                    zrtpClientId:RELEASE_ZRTP_CLIENT_ID
                                   zrtpVersionId:RELEASE_ZRTP_VERSION_ID
-                                contactsManager:[OWSContactsManager new]
-                                contactsUpdater:[ContactsUpdater sharedUpdater]
-                                 networkManager:[TSNetworkManager sharedManager]];
+                                contactsManager:contactsManager
+                                contactsUpdater:contactsUpdater
+                                 networkManager:networkManager
+                                  messageSender:messageSender];
 }
 
 + (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions {
@@ -90,6 +107,14 @@ static unsigned char DH3K_PRIME[] = {
     if ([testingAndLegacyOptions containsObject:TESTING_OPTION_USE_DH_FOR_HANDSHAKE]) {
         keyAgreementProtocols = @[ [Release supportedDH3KKeyAgreementProtocol] ];
     }
+
+    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
+    OWSContactsManager *contactsManager = [OWSContactsManager new];
+    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
+    OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
+                                                                        storageManager:[TSStorageManager sharedManager]
+                                                                       contactsManager:contactsManager
+                                                                       contactsUpdater:contactsUpdater];
 
     return [[Environment alloc] initWithLogging:[DiscardingLog discardingLog]
                                      errorNoter:^(id error, id relatedInfo, bool causedTermination) {
@@ -106,8 +131,9 @@ static unsigned char DH3K_PRIME[] = {
                                    zrtpClientId:TESTING_ZRTP_CLIENT_ID
                                   zrtpVersionId:TESTING_ZRTP_VERSION_ID
                                 contactsManager:nil
-                                contactsUpdater:[ContactsUpdater sharedUpdater]
-                                 networkManager:[TSNetworkManager sharedManager]];
+                                contactsUpdater:contactsUpdater
+                                 networkManager:networkManager
+                                  messageSender:messageSender];
 }
 
 + (NSArray *)supportedKeyAgreementProtocols {

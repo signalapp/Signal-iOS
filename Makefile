@@ -8,19 +8,19 @@ WORKING_DIR = ./
 SCHEME = Signal
 XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
 
-.PHONY: build test retest clean
+.PHONY: build test retest clean dependencies
 
 default: test
 
-ci: build_dependencies test
+ci: dependencies test
 
-build_dependencies:
+dependencies:
 	cd $(WORKING_DIR) && \
 		git submodule update --init
 		pod install
 		carthage build --platform iOS
 
-build: build_dependencies
+build: dependencies
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) build | xcpretty
 
@@ -32,6 +32,7 @@ test: optional_early_start_simulator
 
 clean:
 	cd $(WORKING_DIR) && \
+		rm -fr Carthage/Build && \
 		$(XCODE_BUILD) \
 			clean | xcpretty
 
