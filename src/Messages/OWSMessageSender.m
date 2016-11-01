@@ -665,7 +665,10 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                                                                        recipientId:identifier
                                                                           deviceId:[deviceNumber intValue]];
             @try {
-                [builder processPrekeyBundle:bundle];
+                // Mutating session state is not thread safe.
+                @synchronized(self) {
+                    [builder processPrekeyBundle:bundle];
+                }
             } @catch (NSException *exception) {
                 if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                     @throw [NSException
@@ -685,7 +688,11 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
 
-    id<CipherMessage> encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
+    // Mutating session state is not thread safe.
+    id<CipherMessage> encryptedMessage;
+    @synchronized (self) {
+        encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
+    }
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
 
