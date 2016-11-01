@@ -1845,10 +1845,15 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // HACK to work around radar #28167779
+    // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
+    // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
+    // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
+    [self.collectionView layoutIfNeeded];
+    // ENDHACK to work around radar #28167779
+
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges    = nil;
-
-
     [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                                rowChanges:&messageRowChanges
                                                                          forNotifications:notifications
