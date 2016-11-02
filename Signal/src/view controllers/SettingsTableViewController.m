@@ -9,7 +9,7 @@
 #import "SettingsTableViewController.h"
 
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "TSAccountManager.h"
 #import "UIUtil.h"
 

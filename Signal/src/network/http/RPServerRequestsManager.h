@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "RPAPICall.h"
 
-#import <CollapsingFutures.h>
-
 @interface RPServerRequestsManager : NSObject
 
 + (instancetype)sharedManager;
@@ -18,7 +16,5 @@
 - (void)performRequest:(RPAPICall *)apiCall
                success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
                failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
-
-- (TOCFuture *)futureForRequest:(RPAPICall *)apiCall;
 
 @end

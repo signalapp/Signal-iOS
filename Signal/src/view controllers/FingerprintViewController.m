@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIView *qrContainer;
 @property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
 @property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
-@property (strong, nonatomic) IBOutlet CopyableLabel *privacyVerificationFingerprint;
+@property (strong, nonatomic) IBOutlet OWSCopyableLabel *privacyVerificationFingerprint;
 @property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (strong, nonatomic) IBOutlet UIButton *scanButton;
 

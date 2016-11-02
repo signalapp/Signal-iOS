@@ -7,7 +7,9 @@
 //
 
 #import <AFNetworking/AFNetworking.h>
-#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
 @class PhoneNumber;
 
 @interface RPAPICall : NSObject
@@ -18,14 +20,15 @@ typedef NS_ENUM(NSInteger, HTTPMethod) { HTTP_GET, HTTP_POST, HTTP_PUT, HTTP_DEL
 
 @property (nonatomic, readonly) NSString *endPoint;
 @property (nonatomic, readonly) HTTPMethod method;
-@property (nonatomic, readonly) NSDictionary *parameters;
+@property (nonatomic, readonly) NSMutableDictionary *parameters;
 @property (nonatomic, readonly) AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer;
 @property (nonatomic, readonly) AFHTTPResponseSerializer<AFURLResponseSerialization> *responseSerializer;
 
 #pragma mark API Call Contstructors
 
-+ (RPAPICall *)registerPushNotificationWithPushToken:(NSData *)pushToken voipToken:(NSData *)voipToken;
-+ (RPAPICall *)unregisterWithPushToken:(NSData *)pushToken;
-+ (RPAPICall *)verifyWithTSToken:(NSString *)tsToken attributesParameters:(NSDictionary *)attributes;
++ (RPAPICall *)verifyWithTSToken:(NSString *)tsToken signalingKey:(NSData *)signalingKey;
++ (RPAPICall *)registerPushNotificationWithPushToken:(NSString *)pushToken voipToken:(NSString *)voipToken;
 
 @end
+
+NS_ASSUME_NONNULL_END
