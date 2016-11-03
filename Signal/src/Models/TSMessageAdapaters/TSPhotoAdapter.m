@@ -3,7 +3,7 @@
 
 #import "TSPhotoAdapter.h"
 #import "TSAttachmentStream.h"
-#import "UIDevice+TSHardwareVersion.h"
+#import "JSQMediaItem+OWS.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 
 @interface TSPhotoAdapter ()
@@ -59,7 +59,7 @@
 }
 
 - (CGSize)mediaViewDisplaySize {
-    return [self getBubbleSizeForImage:self.image];
+    return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
 }
 
 - (BOOL)isImage {
@@ -104,42 +104,6 @@
 
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
-}
-
-#pragma mark - Utility
-
-- (CGSize)getBubbleSizeForImage:(UIImage *)image {
-    CGFloat aspectRatio = image.size.height / image.size.width;
-
-    if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
-        return [self getLargeSizeForAspectRatio:aspectRatio];
-    } else {
-        return [self getSmallSizeForAspectRatio:aspectRatio];
-    }
-}
-
-- (CGSize)getLargeSizeForAspectRatio:(CGFloat)ratio {
-    return ratio > 1.0f ? [self largePortraitSize] : [self largeLandscapeSize];
-}
-
-- (CGSize)getSmallSizeForAspectRatio:(CGFloat)ratio {
-    return ratio > 1.0f ? [self smallPortraitSize] : [self smallLandscapeSize];
-}
-
-- (CGSize)largePortraitSize {
-    return CGSizeMake(220.0f, 310.0f);
-}
-
-- (CGSize)smallPortraitSize {
-    return CGSizeMake(150.0f, 210.0f);
-}
-
-- (CGSize)largeLandscapeSize {
-    return CGSizeMake(310.0f, 220.0f);
-}
-
-- (CGSize)smallLandscapeSize {
-    return CGSizeMake(210.0f, 150.0f);
 }
 
 @end
