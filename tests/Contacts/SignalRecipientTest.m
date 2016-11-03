@@ -7,39 +7,41 @@
 
 @interface SignalRecipientTest : XCTestCase
 
+@property (nonatomic) NSString *localNumber;
+
 @end
 
 @implementation SignalRecipientTest
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
-    [TSStorageManager storePhoneNumber:@"+13231231234"];
+    self.localNumber = @"+13231231234";
+    [[TSStorageManager sharedManager] storePhoneNumber:self.localNumber];
 }
 
 - (void)testSelfRecipientWithExistingRecord
 {
     // Sanity Check
-    NSString *localNumber = @"+13231231234";
-    XCTAssertNotNil(localNumber);
-    [[[SignalRecipient alloc] initWithTextSecureIdentifier:localNumber relay:nil supportsVoice:YES] save];
-    XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:localNumber]);
+    XCTAssertNotNil(self.localNumber);
+    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber relay:nil supportsVoice:YES] save];
+    XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
     SignalRecipient *me = [SignalRecipient selfRecipient];
     XCTAssert(me);
-    XCTAssertEqualObjects(localNumber, me.uniqueId);
+    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
 }
 
 - (void)testSelfRecipientWithoutExistingRecord
 {
-    NSString *localNumber = @"+13231231234";
-    XCTAssertNotNil(localNumber);
-    [[SignalRecipient fetchObjectWithUniqueID:localNumber] remove];
+    XCTAssertNotNil(self.localNumber);
+    [[SignalRecipient fetchObjectWithUniqueID:self.localNumber] remove];
     // Sanity Check that there's no existing user.
-    XCTAssertNil([SignalRecipient recipientWithTextSecureIdentifier:localNumber]);
+    XCTAssertNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
     SignalRecipient *me = [SignalRecipient selfRecipient];
     XCTAssert(me);
-    XCTAssertEqualObjects(localNumber, me.uniqueId);
+    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
 }
 
 @end

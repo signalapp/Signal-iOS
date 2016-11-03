@@ -9,12 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "TSConstants.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 static NSString *const TSRegistrationErrorDomain             = @"TSRegistrationErrorDomain";
 static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 
-typedef void (^failedBlock)(NSError *error);
+@class TSNetworkManager;
+@class TSStorageManager;
 
 @interface TSAccountManager : NSObject
+
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                        storageManager:(TSStorageManager *)storageManager;
+
++ (instancetype)sharedInstance;
 
 /**
  *  Returns if a user is registered or not
@@ -22,17 +30,15 @@ typedef void (^failedBlock)(NSError *error);
  *  @return registered or not
  */
 + (BOOL)isRegistered;
-+ (void)runIfRegistered:(void (^)())block;
+
+- (void)ifRegistered:(BOOL)isRegistered runAsync:(void (^)())block;
 
 /**
  *  Returns registered number
  *
  *  @return E164 formatted phone number
  */
-
-+ (NSString *)localNumber;
-
-+ (void)didRegister;
++ (nullable NSString *)localNumber;
 
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
@@ -45,19 +51,17 @@ typedef void (^failedBlock)(NSError *error);
 #pragma mark - Register with phone number
 
 + (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                        success:(successCompletionBlock)successBlock
-                        failure:(failedBlock)failureBlock
+                        success:(void (^)())successBlock
+                        failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-+ (void)rerequestSMSWithSuccess:(successCompletionBlock)successBlock failure:(failedBlock)failureBlock;
++ (void)rerequestSMSWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
 
-+ (void)rerequestVoiceWithSuccess:(successCompletionBlock)successBlock failure:(failedBlock)failureBlock;
++ (void)rerequestVoiceWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
 
-+ (void)verifyAccountWithCode:(NSString *)verificationCode
-                    pushToken:(NSString *)pushToken
-                    voipToken:(NSString *)voipToken
-                      success:(successCompletionBlock)successBlock
-                      failure:(failedBlock)failureBlock;
+- (void)verifyAccountWithCode:(NSString *)verificationCode
+                      success:(void (^)())successBlock
+                      failure:(void (^)(NSError *error))failureBlock;
 
 #if TARGET_OS_IPHONE
 
@@ -66,16 +70,19 @@ typedef void (^failedBlock)(NSError *error);
  *
  *  @param pushToken Apple's Push Token
  */
+- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
+                                        voipToken:(NSString *)voipToken
+                                          success:(void (^)())successHandler
+                                          failure:(void (^)(NSError *error))failureHandler
+    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
 
-+ (void)registerForPushNotifications:(NSString *)pushToken
-                           voipToken:(NSString *)voipToken
-                             success:(successCompletionBlock)success
-                             failure:(failedBlock)failureBlock;
-
-+ (void)obtainRPRegistrationToken:(void (^)(NSString *rpRegistrationToken))success failure:(failedBlock)failureBlock;
+- (void)obtainRPRegistrationTokenWithSuccess:(void (^)(NSString *rpRegistrationToken))success
+                                     failure:(void (^)(NSError *error))failureBlock;
 
 #endif
 
-+ (void)unregisterTextSecureWithSuccess:(successCompletionBlock)success failure:(failedBlock)failureBlock;
++ (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock;
 
 @end
+
+NS_ASSUME_NONNULL_END

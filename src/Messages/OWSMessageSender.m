@@ -634,7 +634,7 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *bundle;
-
+        __block NSException *exception;
         [self.networkManager makeRequest:[[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier
                                                                                     deviceId:[deviceNumber stringValue]]
             success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -645,13 +645,17 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                 DDLogError(@"Server replied on PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 if (response.statusCode == 404) {
-                    @throw [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
-                                                   reason:@"Device not registered"
-                                                 userInfo:nil];
+                    // Can't throw exception from within callback as it's probabably a different thread.
+                    exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
+                                                        reason:@"Device not registered"
+                                                      userInfo:nil];
                 }
                 dispatch_semaphore_signal(sema);
             }];
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        if (exception) {
+            @throw exception;
+        }
 
         if (!bundle) {
             @throw [NSException exceptionWithName:InvalidVersionException

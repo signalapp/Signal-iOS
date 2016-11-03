@@ -6,31 +6,52 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSAccountManager.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
 #import "NSURLSessionDataTask+StatusCode.h"
-
+#import "OWSError.h"
 #import "SecurityUtils.h"
-#import "TSAccountManager.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "TSRedPhoneTokenRequest.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 
+
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSAccountManager ()
 
-@property (nonatomic, retain) NSString *phoneNumberAwaitingVerification;
+@property (nullable, nonatomic, retain) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, strong, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, strong, readonly) TSStorageManager *storageManager;
 
 @end
 
 @implementation TSAccountManager
 
-+ (instancetype)sharedInstance {
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                        storageManager:(TSStorageManager *)storageManager
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _networkManager = networkManager;
+    _storageManager = storageManager;
+
+    return self;
+}
+
++ (instancetype)sharedInstance
+{
     static dispatch_once_t onceToken;
     static id sharedInstance = nil;
     dispatch_once(&onceToken, ^{
-      sharedInstance = [self.class new];
+        sharedInstance = [[self alloc] initWithNetworkManager:[TSNetworkManager sharedManager]
+                                               storageManager:[TSStorageManager sharedManager]];
     });
 
     return sharedInstance;
@@ -40,23 +61,25 @@
     return [TSStorageManager localNumber] ? YES : NO;
 }
 
-+ (void)runIfRegistered:(void (^)())block
+- (void)ifRegistered:(BOOL)isRegistered runAsync:(void (^)())block
 {
-    [[TSStorageManager sharedManager] runIfHasLocalNumber:block];
+    [self.storageManager ifLocalNumberPresent:isRegistered runAsync:block];
 }
 
-+ (void)didRegister {
-    TSAccountManager *sharedManager = [self sharedInstance];
-    __strong NSString *phoneNumber  = sharedManager.phoneNumberAwaitingVerification;
+- (void)didRegister
+{
+    DDLogInfo(@"%@ didRegister", self.tag);
+    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
     if (!phoneNumber) {
         @throw [NSException exceptionWithName:@"RegistrationFail" reason:@"Internal Corrupted State" userInfo:nil];
     }
 
-    [TSStorageManager storePhoneNumber:phoneNumber];
+    [self.storageManager storePhoneNumber:phoneNumber];
 }
 
-+ (NSString *)localNumber {
++ (nullable NSString *)localNumber
+{
     TSAccountManager *sharedManager = [self sharedInstance];
     NSString *awaitingVerif         = sharedManager.phoneNumberAwaitingVerification;
     if (awaitingVerif) {
@@ -88,23 +111,26 @@
     return registrationID;
 }
 
-+ (void)registerForPushNotifications:(NSString *)pushToken
-                           voipToken:(NSString *)voipToken
-                             success:(successCompletionBlock)success
-                             failure:(failedBlock)failureBlock {
-    [[TSNetworkManager sharedManager]
-        makeRequest:[[TSRegisterForPushRequest alloc] initWithPushIdentifier:pushToken voipIdentifier:voipToken]
+- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
+                                        voipToken:(NSString *)voipToken
+                                          success:(void (^)())successHandler
+                                          failure:(void (^)(NSError *))failureHandler
+{
+    TSRegisterForPushRequest *request =
+        [[TSRegisterForPushRequest alloc] initWithPushIdentifier:pushToken voipIdentifier:voipToken];
+
+    [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          success();
+            successHandler();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureBlock(error);
+            failureHandler(error);
         }];
 }
 
 + (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                        success:(successCompletionBlock)successBlock
-                        failure:(failedBlock)failureBlock
+                        success:(void (^)())successBlock
+                        failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS
 
 {
@@ -118,16 +144,22 @@
                         initWithPhoneNumber:phoneNumber
                                   transport:isSMS ? TSVerificationTransportSMS : TSVerificationTransportVoice]
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          successBlock();
-          TSAccountManager *manager               = [self sharedInstance];
-          manager.phoneNumberAwaitingVerification = phoneNumber;
+            DDLogInfo(@"%@ Successfully requested verification code request for number: %@ method:%@",
+                self.tag,
+                phoneNumber,
+                isSMS ? @"SMS" : @"Voice");
+            TSAccountManager *manager = [self sharedInstance];
+            manager.phoneNumberAwaitingVerification = phoneNumber;
+            successBlock();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureBlock(error);
+            DDLogError(@"%@ Failed to request verification code request with error:%@", self.tag, error);
+            failureBlock(error);
         }];
 }
 
-+ (void)rerequestSMSWithSuccess:(successCompletionBlock)successBlock failure:(failedBlock)failureBlock {
++ (void)rerequestSMSWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock
+{
     TSAccountManager *manager = [self sharedInstance];
     NSString *number          = manager.phoneNumberAwaitingVerification;
 
@@ -136,7 +168,8 @@
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
 }
 
-+ (void)rerequestVoiceWithSuccess:(successCompletionBlock)successBlock failure:(failedBlock)failureBlock {
++ (void)rerequestVoiceWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock
+{
     TSAccountManager *manager = [self sharedInstance];
     NSString *number          = manager.phoneNumberAwaitingVerification;
 
@@ -145,18 +178,16 @@
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
 }
 
-+ (void)verifyAccountWithCode:(NSString *)verificationCode
-                    pushToken:(NSString *)pushToken
-                    voipToken:(NSString *)voipToken
-                      success:(successCompletionBlock)successBlock
-                      failure:(failedBlock)failureBlock {
-    NSString *authToken    = [self generateNewAccountAuthenticationToken];
-    NSString *signalingKey = [self generateNewSignalingKeyToken];
-    NSString *phoneNumber  = ((TSAccountManager *)[self sharedInstance]).phoneNumberAwaitingVerification;
+- (void)verifyAccountWithCode:(NSString *)verificationCode
+                      success:(void (^)())successBlock
+                      failure:(void (^)(NSError *error))failureBlock
+{
+    NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
+    NSString *signalingKey = [[self class] generateNewSignalingKeyToken];
+    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
     assert(signalingKey);
     assert(authToken);
-    assert(pushToken);
     assert(phoneNumber);
 
     TSVerifyCodeRequest *request = [[TSVerifyCodeRequest alloc] initWithVerificationCode:verificationCode
@@ -164,51 +195,45 @@
                                                                             signalingKey:signalingKey
                                                                                  authKey:authToken];
 
-    [[TSNetworkManager sharedManager] makeRequest:request
+    [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-          long statuscode             = response.statusCode;
+            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+            long statuscode = response.statusCode;
 
-          if (statuscode == 200 || statuscode == 204) {
-              [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
-
-              [self registerForPushNotifications:pushToken
-                  voipToken:voipToken
-                  success:^{
-                    [self registerPreKeys:^{
-                      [TSSocketManager becomeActiveFromForeground];
-                      successBlock();
-                    }
-                                  failure:failureBlock];
-                  }
-                  failure:^(NSError *error) {
+            switch (statuscode) {
+                case 200:
+                case 204: {
+                    [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
+                    [self didRegister];
+                    [TSSocketManager becomeActiveFromForeground];
+                    [TSPreKeyManager registerPreKeysWithSuccess:successBlock failure:failureBlock];
+                    break;
+                }
+                default: {
+                    DDLogError(@"%@ Unexpected status while verifying code: %ld", self.tag, statuscode);
+                    NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                     failureBlock(error);
-                  }];
-          }
+                    break;
+                }
+            }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          DDLogError(@"Error registering with TextSecure: %@", error.debugDescription);
-          failureBlock(error);
+            DDLogWarn(@"%@ Error verifying code: %@", self.tag, error.debugDescription);
+            switch (error.code) {
+                case 403: {
+                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeUserError,
+                        NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
+                            "Alert body, during registration"));
+                    failureBlock(userError);
+                    break;
+                }
+                default: {
+                    DDLogError(@"%@ verifying code failed with unhandled error: %@", self.tag, error);
+                    failureBlock(error);
+                    break;
+                }
+            }
         }];
-}
-
-+ (void)registerPreKeysAfterPush:(NSString *)pushToken
-                       voipToken:(NSString *)voipToken
-                         success:(successCompletionBlock)successBlock
-                         failure:(failedBlock)failureBlock {
-    [self registerForPushNotifications:pushToken
-                             voipToken:voipToken
-                               success:^{
-                                 [self registerPreKeys:successBlock failure:failureBlock];
-                               }
-                               failure:failureBlock];
-}
-
-+ (void)registerPreKeys:(successCompletionBlock)successBlock failure:(failedBlock)failureBlock {
-    [TSPreKeyManager registerPreKeysWithSuccess:^{
-      successBlock();
-    }
-                                        failure:failureBlock];
 }
 
 #pragma mark Server keying material
@@ -228,24 +253,45 @@
     return signalingKeyTokenPrint;
 }
 
-+ (void)obtainRPRegistrationToken:(void (^)(NSString *rpRegistrationToken))success failure:(failedBlock)failureBlock {
-    [[TSNetworkManager sharedManager] makeRequest:[[TSRedPhoneTokenRequest alloc] init]
+- (void)obtainRPRegistrationTokenWithSuccess:(void (^)(NSString *rpRegistrationToken))success
+                                     failure:(void (^)(NSError *error))failureBlock
+{
+    [self.networkManager makeRequest:[[TSRedPhoneTokenRequest alloc] init]
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          success([responseObject objectForKey:@"token"]);
+            DDLogInfo(@"%@ Successfully obtained Redphone token", self.tag);
+            success([responseObject objectForKey:@"token"]);
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureBlock(error);
+            DDLogError(@"%@ Failed to obtain Redphone token with error: %@", self.tag, error);
+            failureBlock(error);
         }];
 }
 
-+ (void)unregisterTextSecureWithSuccess:(successCompletionBlock)success failure:(failedBlock)failureBlock {
++ (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock
+{
     [[TSNetworkManager sharedManager] makeRequest:[[TSUnregisterAccountRequest alloc] init]
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          success();
+            DDLogInfo(@"%@ Successfully unregistered", self.tag);
+            success();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureBlock(error);
+            DDLogError(@"%@ Failed to unregister with error: %@", self.tag, error);
+            failureBlock(error);
         }];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

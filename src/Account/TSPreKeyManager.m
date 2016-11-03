@@ -16,7 +16,8 @@
 
 @implementation TSPreKeyManager
 
-+ (void)registerPreKeysWithSuccess:(successCompletionBlock)success failure:(failedBlock)failureBlock {
++ (void)registerPreKeysWithSuccess:(void (^)())success failure:(void (^)(NSError *))failureBlock
+{
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     ECKeyPair *identityKeyPair       = [storageManager identityKeyPair];
 
@@ -38,13 +39,15 @@
 
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-          [storageManager storePreKeyRecords:preKeys];
-          [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
+            DDLogInfo(@"%@ Successfully registered pre keys.", self.tag);
+            [storageManager storePreKeyRecords:preKeys];
+            [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
 
-          success();
+            success();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureBlock(error);
+            DDLogError(@"%@ Failed to register pre keys.", self.tag);
+            failureBlock(error);
         }];
 }
 
@@ -121,6 +124,18 @@
     }
 
     return oldRecords;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

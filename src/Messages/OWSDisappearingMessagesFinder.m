@@ -214,7 +214,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                                 withName:OWSDisappearingMessageFinderExpiresAtIndex
                                          completionBlock:^(BOOL ready) {
                                              if (ready) {
-                                                 DDLogInfo(@"%@ completed registering extension async.", self.tag);
+                                                 DDLogDebug(@"%@ completed registering extension async.", self.tag);
                                              } else {
                                                  DDLogError(@"%@ failed registering extension async.", self.tag);
                                              }
