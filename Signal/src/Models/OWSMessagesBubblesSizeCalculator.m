@@ -10,9 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
-// superclass protected methods we need in order to compute bubble size.
-@interface OWSMessagesBubblesSizeCalculator (OWSiOS10EmojiBug)
+/**
+ * We use some private method to size our info messages.
+ */
+@interface OWSMessagesBubblesSizeCalculator (JSQPrivateMethods)
 
 @property (strong, nonatomic, readonly) NSCache *cache;
 @property (assign, nonatomic, readonly) NSUInteger minimumBubbleWidth;
@@ -24,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
                             withLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
 - (CGFloat)textBubbleWidthForLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
 @end
-// END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
 @implementation OWSMessagesBubblesSizeCalculator
 
@@ -56,9 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize size;
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
-    BOOL isIOS10OrGreater =
-        [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){.majorVersion = 10 }];
-    if (isIOS10OrGreater) {
+    if ([self shouldApplyiOS10EmojiFixToString:messageData.text font:layout.messageBubbleFont]) {
         size = [self withiOS10EmojiFixSuperMessageBubbleSizeForMessageData:messageData
                                                                atIndexPath:indexPath
                                                                 withLayout:layout];
@@ -67,108 +65,60 @@ NS_ASSUME_NONNULL_BEGIN
     }
     // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
+    return CGSizeMake(size.width, size.height);
+}
 
+/**
+ * Emoji sizing bug only affects iOS10. Unfortunately the "fix" for emoji font breaks some other fonts, so it's
+ * important
+ * to only apply it when emoji is actually present.
+ */
+- (BOOL)shouldApplyiOS10EmojiFixToString:(NSString *)string font:(UIFont *)font
+{
+    BOOL isIOS10OrGreater =
+        [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){.majorVersion = 10 }];
+    if (!isIOS10OrGreater) {
+        return NO;
+    }
 
-    return size;
+    __block BOOL foundEmoji = NO;
+    NSDictionary *attributes = @{ NSFontAttributeName : font };
+
+    NSMutableAttributedString *attributedString =
+        [[NSMutableAttributedString alloc] initWithString:string attributes:attributes];
+    [attributedString fixAttributesInRange:NSMakeRange(0, string.length)];
+    [attributedString enumerateAttribute:NSFontAttributeName
+                                 inRange:NSMakeRange(0, string.length)
+                                 options:0
+                              usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                                  UIFont *rangeFont = (UIFont *)value;
+                                  if ([rangeFont.fontName isEqualToString:@".AppleColorEmojiUI"]) {
+                                      DDLogVerbose(@"Detected Emoji at location: %lu, for length: %lu",
+                                          (unsigned long)range.location,
+                                          (unsigned long)range.length);
+                                      foundEmoji = YES;
+                                      *stop = YES;
+                                  }
+                              }];
+
+    return foundEmoji;
 }
 
 /**
  * HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
- * iOS10 bug in rendering emoji requires to fudge some things in the middle of the super method.
- * Copy/pasted the superclass method and inlined (and marked) our hacks inline.
+ * As of iOS10.0 the UIEmoji font doesn't present proper line heights. In some cases this causes the last line in a
+ * message to get cropped off.
  */
 - (CGSize)withiOS10EmojiFixSuperMessageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
                                                     atIndexPath:(NSIndexPath *)indexPath
                                                      withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
+    UIFont *emojiFont = [UIFont fontWithName:@".AppleColorEmojiUI" size:layout.messageBubbleFont.pointSize];
+    CGSize superSize = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+    int lines = (int)floor(superSize.height / emojiFont.lineHeight);
 
-    CGSize finalSize = CGSizeZero;
-
-    if ([messageData isMediaMessage]) {
-        finalSize = [[messageData media] mediaViewDisplaySize];
-    } else {
-        CGSize avatarSize = [self jsq_avatarSizeForMessageData:messageData withLayout:layout];
-
-        //  from the cell xibs, there is a 2 point space between avatar and bubble
-        CGFloat spacingBetweenAvatarAndBubble = 2.0f;
-        CGFloat horizontalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.left
-            + layout.messageBubbleTextViewTextContainerInsets.right;
-        CGFloat horizontalFrameInsets
-            = layout.messageBubbleTextViewFrameInsets.left + layout.messageBubbleTextViewFrameInsets.right;
-
-        CGFloat horizontalInsetsTotal
-            = horizontalContainerInsets + horizontalFrameInsets + spacingBetweenAvatarAndBubble;
-        CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - avatarSize.width
-            - layout.messageBubbleLeftRightMargin - horizontalInsetsTotal;
-
-        ///////////////////
-        // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
-
-        // //stringRect doesn't give the correct size with the new emoji font.
-        // CGRect stringRect = [[messageData text] boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
-        //                                                              options:(NSStringDrawingUsesLineFragmentOrigin |
-        //                                                              NSStringDrawingUsesFontLeading)
-        //                                                           attributes:@{ NSFontAttributeName :
-        //                                                           layout.messageBubbleFont }
-        //                                                              context:nil];
-
-        CGRect stringRect;
-        if (!messageData.text) {
-            stringRect = CGRectZero;
-        } else {
-            NSDictionary *attributes = @{ NSFontAttributeName : layout.messageBubbleFont };
-            NSMutableAttributedString *string =
-                [[NSMutableAttributedString alloc] initWithString:[messageData text] attributes:attributes];
-            [string fixAttributesInRange:NSMakeRange(0, string.length)];
-            [string
-                enumerateAttribute:NSFontAttributeName
-                           inRange:NSMakeRange(0, string.length)
-                           options:0
-                        usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
-                            UIFont *font = (UIFont *)value;
-                            if ([font.fontName isEqualToString:@".AppleColorEmojiUI"]) {
-                                DDLogVerbose(@"Replacing new broken emoji font with old emoji font at location: %lu, "
-                                             @"for length: %lu",
-                                    (unsigned long)range.location,
-                                    (unsigned long)range.length);
-                                [string addAttribute:NSFontAttributeName
-                                               value:[UIFont fontWithName:@"AppleColorEmoji" size:font.pointSize]
-                                               range:range];
-                            }
-                        }];
-            stringRect =
-                [string boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
-                                     options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                                     context:nil];
-        }
-        // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
-        /////////////////////////
-
-        CGSize stringSize = CGRectIntegral(stringRect).size;
-
-        CGFloat verticalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.top
-            + layout.messageBubbleTextViewTextContainerInsets.bottom;
-        CGFloat verticalFrameInsets
-            = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
-
-        //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
-        //  not sure why. magix. (shrug) if you know, submit a PR
-        CGFloat verticalInsets = verticalContainerInsets + verticalFrameInsets + self.additionalInset;
-
-        //  same as above, an extra 2 points of magix
-        CGFloat finalWidth
-            = MAX(stringSize.width + horizontalInsetsTotal, self.minimumBubbleWidth) + self.additionalInset;
-
-        finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
-    }
-
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
-
-    return finalSize;
+    // Add an extra pixel per line to fit the emoji.
+    return CGSizeMake(superSize.width, superSize.height + lines);
 }
 
 
