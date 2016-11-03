@@ -654,7 +654,9 @@ typedef enum : NSUInteger {
                       date:(NSDate *)date
 {
     if (text.length > 0) {
-        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        if ([Environment.preferences soundInForeground]) {
+            [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        }
 
         TSOutgoingMessage *message;
         OWSDisappearingMessagesConfiguration *configuration =
