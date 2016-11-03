@@ -14,6 +14,9 @@
 		450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
 		450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
 		450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
+		451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
+		451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
+		451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
 		452E3C8F1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
@@ -27,11 +30,13 @@
 		45666F761D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F751D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m */; };
 		45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */; };
 		45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */; };
+		456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
 		45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
 		45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
+		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458E38311D6682450094BD24 /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */; };
 		458E38341D66873D0094BD24 /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38331D66873D0094BD24 /* OWSLinkDeviceViewController.m */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
@@ -52,6 +57,9 @@
 		45C681C81D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */; };
 		45C681C91D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
+		45CD81A61DBFF8FC004C9430 /* Registration.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CD81A51DBFF8FC004C9430 /* Registration.storyboard */; };
+		45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
+		45CD81F21DC03A22004C9430 /* OWSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81F11DC03A22004C9430 /* OWSLogger.m */; };
 		45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */; };
 		45F2B1941D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45F2B1931D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m */; };
 		45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */; };
@@ -73,7 +81,6 @@
 		76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		76EB058218170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		76EB058418170B33006006FC /* LocalizableText.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041518170B33006006FC /* LocalizableText.m */; };
-		76EB058618170B33006006FC /* PreferencesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PreferencesUtil.m */; };
 		76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
 		76EB058C18170B33006006FC /* DnsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB042018170B33006006FC /* DnsManager.m */; };
@@ -170,7 +177,7 @@
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		A507A3B11A6C60E300BEED0D /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */; };
 		A547DD741A70A87800103EC7 /* DJWActionSheet+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = A547DD721A70A87800103EC7 /* DJWActionSheet+OWS.m */; };
-		A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */; };
+		A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Main.storyboard */; };
 		A5509ECD1A69B1D600ABA4BC /* CountryCodeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */; };
 		A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */; };
 		A5E9D4BB1A65FAD800E4481C /* TSVideoAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */; };
@@ -282,7 +289,6 @@
 		B660F71B1C29988E00687D6E /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B660F71D1C29988E00687D6E /* LocalizableText.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041518170B33006006FC /* LocalizableText.m */; };
-		B660F71E1C29988E00687D6E /* PreferencesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041718170B33006006FC /* PreferencesUtil.m */; };
 		B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		B660F7201C29988E00687D6E /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
 		B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
@@ -534,6 +540,8 @@
 		450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIncomingMessageCollectionViewCell.h; sourceTree = "<group>"; };
 		450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingMessageCollectionViewCell.m; sourceTree = "<group>"; };
 		450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSExpirableMessageView.h; sourceTree = "<group>"; };
+		451DE9F11DC1585F00810E42 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
+		451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsTableViewController.h; sourceTree = "<group>"; };
@@ -563,6 +571,8 @@
 		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
 		45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactAvatarBuilder.h; sourceTree = "<group>"; };
 		45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactAvatarBuilder.m; sourceTree = "<group>"; };
+		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
 		458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQRCodeScanningViewController.m; sourceTree = "<group>"; };
 		458E38321D66873D0094BD24 /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
@@ -588,6 +598,10 @@
 		45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisplayedMessageCollectionViewCell.m; sourceTree = "<group>"; };
 		45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSDisplayedMessageCollectionViewCell.xib; sourceTree = "<group>"; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
+		45CD81A51DBFF8FC004C9430 /* Registration.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Registration.storyboard; path = Storyboards/Registration.storyboard; sourceTree = "<group>"; };
+		45CD81EE1DC030E7004C9430 /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		45CD81F01DC03A22004C9430 /* OWSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLogger.h; sourceTree = "<group>"; };
+		45CD81F11DC03A22004C9430 /* OWSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLogger.m; sourceTree = "<group>"; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45EB32CD1D7465C900735B2E /* OWSLinkedDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkedDevicesTableViewController.h; sourceTree = "<group>"; };
@@ -625,8 +639,6 @@
 		76EB041318170B33006006FC /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		76EB041418170B33006006FC /* LocalizableText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizableText.h; sourceTree = "<group>"; };
 		76EB041518170B33006006FC /* LocalizableText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalizableText.m; sourceTree = "<group>"; };
-		76EB041618170B33006006FC /* PreferencesUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesUtil.h; sourceTree = "<group>"; };
-		76EB041718170B33006006FC /* PreferencesUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesUtil.m; sourceTree = "<group>"; };
 		76EB041818170B33006006FC /* PropertyListPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyListPreferences.h; sourceTree = "<group>"; };
 		76EB041918170B33006006FC /* PropertyListPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyListPreferences.m; sourceTree = "<group>"; };
 		76EB041A18170B33006006FC /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
@@ -814,7 +826,7 @@
 		A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = InboxTableViewCell.xib; path = "Signal/src/view controllers/InboxTableViewCell.xib"; sourceTree = SOURCE_ROOT; };
 		A547DD721A70A87800103EC7 /* DJWActionSheet+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "DJWActionSheet+OWS.m"; path = "util/DJWActionSheet+OWS.m"; sourceTree = "<group>"; };
 		A547DD731A70A87800103EC7 /* DJWActionSheet+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "DJWActionSheet+OWS.h"; path = "util/DJWActionSheet+OWS.h"; sourceTree = "<group>"; };
-		A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Storyboard.storyboard; path = Storyboard/Storyboard.storyboard; sourceTree = "<group>"; };
+		A5509EC91A69AB8B00ABA4BC /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Storyboard/Main.storyboard; sourceTree = "<group>"; };
 		A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeTableViewCell.h; sourceTree = "<group>"; };
 		A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeTableViewCell.m; sourceTree = "<group>"; };
 		A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1119,6 +1131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
@@ -1202,6 +1215,8 @@
 				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
 				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
+				45CD81EE1DC030E7004C9430 /* AccountManager.swift */,
+				451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1210,6 +1225,7 @@
 			isa = PBXGroup;
 			children = (
 				458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */,
+				458967101DC117CC00E9DD21 /* AccountManagerTest.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1229,6 +1245,16 @@
 				45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */,
 			);
 			name = Observers;
+			sourceTree = "<group>";
+		};
+		45CD81A41DBFF8CF004C9430 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */,
+				A5509EC91A69AB8B00ABA4BC /* Main.storyboard */,
+				45CD81A51DBFF8FC004C9430 /* Registration.storyboard */,
+			);
+			name = Storyboards;
 			sourceTree = "<group>";
 		};
 		70B8009F190C529C0042E3F0 /* Products */ = {
@@ -1264,7 +1290,7 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A5509EC91A69AB8B00ABA4BC /* Storyboard.storyboard */,
+				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03D918170B33006006FC /* audio */,
@@ -1341,8 +1367,6 @@
 				B6C93C4D199567AD00EDF894 /* DebugLogger.m */,
 				76EB041418170B33006006FC /* LocalizableText.h */,
 				76EB041518170B33006006FC /* LocalizableText.m */,
-				76EB041618170B33006006FC /* PreferencesUtil.h */,
-				76EB041718170B33006006FC /* PreferencesUtil.m */,
 				76EB041818170B33006006FC /* PropertyListPreferences.h */,
 				76EB041918170B33006006FC /* PropertyListPreferences.m */,
 				76EB041A18170B33006006FC /* Release.h */,
@@ -1721,6 +1745,8 @@
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 				45666F541D9B2827008FE134 /* OWSScrubbingLogFormatter.h */,
 				45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */,
+				45CD81F01DC03A22004C9430 /* OWSLogger.h */,
+				45CD81F11DC03A22004C9430 /* OWSLogger.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1810,7 +1836,6 @@
 			isa = PBXGroup;
 			children = (
 				A507A3AF1A6C60E300BEED0D /* InboxTableViewCell.xib */,
-				45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */,
 			);
 			path = xibs;
 			sourceTree = "<group>";
@@ -1908,6 +1933,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
 				458E38381D6699110094BD24 /* Models */,
 				459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */,
 				B660F66D1C29867F00687D6E /* audio */,
@@ -2172,6 +2198,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				451DE9F11DC1585F00810E42 /* PromiseKit.framework */,
 				4520D8D41D417D8E00123472 /* Photos.framework */,
 				B6B226961BE4B7D200860F4D /* ContactsUI.framework */,
 				B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */,
@@ -2401,6 +2428,7 @@
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				3465F381B1856CC06933B3A8 /* [CP] Copy Pods Resources */,
+				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2423,6 +2451,7 @@
 				D221A0A7169C9E5F00537ABF /* Resources */,
 				B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */,
 				F76686434770E2BBEBD9665A /* [CP] Copy Pods Resources */,
+				451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2468,6 +2497,7 @@
 					};
 					D221A0A9169C9E5F00537ABF = {
 						DevelopmentTeam = U68MSDN6DR;
+						LastSwiftMigration = 0800;
 						TestTargetID = D221A088169C9E5E00537ABF;
 					};
 				};
@@ -2564,7 +2594,7 @@
 			files = (
 				AD41D7B61A6F6F0600241130 /* play_button@2x.png in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
-				A5509ECA1A69AB8B00ABA4BC /* Storyboard.storyboard in Resources */,
+				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				A507A3B11A6C60E300BEED0D /* InboxTableViewCell.xib in Resources */,
 				45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
@@ -2575,6 +2605,7 @@
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				AD41D7B51A6F6F0600241130 /* play_button.png in Resources */,
+				45CD81A61DBFF8FC004C9430 /* Registration.storyboard in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
@@ -2652,6 +2683,36 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Signal/Pods-Signal-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
+			);
+			name = "[Carthage] Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+		451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
+			);
+			name = "[Carthage] Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2734,17 +2795,18 @@
 				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
+				45CD81F21DC03A22004C9430 /* OWSLogger.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
-				76EB058618170B33006006FC /* PreferencesUtil.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,
+				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
 				76EB05D218170B33006006FC /* ZrtpInitiator.m in Sources */,
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
@@ -2866,6 +2928,7 @@
 				76EB05CE18170B33006006FC /* ZrtpHandshakeResult.m in Sources */,
 				45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */,
 				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
+				451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				76EB05B618170B33006006FC /* MasterSecret.m in Sources */,
 				76EB05F418170B33006006FC /* CallConnectResult.m in Sources */,
 				FCFD256F1A151BCB00F4C644 /* NewGroupViewController.m in Sources */,
@@ -2946,6 +3009,7 @@
 				B660F7131C29988E00687D6E /* SoundPlayer.m in Sources */,
 				B660F7141C29988E00687D6E /* RecentCall.m in Sources */,
 				B660F7151C29988E00687D6E /* RecentCallManager.m in Sources */,
+				451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */,
 				B660F7161C29988E00687D6E /* GroupContactsResult.m in Sources */,
 				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
@@ -2954,7 +3018,6 @@
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
 				B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */,
 				B660F71D1C29988E00687D6E /* LocalizableText.m in Sources */,
-				B660F71E1C29988E00687D6E /* PreferencesUtil.m in Sources */,
 				B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */,
 				B660F7201C29988E00687D6E /* Release.m in Sources */,
 				B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */,
@@ -2962,6 +3025,7 @@
 				B660F7231C29988E00687D6E /* DnsManager.m in Sources */,
 				B660F7241C29988E00687D6E /* HostNameEndPoint.m in Sources */,
 				B660F7251C29988E00687D6E /* IgnoredPacketFailure.m in Sources */,
+				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				B660F7261C29988E00687D6E /* UnrecognizedRequestFailure.m in Sources */,
 				B660F7271C29988E00687D6E /* RPAPICall.m in Sources */,
 				B660F7281C29988E00687D6E /* RPServerRequestsManager.m in Sources */,
@@ -2988,6 +3052,7 @@
 				B660F73A1C29988E00687D6E /* EC25KeyAgreementParticipant.m in Sources */,
 				B660F73B1C29988E00687D6E /* EC25KeyAgreementProtocol.m in Sources */,
 				B660F73C1C29988E00687D6E /* EvpKeyAgreement.m in Sources */,
+				451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				B660F73D1C29988E00687D6E /* HashChain.m in Sources */,
 				B660F73E1C29988E00687D6E /* MasterSecret.m in Sources */,
 				B660F73F1C29988E00687D6E /* NegotiationFailed.m in Sources */,
@@ -3317,7 +3382,8 @@
 				DEVELOPMENT_TEAM = U68MSDN6DR;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3358,7 +3424,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TEST_AFTER_BUILD = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -3375,7 +3441,8 @@
 				DEVELOPMENT_TEAM = U68MSDN6DR;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3416,7 +3483,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Signal/src/Signal-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TEST_AFTER_BUILD = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s i386";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = "App Store Release";
@@ -3428,13 +3495,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3457,6 +3524,7 @@
 				);
 				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -3469,6 +3537,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.whispersystems.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
@@ -3481,13 +3552,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3510,6 +3581,7 @@
 				);
 				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -3522,6 +3594,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.whispersystems.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "c15eac58-5aa7-4660-b874-b9f7ed3dab70";
+				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};

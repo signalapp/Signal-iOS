@@ -9,51 +9,59 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import "Constraints.h"
 #import "CryptoTools.h"
-#import "NSData+ows_StripToken.h"
 #import "PhoneNumber.h"
 #import "RPAPICall.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define CLAIMED_INTEROP_VERSION_IN_INITIATE_SIGNAL 1
 
+
+NSString *const RPAPICallPushTokenKey = @"apnRegistrationId";
+NSString *const RPAPICallVoipTokenKey = @"voipRegistrationId";
+NSString *const RPAPICallSignalingKeyKey = @"signalingKey";
+
 @interface RPAPICall ()
+
 @property (nonatomic, readwrite) NSString *endPoint;
 @property (nonatomic, readwrite) HTTPMethod method;
-@property (nonatomic, readwrite) NSDictionary *parameters;
+@property (nonatomic, readwrite) NSMutableDictionary *parameters;
 @property (nonatomic, readwrite) AFHTTPRequestSerializer<AFURLRequestSerialization> *requestSerializer;
 @property (nonatomic, readwrite) AFHTTPResponseSerializer<AFURLResponseSerialization> *responseSerializer;
+
 @end
 
 @implementation RPAPICall
 
 + (RPAPICall *)defaultAPICall {
     RPAPICall *apiCall         = [[RPAPICall alloc] init];
-    apiCall.parameters         = @{};
+    apiCall.parameters = [NSMutableDictionary new];
     apiCall.requestSerializer  = [self basicAuthenticationSerializer];
     apiCall.responseSerializer = [AFHTTPResponseSerializer serializer];
     return apiCall;
 }
 
-+ (RPAPICall *)verifyWithTSToken:(NSString *)tsToken attributesParameters:(NSDictionary *)attributes {
++ (RPAPICall *)verifyWithTSToken:(NSString *)tsToken signalingKey:(NSData *)signalingKey
+{
     RPAPICall *apiCall = [self defaultAPICall];
 
     apiCall.method     = HTTP_PUT;
     apiCall.endPoint   = [NSString stringWithFormat:@"/api/v1/accounts/token/%@", tsToken];
-    apiCall.parameters = attributes;
-
+    apiCall.parameters[RPAPICallSignalingKeyKey] = [signalingKey encodedAsBase64];
     return apiCall;
 }
 
-+ (RPAPICall *)registerPushNotificationWithPushToken:(NSData *)pushToken voipToken:(NSData *)voipToken {
++ (RPAPICall *)registerPushNotificationWithPushToken:(NSString *)pushToken voipToken:(NSString *)voipToken
+{
     RPAPICall *apiCall = [self defaultAPICall];
-    if (voipToken) {
-        apiCall.parameters = @{ @"voip" : [voipToken ows_tripToken] };
-    } else {
-        DDLogWarn(@"No VoIP push token registered, might experience some issues while in background.");
-    }
     apiCall.method   = HTTP_PUT;
-    apiCall.endPoint = [NSString stringWithFormat:@"/apn/%@", [pushToken ows_tripToken]];
+
+    apiCall.parameters[RPAPICallPushTokenKey] = pushToken;
+    apiCall.parameters[RPAPICallVoipTokenKey] = voipToken;
+    apiCall.endPoint = @"/api/v1/accounts/apn";
+
     return apiCall;
 }
 
@@ -61,7 +69,6 @@
     RPAPICall *apiCall        = [self defaultAPICall];
     apiCall.method            = HTTP_DELETE;
     apiCall.endPoint          = [NSString stringWithFormat:@"/apn/%@", pushToken.encodedAsHexString];
-    apiCall.parameters        = nil;
     apiCall.requestSerializer = [self basicAuthenticationSerializer];
     return apiCall;
 }
@@ -194,4 +201,11 @@
  }
  */
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ %@", [super description], self.endPoint];
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

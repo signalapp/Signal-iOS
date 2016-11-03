@@ -2,6 +2,9 @@
 
 #import "SignalsViewController.h"
 
+extern NSString *const AppDelegateStoryboardMain;
+extern NSString *const AppDelegateStoryboardRegistration;
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;

@@ -8,11 +8,11 @@
 
 #import "PrivacySettingsTableViewController.h"
 
-#import <25519/Curve25519.h>
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "UIUtil.h"
+#import <25519/Curve25519.h>
 
 @interface PrivacySettingsTableViewController ()
 

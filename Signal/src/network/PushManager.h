@@ -8,6 +8,11 @@
 
 #import <CollapsingFutures.h>
 #import <PushKit/PushKit.h>
+#import <UIKit/UIApplication.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class UILocalNotification;
 
 #define Signal_Thread_UserInfo_Key @"Signal_Thread_Id"
 #define Signal_Message_UserInfo_Key @"Signal_Message_Id"
@@ -43,23 +48,20 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
  *  @param success Completion block that is passed the token as a parameter
  *  @param failure Failure block, executed when failed to get push token
  */
-
 - (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(void (^)(NSError *))failure;
 
 /**
  *  Registers for Users Notifications. By doing this on launch, we are sure that the correct categories of user
  * notifications is registered.
  */
-
 - (void)validateUserNotificationSettings;
 
 /**
  *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
  */
-
-@property TOCFutureSource *pushNotificationFutureSource;
-@property TOCFutureSource *userNotificationFutureSource;
-@property TOCFutureSource *pushKitNotificationFutureSource;
+@property (nullable, atomic, readwrite, strong) TOCFutureSource *pushNotificationFutureSource;
+@property (nullable, atomic, readwrite, strong) TOCFutureSource *userNotificationFutureSource;
+@property (nullable, atomic, readwrite, strong) TOCFutureSource *pushKitNotificationFutureSource;
 
 - (TOCFuture *)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
@@ -85,3 +87,5 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
              completionHandler:(void (^)())completionHandler;
 
 @end
+
+NS_ASSUME_NONNULL_END

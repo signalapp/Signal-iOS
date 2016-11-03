@@ -7,23 +7,28 @@
 //
 
 #import "AdvancedSettingsTableViewController.h"
-
-#import <PastelogKit/Pastelog.h>
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "PreferencesUtil.h"
+#import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "RPAccountManager.h"
+#import "Signal-Swift.h"
 #import "TSAccountManager.h"
+#import <PastelogKit/Pastelog.h>
+#import <PromiseKit/AnyPromise.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
 @property NSArray *sectionsArray;
+
 @property (strong, nonatomic) UITableViewCell *enableLogCell;
 @property (strong, nonatomic) UITableViewCell *submitLogCell;
 @property (strong, nonatomic) UITableViewCell *registerPushCell;
 
 @property (strong, nonatomic) UISwitch *enableLogSwitch;
+
 @end
 
 @implementation AdvancedSettingsTableViewController
@@ -35,8 +40,10 @@
 }
 
 - (instancetype)init {
-    self.sectionsArray =
-        @[ NSLocalizedString(@"LOGGING_SECTION", nil), NSLocalizedString(@"PUSH_REGISTER_TITLE", nil) ];
+    self.sectionsArray = @[
+        NSLocalizedString(@"LOGGING_SECTION", nil),
+        NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts")
+    ];
 
     return [super initWithStyle:UITableViewStyleGrouped];
 }
@@ -84,7 +91,8 @@
     }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     return [self.sectionsArray objectAtIndex:(NSUInteger)section];
 }
 
@@ -111,20 +119,23 @@
     if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        __block failedPushRegistrationBlock failure = ^(NSError *error) {
-          SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_TITLE", nil), NSLocalizedString(@"REGISTRATION_BODY", nil));
-        };
+        OWSAccountManager *accountManager =
+            [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                 redPhoneAccountManager:[RPAccountManager sharedInstance]];
+        OWSSyncPushTokensJob *syncJob = [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
+                                                                           accountManager:accountManager
+                                                                              preferences:[Environment preferences]];
+        syncJob.uploadOnlyIfStale = NO;
+        [syncJob run]
+            .then(^{
+                SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_SUCCESS", @"Alert title"), nil);
+            })
+            .catch(^(NSError *error) {
+                SignalAlertView(NSLocalizedString(@"REGISTRATION_BODY", @"Alert title"), error.localizedDescription);
+            });
 
-        [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-          [TSAccountManager registerForPushNotifications:pushToken
-                                               voipToken:voipToken
-                                                 success:^{
-                                                   SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_TITLE", nil),
-                                                                   NSLocalizedString(@"PUSH_REGISTER_SUCCESS", nil));
-                                                 }
-                                                 failure:failure];
-        }
-                                                         failure:failure];
+    } else {
+        DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }
 }
 
@@ -142,4 +153,18 @@
     [self.tableView reloadData];
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END
