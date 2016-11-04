@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @protocol ContactsManagerProtocol;
 
+NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject {
 
 @protected

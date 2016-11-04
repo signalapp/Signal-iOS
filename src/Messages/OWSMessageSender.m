@@ -300,6 +300,10 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                      attempts:OWSMessageSenderRetryAttempts
                       success:successHandler
                       failure:failureHandler];
+        } else {
+            DDLogError(@"%@ Unexpected unhandlable message: %@", self.tag, message);
+            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            failureHandler(error);
         }
     });
 }
