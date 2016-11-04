@@ -473,6 +473,7 @@
 		E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62318BBF5BB00F073E5 /* SoundPlayer.m */; };
 		E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62618BBF63B00F073E5 /* SoundBoard.m */; };
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
+		EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
 		FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962F1A0814130094C78E /* SettingsTableViewController.m */; };
@@ -1090,6 +1091,8 @@
 		E1CD329418BCFF9900B1A496 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
 		E1CD329518BCFF9900B1A496 /* SoundInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundInstance.m; sourceTree = "<group>"; };
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
+		EF764C331DB67CC5000D9A87 /* UIViewController+CameraPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+CameraPermissions.h"; path = "util/UIViewController+CameraPermissions.h"; sourceTree = "<group>"; };
+		EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+CameraPermissions.m"; path = "util/UIViewController+CameraPermissions.m"; sourceTree = "<group>"; };
 		FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
 		FC31962B1A06A2190094C78E /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FingerprintViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2412,6 +2415,8 @@
 				FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */,
 				B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */,
 				B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */,
+				EF764C331DB67CC5000D9A87 /* UIViewController+CameraPermissions.h */,
+				EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -2820,6 +2825,7 @@
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
+				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
 				76EB05EC18170B33006006FC /* CallState.m in Sources */,
