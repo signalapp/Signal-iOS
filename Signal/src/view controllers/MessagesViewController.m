@@ -1422,6 +1422,8 @@ typedef enum : NSUInteger {
 
 - (void)handleErrorMessageTap:(TSErrorMessage *)message
 {
+    [self dismissKeyBoard];
+
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
     } else if (message.errorType == TSErrorMessageInvalidMessage) {
@@ -1480,8 +1482,6 @@ typedef enum : NSUInteger {
         NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item"),
         NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
     ];
-
-    [self dismissKeyBoard];
 
     [DJWActionSheet showInView:self.parentViewController.view
                      withTitle:titleText
