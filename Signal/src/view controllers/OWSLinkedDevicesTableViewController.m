@@ -3,6 +3,7 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
+#import "UIViewController+CameraPermissions.h"
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -248,6 +249,15 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     }
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice)
+    {
+        [self ows_askForCameraPermissions:^{
+            [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
+        }];
+    }
+}
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {
