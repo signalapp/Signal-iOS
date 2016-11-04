@@ -46,10 +46,18 @@
 
 + (double)clamp:(double)value toMin:(double)min andMax:(double)max {
     ows_require(min <= max);
-    if (value < min)
-        return min;
-    if (value > max)
+    if (isnan(value)) {
         return max;
+    }
+
+    if (value < min) {
+        return min;
+    }
+
+    if (value > max) {
+        return max;
+    }
+
     return value;
 }
 
