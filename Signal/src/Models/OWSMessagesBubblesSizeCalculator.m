@@ -75,6 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)shouldApplyiOS10EmojiFixToString:(NSString *)string font:(UIFont *)font
 {
+    if (!string) {
+        return NO;
+    }
+
     BOOL isIOS10OrGreater =
         [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){.majorVersion = 10 }];
     if (!isIOS10OrGreater) {

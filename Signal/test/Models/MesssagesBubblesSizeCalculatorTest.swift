@@ -24,12 +24,12 @@ class FakeMessageData: NSObject, JSQMessageData {
         return 1
     }
 
-    var bodyText: String = "fake message data text"
-    func text() -> String {
+    var bodyText: String? = "fake message data text"
+    func text() -> String? {
         return self.bodyText
     }
 
-    init(text: String) {
+    init(text: String?) {
         self.bodyText = text;
     }
 }
@@ -55,6 +55,12 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
     let indexPath = IndexPath()
     let layout =  FakeiPhone6JSQMessagesCollectionViewFlowLayout()
     let calculator = MessagesBubblesSizeCalculator()
+
+    func testHeightForNilMessage() {
+        let messageData = FakeMessageData(text:nil)
+        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        XCTAssertEqual(16, actual.height);
+    }
 
     func testHeightForShort1LineMessage() {
         let messageData = FakeMessageData(text:"foo")
