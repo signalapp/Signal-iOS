@@ -17,18 +17,27 @@ occasionally, CocoaPods itself will need to be updated. Do this with
 sudo gem update
 ```
 
-3) Open the `Signal.xcworkspace` in Xcode.
+3) Some dependencies are added via carthage. Run:
+```
+carthage update
+```
+If you don't have carthage, here are install instructions:
+```
+https://github.com/Carthage/Carthage#installing-carthage
+```
+
+4) Open the `Signal.xcworkspace` in Xcode.
 
 ```
 open Signal.xcworkspace
 ```
 
-4) Some of our build scripts, like running tests, expect your Derived
+5) Some of our build scripts, like running tests, expect your Derived
 Data directory to be `$(PROJECT_DIR)/build`. In Xcode, go to `Preferences-> Locations`,
 and set the "Derived Data" dropdown to "Relative" and the text field
 value to "build".
 
-5) Build and Run and you are ready to go!
+6) Build and Run and you are ready to go!
 
 ## Known issues
 
