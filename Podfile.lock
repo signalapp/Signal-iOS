@@ -44,7 +44,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.5.0):
+  - SignalServiceKit (0.5.1):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -122,7 +122,7 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/fix-crashing-contact-sync`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -131,6 +131,7 @@ EXTERNAL SOURCES:
     :branch: fix-intermittent-crash-on-delete
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
+    :branch: mkirk/fix-crashing-contact-sync
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -140,7 +141,7 @@ CHECKOUT OPTIONS:
     :commit: 03cde781234ade464dd26914d87e6e95afde1119
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: b4c504f61d4f7bbb01133d36b0cb97109ac13b5c
+    :commit: 027fa10730d6521aceb1d55581d4f2c7ec9d1cd7
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -164,7 +165,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: ffb1542582ffe075809bc9c2092100083f22a31d
+  SignalServiceKit: 6d807f3dba7d49a7584b0876541f2d272e179061
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
@@ -172,6 +173,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 0e619684d8a5fa1ddbab78c0821d74af558fd7df
+PODFILE CHECKSUM: 45513f27e11f29808e864b71be54b54e0ab707c1
 
 COCOAPODS: 1.0.1
