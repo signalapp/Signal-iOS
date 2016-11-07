@@ -24,26 +24,32 @@ NS_ASSUME_NONNULL_BEGIN
     return sharedInstance;
 }
 
-- (SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
+- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
 {
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     __block SignalRecipient *recipient;
+
+    // Assigning to a pointer parameter within the block is not preventing the referenced error from being dealloc
+    // Instead, we avoid ambiguity in ownership by assigning to a local __block variable ensuring the error will be
+    // retained until our error parameter can take ownership.
+    __block NSError *retainedError;
     [self lookupIdentifier:identifier
         success:^(NSSet<NSString *> *matchedIds) {
             if (matchedIds.count == 1) {
                 recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier];
             } else {
-                *error = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
+                retainedError = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
             }
             dispatch_semaphore_signal(sema);
         }
-        failure:^(NSError *blockerror) {
-            *error = blockerror;
+        failure:^(NSError *lookupError) {
+            retainedError = lookupError;
             dispatch_semaphore_signal(sema);
         }];
 
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    *error = retainedError;
     return recipient;
 }
 

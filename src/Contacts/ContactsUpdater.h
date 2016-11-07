@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedUpdater;
 
-- (SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
+- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
 
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(NSSet<NSString *> *matchedIds))success
