@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
-    [self askForCameraPermissions:^{
+    [self ows_askForCameraPermissions:^{
         DDLogInfo(@"%@ Showing Scanner", self.tag);
         self.qrScanningView.hidden = NO;
         self.scanningInstructions.hidden = NO;
