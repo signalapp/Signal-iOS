@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
             success:^(NSSet<NSString *> *matchedIds) {
             }
             failure:^(NSError *error) {
-              DDLogInfo(@"Failed to retreive call status. Will be retreived on next contact intersection.");
+                DDLogWarn(@"Failed to lookup contact with error:%@", error);
             }];
         [recipient saveWithTransaction:transaction];
     }

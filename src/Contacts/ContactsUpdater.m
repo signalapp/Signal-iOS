@@ -11,6 +11,8 @@
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation ContactsUpdater
 
 + (instancetype)sharedUpdater {
@@ -50,20 +52,12 @@
                  success:(void (^)(NSSet<NSString *> *matchedIds))success
                  failure:(void (^)(NSError *error))failure
 {
-    if(!identifier) {
-        NSError *error
-            = OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier");
-        BLOCK_SAFE_RUN(failure, error);
+    if (!identifier) {
+        failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
 
-    [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
-        success:^(NSSet<NSString *> *matchedIds) {
-          BLOCK_SAFE_RUN(success, matchedIds);
-        }
-        failure:^(NSError *error) {
-          BLOCK_SAFE_RUN(failure, error);
-        }];
+    [self contactIntersectionWithSet:[NSSet setWithObject:identifier] success:success failure:failure];
 }
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
@@ -77,7 +71,7 @@
         }
     }
 
-    __block NSMutableSet *recipientIds = [NSMutableSet set];
+    NSMutableSet *recipientIds = [NSMutableSet set];
     [[TSStorageManager sharedManager]
             .dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
       NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
@@ -87,24 +81,25 @@
     NSMutableSet<NSString *> *allContacts = [[abPhoneNumbers setByAddingObjectsFromSet:recipientIds] mutableCopy];
 
     [self contactIntersectionWithSet:allContacts
-        success:^(NSSet<NSString *> *matchedIds) {
-          [recipientIds minusSet:matchedIds];
+                             success:^(NSSet<NSString *> *matchedIds) {
+                                 [recipientIds minusSet:matchedIds];
 
-          // Cleaning up unregistered identifiers
-          [[TSStorageManager sharedManager]
-                  .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            for (NSString *identifier in recipientIds) {
-                SignalRecipient *recipient =
-                    [SignalRecipient fetchObjectWithUniqueID:identifier transaction:transaction];
-                [recipient removeWithTransaction:transaction];
-            }
-          }];
+                                 // Cleaning up unregistered identifiers
+                                 [[TSStorageManager sharedManager].dbConnection
+                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                         for (NSString *identifier in recipientIds) {
+                                             SignalRecipient *recipient =
+                                                 [SignalRecipient fetchObjectWithUniqueID:identifier
+                                                                              transaction:transaction];
 
-          BLOCK_SAFE_RUN(success);
-        }
-        failure:^(NSError *error) {
-          BLOCK_SAFE_RUN(failure, error);
-        }];
+                                             [recipient removeWithTransaction:transaction];
+                                         }
+                                     }];
+
+                                 DDLogInfo(@"%@ successfully intersected contacts.", self.tag);
+                                 success();
+                             }
+                             failure:failure];
 }
 
 - (void)contactIntersectionWithSet:(NSSet<NSString *> *)idSet
@@ -131,7 +126,7 @@
                     NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
 
                     if (!identifier) {
-                        DDLogWarn(@"An interesecting hash wasn't found in the mapping.");
+                        DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.tag);
                         break;
                     }
 
@@ -170,12 +165,26 @@
               }
             }];
 
-            BLOCK_SAFE_RUN(success, [NSSet setWithArray:attributesForIdentifier.allKeys]);
+            success([NSSet setWithArray:attributesForIdentifier.allKeys]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
-            BLOCK_SAFE_RUN(failure, error);
+            failure(error);
           }];
     });
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

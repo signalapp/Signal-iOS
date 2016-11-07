@@ -3,6 +3,8 @@
 
 #import "SignalRecipient.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class Contact;
 
 @interface ContactsUpdater : NSObject
@@ -21,3 +23,5 @@
                                               success:(void (^)())success
                                               failure:(void (^)(NSError *error))failure;
 @end
+
+NS_ASSUME_NONNULL_END
