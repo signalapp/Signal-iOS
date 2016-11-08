@@ -29,6 +29,9 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                   theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
                     hashIterations:(uint32_t)hashIterations
 {
+    NSParameterAssert(theirIdentityKeyWithoutKeyType.length == 32);
+    NSParameterAssert(myIdentityKeyWithoutKeyType.length == 32);
+
     self = [super init];
     if (!self) {
         return self;

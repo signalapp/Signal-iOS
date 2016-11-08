@@ -84,6 +84,11 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (BOOL)hasSafetyNumbers
+{
+    return NO;
+}
+
 #pragma mark Interactions
 
 /**

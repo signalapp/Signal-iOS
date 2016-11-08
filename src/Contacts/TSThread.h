@@ -64,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)hasUnreadMessages;
 
+- (BOOL)hasSafetyNumbers;
+
 - (void)markAllAsRead;
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

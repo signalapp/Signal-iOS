@@ -3,6 +3,7 @@
 
 #import "TSContactThread.h"
 #import "ContactsUpdater.h"
+#import "TSStorageManager+identityKeyStore.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -72,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isGroupThread {
     return false;
+}
+
+- (BOOL)hasSafetyNumbers
+{
+    return !![self.storageManager identityKeyForRecipientId:self.contactIdentifier];
 }
 
 - (NSString *)name

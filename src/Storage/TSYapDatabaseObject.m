@@ -65,11 +65,21 @@
     return [[self class] dbConnection];
 }
 
+- (TSStorageManager *)storageManager
+{
+    return [[self class] storageManager];
+}
+
 #pragma mark Class Methods
 
 + (YapDatabaseConnection *)dbConnection
 {
-    return [TSStorageManager sharedManager].dbConnection;
+    return [self storageManager].dbConnection;
+}
+
++ (TSStorageManager *)storageManager
+{
+    return [TSStorageManager sharedManager];
 }
 
 + (NSString *)collection

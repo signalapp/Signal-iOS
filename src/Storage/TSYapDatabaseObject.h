@@ -3,6 +3,7 @@
 
 #import <Mantle/MTLModel+NSCoding.h>
 
+@class TSStorageManager;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
@@ -60,6 +61,9 @@
  */
 - (YapDatabaseConnection *)dbConnection;
 + (YapDatabaseConnection *)dbConnection;
+
+- (TSStorageManager *)storageManager;
++ (TSStorageManager *)storageManager;
 
 /**
  *  Fetches the object with the provided identifier
