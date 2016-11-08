@@ -153,7 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
                          completion:nil];
         
         [self.qrScanningController startCapture];
-    }];
+    }
+                   alertActionHandler:nil];
 }
 
 // pragma mark - OWSQRScannerDelegate

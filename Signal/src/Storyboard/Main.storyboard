@@ -1519,7 +1519,6 @@
         <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="xo7-5J-BJb"/>
         <segue reference="tfr-ZV-qWs"/>
         <segue reference="E8S-Yc-X7E"/>
     </inferredMetricsTieBreakers>

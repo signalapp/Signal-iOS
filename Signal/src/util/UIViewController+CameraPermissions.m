@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIViewController (CameraPermissions)
 
--(void)ows_askForCameraPermissions:(void(^)())permissionsGrantedCallback
+- (void)ows_askForCameraPermissions:(void (^)())permissionsGrantedCallback
+                 alertActionHandler:(nullable void (^)())alertActionHandler
 {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         DDLogError(@"Camera ImagePicker source not available");
@@ -21,13 +22,25 @@ NS_ASSUME_NONNULL_BEGIN
     }
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (status == AVAuthorizationStatusDenied) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CAMERA_PERMISSION_TITLE",nil) message:NSLocalizedString(@"CAMERA_PERMISSION_MESSAGE",nil) preferredStyle:UIAlertControllerStyleAlert];
-        
-        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CAMERA_PERMISSION_PROCEED",nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
+                                                                       message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+
+        NSString *settingsTitle = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", @"Button text which opens the settings app");
+        UIAlertAction *openSettingsAction = [UIAlertAction actionWithTitle:settingsTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-        }]];
-        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CAMERA_PERMISSION_CANCEL",nil) style:UIAlertActionStyleCancel handler:nil]];
-        [self presentViewController:alert animated:YES completion:[UIUtil modalCompletionBlock]];
+            if (alertActionHandler) {
+                alertActionHandler();
+            }
+        }];
+        [alert addAction:openSettingsAction];
+
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:alertActionHandler];
+        [alert addAction:dismissAction];
+
+        [self presentViewController:alert animated:YES completion:nil];
     } else if (status == AVAuthorizationStatusAuthorized) {
         permissionsGrantedCallback();
     } else if (status == AVAuthorizationStatusNotDetermined) {

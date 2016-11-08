@@ -10,7 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface UIViewController (CameraPermissions)
 
--(void)ows_askForCameraPermissions:(void(^)())permissionsGrantedCallback;
+- (void)ows_askForCameraPermissions:(void (^)())permissionsGrantedCallback
+                 alertActionHandler:(nullable void (^)())alertActionHandler;
 
 @end
 NS_ASSUME_NONNULL_END
