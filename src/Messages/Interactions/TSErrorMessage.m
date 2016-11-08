@@ -65,6 +65,8 @@
             return NSLocalizedString(@"ERROR_MESSAGE_INVALID_KEY_EXCEPTION", @"");
         case TSErrorMessageWrongTrustedIdentityKey:
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
+        case TSErrorMessageNonBlockingIdentityChange:
+            return NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"");
         default:
             return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
             break;

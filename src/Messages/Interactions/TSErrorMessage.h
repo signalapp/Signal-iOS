@@ -14,6 +14,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageInvalidMessage,
     TSErrorMessageDuplicateMessage,
     TSErrorMessageInvalidVersion,
+    TSErrorMessageNonBlockingIdentityChange,
 };
 
 -(instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

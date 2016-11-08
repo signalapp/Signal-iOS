@@ -14,6 +14,7 @@
 @class ECKeyPair;
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
+@class TSPrivacyPreferences;
 
 extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 
@@ -46,5 +47,6 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (void)purgeCollection:(NSString *)collection;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) TSPrivacyPreferences *privacyPreferences;
 
 @end

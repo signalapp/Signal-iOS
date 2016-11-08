@@ -10,6 +10,7 @@
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import "TSInteraction.h"
+#import "TSPrivacyPreferences.h"
 #import "TSThread.h"
 #import <25519/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
@@ -73,18 +74,19 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 @implementation TSStorageManager
 
 + (instancetype)sharedManager {
-    static TSStorageManager *sharedMyManager = nil;
+    static TSStorageManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedMyManager = [[self alloc] init];
+        sharedManager = [[self alloc] initDefault];
 #if TARGET_OS_IPHONE
-      [sharedMyManager protectSignalFiles];
+        [sharedManager protectSignalFiles];
 #endif
     });
-    return sharedMyManager;
+    return sharedManager;
 }
 
-- (instancetype)init {
+- (instancetype)initDefault
+{
     self = [super init];
 
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
@@ -176,6 +178,11 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 - (YapDatabaseConnection *)newDatabaseConnection {
     return self.database.newConnection;
+}
+
+- (TSPrivacyPreferences *)privacyPreferences
+{
+    return [TSPrivacyPreferences sharedInstance];
 }
 
 - (BOOL)userSetPassword {

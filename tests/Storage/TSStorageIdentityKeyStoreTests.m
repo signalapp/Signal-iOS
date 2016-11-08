@@ -9,9 +9,10 @@
 #import <XCTest/XCTest.h>
 #import <25519/Curve25519.h>
 
-#import "TSStorageManager.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 #import "SecurityUtils.h"
+#import "TSPrivacyPreferences.h"
+#import "TSStorageManager+IdentityKeyStore.h"
+#import "TSStorageManager.h"
 
 @interface TSStorageIdentityKeyStoreTests : XCTestCase
 
@@ -47,10 +48,15 @@
 }
 
 
-- (void)testChangedKey {
+- (void)testChangedKeyWithBlockingIdentityChanges
+{
+    TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
+    preferences.shouldBlockOnIdentityChange = YES;
+    [preferences save];
+
     NSData *newKey = [SecurityUtils generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
-    
+
     [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
     
     XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
@@ -58,6 +64,25 @@
     NSData *otherKey = [SecurityUtils generateRandomBytes:32];
     
     XCTAssertFalse([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId]);
+}
+
+
+- (void)testChangedKeyWIthNonBlockingIdentityChanges
+{
+    TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
+    preferences.shouldBlockOnIdentityChange = NO;
+    [preferences save];
+
+    NSData *newKey = [SecurityUtils generateRandomBytes:32];
+    NSString *recipientId = @"test@gmail.com";
+
+    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
+
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
+
+    NSData *otherKey = [SecurityUtils generateRandomBytes:32];
+
+    XCTAssertTrue([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId]);
 }
 
 - (void)testIdentityKey {
