@@ -10,6 +10,7 @@
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "OWSConversationSettingsTableViewController.h"
+#import "UIViewController+CameraPermissions.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
@@ -137,20 +138,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
-    DDLogInfo(@"%@ Showing Scanner", self.tag);
-    self.qrScanningView.hidden = NO;
-    self.scanningInstructions.hidden = NO;
-    [UIView animateWithDuration:0.4
-                          delay:0.0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         self.scanningContainer.frame = self.qrContainer.frame;
-                         self.qrContainer.frame = self.instructionsContainer.frame;
-                         self.instructionsContainer.alpha = 0.0f;
-                     }
-                     completion:nil];
-
-    [self.qrScanningController startCapture];
+    [self ows_askForCameraPermissions:^{
+        DDLogInfo(@"%@ Showing Scanner", self.tag);
+        self.qrScanningView.hidden = NO;
+        self.scanningInstructions.hidden = NO;
+        [UIView animateWithDuration:0.4
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.scanningContainer.frame = self.qrContainer.frame;
+                             self.qrContainer.frame = self.instructionsContainer.frame;
+                             self.instructionsContainer.alpha = 0.0f;
+                         }
+                         completion:nil];
+        
+        [self.qrScanningController startCapture];
+    }];
 }
 
 // pragma mark - OWSQRScannerDelegate
