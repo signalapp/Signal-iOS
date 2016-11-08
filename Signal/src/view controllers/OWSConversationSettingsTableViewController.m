@@ -241,8 +241,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     }
 
     if (section == OWSConversationSettingsTableViewControllerSectionContact) {
-        if (self.isGroupThread) {
-            // No fingerprint for group thread.
+        if (!self.thread.hasSafetyNumbers) {
             baseCount -= 1;
         }
 
@@ -256,8 +255,10 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    if (self.isGroupThread && indexPath.section == OWSConversationSettingsTableViewControllerSectionContact) {
-        // Since fingerprint cell is hidden for group threads we offset our index path
+    if (indexPath.section == OWSConversationSettingsTableViewControllerSectionContact
+        && !self.thread.hasSafetyNumbers) {
+
+        // Since fingerprint cell is hidden for some threads we offset our index path
         NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section];
         return [super tableView:tableView cellForRowAtIndexPath:offsetIndexPath];
     }
@@ -411,7 +412,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 - (NSIndexPath *)indexPathForDurationSlider
 {
-    if (self.isGroupThread) {
+    if (!self.thread.hasSafetyNumbers) {
         return [NSIndexPath
             indexPathForRow:OWSConversationSettingsTableViewControllerCellIndexSetDisappearingMessagesDuration - 1
                   inSection:OWSConversationSettingsTableViewControllerSectionContact];
