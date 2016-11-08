@@ -41,6 +41,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import "UIViewController+CameraPermissions.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
@@ -63,6 +64,7 @@
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
+
 
 @import Photos;
 
@@ -1560,19 +1562,16 @@ typedef enum : NSUInteger {
  */
 
 - (void)takePictureOrVideo {
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        DDLogError(@"Camera ImagePicker source not available");
-        return;
+    [self ows_askForCameraPermissions:^{
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+        picker.allowsEditing = NO;
+        picker.delegate = self;
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }
-
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-    picker.allowsEditing = NO;
-    picker.delegate = self;
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+                   alertActionHandler:nil];
 }
-
 - (void)chooseFromLibrary {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         DDLogError(@"PhotoLibrary ImagePicker source not available");

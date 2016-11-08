@@ -3,6 +3,7 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
+#import "UIViewController+CameraPermissions.h"
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -245,6 +246,21 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
         default:
             DDLogError(@"Unknown section: %ld", (long)section);
             return 0;
+    }
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice)
+    {
+        [self ows_askForCameraPermissions:^{
+            [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
+        }
+            alertActionHandler:^{
+                // HACK to unselect rows when swiping back
+                // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
+                [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+            }];
     }
 }
 
