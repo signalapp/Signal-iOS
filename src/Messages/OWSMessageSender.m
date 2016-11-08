@@ -246,8 +246,14 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
                 [self getRecipients:gThread.groupModel.groupMemberIds error:&error];
-            if (error) {
-                return failureHandler(error);
+
+            if (recipients.count == 0) {
+                if (error) {
+                    return failureHandler(error);
+                } else {
+                    DDLogError(@"%@ Unknown error finding contacts", self.tag);
+                    return failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError());
+                }
             }
 
             [self groupSend:recipients message:message thread:gThread success:successHandler failure:failureHandler];
