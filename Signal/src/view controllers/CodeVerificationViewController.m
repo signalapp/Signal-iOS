@@ -59,7 +59,8 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [super viewDidLoad];
     [self initializeKeyboardHandlers];
     _headerLabel.text               = NSLocalizedString(@"VERIFICATION_HEADER", @"Navigation title in the registration flow - during the sms code verification process.");
-    _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT", @"Text field placeholder for SMS verification code during registartion");
+    _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT",
+        @"Text field placeholder for SMS verification code during registration");
     _challengeTextField.delegate    = self;
     [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"button text during registration to submit your SMS verification code")
                       forState:UIControlStateNormal];

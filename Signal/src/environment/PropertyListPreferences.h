@@ -53,6 +53,11 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
 
+#pragma mark - Block on Identity Change
+
+- (BOOL)shouldBlockOnIdentityChange;
+- (void)setShouldBlockOnIdentityChange:(BOOL)value;
+
 #pragma mark - Push Tokens
 
 - (void)setPushToken:(NSString *)value;

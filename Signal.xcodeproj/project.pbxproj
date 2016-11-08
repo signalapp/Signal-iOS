@@ -14,6 +14,7 @@
 		450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
 		450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
 		450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
+		4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */ = {isa = PBXBuildFile; fileRef = 4516E3FE1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m */; };
 		451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
 		451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
 		451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
@@ -544,6 +545,8 @@
 		450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIncomingMessageCollectionViewCell.h; sourceTree = "<group>"; };
 		450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingMessageCollectionViewCell.m; sourceTree = "<group>"; };
 		450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSExpirableMessageView.h; sourceTree = "<group>"; };
+		4516E3FD1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS101ExistingUsersBlockOnIdentityChange.h; path = Migrations/OWS101ExistingUsersBlockOnIdentityChange.h; sourceTree = "<group>"; };
+		4516E3FE1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS101ExistingUsersBlockOnIdentityChange.m; path = Migrations/OWS101ExistingUsersBlockOnIdentityChange.m; sourceTree = "<group>"; };
 		451DE9F11DC1585F00810E42 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SyncPushTokensJob.swift; path = Models/SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
@@ -1201,6 +1204,8 @@
 				45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */,
 				45666F7C1D9C0814008FE134 /* OWSDatabaseMigrationRunner.h */,
 				45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */,
+				4516E3FD1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.h */,
+				4516E3FE1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m */,
 			);
 			name = Migrations;
 			sourceTree = "<group>";
@@ -2822,6 +2827,7 @@
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
+				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
