@@ -44,7 +44,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.5.2):
+  - SignalServiceKit (0.5.3):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -140,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 03cde781234ade464dd26914d87e6e95afde1119
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: b0343ee1d1c7fa3a74bd9c9241884ec0bb371ffb
+    :commit: 725153307e605681c45b3f789ed2153f218805a6
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -164,7 +164,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: dfbd01cfaa2c26e7ebe644e7c5d91f8f1e7cfdec
+  SignalServiceKit: f596e83ab9d7ff9ef89364dfe4a912afda62d55a
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c

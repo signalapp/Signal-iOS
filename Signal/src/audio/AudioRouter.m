@@ -1,6 +1,6 @@
 #import "AudioRouter.h"
 
-#import <AVFoundation/AVAudioSession.h>
+@import AVFoundation;
 
 #define DEFAULT_CATAGORY AVAudioSessionCategoryPlayAndRecord
 

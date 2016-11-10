@@ -34,7 +34,7 @@ class SessionResetJob: NSObject {
             let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                         in: self.thread,
                                         messageType: TSInfoMessageType.typeSessionDidEnd)
-            message?.save()
+            message.save()
         }, failure: {error in
             Logger.error("\(self.TAG) failed to send EndSesionMessage with error: \(error.localizedDescription)")
         });

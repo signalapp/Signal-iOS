@@ -1,4 +1,4 @@
-#import <AVFoundation/AVAudioPlayer.h>
+@import AVFoundation;
 
 /**
  *  Wrapper for system dependant audio interface.

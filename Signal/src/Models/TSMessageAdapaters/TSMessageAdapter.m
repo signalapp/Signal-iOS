@@ -37,7 +37,7 @@
 
 // for ErrorMessages
 
-@property NSInteger errorMessageType;
+@property TSErrorMessageType errorMessageType;
 
 // for outgoing Messages only
 
@@ -196,7 +196,7 @@
         }
     } else {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        adapter.infoMessageType      = errorMessage.errorType;
+        adapter.errorMessageType = errorMessage.errorType;
         adapter.messageBody          = errorMessage.description;
         adapter.messageType          = TSErrorMessageAdapter;
     }

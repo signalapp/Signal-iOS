@@ -1,6 +1,3 @@
-#import <Foundation/Foundation.h>
-
-#import <AVFoundation/AVAudioSession.h>
 #import "CallProgress.h"
 #import "CallTermination.h"
 #import "SoundPlayer.h"
@@ -14,6 +11,8 @@
  *  The AudioProfile determines which preset of logic to use for playing sounds, Such as
  *  which speaker to use or if all sounds should be muted.
  **/
+
+@import AVFoundation;
 
 @interface AppAudioManager : NSObject <SoundPlayerDelegate>
 
