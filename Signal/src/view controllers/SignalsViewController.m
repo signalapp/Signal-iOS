@@ -191,13 +191,6 @@
 
 - (void)didAppearForNewlyRegisteredUser
 {
-    [self promptNewUserForContactsWithCompletion:^{
-        [self ensureNotificationsUpToDate];
-    }];
-}
-
-- (void)promptNewUserForContactsWithCompletion:(void (^)())completionHandler
-{
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     switch (status) {
         case kABAuthorizationStatusNotDetermined:
@@ -212,16 +205,18 @@
                               actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
                                         style:UIAlertActionStyleCancel
                                       handler:^(UIAlertAction *action) {
+                                          [self ensureNotificationsUpToDate];
                                           [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
                                       }]];
 
-            [self presentViewController:controller animated:YES completion:completionHandler];
+            [self presentViewController:controller animated:YES completion:nil];
             break;
         }
         default: {
             DDLogError(@"%@ Unexpected for new user to have kABAuthorizationStatus:%ld", self.tag, status);
+            [self ensureNotificationsUpToDate];
             [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-            completionHandler();
+
             break;
         }
     }
