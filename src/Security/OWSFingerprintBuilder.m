@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
 {
-    NSData *theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
+    NSData *_Nullable theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
 
     return [self fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
 }

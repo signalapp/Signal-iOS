@@ -1,21 +1,28 @@
-//
-//  TSInfoMessage.m
-//  TextSecureKit
-//
 //  Created by Frederic Jacobs on 15/11/14.
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSInfoMessage.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSInfoMessage
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initWithTimestamp:timestamp
+                           inThread:thread
+                        messageBody:nil
+                      attachmentIds:@[]
+                   expiresInSeconds:0
+                    expireStartedAt:0];
 
     if (!self) {
         return self;
@@ -64,3 +71,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
