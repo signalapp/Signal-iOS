@@ -28,7 +28,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                                inThread:(TSThread *)thread
                            forRecipient:(NSString *)recipientId
                            preKeyBundle:(PreKeyBundle *)preKeyBundle
-                            transaction:(YapDatabaseReadWriteTransaction *)transaction {
+{
     self = [super initWithTimestamp:message.timestamp
                            inThread:thread
                   failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
@@ -46,12 +46,11 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                                        inThread:(TSThread *)thread
                                    forRecipient:(NSString *)recipientId
                                    preKeyBundle:(PreKeyBundle *)preKeyBundle
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+{
     TSInvalidIdentityKeySendingErrorMessage *message = [[self alloc] initWithOutgoingMessage:outgoingMessage
                                                                                     inThread:thread
                                                                                 forRecipient:recipientId
-                                                                                preKeyBundle:preKeyBundle
-                                                                                 transaction:transaction];
+                                                                                preKeyBundle:preKeyBundle];
     return message;
 }
 

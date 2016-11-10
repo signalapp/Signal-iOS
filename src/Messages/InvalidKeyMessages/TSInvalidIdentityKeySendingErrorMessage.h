@@ -22,8 +22,7 @@ extern NSString *TSInvalidRecipientKey;
 + (instancetype)untrustedKeyWithOutgoingMessage:(TSOutgoingMessage *)outgoingMessage
                                        inThread:(TSThread *)thread
                                    forRecipient:(NSString *)recipientId
-                                   preKeyBundle:(PreKeyBundle *)preKeyBundle
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                   preKeyBundle:(PreKeyBundle *)preKeyBundle;
 
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSString *messageId;

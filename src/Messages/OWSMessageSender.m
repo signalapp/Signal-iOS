@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 int const OWSMessageSenderRetryAttempts = 3;
 NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceException";
+NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @interface OWSMessageSender ()
 
@@ -420,12 +421,31 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
         deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
     } @catch (NSException *exception) {
         deviceMessages = @[];
+        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+            [[TSInvalidIdentityKeySendingErrorMessage
+                untrustedKeyWithOutgoingMessage:message
+                                       inThread:thread
+                                   forRecipient:exception.userInfo[TSInvalidRecipientKey]
+                                   preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey]] save];
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
+                NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
+                    @"action sheet header when re-sending message which failed because of untrusted identity keys"));
+            return failureHandler(error);
+        }
+
+        if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
+                NSLocalizedString(@"FAILED_SENDING_BECAUSE_RATE_LIMIT",
+                    @"action sheet header when re-sending message which failed because of too many attempts"));
+            return failureHandler(error);
+        }
+
         if (remainingAttempts == 0) {
             DDLogWarn(
                 @"%@ Terminal failure to build any device messages. Giving up with exception:%@", self.tag, exception);
             [self processException:exception outgoingMessage:message inThread:thread];
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-            failureHandler(error);
+            return failureHandler(error);
         }
     }
 
@@ -449,15 +469,7 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
 
             void (^retrySend)() = ^void() {
                 if (remainingAttempts <= 0) {
-                    NSError *presentedError = error;
-                    if (statuscode == 409) {
-                        presentedError = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
-                            NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
-                                @"action sheet header when re-sending message which failed because of untrusted "
-                                @"identity keys"));
-                    }
-
-                    return failureHandler(presentedError);
+                    return failureHandler(error);
                 }
 
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -659,6 +671,11 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
                     exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
                                                         reason:@"Device not registered"
                                                       userInfo:nil];
+                } else if (response.statusCode == 413) {
+                    // Can't throw exception from within callback as it's probabably a different thread.
+                    exception = [NSException exceptionWithName:OWSMessageSenderRateLimitedException
+                                                        reason:@"Too many prekey requests"
+                                                      userInfo:nil];
                 }
                 dispatch_semaphore_signal(sema);
             }];
@@ -803,17 +820,7 @@ NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceExceptio
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
-        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-            errorMessage = [TSInvalidIdentityKeySendingErrorMessage
-                untrustedKeyWithOutgoingMessage:message
-                                       inThread:thread
-                                   forRecipient:exception.userInfo[TSInvalidRecipientKey]
-                                   preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey]
-                                withTransaction:transaction];
-
-            message.messageState = TSOutgoingMessageStateUnsent;
-            [message saveWithTransaction:transaction];
-        } else if (message.groupMetaMessage == TSGroupMessageNone) {
+        if (message.groupMetaMessage == TSGroupMessageNone) {
             // Only update this with exception if it is not a group message as group
             // messages may except for one group
             // send but not another and the UI doesn't know how to handle that
