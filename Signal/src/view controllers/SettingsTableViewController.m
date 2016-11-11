@@ -68,7 +68,7 @@ typedef enum {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.registeredNumber.text =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
-    [self findAndSetRegisteredName];
+    self.registeredName.text = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
 
     [self initializeObserver];
     [TSSocketManager sendNotification];
@@ -99,12 +99,6 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SocketConnectingNotification object:nil];
 }
 
-- (void)findAndSetRegisteredName {
-    NSString *name           = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
-    PhoneNumber *myNumber    = [PhoneNumber phoneNumberFromE164:[TSAccountManager localNumber]];
-    Contact *me              = [[Environment.getCurrent contactsManager] latestContactForPhoneNumber:myNumber];
-    self.registeredName.text = [me fullName] ? [me fullName] : name;
-}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
