@@ -23,7 +23,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 
 @interface CodeVerificationViewController ()
 
-@property (nonatomic, strong, readonly) OWSAccountManager *accountManager;
+@property (nonatomic, strong, readonly) AccountManager *accountManager;
 
 @end
 
@@ -36,8 +36,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
         return self;
     }
 
-    _accountManager = [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                           redPhoneAccountManager:[RPAccountManager sharedInstance]];
+    _accountManager = [Environment getCurrent].accountManager;
 
     return self;
 }
@@ -49,8 +48,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
         return self;
     }
 
-    _accountManager = [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                           redPhoneAccountManager:[RPAccountManager sharedInstance]];
+    _accountManager = [Environment getCurrent].accountManager;
 
     return self;
 }

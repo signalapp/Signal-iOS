@@ -32,7 +32,7 @@ PODS:
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.9.2)
+  - libPhoneNumber-iOS (0.9.1)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -121,7 +121,7 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `master`)
+  - SignalServiceKit (from `../SignalServiceKit`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -129,8 +129,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :branch: master
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :path: "../SignalServiceKit"
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -138,9 +137,6 @@ CHECKOUT OPTIONS:
   AxolotlKit:
     :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
-  SignalServiceKit:
-    :commit: 7b7b338075f3b4615755fcc1f1fb8a8c67b0bd0a
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
@@ -154,7 +150,7 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: a8bffdec18c37728360f6771fe021302f1e0b497
+  libPhoneNumber-iOS: 81ad1e6bfcf46e668636333269afbfe60399a55b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
@@ -170,6 +166,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: cb24c78080551874a45d1a20de4a1bef7427b41f
+PODFILE CHECKSUM: 05b247199157a4742765e0ea45fe671dbf48b58e
 
 COCOAPODS: 1.0.1
