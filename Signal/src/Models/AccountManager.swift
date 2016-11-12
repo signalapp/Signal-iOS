@@ -4,16 +4,23 @@
 import Foundation
 import PromiseKit
 
-@objc(OWSAccountManager)
+/**
+ * Signal is actually two services - textSecure for messages and red phone (for calls). 
+ * AccountManager delegates to both.
+ */
 class AccountManager : NSObject {
     let TAG = "[AccountManager]"
     let textSecureAccountManager: TSAccountManager
+    let networkManager: TSNetworkManager
     let redPhoneAccountManager: RPAccountManager
 
     required init(textSecureAccountManager:TSAccountManager, redPhoneAccountManager:RPAccountManager) {
+        self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.redPhoneAccountManager = redPhoneAccountManager
     }
+
+    // MARK: registration
 
     @objc func register(verificationCode: String) -> AnyPromise {
         return AnyPromise(register(verificationCode: verificationCode));
@@ -44,6 +51,31 @@ class AccountManager : NSObject {
         }
     }
 
+    private func registerForTextSecure(verificationCode: String) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            self.textSecureAccountManager.verifyAccount(withCode:verificationCode,
+                                                        success:fulfill,
+                                                        failure:reject)
+        }
+    }
+
+    private func fetchRedPhoneToken() -> Promise<String> {
+        return Promise { fulfill, reject in
+            self.textSecureAccountManager.obtainRPRegistrationToken(success:fulfill,
+                                                                    failure:reject)
+        }
+    }
+
+    private func registerForRedPhone(tsToken: String) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            self.redPhoneAccountManager.register(withTsToken:tsToken,
+                                                 success:fulfill,
+                                                 failure:reject)
+        }
+    }
+
+    // MARK: Push Tokens
+
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return firstly {
             return self.updateTextSecurePushTokens(pushToken: pushToken, voipToken: voipToken)
@@ -54,6 +86,7 @@ class AccountManager : NSObject {
             return self.updateRedPhonePushTokens(pushToken:pushToken, voipToken:voipToken)
         }.then {
             Logger.info("\(self.TAG) Successfully updated red phone push tokens.")
+            // TODO code cleanup - convert to `return Promise(value: nil)` and test
             return Promise { fulfill, reject in
                 fulfill();
             }
@@ -78,27 +111,29 @@ class AccountManager : NSObject {
         }
     }
 
-    private func registerForTextSecure(verificationCode: String) -> Promise<Void> {
+    // MARK: Turn Server
+
+    func getTurnServerInfo() -> Promise<TurnServerInfo> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.verifyAccount(withCode:verificationCode,
-                                                        success:fulfill,
-                                                        failure:reject)
+            self.networkManager.makeRequest(TurnServerInfoRequest(),
+                                            success: { (task: URLSessionDataTask, responseObject: Any?) in
+                                                guard responseObject != nil else {
+                                                    return reject(OWSErrorMakeUnableToProcessServerResponseError())
+                                                }
+
+                                                if let responseDictionary = responseObject as? [String: AnyObject] {
+                                                    if let turnServerInfo = TurnServerInfo(attributes:responseDictionary) {
+                                                        Logger.debug("\(self.TAG) got valid turnserver info")
+                                                        return fulfill(turnServerInfo)
+                                                    }
+                                                    Logger.error("\(self.TAG) unexpeted server response:\(responseDictionary)")
+                                                }
+                                                return reject(OWSErrorMakeUnableToProcessServerResponseError())
+            },
+                                            failure: { (task: URLSessionDataTask, error: Error) in
+                                                    return reject(error)
+            })
         }
     }
 
-    private func fetchRedPhoneToken() -> Promise<String> {
-        return Promise { fulfill, reject in
-            self.textSecureAccountManager.obtainRPRegistrationToken(success:fulfill,
-                                                                    failure:reject)
-
-        }
-    }
-
-    private func registerForRedPhone(tsToken: String) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.redPhoneAccountManager.register(withTsToken:tsToken,
-                                                 success:fulfill,
-                                                 failure:reject)
-        }
-    }
 }

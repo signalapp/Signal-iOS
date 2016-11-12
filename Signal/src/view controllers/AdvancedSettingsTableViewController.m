@@ -119,12 +119,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        OWSAccountManager *accountManager =
-            [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                 redPhoneAccountManager:[RPAccountManager sharedInstance]];
-        OWSSyncPushTokensJob *syncJob = [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                                                           accountManager:accountManager
-                                                                              preferences:[Environment preferences]];
+        OWSSyncPushTokensJob *syncJob =
+            [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
+                                               accountManager:[Environment getCurrent].accountManager
+                                                  preferences:[Environment preferences]];
         syncJob.uploadOnlyIfStale = NO;
         [syncJob run]
             .then(^{

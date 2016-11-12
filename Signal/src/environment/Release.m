@@ -1,5 +1,6 @@
 #import "Release.h"
 #import "DiscardingLog.h"
+#import "NotificationsManager.h"
 #import "PhoneManager.h"
 #import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
@@ -52,6 +53,7 @@ static unsigned char DH3K_PRIME[] = {
                                                                         storageManager:[TSStorageManager sharedManager]
                                                                        contactsManager:contactsManager
                                                                        contactsUpdater:contactsUpdater];
+
     return [[Environment alloc] initWithLogging:logging
                                      errorNoter:errorNoter
                                      serverPort:31337
@@ -83,6 +85,7 @@ static unsigned char DH3K_PRIME[] = {
                                                                         storageManager:[TSStorageManager sharedManager]
                                                                        contactsManager:contactsManager
                                                                        contactsUpdater:contactsUpdater];
+
     return [[Environment alloc] initWithLogging:logging
                                      errorNoter:errorNoter
                                      serverPort:31337

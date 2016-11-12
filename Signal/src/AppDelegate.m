@@ -24,6 +24,8 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
+@import WebRTC;
+
 NSString *const AppDelegateStoryboardMain = @"Main";
 NSString *const AppDelegateStoryboardRegistration = @"Registration";
 
@@ -123,12 +125,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             DDLogWarn(@"The app was launched in an unknown way");
         }
 
-        OWSAccountManager *accountManager =
-            [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                 redPhoneAccountManager:[RPAccountManager sharedInstance]];
+        RTCInitializeSSL();
 
         [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                  accountManager:accountManager
+                                  accountManager:[Environment getCurrent].accountManager
                                      preferences:[Environment preferences]].then(^{
             DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
         }).catch(^(NSError *_Nonnull error) {
@@ -149,15 +149,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             gesture.numberOfTapsRequired = 8;
             [self.window addGestureRecognizer:gesture];
         });
+        RTCInitializeSSL();
     }];
 
     return YES;
 }
 
 - (void)setupTSKitEnv {
-    [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
+
+    TextSecureKitEnv *sharedEnv =
+        [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
+                                             contactsManager:[Environment getCurrent].contactsManager
+                                        notificationsManager:[Environment getCurrent].notificationsManager];
+    [TextSecureKitEnv setSharedEnv:sharedEnv];
     [[TSStorageManager sharedManager] setupDatabase];
-    [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
 
     OWSMessageSender *messageSender =
         [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
@@ -288,6 +293,36 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                                           }];
     }
 }
+
+/**
+ * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
+ */
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
+{
+    DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.", self.tag, __PRETTY_FUNCTION__, userActivity);
+    // TODO Something like...
+    // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
+    // thread = blah
+    // [callservice handleoutgoingCAll:thread]
+    //
+    // See Speakerbox Example for intent / NSUserActivity handling.
+    return NO;
+}
+//func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+//    guard let handle = userActivity.startCallHandle else {
+//        print("Could not determine start call handle from user activity: \(userActivity)")
+//        return false
+//    }
+//
+//    guard let video = userActivity.video else {
+//        print("Could not determine video from user activity: \(userActivity)")
+//        return false
+//    }
+//
+//    callManager.startCall(handle: handle, video: video)
+//    return true
+//}
+
 
 /**
  * Screen protection obscures the app screen shown in the app switcher.

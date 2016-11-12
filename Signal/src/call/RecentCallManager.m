@@ -102,7 +102,7 @@
 
       [call saveWithTransaction:transaction];
 
-      NotificationsManager *manager = [TextSecureKitEnv sharedEnv].notificationsManager;
+      NotificationsManager *manager = [Environment getCurrent].notificationsManager;
       [manager notifyUserForCall:call inThread:thread];
     }];
 }

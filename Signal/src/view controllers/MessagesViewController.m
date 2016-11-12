@@ -64,8 +64,22 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-
 @import Photos;
+
+@interface Contact (redphoneStubbing)
+
+@property (nonatomic, readonly) BOOL prefersRedphoneContact;
+
+@end
+
+@implementation Contact (redphoneStubbing)
+
+- (BOOL)prefersRedphoneContact
+{
+    return NO;
+}
+
+@end
 
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
@@ -75,9 +89,12 @@
 #define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+
+static NSString *const OWSMessagesViewControllerSegueInitiateCall = @"initiateCallSegue";
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
 static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
     @"OWSMessagesViewControllerSeguePushConversationSettings";
+
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
 typedef enum : NSUInteger {
@@ -646,7 +663,11 @@ typedef enum : NSUInteger {
     if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
+        if (contact.prefersRedphoneContact) {
+            [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
+        } else {
+            [self performSegueWithIdentifier:OWSMessagesViewControllerSegueInitiateCall sender:self];
+        }
     } else {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
     }
@@ -1615,8 +1636,21 @@ typedef enum : NSUInteger {
         OWSConversationSettingsTableViewController *controller
             = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
         [controller configureWithThread:self.thread];
-    }
+    } else if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueInitiateCall]) {
+        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
+            DDLogError(@"%@ Expected CallViewController but got: %@", self.tag, segue.destinationViewController);
+            return;
+        }
 
+        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
+
+        if (![self.thread isKindOfClass:[TSContactThread class]]) {
+            DDLogError(@"%@ Unexpectedly trying to call in group thread:%@. This isn't supported.", self.thread, self.tag);
+            return;
+        }
+        callViewController.thread = (TSContactThread *)self.thread;
+        [callViewController setOutgoingCallDirection];
+    }
 }
 
 

@@ -17,6 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 #define Signal_Thread_UserInfo_Key @"Signal_Thread_Id"
 #define Signal_Message_UserInfo_Key @"Signal_Message_Id"
 
+#define Signal_Full_New_Message_Category @"Signal_Full_New_Message"
+
+#define Signal_Message_Reply_Identifier @"Signal_New_Message_Reply"
+#define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
+
+#pragma mark Redphone Calls (deprecated)
+
 #define Signal_Call_UserInfo_Key @"Signal_Call_Id"
 
 #define Signal_Call_Accept_Identifier @"Signal_Call_Accept"
@@ -25,11 +32,20 @@ NS_ASSUME_NONNULL_BEGIN
 #define Signal_CallBack_Identifier @"Signal_CallBack"
 
 #define Signal_Call_Category @"Signal_IncomingCall"
-#define Signal_Full_New_Message_Category @"Signal_Full_New_Message"
+
 #define Signal_CallBack_Category @"Signal_CallBack"
 
-#define Signal_Message_Reply_Identifier @"Signal_New_Message_Reply"
-#define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
+#pragma mark Signal Calls constants
+
+FOUNDATION_EXPORT NSString *const PushManagerCategoriesIncomingCall;
+FOUNDATION_EXPORT NSString *const PushManagerCategoriesMissedCall;
+
+FOUNDATION_EXPORT NSString *const PushManagerActionsAcceptCall;
+FOUNDATION_EXPORT NSString *const PushManagerActionsDeclineCall;
+FOUNDATION_EXPORT NSString *const PushManagerActionsCallBack;
+
+FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
+FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysLocalCallId;
 
 typedef void (^failedPushRegistrationBlock)(NSError *error);
 typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken);

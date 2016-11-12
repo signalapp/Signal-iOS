@@ -6,6 +6,7 @@
 #import "KeyAgreementProtocol.h"
 #import "MessagesViewController.h"
 #import "RecentCallManager.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
 #import "TSContactThread.h"
@@ -17,6 +18,12 @@
 static Environment *environment = nil;
 
 @implementation Environment
+
+@synthesize accountManager = _accountManager;
+@synthesize callMessageHandler = _callMessageHandler;
+@synthesize callService = _callService;
+@synthesize notificationsManager = _notificationsManager;
+@synthesize preferences = _preferences;
 
 + (Environment *)getCurrent {
     NSAssert((environment != nil), @"Environment is not defined.");
@@ -119,6 +126,45 @@ static Environment *environment = nil;
     return self;
 }
 
+- (AccountManager *)accountManager
+{
+    @synchronized (self) {
+        if (!_accountManager) {
+            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                                redPhoneAccountManager:[RPAccountManager sharedInstance]];
+        }
+    }
+
+    return _accountManager;
+}
+
+- (OWSWebRTCCallMessageHandler *)callMessageHandler
+{
+    @synchronized (self) {
+        if (!_callMessageHandler) {
+            _callMessageHandler = [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
+                                                                                  callService:self.callService
+                                                                                messageSender:self.messageSender];
+        }
+    }
+
+    return _callMessageHandler;
+}
+
+- (CallService *)callService
+{
+    @synchronized (self) {
+        if (!_callService) {
+            _callService = [[CallService alloc] initWithAccountManager:self.accountManager
+                                                       contactsManager:self.contactsManager
+                                                         messageSender:self.messageSender
+                                                  notificationsAdapter:[OWSCallNotificationsAdapter new]];
+        }
+    }
+
+    return _callService;
+}
+
 + (PhoneManager *)phoneManager {
     return Environment.getCurrent.phoneManager;
 }
@@ -151,14 +197,37 @@ static Environment *environment = nil;
       SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
       [vc dismissViewControllerAnimated:NO completion:nil];
       vc.latestCall = latestCall;
-      [vc performSegueWithIdentifier:kCallSegue sender:self];
+      [vc performSegueWithIdentifier:kRedphoneCallSegue sender:self];
     }
                                                      onThread:NSThread.mainThread
                                                untilCancelled:nil];
 }
 
-+ (PropertyListPreferences *)preferences {
-    return [PropertyListPreferences new];
+- (NotificationsManager *)notificationsManager
+{
+    @synchronized (self) {
+        if (!_notificationsManager) {
+            _notificationsManager = [NotificationsManager new];
+        }
+    }
+
+    return _notificationsManager;
+}
+
++ (PropertyListPreferences *)preferences
+{
+    return [Environment getCurrent].preferences;
+}
+
+- (PropertyListPreferences *)preferences
+{
+    @synchronized (self) {
+        if (!_preferences) {
+            _preferences = [PropertyListPreferences new];
+        }
+    }
+
+    return _preferences;
 }
 
 - (void)setSignalsViewController:(SignalsViewController *)signalsViewController {

@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ in group %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Archive";
 
@@ -221,13 +224,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "You Made Another Call.";
 
 /* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy...";
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Missed the Call.";
 
 /* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Client Failed!";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
@@ -240,6 +243,9 @@
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Recipient is no longer a Signal user.";
@@ -353,7 +359,7 @@
 "IN_CALL_TALKING" = "Secured. Active.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Done.";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
 /* No comment provided by engineer. */
 "INCOMING_CALL" = "Incoming call";
