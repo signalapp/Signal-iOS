@@ -600,7 +600,8 @@ typedef enum : NSUInteger {
 
 - (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
 {
-    OWSFingerprintBuilder *builder = [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager];
+    OWSFingerprintBuilder *builder =
+        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
     OWSFingerprint *fingerprint =
         [builder fingerprintWithTheirSignalId:self.thread.contactIdentifier theirIdentityKey:theirIdentityKey];
     [self markAllMessagesAsRead];

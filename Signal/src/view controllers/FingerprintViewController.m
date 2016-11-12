@@ -84,8 +84,11 @@ NS_ASSUME_NONNULL_BEGIN
         @"Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}}");
     self.instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
 
-    self.scanButton.titleLabel.text = NSLocalizedString(@"SCAN_CODE_ACTION",
+    NSString *scanTitle = NSLocalizedString(@"SCAN_CODE_ACTION",
         @"Button label presented with camera icon while verifying privacy credentials. Shows the camera interface.");
+    [self.scanButton setTitle:scanTitle forState:UIControlStateNormal];
+    self.scanningInstructions.text
+        = NSLocalizedString(@"SCAN_CODE_INSTRUCTIONS", @"label presented once scanning (camera) view is visible.");
 
     // Safety numbers and QR Code
     self.privacyVerificationFingerprint.text = self.fingerprint.displayableText;
@@ -166,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
 {
     NSError *error;
-    if ([self.fingerprint matchesCombinedFingerprintData:combinedFingerprintData error:&error]) {
+    if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
         DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
         NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
         NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);

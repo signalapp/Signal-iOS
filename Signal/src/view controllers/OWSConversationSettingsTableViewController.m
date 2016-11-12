@@ -451,7 +451,9 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         FingerprintViewController *controller = (FingerprintViewController *)segue.destinationViewController;
 
         OWSFingerprintBuilder *fingerprintBuilder =
-            [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager];
+            [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager
+                                                  contactsManager:self.contactsManager];
+
         OWSFingerprint *fingerprint = [fingerprintBuilder fingerprintWithTheirSignalId:self.thread.contactIdentifier];
 
         [controller configureWithThread:self.thread fingerprint:fingerprint contactName:self.contactName];
