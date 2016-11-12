@@ -5,11 +5,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSStorageManager;
 @class OWSFingerprint;
+@protocol ContactsManagerProtocol;
 
 @interface OWSFingerprintBuilder : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager NS_DESIGNATED_INITIALIZER;
 
 /**
  * Builds a fingerprint combining your current credentials with their most recently accepted credentials.

@@ -4,10 +4,10 @@
 
 // @@protoc_insertion_point(imports)
 
-@class OWSFingerprintProtosCombinedFingerprint;
-@class OWSFingerprintProtosCombinedFingerprintBuilder;
-@class OWSFingerprintProtosFingerprintData;
-@class OWSFingerprintProtosFingerprintDataBuilder;
+@class OWSFingerprintProtosLogicalFingerprint;
+@class OWSFingerprintProtosLogicalFingerprintBuilder;
+@class OWSFingerprintProtosLogicalFingerprints;
+@class OWSFingerprintProtosLogicalFingerprintsBuilder;
 @class ObjectiveCFileOptions;
 @class ObjectiveCFileOptionsBuilder;
 @class PBDescriptorProto;
@@ -61,138 +61,128 @@
 + (void) registerAllExtensions:(PBMutableExtensionRegistry*) registry;
 @end
 
-#define FingerprintData_publicKey @"publicKey"
-#define FingerprintData_identifier @"identifier"
-@interface OWSFingerprintProtosFingerprintData : PBGeneratedMessage<GeneratedMessageProtocol> {
+#define LogicalFingerprint_identityData @"identityData"
+@interface OWSFingerprintProtosLogicalFingerprint : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasPublicKey_:1;
-  BOOL hasIdentifier_:1;
-  NSData* publicKey;
-  NSData* identifier;
+  BOOL hasIdentityData_:1;
+  NSData* identityData;
 }
-- (BOOL) hasPublicKey;
-- (BOOL) hasIdentifier;
-@property (readonly, strong) NSData* publicKey;
-@property (readonly, strong) NSData* identifier;
+- (BOOL) hasIdentityData;
+@property (readonly, strong) NSData* identityData;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
 
 - (BOOL) isInitialized;
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSFingerprintProtosFingerprintDataBuilder*) builder;
-+ (OWSFingerprintProtosFingerprintDataBuilder*) builder;
-+ (OWSFingerprintProtosFingerprintDataBuilder*) builderWithPrototype:(OWSFingerprintProtosFingerprintData*) prototype;
-- (OWSFingerprintProtosFingerprintDataBuilder*) toBuilder;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) builder;
++ (OWSFingerprintProtosLogicalFingerprintBuilder*) builder;
++ (OWSFingerprintProtosLogicalFingerprintBuilder*) builderWithPrototype:(OWSFingerprintProtosLogicalFingerprint*) prototype;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) toBuilder;
 
-+ (OWSFingerprintProtosFingerprintData*) parseFromData:(NSData*) data;
-+ (OWSFingerprintProtosFingerprintData*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSFingerprintProtosFingerprintData*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSFingerprintProtosFingerprintData*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSFingerprintProtosFingerprintData*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSFingerprintProtosFingerprintData*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromData:(NSData*) data;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromInputStream:(NSInputStream*) input;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 @end
 
-@interface OWSFingerprintProtosFingerprintDataBuilder : PBGeneratedMessageBuilder {
+@interface OWSFingerprintProtosLogicalFingerprintBuilder : PBGeneratedMessageBuilder {
 @private
-  OWSFingerprintProtosFingerprintData* resultFingerprintData;
+  OWSFingerprintProtosLogicalFingerprint* resultLogicalFingerprint;
 }
 
-- (OWSFingerprintProtosFingerprintData*) defaultInstance;
+- (OWSFingerprintProtosLogicalFingerprint*) defaultInstance;
 
-- (OWSFingerprintProtosFingerprintDataBuilder*) clear;
-- (OWSFingerprintProtosFingerprintDataBuilder*) clone;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clear;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clone;
 
-- (OWSFingerprintProtosFingerprintData*) build;
-- (OWSFingerprintProtosFingerprintData*) buildPartial;
+- (OWSFingerprintProtosLogicalFingerprint*) build;
+- (OWSFingerprintProtosLogicalFingerprint*) buildPartial;
 
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFrom:(OWSFingerprintProtosFingerprintData*) other;
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFrom:(OWSFingerprintProtosLogicalFingerprint*) other;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
-- (BOOL) hasPublicKey;
-- (NSData*) publicKey;
-- (OWSFingerprintProtosFingerprintDataBuilder*) setPublicKey:(NSData*) value;
-- (OWSFingerprintProtosFingerprintDataBuilder*) clearPublicKey;
-
-- (BOOL) hasIdentifier;
-- (NSData*) identifier;
-- (OWSFingerprintProtosFingerprintDataBuilder*) setIdentifier:(NSData*) value;
-- (OWSFingerprintProtosFingerprintDataBuilder*) clearIdentifier;
+- (BOOL) hasIdentityData;
+- (NSData*) identityData;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) setIdentityData:(NSData*) value;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clearIdentityData;
 @end
 
-#define CombinedFingerprint_version @"version"
-#define CombinedFingerprint_localFingerprint @"localFingerprint"
-#define CombinedFingerprint_remoteFingerprint @"remoteFingerprint"
-@interface OWSFingerprintProtosCombinedFingerprint : PBGeneratedMessage<GeneratedMessageProtocol> {
+#define LogicalFingerprints_version @"version"
+#define LogicalFingerprints_localFingerprint @"localFingerprint"
+#define LogicalFingerprints_remoteFingerprint @"remoteFingerprint"
+@interface OWSFingerprintProtosLogicalFingerprints : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasLocalFingerprint_:1;
   BOOL hasRemoteFingerprint_:1;
   BOOL hasVersion_:1;
-  OWSFingerprintProtosFingerprintData* localFingerprint;
-  OWSFingerprintProtosFingerprintData* remoteFingerprint;
+  OWSFingerprintProtosLogicalFingerprint* localFingerprint;
+  OWSFingerprintProtosLogicalFingerprint* remoteFingerprint;
   UInt32 version;
 }
 - (BOOL) hasVersion;
 - (BOOL) hasLocalFingerprint;
 - (BOOL) hasRemoteFingerprint;
 @property (readonly) UInt32 version;
-@property (readonly, strong) OWSFingerprintProtosFingerprintData* localFingerprint;
-@property (readonly, strong) OWSFingerprintProtosFingerprintData* remoteFingerprint;
+@property (readonly, strong) OWSFingerprintProtosLogicalFingerprint* localFingerprint;
+@property (readonly, strong) OWSFingerprintProtosLogicalFingerprint* remoteFingerprint;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
 
 - (BOOL) isInitialized;
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) builder;
-+ (OWSFingerprintProtosCombinedFingerprintBuilder*) builder;
-+ (OWSFingerprintProtosCombinedFingerprintBuilder*) builderWithPrototype:(OWSFingerprintProtosCombinedFingerprint*) prototype;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) toBuilder;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) builder;
++ (OWSFingerprintProtosLogicalFingerprintsBuilder*) builder;
++ (OWSFingerprintProtosLogicalFingerprintsBuilder*) builderWithPrototype:(OWSFingerprintProtosLogicalFingerprints*) prototype;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) toBuilder;
 
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromData:(NSData*) data;
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromData:(NSData*) data;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromInputStream:(NSInputStream*) input;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 @end
 
-@interface OWSFingerprintProtosCombinedFingerprintBuilder : PBGeneratedMessageBuilder {
+@interface OWSFingerprintProtosLogicalFingerprintsBuilder : PBGeneratedMessageBuilder {
 @private
-  OWSFingerprintProtosCombinedFingerprint* resultCombinedFingerprint;
+  OWSFingerprintProtosLogicalFingerprints* resultLogicalFingerprints;
 }
 
-- (OWSFingerprintProtosCombinedFingerprint*) defaultInstance;
+- (OWSFingerprintProtosLogicalFingerprints*) defaultInstance;
 
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clear;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clone;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clear;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clone;
 
-- (OWSFingerprintProtosCombinedFingerprint*) build;
-- (OWSFingerprintProtosCombinedFingerprint*) buildPartial;
+- (OWSFingerprintProtosLogicalFingerprints*) build;
+- (OWSFingerprintProtosLogicalFingerprints*) buildPartial;
 
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFrom:(OWSFingerprintProtosCombinedFingerprint*) other;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFrom:(OWSFingerprintProtosLogicalFingerprints*) other;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
 - (BOOL) hasVersion;
 - (UInt32) version;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setVersion:(UInt32) value;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearVersion;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setVersion:(UInt32) value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearVersion;
 
 - (BOOL) hasLocalFingerprint;
-- (OWSFingerprintProtosFingerprintData*) localFingerprint;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setLocalFingerprint:(OWSFingerprintProtosFingerprintData*) value;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setLocalFingerprintBuilder:(OWSFingerprintProtosFingerprintDataBuilder*) builderForValue;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeLocalFingerprint:(OWSFingerprintProtosFingerprintData*) value;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearLocalFingerprint;
+- (OWSFingerprintProtosLogicalFingerprint*) localFingerprint;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setLocalFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setLocalFingerprintBuilder:(OWSFingerprintProtosLogicalFingerprintBuilder*) builderForValue;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeLocalFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearLocalFingerprint;
 
 - (BOOL) hasRemoteFingerprint;
-- (OWSFingerprintProtosFingerprintData*) remoteFingerprint;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setRemoteFingerprint:(OWSFingerprintProtosFingerprintData*) value;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setRemoteFingerprintBuilder:(OWSFingerprintProtosFingerprintDataBuilder*) builderForValue;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeRemoteFingerprint:(OWSFingerprintProtosFingerprintData*) value;
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearRemoteFingerprint;
+- (OWSFingerprintProtosLogicalFingerprint*) remoteFingerprint;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setRemoteFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setRemoteFingerprintBuilder:(OWSFingerprintProtosLogicalFingerprintBuilder*) builderForValue;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeRemoteFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearRemoteFingerprint;
 @end
 
 

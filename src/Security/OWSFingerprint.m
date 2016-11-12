@@ -11,13 +11,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static uint32_t const OWSFingerprintVersion = 0;
+static uint32_t const OWSFingerprintHashingVersion = 0;
+static uint32_t const OWSFingerprintScannableFormatVersion = 1;
 static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 @interface OWSFingerprint ()
 
 @property (nonatomic, readonly) NSUInteger hashIterations;
 @property (nonatomic, readonly) NSString *text;
+@property (nonatomic, readonly) NSData *myFingerprintData;
+@property (nonatomic, readonly) NSData *theirFingerprintData;
+@property (nonatomic, readonly) NSString *theirName;
 
 @end
 
@@ -27,6 +31,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                      myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
                      theirStableId:(NSString *)theirStableId
                   theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                         theirName:(NSString *)theirName
                     hashIterations:(uint32_t)hashIterations
 {
     NSParameterAssert(theirIdentityKeyWithoutKeyType.length == 32);
@@ -42,9 +47,11 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     _theirStableId = theirStableId;
     _theirStableIdData = [theirStableId dataUsingEncoding:NSUTF8StringEncoding];
     _theirIdentityKey = [theirIdentityKeyWithoutKeyType prependKeyType];
+    _theirName = theirName;
     _hashIterations = hashIterations;
-    _text = [self generateText];
-    _image = [self generateImage];
+
+    _myFingerprintData = [self dataForStableId:_myStableIdData publicKey:_myIdentityKey];
+    _theirFingerprintData = [self dataForStableId:_theirStableIdData publicKey:_theirIdentityKey];
 
     return self;
 }
@@ -53,12 +60,14 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                             myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
                             theirStableId:(NSString *)theirStableId
                          theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                theirName:(NSString *)theirName
                            hashIterations:(uint32_t)hashIterations
 {
     return [[self alloc] initWithMyStableId:myStableId
                               myIdentityKey:myIdentityKeyWithoutKeyType
                               theirStableId:theirStableId
                            theirIdentityKey:theirIdentityKeyWithoutKeyType
+                                  theirName:theirName
                              hashIterations:hashIterations];
 }
 
@@ -66,19 +75,21 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                             myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
                             theirStableId:(NSString *)theirStableId
                          theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                theirName:(NSString *)theirName
 {
     return [[self alloc] initWithMyStableId:myStableId
                               myIdentityKey:myIdentityKeyWithoutKeyType
                               theirStableId:theirStableId
                            theirIdentityKey:theirIdentityKeyWithoutKeyType
+                                  theirName:theirName
                              hashIterations:OWSFingerprintDefaultHashIterations];
 }
 
-- (BOOL)matchesCombinedFingerprintData:(NSData *)data error:(NSError **)error
+- (BOOL)matchesLogicalFingerprintsData:(NSData *)data error:(NSError **)error
 {
-    OWSFingerprintProtosCombinedFingerprint *combinedFingerprint;
+    OWSFingerprintProtosLogicalFingerprints *logicalFingerprints;
     @try {
-        combinedFingerprint = [OWSFingerprintProtosCombinedFingerprint parseFromData:data];
+        logicalFingerprints = [OWSFingerprintProtosLogicalFingerprints parseFromData:data];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:@"InvalidProtocolBuffer"]) {
             NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", @"alert body");
@@ -91,59 +102,39 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         }
     }
 
-    if (combinedFingerprint.version < OWSFingerprintVersion) {
-        DDLogWarn(@"%@ Verification failed. We're running an old version.", self.tag);
+    if (logicalFingerprints.version < OWSFingerprintScannableFormatVersion) {
+        DDLogWarn(@"%@ Verification failed. They're running an old version.", self.tag);
         NSString *description
             = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
         return NO;
     }
 
-    if (combinedFingerprint.version > OWSFingerprintVersion) {
-        DDLogWarn(@"%@ Verification failed. They're running an old version.", self.tag);
+    if (logicalFingerprints.version > OWSFingerprintScannableFormatVersion) {
+        DDLogWarn(@"%@ Verification failed. We're running an old version.", self.tag);
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
         return NO;
     }
 
     // Their local is *our* remote.
-    OWSFingerprintProtosFingerprintData *localFingerprint = combinedFingerprint.remoteFingerprint;
-    OWSFingerprintProtosFingerprintData *remoteFingerprint = combinedFingerprint.localFingerprint;
+    OWSFingerprintProtosLogicalFingerprint *localFingerprint = logicalFingerprints.remoteFingerprint;
+    OWSFingerprintProtosLogicalFingerprint *remoteFingerprint = logicalFingerprints.localFingerprint;
 
-    if (![remoteFingerprint.identifier isEqual:self.theirStableIdData]) {
-        DDLogWarn(@"%@ Verification failed. We're expecting a different contact.", self.tag);
-        NSString *errorFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_MISMATCHED_REMOTE_IDENTIFIER",
-            @"Alert body {{expected phone number}}, {{actual phone number we found}}");
-        NSString *expected = [[NSString alloc] initWithData:self.theirStableIdData encoding:NSUTF8StringEncoding];
-        NSString *actual = [[NSString alloc] initWithData:remoteFingerprint.identifier encoding:NSUTF8StringEncoding];
-        NSString *description = [NSString stringWithFormat:errorFormat, expected, actual];
-
+    if (![remoteFingerprint.identityData isEqual:[self scannableData:self.theirFingerprintData]]) {
+        DDLogWarn(@"%@ Verification failed. We have the wrong fingerprint for them", self.tag);
+        NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
+            @"Alert body when verifying with {{contact name}}");
+        NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
         return NO;
     }
 
-    if (![localFingerprint.identifier isEqual:self.myStableIdData]) {
-        DDLogWarn(@"%@ Verification failed. They presented the wrong fingerprint.", self.tag);
-        NSString *errorFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_MISMATCHED_LOCAL_IDENTIFIER",
-            @"Alert body {{expected phone number}}, {{actual phone number we found}}");
-        NSString *expected = [[NSString alloc] initWithData:self.myStableIdData encoding:NSUTF8StringEncoding];
-        NSString *actual = [[NSString alloc] initWithData:localFingerprint.identifier encoding:NSUTF8StringEncoding];
-        NSString *description = [NSString stringWithFormat:errorFormat, expected, actual];
-
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
-        return NO;
-    }
-
-    if (![localFingerprint.publicKey isEqual:self.myIdentityKey]) {
-        DDLogWarn(@"%@ Verification failed. They have the wrong key for us", self.tag);
-        NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_MISMATCHED_KEYS", @"Alert body");
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
-        return NO;
-    }
-
-    if (![remoteFingerprint.publicKey isEqual:self.theirIdentityKey]) {
-        DDLogWarn(@"%@ Verification failed. We have the wrong key for them", self.tag);
-        NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_MISMATCHED_KEYS", @"Alert body");
+    if (![localFingerprint.identityData isEqual:[self scannableData:self.myFingerprintData]]) {
+        DDLogWarn(@"%@ Verification failed. They have the wrong fingerprint for us", self.tag);
+        NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
+            @"Alert body when verifying with {{contact name}}");
+        NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
         return NO;
     }
@@ -152,11 +143,10 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     return YES;
 }
 
-
-- (NSString *)generateText
+- (NSString *)text
 {
-    NSString *myDisplayString = [self stringForStableId:self.myStableIdData publicKey:self.myIdentityKey];
-    NSString *theirDisplayString = [self stringForStableId:self.theirStableIdData publicKey:self.theirIdentityKey];
+    NSString *myDisplayString = [self stringForFingerprintData:self.myFingerprintData];
+    NSString *theirDisplayString = [self stringForFingerprintData:self.theirFingerprintData];
 
     if ([theirDisplayString compare:myDisplayString] == NSOrderedAscending) {
         return [NSString stringWithFormat:@"%@%@", theirDisplayString, myDisplayString];
@@ -200,9 +190,12 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
  * @return
  *      All-number textual representation
  */
-- (NSString *)stringForStableId:(NSData *)stableIdData publicKey:(NSData *)publicKey
+- (NSData *)dataForStableId:(NSData *)stableIdData publicKey:(NSData *)publicKey
 {
-    NSData *versionData = [self dataFromShort:OWSFingerprintVersion];
+    NSParameterAssert(stableIdData);
+    NSParameterAssert(publicKey);
+
+    NSData *versionData = [self dataFromShort:OWSFingerprintHashingVersion];
     NSMutableData *hash = [NSMutableData dataWithData:versionData];
     [hash appendData:publicKey];
     [hash appendData:stableIdData];
@@ -215,17 +208,27 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         hash = [NSMutableData dataWithBytes:digest length:CC_SHA512_DIGEST_LENGTH];
     }
 
+    return [hash copy];
+}
+
+
+- (NSString *)stringForFingerprintData:(NSData *)data
+{
+    NSParameterAssert(data);
+
     return [NSString stringWithFormat:@"%@%@%@%@%@%@",
-                     [self encodedChunkFromData:hash offset:0],
-                     [self encodedChunkFromData:hash offset:5],
-                     [self encodedChunkFromData:hash offset:10],
-                     [self encodedChunkFromData:hash offset:15],
-                     [self encodedChunkFromData:hash offset:20],
-                     [self encodedChunkFromData:hash offset:25]];
+                     [self encodedChunkFromData:data offset:0],
+                     [self encodedChunkFromData:data offset:5],
+                     [self encodedChunkFromData:data offset:10],
+                     [self encodedChunkFromData:data offset:15],
+                     [self encodedChunkFromData:data offset:20],
+                     [self encodedChunkFromData:data offset:25]];
 }
 
 - (NSString *)encodedChunkFromData:(NSData *)data offset:(uint)offset
 {
+    NSParameterAssert(data);
+
     uint8_t fiveBytes[5];
     [data getBytes:fiveBytes range:NSMakeRange(offset, 5)];
 
@@ -244,27 +247,33 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     return result;
 }
 
-- (nullable UIImage *)generateImage
+- (NSData *)scannableData:(NSData *)data
 {
-    OWSFingerprintProtosCombinedFingerprintBuilder *combinedFingerprintBuilder =
-        [OWSFingerprintProtosCombinedFingerprintBuilder new];
+    return [data subdataWithRange:NSMakeRange(0, 32)];
+}
 
-    [combinedFingerprintBuilder setVersion:OWSFingerprintVersion];
+- (nullable UIImage *)image
+{
+    OWSFingerprintProtosLogicalFingerprintsBuilder *logicalFingerprintsBuilder =
+        [OWSFingerprintProtosLogicalFingerprintsBuilder new];
 
-    OWSFingerprintProtosFingerprintDataBuilder *remoteFingerprintDataBuilder =
-        [OWSFingerprintProtosFingerprintDataBuilder new];
-    [remoteFingerprintDataBuilder setPublicKey:self.theirIdentityKey];
-    [remoteFingerprintDataBuilder setIdentifier:self.theirStableIdData];
-    [combinedFingerprintBuilder setRemoteFingerprintBuilder:remoteFingerprintDataBuilder];
+    logicalFingerprintsBuilder.version = OWSFingerprintScannableFormatVersion;
 
-    OWSFingerprintProtosFingerprintDataBuilder *localFingerprintDataBuilder =
-        [OWSFingerprintProtosFingerprintDataBuilder new];
-    [localFingerprintDataBuilder setPublicKey:self.myIdentityKey];
-    [localFingerprintDataBuilder setIdentifier:self.myStableIdData];
-    [combinedFingerprintBuilder setLocalFingerprintBuilder:localFingerprintDataBuilder];
+    OWSFingerprintProtosLogicalFingerprintBuilder *remoteFingerprintBuilder =
+        [OWSFingerprintProtosLogicalFingerprintBuilder new];
+
+    remoteFingerprintBuilder.identityData = [self scannableData:self.theirFingerprintData];
+    logicalFingerprintsBuilder.remoteFingerprint = [remoteFingerprintBuilder build];
+
+    OWSFingerprintProtosLogicalFingerprintBuilder *localFingerprintBuilder =
+        [OWSFingerprintProtosLogicalFingerprintBuilder new];
+
+    localFingerprintBuilder.identityData = [self scannableData:self.myFingerprintData];
+    logicalFingerprintsBuilder.localFingerprint = [localFingerprintBuilder build];
 
     // Build ByteMode QR (Latin-1 encodable data)
-    NSData *fingerprintData = [combinedFingerprintBuilder build].data;
+    NSData *fingerprintData = [logicalFingerprintsBuilder build].data;
+
     DDLogDebug(@"%@ Building fingerprint with data: %@", self.tag, fingerprintData);
 
     CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];

@@ -23,6 +23,7 @@
                                                                    myIdentityKey:aliceIdentityKey
                                                                    theirStableId:bobStableId
                                                                 theirIdentityKey:bobIdentityKey
+                                                                       theirName:@"Bob"
                                                                   hashIterations:2];
 
     NSString *displayableText = aliceFingerprint.displayableText;
@@ -53,18 +54,21 @@
                                                                    myIdentityKey:aliceIdentityKey
                                                                    theirStableId:bobStableId
                                                                 theirIdentityKey:bobIdentityKey
+                                                                       theirName:@"Bob"
                                                                   hashIterations:2];
 
     OWSFingerprint *bobFingerprint = [OWSFingerprint fingerprintWithMyStableId:bobStableId
                                                                  myIdentityKey:bobIdentityKey
                                                                  theirStableId:aliceStableId
                                                               theirIdentityKey:aliceIdentityKey
+                                                                     theirName:@"Alice"
                                                                 hashIterations:2];
 
     OWSFingerprint *charlieFingerprint = [OWSFingerprint fingerprintWithMyStableId:charlieStableId
                                                                      myIdentityKey:charlieIdentityKey
                                                                      theirStableId:aliceStableId
                                                                   theirIdentityKey:aliceIdentityKey
+                                                                         theirName:@"Alice"
                                                                     hashIterations:2];
 
     XCTAssertEqualObjects(aliceFingerprint.displayableText, bobFingerprint.displayableText);

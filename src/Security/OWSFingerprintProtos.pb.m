@@ -21,55 +21,43 @@ static PBExtensionRegistry* extensionRegistry = nil;
 }
 @end
 
-@interface OWSFingerprintProtosFingerprintData ()
-@property (strong) NSData* publicKey;
-@property (strong) NSData* identifier;
+@interface OWSFingerprintProtosLogicalFingerprint ()
+@property (strong) NSData* identityData;
 @end
 
-@implementation OWSFingerprintProtosFingerprintData
+@implementation OWSFingerprintProtosLogicalFingerprint
 
-- (BOOL) hasPublicKey {
-  return !!hasPublicKey_;
+- (BOOL) hasIdentityData {
+  return !!hasIdentityData_;
 }
-- (void) setHasPublicKey:(BOOL) _value_ {
-  hasPublicKey_ = !!_value_;
+- (void) setHasIdentityData:(BOOL) _value_ {
+  hasIdentityData_ = !!_value_;
 }
-@synthesize publicKey;
-- (BOOL) hasIdentifier {
-  return !!hasIdentifier_;
-}
-- (void) setHasIdentifier:(BOOL) _value_ {
-  hasIdentifier_ = !!_value_;
-}
-@synthesize identifier;
+@synthesize identityData;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.publicKey = [NSData data];
-    self.identifier = [NSData data];
+    self.identityData = [NSData data];
   }
   return self;
 }
-static OWSFingerprintProtosFingerprintData* defaultOWSFingerprintProtosFingerprintDataInstance = nil;
+static OWSFingerprintProtosLogicalFingerprint* defaultOWSFingerprintProtosLogicalFingerprintInstance = nil;
 + (void) initialize {
-  if (self == [OWSFingerprintProtosFingerprintData class]) {
-    defaultOWSFingerprintProtosFingerprintDataInstance = [[OWSFingerprintProtosFingerprintData alloc] init];
+  if (self == [OWSFingerprintProtosLogicalFingerprint class]) {
+    defaultOWSFingerprintProtosLogicalFingerprintInstance = [[OWSFingerprintProtosLogicalFingerprint alloc] init];
   }
 }
 + (instancetype) defaultInstance {
-  return defaultOWSFingerprintProtosFingerprintDataInstance;
+  return defaultOWSFingerprintProtosLogicalFingerprintInstance;
 }
 - (instancetype) defaultInstance {
-  return defaultOWSFingerprintProtosFingerprintDataInstance;
+  return defaultOWSFingerprintProtosLogicalFingerprintInstance;
 }
 - (BOOL) isInitialized {
   return YES;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasPublicKey) {
-    [output writeData:1 value:self.publicKey];
-  }
-  if (self.hasIdentifier) {
-    [output writeData:2 value:self.identifier];
+  if (self.hasIdentityData) {
+    [output writeData:1 value:self.identityData];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -80,61 +68,52 @@ static OWSFingerprintProtosFingerprintData* defaultOWSFingerprintProtosFingerpri
   }
 
   size_ = 0;
-  if (self.hasPublicKey) {
-    size_ += computeDataSize(1, self.publicKey);
-  }
-  if (self.hasIdentifier) {
-    size_ += computeDataSize(2, self.identifier);
+  if (self.hasIdentityData) {
+    size_ += computeDataSize(1, self.identityData);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
   return size_;
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromData:(NSData*) data {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromData:data] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromData:(NSData*) data {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromData:data] build];
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromInputStream:(NSInputStream*) input {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromInputStream:input] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromInputStream:input] build];
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromCodedInputStream:input] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromCodedInputStream:input] build];
 }
-+ (OWSFingerprintProtosFingerprintData*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosFingerprintData*)[[[OWSFingerprintProtosFingerprintData builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprint*)[[[OWSFingerprintProtosLogicalFingerprint builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosFingerprintDataBuilder*) builder {
-  return [[OWSFingerprintProtosFingerprintDataBuilder alloc] init];
++ (OWSFingerprintProtosLogicalFingerprintBuilder*) builder {
+  return [[OWSFingerprintProtosLogicalFingerprintBuilder alloc] init];
 }
-+ (OWSFingerprintProtosFingerprintDataBuilder*) builderWithPrototype:(OWSFingerprintProtosFingerprintData*) prototype {
-  return [[OWSFingerprintProtosFingerprintData builder] mergeFrom:prototype];
++ (OWSFingerprintProtosLogicalFingerprintBuilder*) builderWithPrototype:(OWSFingerprintProtosLogicalFingerprint*) prototype {
+  return [[OWSFingerprintProtosLogicalFingerprint builder] mergeFrom:prototype];
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) builder {
-  return [OWSFingerprintProtosFingerprintData builder];
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) builder {
+  return [OWSFingerprintProtosLogicalFingerprint builder];
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) toBuilder {
-  return [OWSFingerprintProtosFingerprintData builderWithPrototype:self];
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) toBuilder {
+  return [OWSFingerprintProtosLogicalFingerprint builderWithPrototype:self];
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasPublicKey) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"publicKey", self.publicKey];
-  }
-  if (self.hasIdentifier) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"identifier", self.identifier];
+  if (self.hasIdentityData) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"identityData", self.identityData];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasPublicKey) {
-    [dictionary setObject: self.publicKey forKey: @"publicKey"];
-  }
-  if (self.hasIdentifier) {
-    [dictionary setObject: self.identifier forKey: @"identifier"];
+  if (self.hasIdentityData) {
+    [dictionary setObject: self.identityData forKey: @"identityData"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -142,81 +121,73 @@ static OWSFingerprintProtosFingerprintData* defaultOWSFingerprintProtosFingerpri
   if (other == self) {
     return YES;
   }
-  if (![other isKindOfClass:[OWSFingerprintProtosFingerprintData class]]) {
+  if (![other isKindOfClass:[OWSFingerprintProtosLogicalFingerprint class]]) {
     return NO;
   }
-  OWSFingerprintProtosFingerprintData *otherMessage = other;
+  OWSFingerprintProtosLogicalFingerprint *otherMessage = other;
   return
-      self.hasPublicKey == otherMessage.hasPublicKey &&
-      (!self.hasPublicKey || [self.publicKey isEqual:otherMessage.publicKey]) &&
-      self.hasIdentifier == otherMessage.hasIdentifier &&
-      (!self.hasIdentifier || [self.identifier isEqual:otherMessage.identifier]) &&
+      self.hasIdentityData == otherMessage.hasIdentityData &&
+      (!self.hasIdentityData || [self.identityData isEqual:otherMessage.identityData]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
-  if (self.hasPublicKey) {
-    hashCode = hashCode * 31 + [self.publicKey hash];
-  }
-  if (self.hasIdentifier) {
-    hashCode = hashCode * 31 + [self.identifier hash];
+  if (self.hasIdentityData) {
+    hashCode = hashCode * 31 + [self.identityData hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
 @end
 
-@interface OWSFingerprintProtosFingerprintDataBuilder()
-@property (strong) OWSFingerprintProtosFingerprintData* resultFingerprintData;
+@interface OWSFingerprintProtosLogicalFingerprintBuilder()
+@property (strong) OWSFingerprintProtosLogicalFingerprint* resultLogicalFingerprint;
 @end
 
-@implementation OWSFingerprintProtosFingerprintDataBuilder
-@synthesize resultFingerprintData;
+@implementation OWSFingerprintProtosLogicalFingerprintBuilder
+@synthesize resultLogicalFingerprint;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.resultFingerprintData = [[OWSFingerprintProtosFingerprintData alloc] init];
+    self.resultLogicalFingerprint = [[OWSFingerprintProtosLogicalFingerprint alloc] init];
   }
   return self;
 }
 - (PBGeneratedMessage*) internalGetResult {
-  return resultFingerprintData;
+  return resultLogicalFingerprint;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) clear {
-  self.resultFingerprintData = [[OWSFingerprintProtosFingerprintData alloc] init];
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clear {
+  self.resultLogicalFingerprint = [[OWSFingerprintProtosLogicalFingerprint alloc] init];
   return self;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) clone {
-  return [OWSFingerprintProtosFingerprintData builderWithPrototype:resultFingerprintData];
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clone {
+  return [OWSFingerprintProtosLogicalFingerprint builderWithPrototype:resultLogicalFingerprint];
 }
-- (OWSFingerprintProtosFingerprintData*) defaultInstance {
-  return [OWSFingerprintProtosFingerprintData defaultInstance];
+- (OWSFingerprintProtosLogicalFingerprint*) defaultInstance {
+  return [OWSFingerprintProtosLogicalFingerprint defaultInstance];
 }
-- (OWSFingerprintProtosFingerprintData*) build {
+- (OWSFingerprintProtosLogicalFingerprint*) build {
   [self checkInitialized];
   return [self buildPartial];
 }
-- (OWSFingerprintProtosFingerprintData*) buildPartial {
-  OWSFingerprintProtosFingerprintData* returnMe = resultFingerprintData;
-  self.resultFingerprintData = nil;
+- (OWSFingerprintProtosLogicalFingerprint*) buildPartial {
+  OWSFingerprintProtosLogicalFingerprint* returnMe = resultLogicalFingerprint;
+  self.resultLogicalFingerprint = nil;
   return returnMe;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFrom:(OWSFingerprintProtosFingerprintData*) other {
-  if (other == [OWSFingerprintProtosFingerprintData defaultInstance]) {
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFrom:(OWSFingerprintProtosLogicalFingerprint*) other {
+  if (other == [OWSFingerprintProtosLogicalFingerprint defaultInstance]) {
     return self;
   }
-  if (other.hasPublicKey) {
-    [self setPublicKey:other.publicKey];
-  }
-  if (other.hasIdentifier) {
-    [self setIdentifier:other.identifier];
+  if (other.hasIdentityData) {
+    [self setIdentityData:other.identityData];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
   return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
   PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
   while (YES) {
     SInt32 tag = [input readTag];
@@ -232,57 +203,37 @@ static OWSFingerprintProtosFingerprintData* defaultOWSFingerprintProtosFingerpri
         break;
       }
       case 10: {
-        [self setPublicKey:[input readData]];
-        break;
-      }
-      case 18: {
-        [self setIdentifier:[input readData]];
+        [self setIdentityData:[input readData]];
         break;
       }
     }
   }
 }
-- (BOOL) hasPublicKey {
-  return resultFingerprintData.hasPublicKey;
+- (BOOL) hasIdentityData {
+  return resultLogicalFingerprint.hasIdentityData;
 }
-- (NSData*) publicKey {
-  return resultFingerprintData.publicKey;
+- (NSData*) identityData {
+  return resultLogicalFingerprint.identityData;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) setPublicKey:(NSData*) value {
-  resultFingerprintData.hasPublicKey = YES;
-  resultFingerprintData.publicKey = value;
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) setIdentityData:(NSData*) value {
+  resultLogicalFingerprint.hasIdentityData = YES;
+  resultLogicalFingerprint.identityData = value;
   return self;
 }
-- (OWSFingerprintProtosFingerprintDataBuilder*) clearPublicKey {
-  resultFingerprintData.hasPublicKey = NO;
-  resultFingerprintData.publicKey = [NSData data];
-  return self;
-}
-- (BOOL) hasIdentifier {
-  return resultFingerprintData.hasIdentifier;
-}
-- (NSData*) identifier {
-  return resultFingerprintData.identifier;
-}
-- (OWSFingerprintProtosFingerprintDataBuilder*) setIdentifier:(NSData*) value {
-  resultFingerprintData.hasIdentifier = YES;
-  resultFingerprintData.identifier = value;
-  return self;
-}
-- (OWSFingerprintProtosFingerprintDataBuilder*) clearIdentifier {
-  resultFingerprintData.hasIdentifier = NO;
-  resultFingerprintData.identifier = [NSData data];
+- (OWSFingerprintProtosLogicalFingerprintBuilder*) clearIdentityData {
+  resultLogicalFingerprint.hasIdentityData = NO;
+  resultLogicalFingerprint.identityData = [NSData data];
   return self;
 }
 @end
 
-@interface OWSFingerprintProtosCombinedFingerprint ()
+@interface OWSFingerprintProtosLogicalFingerprints ()
 @property UInt32 version;
-@property (strong) OWSFingerprintProtosFingerprintData* localFingerprint;
-@property (strong) OWSFingerprintProtosFingerprintData* remoteFingerprint;
+@property (strong) OWSFingerprintProtosLogicalFingerprint* localFingerprint;
+@property (strong) OWSFingerprintProtosLogicalFingerprint* remoteFingerprint;
 @end
 
-@implementation OWSFingerprintProtosCombinedFingerprint
+@implementation OWSFingerprintProtosLogicalFingerprints
 
 - (BOOL) hasVersion {
   return !!hasVersion_;
@@ -308,22 +259,22 @@ static OWSFingerprintProtosFingerprintData* defaultOWSFingerprintProtosFingerpri
 - (instancetype) init {
   if ((self = [super init])) {
     self.version = 0;
-    self.localFingerprint = [OWSFingerprintProtosFingerprintData defaultInstance];
-    self.remoteFingerprint = [OWSFingerprintProtosFingerprintData defaultInstance];
+    self.localFingerprint = [OWSFingerprintProtosLogicalFingerprint defaultInstance];
+    self.remoteFingerprint = [OWSFingerprintProtosLogicalFingerprint defaultInstance];
   }
   return self;
 }
-static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombinedFingerprintInstance = nil;
+static OWSFingerprintProtosLogicalFingerprints* defaultOWSFingerprintProtosLogicalFingerprintsInstance = nil;
 + (void) initialize {
-  if (self == [OWSFingerprintProtosCombinedFingerprint class]) {
-    defaultOWSFingerprintProtosCombinedFingerprintInstance = [[OWSFingerprintProtosCombinedFingerprint alloc] init];
+  if (self == [OWSFingerprintProtosLogicalFingerprints class]) {
+    defaultOWSFingerprintProtosLogicalFingerprintsInstance = [[OWSFingerprintProtosLogicalFingerprints alloc] init];
   }
 }
 + (instancetype) defaultInstance {
-  return defaultOWSFingerprintProtosCombinedFingerprintInstance;
+  return defaultOWSFingerprintProtosLogicalFingerprintsInstance;
 }
 - (instancetype) defaultInstance {
-  return defaultOWSFingerprintProtosCombinedFingerprintInstance;
+  return defaultOWSFingerprintProtosLogicalFingerprintsInstance;
 }
 - (BOOL) isInitialized {
   return YES;
@@ -360,35 +311,35 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
   memoizedSerializedSize = size_;
   return size_;
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromData:(NSData*) data {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromData:data] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromData:(NSData*) data {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromData:data] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromInputStream:(NSInputStream*) input {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromInputStream:input] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromInputStream:input] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromCodedInputStream:input] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromCodedInputStream:input] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprint*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSFingerprintProtosCombinedFingerprint*)[[[OWSFingerprintProtosCombinedFingerprint builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSFingerprintProtosLogicalFingerprints*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSFingerprintProtosLogicalFingerprints*)[[[OWSFingerprintProtosLogicalFingerprints builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSFingerprintProtosCombinedFingerprintBuilder*) builder {
-  return [[OWSFingerprintProtosCombinedFingerprintBuilder alloc] init];
++ (OWSFingerprintProtosLogicalFingerprintsBuilder*) builder {
+  return [[OWSFingerprintProtosLogicalFingerprintsBuilder alloc] init];
 }
-+ (OWSFingerprintProtosCombinedFingerprintBuilder*) builderWithPrototype:(OWSFingerprintProtosCombinedFingerprint*) prototype {
-  return [[OWSFingerprintProtosCombinedFingerprint builder] mergeFrom:prototype];
++ (OWSFingerprintProtosLogicalFingerprintsBuilder*) builderWithPrototype:(OWSFingerprintProtosLogicalFingerprints*) prototype {
+  return [[OWSFingerprintProtosLogicalFingerprints builder] mergeFrom:prototype];
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) builder {
-  return [OWSFingerprintProtosCombinedFingerprint builder];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) builder {
+  return [OWSFingerprintProtosLogicalFingerprints builder];
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) toBuilder {
-  return [OWSFingerprintProtosCombinedFingerprint builderWithPrototype:self];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) toBuilder {
+  return [OWSFingerprintProtosLogicalFingerprints builderWithPrototype:self];
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasVersion) {
@@ -428,10 +379,10 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
   if (other == self) {
     return YES;
   }
-  if (![other isKindOfClass:[OWSFingerprintProtosCombinedFingerprint class]]) {
+  if (![other isKindOfClass:[OWSFingerprintProtosLogicalFingerprints class]]) {
     return NO;
   }
-  OWSFingerprintProtosCombinedFingerprint *otherMessage = other;
+  OWSFingerprintProtosLogicalFingerprints *otherMessage = other;
   return
       self.hasVersion == otherMessage.hasVersion &&
       (!self.hasVersion || self.version == otherMessage.version) &&
@@ -457,42 +408,42 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
 }
 @end
 
-@interface OWSFingerprintProtosCombinedFingerprintBuilder()
-@property (strong) OWSFingerprintProtosCombinedFingerprint* resultCombinedFingerprint;
+@interface OWSFingerprintProtosLogicalFingerprintsBuilder()
+@property (strong) OWSFingerprintProtosLogicalFingerprints* resultLogicalFingerprints;
 @end
 
-@implementation OWSFingerprintProtosCombinedFingerprintBuilder
-@synthesize resultCombinedFingerprint;
+@implementation OWSFingerprintProtosLogicalFingerprintsBuilder
+@synthesize resultLogicalFingerprints;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.resultCombinedFingerprint = [[OWSFingerprintProtosCombinedFingerprint alloc] init];
+    self.resultLogicalFingerprints = [[OWSFingerprintProtosLogicalFingerprints alloc] init];
   }
   return self;
 }
 - (PBGeneratedMessage*) internalGetResult {
-  return resultCombinedFingerprint;
+  return resultLogicalFingerprints;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clear {
-  self.resultCombinedFingerprint = [[OWSFingerprintProtosCombinedFingerprint alloc] init];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clear {
+  self.resultLogicalFingerprints = [[OWSFingerprintProtosLogicalFingerprints alloc] init];
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clone {
-  return [OWSFingerprintProtosCombinedFingerprint builderWithPrototype:resultCombinedFingerprint];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clone {
+  return [OWSFingerprintProtosLogicalFingerprints builderWithPrototype:resultLogicalFingerprints];
 }
-- (OWSFingerprintProtosCombinedFingerprint*) defaultInstance {
-  return [OWSFingerprintProtosCombinedFingerprint defaultInstance];
+- (OWSFingerprintProtosLogicalFingerprints*) defaultInstance {
+  return [OWSFingerprintProtosLogicalFingerprints defaultInstance];
 }
-- (OWSFingerprintProtosCombinedFingerprint*) build {
+- (OWSFingerprintProtosLogicalFingerprints*) build {
   [self checkInitialized];
   return [self buildPartial];
 }
-- (OWSFingerprintProtosCombinedFingerprint*) buildPartial {
-  OWSFingerprintProtosCombinedFingerprint* returnMe = resultCombinedFingerprint;
-  self.resultCombinedFingerprint = nil;
+- (OWSFingerprintProtosLogicalFingerprints*) buildPartial {
+  OWSFingerprintProtosLogicalFingerprints* returnMe = resultLogicalFingerprints;
+  self.resultLogicalFingerprints = nil;
   return returnMe;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFrom:(OWSFingerprintProtosCombinedFingerprint*) other {
-  if (other == [OWSFingerprintProtosCombinedFingerprint defaultInstance]) {
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFrom:(OWSFingerprintProtosLogicalFingerprints*) other {
+  if (other == [OWSFingerprintProtosLogicalFingerprints defaultInstance]) {
     return self;
   }
   if (other.hasVersion) {
@@ -507,10 +458,10 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
   return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
   PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
   while (YES) {
     SInt32 tag = [input readTag];
@@ -530,7 +481,7 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
         break;
       }
       case 18: {
-        OWSFingerprintProtosFingerprintDataBuilder* subBuilder = [OWSFingerprintProtosFingerprintData builder];
+        OWSFingerprintProtosLogicalFingerprintBuilder* subBuilder = [OWSFingerprintProtosLogicalFingerprint builder];
         if (self.hasLocalFingerprint) {
           [subBuilder mergeFrom:self.localFingerprint];
         }
@@ -539,7 +490,7 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
         break;
       }
       case 26: {
-        OWSFingerprintProtosFingerprintDataBuilder* subBuilder = [OWSFingerprintProtosFingerprintData builder];
+        OWSFingerprintProtosLogicalFingerprintBuilder* subBuilder = [OWSFingerprintProtosLogicalFingerprint builder];
         if (self.hasRemoteFingerprint) {
           [subBuilder mergeFrom:self.remoteFingerprint];
         }
@@ -551,79 +502,79 @@ static OWSFingerprintProtosCombinedFingerprint* defaultOWSFingerprintProtosCombi
   }
 }
 - (BOOL) hasVersion {
-  return resultCombinedFingerprint.hasVersion;
+  return resultLogicalFingerprints.hasVersion;
 }
 - (UInt32) version {
-  return resultCombinedFingerprint.version;
+  return resultLogicalFingerprints.version;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setVersion:(UInt32) value {
-  resultCombinedFingerprint.hasVersion = YES;
-  resultCombinedFingerprint.version = value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setVersion:(UInt32) value {
+  resultLogicalFingerprints.hasVersion = YES;
+  resultLogicalFingerprints.version = value;
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearVersion {
-  resultCombinedFingerprint.hasVersion = NO;
-  resultCombinedFingerprint.version = 0;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearVersion {
+  resultLogicalFingerprints.hasVersion = NO;
+  resultLogicalFingerprints.version = 0;
   return self;
 }
 - (BOOL) hasLocalFingerprint {
-  return resultCombinedFingerprint.hasLocalFingerprint;
+  return resultLogicalFingerprints.hasLocalFingerprint;
 }
-- (OWSFingerprintProtosFingerprintData*) localFingerprint {
-  return resultCombinedFingerprint.localFingerprint;
+- (OWSFingerprintProtosLogicalFingerprint*) localFingerprint {
+  return resultLogicalFingerprints.localFingerprint;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setLocalFingerprint:(OWSFingerprintProtosFingerprintData*) value {
-  resultCombinedFingerprint.hasLocalFingerprint = YES;
-  resultCombinedFingerprint.localFingerprint = value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setLocalFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value {
+  resultLogicalFingerprints.hasLocalFingerprint = YES;
+  resultLogicalFingerprints.localFingerprint = value;
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setLocalFingerprintBuilder:(OWSFingerprintProtosFingerprintDataBuilder*) builderForValue {
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setLocalFingerprintBuilder:(OWSFingerprintProtosLogicalFingerprintBuilder*) builderForValue {
   return [self setLocalFingerprint:[builderForValue build]];
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeLocalFingerprint:(OWSFingerprintProtosFingerprintData*) value {
-  if (resultCombinedFingerprint.hasLocalFingerprint &&
-      resultCombinedFingerprint.localFingerprint != [OWSFingerprintProtosFingerprintData defaultInstance]) {
-    resultCombinedFingerprint.localFingerprint =
-      [[[OWSFingerprintProtosFingerprintData builderWithPrototype:resultCombinedFingerprint.localFingerprint] mergeFrom:value] buildPartial];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeLocalFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value {
+  if (resultLogicalFingerprints.hasLocalFingerprint &&
+      resultLogicalFingerprints.localFingerprint != [OWSFingerprintProtosLogicalFingerprint defaultInstance]) {
+    resultLogicalFingerprints.localFingerprint =
+      [[[OWSFingerprintProtosLogicalFingerprint builderWithPrototype:resultLogicalFingerprints.localFingerprint] mergeFrom:value] buildPartial];
   } else {
-    resultCombinedFingerprint.localFingerprint = value;
+    resultLogicalFingerprints.localFingerprint = value;
   }
-  resultCombinedFingerprint.hasLocalFingerprint = YES;
+  resultLogicalFingerprints.hasLocalFingerprint = YES;
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearLocalFingerprint {
-  resultCombinedFingerprint.hasLocalFingerprint = NO;
-  resultCombinedFingerprint.localFingerprint = [OWSFingerprintProtosFingerprintData defaultInstance];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearLocalFingerprint {
+  resultLogicalFingerprints.hasLocalFingerprint = NO;
+  resultLogicalFingerprints.localFingerprint = [OWSFingerprintProtosLogicalFingerprint defaultInstance];
   return self;
 }
 - (BOOL) hasRemoteFingerprint {
-  return resultCombinedFingerprint.hasRemoteFingerprint;
+  return resultLogicalFingerprints.hasRemoteFingerprint;
 }
-- (OWSFingerprintProtosFingerprintData*) remoteFingerprint {
-  return resultCombinedFingerprint.remoteFingerprint;
+- (OWSFingerprintProtosLogicalFingerprint*) remoteFingerprint {
+  return resultLogicalFingerprints.remoteFingerprint;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setRemoteFingerprint:(OWSFingerprintProtosFingerprintData*) value {
-  resultCombinedFingerprint.hasRemoteFingerprint = YES;
-  resultCombinedFingerprint.remoteFingerprint = value;
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setRemoteFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value {
+  resultLogicalFingerprints.hasRemoteFingerprint = YES;
+  resultLogicalFingerprints.remoteFingerprint = value;
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) setRemoteFingerprintBuilder:(OWSFingerprintProtosFingerprintDataBuilder*) builderForValue {
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) setRemoteFingerprintBuilder:(OWSFingerprintProtosLogicalFingerprintBuilder*) builderForValue {
   return [self setRemoteFingerprint:[builderForValue build]];
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) mergeRemoteFingerprint:(OWSFingerprintProtosFingerprintData*) value {
-  if (resultCombinedFingerprint.hasRemoteFingerprint &&
-      resultCombinedFingerprint.remoteFingerprint != [OWSFingerprintProtosFingerprintData defaultInstance]) {
-    resultCombinedFingerprint.remoteFingerprint =
-      [[[OWSFingerprintProtosFingerprintData builderWithPrototype:resultCombinedFingerprint.remoteFingerprint] mergeFrom:value] buildPartial];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) mergeRemoteFingerprint:(OWSFingerprintProtosLogicalFingerprint*) value {
+  if (resultLogicalFingerprints.hasRemoteFingerprint &&
+      resultLogicalFingerprints.remoteFingerprint != [OWSFingerprintProtosLogicalFingerprint defaultInstance]) {
+    resultLogicalFingerprints.remoteFingerprint =
+      [[[OWSFingerprintProtosLogicalFingerprint builderWithPrototype:resultLogicalFingerprints.remoteFingerprint] mergeFrom:value] buildPartial];
   } else {
-    resultCombinedFingerprint.remoteFingerprint = value;
+    resultLogicalFingerprints.remoteFingerprint = value;
   }
-  resultCombinedFingerprint.hasRemoteFingerprint = YES;
+  resultLogicalFingerprints.hasRemoteFingerprint = YES;
   return self;
 }
-- (OWSFingerprintProtosCombinedFingerprintBuilder*) clearRemoteFingerprint {
-  resultCombinedFingerprint.hasRemoteFingerprint = NO;
-  resultCombinedFingerprint.remoteFingerprint = [OWSFingerprintProtosFingerprintData defaultInstance];
+- (OWSFingerprintProtosLogicalFingerprintsBuilder*) clearRemoteFingerprint {
+  resultLogicalFingerprints.hasRemoteFingerprint = NO;
+  resultLogicalFingerprints.remoteFingerprint = [OWSFingerprintProtosLogicalFingerprint defaultInstance];
   return self;
 }
 @end
