@@ -105,6 +105,7 @@ static Environment *environment = nil;
     _zrtpClientId = zrtpClientId;
     _zrtpVersionId = zrtpVersionId;
     _contactsManager = contactsManager;
+    _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
     _messageSender = messageSender;
 
