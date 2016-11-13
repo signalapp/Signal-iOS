@@ -28,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
 }
 
+- (UIColor *)ows_textColor
+{
+    return [UIColor whiteColor];
+}
+
 // pragma mark - OWSExpirableMessageView
 
 - (void)startExpirationTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds

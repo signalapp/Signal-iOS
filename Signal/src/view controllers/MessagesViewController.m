@@ -788,16 +788,15 @@ typedef enum : NSUInteger {
 - (JSQMessagesCollectionViewCell *)loadIncomingMessageCellForMessage:(id<OWSMessageData>)message
                                                          atIndexPath:(NSIndexPath *)indexPath
 {
-    JSQMessagesCollectionViewCell *cell =
-        (JSQMessagesCollectionViewCell *)[super collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
-    if (!message.isMediaMessage) {
-        cell.textView.textColor          = [UIColor ows_blackColor];
-        cell.textView.linkTextAttributes = @{
-            NSForegroundColorAttributeName : cell.textView.textColor,
-            NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-        };
-    }
+    OWSIncomingMessageCollectionViewCell *cell
+        = (OWSIncomingMessageCollectionViewCell *)[super collectionView:self.collectionView
+                                                 cellForItemAtIndexPath:indexPath];
 
+    if (![cell isKindOfClass:[OWSIncomingMessageCollectionViewCell class]]) {
+        DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
+        return cell;
+    }
+    [cell ows_didLoad];
     return cell;
 }
 
@@ -808,19 +807,20 @@ typedef enum : NSUInteger {
         = (OWSOutgoingMessageCollectionViewCell *)[super collectionView:self.collectionView
                                                  cellForItemAtIndexPath:indexPath];
 
+    if (![cell isKindOfClass:[OWSOutgoingMessageCollectionViewCell class]]) {
+        DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
+        return cell;
+    }
+    [cell ows_didLoad];
+
     if (message.isMediaMessage) {
         if (![message isKindOfClass:[TSMessageAdapter class]]) {
             DDLogError(@"%@ Unexpected media message:%@", self.tag, message.class);
         }
         TSMessageAdapter *messageAdapter = (TSMessageAdapter *)message;
         cell.mediaView.alpha = messageAdapter.mediaViewAlpha;
-    } else {
-        cell.textView.textColor          = [UIColor whiteColor];
-        cell.textView.linkTextAttributes = @{
-            NSForegroundColorAttributeName : cell.textView.textColor,
-            NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-        };
     }
+
     return cell;
 }
 
