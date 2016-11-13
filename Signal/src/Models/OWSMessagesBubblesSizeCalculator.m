@@ -54,18 +54,16 @@ NS_ASSUME_NONNULL_BEGIN
         return [self messageBubbleSizeForCallData:messageData atIndexPath:indexPath withLayout:layout];
     }
 
-    CGSize size;
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
     if ([self shouldApplyiOS10EmojiFixToString:messageData.text font:layout.messageBubbleFont]) {
-        size = [self withiOS10EmojiFixSuperMessageBubbleSizeForMessageData:messageData
+        return [self withiOS10EmojiFixSuperMessageBubbleSizeForMessageData:messageData
                                                                atIndexPath:indexPath
                                                                 withLayout:layout];
     } else {
-        size = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
-    }
-    // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
+        // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
-    return CGSizeMake(size.width, size.height);
+        return [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+    }
 }
 
 /**
@@ -122,7 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
     int lines = (int)floor(superSize.height / emojiFont.lineHeight);
 
     // Add an extra pixel per line to fit the emoji.
-    return CGSizeMake(superSize.width, superSize.height + lines);
+    // This is a crappy solution. Long messages with only one line of emoji will have an extra pixel per line.
+    return CGSizeMake(superSize.width, superSize.height + 1.5 * lines);
 }
 
 

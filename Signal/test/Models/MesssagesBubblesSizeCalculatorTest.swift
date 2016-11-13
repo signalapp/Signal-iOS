@@ -90,14 +90,21 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
         let messageData = FakeMessageData(text:"Wunderschönen Guten Morgaaaahhhn 😝 - hast du gut geschlafen ☺️😘")
         let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
 
-        XCTAssertEqual(84, actual.height);
+        XCTAssertEqual(85.5, actual.height);
+    }
+
+    func testHeightForiOS10EmojiBug2() {
+        let messageData = FakeMessageData(text:"Test test test test test test test test test test test test 😊❤️❤️")
+        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+
+        XCTAssertEqual(62, actual.height);
     }
 
     func testHeightForChineseWithEmojiBug() {
         let messageData = FakeMessageData(text:"一二三四五六七八九十甲乙丙😝戊己庚辛壬圭咖啡牛奶餅乾水果蛋糕")
         let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
         // erroneously seeing 69 with the emoji fix in place.
-        XCTAssertEqual(84, actual.height);
+        XCTAssertEqual(85.5, actual.height);
     }
 
     func testHeightForChineseWithoutEmojiBug() {
