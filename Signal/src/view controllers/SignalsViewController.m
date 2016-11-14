@@ -556,6 +556,7 @@
 
 - (void)checkIfEmptyView {
     [_tableView setHidden:NO];
+    [_emptyBoxLabel setHidden:NO];
     if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup] == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
@@ -563,6 +564,8 @@
                [self.threadMappings numberOfItemsInGroup:TSArchiveGroup] == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
+    } else {
+        [_emptyBoxLabel setHidden:YES];
     }
 }
 
