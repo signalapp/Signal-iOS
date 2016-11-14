@@ -25,7 +25,7 @@ NSString *const TSPrivacyPreferencesSingletonKey = @"TSPrivacyPreferences";
 
 - (instancetype)initDefault
 {
-    return [self initWithShouldBlockOnIdentityChange:NO];
+    return [self initWithShouldBlockOnIdentityChange:YES];
 }
 
 - (instancetype)initWithShouldBlockOnIdentityChange:(BOOL)shouldBlockOnIdentityChange
