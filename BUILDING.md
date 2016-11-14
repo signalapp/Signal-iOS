@@ -32,12 +32,14 @@ https://github.com/Carthage/Carthage#installing-carthage
 open Signal.xcworkspace
 ```
 
-5) Some of our build scripts, like running tests, expect your Derived
+5) In the Signal target on the General tab, change the Team drop down to your own. On the Capabilities tab turn off Push Notifications and Data Protection. Only Background Modes should remain on.
+
+6) Some of our build scripts, like running tests, expect your Derived
 Data directory to be `$(PROJECT_DIR)/build`. In Xcode, go to `Preferences-> Locations`,
 and set the "Derived Data" dropdown to "Relative" and the text field
 value to "build".
 
-6) Build and Run and you are ready to go!
+7) Build and Run and you are ready to go!
 
 ## Known issues
 
