@@ -155,16 +155,28 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 }
 
+/**
+ * Formats numeric fingerprint, 3 lines in groups of 5 digits.
+ */
 - (NSString *)displayableText
 {
     NSString *input = self.text;
 
-    NSMutableArray<NSString *> *chunks = [NSMutableArray new];
-    for (uint i = 0; i < input.length / 5; i++) {
-        NSString *nextChunk = [input substringWithRange:NSMakeRange(i * 5, 5)];
-        [chunks addObject:nextChunk];
+    NSMutableArray<NSString *> *lines = [NSMutableArray new];
+
+    uint lineLength = self.text.length / 3;
+    for (uint i = 0; i < 3; i++) {
+        NSString *line = [input substringWithRange:NSMakeRange(i * lineLength, lineLength)];
+
+        NSMutableArray<NSString *> *chunks = [NSMutableArray new];
+        for (uint i = 0; i < line.length / 5; i++) {
+            NSString *nextChunk = [line substringWithRange:NSMakeRange(i * 5, 5)];
+            [chunks addObject:nextChunk];
+        }
+        [lines addObject:[chunks componentsJoinedByString:@" "]];
     }
-    return [chunks componentsJoinedByString:@" "];
+
+    return [lines componentsJoinedByString:@"\n"];
 }
 
 
