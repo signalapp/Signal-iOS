@@ -28,8 +28,8 @@
 
 // OR for groups
 
-@property (nonatomic, retain) NSString *senderId;
-@property (nonatomic, retain) NSString *senderDisplayName;
+@property (nonatomic, copy) NSString *senderId;
+@property (nonatomic, copy) NSString *senderDisplayName;
 
 // for InfoMessages
 
@@ -91,7 +91,7 @@
     return self;
 }
 
-+ (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread
++ (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] initWithInteraction:interaction];
 
@@ -100,7 +100,7 @@
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             NSString *contactId       = ((TSContactThread *)thread).contactIdentifier;
             adapter.senderId          = contactId;
-            adapter.senderDisplayName = contactId;
+            adapter.senderDisplayName = [contactsManager nameStringForPhoneIdentifier:contactId];
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId          = ME_MESSAGE_IDENTIFIER;
@@ -111,7 +111,7 @@
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *message = (TSIncomingMessage *)interaction;
             adapter.senderId           = message.authorId;
-            adapter.senderDisplayName  = message.authorId;
+            adapter.senderDisplayName = [contactsManager nameStringForPhoneIdentifier:message.authorId];
             adapter.messageType        = TSIncomingMessageAdapter;
         } else {
             adapter.senderId          = ME_MESSAGE_IDENTIFIER;
@@ -214,13 +214,6 @@
     } else {
         return ME_MESSAGE_IDENTIFIER;
     }
-}
-
-- (NSString *)senderDisplayName {
-    if (self.thread) {
-        return _thread.name;
-    }
-    return _senderDisplayName;
 }
 
 - (NSDate *)date {

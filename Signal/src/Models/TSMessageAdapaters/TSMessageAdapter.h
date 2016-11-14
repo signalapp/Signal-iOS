@@ -9,6 +9,7 @@
 #import "OWSMessageData.h"
 #import "OWSMessageEditing.h"
 #import "TSInfoMessage.h"
+#import "ContactsManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessageAdapter : NSObject <OWSMessageData>
 
-+ (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread;
++ (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 
 @property (nonatomic) TSInteraction *interaction;
 @property (readonly) TSInfoMessageType infoMessageType;

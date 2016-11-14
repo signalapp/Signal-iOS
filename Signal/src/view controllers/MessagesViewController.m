@@ -1957,7 +1957,7 @@ typedef enum : NSUInteger {
     id<OWSMessageData> messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
 
     if (!messageAdapter) {
-        messageAdapter = [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread];
+        messageAdapter = [TSMessageAdapter messageViewDataWithInteraction:interaction inThread:self.thread contactsManager:self.contactsManager];
         [self.messageAdapterCache setObject:messageAdapter forKey: interaction.uniqueId];
     }
 
