@@ -684,7 +684,20 @@ typedef enum : NSUInteger {
             failure:^(NSError *error) {
                 DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
             }];
+        [self toggleDefaultKeyboard];
         [self finishSendingMessage];
+    }
+}
+
+- (void)toggleDefaultKeyboard
+{
+    NSString *mode = [self.inputToolbar.contentView.textView.textInputMode primaryLanguage];
+    // Mode is nil for the emoji keyboard
+    if (mode) {
+        [self.keyboardController endListeningForKeyboard];
+        [self dismissKeyBoard];
+        [self popKeyBoard];
+        [self.keyboardController beginListeningForKeyboard];
     }
 }
 
