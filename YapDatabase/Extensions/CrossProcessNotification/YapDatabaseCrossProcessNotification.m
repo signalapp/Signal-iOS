@@ -110,7 +110,7 @@ static pid_t currentPid() {
  *   This method is invoked within the writeQueue.
  *   So either don't do anything expensive/time-consuming in this method, or dispatch_async to do it in another queue.
 **/
-- (void)didRegisterWithDatabase:(YapDatabase __unused *)database
+- (void)didRegisterExtension
 {
 	// only start dispatching notifications once the extension is registered to a database
 	[self start];
