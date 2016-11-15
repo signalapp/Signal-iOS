@@ -200,7 +200,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B4o-Rc-z68" userLabel="Instructions Container">
                                 <rect key="frame" x="0.0" y="333.5" width="375" height="289.5"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12345 54432 83456 89456 24327 87547 90123 31523 91052 84930 89304 00234" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e7E-iS-3Oc" userLabel="Privacy Verification Key Text" customClass="OWSCopyableLabel">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12345 54432 83456 89456 24327 87547 90123 31523 91052 84930 89304 00234" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e7E-iS-3Oc" userLabel="Privacy Verification Key Text" customClass="OWSHighlightableLabel">
                                         <rect key="frame" x="36" y="0.0" width="303" height="70"/>
                                         <gestureRecognizers/>
                                         <constraints>
@@ -301,12 +301,20 @@
                         <outlet property="scanButton" destination="RX6-CJ-FV1" id="BKY-4g-g3U"/>
                         <outlet property="scanningContainer" destination="8DU-2J-HAz" id="FH9-yo-8uI"/>
                         <outlet property="scanningInstructions" destination="NXP-Ue-iml" id="Iqf-NS-kzM"/>
+                        <outlet property="shareButton" destination="k9L-LH-YS4" id="kPI-Du-1Lk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sd1-mY-rAe" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <barButtonItem image="btnCancel--white" id="kAa-FW-3Am" userLabel="Dismiss Button">
+                <barButtonItem systemItem="stop" id="kAa-FW-3Am" userLabel="Dismiss Button">
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="closeButtonAction:" destination="urv-62-RsD" id="Odq-bS-LCh"/>
+                    </connections>
+                </barButtonItem>
+                <barButtonItem systemItem="action" id="k9L-LH-YS4" userLabel="Share Button">
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <connections>
+                        <action selector="didTapShareButton" destination="urv-62-RsD" id="Oqj-ag-vEG"/>
                     </connections>
                 </barButtonItem>
             </objects>
@@ -417,7 +425,7 @@
                                                         <action selector="disappearingMessagesSwitchValueDidChange:" destination="4oU-Rv-yJi" eventType="valueChanged" id="3fF-JA-69e"/>
                                                     </connections>
                                                 </switch>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_timer" translatesAutoresizingMaskIntoConstraints="NO" id="iRL-ZI-kXA">
+                                                <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_timer" translatesAutoresizingMaskIntoConstraints="NO" id="iRL-ZI-kXA">
                                                     <rect key="frame" x="16" y="6" width="32" height="32"/>
                                                     <color key="tintColor" red="0.054901960780000002" green="0.054901960780000002" blue="0.054901960780000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
@@ -578,6 +586,9 @@
                         <outlet property="toggleDisappearingMessagesTitleLabel" destination="qbY-qJ-enK" id="gMK-F9-7Ss"/>
                         <outlet property="updateGroupCell" destination="XHr-b6-Gvn" id="JMz-e5-FNh"/>
                         <outlet property="verifyPrivacyCell" destination="Dzg-XO-ciX" id="kKQ-3F-uIp"/>
+                        <outletCollection property="cellIcons" destination="eGH-Vc-aKx" id="QW6-1W-hpg"/>
+                        <outletCollection property="cellIcons" destination="iRL-ZI-kXA" id="kct-Ug-2zB"/>
+                        <outletCollection property="cellIcons" destination="X7n-1t-1Q7" id="sc6-6u-NOR"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ftx-dN-loa" userLabel="First Responder" sceneMemberID="firstResponder"/>
