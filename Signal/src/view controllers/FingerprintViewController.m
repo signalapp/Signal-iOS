@@ -10,8 +10,9 @@
 #import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "OWSConversationSettingsTableViewController.h"
-#import "UIViewController+CameraPermissions.h"
 #import "Signal-Swift.h"
+#import "UIUtil.h"
+#import "UIViewController+CameraPermissions.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/TSInfoMessage.h>
@@ -22,7 +23,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FingerprintViewController ()
+@interface FingerprintViewController () <OWSHighlightableLabelDelegate>
 
 @property (strong, nonatomic) TSStorageManager *storageManager;
 @property (strong, nonatomic) TSThread *thread;
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *modalNavigationBar;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *dismissModalButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *shareButton;
 @property (strong, nonatomic) IBOutlet UIView *qrScanningView;
 @property (strong, nonatomic) IBOutlet UILabel *scanningInstructions;
 @property (strong, nonatomic) IBOutlet UIView *scanningContainer;
@@ -39,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIView *qrContainer;
 @property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
 @property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
-@property (strong, nonatomic) IBOutlet OWSCopyableLabel *privacyVerificationFingerprint;
+@property (strong, nonatomic) IBOutlet OWSHighlightableLabel *privacyVerificationFingerprint;
 @property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (strong, nonatomic) IBOutlet UIButton *scanButton;
 
@@ -61,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     self.navigationItem.leftBarButtonItem = self.dismissModalButton;
+    self.navigationItem.rightBarButtonItem = self.shareButton;
     [self.modalNavigationBar pushNavigationItem:self.navigationItem animated:NO];
 
     // HACK for transparent navigation bar.
@@ -96,6 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't antialias QRCode
     self.privacyVerificationQRCode.layer.magnificationFilter = kCAFilterNearest;
+
+    self.privacyVerificationFingerprint.delegate = self;
 }
 
 - (void)viewDidLayoutSubviews
@@ -108,6 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Round QR Code.
     self.privacyVerificationQRCodeFrame.layer.masksToBounds = YES;
     self.privacyVerificationQRCodeFrame.layer.cornerRadius = self.privacyVerificationQRCodeFrame.frame.size.height / 2;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    // In case we're returning from activity view that needed default system styles.
+    [UIUtil applySignalAppearence];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -128,10 +139,49 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark - HilightableLableDelegate
+
+- (void)didHighlightLabelWithLabel:(OWSHighlightableLabel *)label completion:(nullable void (^)(void))completionHandler
+{
+    [self showSharingActivityWithCompletion:completionHandler];
+}
+
+- (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
+{
+    DDLogDebug(@"%@ Sharing safety numbers", self.tag);
+
+    NSString *shareFormat = NSLocalizedString(@"SAFETY_NUMBER_SHARE_FORMAT", @"Snippet to share {{safety numbers}} with a friend. sent e.g. via sms");
+    NSString *shareString = [NSString stringWithFormat:shareFormat, self.fingerprint.displayableText];
+
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:@[shareString]
+                                                                                     applicationActivities:nil];
+
+    void (^activityControllerCompletionHandler)(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) = ^void(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
+        if (completionHandler) {
+            completionHandler();
+        }
+        [UIUtil applySignalAppearence];
+    };
+
+    activityController.completionWithItemsHandler = activityControllerCompletionHandler;
+
+    activityController.excludedActivityTypes =
+        @[ UIActivityTypePostToFacebook, UIActivityTypePostToWeibo, UIActivityTypeAirDrop ];
+
+    [UIUtil applyDefaultSystemAppearence];
+    [self presentViewController:activityController animated:YES completion:nil];
+}
+
 #pragma mark - Action
+
 - (IBAction)closeButtonAction:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)didTapShareButton
+{
+    [self showSharingActivityWithCompletion:nil];
 }
 
 - (IBAction)didTouchUpInsideScanButton:(id)sender
@@ -141,6 +191,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
+    // Camera stops capturing when "sharing" while in capture mode.
+    // Also, it's less obvious whats being "shared" at this point,
+    // so just disable sharing when in capture mode.
+    self.shareButton.enabled = NO;
+
     [self ows_askForCameraPermissions:^{
         DDLogInfo(@"%@ Showing Scanner", self.tag);
         self.qrScanningView.hidden = NO;
@@ -160,8 +215,9 @@ NS_ASSUME_NONNULL_BEGIN
                    alertActionHandler:nil];
 }
 
-// pragma mark - OWSQRScannerDelegate
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
+#pragma mark - OWSQRScannerDelegate
+
+- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data
 {
     [self verifyCombinedFingerprintData:data];
 }

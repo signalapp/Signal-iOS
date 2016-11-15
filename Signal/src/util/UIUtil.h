@@ -20,4 +20,7 @@ typedef void (^completionBlock)(void);
 + (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView;
 
 + (completionBlock)modalCompletionBlock;
++ (void)applyDefaultSystemAppearence;
++ (void)applySignalAppearence;
+
 @end

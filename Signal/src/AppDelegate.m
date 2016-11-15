@@ -56,7 +56,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Setting up environment
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
 
-    [self setupAppearance];
+    [UIUtil applySignalAppearence];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
 
     if (getenv("runningTests_dontStartApp")) {
@@ -316,30 +316,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = YES;
     }
-}
-
-- (void)setupAppearance {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-
-    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
-
-
-    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
-    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-
-    NSShadow *shadow = [NSShadow new];
-    [shadow setShadowColor:[UIColor clearColor]];
-
-    NSDictionary *navbarTitleTextAttributes = @{
-        NSForegroundColorAttributeName : [UIColor whiteColor],
-        NSShadowAttributeName : shadow,
-    };
-
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
-
-    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 }
 
 #pragma mark Push Notifications Delegate Methods

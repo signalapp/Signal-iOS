@@ -65,6 +65,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 @property (strong, nonatomic) IBOutlet UIImageView *avatar;
 @property (strong, nonatomic) IBOutlet UILabel *nameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *signalIdLabel;
+@property (strong, nonatomic) IBOutletCollection(UIImageView) NSArray *cellIcons;
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) NSString *contactName;
@@ -183,6 +184,13 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
     self.disappearingMessagesDurationSlider.value = self.disappearingMessagesConfiguration.durationIndex;
     [self toggleDisappearingMessages:self.disappearingMessagesConfiguration.isEnabled];
+
+    // RADAR http://www.openradar.me/23759908
+    // Finding that occasionally the tabel icons are not being tinted
+    // i.e. rendered as white making them invisible.
+    for (UIImageView *cellIcon in self.cellIcons) {
+        [cellIcon tintColorDidChange];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated

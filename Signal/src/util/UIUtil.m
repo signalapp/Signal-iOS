@@ -25,4 +25,38 @@
     return block;
 }
 
++ (void)applyDefaultSystemAppearence
+{
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
+    NSDictionary *navbarTitleTextAttributes = @{ NSForegroundColorAttributeName : [UIColor blackColor] };
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+}
+
++ (void)applySignalAppearence
+{
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+
+
+    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+
+    NSShadow *shadow = [NSShadow new];
+    [shadow setShadowColor:[UIColor clearColor]];
+
+    NSDictionary *navbarTitleTextAttributes = @{
+        NSForegroundColorAttributeName : [UIColor whiteColor],
+        NSShadowAttributeName : shadow,
+    };
+
+    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
+
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+}
+
 @end
