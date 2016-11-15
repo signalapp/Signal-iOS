@@ -332,32 +332,38 @@
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath {
     TSThread *thread = [self threadForIndexPath:indexPath];
     if ([thread isKindOfClass:[TSGroupThread class]]) {
-        UIAlertController *removingFromGroup = [UIAlertController
-            alertControllerWithTitle:[NSString
-                                         stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
-                             message:nil
-                      preferredStyle:UIAlertControllerStyleAlert];
-        [self presentViewController:removingFromGroup animated:YES completion:nil];
 
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                         inThread:thread
-                                                                      messageBody:@""
-                                                                    attachmentIds:[NSMutableArray new]];
-        message.groupMetaMessage = TSGroupMessageQuit;
-        [self.messageSender sendMessage:message
-            success:^{
-                [self dismissViewControllerAnimated:YES
-                                         completion:^{
-                                             [self deleteThread:thread];
-                                         }];
-            }
-            failure:^(NSError *error) {
-                [self dismissViewControllerAnimated:YES
-                                         completion:^{
-                                             SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
-                                                 error.localizedRecoverySuggestion);
-                                         }];
-            }];
+        TSGroupThread *gThread = (TSGroupThread *)thread;
+        if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+            UIAlertController *removingFromGroup = [UIAlertController
+                                                    alertControllerWithTitle:[NSString
+                                                                              stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
+                                                    message:nil
+                                                    preferredStyle:UIAlertControllerStyleAlert];
+            [self presentViewController:removingFromGroup animated:YES completion:nil];
+
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:@""
+                                                                        attachmentIds:[NSMutableArray new]];
+            message.groupMetaMessage = TSGroupMessageQuit;
+            [self.messageSender sendMessage:message
+                                    success:^{
+                                        [self dismissViewControllerAnimated:YES
+                                                                 completion:^{
+                                                                     [self deleteThread:thread];
+                                                                 }];
+                                    }
+                                    failure:^(NSError *error) {
+                                        [self dismissViewControllerAnimated:YES
+                                                                 completion:^{
+                                                                     SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
+                                                                                     error.localizedRecoverySuggestion);
+                                                                 }];
+                                    }];
+        } else {
+            [self deleteThread:thread];
+        }
     } else {
         [self deleteThread:thread];
     }
