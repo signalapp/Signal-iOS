@@ -313,7 +313,7 @@ typedef enum : NSUInteger {
 {
     if (shouldObserve) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(dynamicTypeSettingsModified:)
+                                                 selector:@selector(didChangePreferredContentSize:)
                                                      name:UIContentSizeCategoryDidChangeNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -960,7 +960,7 @@ typedef enum : NSUInteger {
 
  @param notification NSNotification with the dynamic type change information.
  */
-- (void)dynamicTypeSettingsModified:(NSNotification *)notification {
+- (void)didChangePreferredContentSize:(NSNotification *)notification {
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
     [self.collectionView reloadData];
     [self reloadInputToolbarSizeIfNeeded];
