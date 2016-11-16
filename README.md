@@ -9,7 +9,7 @@ Signal is a messaging app for simple private communication with friends.
 Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/open-whisper-systems/signal-ios/)
 
 ## Contributing Code
-Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md).
+Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/WhisperSystems/Signal-iOS/wiki/Development-Guide)
 
 If you're new to the Signal-iOS codebase, we recommend going through our issues and picking out a simple bug to fix (check the "easy" label in our issues) in order to get yourself familiar.
 
