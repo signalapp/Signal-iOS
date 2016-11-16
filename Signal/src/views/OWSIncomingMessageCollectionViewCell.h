@@ -1,6 +1,7 @@
 //  Created by Michael Kirk on 9/29/16.
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
+#import "JSQMessagesCollectionViewCell+OWS.h"
 #import "OWSExpirableMessageView.h"
 #import <JSQMessagesViewController/JSQMessagesCollectionViewCellIncoming.h>
 

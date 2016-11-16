@@ -36,6 +36,12 @@
 + (void)performUpdateCheck
 {
     NSString *previousVersion = Environment.preferences.lastRanVersion;
+    NSString *currentVersion =
+        [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
+
+    DDLogInfo(
+        @"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@", self.tag, currentVersion, previousVersion);
+
     if (!previousVersion) {
         DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner =
@@ -45,19 +51,25 @@
         return;
     }
 
-    if (([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"])) {
-        // We don't migrate from RedPhone anymore, too painful to maintain.
-        DDLogError(@"Migrating from RedPhone no longer supported. Resetting app data and quitting.");
-        [Environment resetAppData];
-        exit(0);
-    }
+    if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
+        DDLogError(@"Migrating from RedPhone no longer supported. Quitting.");
+        // Not translating these as so few are affected.
+        UIAlertController *alertController = [UIAlertController
+            alertControllerWithTitle:@"You must reinstall Signal"
+                             message:
+                                 @"Sorry, your installation is too old for us to update. You'll have to start fresh."
+                      preferredStyle:UIAlertControllerStyleAlert];
 
-    BOOL VOIPRegistration =
-        [[PushManager sharedManager] supportsVOIPPush] && ![Environment.preferences hasRegisteredVOIPPush];
+        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *_Nonnull action) {
+                                                               exit(0);
+                                                           }];
+        [alertController addAction:quitAction];
 
-    // VOIP Push might need to be enabled because 1) user ran old version 2) Update to compatible iOS version
-    if (VOIPRegistration && [TSAccountManager isRegistered]) {
-        [self nonBlockingPushRegistration];
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController
+                                                                                     animated:YES
+                                                                                   completion:nil];
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
@@ -195,6 +207,18 @@
     } else {
         DDLogDebug(@"No bloom filter cache to remove.");
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

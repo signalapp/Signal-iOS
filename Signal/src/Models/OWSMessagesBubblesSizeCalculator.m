@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Add an extra pixel per line to fit the emoji.
     // This is a crappy solution. Long messages with only one line of emoji will have an extra pixel per line.
-    return CGSizeMake(superSize.width, superSize.height + 1.5 * lines);
+    return CGSizeMake(superSize.width, superSize.height + (CGFloat)1.5 * lines);
 }
 
 

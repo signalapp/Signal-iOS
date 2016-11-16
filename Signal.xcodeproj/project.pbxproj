@@ -22,6 +22,7 @@
 		452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */; };
 		452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
 		452E3C8F1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */; };
+		4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */; };
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
@@ -45,7 +46,7 @@
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
 		459C3F0D1C9B3A1B003ACF51 /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */; };
-		45B201761DAECBFE00C461E0 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B201751DAECBFE00C461E0 /* CopyableLabel.swift */; };
+		45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */; };
 		45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
 		45BFFFA91D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
 		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
@@ -554,6 +555,8 @@
 		452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MesssagesBubblesSizeCalculatorTest.swift; path = Models/MesssagesBubblesSizeCalculatorTest.swift; sourceTree = "<group>"; };
 		452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsTableViewController.h; sourceTree = "<group>"; };
 		452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = OWSConversationSettingsTableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMessagesCollectionViewCell+OWS.h"; sourceTree = "<group>"; };
+		4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMessagesCollectionViewCell+OWS.m"; sourceTree = "<group>"; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisplayedMessage.h; sourceTree = "<group>"; };
 		453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisplayedMessage.m; sourceTree = "<group>"; };
@@ -594,7 +597,7 @@
 		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
 		459C3F0C1C9B3A1B003ACF51 /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageAdapterTest.m; path = "view controllers/Signals/TSMessageAdapters/TSMessageAdapterTest.m"; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
-		45B201751DAECBFE00C461E0 /* CopyableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
+		45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightableLabel.swift; sourceTree = "<group>"; };
 		45BFFFA61D898AF0004A12A7 /* OWSStaleNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSStaleNotificationObserver.h; path = Observers/OWSStaleNotificationObserver.h; sourceTree = "<group>"; };
 		45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSStaleNotificationObserver.m; path = Observers/OWSStaleNotificationObserver.m; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
@@ -1825,7 +1828,7 @@
 		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				45B201751DAECBFE00C461E0 /* CopyableLabel.swift */,
+				45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */,
 				45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */,
 				45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */,
 				45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */,
@@ -1850,6 +1853,8 @@
 				450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */,
 				450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */,
 				450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */,
+				4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */,
+				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
 			);
 			name = Views;
 			path = views;
@@ -2827,6 +2832,7 @@
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				76EB05BE18170B33006006FC /* ConfirmPacket.m in Sources */,
+				4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */,
 				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
@@ -2998,7 +3004,7 @@
 				76EB05C618170B33006006FC /* HelloAckPacket.m in Sources */,
 				76EB05E818170B33006006FC /* CallFailedServerMessage.m in Sources */,
 				76EB05FA18170B33006006FC /* CallConnectUtil_Responder.m in Sources */,
-				45B201761DAECBFE00C461E0 /* CopyableLabel.swift in Sources */,
+				45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */,
 				76EB05AE18170B33006006FC /* SrtpStream.m in Sources */,
 				E197B61318BBEC1A00F073E5 /* DesiredBufferDepthController.m in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,

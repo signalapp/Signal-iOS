@@ -3,6 +3,7 @@
 
 #import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSExpirationTimerView.h"
+#import "UIColor+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
