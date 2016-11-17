@@ -11,8 +11,7 @@ target 'Signal' do
     pod 'SCWaveformView',             '~> 1.0'
     pod 'ZXingObjC'
     pod 'DJWActionSheet'
-    #pod 'JSQMessagesViewController'
-    pod 'JSQMessagesViewController', git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'fix-intermittent-crash-on-delete'
+    pod 'JSQMessagesViewController'
     target 'SignalTests' do
         inherit! :search_paths
     end
