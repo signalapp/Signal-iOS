@@ -313,6 +313,10 @@ typedef enum : NSUInteger {
 {
     if (shouldObserve) {
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didChangePreferredContentSize:)
+                                                     name:UIContentSizeCategoryDidChangeNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
                                                    object:nil];
@@ -329,6 +333,9 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
     } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                     name:UIContentSizeCategoryDidChangeNotification
+                                                   object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                      name:YapDatabaseModifiedNotification
                                                    object:nil];
@@ -917,6 +924,47 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Adjusting cell label heights
+
+
+/**
+ Due to the usage of JSQMessagesViewController, and it non-conformity to Dynamyc Type
+ we're left to our own devices to make this as usable as possible.
+ JSQMessagesVC also does not expose the constraint for the input toolbar height nor does it seem to
+ give us a method to tell it to re-adjust (I think it should observe the preferredDefaultHeight property).
+ 
+ With that in mind, we use magical runtime to get that property, and if it doesn't exist, we just don't apply the dynamic
+ type change. If it does exist, than we apply the font changes and adjust the views to contain them properly.
+ 
+ This is not the prettiest code, but it's working code. We should tag this code for deletion as soon as JSQMessagesVC adops Dynamic type.
+ */
+- (void)reloadInputToolbarSizeIfNeeded {
+    NSLayoutConstraint *heightConstraint = ((NSLayoutConstraint *)[self valueForKeyPath:@"toolbarHeightConstraint"]);
+    if (heightConstraint == nil) {
+        return;
+    }
+
+    [self.inputToolbar.contentView.textView setFont:[UIFont ows_dynamicTypeBodyFont]];
+
+    CGRect f = self.inputToolbar.contentView.textView.frame;
+    f.size.height = [self.inputToolbar.contentView.textView sizeThatFits:self.inputToolbar.contentView.textView.frame.size].height;
+    self.inputToolbar.contentView.textView.frame = f;
+
+    self.inputToolbar.preferredDefaultHeight = self.inputToolbar.contentView.textView.frame.size.height + 16;
+    heightConstraint.constant = self.inputToolbar.preferredDefaultHeight;
+    [self.inputToolbar setNeedsLayout];
+}
+
+
+/**
+ Called whenever the user manually changes the dynamic type options inside Settings.
+
+ @param notification NSNotification with the dynamic type change information.
+ */
+- (void)didChangePreferredContentSize:(NSNotification *)notification {
+    [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
+    [self.collectionView reloadData];
+    [self reloadInputToolbarSizeIfNeeded];
+}
 
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                               layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
