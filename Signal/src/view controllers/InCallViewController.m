@@ -120,7 +120,7 @@
 
     if (_potentiallyKnownContact) {
         if (_potentiallyKnownContact.image) {
-            [UIUtil applyRoundedBorderToImageView:&_contactImageView];
+            [UIUtil applyRoundedBorderToImageView:_contactImageView];
         }
 
         _nameLabel.text = _potentiallyKnownContact.fullName;

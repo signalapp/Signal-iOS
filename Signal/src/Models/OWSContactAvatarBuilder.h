@@ -10,6 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactAvatarBuilder : OWSAvatarBuilder
 
+- (instancetype)initWithContactId:(NSString *)contactId
+                             name:(NSString *)name
+                  contactsManager:(OWSContactsManager *)contactsManager;
+
 - (instancetype)initWithThread:(TSContactThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 
 @end

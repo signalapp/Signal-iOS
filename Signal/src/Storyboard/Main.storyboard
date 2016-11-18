@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16C41b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -1184,15 +1184,32 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="9FD-M0-WLe" style="IBUITableViewCellStyleDefault" id="a7a-qe-87x" userLabel="Invite Your Friends">
+                                        <rect key="frame" x="0.0" y="382" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="a7a-qe-87x" id="gcU-Ld-alv">
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Invite Your Friends" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9FD-M0-WLe" userLabel="Invite Your Friends">
+                                                    <rect key="frame" x="15" y="0.0" width="325" height="43"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="FdD-MV-PUQ">
                                 <cells>
                                     <tableViewCell autoresizesSubviews="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="100" id="R82-FT-SEA" userLabel="Destroy Account Cell">
-                                        <rect key="frame" x="0.0" y="382" width="375" height="100"/>
+                                        <rect key="frame" x="0.0" y="426" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R82-FT-SEA" id="Ok9-fE-WhB">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="99"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Mk-ly-6fq">
@@ -1240,6 +1257,7 @@
                         <outlet property="aboutLabel" destination="qeN-f1-cIQ" id="kmc-iU-NK5"/>
                         <outlet property="advancedLabel" destination="dkL-Nz-E6H" id="HUw-SB-apQ"/>
                         <outlet property="destroyAccountButton" destination="4Mk-ly-6fq" id="6Xj-Rb-kfF"/>
+                        <outlet property="inviteLabel" destination="9FD-M0-WLe" id="TfU-b4-OtN"/>
                         <outlet property="linkedDevicesLabel" destination="hrc-lZ-NeA" id="VkD-E5-2kW"/>
                         <outlet property="networkStatusHeader" destination="uNq-FV-lwt" id="vca-cC-nXG"/>
                         <outlet property="networkStatusLabel" destination="tg3-dQ-odw" id="l6J-8y-maW"/>
@@ -1376,25 +1394,36 @@
                                 <rect key="frame" x="0.0" y="22" width="375" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ld5-sX-pB8" id="EqP-87-4hZ">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="47"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="47.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="urb-Me-knG">
-                                            <rect key="frame" x="20" y="4" width="275" height="39.5"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4zF-SU-q4z">
+                                            <rect key="frame" x="67.5" y="8" width="299.5" height="31.5"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                            <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="11n-jp-FCg">
+                                            <rect key="frame" x="16" y="4" width="39.5" height="39.5"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="11n-jp-FCg" secondAttribute="height" multiplier="1:1" id="CMp-Im-YMw"/>
+                                            </constraints>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottomMargin" secondItem="urb-Me-knG" secondAttribute="bottom" constant="-4" id="3fF-H3-Spz"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="urb-Me-knG" secondAttribute="trailing" constant="72" id="R9g-GE-nWU"/>
-                                        <constraint firstItem="urb-Me-knG" firstAttribute="leading" secondItem="EqP-87-4hZ" secondAttribute="leadingMargin" constant="12" id="Zjd-vI-V9V"/>
-                                        <constraint firstItem="urb-Me-knG" firstAttribute="top" secondItem="EqP-87-4hZ" secondAttribute="topMargin" constant="-4" id="iex-zH-iTD"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="4zF-SU-q4z" secondAttribute="trailing" id="0Af-5G-21G"/>
+                                        <constraint firstItem="11n-jp-FCg" firstAttribute="leading" secondItem="EqP-87-4hZ" secondAttribute="leadingMargin" constant="8" id="GYw-2Z-sxC"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="11n-jp-FCg" secondAttribute="bottom" constant="-4" id="XTB-Kg-dNU"/>
+                                        <constraint firstItem="4zF-SU-q4z" firstAttribute="leading" secondItem="11n-jp-FCg" secondAttribute="trailing" constant="12" id="ZiW-nb-biK"/>
+                                        <constraint firstItem="11n-jp-FCg" firstAttribute="top" secondItem="EqP-87-4hZ" secondAttribute="topMargin" constant="-4" id="pYu-uo-erC"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="4zF-SU-q4z" secondAttribute="bottom" id="qZb-xR-JoS"/>
+                                        <constraint firstItem="4zF-SU-q4z" firstAttribute="top" secondItem="EqP-87-4hZ" secondAttribute="topMargin" id="ruR-db-L1p"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
-                                    <outlet property="nameLabel" destination="urb-Me-knG" id="2h5-l1-QDQ"/>
+                                    <outlet property="avatarView" destination="11n-jp-FCg" id="OBx-gj-ljU"/>
+                                    <outlet property="nameLabel" destination="4zF-SU-q4z" id="ita-p1-Vod"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1405,8 +1434,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="New Message" id="D6A-aV-gEq">
                         <barButtonItem key="backBarButtonItem" title=" " id="rvF-0w-DNd"/>
-                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="bP2-Tc-byJ">
-                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="bP2-Tc-byJ">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="closeAction:" destination="Qga-41-bw2" id="i8h-aS-Y3o"/>
@@ -1420,8 +1448,29 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="inviteCell" destination="Pgm-Qb-oPu" id="Nf5-sS-IKL"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-iU-Cax" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ContactTableInviteCell" textLabel="QGl-1D-W9D" rowHeight="48" style="IBUITableViewCellStyleDefault" id="Pgm-Qb-oPu" userLabel="Invite Cell">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="48"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Pgm-Qb-oPu" id="amG-75-RNT">
+                        <rect key="frame" x="0.0" y="0.0" width="342" height="47"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Invite your friends!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="QGl-1D-W9D">
+                                <rect key="frame" x="15" y="0.0" width="325" height="47"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.09412795243864841" green="0.43645224658557435" blue="0.71380208333333339" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="tintColor" red="0.1135657504" green="0.4787300229" blue="0.89595204589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </tableViewCellContentView>
+                </tableViewCell>
                 <searchDisplayController id="f1M-Dk-nMv"/>
             </objects>
             <point key="canvasLocation" x="-2357" y="-235"/>

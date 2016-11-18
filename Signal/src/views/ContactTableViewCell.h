@@ -7,11 +7,14 @@
  *
  */
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class OWSContactsManager;
+
 @interface ContactTableViewCell : UITableViewCell
 
-@property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property BOOL shouldShowContactButtons;
-
-- (void)configureWithContact:(Contact *)contact;
+- (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
 
 @end
+
+NS_ASSUME_NONNULL_END

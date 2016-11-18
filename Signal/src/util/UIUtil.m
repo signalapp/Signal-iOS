@@ -4,13 +4,13 @@
 
 @implementation UIUtil
 
-+ (void)applyRoundedBorderToImageView:(UIImageView *__strong *)imageView {
-    [[*imageView layer] setBorderWidth:CONTACT_PICTURE_VIEW_BORDER_WIDTH];
-    [[*imageView layer] setBorderColor:[[UIColor clearColor] CGColor]];
-    [[*imageView layer] setCornerRadius:CGRectGetWidth([*imageView frame]) / 2];
-    [[*imageView layer] setMasksToBounds:YES];
++ (void)applyRoundedBorderToImageView:(UIImageView *)imageView
+{
+    imageView.layer.borderWidth = CONTACT_PICTURE_VIEW_BORDER_WIDTH;
+    imageView.layer.borderColor = [UIColor clearColor].CGColor;
+    imageView.layer.cornerRadius = CGRectGetWidth(imageView.frame) / 2;
+    imageView.layer.masksToBounds = YES;
 }
-
 
 + (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView {
     [[*imageView layer] setBorderWidth:0];
@@ -42,7 +42,7 @@
 
     [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
 
-
+    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
 
@@ -53,9 +53,6 @@
         NSForegroundColorAttributeName : [UIColor whiteColor],
         NSShadowAttributeName : shadow,
     };
-
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
-
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
 }
 

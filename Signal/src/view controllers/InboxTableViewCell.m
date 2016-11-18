@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.snippetLabel.text = snippetLabel;
         self.timeLabel.attributedText = attributedDate;
         self.contactPictureView.image = avatar;
-        [UIUtil applyRoundedBorderToImageView:&_contactPictureView];
+        [UIUtil applyRoundedBorderToImageView:_contactPictureView];
 
         self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
 

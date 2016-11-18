@@ -16,7 +16,7 @@ typedef void (^completionBlock)(void);
 
 @interface UIUtil : NSObject
 
-+ (void)applyRoundedBorderToImageView:(UIImageView *__strong *)imageView;
++ (void)applyRoundedBorderToImageView:(UIImageView *)imageView;
 + (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView;
 
 + (completionBlock)modalCompletionBlock;

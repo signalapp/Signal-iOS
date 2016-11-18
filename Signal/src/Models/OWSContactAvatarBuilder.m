@@ -22,18 +22,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactAvatarBuilder
 
-- (instancetype)initWithThread:(TSContactThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (instancetype)initWithContactId:(NSString *)contactId
+                             name:(NSString *)name
+                  contactsManager:(OWSContactsManager *)contactsManager
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _signalId = thread.contactIdentifier;
-    _contactName = thread.name;
+    _signalId = contactId;
+    _contactName = name;
     _contactsManager = contactsManager;
 
     return self;
+}
+
+
+- (instancetype)initWithThread:(TSContactThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+{
+    return [self initWithContactId:thread.contactIdentifier name:thread.name contactsManager:contactsManager];
 }
 
 - (nullable UIImage *)buildSavedImage
@@ -43,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)buildDefaultImage
 {
+    UIImage *cachedAvatar = [self.contactsManager.avatarCache objectForKey:self.signalId];
+    if (cachedAvatar) {
+        return cachedAvatar;
+    }
+
     NSMutableString *initials = [NSMutableString string];
 
     if (self.contactName.length > 0) {
@@ -61,11 +74,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
 
-    return [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
-                                                       backgroundColor:backgroundColor
-                                                             textColor:[UIColor whiteColor]
-                                                                  font:[UIFont ows_boldFontWithSize:36.0]
-                                                              diameter:100] avatarImage];
+    UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
+                                                                 backgroundColor:backgroundColor
+                                                                       textColor:[UIColor whiteColor]
+                                                                            font:[UIFont ows_boldFontWithSize:36.0]
+                                                                        diameter:100] avatarImage];
+
+    [self.contactsManager.avatarCache setObject:image forKey:self.signalId];
+    return image;
 }
 
 

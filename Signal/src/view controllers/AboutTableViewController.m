@@ -22,6 +22,11 @@
 
 @end
 
+typedef NS_ENUM(NSUInteger, AboutTableViewControllerSection) {
+    AboutTableViewControllerSectionInformation,
+    AboutTableViewControllerSectionHelp
+};
+
 @implementation AboutTableViewController
 
 - (instancetype)init {
@@ -64,32 +69,19 @@
     self.footerView.font          = [UIFont ows_regularFontWithSize:15.0f];
     self.footerView.numberOfLines = 2;
     self.footerView.textAlignment = NSTextAlignmentCenter;
-
-
-    // Twitter Invite
-    self.twitterInviteCell                = [[UITableViewCell alloc] init];
-    self.twitterInviteCell.textLabel.text = NSLocalizedString(@"SETTINGS_SHARE_INSTALL", @"");
-
-    UIImageView *twitterImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"twitter_logo"]];
-    [twitterImageView setFrame:CGRectMake(0, 0, 34, 34)];
-    twitterImageView.contentMode = UIViewContentModeScaleAspectFit;
-
-    self.twitterInviteCell.accessoryView = twitterImageView;
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0:
+        case AboutTableViewControllerSectionInformation:
             return 1;
-        case 1:
-            return 1;
-        case 2:
+        case AboutTableViewControllerSectionHelp:
             return 1;
         default:
             return 0;
@@ -98,13 +90,10 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
-        case 0:
+        case AboutTableViewControllerSectionInformation:
             return NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
-        case 1:
-            return NSLocalizedString(@"SETTINGS_INVITE_HEADER", @"");
-        case 2:
+        case AboutTableViewControllerSectionHelp:
             return NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-
         default:
             return nil;
     }
@@ -112,11 +101,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
-        case 0:
+        case AboutTableViewControllerSectionInformation:
             return self.versionCell;
-        case 1:
-            return self.twitterInviteCell;
-        case 2:
+        case AboutTableViewControllerSectionHelp:
             return self.supportCell;
     }
 
@@ -127,10 +114,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     switch (indexPath.section) {
-        case 1:
-            [self tappedInviteTwitter];
-            break;
-        case 2:
+        case AboutTableViewControllerSectionHelp:
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://support.whispersystems.org"]];
             break;
 
@@ -140,25 +124,11 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    return section == 2 ? self.footerView : nil;
+    return section == AboutTableViewControllerSectionHelp ? self.footerView : nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return section == 2 ? 60.0f : 0;
-}
-
-- (void)tappedInviteTwitter {
-    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
-        SLComposeViewController *tweetSheet =
-            [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
-
-        NSString *tweetString = [NSString stringWithFormat:NSLocalizedString(@"SETTINGS_INVITE_TWITTER_TEXT", @"")];
-        [tweetSheet setInitialText:tweetString];
-        [tweetSheet addURL:[NSURL URLWithString:@"https://whispersystems.org/signal/install/"]];
-        tweetSheet.completionHandler = ^(SLComposeViewControllerResult result) {
-        };
-        [self presentViewController:tweetSheet animated:YES completion:[UIUtil modalCompletionBlock]];
-    }
+    return section == AboutTableViewControllerSectionHelp ? 60.0f : 0;
 }
 
 @end

@@ -25,11 +25,15 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 - (id)init {
     self = [super init];
-    if (self) {
-        _life = [TOCCancelTokenSource new];
-        _observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
-        _latestContactsById = @{};
+    if (!self) {
+        return self;
     }
+
+    _life = [TOCCancelTokenSource new];
+    _observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
+    _latestContactsById = @{};
+    _avatarCache = [NSCache new];
+
     return self;
 }
 
@@ -67,9 +71,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context) {
     OWSContactsManager *contactsManager = (__bridge OWSContactsManager *)context;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      [contactsManager pullLatestAddressBook];
-      [contactsManager intersectContacts];
+        [contactsManager handleAddressBookChanged];
     });
+}
+
+- (void)handleAddressBookChanged
+{
+    [self pullLatestAddressBook];
+    [self intersectContacts];
+    [self.avatarCache removeAllObjects];
 }
 
 #pragma mark - Setup
@@ -81,8 +91,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
         ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          [self pullLatestAddressBook];
-          [self intersectContacts];
+            [self handleAddressBookChanged];
         });
       }];
     });
@@ -370,9 +379,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 #pragma mark - Whisper User Management
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
-    return [[contacts filter:^int(Contact *contact) {
-      return [contact isSignalContact];
-    }] sortedArrayUsingComparator:[[self class] contactComparator]];
+    NSMutableDictionary *signalContacts = [NSMutableDictionary new];
+    for (Contact *contact in contacts) {
+        if ([contact isSignalContact]) {
+            signalContacts[contact.textSecureIdentifiers.firstObject] = contact;
+        }
+    }
+    return [signalContacts.allValues sortedArrayUsingComparator:[[self class] contactComparator]];
 }
 
 + (NSComparator)contactComparator {
@@ -383,9 +396,33 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
       BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
 
       if (firstNameOrdering) {
-          return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
+          if (contact1.firstName) {
+              if (contact2.firstName) {
+                  return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
+              } else {
+                  return [contact1.firstName caseInsensitiveCompare:contact2.lastName];
+              }
+          } else {
+              if (contact2.firstName) {
+                  return [contact1.lastName caseInsensitiveCompare:contact2.firstName];
+              } else {
+                  return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
+              }
+          }
       } else {
-          return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
+          if (contact1.lastName) {
+              if (contact2.lastName) {
+                  return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
+              } else {
+                  return [contact1.lastName caseInsensitiveCompare:contact2.firstName];
+              }
+          } else {
+              if (contact2.lastName) {
+                  return [contact1.firstName caseInsensitiveCompare:contact2.lastName];
+              } else {
+                  return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
+              }
+          }
       };
     };
 }

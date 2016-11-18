@@ -1,12 +1,14 @@
 #import "ContactTableViewCell.h"
-#import "UIUtil.h"
-
 #import "Environment.h"
+#import "OWSContactAvatarBuilder.h"
+#import "OWSContactsManager.h"
 #import "PhoneManager.h"
+#import "UIUtil.h"
 
 @interface ContactTableViewCell ()
 
-@property (strong, nonatomic) Contact *associatedContact;
+@property (nonatomic) IBOutlet UILabel *nameLabel;
+@property (nonatomic) IBOutlet UIImageView *avatarView;
 
 @end
 
@@ -21,9 +23,19 @@
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithContact:(Contact *)contact {
-    self.associatedContact = contact;
+- (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
+{
     self.nameLabel.attributedText = [self attributedStringForContact:contact];
+    self.avatarView.image =
+        [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
+                                                       name:contact.fullName
+                                            contactsManager:contactsManager] build];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [UIUtil applyRoundedBorderToImageView:self.avatarView];
 }
 
 - (NSAttributedString *)attributedStringForContact:(Contact *)contact {
@@ -34,11 +46,11 @@
     UIFont *lastNameFont;
 
     if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
+        lastNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
     } else {
-        firstNameFont = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
+        firstNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
+        lastNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
     }
     [fullNameAttributedString addAttribute:NSFontAttributeName
                                      value:firstNameFont

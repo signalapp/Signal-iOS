@@ -7,6 +7,7 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RPAccountManager.h"
+#import "UIUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>

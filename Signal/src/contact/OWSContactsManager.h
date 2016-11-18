@@ -18,6 +18,7 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
 @property CNContactStore *contactStore;
+@property NSCache<NSString *, UIImage *> *avatarCache;
 
 - (ObservableValue *)getObservableContacts;
 

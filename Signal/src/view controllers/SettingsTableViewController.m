@@ -17,13 +17,13 @@
 
 #import "TSSocketManager.h"
 
-#import "OWSContactsManager.h"
-
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "NotificationSettingsViewController.h"
+#import "OWSContactsManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "PushManager.h"
+#import "Signal-Swift.h"
 
 #define kProfileCellHeight 87.0f
 #define kStandardCellHeight 44.0f
@@ -35,12 +35,13 @@
 #define kNotificationRow 1
 #define kAdvancedRow 3
 #define kAboutRow 4
+#define kInviteRow 5
 #define kNetworkRow 0
 #define kUnregisterRow 0
 
 typedef enum {
     kRegisteredRows = 1,
-    kGeneralRows = 5,
+    kGeneralRows = 6,
     kNetworkStatusRows = 1,
     kUnregisterRows = 1,
 } kRowsForSection;
@@ -81,6 +82,8 @@ typedef enum {
     self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
     self.linkedDevicesLabel.text
         = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
+    self.inviteLabel.text = NSLocalizedString(@"SETTINGS_INVITE_TITLE", @"Settings table view cell label");
+
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];
 }
@@ -153,7 +156,16 @@ typedef enum {
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
+                case kInviteRow: {
+                    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+                    [self presentViewController:inviteFlow.actionSheetController
+                                       animated:YES
+                                     completion:^{
+                                         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                     }];
+                }
                 default:
+                    DDLogError(@"%@ Unhandled row selected at index path: %@", self.tag, indexPath);
                     break;
             }
 
@@ -258,6 +270,18 @@ typedef enum {
 - (void)socketIsConnecting {
     self.networkStatusLabel.text      = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
     self.networkStatusLabel.textColor = [UIColor ows_yellowColor];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
