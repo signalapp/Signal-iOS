@@ -28,7 +28,6 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 - (NSArray<Contact *> *)allContacts;
 - (NSArray<Contact *> *)signalContacts;
-- (NSArray *)textSecureContacts;
 
 - (void)doAfterEnvironmentInitSetup;
 

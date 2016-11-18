@@ -72,7 +72,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    contacts = [Environment getCurrent].contactsManager.textSecureContacts;
+    contacts = [Environment getCurrent].contactsManager.signalContacts;
 
 
     self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);

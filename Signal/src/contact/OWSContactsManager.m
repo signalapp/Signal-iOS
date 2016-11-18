@@ -394,12 +394,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
-- (NSArray *)textSecureContacts {
-    return [[self.allContacts filter:^int(Contact *contact) {
-      return [contact isSignalContact];
-    }] sortedArrayUsingComparator:[[self class] contactComparator]];
-}
-
 - (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier {
     if (!identifier) {
         return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
