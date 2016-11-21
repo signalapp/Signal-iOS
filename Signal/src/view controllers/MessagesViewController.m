@@ -691,14 +691,14 @@ typedef enum : NSUInteger {
 
 - (void)toggleDefaultKeyboard
 {
-    NSString *mode = [self.inputToolbar.contentView.textView.textInputMode primaryLanguage];
-    // Mode is nil for the emoji keyboard
-    if (mode) {
-        [self.keyboardController endListeningForKeyboard];
-        [self dismissKeyBoard];
-        [self popKeyBoard];
-        [self.keyboardController beginListeningForKeyboard];
+    // Primary language is nil for the emoji keyboard & we want to stay on it after sending
+    if (![self.inputToolbar.contentView.textView.textInputMode primaryLanguage]) {
+        return;
     }
+    [self.keyboardController endListeningForKeyboard];
+    [self dismissKeyBoard];
+    [self popKeyBoard];
+    [self.keyboardController beginListeningForKeyboard];
 }
 
 #pragma mark - UICollectionViewDelegate
