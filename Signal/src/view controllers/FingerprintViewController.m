@@ -14,6 +14,7 @@
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
@@ -23,7 +24,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FingerprintViewController () <OWSHighlightableLabelDelegate>
+@interface FingerprintViewController () <OWSHighlightableLabelDelegate, OWSCompareSafetyNumbersActivityDelegate>
 
 @property (strong, nonatomic) TSStorageManager *storageManager;
 @property (strong, nonatomic) TSThread *thread;
@@ -141,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - HilightableLableDelegate
 
-- (void)didHighlightLabelWithLabel:(OWSHighlightableLabel *)label completion:(nullable void (^)(void))completionHandler
+- (void)didHighlightLabel:(OWSHighlightableLabel *)label completion:(nullable void (^)(void))completionHandler
 {
     [self showSharingActivityWithCompletion:completionHandler];
 }
@@ -150,30 +151,46 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogDebug(@"%@ Sharing safety numbers", self.tag);
 
+    OWSCompareSafetyNumbersActivity *compareActivity = [[OWSCompareSafetyNumbersActivity alloc] initWithDelegate:self];
+
     NSString *shareFormat = NSLocalizedString(@"SAFETY_NUMBER_SHARE_FORMAT", @"Snippet to share {{safety numbers}} with a friend. sent e.g. via sms");
     NSString *shareString = [NSString stringWithFormat:shareFormat, self.fingerprint.displayableText];
 
-    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:@[shareString]
-                                                                                     applicationActivities:nil];
+    UIActivityViewController *activityController =
+        [[UIActivityViewController alloc] initWithActivityItems:@[ shareString ]
+                                          applicationActivities:@[ compareActivity ]];
 
-    void (^activityControllerCompletionHandler)(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) = ^void(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
+    activityController.completionWithItemsHandler = ^void(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
         if (completionHandler) {
             completionHandler();
         }
         [UIUtil applySignalAppearence];
     };
 
-    activityController.completionWithItemsHandler = activityControllerCompletionHandler;
-
+    // This value was extracted by inspecting `activityType` in the activityController.completionHandler
+    NSString *const iCloudActivityType = @"com.apple.CloudDocsUI.AddToiCloudDrive";
     activityController.excludedActivityTypes = @[
         UIActivityTypePostToFacebook,
         UIActivityTypePostToWeibo,
         UIActivityTypeAirDrop,
-        UIActivityTypePostToTwitter
+        UIActivityTypePostToTwitter,
+        iCloudActivityType // This isn't being excluded. RADAR https://openradar.appspot.com/27493621
     ];
 
     [UIUtil applyDefaultSystemAppearence];
     [self presentViewController:activityController animated:YES completion:nil];
+}
+
+#pragma mark - OWSCompareSafetyNumbersActivityDelegate
+
+- (void)compareSafetyNumbersActivitySucceededWithActivity:(OWSCompareSafetyNumbersActivity *)activity
+{
+    [self showVerificationSucceeded];
+}
+
+- (void)compareSafetyNumbersActivity:(OWSCompareSafetyNumbersActivity *)activity failedWithError:(NSError *)error
+{
+    [self showVerificationFailedWithError:error];
 }
 
 #pragma mark - Action
@@ -230,45 +247,46 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSError *error;
     if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
-        DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
-        NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
-        NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-        NSString *descriptionFormat = NSLocalizedString(
-            @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
-        NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
-        UIAlertController *successAlertController =
-            [UIAlertController alertControllerWithTitle:successTitle
-                                                message:successDescription
-                                         preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:dismissText
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [self dismissViewControllerAnimated:YES completion:nil];
-                                   }];
-        [successAlertController addAction:dismissAction];
-
-        [self presentViewController:successAlertController animated:YES completion:nil];
+        [self showVerificationSucceeded];
     } else {
-        [self failVerificationWithError:error];
+        [self showVerificationFailedWithError:error];
     }
 }
 
-- (void)failVerificationWithError:(NSError *)error
+- (void)showVerificationSucceeded
 {
-    NSString *failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
+    DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
+    NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
+    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
+    NSString *descriptionFormat = NSLocalizedString(
+        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
+    NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
+    UIAlertController *successAlertController =
+        [UIAlertController alertControllerWithTitle:successTitle
+                                            message:successDescription
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *dismissAction =
+        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:nil];
+    [successAlertController addAction:dismissAction];
+
+    [self presentViewController:successAlertController animated:YES completion:nil];
+}
+
+- (void)showVerificationFailedWithError:(NSError *)error
+{
+    NSString *_Nullable failureTitle;
+    if (error.code != OWSErrorCodeUserError) {
+        failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
+    } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
+
     UIAlertController *failureAlertController =
         [UIAlertController alertControllerWithTitle:failureTitle
                                             message:error.localizedDescription
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    NSString *cancelText = NSLocalizedString(@"TXT_CANCEL_TITLE", nil);
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:cancelText
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction *_Nonnull action) {
-                                                             [self dismissViewControllerAnimated:YES completion:nil];
-                                                         }];
-    [failureAlertController addAction:cancelAction];
+    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler:nil];
+    [failureAlertController addAction:dismissAction];
 
     // TODO
     //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);

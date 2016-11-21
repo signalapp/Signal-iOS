@@ -5,7 +5,7 @@ import UIKit
 
 @objc(OWSHighlightableLabelDelegate)
 protocol HighlightableLabelDelegate {
-    func didHighlightLabel(label:HighlightableLabel, completion: (()->())?) -> ()
+    func didHighlightLabel(_ label:HighlightableLabel, completion: (()->())?) -> ()
 }
 
 @objc(OWSHighlightableLabel)
@@ -60,6 +60,6 @@ class HighlightableLabel : UILabel {
 
         becomeFirstResponder();
         showBorder()
-        self.delegate?.didHighlightLabel(label: self, completion:{ self.hideBorder() })
+        self.delegate?.didHighlightLabel(self, completion:{ self.hideBorder() })
     }
 }
