@@ -122,13 +122,12 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/ignore-unknown-message-types`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :branch: mkirk/ignore-unknown-message-types
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -167,6 +166,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: a4bcdf4d0f3b2a1c27c670c3182806fc11309d9e
+PODFILE CHECKSUM: 93ccdbbb243044904d772ee53e00154890a9f82f
 
 COCOAPODS: 1.0.1

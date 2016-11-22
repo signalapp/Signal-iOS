@@ -5,6 +5,8 @@
 #import "PhoneManager.h"
 #import "UIUtil.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ContactTableViewCell ()
 
 @property (nonatomic) IBOutlet UILabel *nameLabel;
@@ -14,12 +16,8 @@
 
 @implementation ContactTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    return self;
-}
-
-- (NSString *)reuseIdentifier {
+- (nullable NSString *)reuseIdentifier
+{
     return NSStringFromClass(self.class);
 }
 
@@ -30,6 +28,9 @@
         [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
                                                        name:contact.fullName
                                             contactsManager:contactsManager] build];
+
+    // Force layout, since imageView isn't being initally rendered on App Store optimized build.
+    [self layoutSubviews];
 }
 
 - (void)layoutSubviews
@@ -75,3 +76,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
