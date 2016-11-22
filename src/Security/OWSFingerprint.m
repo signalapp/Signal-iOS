@@ -164,7 +164,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
     NSMutableArray<NSString *> *lines = [NSMutableArray new];
 
-    uint lineLength = self.text.length / 3;
+    NSUInteger lineLength = self.text.length / 3;
     for (uint i = 0; i < 3; i++) {
         NSString *line = [input substringWithRange:NSMakeRange(i * lineLength, lineLength)];
 

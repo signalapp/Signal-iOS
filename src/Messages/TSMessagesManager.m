@@ -397,6 +397,8 @@ NS_ASSUME_NONNULL_BEGIN
                 failure:^(NSError *error) {
                     DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
                 }];
+        } else {
+            DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
@@ -487,37 +489,48 @@ NS_ASSUME_NONNULL_BEGIN
           TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
           [gThread saveWithTransaction:transaction];
 
-          if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate) {
-              NSString *updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:model contactsManager:self.contactsManager];
-              gThread.groupModel        = model;
-              [gThread saveWithTransaction:transaction];
-              [[[TSInfoMessage alloc] initWithTimestamp:timestamp
-                                               inThread:gThread
-                                            messageType:TSInfoMessageTypeGroupUpdate
-                                          customMessage:updateGroupInfo] saveWithTransaction:transaction];
-          } else if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeQuit) {
-              NSString *nameString = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
+          switch (dataMessage.group.type) {
+              case OWSSignalServiceProtosGroupContextTypeUpdate: {
+                  NSString *updateGroupInfo =
+                      [gThread.groupModel getInfoStringAboutUpdateTo:model contactsManager:self.contactsManager];
+                  gThread.groupModel = model;
+                  [gThread saveWithTransaction:transaction];
+                  [[[TSInfoMessage alloc] initWithTimestamp:timestamp
+                                                   inThread:gThread
+                                                messageType:TSInfoMessageTypeGroupUpdate
+                                              customMessage:updateGroupInfo] saveWithTransaction:transaction];
+                  break;
+              }
+              case OWSSignalServiceProtosGroupContextTypeQuit: {
+                  NSString *nameString = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
 
-              NSString *updateGroupInfo =
-                  [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
-              NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-              [newGroupMembers removeObject:envelope.source];
-              gThread.groupModel.groupMemberIds = newGroupMembers;
+                  NSString *updateGroupInfo =
+                      [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
+                  NSMutableArray *newGroupMembers = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
+                  [newGroupMembers removeObject:envelope.source];
+                  gThread.groupModel.groupMemberIds = newGroupMembers;
 
-              [gThread saveWithTransaction:transaction];
-              [[[TSInfoMessage alloc] initWithTimestamp:timestamp
-                                               inThread:gThread
-                                            messageType:TSInfoMessageTypeGroupUpdate
-                                          customMessage:updateGroupInfo] saveWithTransaction:transaction];
-          } else {
-              incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                    inThread:gThread
-                                                                    authorId:envelope.source
-                                                                 messageBody:body
-                                                               attachmentIds:attachmentIds
-                                                            expiresInSeconds:dataMessage.expireTimer];
+                  [gThread saveWithTransaction:transaction];
+                  [[[TSInfoMessage alloc] initWithTimestamp:timestamp
+                                                   inThread:gThread
+                                                messageType:TSInfoMessageTypeGroupUpdate
+                                              customMessage:updateGroupInfo] saveWithTransaction:transaction];
+                  break;
+              }
+              case OWSSignalServiceProtosGroupContextTypeDeliver: {
+                  incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
+                                                                        inThread:gThread
+                                                                        authorId:envelope.source
+                                                                     messageBody:body
+                                                                   attachmentIds:attachmentIds
+                                                                expiresInSeconds:dataMessage.expireTimer];
 
-              [incomingMessage saveWithTransaction:transaction];
+                  [incomingMessage saveWithTransaction:transaction];
+                  break;
+              }
+              default: {
+                  DDLogWarn(@"%@ Ignoring unknown group message type:%d", self.tag, dataMessage.group.type);
+              }
           }
 
           thread = gThread;

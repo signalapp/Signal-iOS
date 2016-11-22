@@ -160,6 +160,33 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertEqualObjects(@"Newly created Group with Avatar Name", groupThread.name);
 }
 
+- (void)testUnknownGroupMessageIsIgnored
+{
+    NSData *groupIdData = [Cryptography generateRandomBytes:32];
+    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupIdData:groupIdData];
+
+    // Sanity check
+    XCTAssertEqual(0, groupThread.numberOfInteractions);
+
+    TSMessagesManager *messagesManager = [self messagesManagerWithSender:[OWSFakeMessageSender new]];
+
+    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+
+    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+    groupContextBuilder.name = @"Newly created Group with Avatar Name";
+    groupContextBuilder.id = groupIdData;
+
+    // e.g. some future feature sent from another device that we don't yet support.
+    groupContextBuilder.type = 666;
+
+    OWSSignalServiceProtosDataMessageBuilder *messageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    messageBuilder.group = [groupContextBuilder build];
+
+    [messagesManager handleIncomingEnvelope:[envelopeBuilder build] withDataMessage:[messageBuilder build]];
+
+    XCTAssertEqual(0, groupThread.numberOfInteractions);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
