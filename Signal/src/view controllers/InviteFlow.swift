@@ -15,12 +15,7 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
 
     let TAG = "[ShareActions]"
 
-    // redirects to either the ios appstore or google play store depending on the user agent.
-    // Appropriate to send to mobile browsers, but for email we want to expose both directs link
-    // since an e.g. mac user, might have an Android, or Windows user might have an iPhone.
-    let mobileInstallUrl = "https://signal.org/install/"
-    let iOSInstallUrl = "https://itunes.apple.com/us/app/signal-private-messenger/id874139669"
-    let androidInstallUrl = "https://play.google.com/store/apps/details?id=org.thoughtcrime.securesms"
+    let installUrl = "https://signal.org/install/"
     let homepageUrl = "https://whispersystems.org"
 
     let actionSheetController: UIAlertController
@@ -71,7 +66,7 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
         let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment:"content of tweet when inviting via twitter")
         twitterViewController.setInitialText(tweetString)
 
-        let tweetUrl = URL(string: mobileInstallUrl)
+        let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "logo_with_background"))
 
@@ -167,7 +162,7 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
             messageComposeViewController.recipients = contacts.map { $0.phoneNumbers.first }.filter { $0 != nil }.map { $0!.value.stringValue }
 
             let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment:"body sent to contacts when inviting to Install Signal")
-            messageComposeViewController.body = inviteText.appending(" \(self.mobileInstallUrl)")
+            messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
             self.presentingViewController.navigationController?.present(messageComposeViewController, animated:true)
         }
     }
@@ -223,8 +218,8 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
         mailComposeViewController.setBccRecipients(recipients)
 
         let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment:"subject of email sent to contacts when inviting to install Signal")
-        let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment:"body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal-iOS}}, {{link to install Signal-Android}}, and {{link to WhisperSystems home page}}")
-        let body = String.init(format: bodyFormat, iOSInstallUrl, androidInstallUrl, homepageUrl)
+        let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment:"body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}}")
+        let body = String.init(format: bodyFormat, installUrl, homepageUrl)
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
