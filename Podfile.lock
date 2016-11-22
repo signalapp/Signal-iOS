@@ -44,7 +44,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.7.1):
+  - SignalServiceKit (0.7.2):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -122,20 +122,20 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/default-to-blocking-sn`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/ignore-unknown-message-types`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
 EXTERNAL SOURCES:
   SignalServiceKit:
-    :branch: mkirk/default-to-blocking-sn
+    :branch: mkirk/ignore-unknown-message-types
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 1ba082356a4678a73485ad17313e9d3eeaae834a
+    :commit: df756423f24ac91dd69f45cc036c09771c15f6eb
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -159,7 +159,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: 0cd25c4d4c96b541723bfc74f46695cc94e05d5f
+  SignalServiceKit: 077149bbd2852df8dbd987a5e9c47b1e47bc5aca
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
@@ -167,6 +167,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 7c33f38e6e7478b5f9509c893ca24533c8f98b18
+PODFILE CHECKSUM: a4bcdf4d0f3b2a1c27c670c3182806fc11309d9e
 
 COCOAPODS: 1.0.1
