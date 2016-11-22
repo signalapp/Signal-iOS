@@ -31,11 +31,13 @@
 #define kNumberOfSections 4
 
 #define kRegisteredNumberRow 0
-#define kPrivacyRow 0
-#define kNotificationRow 1
-#define kAdvancedRow 3
-#define kAboutRow 4
-#define kInviteRow 5
+#define kInviteRow 0
+#define kPrivacyRow 1
+#define kNotificationRow 2
+#define kLinkedDevices 3 // we don't actually use this, instead we segue via Interface Builder
+#define kAdvancedRow 4
+#define kAboutRow 5
+
 #define kNetworkRow 0
 #define kUnregisterRow 0
 
@@ -130,6 +132,15 @@ typedef enum {
     switch (indexPath.section) {
         case kGeneralSection: {
             switch (indexPath.row) {
+                case kInviteRow: {
+                    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+                    [self presentViewController:inviteFlow.actionSheetController
+                                       animated:YES
+                                     completion:^{
+                                         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                     }];
+                    break;
+                }
                 case kPrivacyRow: {
                     PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
@@ -155,14 +166,6 @@ typedef enum {
                     NSAssert(vc != nil, @"About View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
-                }
-                case kInviteRow: {
-                    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-                    [self presentViewController:inviteFlow.actionSheetController
-                                       animated:YES
-                                     completion:^{
-                                         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                     }];
                 }
                 default:
                     DDLogError(@"%@ Unhandled row selected at index path: %@", self.tag, indexPath);
