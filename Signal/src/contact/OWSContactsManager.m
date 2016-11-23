@@ -385,46 +385,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             signalContacts[contact.textSecureIdentifiers.firstObject] = contact;
         }
     }
-    return [signalContacts.allValues sortedArrayUsingComparator:[[self class] contactComparator]];
-}
 
-+ (NSComparator)contactComparator {
-    return ^NSComparisonResult(id obj1, id obj2) {
-      Contact *contact1 = (Contact *)obj1;
-      Contact *contact2 = (Contact *)obj2;
-
-      BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-
-      if (firstNameOrdering) {
-          if (contact1.firstName) {
-              if (contact2.firstName) {
-                  return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
-              } else {
-                  return [contact1.firstName caseInsensitiveCompare:contact2.lastName];
-              }
-          } else {
-              if (contact2.firstName) {
-                  return [contact1.lastName caseInsensitiveCompare:contact2.firstName];
-              } else {
-                  return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
-              }
-          }
-      } else {
-          if (contact1.lastName) {
-              if (contact2.lastName) {
-                  return [contact1.lastName caseInsensitiveCompare:contact2.lastName];
-              } else {
-                  return [contact1.lastName caseInsensitiveCompare:contact2.firstName];
-              }
-          } else {
-              if (contact2.lastName) {
-                  return [contact1.firstName caseInsensitiveCompare:contact2.lastName];
-              } else {
-                  return [contact1.firstName caseInsensitiveCompare:contact2.firstName];
-              }
-          }
-      };
-    };
+    BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
+    NSComparator contactsComparator = [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
+    return [signalContacts.allValues sortedArrayUsingComparator:contactsComparator];
 }
 
 - (NSArray<Contact *> *)signalContacts {
