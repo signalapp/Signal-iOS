@@ -255,9 +255,71 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     CFRelease(allPeople);
     NSArray *filteredContacts = [sortedPeople filteredArrayUsingPredicate:predicate];
 
-    return [filteredContacts map:^id(id item) {
+    NSArray *contacts = [filteredContacts map:^id(id item) {
       return [self contactForRecord:(__bridge ABRecordRef)item];
     }];
+    
+    return [self deduplicatedContacts:contacts];
+}
+
+- (NSArray<Contact *> *)deduplicatedContacts:(NSArray<Contact *> *)contacts
+{
+    NSMutableArray *dedupedContacts = [[NSMutableArray alloc] initWithCapacity:contacts.count];
+    for (Contact *c in contacts) {
+        BOOL dupe = NO;
+        for (Contact *dc in dedupedContacts) {
+            if ([self isContact:c equalToContact:dc]) {
+                dupe = YES;
+                break;
+            }
+        }
+        
+        if (!dupe) {
+            [dedupedContacts addObject:c];
+        }
+    }
+    
+    return [NSArray arrayWithArray:dedupedContacts];
+}
+
+/**
+ * isContact:equalToContact:
+ *
+ * Returns YES iff two contacts have the same firstName, lastName, and e164-formatted phone numbers (in the same order)
+ *
+ * The empty string (@"") and nil are considered equivalent.
+ *
+ * Used to deduplicate multiple contacts listed due to merged contacts
+ */
+- (BOOL)isContact:(Contact *)left equalToContact:(Contact *)right {
+    
+    if ((left.lastName.length != right.lastName.length)
+        || (left.lastName.length > 0 && ![left.lastName isEqualToString:right.lastName]))
+    {
+        return NO;
+    }
+    
+    if ((left.firstName.length != right.firstName.length)
+        || (left.firstName.length > 0 && ![left.firstName isEqualToString:right.firstName]))
+    {
+        return NO;
+    }
+    
+    if (left.parsedPhoneNumbers.count != right.parsedPhoneNumbers.count) {
+        return NO;
+    }
+    
+    for (NSUInteger i = 0; i < self.parsedPhoneNumbers.count; i++) {
+        PhoneNumber *leftPhoneNumber = left.parsedPhoneNumbers[i];
+        PhoneNumber *rightPhoneNumber = right.parsedPhoneNumbers[i];
+        if ((leftPhoneNumber.toE164.length != rightPhoneNumber.toE164.length)
+            || (leftPhoneNumber.toE164.length > 0 && ![leftPhoneNumber.toE164 isEqualToString:rightPhoneNumber.toE164]))
+        {
+            return NO;
+        }
+    }
+    
+    return YES;
 }
 
 #pragma mark - Contact/Phone Number util
