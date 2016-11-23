@@ -57,9 +57,35 @@ typedef enum {
 
 @interface SettingsTableViewController () <UIAlertViewDelegate>
 
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+
 @end
 
 @implementation SettingsTableViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
 
 - (void)viewDidLoad
 {
@@ -133,7 +159,9 @@ typedef enum {
         case kGeneralSection: {
             switch (indexPath.row) {
                 case kInviteRow: {
-                    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+                    OWSInviteFlow *inviteFlow =
+                        [[OWSInviteFlow alloc] initWithPresentingViewController:self
+                                                                contactsManager:self.contactsManager];
                     [self presentViewController:inviteFlow.actionSheetController
                                        animated:YES
                                      completion:^{

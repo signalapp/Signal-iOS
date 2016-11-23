@@ -75,6 +75,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
+    self.tableView.estimatedRowHeight = (CGFloat)60.0;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+
     self.contacts = self.contactsManager.signalContacts;
     self.searchResults = self.contacts;
     [self initializeSearch];
@@ -430,6 +433,10 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == MessageComposeTableViewControllerSectionInvite) {
+        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_9_0) {
+            // Invite flow not supported on iOS8
+            return 0;
+        }
         return 1;
     } else {
         if (self.searchController.active) {
@@ -454,17 +461,14 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 52.0f;
-}
-
 #pragma mark - Table View delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (indexPath.section == MessageComposeTableViewControllerSectionInvite) {
         void (^showInvite)() = ^{
-            OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+            OWSInviteFlow *inviteFlow =
+                [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
             [self presentViewController:inviteFlow.actionSheetController
                                animated:YES
                              completion:^{

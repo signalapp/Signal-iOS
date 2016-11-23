@@ -3,11 +3,17 @@
 //
 #import <Foundation/Foundation.h>
 
+#import "Environment.h"
+#import "OWSContactAvatarBuilder.h"
+#import "OWSContactsManager.h"
 #import "OWSLogger.h"
+#import "PhoneNumber.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RPAccountManager.h"
+#import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>

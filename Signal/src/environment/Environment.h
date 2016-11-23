@@ -32,6 +32,7 @@ static NSString *const kCallSegue = @"2.0_6.0_Call_Segue";
 @class ContactsUpdater;
 @class TSNetworkManager;
 @class OWSMessageSender;
+@class UINavigationController;
 
 @interface Environment : NSObject
 

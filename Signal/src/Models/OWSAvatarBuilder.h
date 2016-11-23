@@ -5,6 +5,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 @class OWSContactsManager;
+@class UIImage;
 
 @interface OWSAvatarBuilder : NSObject
 

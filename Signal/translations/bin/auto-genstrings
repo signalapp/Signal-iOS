@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGETS="Signal/src ../SignalServiceKit/src Pods/JSQMessagesViewController"
+TARGETS="Signal/src Libraries/EPContactsPicker ../SignalServiceKit/src Pods/JSQMessagesViewController"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 

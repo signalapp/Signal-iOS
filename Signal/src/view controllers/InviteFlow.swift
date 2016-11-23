@@ -7,8 +7,7 @@ import ContactsUI
 import MessageUI
 
 @objc(OWSInviteFlow)
-class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate {
-
+class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
     enum Channel {
         case message, mail, twitter
     }
@@ -20,11 +19,13 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
 
     let actionSheetController: UIAlertController
     let presentingViewController: UIViewController
+    let contactsManager: OWSContactsManager
+
     var channel: Channel?
 
-    required init(presentingViewController: UIViewController) {
+    required init(presentingViewController: UIViewController, contactsManager: OWSContactsManager) {
         self.presentingViewController = presentingViewController
-
+        self.contactsManager = contactsManager
         actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
         super.init()
@@ -68,7 +69,7 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
 
         let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
-        twitterViewController.add(#imageLiteral(resourceName: "logo_with_background"))
+        twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
 
         let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment:"action sheet item")
         return UIAlertAction(title: tweetTitle, style: .default) { action in
@@ -82,24 +83,10 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
         return UIAlertAction(title: NSLocalizedString("DISMISS_BUTTON_TEXT", comment:""), style: .cancel)
     }
 
-    // MARK: ContactPickerDelegate
+    // MARK: ContactsPickerDelegate
 
-    /*!
-     * @abstract Invoked when the picker is closed.
-     * @discussion The picker will be dismissed automatically after a contact or property is picked.
-     */
     @available(iOS 9.0, *)
-    func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-        Logger.debug("\(TAG) pickerDidCancel")
-    }
-
-    /*!
-     * @abstract Plural delegate methods.
-     * @discussion These delegate methods will be invoked when the user is done selecting multiple contacts or properties.
-     * Implementing one of these methods will configure the picker for multi-selection.
-     */
-    @available(iOS 9.0, *)
-    func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
+    func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         Logger.debug("\(TAG) didSelectContacts:\(contacts)")
 
         guard let inviteChannel = channel else {
@@ -109,24 +96,38 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
 
         switch inviteChannel {
         case .message:
-            sendSMSTo(contacts: contacts)
+            let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
+            sendSMSTo(phoneNumbers: phoneNumbers)
         case .mail:
-            sendMailTo(contacts:contacts)
+            let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
+            sendMailTo(emails: recipients)
         default:
             Logger.error("\(TAG) unexpected channel after returning from contact picker: \(inviteChannel)")
         }
     }
 
     @available(iOS 9.0, *)
-    func contactPicker(_ picker: CNContactPickerViewController, didSelectContactProperties contactProperties: [CNContactProperty]) {
-        Logger.debug("\(TAG) didSelectContactProperties:\(contactProperties)")
+    func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
+        guard let inviteChannel = channel else {
+            Logger.error("\(TAG) unexpected nil channel in contact picker.")
+            return true
+        }
+
+        switch inviteChannel {
+        case .message:
+            return contact.userTextPhoneNumbers.count > 0
+        case .mail:
+            return contact.emails.count > 0
+        default:
+            Logger.error("\(TAG) unexpected channel after returning from contact picker: \(inviteChannel)")
+        }
+        return true
     }
 
     // MARK: SMS
 
     @available(iOS 9.0, *)
     func messageAction() -> UIAlertAction? {
-
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("\(TAG) Device cannot send text")
             return nil
@@ -136,18 +137,13 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
         return UIAlertAction(title: messageTitle, style: .default) { action in
             Logger.debug("\(self.TAG) Chose message.")
             self.channel = .message
-
-            let picker = CNContactPickerViewController()
-            picker.predicateForSelectionOfContact = NSPredicate(value: false)
-            picker.predicateForEnablingContact = NSPredicate(format: "phoneNumbers.@count > 0")
-            picker.delegate = self
-            
-            self.presentingViewController.present(picker, animated: true, completion: nil)
+            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .phoneNumber)            
+            let navigationController = UINavigationController(rootViewController: picker)
+            self.presentingViewController.present(navigationController, animated: true)
         }
     }
 
-    @available(iOS 9.0, *)
-    func sendSMSTo(contacts: [CNContact]) {
+    func sendSMSTo(phoneNumbers: [String]) {
         self.presentingViewController.dismiss(animated: true) {
             if #available(iOS 10.0, *) {
                 // iOS10 message compose view doesn't respect some system appearence attributes.
@@ -159,7 +155,7 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
             }
             let messageComposeViewController = MFMessageComposeViewController()
             messageComposeViewController.messageComposeDelegate = self
-            messageComposeViewController.recipients = contacts.map { $0.phoneNumbers.first }.filter { $0 != nil }.map { $0!.value.stringValue }
+            messageComposeViewController.recipients = phoneNumbers
 
             let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment:"body sent to contacts when inviting to Install Signal")
             messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
@@ -200,22 +196,18 @@ class InviteFlow: NSObject, CNContactPickerDelegate, MFMessageComposeViewControl
             Logger.debug("\(self.TAG) Chose mail.")
             self.channel = .mail
 
-            let picker = CNContactPickerViewController()
-            picker.predicateForSelectionOfContact = NSPredicate(value: false)
-            picker.predicateForEnablingContact = NSPredicate(format: "emailAddresses.@count > 0")
-            picker.delegate = self
-
-            self.presentingViewController.present(picker, animated: true)
+            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .email)
+            let navigationController = UINavigationController(rootViewController: picker)
+            self.presentingViewController.present(navigationController, animated: true)
         }
     }
 
     @available(iOS 9.0, *)
-    func sendMailTo(contacts: [CNContact]) {
+    func sendMailTo(emails recipientEmails: [String]) {
         let mailComposeViewController = MFMailComposeViewController()
         mailComposeViewController.mailComposeDelegate = self
 
-        let recipients: [String] = contacts.map { $0.emailAddresses.first }.filter { $0 != nil }.map { $0!.value as String }
-        mailComposeViewController.setBccRecipients(recipients)
+        mailComposeViewController.setBccRecipients(recipientEmails)
 
         let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment:"subject of email sent to contacts when inviting to install Signal")
         let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment:"body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}}")

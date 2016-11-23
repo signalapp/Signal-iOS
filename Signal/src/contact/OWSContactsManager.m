@@ -347,7 +347,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }];
 }
 
-- (NSArray<Contact *> *)allContacts {
+- (NSArray<Contact *> *_Nonnull)allContacts {
     NSMutableArray *allContacts = [NSMutableArray array];
 
     for (NSString *key in self.latestContactsById.allKeys) {
