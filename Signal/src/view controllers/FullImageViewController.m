@@ -7,7 +7,6 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 //
 
-#import "DJWActionSheet+OWS.h"
 #import "FLAnimatedImage.h"
 #import "FullImageViewController.h"
 #import "UIUtil.h"

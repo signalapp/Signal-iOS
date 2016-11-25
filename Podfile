@@ -10,7 +10,6 @@ target 'Signal' do
     pod 'FFCircularProgressView',     '~> 0.5'
     pod 'SCWaveformView',             '~> 1.0'
     pod 'ZXingObjC'
-    pod 'DJWActionSheet'
     pod 'JSQMessagesViewController'
     target 'SignalTests' do
         inherit! :search_paths
