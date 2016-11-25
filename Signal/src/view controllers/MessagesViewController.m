@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 
-#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -1460,34 +1459,41 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
-    [self dismissKeyBoard];
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:message.mostRecentFailureText
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-             otherButtonTitles:@[ NSLocalizedString(@"SEND_AGAIN_BUTTON", @"") ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              DDLogDebug(@"%@ User cancelled unsent dialog", self.tag);
-                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              DDLogInfo(@"%@ User chose to delete unsent message.", self.tag);
-                              [message remove];
-                          } else {
-                              [self.messageSender sendMessage:message
-                                  success:^{
-                                      DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
-                                  }
-                                  failure:^(NSError *_Nonnull error) {
-                                      DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
-                                  }];
-                          }
-                      }];
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:message.mostRecentFailureText
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                  style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                    [message remove];
+                                                                }];
+    [actionSheetController addAction:deleteMessageAction];
+
+    UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * _Nonnull action) {
+                                                                    [self.messageSender sendMessage:message
+                                                                        success:^{
+                                                                            DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
+                                                                        }
+                                                                        failure:^(NSError *_Nonnull error) {
+                                                                            DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
+                                                                        }];
+                                                                }];
+
+    [actionSheetController addAction:resendMessageAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
 - (void)handleErrorMessageTap:(TSErrorMessage *)message
 {
-    [self dismissKeyBoard];
-
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
     } else if (message.errorType == TSErrorMessageInvalidMessage) {
@@ -1500,41 +1506,35 @@ typedef enum : NSUInteger {
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
 {
 
-    NSString *actionSheetTitle = [NSString
+    NSString *alertMessage = [NSString
         stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
 
-    [DJWActionSheet showInView:self.view
-                     withTitle:actionSheetTitle
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[ NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", nil) ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              DDLogDebug(@"User Cancelled");
-                          } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                              DDLogDebug(@"Destructive button tapped");
-                          } else {
-                              switch (tappedButtonIndex) {
-                                  case 0: {
-                                      if (![self.thread isKindOfClass:[TSContactThread class]]) {
-                                          // Corrupt Message errors only appear in contact threads.
-                                          DDLogError(
-                                              @"%@ Unexpected request to reset session in group thread. Refusing",
-                                              self.tag);
-                                          return;
-                                      }
-                                      TSContactThread *contactThread = (TSContactThread *)self.thread;
-                                      [OWSSessionResetJob runWithCorruptedMessage:message
-                                                                    contactThread:contactThread
-                                                                    messageSender:self.messageSender
-                                                                   storageManager:self.storageManager];
-                                      break;
-                                  }
-                                  default:
-                                      break;
-                              }
-                          }
-                      }];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:alertMessage
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [alertController addAction:dismissAction];
+    
+    UIAlertAction *resetSessionAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * _Nonnull action) {
+                                                                    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+                                                                        // Corrupt Message errors only appear in contact threads.
+                                                                        DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.tag);
+                                                                            return;
+                                                                    }
+                                                                    TSContactThread *contactThread = (TSContactThread *)self.thread;
+                                                                    [OWSSessionResetJob runWithCorruptedMessage:message
+                                                                                                  contactThread:contactThread
+                                                                                                  messageSender:self.messageSender
+                                                                                                 storageManager:self.storageManager];
+                                                               }];
+    [alertController addAction:resetSessionAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
@@ -1542,52 +1542,47 @@ typedef enum : NSUInteger {
     NSString *keyOwner = [self.contactsManager nameStringForPhoneIdentifier:errorMessage.theirSignalId];
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
-    NSArray *actions = @[
-        NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item"),
-        NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
-    ];
 
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:titleText
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:actions
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                          if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                              DDLogDebug(@"%@ Remote Key Changed actions: Tapped cancel", self.tag);
-                          } else {
-                              switch (tappedButtonIndex) {
-                                  case 0:
-                                      DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
-                                      [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
-                                                                  theirSignalId:errorMessage.theirSignalId];
-                                      break;
-                                  case 1:
-                                      DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:titleText
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
 
-                                      [errorMessage acceptNewIdentityKey];
-                                      if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
-                                          [self.messageSender
-                                              resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)
-                                                                            errorMessage
-                                              success:^{
-                                                  DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
-                                              }
-                                              failure:^(NSError *_Nonnull error) {
-                                                  DDLogError(@"%@ Failed to resend key-error message with error:%@",
-                                                      self.tag,
-                                                      error);
-                                              }];
-                                      }
-                                      break;
-                                  default:
-                                      DDLogInfo(@"%@ Remote Key Changed actions: Unhandled button pressed: %d",
-                                          self.tag,
-                                          (int)tappedButtonIndex);
-                                      break;
-                              }
-                          }
-                      }];
+    UIAlertAction *showSafteyNumberAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:^(UIAlertAction * _Nonnull action) {
+                                                                        DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
+                                                                        [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
+                                                                                                    theirSignalId:errorMessage.theirSignalId];
+                                                                    }];
+    [actionSheetController addAction:showSafteyNumberAction];
+    
+    UIAlertAction *acceptSafetyNumberAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * _Nonnull action) {
+                                                                          DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+                                                                          [errorMessage acceptNewIdentityKey];
+                                                                          if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+                                                                              [self.messageSender
+                                                                               resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)
+                                                                               errorMessage
+                                                                               success:^{
+                                                                                   DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
+                                                                               }
+                                                                               failure:^(NSError *_Nonnull error) {
+                                                                                   DDLogError(@"%@ Failed to resend key-error message with error:%@",
+                                                                                              self.tag,
+                                                                                              error);
+                                                                               }];
+                                                                          }
+                                                                      }];
+    [actionSheetController addAction:acceptSafetyNumberAction];
+    
+    [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
 #pragma mark - Navigation
@@ -2074,39 +2069,30 @@ typedef enum : NSUInteger {
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
-    [self dismissKeyBoard];
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:nil];
+    [actionSheetController addAction:cancelAction];
+    
+    UIAlertAction *takeMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_MEDIA_BUTTON", @"")
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * _Nonnull action) {
+                                                                [self takePictureOrVideo];
+                                                            }];
+    [actionSheetController addAction:takeMediaAction];
 
-    UIView *presenter = self.parentViewController.view;
-
-    [DJWActionSheet showInView:presenter
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[
-                 NSLocalizedString(@"TAKE_MEDIA_BUTTON", @""),
-                 NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
-             ] //,@"Record audio"]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogVerbose(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            DDLogVerbose(@"Destructive button tapped");
-                        } else {
-                            switch (tappedButtonIndex) {
-                                case 0:
-                                    [self takePictureOrVideo];
-                                    break;
-                                case 1:
-                                    [self chooseFromLibrary];
-                                    break;
-                                case 2:
-                                    [self recordAudio];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                      }];
+    UIAlertAction *chooseMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
+                                          style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction * _Nonnull action) {
+                                             [self chooseFromLibrary];
+                                         }];
+    [actionSheetController addAction:chooseMediaAction];
+    
+    [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
 - (void)markAllMessagesAsRead

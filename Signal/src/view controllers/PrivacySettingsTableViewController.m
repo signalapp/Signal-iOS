@@ -8,7 +8,6 @@
 
 #import "PrivacySettingsTableViewController.h"
 
-#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "UIUtil.h"
@@ -144,22 +143,23 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 
     switch (indexPath.section) {
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog: {
-            [DJWActionSheet showInView:self.parentViewController.view
-                             withTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION", @"")
-                     cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                destructiveButtonTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")
-                     otherButtonTitles:@[]
-                              tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
-                                [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-                                if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                                    DDLogDebug(@"User Cancelled");
-                                } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                                    [[TSStorageManager sharedManager] deleteThreadsAndMessages];
-                                } else {
-                                    DDLogDebug(@"The user tapped button at index: %li", (long)tappedButtonIndex);
-                                }
-                              }];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                                     message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION", @"Alert message before user confirms clearing history")
+                                                                              preferredStyle:UIAlertControllerStyleAlert];
 
+            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                                    style:UIAlertActionStyleCancel
+                                                                  handler:nil];
+            [alertController addAction:dismissAction];
+
+            UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")
+                                                                   style:UIAlertActionStyleDestructive
+                                                                 handler:^(UIAlertAction * _Nonnull action) {
+                                                                     [[TSStorageManager sharedManager] deleteThreadsAndMessages];
+                                                                 }];
+            [alertController addAction:deleteAction];
+
+            [self presentViewController:alertController animated:true completion:nil];
             break;
         }
         default:

@@ -7,7 +7,6 @@
 //
 
 #import "NewGroupViewController.h"
-#import "DJWActionSheet+OWS.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
 #import "OWSContactsManager.h"
@@ -238,34 +237,29 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 - (IBAction)addGroupPhoto:(id)sender {
-    [self.nameGroupTextField resignFirstResponder];
-    [DJWActionSheet showInView:self.parentViewController.view
-                     withTitle:nil
-             cancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-        destructiveButtonTitle:nil
-             otherButtonTitles:@[
-                 NSLocalizedString(@"TAKE_PICTURE_BUTTON", @""),
-                 NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
-             ]
-                      tapBlock:^(DJWActionSheet *actionSheet, NSInteger tappedButtonIndex) {
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar")
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
 
-                        if (tappedButtonIndex == actionSheet.cancelButtonIndex) {
-                            DDLogDebug(@"User Cancelled");
-                        } else if (tappedButtonIndex == actionSheet.destructiveButtonIndex) {
-                            DDLogDebug(@"Destructive button tapped");
-                        } else {
-                            switch (tappedButtonIndex) {
-                                case 0:
-                                    [self takePicture];
-                                    break;
-                                case 1:
-                                    [self chooseFromLibrary];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                      }];
+    UIAlertAction *takePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_PICTURE_BUTTON", @"")
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * _Nonnull action) {
+                                                                  [self takePicture];
+                                                              }];
+    [actionSheetController addAction:takePictureAction];
+
+    UIAlertAction *choosePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction * _Nonnull action) {
+                                                                    [self chooseFromLibrary];
+                                                                }];
+    [actionSheetController addAction:choosePictureAction];
+
+    [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
 #pragma mark - Group Image
