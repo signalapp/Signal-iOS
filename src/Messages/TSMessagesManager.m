@@ -529,7 +529,7 @@ NS_ASSUME_NONNULL_BEGIN
                   break;
               }
               default: {
-                  DDLogWarn(@"%@ Ignoring unknown group message type:%d", self.tag, dataMessage.group.type);
+                  DDLogWarn(@"%@ Ignoring unknown group message type:%d", self.tag, (int)dataMessage.group.type);
               }
           }
 

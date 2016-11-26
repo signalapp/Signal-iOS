@@ -1,6 +1,8 @@
 #import <AddressBook/AddressBook.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  *
  * Contact represents relevant information related to a contact from the user's
@@ -8,31 +10,39 @@
  *
  */
 
+@class CNContact;
+@class PhoneNumber;
+
 @interface Contact : NSObject
 
-@property (readonly, nonatomic) NSString *firstName;
-@property (readonly, nonatomic) NSString *lastName;
-@property (readonly, nonatomic) NSArray *parsedPhoneNumbers;
-@property (readonly, nonatomic) NSArray *userTextPhoneNumbers;
-@property (readonly, nonatomic) NSArray *emails;
-@property (readonly, nonatomic) NSString *notes;
-
-- (NSString *)fullName;
-
+@property (nullable, readonly, nonatomic) NSString *firstName;
+@property (nullable, readonly, nonatomic) NSString *lastName;
+@property (readonly, nonatomic) NSString *fullName;
+@property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
+@property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
+@property (readonly, nonatomic) NSArray<NSString *> *emails;
+@property (readonly, nonatomic) NSString *uniqueId;
+#if TARGET_OS_IOS
+@property (nullable, readonly, nonatomic) UIImage *image;
+@property (readonly, nonatomic) ABRecordID recordID;
+@property (nullable, nonatomic, readonly) CNContact *cnContact;
+#endif // TARGET_OS_IOS
 
 - (BOOL)isSignalContact;
 - (NSArray<NSString *> *)textSecureIdentifiers;
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithContactWithFirstName:(NSString *)firstName
-                                 andLastName:(NSString *)lastName
-                     andUserTextPhoneNumbers:(NSArray *)phoneNumbers
-                                    andImage:(UIImage *)image
+- (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
+                                 andLastName:(nullable NSString *)lastName
+                     andUserTextPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                                    andImage:(nullable UIImage *)image
                                 andContactID:(ABRecordID)record;
 
-@property (readonly, nonatomic) UIImage *image;
-@property (readonly, nonatomic) ABRecordID recordID;
-#endif
+- (instancetype)initWithContact:(CNContact *)contact;
+
+#endif // TARGET_OS_IOS
 
 @end
+
+NS_ASSUME_NONNULL_END

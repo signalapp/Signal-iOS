@@ -3,37 +3,92 @@
 #import "SignalRecipient.h"
 #import "TSStorageManager.h"
 
+@import Contacts;
+
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation Contact
 
 #if TARGET_OS_IOS
-- (instancetype)initWithContactWithFirstName:(NSString *)firstName
-                                 andLastName:(NSString *)lastName
+- (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
+                                 andLastName:(nullable NSString *)lastName
                      andUserTextPhoneNumbers:(NSArray *)phoneNumbers
-                                    andImage:(UIImage *)image
-                                andContactID:(ABRecordID)record {
+                                    andImage:(nullable UIImage *)image
+                                andContactID:(ABRecordID)record
+{
     self = [super init];
-    if (self) {
-        _firstName            = firstName;
-        _lastName             = lastName;
-        _userTextPhoneNumbers = phoneNumbers;
-        _recordID             = record;
-        _image                = image;
+    if (!self) {
+        return self;
+    }
 
-        NSMutableArray *parsedPhoneNumbers = [NSMutableArray array];
+    _firstName = firstName;
+    _lastName = lastName;
+    _uniqueId = [self.class uniqueIdFromABRecordId:record];
+    _recordID = record;
+    _userTextPhoneNumbers = phoneNumbers;
+    _parsedPhoneNumbers = [self.class parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers];
+    _image = image;
+    // Not using emails for old AB style contacts.
+    _emails = [NSMutableArray new];
 
-        for (NSString *phoneNumberString in phoneNumbers) {
-            PhoneNumber *phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumberString];
-            if (phoneNumber) {
-                [parsedPhoneNumbers addObject:phoneNumber];
-            }
+    return self;
+}
+
+- (instancetype)initWithContact:(CNContact *)contact
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _cnContact = contact;
+    _firstName = contact.givenName;
+    _lastName = contact.familyName;
+    _uniqueId = contact.identifier;
+
+    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
+    for (CNLabeledValue *phoneNumberField in contact.phoneNumbers) {
+        if ([phoneNumberField.value isKindOfClass:[CNPhoneNumber class]]) {
+            CNPhoneNumber *phoneNumber = (CNPhoneNumber *)phoneNumberField.value;
+            [phoneNumbers addObject:phoneNumber.stringValue];
         }
+    }
+    _userTextPhoneNumbers = [phoneNumbers copy];
+    _parsedPhoneNumbers = [self.class parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers];
 
-        _parsedPhoneNumbers = parsedPhoneNumbers.copy;
+    NSMutableArray<NSString *> *emailAddresses = [NSMutableArray new];
+    for (CNLabeledValue *emailField in contact.emailAddresses) {
+        if ([emailField.value isKindOfClass:[NSString class]]) {
+            [emailAddresses addObject:(NSString *)emailField.value];
+        }
+    }
+    _emails = [emailAddresses copy];
+
+    if (contact.thumbnailImageData) {
+        _image = [UIImage imageWithData:contact.thumbnailImageData];
     }
 
     return self;
 }
-#endif
+
++ (NSString *)uniqueIdFromABRecordId:(ABRecordID)recordId
+{
+    return [NSString stringWithFormat:@"ABRecordId:%d", recordId];
+}
+
+#endif // TARGET_OS_IOS
+
++ (NSArray<PhoneNumber *> *)parsedPhoneNumbersFromUserTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
+{
+    NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
+    for (NSString *phoneNumberString in userTextPhoneNumbers) {
+        PhoneNumber *phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumberString];
+        if (phoneNumber) {
+            [parsedPhoneNumbers addObject:phoneNumber];
+        }
+    }
+    return [parsedPhoneNumbers copy];
+}
 
 - (NSString *)fullName {
     NSMutableString *fullName = [NSMutableString string];
@@ -70,3 +125,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
