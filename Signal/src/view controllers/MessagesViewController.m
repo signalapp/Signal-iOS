@@ -110,9 +110,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, strong) UILabel *navbarTitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
-
+@property (nonatomic, retain) OWSActionableNavbarTitleView *navbarTitleView;
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
 @property NSUInteger page;
@@ -258,6 +257,11 @@ typedef enum : NSUInteger {
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
+    self.navbarTitleView = [OWSActionableNavbarTitleView loadFromNib];
+    self.navigationItem.titleView = self.navbarTitleView;
+    [self.navbarTitleView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTitle)]];
+
     [self initializeToolbars];
 }
 
@@ -276,11 +280,6 @@ typedef enum : NSUInteger {
         [self.collectionView.collectionViewLayout
             invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     }
-}
-
-- (void)didMoveToParentViewController:(UIViewController *)parent
-{
-    [self setupTitleLabelGestureRecognizer];
 }
 
 - (void)registerCustomMessageNibs
@@ -483,6 +482,25 @@ typedef enum : NSUInteger {
     self.title = navTitle;
 }
 
+- (void)setTitle:(NSString *)title
+{
+    if ([self.title isEqualToString:title]) {
+        // skip unnecessary title setting, since it causes render glitch
+        // when returning to thread from conversation settings
+        return;
+    }
+
+    [super setTitle:title];
+
+    self.navbarTitleView.title = title;
+
+    // This allows us to accomodate a variable number of bar button items, while still centering the label when possible
+    CGSize size = [self.navbarTitleView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+    self.navbarTitleView.frame = CGRectMake(0.f, 0.f, size.width, size.height);
+    [self.navbarTitleView setNeedsLayout];
+}
+
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 
@@ -531,46 +549,6 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
-}
-
-- (void)setupTitleLabelGestureRecognizer
-{
-    // Called on load/unload, but we only want to init once.
-    if (self.navbarTitleLabel) {
-        return;
-    }
-
-    UILabel *navbarTitleLabel = [self findNavbarTitleLabel];
-    if (!navbarTitleLabel) {
-        DDLogError(@"%@ Unable to find navbar title label. Skipping gesture recognition", self.tag);
-        return;
-    }
-
-    self.navbarTitleLabel = navbarTitleLabel;
-    navbarTitleLabel.userInteractionEnabled = YES;
-    navbarTitleLabel.superview.userInteractionEnabled = YES;
-
-    UITapGestureRecognizer *titleTapRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTitle)];
-    [navbarTitleLabel addGestureRecognizer:titleTapRecognizer];
-}
-
-- (nullable UILabel *)findNavbarTitleLabel
-{
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            UIView *navItemView = view;
-            for (UIView *aView in navItemView.subviews) {
-                if ([aView isKindOfClass:[UILabel class]]) {
-                    UILabel *label = (UILabel *)aView;
-                    if ([label.text isEqualToString:self.title]) {
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-    return nil;
 }
 
 // Overiding JSQMVC layout defaults
