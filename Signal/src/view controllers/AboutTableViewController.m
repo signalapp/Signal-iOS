@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, AboutTableViewControllerSection) {
 - (void)loadView {
     [super loadView];
 
-    self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"");
+    self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"Navbar title");
 
     // Version
     self.versionCell                = [[UITableViewCell alloc] init];

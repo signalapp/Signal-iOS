@@ -1,19 +1,28 @@
 #!/bin/bash
-TARGETS="Signal/src Libraries/EPContactsPicker ../SignalServiceKit/src Pods/JSQMessagesViewController"
+TARGETS="Signal/src ../SignalServiceKit/src"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
-# Make sure we are in the right place
-if [ ! -d "Signal/src" ]; then
-  echo "Please run this tool from the repository's base directory"
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT=$BIN_DIR/../../..
+cd $REPO_ROOT
+
+for TARGET_DIR in $TARGETS
+do
+
+if [ ! -d $TARGET_DIR ]; then
+  echo "Unable to find required directory: ${TARGET_DIR}."
   exit 1
 fi
+
+done
 
 # Search directories for .m & .h files and collect string definitions with genstrings
 find $TARGETS -name "*.m" -print0 -o -name "*.h" -print0 -o -name "*.swift" -print0 | xargs -0 genstrings -o $TMP
 
-# We have to convert the old and new .strings files to UTF-8 in order to deal with them
-OLDUTF8=$(iconv -f UTF-16 -t UTF-8 $STRINGFILE)
+# We have to convert the new .strings files to UTF-8 in order to deal with them
+# STRINGFILE is already UTF-8.
+OLDUTF8=$(cat $STRINGFILE)
 NEWUTF8=$(iconv -f UTF-16 -t UTF-8 $TMP/Localizable.strings)
 
 # Let's merge the old with the new .strings file:
@@ -29,5 +38,4 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 		{$2 = ($1 in a ? a[$1] : $2); \
 		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
 		if($2 ~ /"$/){$2 = $2";"}; \
-		print}' - <(echo "$NEWUTF8") | \
-	iconv -f UTF-8 -t UTF-16 > $STRINGFILE
+		print}' - <(echo "$NEWUTF8") > $STRINGFILE

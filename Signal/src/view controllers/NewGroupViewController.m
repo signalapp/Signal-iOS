@@ -245,14 +245,14 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                           handler:nil];
     [actionSheetController addAction:dismissAction];
 
-    UIAlertAction *takePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TAKE_PICTURE_BUTTON", @"")
+    UIAlertAction *takePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * _Nonnull action) {
                                                                   [self takePicture];
                                                               }];
     [actionSheetController addAction:takePictureAction];
 
-    UIAlertAction *choosePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"CHOOSE_MEDIA_BUTTON", @"")
+    UIAlertAction *choosePictureAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                                                                   style:UIAlertActionStyleDefault
                                                                 handler:^(UIAlertAction * _Nonnull action) {
                                                                     [self chooseFromLibrary];
