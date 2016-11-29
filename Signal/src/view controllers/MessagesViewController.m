@@ -518,15 +518,6 @@ typedef enum : NSUInteger {
                                                                       action:@selector(callAction)];
         callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
         [barButtons addObject:callButton];
-    } else if ([self.thread isGroupThread]) {
-        UIBarButtonItem *manageGroupButton =
-            [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapManageGroupButton:)];
-        // Hack to shrink button image
-        manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
-        [barButtons addObject:manageGroupButton];
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
