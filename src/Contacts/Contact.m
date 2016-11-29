@@ -9,6 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation Contact
 
+@synthesize fullName = _fullName;
+@synthesize comparableNameFirstLast = _comparableNameFirstLast;
+@synthesize comparableNameLastFirst = _comparableNameLastFirst;
+
 #if TARGET_OS_IOS
 - (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
                                  andLastName:(nullable NSString *)lastName
@@ -91,17 +95,54 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)fullName {
-    NSMutableString *fullName = [NSMutableString string];
-    if (self.firstName)
-        [fullName appendString:self.firstName];
-    if (self.lastName) {
-        [fullName appendString:[NSString stringWithFormat:@" %@", self.lastName]];
+    if (_fullName == nil) {
+        if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
+            _fullName = [self combineLeftName:_firstName withRightName:_lastName usingSeparator:@" "];
+        } else {
+            _fullName = [self combineLeftName:_lastName withRightName:_firstName usingSeparator:@" "];
+        }
     }
-    return fullName;
+    
+    return _fullName;
+}
+
+- (NSString *)comparableNameFirstLast {
+    if (_comparableNameFirstLast == nil) {
+        // Combine the two names with a tab separator, which has a lower ascii code than space, so that first names
+        // that contain a space ("Mary Jo\tCatlett") will sort after those that do not ("Mary\tOliver")
+        _comparableNameFirstLast = [self combineLeftName:_firstName withRightName:_lastName usingSeparator:@"\t"];
+    }
+    
+    return _comparableNameFirstLast;
+}
+
+- (NSString *)comparableNameLastFirst {
+    if (_comparableNameLastFirst == nil) {
+        // Combine the two names with a tab separator, which has a lower ascii code than space, so that last names
+        // that contain a space ("Van Der Beek\tJames") will sort after those that do not ("Van\tJames")
+        _comparableNameLastFirst = [self combineLeftName:_lastName withRightName:_firstName usingSeparator:@"\t"];
+    }
+    
+    return _comparableNameLastFirst;
+}
+
+- (NSString *)combineLeftName:(NSString *)leftName withRightName:(NSString *)rightName usingSeparator:(NSString *)separator {
+    const BOOL leftNameNonEmpty = (leftName.length > 0);
+    const BOOL rightNameNonEmpty = (rightName.length > 0);
+    
+    if (leftNameNonEmpty && rightNameNonEmpty) {
+        return [NSString stringWithFormat:@"%@%@%@", leftName, separator, rightName];
+    } else if (leftNameNonEmpty) {
+        return [leftName copy];
+    } else if (rightNameNonEmpty) {
+        return [rightName copy];
+    } else {
+        return @"";
+    }
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%@ %@: %@", self.firstName, self.lastName, self.userTextPhoneNumbers];
+    return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
 - (BOOL)isSignalContact {
@@ -122,6 +163,19 @@ NS_ASSUME_NONNULL_BEGIN
       }
     }];
     return identifiers;
+}
+
++ (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
+    return ^NSComparisonResult(id obj1, id obj2) {
+        Contact *contact1 = (Contact *)obj1;
+        Contact *contact2 = (Contact *)obj2;
+        
+        if (firstNameOrdering) {
+            return [contact1.comparableNameFirstLast caseInsensitiveCompare:contact2.comparableNameFirstLast];
+        } else {
+            return [contact1.comparableNameLastFirst caseInsensitiveCompare:contact2.comparableNameLastFirst];
+        }
+    };
 }
 
 @end

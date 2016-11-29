@@ -12,12 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class PhoneNumber;
+@class UIImage;
 
 @interface Contact : NSObject
 
 @property (nullable, readonly, nonatomic) NSString *firstName;
 @property (nullable, readonly, nonatomic) NSString *lastName;
 @property (readonly, nonatomic) NSString *fullName;
+@property (readonly, nonatomic) NSString *comparableNameFirstLast;
+@property (readonly, nonatomic) NSString *comparableNameLastFirst;
 @property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
@@ -42,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContact:(CNContact *)contact;
 
 #endif // TARGET_OS_IOS
+
++ (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
 
 @end
 
