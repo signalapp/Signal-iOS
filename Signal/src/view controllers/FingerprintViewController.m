@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
     NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
-        @"Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}}");
+        @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
     self.instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
 
     NSString *scanTitle = NSLocalizedString(@"SCAN_CODE_ACTION",
@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSCompareSafetyNumbersActivity *compareActivity = [[OWSCompareSafetyNumbersActivity alloc] initWithDelegate:self];
 
-    NSString *shareFormat = NSLocalizedString(@"SAFETY_NUMBER_SHARE_FORMAT", @"Snippet to share {{safety numbers}} with a friend. sent e.g. via sms");
+    NSString *shareFormat = NSLocalizedString(@"SAFETY_NUMBER_SHARE_FORMAT", @"Snippet to share {{safety number}} with a friend. sent e.g. via SMS");
     NSString *shareString = [NSString stringWithFormat:shareFormat, self.fingerprint.displayableText];
 
     UIActivityViewController *activityController =
