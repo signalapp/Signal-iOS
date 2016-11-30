@@ -31,7 +31,7 @@
         [[NSMutableAttributedString alloc] initWithString:contact.fullName];
 
     BOOL firstNameDisplay = ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-    BOOL firstNameSortOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
+    BOOL sortByFirstName = ABPersonGetSortOrdering() == kABPersonSortByFirstName ? YES : NO;
 
     UIFont *firstNameFont;
     UIColor *firstNameFontColor;
@@ -41,7 +41,7 @@
     UIColor *lastNameFontColor;
     NSRange lastNameRange;
 
-    if ((firstNameSortOrdering && contact.firstName) || !contact.lastName) {
+    if ((sortByFirstName && contact.firstName) || !contact.lastName) {
         firstNameFont = [UIFont ows_mediumFontWithSize:_nameLabel.font.pointSize];
         firstNameFontColor = [UIColor blackColor];
         lastNameFont  = [UIFont ows_regularFontWithSize:_nameLabel.font.pointSize];
