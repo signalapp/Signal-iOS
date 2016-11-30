@@ -152,10 +152,10 @@
 "EMPTY_CONTACTS_INVITE_BUTTON" = "Invite contact";
 
 /* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal!";
+"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
 /* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tip: add a conversation as a reminder!";

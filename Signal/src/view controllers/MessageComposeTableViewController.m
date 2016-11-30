@@ -25,13 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                  MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *inviteCell;
+@property (nonatomic, strong) IBOutlet OWSNoSignalContactsView *noSignalContactsView;
 
 @property (nonatomic) UIButton *sendTextButton;
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, strong) UIBarButtonItem *addGroup;
 @property (nonatomic, strong) UIView *loadingBackgroundView;
-@property (nonatomic, strong) UIView *emptyBackgroundView;
+
 @property (nonatomic) NSString *currentSearchTerm;
 @property (copy) NSArray<Contact *> *contacts;
 @property (copy) NSArray<Contact *> *searchResults;
@@ -128,19 +129,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     return label;
 }
 
-- (UIButton *)createButtonWithTitle:(NSString *)title {
-    NSDictionary *buttonTextAttributes = @{
-        NSFontAttributeName : [UIFont ows_regularFontWithSize:15.0f],
-        NSForegroundColorAttributeName : [UIColor ows_materialBlueColor]
-    };
-    UIButton *button                           = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 65, 24)];
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:title];
-    [attributedTitle setAttributes:buttonTextAttributes range:NSMakeRange(0, [attributedTitle length])];
-    [button setAttributedTitle:attributedTitle forState:UIControlStateNormal];
-    [button.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    return button;
-}
-
 - (void)createLoadingAndBackgroundViews {
     // This will be further tweaked per design recs. It must currently be hardcoded (or we can place in separate .xib I
     // suppose) as the controller must be a TableViewController to have access to the native pull to refresh
@@ -168,27 +156,16 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [_loadingBackgroundView addSubview:loadingProgressView];
     [_loadingBackgroundView addSubview:loadingLabel];
 
-    _emptyBackgroundView        = [[UIView alloc] initWithFrame:self.tableView.frame];
-    UIImageView *emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"uiEmptyContact"]];
-    [emptyImageView setBackgroundColor:[UIColor whiteColor]];
-    [emptyImageView setContentMode:UIViewContentModeCenter];
-    [emptyImageView setFrame:CGRectMake(self.tableView.frame.size.width / 2.0f - 115.0f / 2.0f, 100, 115, 110)];
-    emptyImageView.contentMode = UIViewContentModeCenter;
-    emptyImageView.contentMode = UIViewContentModeScaleAspectFit;
-    UILabel *emptyLabel        = [self createLabelWithFirstLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE1", @"")
-                                           andSecondLine:NSLocalizedString(@"EMPTY_CONTACTS_LABEL_LINE2", @"")];
+    [self.noSignalContactsView.inviteButton addTarget:self
+                                               action:@selector(presentInviteFlow)
+                                     forControlEvents:UIControlEventTouchUpInside];
+}
 
-    UIButton *inviteContactButton =
-        [self createButtonWithTitle:NSLocalizedString(@"EMPTY_CONTACTS_INVITE_BUTTON", @"")];
-
-    [inviteContactButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
-    [inviteContactButton
-        setFrame:CGRectMake([self marginSize], self.tableView.frame.size.height - 200, [self contentWidth], 60)];
-    [inviteContactButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-
-    [_emptyBackgroundView addSubview:emptyImageView];
-    [_emptyBackgroundView addSubview:emptyLabel];
-    [_emptyBackgroundView addSubview:inviteContactButton];
+- (void)presentInviteFlow
+{
+    OWSInviteFlow *inviteFlow =
+        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
+    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
 
@@ -223,8 +200,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8, 8, 8, 8);
 
 
+        self.inviteCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
-        self.tableView.backgroundView          = _emptyBackgroundView;
+        self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
     } else {
         [self initializeRefreshControl];
@@ -233,6 +211,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             self.navigationItem.rightBarButtonItem != nil ? self.navigationItem.rightBarButtonItem : _addGroup;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
+        self.inviteCell.hidden = NO;
     }
 }
 
