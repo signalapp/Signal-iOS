@@ -386,9 +386,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     }
 
+    return [signalContacts.allValues sortedArrayUsingComparator:[[self class] contactComparator]];
+}
+
++ (NSComparator)contactComparator
+{
     BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-    NSComparator contactsComparator = [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
-    return [signalContacts.allValues sortedArrayUsingComparator:contactsComparator];
+    return [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
 }
 
 - (NSArray<Contact *> *)signalContacts {
