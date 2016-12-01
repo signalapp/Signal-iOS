@@ -137,7 +137,7 @@
     if (indexPath) {
         [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
-        MessagesViewController *vc = [[MessagesViewController alloc] initWithNibName:nil bundle:nil];
+        MessagesViewController *vc = [MessagesViewController new];
         TSThread *thread           = [self threadForIndexPath:indexPath];
         [vc configureForThread:thread keyboardOnViewAppearing:NO];
         [vc peekSetup];
