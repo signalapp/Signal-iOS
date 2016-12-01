@@ -72,13 +72,23 @@ NS_ASSUME_NONNULL_BEGIN
     NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
     initials = [[initials substringWithRange:stringRange] mutableCopy];
 
-    UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
-
-    UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
-                                                                 backgroundColor:backgroundColor
-                                                                       textColor:[UIColor whiteColor]
-                                                                            font:[UIFont ows_boldFontWithSize:36.0]
-                                                                        diameter:100] avatarImage];
+    // Is this a phone number, or a set of initials?
+    NSCharacterSet *phoneNumberChars = [NSCharacterSet characterSetWithCharactersInString:@"0123456789+()-"];
+    BOOL phoneNumber = ([[initials componentsSeparatedByCharactersInSet:phoneNumberChars] componentsJoinedByString:@""].length == 0);
+    UIImage *image;
+    if (phoneNumber) {
+        // This looks like a phone number, let's render an image for an unknown user
+        image = [JSQMessagesAvatarImageFactory circularAvatarHighlightedImage:[UIImage imageNamed:@"unknownContactAvatar"] withDiameter:100];
+    } else {
+        // This looks like initials, let's render an image that's has the user's initials
+        UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
+        
+        image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
+                                                            backgroundColor:backgroundColor
+                                                                  textColor:[UIColor whiteColor]
+                                                                       font:[UIFont ows_boldFontWithSize:36.0]
+                                                                   diameter:100] avatarImage];
+    }
 
     [self.contactsManager.avatarCache setObject:image forKey:self.signalId];
     return image;

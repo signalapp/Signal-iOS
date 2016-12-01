@@ -1744,6 +1744,12 @@
                         <key>Type</key>
                         <string>PSGroupSpecifier</string>
                         <key>FooterText</key>
+                        <string>User-image</string>
+                </dict>
+                <dict>
+                        <key>Type</key>
+                        <string>PSGroupSpecifier</string>
+                        <key>FooterText</key>
                         <string>YapDatabase</string>
                 </dict>
                 <dict>
