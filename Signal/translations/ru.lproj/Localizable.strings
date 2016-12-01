@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Извините!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Принять новый код безопасности.";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Принять новый код безопасности";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Требуется действие";
@@ -86,10 +86,10 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незарегистрированный номер";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Нет адреса эл. почты.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Нет номера телефона.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Настройки разговоров";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Разгребите завалы.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Пригласить из контактов";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ни у кого из ваших контактов не установлен Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ни у кого из ваших контактов не установлен Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Давайте пригласим кого-нибудь";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Почему бы вам не пригласить кого-нибудь?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Совет: добавьте разговор в качестве напоминания!";
@@ -248,7 +245,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Произошла неизвестная ошибка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился. Коснитесь, чтобы подтвердить.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился. Нажмите для подтверждения.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Не повезло!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Слишком много ошибок отправки. Пожалуйста, попробуйте позже.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Необходимо принять новые коды безопасности перед отправкой.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Необходимо принять новый код безопасности перед отправкой.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Отправка не удалась. Нажмите для повторной попытки.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Подтверждение не удалось!";
+"FAILED_VERIFICATION_TITLE" = "Ошибка проверки кода безопасности!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сеанс связи.";
@@ -335,7 +332,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Пригласите друзей в Signal";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Пригласить друзей";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Сообщения будут исчезать через %@.";
@@ -395,10 +392,10 @@
 "ME_STRING" = "Я";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Камера";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Библиотека фотографий";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Новое сообщение";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "Вы можете узнать свой сетевой статус по цветной полоске над Входящими.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Добавить фотографию группы";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Новая группа";
@@ -512,10 +509,10 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Содержимое буфера обмена не является кодом безопасности для данного собеседника.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не обнаружил код безопасности в вашем буфере обмена. Повторите попытку копирования.";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не обнаружил код безопасности в вашем буфере обмена. Скопируйте еще раз.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Каждой паре пользователей Signal присваиваются определенные коды безопасности. Убедитесь, что пользователь %@ отображает ваш код.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Каждой паре пользователей Signal присваивается определенный код безопасности. Убедитесь, что пользователь %@ отображает *ваш* код.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "У вас старая версия Signal. Вам необходимо обновиться перед подтверждением.";
@@ -526,7 +523,7 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Просканированный код не похож на код безопасности. Вы оба используете последнюю версию Signal?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Чтобы подтвердить безопасность сквозного шифрования при общении с %@, сравните код, показанный выше, с кодом на устройстве вашего собеседника.\n\nТакже вы можете просканировать его или попросить собеседника просканировать ваш код.";
 
 /* Navbar title */
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Повторить";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Наши коды безопасности:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безопасности:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Код безопасности %@ изменился. Возможно, вам стоит его подтвердить.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Код безопасности с пользователем %@ изменился. Возможно, вы хотите его подтвердить.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Сканировать";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Показать новый код безопасности.";
+"SHOW_SAFETY_NUMBER_ACTION" = "Показать новый код безопасности";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u дн.";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Предлагаю установить Signal! Вот ссылка:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Код безопасности успешно подтверждён. Вы можете быть уверены, что ваше общение с %@ конфиденциально.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Код безопасности успешно подтвержден. Вы можете быть уверены, что ваше общение с %@ конфиденциально.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Код подтверждён!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Код подтвержден!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Мы не смогли обновить список собеседников с сервера. Пожалуйста, попробуйте позже.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Подтверждение";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Проверить коды безопасности";
+"VERIFY_PRIVACY" = "Подтвердить код безопасности";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Продолжите настройку в Signal Desktop.";

@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Desculpe!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Aceitar novos Números de Segurança";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Aceitar novo número de segurança";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Acção Necessária";
@@ -131,10 +131,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "Guardar";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Olá,\n\nUltimamente tenho usado o Signal para manter as minhas conversas no meu iPhone privadas. Gostaria que tu também o instalasses, para podermos estar confiantes que mais ninguém pode ler as nossas mensagens nem ouvir as nossas chamadas.\n\nO Signal está disponível para iPhone e Android. Faz download aqui: %@\n\nO Signal funciona como qualquer outra App de mensagens, podes enviar fotos e video, fazer chamadas e criar mensagens de grupo. A melhor parte é que mais ninguém poderá ve-las, nem os criadores do Signal!\n\nPodes ler mais sobre a Open Whisper Systems, as pessoas por detrás do Signal aqui: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Vamos mudar para o Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Toque no botão compôr.";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Apagar Conversas.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Convidar contacto";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nenhum dos seus contactos têm o Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nenhum dos seus contactos tem Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Porque não convida alguém";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Por que não convidar alguém?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Dica: adicione uma conversa como um lembrete!";
@@ -233,7 +230,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "A chave do destinatário não é valida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Foi recebida uma mensagem fora de ordem. Toque para reiniciar a sessão segura.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Recebeu uma mensagem não compatível com esta versão.";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nenhuma sessão disponível para este contacto.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Os números de segurança mudaram.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Número de segurança alterado.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ocorreu um erro desconhecido.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Os Números de Segurança mudaram. Toque para verificar.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Número de segurança alterado. Toque para verificar.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Erro!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Estão a ocorrer demasiadas falhas com este contacto. Por favor, volte a tentar mais tarde.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "É necessário aceitar os novos Números de Segurança antes de poder enviar.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Deve aceitar os novos números de segurança se prentende enviar.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Falha no envio. Toque para tentar novamente.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Falhou a verificação dos Números de Segurança!";
+"FAILED_VERIFICATION_TITLE" = "Falha ao verificar o número de segurança!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar esta sessão.";
@@ -395,10 +392,10 @@
 "ME_STRING" = "Eu";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Camâra";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Biblioteca de Fotos";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova Mensagem";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "Pode verificar o estado da rede pela barra colorida no topo da sua caixa de entrada.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Definir Foto de Grupo";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Novo grupo";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "O seu iPhone necessita de estar desbloqueado para receber mensagens.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Os números de segurança não parecem pertencer a %@. Está a tentar verificar o contacto correcto?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Isto não parece o seu número de segurança com %@. Está a verificar o contacto correcto?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Os números copiados não parecem os números de segurança correctos para esta conversa.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "O número copiado não parece o número de segurança correcto para esta conversa.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "O Signal não conseguiu encontrar os números de segurança. Copiou-os correctamente?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "O Signal não conseguiu encontrar um número de segurança no seu clipboard. Copiou-o correctamente?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Cada par de utilizadores Signal partilha números de segurança diferentes. Verifique que %@ está a mostrar os *seus* números de segurança";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Cada par de utilizadores Signal partilha um número de segurança diferente. Verifique que %@ está a mostrar o *seu* número de segurança";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Está a usar uma verão antiga. Necessita de fazer update para verificar.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "O código scaneado não parece um código de um número de segurança. Verifique que ambas as versões do signal estão actualizadas.";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Se deseja verificar a segurança da sua cifragem ponto-a-ponto com %@, compare os números acima com os do outro dispositivo\n\nOu scaneie directamente o código nos dispositivos.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verificar Números de Segurança";
+"PRIVACY_VERIFICATION_TITLE" = "Verificar Número de Segurança";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continuar";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Tentar novamente";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Os nossos Números de Segurança Signal:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "O nosso Número de Segurança Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Os Números de Segurança para %@ mudaram. Poderá querer verifica-los.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "O número de segurança com %@ mudou. Poderá querer verificá-lo.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Scanear";
@@ -662,10 +659,10 @@
 "SEND_BUTTON_TITLE" = "Enviar";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "Envio do convite falhou, por favor tente mais tarde.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Convidou o seu amigo para usar o Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "Enviar SMS para:";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avançado";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requer a sua aprovação quando algum dos seus contactos tiver novos números de segurança. Normalmente isto acontece quando o Signal é reinstalado.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requer a sua aprovação quando algum dos seus contactos tiver um novo número de segurança. Normalmente isto acontece quando o Signal é reinstalado.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Requerer aprovação quando alterados";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Mostrar novos Números de Segurança";
+"SHOW_SAFETY_NUMBER_ACTION" = "mostrar novo número de segurança";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u dia";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Estou a convidar-te para instalar o Signal! Aqui está o link: ";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Os Números de Segurança foram verificados. Pode confiar que a comunicação com %@ é privada.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "O seu número de segurança com %@ foi verificado. Pode estar seguro de que a  sua comunicação é privada.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Números de Segurança verificados!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Número de Segurança verificado!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Não conseguimos receber uma lista de contactos actualizada do servidor. Por favor tente mais tarde.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Verificar";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verificar Números de Segurança";
+"VERIFY_PRIVACY" = "Verificar Número de Segurança";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete a instalação no Signal Desktop.";

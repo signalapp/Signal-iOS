@@ -148,13 +148,10 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversations.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Invite contact";
-
-/* No comment provided by engineer. */
+/* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
-/* No comment provided by engineer. */
+/* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
@@ -526,7 +523,7 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number code. Are you both on an up-to-date version of Signal?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
 
 /* Navbar title */
@@ -634,7 +631,7 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
 /* Action sheet heading */

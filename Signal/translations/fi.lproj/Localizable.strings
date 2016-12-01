@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Hups!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Hyväksy uudet turvanumerot.";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Hyväksy uusi turvanumero";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Toimintaa vaaditaan";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Siisti viestiketjujasi";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Kutsu yhteystieto";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Kellään yhteystiedollasi ei ole Signalia.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Kellään yhteystiedoistasi ei ole Signalia!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Kutsupa joku";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Kutsupa joku?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Vihje: lisää keskustelu muistutukseksi!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Tälle yhteystiedolle ei ole istuntoa.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Turvanumerot ovat vaihtuneet.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Turvanumero on vaihtunut.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Tuntematon virhe.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumerot ovat vaihtuneet. Varmenna napsauttamalla.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumero on vaihtunut. Varmenna napsauttamalla.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Harmi!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Viestien lähetys tälle yhteystiedolle epäonnistui liian monta kertaa. Yritä myöhemmin uudelleen.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sinun täytyy ensin hyväksyä uudet turvanumerot, ennen kuin voit lähettää viestejä.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sinun täytyy ensin hyväksyä uusi turvanumero, ennen kuin voit lähettää viestejä.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Lähetys epäonnistui. Yritä uudelleen napauttamalla.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Turvanumeroiden varmennus epäonnistui!";
+"FAILED_VERIFICATION_TITLE" = "Turvanumeron varmennus epäonnistui!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto.";
@@ -395,10 +392,10 @@
 "ME_STRING" = "Minä";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Kameran rulla";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Uusi viesti";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "Voit tarkistaa verkkoyhteydesi tilan postilaatikkosi yläpuolella näkyvästä värillisestä palkista.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Aseta ryhmän kuva";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Uusi ryhmä";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Jotta voit vastaanottaa uusia viestejä, iPhonesi näytön täytyy olla auki.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Nuo eivät näytä yhteystiedon %@ turvanumeroilta. Tarkista että olet varmentamassa oikeaa yhteystietoa.";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tämä ei näytä olevan sinun ja yhteystiedon %@ turvanumero. Tarkista että olet varmentamassa oikeaa yhteystietoa.";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Leikepöydällä olevat numerot eivät näytä olevan oikeat turvanumerot tälle keskustelulle.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Leikepöydällä oleva numero ei näytä olevan oikea turvanumero tälle keskustelulle.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei löytänyt turvanumeroita leikepöydältä. Oletko varmasti kopioinut ne oikein?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei löytänyt turvanumeroa leikepöydältä. Oletko varmasti kopioinut sen oikein?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Turvanumerot ovat yksilölliset aina kahden Signal-käyttäjän välillä. Tarkista vielä uudelleen, että yhteystiedon %@ laiteessa näkyy juuri teidän väliset turvanumerot.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Turvanumero on yksilöllinen aina kahden Signal-käyttäjän välillä. Tarkista vielä uudelleen, että yhteystiedon %@ laiteessa näkyy juuri teidän turvanumero.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sinulla on käytössä vanha versio Signalista. Sinun tulee ensin päivittää, jotta voit varmentaa.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannattu koodi ei näytä olevan turvanumero. Onko teillä kummallakin viimeisin versio Signalista käytössä?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Jos haluat varmentaa sinun ja yhteystiedon %@ välisen salauksen tietoturvan, vertaa ylläolevia numeroita hänen laitteessaan näkyviin vastaaviin numeroihin.\n\nVaihtoehtoisesti voit skannata koodin hänen puhelimestaan, tai pyytää häntä skannaamaan sinun koodisi.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Varmenna turvanumerot";
+"PRIVACY_VERIFICATION_TITLE" = "Varmenna turvanumero";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Jatka";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Yritä uudelleen";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Meidän Signal-turvanumeromme:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Yhteystiedon %@ turvanumerot ovat vaihtuneet. Saatat halua varmentaa ne.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Sinun ja yhteystiedon %@ turvanumero on vaihtunut. Saatat halua varmentaa sen.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Skannaa koodi";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Lisäasetukset";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Aika kun jonkun yhteystietoni turvanumerot ovat vaihtuneet, vaadi niiden erillistä hyväksyntää, ennen kuin voin jatkaa viestittelyä. Yleensä turvanumerot vaihtuvat, kun joku uudelleenasentaa Signalin.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Aina kun jonkun yhteystietoni turvanumero on vaihtunut, vaadi sen erillistä hyväksyntää, ennen kuin voin jatkaa viestittelyä. Yleensä turvanumero vaihtuu, kun joku uudelleenasentaa Signalin.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Vaadi hyväksyntää vaihdoksissa";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Näytä uudet turvanumerot.";
+"SHOW_SAFETY_NUMBER_ACTION" = "Näytä uusi turvanumero";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u päivä";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Kutsun sinut käyttämään Signalia! Tässä linkki:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Turvanumerot ovat nyt varmennettu. Voit olla varma, että keskustelusi yhteystiedon %@ kanssa on yksityistä.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sinun ja yhteystiedon %@ turvanumero on nyt varmennettu ja siten keskustelujenne yksityisyys on taattu.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Turvanumerot varmennettu!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Turvanumero varmennettu!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Emme saaneet haettua päivitettyä yhteystietoluetteloa palvelimelta. Yritä myöhemmin uudelleen.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Vahvista";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Varmenna turvanumerot";
+"VERIFY_PRIVACY" = "Varmenna turvanumero";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Saata yhdistäminen loppuun Signal Desktopissa.";

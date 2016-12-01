@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Žal!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Sprejmi nova varnostna števila";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Sprejmi novo varnostno število";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Potrebno je ukrepanje";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Počistite svoje pogovore.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Povabite koga izmed stikov";
-
-/* No comment provided by engineer. */
+/* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Noben izmed vaših stikov ne uporablja aplikacije Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Povabite nekoga";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Zakaj ne bi koga povabili?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Namig: dodajte pogovor kot opomnik!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Za ta stik ni na voljo nobena seja.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Varnostna števila so spremenjena.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Varnostno število je bilo spremenjeno.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Neznana napaka.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Varnostna števila so spremenjena. Tapnite za overitev.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Varnostno število je bilo spremenjeno. Tapnite za overitev.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Štala!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Preveč napak pri tem stiku. Poskusite znova kasneje.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Preden boste lahko pošiljali sporočila, morate potrditi nova varnostna števila prejemnika.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Preden boste lahko pošiljali sporočila, morate potrditi novo skupno varnostno število.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Pošiljanje ni uspelo. Tapnite za ponovitev.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Varnostnih števil ni bilo mogoče overiti!";
+"FAILED_VERIFICATION_TITLE" = "Varnostnega števila ni bilo mogoče overiti!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Ponastavi tekočo sejo.";
@@ -395,10 +392,10 @@
 "ME_STRING" = "Jaz";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Foto galerija";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Novo sporočilo";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "Stanje vašega omrežja lahko preverite na barvnem traku nad poštnim nabiralnikom.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Določi fotografijo skipine";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nova skupina";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Za prejemanje novih sporočil mora biti vaš iPhone odklenjen.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Izgleda, da ne gre za varnostna števila osebe %@. Ste prepričani, da overjate pravo osebo?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Izgleda, da ne gre za varnostno število z osebo %@. Ste prepričani, da overjate pravo osebo?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Varnostna števila kopirana v vaše odložišče niso prava varnostna števila za ta pogovor.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Varnostno število kopirano v odložišče ni pravo varnostno število za ta pogovor.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "V vašem odložišču ni bilo zaznati varnostnih števil. Ste jih pravilno prekopirali?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "V vašem odložišču ni bilo zaznati varnostnega števila. Ste ga pravilno prekopirali?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Vsak par uporabnikov aplikacije Signal ima povsem svoja varnostna števila. Preverite, če oseba %@ prikazuje 'vajina' varnostne števila.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Vsak par uporabnikov aplikacije Signal ima skupno varnostno število. Preverite, če oseba %@ prikazuje 'vajino' skupno varnostno število.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Nameščeno imate zastarelo različico aplikacije Signal. Pred overbo jo je potrebno nadgraditi.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirana koda ne izgleda kot koda z varnostnimi števili. Je na obeh napravah nameščena zadnja različica aplikacije Signal?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Če želite preveriti varnost od konca do konca šifrirane komunikacije z uporabnikom %@, primerjajte gornja števila s števili na napravi te osebe.\n\nNamesto tega lahko tudi skenirate kodo na napravi partnerja, ali njega prosite, naj skenira vašo.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Overi varnostna števila";
+"PRIVACY_VERIFICATION_TITLE" = "Overi varnostno število";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nadaljuj";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Poskusi znova";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Najina varnostna števila:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Najino varnostno število:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Varnostna števila uporabnika %@ so bila spremenjena. Jih želite overiti?";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Varnostno število z uporabnikom %@ je bilo spremenjeno. Ga želite overiti?";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Skeniraj kodo";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Za nadaljevanje komunikacije z osebo, ki ima nova varnostna števila je potrebna vaša potrditev. Največkrat do tega pride ob ponovni namestitvi aplikacije Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Za nadaljevanje komunikacije z osebo, ki ima novo varnostno število je potrebna vaša potrditev. Razlog za spremembo je največkrat ponovna namestitev aplikacije Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Ob spremembi zahtevaj potrditev";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži nova varnostna števila";
+"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži novo varnostno število";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u dan";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Vabim te, da si namestiš aplikacijo Signal. Tu je povezava:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Varnostna števila so overjena. Lahko ste prepričani, da je zasebnost vaše komunikacije z uporabnikom %@ zaščitena.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Varnostno število z uporabnikom %@ je potrjeno. Lahko ste prepričani v zasebnost vajine komunikacije.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Varna števila so overjena!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Varnostno število je bilo potrjeno!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Posodobitev seznama stikov s strežnika ni uspela. Poskusite zopet kasneje.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Overi";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Overi varnostna števila";
+"VERIFY_PRIVACY" = "Potrdi varnostno število";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončajte nastavitev na aplikaciji Signal Desktop.";

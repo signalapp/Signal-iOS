@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Entschuldigung!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Neue Sicherheitsnummern akzeptieren";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Neue Sicherheitsnummer akzeptieren";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Aktion erforderlich";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Unterhaltungen aufräumen.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Kontakt einladen";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Keiner deiner Kontakte verwendet Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Keiner deiner Kontakte verwendet Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Warum lädst du nicht jemanden ein";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Warum lädst du nicht jemanden ein?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tipp: Füge eine Unterhaltung als Erinnerung hinzu!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Kein Schlüssel für diesen Kontakt vorhanden.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sicherheitsnummern geändert.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sicherheitsnummer geändert.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ein unbekannter Fehler ist aufgetreten.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sicherheitsnummern geändert. Zum Überprüfen antippen.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sicherheitsnummer geändert. Zum Überprüfen antippen.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Mist!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte in Kürze erneut versuchen.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vor dem Senden musst du die neuen Sicherheitsnummern deines Kontakts akzeptieren.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vor dem Senden musst du die neue Sicherheitsnummer akzeptieren.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Versand gescheitert. Für erneuten Versuch antippen.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Überprüfung der Sicherheitsnummern gescheitert!";
+"FAILED_VERIFICATION_TITLE" = "Überprüfen der Sicherheitsnummer nicht erfolgreich!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Verschlüsselung neu starten";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Dein iPhone muss entsperrt sein, um neue Nachrichten zu empfangen.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies sieht nicht wie die Sicherheitsnummern für %@ aus. Überprüfst du den richtigen Kontakt?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies scheint nicht deine Sicherheitsnummer mit %@ zu sein. Überprüfst du den richtigen Kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Die Nummern in deiner Zwischenablage scheinen nicht die korrekten Sicherheitsnummern für diese Unterhaltung zu sein.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Die Nummer in deiner Zwischenablage scheint nicht die korrekten Sicherheitsnummer für diese Unterhaltung zu sein.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal konnte in deiner Zwischenablage keine Sicherheitsnummern finden. Hast du diese korrekt kopiert?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal konnte in deiner Zwischenablage keine Sicherheitsnummer finden. Hast du sie korrekt kopiert?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Jedes Paar von Signal-Benutzern teilt individuelle Sicherheitsnummern. Überprüfe noch einmal, ob %@ wirklich *deine* individuellen Sicherheitsnummern anzeigt.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Jedes Paar von Signal-Benutzern teilt eine individuelle Sicherheitsnummer. Überprüfe noch einmal, ob %@ wirklich *eure* individuelle Sicherheitsnummer anzeigt.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Du verwendest eine alte Version von Signal. Um den Kontakt überprüfen zu können, aktualisiere bitte die Signal-App.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Der eingescannte Code sieht nicht wie ein Code für Sicherheitsnummern aus. Verwendet ihr beide eine aktuelle Version von Signal?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Falls du die Sicherheit deiner Ende-zu-Ende-Verschlüsselung mit %@ überprüfen möchtest, so vergleiche bitte die oben dargestellten Nummern mit den Nummern auf dem Gerät deines Kontakts.\n\nAlternativ kannst du den Code deines Kontakts einscannen oder ihn deinen eigenen Code einscannen lassen.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Sicherheitsnummern überprüfen";
+"PRIVACY_VERIFICATION_TITLE" = "Sicherheitsnummer überprüfen";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortfahren";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Erneut versuchen";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Unsere Signal-Sicherheitsnummern:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Unsere Signal-Sicherheitsnummer:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Die Sicherheitsnummern für %@ haben sich geändert. Vielleicht möchtest du diese überprüfen.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Deine Sicherheitsnummer mit %@ hat sich geändert. Vielleicht möchtest du sie überprüfen.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Code einscannen";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Erweitert";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Erfordert deine Zustimmung vor der Kommunikation mit jemandem mit neuen Sicherheitsnummern. Grund hierfür ist häufig eine erneute Installation von Signal durch deinen Kontakt.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Erfordert deine Zustimmung vor der Kommunikation mit jemandem mit einer neuen Sicherheitsnummer. Grund hierfür ist häufig eine Neuinstallation von Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Bei Änderung Zustimmung erfordern";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Neue Sicherheitsnummern anzeigen";
+"SHOW_SAFETY_NUMBER_ACTION" = "Neue Sicherheitsnummer anzeigen";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u Tag";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Ich möchte dich einladen, »Signal« zu verwenden! Hier ist der Link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Deine Sicherheitsnummern wurden erfolgreich überprüft. Du kannst nun sicher sein, dass deine Kommunikation mit %@ vertraulich ist.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Deine Sicherheitsnummer mit %@ wurde erfolgreich überprüft. Du kannst sicher sein, dass eure Kommunikation vertraulich ist.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Sicherheitsnummern erfolgreich überprüft!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Sicherheitsnummer erfolgreich überprüft!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Leider konnte keine aktualisierte Liste deiner Kontakte vom Server abgerufen werden. Bitte versuche es später erneut.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Bestätigen";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Sicherheitsnummern überprüfen";
+"VERIFY_PRIVACY" = "Sicherheitsnummer überprüfen";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Schließe die Einrichtung von Signal Desktop ab.";

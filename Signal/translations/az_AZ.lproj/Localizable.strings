@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Üzr istəyirik!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Yeni təhlükəsizlik nömrələrini təsdiqlə";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Fəaliyyət tələb olunur!";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Söhbətləri təmizlə.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Dəvət et";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Əlaqələrinin heç birində Signal yoxdur!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Kimisə dəvət edə bilərsən";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Məsləhət: söhbəti xəbərdarlıq kimi əlavə et!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Əlaqə üçün sessiya yoxdur.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Təhlükəsizlik nömrələri dəyişib.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Bilinməyən xəta baş verdi.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Təhlükəsizlik nömrələri dəyişdib. Təsdiqləmək üçün kliklə.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Bummer!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu adamla həddən artıq sıhv qoşuulma var. Bir azdan yenidən sınayın.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Göndərməmişdən qabaq yeni təhlükəsizlik nömrələrini qəbul etməlisiniz.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Göndəriş alınmadı. Bir daha sınayın.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Təhlükəsiz nömrələri təsdiqləmədi!";
+"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Sessiyanı yenidən başla.";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "IPhone-nuz yeni ismarışları almaq üçün açılmalıdır.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@ üçün təhlükəsiz nömrəyə oxşamır. Düzgün əlaqənin olduğuna əminsiniz?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Clipboard-da olan nömrələr bu söhbətdəki təhlükəsiz nömrələrə oxşamır.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal Clipborda-da təhlükəsiz nömrə tapmadı. Onları düzgün kopyalamısınız?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal istifadəçilərinin hər cütü təhlükəsiz npmrələri paylaşır. %@ sizin düzgün təhlükəsiz nömrələrinizi göstərdiyini yoxlayın.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Signalın köhnə versiyasından istifadə edirsiniz. Yeniləməmişdən öncə təsdiqləməlisiniz.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skan olunan kod təhlükəsiz npmrə koduna oxşamır. Hər ikiniz Signalın son versiyasını istifadə edirsiniz?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@ ilə hər iki tərəfli şifrələmənin təhlükəsizliyini yoxlamaq üçün, yuxarıdakı nömrələrlə alətlərindəki nömrələri yoxlayın.\n\nOnların telefonundakı kodu skan edə və ya sizin kodunuzu skan etməklərini istəyə bilərsiniz.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Təhlükəsiz nömrələri təsdiqlə";
+"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Davam et";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Yenidən sına";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Signal təhlükəsizlik nömrəmiz:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ üçün təhlükəsizlik nömrələri dəyişib. Onu təsdiqləməlisiniz.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Kodu skan et";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Əlavə";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signalı yenidən yüklədiyi üçün təhlükəsizlik nömrələrini təsdiqləməlisiniz ki, əlaqəyə girə bilsin.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Dəyişiklik üçün təsdiqləmə tələbi";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Yeni təhlükəsiz nömrələri göstər";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u gün";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Səni Signalı yükləməyə dəvət edirəm! Link belədir:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sizin təhlükəsizlik nömrələriniz təsdiqləndi. %@  ilə rabitənizin qapalı olduğuna əmin ola bilərsiniz.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Təhlükəsiz nömrələr təsdiqləndi!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Serverdən yenilənmiş əlaqə siyahısını ala bilmədik. Lütfən, birazdan yenidən sına.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Təsdiqlə";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Təhlükəsiz nömrələri təsdiqlə";
+"VERIFY_PRIVACY" = "Verify Safety Number";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop üçün yükləməni bitir.";

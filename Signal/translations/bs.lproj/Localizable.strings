@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Žao nam je!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Prihvati nove sigurnosne brojeve";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Zahtijeva akciju";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Očistite vaše razgovore.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Pošaljite pozivnicu kontaktu";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Niko od vaših kontakata ne koristi Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Zašto ne pošaljete pozivnicu nekome";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Savjet: dodajte razgovor kao podsjetnik!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nema raspoloživih sesija za kontakt.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni brojevi promijenjeni.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni brojevi promijenjeni. Dodirnite za verifikaciju.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Pažnja!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha sa ovim kontaktom. Pokušajte malo kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Morate prihvatiti njegove/njezine nove sigurnosne brojeve prije nego što budete u mogućnosti slanja.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dodirnite za novi pokušaj.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Neuspjela verifikacija sigurnosnih brojeva!";
+"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetuj ovu sesiju.";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Vaš iPhone treba biti otključan za primanje nove poruke.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgledaju kao sigurnosni brojevi za%@. Da li provjeravate ispravan kontakt ?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The numbers in your clipboard do not look like the correct safety numbers for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety numbers in your clipboard. Have you copied them correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki par signal korisnika dijeli posebne sigurnosne brojeve. Provjerite da %@ prikazuje \n*vaš* poseban sigurnosni broj.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Pokrećete staru verziju Signala. Potrebno je ažuriranje prije verifikacije.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kôd ne izgleda kao kôd sigurnosnih brojeva. Da li oboje koristite najnoviju verziju Signala?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite verifikovati sigurnost end-to-end šifriranja sa %@, uporedite brojeve iznad sa brojevima na njegovom/njezinom uređaju.\n\nAlternativno, možete skenirati kôd na njegovom/njezinom telefonu ili upitati ih da skeniraju vaš kôd.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verifikuj sigurnosne brojeve";
+"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavljanje";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Pokušaj";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Numbers:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Sigurnosni brojevi za %@ su promjenjeni. Možda ih želite verifikovati.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Skeniraj kôd";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Zahtijeva  vaše odobrenje prije komunikacije sa nekim ko ima nove sigurnosne brojeve, najčešće zbog reinstalacije Signala.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Potrebno je odobrenje za promjenu";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži nove sigurnosne brojeve";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u dan";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Pozivam vas da instalirate Signal! Ovdje je link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaši sigurnosni brojevi su verifikovani. Možete biti uvjereni da je vaša komunikacija sa %@ privatna.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni brojevi su verifikovani!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Nismo mogli donijeti ažurirani popis kontakata sa servera. Molimo pokušajte ponovo kasnije.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Verifikuj";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verifikuj sigurnosne brojeve";
+"VERIFY_PRIVACY" = "Verify Safety Number";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";

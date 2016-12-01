@@ -62,7 +62,7 @@
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "เปรียบเทียบกับคลิปบอร์ด";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "สิ่งนี้จะรีเซ็ตแอปพลิเคชันโดยลบข้อความของคุณและเลิกลงทะเบียนคุณกับเซิร์ฟเวอร์ แอปจะปิดหลังจากการลบข้อมูล";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "ล้างการสนทนาของคุณ";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "เชิญชวนรายชื่อ";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในรายชื่อของคุณมี Signal";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในรายชื่อของคุณมี Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญชวนใครสักคนล่ะ";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญชวนใครสักคนล่ะ?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "เคล็ดลับ: เพิ่มการสนทนาเป็นเตือนความจำ!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "ไม่มีวาระที่ใช้งานได้สำหรับรายชื่อ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety numbers changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "ตัวเลขความปลอดภัยถูกเปลี่ยน แตะเพื่อตรวจสอบ";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "แย่จัง!";
@@ -257,7 +254,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "คุณต้องยอมรับตัวเลขความปลอดภัยใหม่ของเขาก่อนที่คุณจะสามารถส่ง";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "การส่งล้มเหลว แตะเพื่อลองใหม่";
@@ -395,7 +392,7 @@
 "ME_STRING" = "ฉัน";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "กล้อง";
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "คุณสามารถตรวจสอบสถานะเครือข่ายของคุณโดยดูที่แถบสีด้านบนกล่องขาเข้าของคุณ";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "ตั้งรูปภาพกลุ่ม";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "กลุ่มใหม่";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "iPhone ของคุณจำเป็นต้องปลดล็อคเพื่อรับข้อความใหม่";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Those don't look like the safety numbers for %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The numbers in your clipboard do not look like the correct safety numbers for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety numbers in your clipboard. Have you copied them correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares distinct safety numbers. Double check that %@ is displaying *your* distinct safety numbers.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "คุณกำลังใช้ Signal รุ่นเก่า คุณจำเป็นต้องอัปเดตก่อนที่คุณจะสามารถตรวจสอบ";
@@ -526,7 +523,7 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "รหัสที่สแกนดูไม่เหมือนกับรหัสตัวเลขความปลอดภัย คุณทั้งสองกำลังใช้ Signal รุ่นล่าสุดอยู่หรือไม่?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "หากคุณต้องการตรวจสอบความปลอดภัยในการเข้ารหัสจากต้นทางถึงปลายทางของคุณกับ %@ เปรียบเทียบตัวเลขด้านบนกับตัวเลขบนอุปกรณ์ของเขา\n\nหรืออีกทางเลือก คุณสามารถสแกนรหัสบนโทรศัพท์ของเขา หรือขอให้เขาสแกนรหัสของคุณ";
 
 /* Navbar title */
@@ -614,7 +611,7 @@
 "REGISTRATION_TITLE_LABEL" = "หมายเลขโทรศัพท์ของคุณ";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจสอบล้มเหลว";
 
 /* Alert body, during registration */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
@@ -634,17 +631,17 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ลองใหม่";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "ตัวเลขความปลอดภัย Signal ของเรา:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "ตัวเลขความปลอดภัยสำหรับ %@ มีการเปลี่ยนแปลง คุณอาจต้องการตรวจสอบ";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "สแกนรหัส";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+"SCAN_CODE_INSTRUCTIONS" = "สแกนรหัส QR บนอุปกรณ์ของรายชื่อของคุณ";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ค้นหาโดยชื่อหรือหมายเลข";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has new safety numbers, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
@@ -779,7 +776,7 @@
 "SMS_INVITE_BODY" = "ฉันกำลังเชิญชวนให้คุณติดตั้ง Signal! นี่คือลิงก์:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "ตรวจสอบตัวเลขความปลอดภัยของคุณแล้ว คุณสามารถมั่นใจได้ว่าการสนทนาของคุณกับ %@ เป็นส่วนตัว";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "ตัวเลขความปลอดภัยของคุณกับ %@ ได้รับการตรวจสอบแล้ว คุณสามารถมั่นใจได้ว่าการสื่อสารของคุณเป็นส่วนตัว";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "ตรวจสอบตัวเลขความปลอดภัยแล้ว!";

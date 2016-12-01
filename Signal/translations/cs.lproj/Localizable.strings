@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Promiňte!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Přijmout nová bezpečnostní čísla";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Vyžadována akce";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Vyčistěte vaše konverzace.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Pozvat";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Žádný z kontaktů nepoužívá Signal";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Proč nemůžeš nikoho pozvat";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tip: přidej si připomínku konverzace!";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nedostupné sezení pro kontakt.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety numbers changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo k neznámé chybě.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Bezpečnostní čísla se změnila.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Smůla!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Před odesláním musíte přijmout jejich nová bezpečnostní čísla.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Odeslání selhalo. Klepněte pro další pokus.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Nepodařilo se ověřit bezpečnostní čísla.";
+"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetovat toto sezení.";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Váš Iphone musí být odemčen, abyste mohl přijímat nové zprávy.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Those don't look like the safety numbers for %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The numbers in your clipboard do not look like the correct safety numbers for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety numbers in your clipboard. Have you copied them correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares distinct safety numbers. Double check that %@ is displaying *your* distinct safety numbers.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Používáte starou verzi Signalu, před ověřením musíte aktualizovat.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Naskenovaný kód nevypadá jako kód bezpečných čísel. Používate oba aktuální verzi Signalu?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Pokud chcete ověřit bezpečnost koncového šifrování s %@, porovnete čísla výše s čísli na druhém zařízení..\n\nNebo můžete naskenovat kód z druhého telefonu, nebo on může naskenovat ten váš.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Ověření bezpečnostních čísel";
+"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Pokračovat";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Zkusit znovu";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Numbers:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Bezpečnostní čísla pro %@ se změnila. Možná byste je chtěl ověřit.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Naskenovat kód";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Rozšířené";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has new safety numbers, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Zobrazit nová bezpečnostní čísla";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u den";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Pozval jsem tě do Signal! Zde je odkaz:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaše bezpečnostní čísla byla ověřena. Můžete si být jist(a), že komunikace s %@ je soukromá.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Bezpečnostní čísla ověřena!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Nepodařilo se načíst nový adresář ze serveru. Zkuste to za chvíli.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Ověřit";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Ověřit bezpečnostní čísla";
+"VERIFY_PRIVACY" = "Verify Safety Number";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončete nastavení v Signalu pro desktop.";

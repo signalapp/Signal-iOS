@@ -92,7 +92,7 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Teléfono no disponible";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Ajustes de conversación";
+"CONVERSATION_SETTINGS" = "Ajustes de chat";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar tu sesión te permitirá recibir mensajes de %@ pero no permitirá recuperar los mensajes corruptos ya recibidos.";
@@ -119,7 +119,7 @@
 "DISAPPEARING_MESSAGES" = "Mensajes con caducidad";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Al activar la opción, los mensajes en esta conversación desaparecerán tras cumplirse el tiempo elegido.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Al activar la opción, los mensajes en este chat desaparecerán tras cumplirse el tiempo seleccionado.";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
@@ -148,13 +148,10 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Organiza tus chats";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Invitar contacto";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ninguno de tus contactos usa Signal";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "¡Ninguno de tus contactos usa Signal!";
-
-/* No comment provided by engineer. */
+/* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "¿Por qué no invitas a alguien?";
 
 /* No comment provided by engineer. */
@@ -257,7 +254,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Debes aceptar las nuevas cifras de seguridad antes de poder enviar.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Tienes que aceptar las nuevas cifras de seguridad para poder enviar.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Fallo al enviar. Toca para reintentar.";
@@ -395,10 +392,10 @@
 "ME_STRING" = "Yo";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Cámara";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Fototeca";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
@@ -449,7 +446,7 @@
 "NETWORK_STATUS_TEXT" = "Puedes comprobar el estado de la conexión simplemente observando la barra de progreso en la parte superior de la bandeja de entrada.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Seleccionar foto de grupo";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nuevo grupo";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Tu iPhone debe estar desbloqueado para recibir mensajes.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Esas no son las cifras de seguridad de la conversación con %@. ¿Estás comprobando el contacto correcto?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Esas no son las cifras de seguridad del chat con %@. ¿Estás identificando el contacto correcto?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Las cifras del portapapeles no son las cifras de seguridad de esta conversación.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Las cifras en el portapapeles no son las cifras de seguridad correctas para este chat.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal no ha encontrado las cifras de seguridad en el portapapeles. ¿Las has copiado correctamente?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal no ha encontrado las cifras d seguridad en el portapapeles. ¿Las has copiado correctamente?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Toda conversación entre usuarios de Signal tiene unas cifras de seguridad únicas. Vuelve a comprobar que %@ está mostrando las cifras de vuestra conversación.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Todas los chats entre usuarios de Signal tienen unas cifras de seguridad únicas. Vuelve a comprobar que %@ está mostrando las cifras de vuestro chat.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Estás utilizando una version antigua de Signal. Necesitas actualizar para poder comprobar.";
@@ -526,7 +523,7 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El código escaneado no es un código de cifras de seguridad. ¿Estáis usando los dos una versión de Signal reciente?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si quieres comprobar la seguridad del cifrado punto a punto con %@, compara las cifras de arriba con las de su teléfono.\n\nTambién puedes escanear el código en el teléfono de tu contacto o dejarle escanear el tuyo.";
 
 /* Navbar title */
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Reintentar";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Nuestras cifras de seguridad:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Cifras de seguridad de este chat:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Las cifras de seguridad de %@ han cambiado. Tal vez quieras comprobarlas.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Las cifras de seguridad del chat con %@ han cambiado. Por favor, compruébalo.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Escanear código";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal solicitará tu confirmación antes de comunicarse con alguien cuyas cifras de seguridad han cambiado. El cambio de cifras suele ocurrir al reinstalar Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal necesita tu confirmación antes de comunicarse con un contacto cuyas cifras de seguridad han cambiado. Esto suele ocurrir al reinstalar Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Aprobar cambio de cifras";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Mostrar cifras de seguridad nuevas";
+"SHOW_SAFETY_NUMBER_ACTION" = "Mostrar las nuevas cifras de seguridad";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u día";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Pulsa en el enlace:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Las cifras de seguridad son correctas. Puedes estar seguro que tu comunicación con %@ es privada.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Las cifras de seguridad del chat con %@ han sido comprobadas. Puedes estar seguro que vuestro chat es privado.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "¡Cifras de seguridad comprobadas!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "¡Las cifras de seguridad son correctas!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "No se pudo obtener la lista de contactos actualizada del servidor. Por favor, inténtalo más tarde.";

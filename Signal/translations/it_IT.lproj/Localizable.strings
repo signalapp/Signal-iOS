@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Spiacente!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accetta nuovi numeri sicuri";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Azione richiesta";
@@ -148,14 +148,11 @@
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Pulisci le tue Conversazioni";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_INVITE_BUTTON" = "Invita contatto";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nessuno dei tuoi contatti ha Signal!";
-
-/* No comment provided by engineer. */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Perchè non inviti qualcuno";
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Suggerimento: aggiungi una conversazione come Promemoria";
@@ -242,13 +239,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nessuna sessione disponibile per il contatto";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Numeri sicuri cambiati.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Si è verificato un errore sconosciuto.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numeri sicuri cambiati. Tocca per verificare.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Fiasco!";
@@ -257,13 +254,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Troppi fallimenti con questo contatto. Riprovare tra un po'.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "È necessario accettare i nuovi numeri sicuri prima di poter inviare.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Invio Fallitto. Premi per riprovare.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifica numeri sicuri fallita!";
+"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Rosetta questa sessione.";
@@ -506,16 +503,16 @@
 "PHONE_NEEDS_UNLOCK" = "Il tuo iPhone ha bisogno di essere sbloccato per poter ricevere nuovi messaggi.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Questi non sembrano i numeri sicuri di %@. Stai controllando il contatto corretto?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "I numeri sicuri negli appunti non sembrano quelli corretti per questa conversazione.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal non ha trovato numeri sicuri negli appunti. Gli hai copiati correttamente?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Ogni coppia di utenti Signal condivide numeri sicuri diversi. Fai un doppio controllo che %@ stia mostrando *i tuoi* numeri sicuri.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Stai usando una vecchia versione di Signal. Devi aggiornarla prima di poter verificare.";
@@ -526,11 +523,11 @@
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Il codice letto non sembra quello di un numero sicuro. State usando entrambi una versione aggiornata di Signal?";
 
-/* Paragraph(s) shown alongside keying material when verifying privacy with {{contact name}} */
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Se desideri verificare la sicurezza della tua codifica end-to-end con %@, confronta i numeri precedenti con quelli del suo dispositivo.\n\nIn alternativa puoi fare uno scan del codice sul suo telefono o chiedergli di fare una scansione del tuo.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verifica numeri sicuri";
+"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Procedi";
@@ -634,11 +631,11 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Riprova";
 
-/* Snippet to share {{safety numbers}} with a friend. sent e.g. via sms */
-"SAFETY_NUMBER_SHARE_FORMAT" = "I nostri numeri sicuri Signal:\n%@";
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "I numeri sicuri di %@ sono cambiati. Dovresti verificarli.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Scansione codice";
@@ -689,7 +686,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzate";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Richiedi la tua approvazione prima di comunicare con qualcuno con nuovi numeri sicuri, situazione tipica in caso di re-installazione di Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Richiedi approvazione in caso di cambiamenti";
@@ -761,7 +758,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Mostra nuovi numeri sicuri";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u giorno";
@@ -779,10 +776,10 @@
 "SMS_INVITE_BODY" = "Ti sto invitando a installare Signal! Ecco il lnk:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "I tuoi numeri sicuri sono stati verificati. Puoi essere sicuro che la tua comunicazione con %@ sia privata.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Numeri sicuri verificati!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Non siamo riusciti a recuperare dal server un elenco aggiornato dei contatti. Riprovare più tardi.";
@@ -854,7 +851,7 @@
 "VERIFICATION_HEADER" = "Verifica";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verifica numeri sicuri";
+"VERIFY_PRIVACY" = "Verify Safety Number";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configurazione su Signal Desktop.";
