@@ -12,28 +12,26 @@
 
 #define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
 
-typedef void (^ABAccessRequestCompletionBlock)(BOOL hasAccess);
-typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
-
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-@property CNContactStore *contactStore;
-@property NSCache<NSString *, UIImage *> *avatarCache;
+@property CNContactStore * _Nullable contactStore;
+@property NSCache<NSString *, UIImage *> * _Nonnull avatarCache;
 
-- (ObservableValue *)getObservableContacts;
+- (ObservableValue * _Nonnull)getObservableContacts;
 
-- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
-- (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber;
+- (NSArray * _Nonnull)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook;
+- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber * _Nullable)phoneNumber;
 
 - (void)verifyABPermission;
 
-- (NSArray<Contact *> *)allContacts;
-- (NSArray<Contact *> *)signalContacts;
+- (NSArray<Contact *> * _Nonnull)allContacts;
+- (NSArray<Contact *> * _Nonnull)signalContacts;
 
 - (void)doAfterEnvironmentInitSetup;
 
-- (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier;
-- (UIImage *)imageForPhoneIdentifier:(NSString *)identifier;
+- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier;
+- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier;
+- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier;
 
 + (NSComparator)contactComparator;
 
