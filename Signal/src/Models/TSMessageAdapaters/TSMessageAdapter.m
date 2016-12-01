@@ -100,7 +100,7 @@
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             NSString *contactId       = ((TSContactThread *)thread).contactIdentifier;
             adapter.senderId          = contactId;
-            adapter.senderDisplayName = [contactsManager nameStringForPhoneIdentifier:contactId];
+            adapter.senderDisplayName = [contactsManager displayNameForPhoneIdentifier:contactId];
             adapter.messageType       = TSIncomingMessageAdapter;
         } else {
             adapter.senderId          = ME_MESSAGE_IDENTIFIER;
@@ -111,7 +111,7 @@
         if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *message = (TSIncomingMessage *)interaction;
             adapter.senderId           = message.authorId;
-            adapter.senderDisplayName = [contactsManager nameStringForPhoneIdentifier:message.authorId];
+            adapter.senderDisplayName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
             adapter.messageType        = TSIncomingMessageAdapter;
         } else {
             adapter.senderId          = ME_MESSAGE_IDENTIFIER;

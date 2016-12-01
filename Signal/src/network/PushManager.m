@@ -111,7 +111,7 @@
             UILocalNotification *notification = [[UILocalNotification alloc] init];
 
             NSString *callerId   = call.initiatorNumber.toE164;
-            NSString *displayName = [self.contactsManager nameStringForPhoneIdentifier:callerId];
+            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:callerId];
             PropertyListPreferences *prefs = [Environment preferences];
 
             notification.alertBody = @"☎️ ";
