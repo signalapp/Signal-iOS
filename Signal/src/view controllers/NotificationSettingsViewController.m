@@ -12,6 +12,8 @@
 #import "NotificationSettingsOptionsViewController.h"
 #import "PropertyListPreferences.h"
 
+#define kNotificationOptionSection 0
+
 @interface NotificationSettingsViewController ()
 
 @property NSArray *notificationsSections;
@@ -62,7 +64,7 @@
     }
 
     PropertyListPreferences *prefs = Environment.preferences;
-    if (indexPath.section == 0) {
+    if (indexPath.section == kNotificationOptionSection) {
         NotificationType notifType = [prefs notificationPreviewType];
         NSString *detailString     = [prefs nameForNotificationPreviewType:notifType];
 
@@ -90,10 +92,26 @@
     [Environment.preferences setSoundInForeground:sender.on];
 }
 
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    switch (indexPath.section) {
+        case kNotificationOptionSection: {
+            return indexPath;
+        }
+        default: {
+            return nil;
+        }
+    }
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NotificationSettingsOptionsViewController *vc =
-        [[NotificationSettingsOptionsViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    [self.navigationController pushViewController:vc animated:YES];
+    switch (indexPath.section) {
+        case kNotificationOptionSection: {
+            NotificationSettingsOptionsViewController *vc =
+                [[NotificationSettingsOptionsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [self.navigationController pushViewController:vc animated:YES];
+            break;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
