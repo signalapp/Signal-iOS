@@ -12,9 +12,6 @@
 
 #define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
 
-typedef void (^ABAccessRequestCompletionBlock)(BOOL hasAccess);
-typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
-
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
 @property CNContactStore *contactStore;
