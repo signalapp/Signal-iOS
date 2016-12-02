@@ -9,22 +9,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeContactsManager
 
-- (NSString *)nameStringForPhoneIdentifier:(NSString *)phoneNumber
+- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber
 {
     return @"Fake name";
 }
 
-- (NSArray<Contact *> *)signalContacts
+- (NSArray<Contact *> * _Nonnull)signalContacts
 {
     return @[];
 }
 
-+ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString
++ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString
 {
     return YES;
 }
 
-- (nullable UIImage *)imageForPhoneIdentifier:(NSString *)phoneNumber
+- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)phoneNumber
 {
     return nil;
 }

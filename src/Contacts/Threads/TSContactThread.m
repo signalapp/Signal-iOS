@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name
 {
-    return [[TextSecureKitEnv sharedEnv].contactsManager nameStringForPhoneIdentifier:self.contactIdentifier];
+    return [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
 }
 
 #if TARGET_OS_IPHONE

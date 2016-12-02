@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
              durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
     }
     [disappearingMessagesConfiguration save];
-    NSString *name = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
+    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:envelope.timestamp
                                                                           thread:thread
@@ -502,7 +502,7 @@ NS_ASSUME_NONNULL_BEGIN
                   break;
               }
               case OWSSignalServiceProtosGroupContextTypeQuit: {
-                  NSString *nameString = [self.contactsManager nameStringForPhoneIdentifier:envelope.source];
+                  NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
 
                   NSString *updateGroupInfo =
                       [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];

@@ -81,7 +81,7 @@
 
     if ([membersWhoLeft count] > 0) {
         NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager nameStringForPhoneIdentifier:item];
+            return [contactsManager displayNameForPhoneIdentifier:item];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
@@ -91,7 +91,7 @@
     
     if ([membersWhoJoined count] > 0) {
         NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager nameStringForPhoneIdentifier:item];
+            return [contactsManager displayNameForPhoneIdentifier:item];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
