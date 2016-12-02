@@ -399,19 +399,45 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
-- (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier {
+- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString *)identifier {
     if (!identifier) {
         return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
     }
+    Contact *contact = [self contactForPhoneIdentifier:identifier];
+    
+    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
+    
+    return displayName;
+}
+
+- (BOOL)nameExistsForPhoneIdentifier:(NSString *)identifier {
+    Contact *contact = [self contactForPhoneIdentifier:identifier];
+    NSString *name = contact.fullName;
+    
+    if (name.length <= 0) return NO;
+    
+    // OWSContactsManager::contactForRecord will use the first phone number as a name
+    // in absense of a name or business name during import. Make sure that's not happening here.
+    if ((contact.userTextPhoneNumbers.count > 0) && ([contact.userTextPhoneNumbers[0] isEqualToString:name])) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (Contact * _Nullable)contactForPhoneIdentifier:(NSString *)identifier {
+    if (!identifier) {
+        return nil;
+    }
     for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
-                return contact.fullName;
+                return contact;
             }
         }
     }
-    return identifier;
+    return nil;
 }
 
 - (UIImage *)imageForPhoneIdentifier:(NSString *)identifier {

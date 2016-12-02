@@ -32,7 +32,8 @@ typedef void (^ABReloadRequestCompletionBlock)(NSArray *contacts);
 
 - (void)doAfterEnvironmentInitSetup;
 
-- (NSString *)nameStringForPhoneIdentifier:(NSString *)identifier;
+- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString *)identifier;
+- (BOOL)nameExistsForPhoneIdentifier:(NSString *)identifier;
 - (UIImage *)imageForPhoneIdentifier:(NSString *)identifier;
 
 + (NSComparator)contactComparator;
