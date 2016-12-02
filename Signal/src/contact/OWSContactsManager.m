@@ -440,15 +440,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return nil;
 }
 
-- (UIImage *)imageForPhoneIdentifier:(NSString *)identifier {
-    for (Contact *contact in self.allContacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            if ([phoneNumber.toE164 isEqualToString:identifier]) {
-                return contact.image;
-            }
-        }
-    }
-    return nil;
+- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString *)identifier {
+    Contact *contact = [self contactForPhoneIdentifier:identifier];
+
+    return contact.image;
 }
 
 #pragma mark - Logging
