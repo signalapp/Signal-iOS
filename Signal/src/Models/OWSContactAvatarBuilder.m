@@ -57,8 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableString *initials = [NSMutableString string];
-
-    if (self.contactName.length > 0) {
+    BOOL contactHasName = [self.contactsManager nameExistsForPhoneIdentifier:self.signalId];
+    if (contactHasName) {
+        // Make an image from the contact's initials
         NSArray *words =
             [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (NSString *word in words) {
@@ -67,19 +68,20 @@ NS_ASSUME_NONNULL_BEGIN
                 [initials appendString:[firstLetter uppercaseString]];
             }
         }
+        
+        NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
+        initials = [[initials substringWithRange:stringRange] mutableCopy];
+    } else {
+        // We don't have a name for this contact, so we can't make an "initials" image
+        [initials appendString:@"#"];
     }
-
-    NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
-    initials = [[initials substringWithRange:stringRange] mutableCopy];
-
+    
     UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
-
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
                                                                  backgroundColor:backgroundColor
                                                                        textColor:[UIColor whiteColor]
                                                                             font:[UIFont ows_boldFontWithSize:36.0]
                                                                         diameter:100] avatarImage];
-
     [self.contactsManager.avatarCache setObject:image forKey:self.signalId];
     return image;
 }

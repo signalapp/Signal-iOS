@@ -113,7 +113,7 @@
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 
                 if ([thread isGroupThread]) {
-                    NSString *sender = [self.contactsManager nameStringForPhoneIdentifier:message.authorId];
+                    NSString *sender = [self.contactsManager displayNameForPhoneIdentifier:message.authorId];
                     NSString *threadName = [NSString stringWithFormat:@"\"%@\"", name];
                     notification.alertBody =
                         [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
