@@ -224,7 +224,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return futureAddressBookSource.future;
 }
 
-- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook {
+- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook {
     CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
     CFMutableArrayRef allPeopleMutable =
         CFArrayCreateMutableCopy(kCFAllocatorDefault, CFArrayGetCount(allPeople), allPeople);
@@ -290,7 +290,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                             andContactID:recordID];
 }
 
-- (Contact *)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber {
+- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber {
     NSArray *allContacts = [self allContacts];
 
     ContactSearchBlock searchBlock = ^BOOL(Contact *contact, NSUInteger idx, BOOL *stop) {
@@ -361,7 +361,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 
-+ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
++ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString {
     NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
     NSArray *queryStrings         = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
     NSArray *nameStrings          = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
@@ -395,11 +395,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
 }
 
-- (NSArray<Contact *> *)signalContacts {
+- (NSArray<Contact *> * _Nonnull)signalContacts {
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString *)identifier {
+- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
         return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
@@ -411,7 +411,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
-- (BOOL)nameExistsForPhoneIdentifier:(NSString *)identifier {
+- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = [self contactForPhoneIdentifier:identifier];
     NSString *name = contact.fullName;
     
@@ -426,7 +426,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return YES;
 }
 
-- (Contact * _Nullable)contactForPhoneIdentifier:(NSString *)identifier {
+- (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
         return nil;
     }
@@ -440,7 +440,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return nil;
 }
 
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString *)identifier {
+- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = [self contactForPhoneIdentifier:identifier];
 
     return contact.image;
