@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
-    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
+    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: "mkirk/fixup-contacts"
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL'
     pod 'PastelogKit',                '~> 1.3'
