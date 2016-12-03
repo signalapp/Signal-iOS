@@ -367,6 +367,10 @@ fileprivate extension CNContact {
      */
     @objc var nameForCollating: String {
         get {
+            if self.familyName.isEmpty && self.givenName.isEmpty {
+                return self.emailAddresses.first?.value as? String ?? ""
+            }
+            
             let compositeName: String
             if ContactSortOrder == .familyName {
                 compositeName = "\(self.familyName) \(self.givenName)"
