@@ -32,7 +32,7 @@ PODS:
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.8.17)
+  - libPhoneNumber-iOS (0.9.1)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -43,7 +43,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.7.2):
+  - SignalServiceKit (0.8.0):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -132,7 +132,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SignalServiceKit:
-    :commit: 71250281596cdd6a03072d1b4a23aea8ce490eeb
+    :commit: 745a5a276926b9f1f38c3e1bf8bea241e63781e1
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -147,7 +147,7 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: 9f083847f8cb9b81064cff2ed2c98cbf18d9f9f2
+  libPhoneNumber-iOS: 81ad1e6bfcf46e668636333269afbfe60399a55b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
@@ -155,7 +155,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: 077149bbd2852df8dbd987a5e9c47b1e47bc5aca
+  SignalServiceKit: b4b9e425f4043ed74dd07e243de18de401252462
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
