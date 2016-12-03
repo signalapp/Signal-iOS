@@ -3,17 +3,18 @@
 #import "Environment.h"
 #import "Util.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 @interface OWSContactsManager ()
 
-@property id addressBookReference;
-@property TOCFuture *futureAddressBook;
-@property ObservableValueController *observableContactsController;
-@property TOCCancelTokenSource *life;
-@property(atomic, copy) NSDictionary *latestContactsById;
+@property (nullable, strong) id addressBookReference;
+@property (nonatomic, readonly, strong) ObservableValueController *observableContactsController;
+@property (atomic, readonly, strong) TOCCancelTokenSource *life;
+@property (atomic, copy) NSDictionary<NSNumber *, Contact *> *latestContactsById;
 
 @end
 
@@ -125,7 +126,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
 }
 
-- (void)setupLatestContacts:(NSArray *)contacts {
+- (void)setupLatestContacts:(nullable NSArray *)contacts
+{
     if (contacts) {
         self.latestContactsById = [OWSContactsManager keyContactsById:contacts];
     }
@@ -224,7 +226,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return futureAddressBookSource.future;
 }
 
-- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook {
+- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook
+{
     CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
     CFMutableArrayRef allPeopleMutable =
         CFArrayCreateMutableCopy(kCFAllocatorDefault, CFArrayGetCount(allPeople), allPeople);
@@ -290,7 +293,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                             andContactID:recordID];
 }
 
-- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber {
+- (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber
+{
+    if (!phoneNumber) {
+        DDLogWarn(@"%@ Can't find contact for nil phone number.", self.tag);
+        return nil;
+    }
+
     NSArray *allContacts = [self allContacts];
 
     ContactSearchBlock searchBlock = ^BOOL(Contact *contact, NSUInteger idx, BOOL *stop) {
@@ -316,7 +325,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
 }
 
-- (NSArray *)phoneNumbersForRecord:(ABRecordRef)record {
+- (NSArray<NSString *> *)phoneNumbersForRecord:(ABRecordRef)record
+{
     ABMultiValueRef numberRefs = ABRecordCopyValue(record, kABPersonPhoneProperty);
 
     @try {
@@ -325,14 +335,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         if (phoneNumbers == nil)
             phoneNumbers = @[];
 
-        NSMutableArray *numbers = [NSMutableArray array];
+        NSMutableArray<NSString *> *numbers = [NSMutableArray array];
 
         for (NSUInteger i = 0; i < phoneNumbers.count; i++) {
             NSString *phoneNumber = phoneNumbers[i];
             [numbers addObject:phoneNumber];
         }
 
-        return numbers;
+        return [numbers copy];
 
     } @finally {
         if (numberRefs) {
@@ -341,16 +351,18 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-+ (NSDictionary *)keyContactsById:(NSArray *)contacts {
++ (NSDictionary<NSNumber *, Contact *> *)keyContactsById:(NSArray *)contacts
+{
     return [contacts keyedBy:^id(Contact *contact) {
       return @((int)contact.recordID);
     }];
 }
 
-- (NSArray<Contact *> *_Nonnull)allContacts {
+- (NSArray<Contact *> *)allContacts
+{
     NSMutableArray *allContacts = [NSMutableArray array];
 
-    for (NSString *key in self.latestContactsById.allKeys) {
+    for (NSNumber *key in self.latestContactsById.allKeys) {
         Contact *contact = [self.latestContactsById objectForKey:key];
 
         if ([contact isKindOfClass:[Contact class]]) {
@@ -361,7 +373,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 
-+ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString {
++ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString
+{
     NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
     NSArray *queryStrings         = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
     NSArray *nameStrings          = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
@@ -378,8 +391,9 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Whisper User Management
 
-- (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
-    NSMutableDictionary *signalContacts = [NSMutableDictionary new];
+- (NSArray<Contact *> *)getSignalUsersFromContactsArray:(NSArray *)contacts
+{
+    NSMutableDictionary<NSString *, Contact *> *signalContacts = [NSMutableDictionary new];
     for (Contact *contact in contacts) {
         if ([contact isSignalContact]) {
             signalContacts[contact.textSecureIdentifiers.firstObject] = contact;
@@ -395,11 +409,13 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
 }
 
-- (NSArray<Contact *> * _Nonnull)signalContacts {
+- (NSArray<Contact *> *)signalContacts
+{
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
+- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier
+{
     if (!identifier) {
         return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
@@ -411,7 +427,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
-- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier {
+- (BOOL)nameExistsForPhoneIdentifier:(nullable NSString *)identifier
+{
     Contact *contact = [self contactForPhoneIdentifier:identifier];
     NSString *name = contact.fullName;
     
@@ -426,10 +443,12 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return YES;
 }
 
-- (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {
+- (nullable Contact *)contactForPhoneIdentifier:(nullable NSString *)identifier
+{
     if (!identifier) {
         return nil;
     }
+
     for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
@@ -440,7 +459,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return nil;
 }
 
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
+- (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier
+{
     Contact *contact = [self contactForPhoneIdentifier:identifier];
 
     return contact.image;
@@ -459,3 +479,5 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

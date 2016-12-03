@@ -10,29 +10,31 @@
  Get latest Signal contacts, and be notified when they change.
  */
 
-#define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
+NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-@property CNContactStore * _Nullable contactStore;
-@property NSCache<NSString *, UIImage *> * _Nonnull avatarCache;
+@property (nullable, strong) CNContactStore *contactStore;
+@property (readonly, nonatomic, strong) NSCache<NSString *, UIImage *> *avatarCache;
 
-- (ObservableValue * _Nonnull)getObservableContacts;
+- (ObservableValue *)getObservableContacts;
 
-- (NSArray * _Nonnull)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook;
-- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber * _Nullable)phoneNumber;
+- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef)addressBook;
+- (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber;
 
 - (void)verifyABPermission;
 
-- (NSArray<Contact *> * _Nonnull)allContacts;
-- (NSArray<Contact *> * _Nonnull)signalContacts;
+- (NSArray<Contact *> *)allContacts;
+- (NSArray<Contact *> *)signalContacts;
 
 - (void)doAfterEnvironmentInitSetup;
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier;
-- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier;
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier;
+- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
+- (BOOL)nameExistsForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 
 + (NSComparator)contactComparator;
 
 @end
+
+NS_ASSUME_NONNULL_END
