@@ -33,6 +33,6 @@
 - (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier;
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier;
 
-+ (NSComparator)contactComparator;
++ (NSComparator _Nonnull)contactComparator;
 
 @end

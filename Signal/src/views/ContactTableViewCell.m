@@ -40,39 +40,55 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSAttributedString *)attributedStringForContact:(Contact *)contact {
-    NSMutableAttributedString *fullNameAttributedString =
-        [[NSMutableAttributedString alloc] initWithString:contact.fullName];
 
-    UIFont *firstNameFont;
-    UIFont *lastNameFont;
+    NSDictionary<NSString *, id> *boldFontAttributes = @{
+        NSFontAttributeName : [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize],
+        NSForegroundColorAttributeName : [UIColor blackColor]
+    };
 
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
-        lastNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
+    NSDictionary<NSString *, id> *normalFontAttributes = @{
+        NSFontAttributeName : [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize],
+        NSForegroundColorAttributeName : [UIColor ows_darkGrayColor]
+    };
+
+    NSAttributedString *_Nullable firstName, *_Nullable lastName;
+    if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
+        if (contact.firstName) {
+            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:boldFontAttributes];
+        }
+        if (contact.lastName) {
+            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:normalFontAttributes];
+        }
     } else {
-        firstNameFont = [UIFont ows_regularFontWithSize:self.nameLabel.font.pointSize];
-        lastNameFont = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
+        if (contact.firstName) {
+            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:normalFontAttributes];
+        }
+        if (contact.lastName) {
+            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:boldFontAttributes];
+        }
     }
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:firstNameFont
-                                     range:NSMakeRange(0, contact.firstName.length)];
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:lastNameFont
-                                     range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                     value:[UIColor blackColor]
-                                     range:NSMakeRange(0, contact.fullName.length)];
 
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
+    NSAttributedString *_Nullable leftName, *_Nullable rightName;
+    if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
+        leftName = firstName;
+        rightName = lastName;
     } else {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(0, contact.firstName.length)];
+        leftName = lastName;
+        rightName = firstName;
     }
-    return fullNameAttributedString;
+
+    NSMutableAttributedString *fullNameString = [NSMutableAttributedString new];
+    if (leftName) {
+        [fullNameString appendAttributedString:leftName];
+    }
+    if (leftName && rightName) {
+        [fullNameString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+    }
+    if (rightName) {
+        [fullNameString appendAttributedString:rightName];
+    }
+
+    return fullNameString;
 }
 
 @end
