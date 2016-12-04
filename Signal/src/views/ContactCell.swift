@@ -8,6 +8,9 @@
 
 import UIKit
 
+/**
+ * Used in the invite flow contact picker.
+ */
 @available(iOS 9.0, *)
 class ContactCell: UITableViewCell {
 
@@ -18,7 +21,7 @@ class ContactCell: UITableViewCell {
     @IBOutlet weak var contactImageView: UIImageView!
     @IBOutlet weak var contactContainerView: UIView!
     
-    var contact: Contact?
+    var contact: ContactAdapter?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -47,10 +50,11 @@ class ContactCell: UITableViewCell {
     }
 
     func updateContactsinUI(_ contact: Contact, subtitleType: SubtitleCellValue, contactsManager: OWSContactsManager) {
-        self.contact = contact
+        let contactAdapter = ContactAdapter(contact: contact)
+        self.contact = contactAdapter
 
         if contactTextLabel != nil {
-            contactTextLabel.attributedText = contact.cnContact?.formattedFullName(font:contactTextLabel.font)
+            contactTextLabel.attributedText = contactAdapter.formattedFullName(font: contactTextLabel.font)
         }
         
         updateSubtitleBasedonType(subtitleType, contact: contact)
@@ -91,28 +95,3 @@ class ContactCell: UITableViewCell {
     }
 }
 
-@available(iOS 9.0, *)
-fileprivate extension CNContact {
-    /**
-     * Bold the sorting portion of the name. e.g. if we sort by family name, bold the family name.
-     */
-    func formattedFullName(font: UIFont) -> NSAttributedString? {
-        let keyToHighlight = ContactSortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
-
-        if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
-            let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
-            highlightedName.enumerateAttributes(in: NSMakeRange(0, highlightedName.length), options: [], using: { (attrs, range, stop) in
-                if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
-                    let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
-                    let boldAttributes = [
-                        NSFontAttributeName: UIFont(descriptor:boldDescriptor!, size: 0)
-                    ]
-                    
-                    highlightedName.addAttributes(boldAttributes, range: range)
-                }
-            })
-            return highlightedName
-        }
-        return nil
-    }
-}

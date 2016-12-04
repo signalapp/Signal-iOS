@@ -3,6 +3,7 @@
 
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSThread.h"
@@ -56,26 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    NSMutableString *initials = [NSMutableString string];
-    BOOL contactHasName = [self.contactsManager nameExistsForPhoneIdentifier:self.signalId];
-    if (contactHasName) {
-        // Make an image from the contact's initials
-        NSArray *words =
-            [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        for (NSString *word in words) {
-            if (word.length > 0) {
-                NSString *firstLetter = [word substringToIndex:1];
-                [initials appendString:[firstLetter uppercaseString]];
-            }
-        }
-        
-        NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
-        initials = [[initials substringWithRange:stringRange] mutableCopy];
-    } else {
-        // We don't have a name for this contact, so we can't make an "initials" image
-        [initials appendString:@"#"];
+    OWSContactAdapter *contact = [self.contactsManager contactAdapterForPhoneIdentifier:self.signalId];
+    NSString *initials = contact.initials;
+    if (!initials) {
+        initials = @"";
     }
-    
     UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
                                                                  backgroundColor:backgroundColor

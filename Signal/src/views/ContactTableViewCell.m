@@ -3,6 +3,7 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "PhoneManager.h"
+#import "Signal-Swift.h"
 #import "UIUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
 {
-    self.nameLabel.attributedText = [self attributedStringForContact:contact];
+    OWSContactAdapter *contactAdapter = [[OWSContactAdapter alloc] initWithContact:contact];
+    self.nameLabel.attributedText = [contactAdapter formattedFullNameWithFont:self.nameLabel.font];
     self.avatarView.image =
         [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
                                                        name:contact.fullName

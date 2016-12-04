@@ -260,18 +260,18 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
 
-        guard (contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact)) else {
+        guard (contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact.contact)) else {
             self.tableView.deselectRow(at: indexPath, animated: false)
             return
         }
 
-        selectedContacts.append(selectedContact)
+        selectedContacts.append(selectedContact.contact)
 
         if !multiSelectEnabled {
             //Single selection code
             resultSearchController.isActive = false
             self.dismiss(animated: true) {
-                self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact)
+                self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact.contact)
             }
         }
     }

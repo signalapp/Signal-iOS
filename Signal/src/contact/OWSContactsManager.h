@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSContactAdapter;
+
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
 @property (nullable, strong) CNContactStore *contactStore;
@@ -30,8 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)doAfterEnvironmentInitSetup;
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
-- (BOOL)nameExistsForPhoneIdentifier:(nullable NSString *)identifier;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable OWSContactAdapter *)contactAdapterForPhoneIdentifier:(nullable NSString *)identifier;
 
 + (NSComparator)contactComparator;
 

@@ -1,6 +1,7 @@
 #import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
+#import "Signal-Swift.h"
 #import "Util.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -420,30 +421,19 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
     }
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
-    
-    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
-    
-    return displayName;
-}
 
-- (BOOL)nameExistsForPhoneIdentifier:(nullable NSString *)identifier
-{
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
-    NSString *name = contact.fullName;
-    
-    if (name.length <= 0) return NO;
-    
-    // OWSContactsManager::contactForRecord will use the first phone number as a name
-    // in absense of a name or business name during import. Make sure that's not happening here.
-    if ((contact.userTextPhoneNumbers.count > 0) && ([contact.userTextPhoneNumbers[0] isEqualToString:name])) {
-        return NO;
+    OWSContactAdapter *contact = [self contactAdapterForPhoneIdentifier:identifier];
+
+    if (!contact) {
+        // TODO unknown contact null object
+        return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
+            @"Displayed if for some reason we can't determine a contacts phone number *or* name");
     }
-    
-    return YES;
+
+    return contact.displayName;
 }
 
-- (nullable Contact *)contactForPhoneIdentifier:(nullable NSString *)identifier
+- (nullable OWSContactAdapter *)contactAdapterForPhoneIdentifier:(nullable NSString *)identifier
 {
     if (!identifier) {
         return nil;
@@ -452,7 +442,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     for (Contact *contact in self.allContacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 isEqualToString:identifier]) {
-                return contact;
+                return [[OWSContactAdapter alloc] initWithContact:contact];
             }
         }
     }
@@ -461,7 +451,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier
 {
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
+    OWSContactAdapter *contact = [self contactAdapterForPhoneIdentifier:identifier];
 
     return contact.image;
 }
