@@ -19,7 +19,9 @@ class ContactAdapter: NSObject {
 
     required init(contact aContact: Contact) {
         contact = aContact
-        if #available(iOS 9, *) {
+        // Even on iOS9 we are still using ABContacts in some places
+        // So we have to be sure the Contact is a CNContact backed instance.
+        if #available(iOS 9, *), aContact.cnContact != nil {
             adaptee = ContactAdapteeIOS9(contact: aContact)
         } else {
             adaptee = ContactAdapteeIOS8(contact: aContact)
@@ -89,7 +91,7 @@ class ContactAdapter: NSObject {
     }
 }
 
-// iOS 8.
+// Backed by the old pre iOS9 AddressBook framework.
 class ContactAdapteeIOS8: ContactAdaptee {
     let contact: Contact
     let fullName: String
@@ -158,13 +160,15 @@ class ContactAdapteeIOS8: ContactAdaptee {
     }
 }
 
-// iOS 9+
+// Backed by the iOS9+ Contacts framework.
 @available(iOS 9.0, *)
 class ContactAdapteeIOS9: ContactAdaptee {
 
     let contact: Contact
     let cnContact: CNContact
     let fullName: String
+
+    static let ContactSortOrder = computeSortOrder()
 
     required init(contact aContact: Contact) {
         contact = aContact
@@ -177,7 +181,7 @@ class ContactAdapteeIOS9: ContactAdaptee {
      * Bold the sorting portion of the name. e.g. if we sort by family name, bold the family name.
      */
     func formattedFullName(font: UIFont) -> NSAttributedString? {
-        let keyToHighlight = ContactSortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
+        let keyToHighlight = ContactAdapteeIOS9.ContactSortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
 
         if let attributedName = CNContactFormatter.attributedString(from: cnContact, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
@@ -196,6 +200,25 @@ class ContactAdapteeIOS9: ContactAdaptee {
         return nil
     }
 
+    class func computeSortOrder() -> CNContactSortOrder {
+        let comparator = CNContact.comparator(forNameSortOrder: .userDefault)
+
+        let contact0 = CNMutableContact()
+        contact0.givenName = "A"
+        contact0.familyName = "Z"
+
+        let contact1 = CNMutableContact()
+        contact1.givenName = "Z"
+        contact1.familyName = "A"
+
+        let result = comparator(contact0, contact1)
+
+        if result == .orderedAscending {
+            return .givenName
+        } else {
+            return .familyName
+        }
+    }
 }
 
 // TODO move this to separate file

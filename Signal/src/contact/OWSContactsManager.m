@@ -1,8 +1,10 @@
 #import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
-#import "Signal-Swift.h"
 #import "Util.h"
+
+// import this one last, since this class is cyclically references in the swift bridging header.
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
