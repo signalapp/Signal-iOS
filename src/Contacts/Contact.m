@@ -162,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
           }
       }
     }];
-    return identifiers;
+    return [identifiers copy];
 }
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
