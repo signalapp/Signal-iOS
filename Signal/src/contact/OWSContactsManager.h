@@ -30,7 +30,6 @@
 - (void)doAfterEnvironmentInitSetup;
 
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier;
-- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier;
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier;
 
 + (NSComparator _Nonnull)contactComparator;

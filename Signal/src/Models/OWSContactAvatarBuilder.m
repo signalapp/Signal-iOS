@@ -57,8 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableString *initials = [NSMutableString string];
-    BOOL contactHasName = [self.contactsManager nameExistsForPhoneIdentifier:self.signalId];
-    if (contactHasName) {
+
+    NSRange rangeOfLetters = [self.contactName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
+    if (rangeOfLetters.location != NSNotFound) {
+        // Contact name contains letters, so it's probably not just a phone number.
         // Make an image from the contact's initials
         NSArray *words =
             [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -71,7 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
         
         NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
         initials = [[initials substringWithRange:stringRange] mutableCopy];
-    } else {
+    }
+
+    if (initials.length == 0) {
         // We don't have a name for this contact, so we can't make an "initials" image
         [initials appendString:@"#"];
     }

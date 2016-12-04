@@ -411,21 +411,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
-- (BOOL)nameExistsForPhoneIdentifier:(NSString * _Nullable)identifier {
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
-    NSString *name = contact.fullName;
-    
-    if (name.length <= 0) return NO;
-    
-    // OWSContactsManager::contactForRecord will use the first phone number as a name
-    // in absense of a name or business name during import. Make sure that's not happening here.
-    if ((contact.userTextPhoneNumbers.count > 0) && ([contact.userTextPhoneNumbers[0] isEqualToString:name])) {
-        return NO;
-    }
-    
-    return YES;
-}
-
 - (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
         return nil;
