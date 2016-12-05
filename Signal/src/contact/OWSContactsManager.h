@@ -6,32 +6,36 @@
 #import "Contact.h"
 #import "ObservableValue.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class UIFont;
+
 /**
- Get latest Signal contacts, and be notified when they change.
+ * Get latest Signal contacts, and be notified when they change.
  */
-
-#define SIGNAL_LIST_UPDATED @"Signal_AB_UPDATED"
-
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-@property CNContactStore * _Nullable contactStore;
-@property NSCache<NSString *, UIImage *> * _Nonnull avatarCache;
+@property (nullable, strong) CNContactStore *contactStore;
+@property (nonnull, readonly, strong) NSCache<NSString *, UIImage *> *avatarCache;
 
-- (ObservableValue * _Nonnull)getObservableContacts;
+- (nonnull ObservableValue *)getObservableContacts;
 
-- (NSArray * _Nonnull)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook;
-- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber * _Nullable)phoneNumber;
+- (nonnull NSArray *)getContactsFromAddressBook:(nonnull ABAddressBookRef)addressBook;
+- (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber;
 
 - (void)verifyABPermission;
 
-- (NSArray<Contact *> * _Nonnull)allContacts;
-- (NSArray<Contact *> * _Nonnull)signalContacts;
+- (NSArray<Contact *> *)allContacts;
+- (NSArray<Contact *> *)signalContacts;
 
 - (void)doAfterEnvironmentInitSetup;
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier;
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier;
+- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
+- (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 
 + (NSComparator _Nonnull)contactComparator;
 
 @end
+
+NS_ASSUME_NONNULL_END

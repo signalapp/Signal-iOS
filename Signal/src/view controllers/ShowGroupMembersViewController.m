@@ -19,16 +19,43 @@
 
 #import <AddressBookUI/AddressBookUI.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
 
 @interface ShowGroupMembersViewController ()
 
 @property GroupContactsResult *groupContacts;
 @property TSGroupThread *thread;
+@property (nonatomic, readonly, strong) OWSContactsManager *_Nonnull contactsManager;
 
 @end
 
 @implementation ShowGroupMembersViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _contactsManager = [Environment getCurrent].contactsManager;
+
+    return self;
+}
 
 - (void)configWithThread:(TSGroupThread *)gThread {
     _thread = gThread;
@@ -45,18 +72,16 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     self.groupContacts =
         [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
 
-    [[Environment.getCurrent contactsManager]
-            .getObservableContacts watchLatestValue:^(id latestValue) {
-      self.groupContacts =
-          [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
-      [self.tableView reloadData];
+    [self.contactsManager.getObservableContacts watchLatestValue:^(id latestValue) {
+        self.groupContacts =
+            [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
+        [self.tableView reloadData];
     }
-                                           onThread:[NSThread mainThread]
-                                     untilCancelled:nil];
+                                                        onThread:[NSThread mainThread]
+                                                  untilCancelled:nil];
 }
 
 #pragma mark - Initializers
-
 
 - (void)initializeTableView {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -85,7 +110,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         NSIndexPath *relativeIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
         if ([self.groupContacts isContactAtIndexPath:relativeIndexPath]) {
             Contact *contact              = [self contactForIndexPath:relativeIndexPath];
-            cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
+            cell.textLabel.attributedText =
+                [self.contactsManager formattedFullNameForContact:contact font:cell.textLabel.font];
         } else {
             cell.textLabel.text = [self.groupContacts identifierForIndexPath:relativeIndexPath];
         }
@@ -100,7 +126,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
     return cell;
 }
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSIndexPath *relativeIndexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
@@ -147,43 +172,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     return contact;
 }
 
-#pragma mark - Cell Utility
-
-- (NSAttributedString *)attributedStringForContact:(Contact *)contact inCell:(UITableViewCell *)cell {
-    NSMutableAttributedString *fullNameAttributedString =
-        [[NSMutableAttributedString alloc] initWithString:contact.fullName];
-
-    UIFont *firstNameFont;
-    UIFont *lastNameFont;
-
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
-    } else {
-        firstNameFont = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
-    }
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:firstNameFont
-                                     range:NSMakeRange(0, contact.firstName.length)];
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:lastNameFont
-                                     range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                     value:[UIColor blackColor]
-                                     range:NSMakeRange(0, contact.fullName.length)];
-
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-    } else {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(0, contact.firstName.length)];
-    }
-    return fullNameAttributedString;
-}
-
 @end
+
+NS_ASSUME_NONNULL_END

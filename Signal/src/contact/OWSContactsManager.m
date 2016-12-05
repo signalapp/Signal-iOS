@@ -411,6 +411,56 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
+- (NSAttributedString *_Nonnull)formattedFullNameForContact:(Contact *)contact font:(UIFont *_Nonnull)font
+{
+    UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
+
+    NSDictionary<NSString *, id> *boldFontAttributes =
+        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [UIColor blackColor] };
+
+    NSDictionary<NSString *, id> *normalFontAttributes =
+        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_darkGrayColor] };
+
+    NSAttributedString *_Nullable firstName, *_Nullable lastName;
+    if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
+        if (contact.firstName) {
+            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:boldFontAttributes];
+        }
+        if (contact.lastName) {
+            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:normalFontAttributes];
+        }
+    } else {
+        if (contact.firstName) {
+            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:normalFontAttributes];
+        }
+        if (contact.lastName) {
+            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:boldFontAttributes];
+        }
+    }
+
+    NSAttributedString *_Nullable leftName, *_Nullable rightName;
+    if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
+        leftName = firstName;
+        rightName = lastName;
+    } else {
+        leftName = lastName;
+        rightName = firstName;
+    }
+
+    NSMutableAttributedString *fullNameString = [NSMutableAttributedString new];
+    if (leftName) {
+        [fullNameString appendAttributedString:leftName];
+    }
+    if (leftName && rightName) {
+        [fullNameString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+    }
+    if (rightName) {
+        [fullNameString appendAttributedString:rightName];
+    }
+
+    return fullNameString;
+}
+
 - (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
         return nil;

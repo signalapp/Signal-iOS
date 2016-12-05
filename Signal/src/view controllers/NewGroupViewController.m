@@ -29,7 +29,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 @property TSGroupThread *thread;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
+@property (nonatomic, readonly, strong) OWSContactsManager *contactsManager;
 
 @end
 
@@ -42,10 +43,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         return self;
     }
 
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:[Environment getCurrent].contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
+
     return self;
 }
 
@@ -56,11 +55,19 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         return self;
     }
 
+    [self commonInit];
+
+    return self;
+}
+
+- (void)commonInit
+{
     _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
                                                        storageManager:[TSStorageManager sharedManager]
                                                       contactsManager:[Environment getCurrent].contactsManager
                                                       contactsUpdater:[Environment getCurrent].contactsUpdater];
-    return self;
+
+    _contactsManager = [Environment getCurrent].contactsManager;
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
@@ -339,7 +346,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     NSUInteger row   = (NSUInteger)indexPath.row;
     Contact *contact = contacts[row];
 
-    cell.textLabel.attributedText = [self attributedStringForContact:contact inCell:cell];
+    cell.textLabel.attributedText = [self.contactsManager formattedFullNameForContact:contact font:cell.textLabel.font];
 
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
@@ -370,46 +377,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [self.nameGroupTextField resignFirstResponder];
     return NO;
-}
-
-#pragma mark - Cell Utility
-
-- (NSAttributedString *)attributedStringForContact:(Contact *)contact inCell:(UITableViewCell *)cell {
-    NSMutableAttributedString *fullNameAttributedString =
-        [[NSMutableAttributedString alloc] initWithString:contact.fullName];
-
-    UIFont *firstNameFont;
-    UIFont *lastNameFont;
-
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        firstNameFont = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
-    } else {
-        firstNameFont = [UIFont ows_regularFontWithSize:cell.textLabel.font.pointSize];
-        lastNameFont  = [UIFont ows_mediumFontWithSize:cell.textLabel.font.pointSize];
-    }
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:firstNameFont
-                                     range:NSMakeRange(0, contact.firstName.length)];
-    [fullNameAttributedString addAttribute:NSFontAttributeName
-                                     value:lastNameFont
-                                     range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-
-    [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                     value:[UIColor blackColor]
-                                     range:NSMakeRange(0, contact.fullName.length)];
-
-    if (ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst) {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(contact.firstName.length + 1, contact.lastName.length)];
-    } else {
-        [fullNameAttributedString addAttribute:NSForegroundColorAttributeName
-                                         value:[UIColor ows_darkGrayColor]
-                                         range:NSMakeRange(0, contact.firstName.length)];
-    }
-
-    return fullNameAttributedString;
 }
 
 @end
