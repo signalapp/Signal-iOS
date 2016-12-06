@@ -183,20 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        if (messageEnvelope.hasContent) {
-            OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            if (content.hasSyncMessage) {
-                [self handleIncomingEnvelope:messageEnvelope withSyncMessage:content.syncMessage];
-            } else if (content.dataMessage) {
-                [self handleIncomingEnvelope:messageEnvelope withDataMessage:content.dataMessage];
-            }
-        } else if (messageEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
-            OWSSignalServiceProtosDataMessage *dataMessage =
-                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
-            [self handleIncomingEnvelope:messageEnvelope withDataMessage:dataMessage];
-        } else {
-            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
-        }
+        [self handleEnvelope:messageEnvelope plaintextData:plaintextData];
     }
 }
 
@@ -230,20 +217,27 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        if (preKeyEnvelope.hasContent) {
-            OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-            if (content.hasSyncMessage) {
-                [self handleIncomingEnvelope:preKeyEnvelope withSyncMessage:content.syncMessage];
-            } else if (content.dataMessage) {
-                [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:content.dataMessage];
-            }
-        } else if (preKeyEnvelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
-            OWSSignalServiceProtosDataMessage *dataMessage =
-                [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
-            [self handleIncomingEnvelope:preKeyEnvelope withDataMessage:dataMessage];
+        [self handleEnvelope:preKeyEnvelope plaintextData:plaintextData];
+    }
+}
+
+- (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
+{
+    if (envelope.hasContent) {
+        OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
+        if (content.hasSyncMessage) {
+            [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
+        } else if (content.hasDataMessage) {
+            [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage];
         } else {
-            DDLogWarn(@"Ignoring content that has no dataMessage or syncMessage.");
+            DDLogWarn(@"%@ Ignoring envelope.Content with no known payload", self.tag);
         }
+    } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+        OWSSignalServiceProtosDataMessage *dataMessage =
+            [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
+    } else {
+        DDLogWarn(@"%@ Ignoring envelope with neither DataMessage nor Content.", self.tag);
     }
 }
 
