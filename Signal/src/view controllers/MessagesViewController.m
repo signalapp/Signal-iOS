@@ -236,6 +236,8 @@ typedef enum : NSUInteger {
     self.messageAdapterCache = [[NSCache alloc] init];
 
     _attachButton = [[UIButton alloc] init];
+    _attachButton.accessibilityLabel = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
+    _attachButton.accessibilityHint = NSLocalizedString(@"ATTACHMENT_HINT", @"Accessibility hint describing what you can do with the attachment button");
     [_attachButton setFrame:CGRectMake(0,
                                        0,
                                        JSQ_TOOLBAR_ICON_WIDTH + JSQ_IMAGE_INSET * 2,
@@ -498,6 +500,7 @@ typedef enum : NSUInteger {
                                                                        style:UIBarButtonItemStylePlain
                                                                       target:self
                                                                       action:@selector(callAction)];
+        callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibilty label for placing call button");
         callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
         [barButtons addObject:callButton];
     } else if ([self.thread isGroupThread]) {
@@ -508,14 +511,19 @@ typedef enum : NSUInteger {
                                             action:@selector(didTapManageGroupButton:)];
         // Hack to shrink button image
         manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+        manageGroupButton.accessibilityLabel = NSLocalizedString(@"GROUP_SETTINGS_LABEL", @"Accessibilty label for group settings");
         [barButtons addObject:manageGroupButton];
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
+        UIBarButtonItem *timerButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
                                                                style:UIBarButtonItemStylePlain
                                                               target:self
-                                                              action:@selector(didTapTimerInNavbar)]];
+                                                              action:@selector(didTapTimerInNavbar)];
+        timerButton.accessibilityLabel = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
+        NSString *formatString = NSLocalizedString(@"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
+        timerButton.accessibilityHint = [NSString stringWithFormat:formatString, [disappearingMessagesConfiguration durationString]];
+        [barButtons addObject:timerButton];
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
