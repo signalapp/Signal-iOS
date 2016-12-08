@@ -128,6 +128,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 @property (nonatomic, strong) id visibleAlert;
 @property (nonatomic, assign) BOOL checkingForPrompt;
 @property (nonatomic, assign) BOOL checkingForAppStoreID;
+@property (nonatomic, assign) BOOL shouldPreventPromptAtNextTest;
 
 @end
 
@@ -224,6 +225,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
         self.remindPeriod                      = 1.0f;
         self.verboseLogging                    = NO;
         self.previewMode                       = NO;
+        self.shouldPreventPromptAtNextTest     = NO;
 
 #if DEBUG
 
@@ -404,6 +406,10 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)preventPromptAtNextTest {
+    self.shouldPreventPromptAtNextTest = YES;
+}
+
 - (void)incrementUseCount {
     self.usesCount++;
 }
@@ -413,6 +419,14 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 }
 
 - (BOOL)shouldPromptForRating {
+    // Avoid potentially inconvenient prompt
+    if (self.shouldPreventPromptAtNextTest)
+    {
+        NSLog(@"iRate did not prompt for rating because it is potentially inconvenient");
+        self.shouldPreventPromptAtNextTest = NO;
+        return NO;
+    }
+
     // preview mode?
     if (self.previewMode) {
         NSLog(@"iRate preview mode is enabled - make sure you disable this for release");
