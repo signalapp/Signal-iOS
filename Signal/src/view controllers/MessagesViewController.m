@@ -1625,7 +1625,9 @@ typedef enum : NSUInteger {
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        });
     }
                    alertActionHandler:nil];
 }
@@ -1639,7 +1641,9 @@ typedef enum : NSUInteger {
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     picker.delegate = self;
     picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    });
 }
 
 /*
@@ -1755,22 +1759,24 @@ typedef enum : NSUInteger {
                                                  attachmentIds:[NSMutableArray new]];
     }
 
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                                              (unsigned long)attachmentData.length,
-                                              attachmentType);
-                                 [self.messageSender sendAttachmentData:attachmentData
-                                     contentType:attachmentType
-                                     inMessage:message
-                                     success:^{
-                                         DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
-                                     }
-                                     failure:^(NSError *error) {
-                                         DDLogError(
-                                             @"%@ Failed to send message attachment with error: %@", self.tag, error);
-                                     }];
-                             }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self dismissViewControllerAnimated:YES
+                                 completion:^{
+                                     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                                                  (unsigned long)attachmentData.length,
+                                                  attachmentType);
+                                     [self.messageSender sendAttachmentData:attachmentData
+                                                                contentType:attachmentType
+                                                                  inMessage:message
+                                                                    success:^{
+                                                                        DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
+                                                                    }
+                                                                    failure:^(NSError *error) {
+                                                                        DDLogError(
+                                                                                   @"%@ Failed to send message attachment with error: %@", self.tag, error);
+                                                                    }];
+                                 }];
+    });
 }
 
 - (NSURL *)videoTempFolder {
