@@ -155,12 +155,10 @@
 
                     if (pointer.isDownloading) {
                         adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
+                    } else if (pointer.hasFailed) {
+                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
                     } else {
-                        if (pointer.hasFailed) {
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
-                        } else {
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
-                        }
+                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
                     }
                 } else {
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
