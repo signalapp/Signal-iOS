@@ -25,4 +25,8 @@
     rate.rateButtonLabel                = NSLocalizedString(@"RATING_RATE", nil);
 }
 
++ (void)preventPromptAtNextTest {
+    iRate *rate = [iRate sharedInstance];
+    [rate preventPromptAtNextTest];
+}
 @end

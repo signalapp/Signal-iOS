@@ -332,6 +332,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    [AppStoreRating preventPromptAtNextTest];
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
 }
 

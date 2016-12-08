@@ -11,5 +11,6 @@
 @interface AppStoreRating : NSObject
 
 + (void)setupRatingLibrary;
++ (void)preventPromptAtNextTest;
 
 @end
