@@ -11,6 +11,11 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Menlo.ttc">
+            <string>Menlo-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Conversations-->
         <scene sceneID="82U-Xj-21R">
@@ -421,6 +426,9 @@
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0dO-mx-W3I" userLabel="Disappearing Messages Switch">
                                                     <rect key="frame" x="310" y="7" width="51" height="31"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="49" id="6x6-MQ-bdQ"/>
+                                                    </constraints>
                                                     <connections>
                                                         <action selector="disappearingMessagesSwitchValueDidChange:" destination="4oU-Rv-yJi" eventType="valueChanged" id="3fF-JA-69e"/>
                                                     </connections>
@@ -1492,11 +1500,11 @@
                         <viewControllerLayoutGuide type="bottom" id="kH6-9L-pzh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P0X-AM-Yjw">
-                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ukg-om-VX3" userLabel="Group Details">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="100"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul8-NY-i4c">
                                         <rect key="frame" x="8" y="20" width="60" height="60"/>
@@ -1531,7 +1539,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="cFo-AT-Srf">
-                                <rect key="frame" x="0.0" y="108" width="375" height="495"/>
+                                <rect key="frame" x="0.0" y="128" width="375" height="539"/>
                                 <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <view key="tableHeaderView" contentMode="scaleToFill" id="ekO-kw-iHV" userLabel="Header View">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
@@ -1669,6 +1677,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="wgA-Oo-kKq"/>
-        <segue reference="D0d-4f-lcI"/>
+        <segue reference="E8S-Yc-X7E"/>
     </inferredMetricsTieBreakers>
 </document>
