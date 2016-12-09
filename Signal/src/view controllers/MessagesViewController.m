@@ -500,23 +500,17 @@ typedef enum : NSUInteger {
                                                                       action:@selector(callAction)];
         callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
         [barButtons addObject:callButton];
-    } else if ([self.thread isGroupThread]) {
-        UIBarButtonItem *manageGroupButton =
-            [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapManageGroupButton:)];
-        // Hack to shrink button image
-        manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
-        [barButtons addObject:manageGroupButton];
     }
 
-    if (disappearingMessagesConfiguration.isEnabled) {
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
-                                                               style:UIBarButtonItemStylePlain
-                                                              target:self
-                                                              action:@selector(didTapTimerInNavbar)]];
-    }
+    UIBarButtonItem *conversationSettingsButton =
+        [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapConversationSettingsButton:)];
+    // Hack to shrink button image
+    conversationSettingsButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+    [barButtons addObject:conversationSettingsButton];
+
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
 }
@@ -1125,15 +1119,9 @@ typedef enum : NSUInteger {
     [self showConversationSettings];
 }
 
-- (void)didTapManageGroupButton:(id)sender
+- (void)didTapConversationSettingsButton:(id)sender
 {
     DDLogDebug(@"%@ Tapped options menu in navbar", self.tag);
-    [self showConversationSettings];
-}
-
-- (void)didTapTimerInNavbar
-{
-    DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
     [self showConversationSettings];
 }
 
