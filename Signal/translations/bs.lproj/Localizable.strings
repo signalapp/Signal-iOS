@@ -8,10 +8,10 @@
 "AB_PERMISSION_MISSING_TITLE" = "Žao nam je!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Prihvati novi sigurnosni broj";
 
 /* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Zahtijeva akciju";
+"ACTION_REQUIRED_TITLE" = "Zahtjeva akciju";
 
 /* Alert body when contacts disabled */
 "ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal zahtijeva pristup vašim kontaktima. Pristup kontaktima  je ograničen. Signal će se zatvoriti. Vi možete privremeno onemogućiti ograničenje i dozvoliti da Signal pristupi vašim kontaktima u aplikaciji Postavke >> Općenito >> Ograničenja >> Kontakti >> Dozvoli promjene";
@@ -38,7 +38,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "Arhiva";
+"ARCHIVE_ACTION" = "Arhiviraj";
 
 /* No comment provided by engineer. */
 "ARCHIVE_NAV_BAR_TITLE" = "Arhiva";
@@ -52,17 +52,26 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Preuzimanje privitka";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Novi privitak na čekanju za preuzimanje.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal želi koristiti vaš mikrofon kako bi ispravno funkcionirao. Uvijek se možete vratiti na prijašnje postavke u aplikaciji Postavke >> Privatnost >> Mikrofon >> Signal";
 
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
+
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Povratni poziv";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Uporedi sa međuspremnikom";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka i odjaviti će vas sa servera. Aplikacija će se zatvoriti nakon brisanja podataka.";
@@ -83,19 +92,19 @@
 "CONFIRMATION_TITLE" = "Potvrdi";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Broj nije registrovan";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistrirani broj";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Nema dostupnog e-maila.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nema dostupnog telefonskog broja.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Podešavanje razgovora";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Vraćanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Izaberi državni kôd";
@@ -110,7 +119,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posljednja aktivnost: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Povezan: %@";
+"DEVICE_LINKED_AT_LABEL" = "Uvezan: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Neuspjelo ažuriranje liste uređaja.";
@@ -119,7 +128,13 @@
 "DISAPPEARING_MESSAGES" = "Nestajuće poruke";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, poslane i primljene poruke u ovom razgovoru će se same nestajati nakon što budu viđene.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, poslane i primljene poruke u ovom razgovoru će same nestajati nakon što budu viđene.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Odbaci";
@@ -131,10 +146,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "Spremi";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nOdnedavno koristim Signal kako bi svoje razgovore na mom iPhoneu zadržao privatnim. Volio bi da ga i ti instaliraš, tako da budemo sigurni da samo ja i ti možemo čitati naše poruke i čuti naše razgovore.\n\nSignal je dostupan za iPhone i Android. Preuzmite ga ovdje : %@\n\nSignal radi kao tvoja postojeća aplikacija za razmjenu poruka. Možemo slati slike i video, vršiti pozive i započeti grupne razgovore. Najbolje stvar je što nitko drugi osim nas ništa od toga ne može vidjeti, pa čak ni ljudi koje čine Signal.\n\nMožeš pročitati više o Open Whisper System i Signalu, ljudima koji stoje iza ovog projekta, ovdje: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Pređimo na Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Dodirnite dugme za sastavljanje poruke.";
@@ -149,10 +164,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Očistite vaše razgovore.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Niko od vaših kontakata ne koristi Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Zašto nekome ne pošaljete pozivnicu?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Savjet: dodajte razgovor kao podsjetnik!";
@@ -161,10 +176,10 @@
 "EMPTY_INBOX_FIRST_TITLE" = "Uredu. Uredu. Uredu.";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TEXT" = "Ništa. Zero. Zlich. Nada";
+"EMPTY_INBOX_TEXT" = "Ništa. None. Zero. Nada";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TITLE" = "Sve skroz uredno.";
+"EMPTY_INBOX_TITLE" = "Nema arhiviranih razgovora.";
 
 /* No comment provided by engineer. */
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "Serverska greška!";
@@ -176,22 +191,22 @@
 "END_CALL_HANDSHAKE_FAILED" = "Greška kod rukovanja!";
 
 /* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Prekinuli ste vezu.";
+"END_CALL_HANGUP_LOCAL" = "Prekinuli ste poziv.";
 
 /* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Druga strana je prekinula vezu.";
+"END_CALL_HANGUP_REMOTE" = "Druga strana je prekinula poziv.";
 
 /* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Greška prilikom prijave!";
+"END_CALL_LOGIN_FAILED" = "Neuspješna prijava!";
 
 /* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Serverska poruka:";
+"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Poruka sa servera:";
 
 /* No comment provided by engineer. */
 "END_CALL_NO_SUCH_USER" = "Broj nije registrovan na Signal ili RedPhone!";
 
 /* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Primalac Nedostupan.";
+"END_CALL_RECIPIENT_UNAVAILABLE" = "Primalac nedostupan.";
 
 /* No comment provided by engineer. */
 "END_CALL_REJECTED_LOCAL" = "Odbili ste poziv.";
@@ -209,7 +224,7 @@
 "END_CALL_STALE_SESSION" = "Propušten poziv.";
 
 /* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Greška Klijenta.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Klijent nije uspio.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo.";
@@ -230,7 +245,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primaoca nije validan.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka je van sinkronizacije. Dodirnite za resetovanje sigurnosne sesije.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Primljena poruka nije kompatibilna s ovom verzijom.";
@@ -239,13 +254,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nema raspoloživih sesija za kontakt.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj promijenjen.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate greške.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirnite za verifikaciju.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Pažnja!";
@@ -254,19 +269,22 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha sa ovim kontaktom. Pokušajte malo kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Morate prihvatiti novi sigurnosni broj prije mogućnosti slanja.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dodirnite za novi pokušaj.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja nije uspjela!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetuj ovu sesiju.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Slika profila promjenjena.";
+"GROUP_AVATAR_CHANGED" = "Slika profila promijenjena.";
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Grupa je kreirana.";
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Napuštanje grupe nije uspjelo";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Naslov je sada '%@'.";
@@ -329,13 +350,13 @@
 "INCOMING_CALL_FROM" = "Dolazni poziv od %@";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozovite prijatelje na Signal";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Pošalji pozivnicu prijateljima";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Poruke će nestajati nakon %@.";
+"KEEP_MESSAGES_DURATION" = "Poruke nestaju nakon %@.";
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Poruke neće nestajati.";
@@ -350,31 +371,31 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ovaj QR kôd nije validan, budite sigurni da skenirate QR kôd prikazan na uređaju koji želite povezati.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Povezivanje uređaja nije uspjelo.";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Uvezivanje uređaja nije uspjelo!";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ovaj uređaj će biti u stanju prikazati vaše grupe i kontakte, čitati sve vaše poruke i slati poruke u vaše ime.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Poveži ovaj uređaj?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Uveži ovaj uređaj?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Pokušaj";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skeniraj QR kôd prikazan na uređaju koji povezujete.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skeniraj QR kôd prikazan na uređaju koji uvezujete.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skeniraj QR kôd";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Poveži novi uređaj";
+"LINK_NEW_DEVICE_TITLE" = "Uveži novi uređaj";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Povezani uređaji";
+"LINKED_DEVICES_TITLE" = "Uvezani uređaji";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Povezivanje uređaja nije uspjelo";
+"LINKING_DEVICE_FAILED_TITLE" = "Uvezivanje uređaja nije uspjelo";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Popis članova grupe";
@@ -392,10 +413,10 @@
 "ME_STRING" = "Ja";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Foto Galerija";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";
@@ -410,7 +431,7 @@
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Ranije niste dopustili Signalu da pristupi vašoj kameri. Ažurirajte vaše postavke sistema kako bi ste nastavili.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristupiti kameri.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_MISSED_CALL" = "Propušten poziv od %@.";
@@ -446,13 +467,13 @@
 "NETWORK_STATUS_TEXT" = "Možete provjeriti status vaše mreže gledajući traku u boji iznad vašeg sandučića.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Postavi sliku grupe";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nova grupa";
 
 /* No comment provided by engineer. */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Daj naziv ovom grupnom razgovoru";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Dodijeli naziv ovom grupnom razgovoru";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Dodajte osobe";
@@ -482,7 +503,7 @@
 "NOTIFICATIONS_SHOW" = "Prikaži";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Zvuk obavijesti";
+"NOTIFICATIONS_SOUND" = "Zvukovi obavijesti";
 
 /* No comment provided by engineer. */
 "OK" = "Ok";
@@ -494,7 +515,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ onemogućio/la nestajuće poruke.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je postavio/la vrijeme za nestajanje poruka na %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je postavio/la vrijeme za nestajuće poruke na %@.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Odlazni poziv";
@@ -503,16 +524,16 @@
 "PHONE_NEEDS_UNLOCK" = "Vaš iPhone treba biti otključan za primanje nove poruke.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Broj u vašem međuspremniku ne izgleda kao ispravan sigurnosni broj za ovaj razgovor.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ne može pronaći nijedan sigurnosni broj u međuspremniku. Da li sta ga ispravno kopirali?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki korisnički par na Signalu dijeli poseban sigurnosni broj. Duplo provjerite da %@ prikazuje *vaš* poseban sigurnosni broj.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Pokrećete staru verziju Signala. Potrebno je ažuriranje prije verifikacije.";
@@ -527,7 +548,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite verifikovati sigurnost end-to-end šifriranja sa %@, uporedite brojeve iznad sa brojevima na njegovom/njezinom uređaju.\n\nAlternativno, možete skenirati kôd na njegovom/njezinom telefonu ili upitati ih da skeniraju vaš kôd.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavljanje";
@@ -587,7 +608,7 @@
 "REGISTRATION_BODY" = "Neuspješna preregistracija za push obavijesti.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kôd države";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Državni kôd ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Unesite broj";
@@ -632,10 +653,10 @@
 "RETRY_BUTTON_TEXT" = "Pokušaj";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Naš Signal sigurnosni broj:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj sa %@ je promijenjen. Možda ga želite verifikovati";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Skeniraj kôd";
@@ -644,7 +665,7 @@
 "SCAN_CODE_INSTRUCTIONS" = "Skenirajte QR kôd na uređaju vašeg kontakta.";
 
 /* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Traži po imenu ili broju";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Pretraga po imenu ili broju";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "SECONDS_TIME_AMOUNT" = "%u sekundi";
@@ -659,10 +680,10 @@
 "SEND_BUTTON_TITLE" = "Šalji";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "Slanje pozivnice nije uspjelo, molimo pokušajte kasnije.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Pozvali se prijatelja/icu da koristi Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "Pošalji SMS za:";
@@ -674,7 +695,7 @@
 "SEND_SMS_INVITE_TITLE" = "Želite li poslati pozivnicu na Signal sljedećem broju:";
 
 /* Navbar title */
-"SETTINGS_ABOUT" = "O nama";
+"SETTINGS_ABOUT" = "O aplikaciji";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Omogućite zapis o neispravnosti";
@@ -686,22 +707,22 @@
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Zahtjeva vaše odobrenje prije komunikacije sa nekim ko ima novi sigurnosni broj, obično zbog reinstalacije Signala.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Potrebno je odobrenje za promjenu";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Zahtjeva odobrenje za promjenu";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Očisti historijski zapis";
+"SETTINGS_CLEAR_HISTORY" = "Očisti historijske zapise";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Sva prava zadržana Open Whisper Systems\nLicencirana pod GPLv3";
+"SETTINGS_COPYRIGHT" = "Sva prava zadržava Open Whisper Systems\nLicencirano pod GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Da li ste sigurni da želite izbrisati svu historiju (poruke, privitke, historiju poziva...) ? \nOva akcija ne može biti vraćena.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Da li ste sigurni da želite izbrisati svu historiju (poruke, privitke, historiju poziva...) ? \nOva akcija ne može biti poništena.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Siguran sam.";
@@ -716,13 +737,13 @@
 "SETTINGS_INFORMATION_HEADER" = "Informacije";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Pošalji pozivnicu prijateljima";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Možete me kontaktirati koristeći Signal od @WhisperSystems, preuzmite ga sada.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Povežimo se koristeći Signal od @WhisperSystems, preuzmite aplikaciju sada.";
 
 /* Title for settings activity */
-"SETTINGS_NAV_BAR_TITLE" = "Postavke";
+"SETTINGS_NAV_BAR_TITLE" = "Podešavanja";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Obavijesti";
@@ -737,7 +758,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Omogući sigurnost zaslona";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja u promjeni aplikacija.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Sigurnost zaslona";
@@ -749,16 +770,16 @@
 "SETTINGS_VERSION" = "Verzija";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "E-mail";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Poruka";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži novi sigurnosni broj";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u dan";
@@ -767,7 +788,7 @@
 "SINGLE_HOUR_TIME_AMOUNT" = "%u sat";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minuta";
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u minut";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_WEEK_TIME_AMOUNT" = "%u sedmica";
@@ -776,10 +797,10 @@
 "SMS_INVITE_BODY" = "Pozivam vas da instalirate Signal! Ovdje je link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaš sigurnosni broj sa %@ je verifikovan. Možete biti uvjereni da je vaša komunikacija privatna.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj verifikovan!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Nismo mogli donijeti ažurirani popis kontakata sa servera. Molimo pokušajte ponovo kasnije.";
@@ -788,7 +809,7 @@
 "TXT_CANCEL_TITLE" = "Otkaži";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Obriši";
+"TXT_DELETE_TITLE" = "Izbriši";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Dearhiviraj";
@@ -812,7 +833,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal nije u mogućnosti prekinuti vezu sa vašim uređajem.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Neimenovan uređaj";
+"UNNAMED_DEVICE" = "Neimenovani uređaj";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Odjava sa Signala nije uspjela.";
@@ -839,7 +860,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikacijski kôd";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Nazovi me umjesto toga";
+"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Potvrdi pozivom";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo zatraži kôd";
@@ -851,7 +872,7 @@
 "VERIFICATION_HEADER" = "Verifikuj";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "Verifikuj sigurnosni broj";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";
@@ -863,7 +884,7 @@
 "WHISPER_NAV_BAR_TITLE" = "Sandučić";
 
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Onemogućili ste samouništavajuće poruke.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Onemogućili ste nestajuće poruke.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste vrijeme za nestajanje poruka na %@. ";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste vrijeme za nestajuće poruke na %@. ";

@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Melléklet letöltése";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Új melléklet várakozik helyrehozásra.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Az alkalmazás megfelelő működéséhez az alkalmazásnak hozzá kell férni a telefonod mikrofonjához. Az engedélyt a Beállítások >> Adatvédelem >>  Mikrofon >> Signal menüpontban vonhatod vissza.";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Visszahívás";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Elvet";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Munkamenet alaphelyzetbe állítása.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "A profilképed megváltozott.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Csoport elhagyása sikertelen";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "A cím most %@";

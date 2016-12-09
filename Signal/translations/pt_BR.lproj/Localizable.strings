@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Baixando anexo";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Novo anexo na fila para recuperação.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Para funcionar corretamente o Signal precisa acessar seu microfone. Você pode permitir o acesso ao microfone em Ajustes >> Privacidade >> Microfone >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Chamar de volta";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Se assim habilitadas, as mensagens enviadas e recebidas nesta conversa irão desaparecer após terem sido lidas.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar esta sessão.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar trocado.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Falha ao sair do grupo";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "O título agora é '%@'.";

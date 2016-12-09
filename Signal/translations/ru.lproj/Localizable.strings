@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Вложение скачивается";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Новое вложение поставлено в очередь для скачивания.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Для правильной работы Signal необходим доступ к микрофону. Вы можете восстановить доступ в Настройках в разделе Конфиденциальность >> Микрофон >> Signal.";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Перезвонить";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "При включении этой настройки сообщения, отправленные и полученные в этом разговоре, будут исчезать после прочтения.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Закрыть";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сеанс связи.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Аватар изменён.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Не удалось покинуть группу";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Название изменено на «%@».";

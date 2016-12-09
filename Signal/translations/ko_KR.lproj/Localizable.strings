@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "첨부파일 다운로드중";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "정보 검색을 위한 새 첨부파일 대기";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal이 제대로 작동하려면 마이크에 접근을 필요로 합니다. ‘설정’ > ‘개인 정보 보호’ > ‘마이크’ > ‘Signal’에서 설정을 변경할 수 있습니다.";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "전화하기";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "세션 초기화";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "아바타 변경됨.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Failed to leave group";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "제목은 '%@'";

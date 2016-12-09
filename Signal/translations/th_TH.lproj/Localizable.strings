@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "กำลังดาวน์โหลดไฟล์แนบ";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "ไฟล์แนบถูกจัดคิวสำหรับดึงข้อมูล";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal ต้องการเข้าถึงไมโครโฟนของคุณเพื่อให้ทำงานได้ถูกต้อง คุณสามารถเรียกคืนสิทธิการเข้าถึงได้ในแอป การตั้งค่า >> ความเป็นส่วนตัว >> ไมโครโฟน >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
@@ -86,16 +95,16 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "หมายเลขที่ยังไม่ลงทะเบียน";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "ไม่มีอีเมลที่ใช้งานได้";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "ไม่มีหมายเลขโทรศัพท์ที่ใช้งานได้";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "ตั้งค่าการสนทนา";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตวาระของคุณจะอนุญาตให้คุณรับข้อความในอนาคตจาก %@ แต่จะไม่กู้คืนข้อความใด ๆ ที่เสียหายไปแล้ว";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "เลือกรหัสประเทศ";
@@ -110,7 +119,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "ใช้งานล่าสุด: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "เชื่อมโยงเมื่อ: %@";
+"DEVICE_LINKED_AT_LABEL" = "เชื่อมโยง: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ไม่สามารถอัปเดตรายการอุปกรณ์";
@@ -121,8 +130,14 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "เมื่อเปิดใช้งาน ข้อความที่ส่งและรับในการสนทนานี้จะหายไปหลังจากเห็นแล้ว";
 
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+
 /* Generic short text for button to dismiss a dialog */
-"DISMISS_BUTTON_TEXT" = "บอกเลิก";
+"DISMISS_BUTTON_TEXT" = "ยกเลิก";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
@@ -131,10 +146,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "บันทึก";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "เฮ้\n\nเมื่อเร็ว ๆ นี้ฉันได้ใช้ Signal เพื่อเก็บรักษาความเป็นส่วนตัวในการสนทนาบน iPhone ของฉัน ฉันอยากให้คุณติดตั้งด้วย เพื่อให้เราสามารถมั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงโทรของเรา\n\nSignal ใช้งานได้บน iPhone และ Android รับเลยที่นี่: %@\n\nSignal ทำงานเหมือนกับแอปข้อความที่มีอยู่ของคุณ เราสามารถส่งรูปภาพและวิดีโอ โทรออก และเริ่มแชทกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครอื่นสามารถเห็นสิ่งเหล่านี้ ไม่แม้แต่ผู้คนที่สร้าง Signal!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้คนที่สร้าง Signal ได้ที่นี่: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "แตะบนปุ่มเขียน";
@@ -170,7 +185,7 @@
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "เซิร์ฟเวอร์ล้มเหลว!";
 
 /* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "สิ้นสุด";
+"END_CALL_BUTTON_TITLE" = "วาง";
 
 /* No comment provided by engineer. */
 "END_CALL_HANDSHAKE_FAILED" = "Handshake ล้มเหลว!";
@@ -230,7 +245,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "กุญแจของผู้รับไม่ถูกต้อง";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "ข้อความที่ได้รับหลุดจากการซิงค์ แตะเพื่อรีเซ็ตวาระแบบปลอดภัยของคุณ";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "ได้รับข้อความที่เข้ากันไม่ได้กับรุ่นนี้";
@@ -239,22 +254,22 @@
 "ERROR_MESSAGE_NO_SESSION" = "ไม่มีวาระที่ใช้งานได้สำหรับรายชื่อ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "ตัวเลขความปลอดภัยถูกเปลี่ยน";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "ตัวเลขความปลอดภัยถูกเปลี่ยน แตะเพื่อตรวจสอบ";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "แย่จัง!";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "เกิดความล้มเหลวมากเกินไปกับรายชื่อนี้ โปรดลองอีกครั้งในเร็ว ๆ นี้";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "คุณต้องยอมรับตัวเลขความปลอดภัยใหม่ก่อนที่คุณจะสามารถส่ง";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "การส่งล้มเหลว แตะเพื่อลองใหม่";
@@ -264,6 +279,9 @@
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "รีเซ็ตวาระนี้";
+
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "เปลี่ยนภาพประจำตัวแล้ว";
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "ไม่สามารถออกจากกลุ่ม";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "หัวข้อตอนนี้เป็น '%@'";
@@ -329,7 +350,7 @@
 "INCOMING_CALL_FROM" = "สายโทรเข้าจาก %@";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "เชิญชวนเพื่อนมาใช้ Signal";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "เชิญชวนเพื่อน";
@@ -395,7 +416,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "กล้อง";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "คลังรูปภาพ";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "ข้อความใหม่";
@@ -407,10 +428,10 @@
 "MISSED_CALL" = "สายที่ไม่ได้รับ";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "คุณได้ปฏิเสธไม่ให้ Signal เข้าถึงกล้องของคุณก่อนหน้านี้ อัปเดตการตั้งค่าระบบของคุณเพื่อดำเนินการต่อ";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณ";
 
 /* No comment provided by engineer. */
 "MSGVIEW_MISSED_CALL" = "สายที่ไม่ได้รับจาก %@";
@@ -503,16 +524,16 @@
 "PHONE_NEEDS_UNLOCK" = "iPhone ของคุณจำเป็นต้องปลดล็อคเพื่อรับข้อความใหม่";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "นี่ดูเหมือนจะไม่ใช่ตัวเลขความปลอดภัยของคุณกับ %@ คุณกำลังตรวจสอบรายชื่อที่ถูกต้องหรือไม่?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "ตัวเลขในคลิปบอร์ดของคุณดูเหมือนจะไม่ใช่ตัวเลขความปลอดภัยที่ถูกต้องสำหรับการสนทนานี้";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ไม่สามารถค้นหาตัวเลขความปลอดภัยใด ๆ ในคลิปบอร์ดของคุณ คุณได้คัดลอกมาถูกต้องหรือไม่?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ทุกคู่ของผู้ใช้ Signal จะแบ่งปันตัวเลขความปลอดภัยที่แตกต่างกัน ตรวจสอบอีกครั้งว่า %@ กำลังแสดงผลตัวเลขความปลอดภัยจำเพาะ *ของคุณ*";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "คุณกำลังใช้ Signal รุ่นเก่า คุณจำเป็นต้องอัปเดตก่อนที่คุณจะสามารถตรวจสอบ";
@@ -539,7 +560,7 @@
 "PUSH_MANAGER_REPLY" = "ตอบกลับ";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "ลงทะเบียนใหม่สำหรับการแจ้งเตือนแบบผลักสำเร็จ";
+"PUSH_REGISTER_SUCCESS" = "ลงทะเบียนการแจ้งเตือนแบบผลักใหม่สำเร็จ";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "การแจ้งเตือนแบบผลัก";
@@ -584,7 +605,7 @@
 "REGISTERED_NUMBER_TEXT" = "หมายเลขที่ลงทะเบียน";
 
 /* Alert title */
-"REGISTRATION_BODY" = "ไม่สามารถลงทะเบียนใหม่สำหรับการแจ้งเตือนแบบผลัก";
+"REGISTRATION_BODY" = "ไม่สามารถลงทะเบียนการแจ้งเตือนแบบผลักใหม่";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "รหัสประเทศ";
@@ -596,7 +617,7 @@
 "REGISTRATION_ERROR" = "ข้อผิดพลาดการลงทะเบียน";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "เราไม่สามารถเปิดใช้งานบัญชีของคุณจนกว่าคุณจะตรวจสอบรหัสที่เราส่งให้คุณ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ไม่รองรับรูปแบบหมายเลขโทรศัพท์นี้ โปรดติดต่อฝ่ายสนับสนุน";
@@ -614,7 +635,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจสอบล้มเหลว";
 
 /* Alert body, during registration */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้ง?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "ตรวจสอบอุปกรณ์นี้";
@@ -626,7 +647,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "หมายเลขโทรศัพท์ที่คุณกำลังพยายามจะลงทะเบียนได้มีการลงทะเบียนอยู่แล้วบนเซิร์ฟเวอร์อื่น โปรดเลิกลงทะเบียนจากที่นั่นและลองอีกครั้ง";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "ลงทะเบียนใหม่สำหรับการแจ้งเตือนแบบผลัก";
+"REREGISTER_FOR_PUSH" = "ลงทะเบียนการแจ้งเตือนแบบผลักใหม่";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ลองใหม่";
@@ -635,7 +656,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "ตัวเลขความปลอดภัย Signal ของเรา:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "ตัวเลขความปลอดภัยของคุณกับ %@ มีการเปลี่ยนแปลง คุณอาจต้องการตรวจสอบ";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "สแกนรหัส";
@@ -662,7 +683,7 @@
 "SEND_INVITE_FAILURE" = "การส่งคำเชิญล้มเหลว โปรดลองอีกครั้งในภายหลัง";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "คุณได้เชิญชวนเพื่อนของคุณให้มาใช้ Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "ส่ง SMS ไปยัง: ";
@@ -686,10 +707,10 @@
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "ต้องได้รับการอนุมัติจากคุณก่อนที่จะสื่อสารกับใครสักคนที่มีตัวเลขความปลอดภัยใหม่ โดยทั่วไปมาจากการติดตั้ง Signal ใหม่";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "ต้องได้รับการอนุมัติเมื่อมีการเปลี่ยนแปลง";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "ล้างบันทึกประวัติ";

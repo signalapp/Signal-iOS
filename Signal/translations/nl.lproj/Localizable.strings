@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Sorry!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer aanvaarden";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Actie vereist";
@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Bijlage wordt gedownload";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Er staat een nieuwe bijlage klaar om te downloaden.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Om goed te kunnen werken heeft Signal toegang nodig tot je microfoon. Je kan toestemming geven door te gaan naar Instellingen >> Privacy >> Microfoon >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Terugbellen";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zullen verzonden en ontvangen berichten in dit gesprek verdwijnen nadat ze zijn gelezen.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Sluiten";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Deze sessie opnieuw instellen.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar bewerkt.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Het verlaten van de groep is mislukt";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "De titel is nu '%@'.";

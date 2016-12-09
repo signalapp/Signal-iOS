@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Ursäkta!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Bekräfta nytt säkerhetsnummer";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Åtgärd krävs";
@@ -52,17 +52,26 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Laddar ner bifogad fil";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Ny bifogad fil i kö för hämtning.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal behöver komma åt mikrofonen för att fungera. Du kan ändra om du tillåter det eller inte i appen Inställningar >> Integritetsskydd >> Mikrofon >> Signal";
 
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
+
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Ring tillbaka";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Jämför med kopierat";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Jämför med urklipp";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer återställa appen, radera dina meddelanden och avregistrera dig från servern. Appen kommer stängas när datan är raderad.";
@@ -86,16 +95,16 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Oregistrerat nummer";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Ingen e-post tillgänglig.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Inget telefonnummer tillgängligt.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Konversations-inställningar";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte få tillbaka meddelanden som redan är korrupta.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte att återställa meddelanden som redan är korrupta.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Välj landskod";
@@ -116,10 +125,16 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Misslyckades uppdatera enhetslistan.";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Meddelanden försvinner";
+"DISAPPEARING_MESSAGES" = "Meddelanden som försvinner";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Gör att meddelanden som skickats och tagits emot i denna konversation kommer försvinna efter att de lästs.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Avfärda";
@@ -131,10 +146,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "Spara";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina konversationer på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta den här: %@\n\nSignal fungerar som din redan befintliga meddelande-app. Vi kan skicka bilder och video, ringa samtal, och starta gruppkonversationer. Den bästa delen med det är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, och de som ligger bakom hör: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Låt oss byta till Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Tryck på knappen för nytt meddelande.";
@@ -149,10 +164,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Rensa bland konversationerna.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Inga av dina kontakter har Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Varför inte bjuda in någon?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tips: lägg till en konversation som en påminnelse!";
@@ -230,7 +245,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Mottagarens nyckel är ogiltig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mottagna meddelanden är ur sync. Tryck för att återställa den säkra sessionen.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Fick ett meddelande som inte är kompatibelt med den här versionen.";
@@ -239,13 +254,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Ingen tillgänglig session för kontakten.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Säkerhetsnumret har ändrats.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ett okänt fel inträffade.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Säkerhetsnumret har ändrats. Tryck för att bekräfta.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Attans!";
@@ -254,16 +269,19 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Får för många fel med den här kontakten. Försök igen senare.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Du måste bekräfta det nya säkerhetsnumret innan du kan skicka.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Kunde inte skicka. Tryck för att försöka igen.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Misslyckades med att bekräfta säkerhetsnumret!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nollställ sessionen.";
+
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar ändrad.";
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Kunde inte gå ur gruppen";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titeln är nu '%@'.";
@@ -329,10 +350,10 @@
 "INCOMING_CALL_FROM" = "Inkommande samtal från %@";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Bjud in vänner till Signal";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Bjud in vänner";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Meddelanden försvinner efter %@.";
@@ -347,7 +368,7 @@
 "LEAVE_GROUP_ACTION" = "Lämna grupp";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "QR-koden stämmer inte, kolla att du läser av QR-koden som visas på enheten som du vill länka.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "QR-koden stämmer inte, se till att du läser av den QR-kod som visas på enheten som du vill länka.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Kunde inte länka enheten";
@@ -362,7 +383,7 @@
 "LINK_DEVICE_RESTART" = "Försök igen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Läs av QR-koden som syns på enheten för att länka ihop.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Läs av den QR-kod som syns på enheten för att länka ihop.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Läs av QR-kod";
@@ -392,10 +413,10 @@
 "ME_STRING" = "Jag";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Bildbibliotek";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nytt meddelande";
@@ -407,10 +428,10 @@
 "MISSED_CALL" = "Missat samtal";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du har inte låtit Signal använda din kamera. Ändra i dina systeminställningar om du vill gå vidare.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du har tidigare nekat Signal använda din kamera. Ändra i dina systeminställningar om du vill gå vidare.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal behöver använda din kamera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal behöver åtkomst till din kamera.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_MISSED_CALL" = "Missade samtal från %@.";
@@ -446,7 +467,7 @@
 "NETWORK_STATUS_TEXT" = "Du kan se din nätverksstatus på den färgade raden ovanför din inkorg.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Välj gruppbild";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Ny grupp";
@@ -503,22 +524,22 @@
 "PHONE_NEEDS_UNLOCK" = "Din iPhone behöver låsas upp för att ta emot nya meddelanden";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Det här ser inte ut som ditt säkerhetsnummer med %@. Bekräftar du rätt kontakt?\n";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numret i urklippet ser inte ut som ett korrekt säkerhetsnummer för den här konversationen.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunde inte hitta något säkerhetsnummer i ditt urklipp. Har du kopierat det korrekt?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Varje par av Signal-användare delar ett unikt säkerhetsnummer. Kontrollera noga att %@ visar *ditt* säkerhetsnummer.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Du kör en gammal version av Signal. Du behöver uppdatera innan du kan verifiera.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Du kör en gammal version av Signal. Du behöver uppdatera innan du kan bekräfta.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Din partner kör en gammal version av Signal. De behöver uppdatera innan du kan verifiera.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Din partner kör en gammal version av Signal. De behöver uppdatera innan du kan bekräfta.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Koden som lästes in verkar inte vara ett säkerhetsnummer. Är du säker att ni båda två har en uppdaterad version av Signal?";
@@ -527,7 +548,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Om du vill vara säker på att din kommunikation med %@ är krypterad hela vägen, jämför numren ovan med numren på den andra enheten.\n\nEtt alternativ är att du läser av koden på deras telefon eller be dem läsa av din kod.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Bekräfta säkerhetsnummer";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortsätt";
@@ -596,7 +617,7 @@
 "REGISTRATION_ERROR" = "Fel vid registrering";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan inte aktivera ditt konto förrän du har verifierat koden vi skickat till dig.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan inte aktivera ditt konto förrän du har bekräftat koden vi skickat till dig.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, vänligen kontaktar supporten.";
@@ -611,13 +632,13 @@
 "REGISTRATION_TITLE_LABEL" = "Ditt telefonnummer";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Kunde inte verifiera";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Kunde inte bekräfta";
 
 /* Alert body, during registration */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Numren du skrev stämmer inte med de vi skickade. Kan du dubbelkolla?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Verifiera den här enheten";
+"REGISTRATION_VERIFY_DEVICE" = "Bekräfta den här enheten";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Avvisa";
@@ -632,10 +653,10 @@
 "RETRY_BUTTON_TEXT" = "Försök igen";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Vårt säkerhetsnummer för Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ditt säkerhetsnummer med %@ har ändrats. Du vill nog bekräfta det.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Läs av kod";
@@ -659,10 +680,10 @@
 "SEND_BUTTON_TITLE" = "Skicka";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "Kunde inte skicka inbjudan, vänligen försök senare.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Du har bjudit in din vän att använda Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "Skicka SMS till:";
@@ -686,10 +707,10 @@
 "SETTINGS_ADVANCED_TITLE" = "Avancerat";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Kräver ditt godkännande innan du kommunicerar med någon som har ett säkert nummer, vanligtvis från en ominstallation av Signal.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Kräv godkännande om ändrats";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Kräv godkännande vid förändring";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Rensa historik";
@@ -716,7 +737,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Information";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Bjud in dina vänner";
 
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Du kan nå mig via Signal från @WhisperSystems, hämta den nu.";
@@ -749,16 +770,16 @@
 "SETTINGS_VERSION" = "Version";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "E-post";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Meddelande";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Visa nytt säkerhetsnummer";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u dag";
@@ -776,10 +797,10 @@
 "SMS_INVITE_BODY" = "Jag vill gärna att du installerar Signal! Här är länken:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ditt säkerhetsnummer med %@ är bekräftat. Du kan vara säker på att er kommunikation är privat.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Säkerhetsnumret bekräftat!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Vi kunde inte få tag i en uppdaterad kontaktlista från servern. Försök igen lite senare.";
@@ -848,10 +869,10 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka verifieringskod";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Verifiera";
+"VERIFICATION_HEADER" = "Bekräfta";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "Bekräfta säkerhetsnummer";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Färdigställ länkningen i Signal Desktop.";

@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "注意！";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "新しい安全番号を受け入れる";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "操作を必要とします";
@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "添付ファイルをダウンロード中";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "添付ファイルが取得予定に追加されました。";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signalを使うにはマイクへのアクセスが必要です。アクセスを許可するには、「設定」>「プライバシー」>「マイク」>「Signal」で設定してください。";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
@@ -121,6 +130,12 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "オンにすると，この会話内で送受信されたメッセージは閲覧して一定時間経つと消えます。";
 
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "やめる";
 
@@ -149,10 +164,10 @@
 "EMPTY_ARCHIVE_TITLE" = "会話を整理しよう";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "連絡先にSignalユーザーはいないようです";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "だれかを招待しませんか";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "ヒント：メッセージはリマインダーとして使うこともできます";
@@ -239,13 +254,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "この連絡先とのセッションはありません";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "安全番号が変わりました";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "不明なエラーが発生しました";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全番号が変わりました。タップして確認してください。";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "エラー！";
@@ -254,16 +269,19 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "この連絡先との連絡に失敗しました。しばらくしてから再度試してください。";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "新しい安全番号を承諾しなければ送信を行うことはできません";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "送信失敗（タップでやり直し）";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "安全番号が確認できませんでした";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "このセッションをリセットする";
+
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "アイコンが変わりました";
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "グループ離脱に失敗";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
@@ -326,7 +347,7 @@
 "INCOMING_CALL" = "着信";
 
 /* No comment provided by engineer. */
-"INCOMING_CALL_FROM" = "%@から着信";
+"INCOMING_CALL_FROM" = "%@ から着信";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
@@ -413,13 +434,13 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
 /* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL" = "%@から不在着信";
+"MSGVIEW_MISSED_CALL" = "%@ から不在着信";
 
 /* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "%@から着信";
+"MSGVIEW_RECEIVED_CALL" = "%@ から着信";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "%@に発信";
+"MSGVIEW_YOU_CALLED" = "%@ に発信";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
@@ -503,16 +524,16 @@
 "PHONE_NEEDS_UNLOCK" = "新着メッセージを受信するにはデバイスのロックを解除してください";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@との安全番号ではないようです。連絡先が正しいか確認してください。";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "クリップボードにある番号はこの会話の安全番号ではないようです。";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "クリップボードのなかに安全番号はみつかりませんでした。正しくコピーしましたか？";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "安全番号はSignalユーザーの組合せごとに異なります。%@が表示している安全番号があなたとの番号か確認してください。";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSignalを使っています。最新版に更新してください。";
@@ -527,7 +548,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@との端末間の暗号化が完全かどうかを確認するには，上記の番号と相手方に表示されている番号を比べてください。\n\nあるいは，相手方の端末上のQRコードを読み取るか，こちらのQRコードを相手に読み取ってもらってください。";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "安全番号の確認";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "進む";
@@ -632,10 +653,10 @@
 "RETRY_BUTTON_TEXT" = "再試行";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "私たちの安全番号は：\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@との安全番号が変わりました。確認した方がいいかも知れません。";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "コードを読み取る";
@@ -686,7 +707,7 @@
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新しい安全番号を持った人（例えばSignalを再インストールした人）と通信する前にはあなたの承認が必要です。";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "変更の承認が必要";
@@ -758,7 +779,7 @@
 "SHARE_ACTION_TWEET" = "ツイッター";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "新しい安全番号を表示する";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u日";
@@ -776,10 +797,10 @@
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします。このリンクから入手してください：";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@との安全番号が確認できましたので，通信が第３者に漏れていないと確信することができます。";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が確認できました！";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "連絡先の最新データをサーバーから取得できませんでした。しばらく待って再度お試しください。";
@@ -851,7 +872,7 @@
 "VERIFICATION_HEADER" = "認証";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "安全番号の確認";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktopが設定を行っています";

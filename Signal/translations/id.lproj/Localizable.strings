@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Lampiran sedang diunduh";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Lampiran baru mengantri untuk diambil";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal membutuhkan akses ke mikrofon Anda agar berfungsi dengan baik. Anda dapat mengembalikan izin di Pengaturan >> Privasi >> Mikrofon >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Hubungi kembali";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Batalkan";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Sesi di ulang";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar telah diubah";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Gagal keluar dari grup";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Topik baru saat ini '%@'.";
@@ -716,10 +737,10 @@
 "SETTINGS_INFORMATION_HEADER" = "Informasi";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Undang Temanmu";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Kamu bisa menghubungi saya lewat Signal di @WhisperSystems, Dapatkan segera.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Pengaturan";
@@ -749,10 +770,10 @@
 "SETTINGS_VERSION" = "Versi";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "Surat";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Pesan";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
@@ -761,16 +782,16 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u day";
+"SINGLE_DAY_TIME_AMOUNT" = "%u hari";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u hour";
+"SINGLE_HOUR_TIME_AMOUNT" = "%u jam";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minute";
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u menit";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u week";
+"SINGLE_WEEK_TIME_AMOUNT" = "%u minggu";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Aku mengundang anda untuk memasang Signal! Tautan tersedia disini:";
@@ -812,7 +833,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal tidak dapat menautkan perangkat anda";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
+"UNNAMED_DEVICE" = "Perangkat Tak Bernama";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Gagal unregister dari Signal";
@@ -827,10 +848,10 @@
 "UPDATE_BUTTON_TITLE" = "Perbarui";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal ...";
+"Upgrading Signal ..." = "Memperbaharui Signal ...";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploading...";
+"UPLOADING_MESSAGE_TEXT" = "Mengunggah...";
 
 /* button text during registration to make corrections to your submitted phone number */
 "VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Ubah Nomor";

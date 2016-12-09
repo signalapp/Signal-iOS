@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Scuze!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă noul număr de siguranță";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Se Necesită Acțiune";
@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Atașamentul se descarcă";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Un nou atașament a fost pus în coada de descărcare.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Pentru a funcționa corect aplicația Signal are nevoie de accesul la microfon.Puteți permite accesul în Configurări >> Intimitate >> Microfon >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Sună înapoi";
@@ -121,6 +130,12 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Când e activată opțiunea, mesajele trimise și primite în această conversație vor dispărea după ce au fost vizualizate.";
 
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Revocare";
 
@@ -149,10 +164,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Ștergerge Conversațiile Tale";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nici un contact de al tău nu are Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "De ce nu inviți pe cineva?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Sfat: adaugă o conversație ca și memento!";
@@ -239,13 +254,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Nu există nici o sesiune pentru contact.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Numărul de siguranță s-a schimbat.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "A apărut o eroare neprevăzută. ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numărul de siguranță s-a schimbat. Apasă pentru a verifica.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Opa!";
@@ -254,16 +269,19 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Prea multe erori pentru acest contact. Te rog încearcă din nou în curând.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Trebuie să accepți înainte noul număr de siguranță pentru a putea trimite mesaje.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Trimitere eșuată. Apasă pentru a reîncerca.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Verificarea Numărului de Siguranță a eșuat!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetează sesiunea.";
+
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar schimbat.";
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Părăsirea grupului a eșuat.";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titlul este '%@' acum.";
@@ -392,10 +413,10 @@
 "ME_STRING" = "Eu";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Cameră";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Librărie Foto";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Mesaj Nou";
@@ -446,7 +467,7 @@
 "NETWORK_STATUS_TEXT" = "Poți verifica status-ul rețelei prin observarea barei colorate deasupra inbox-ului.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Setează Poza de Grup";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Grup Nou";
@@ -503,16 +524,16 @@
 "PHONE_NEEDS_UNLOCK" = "Iphone-ul tău trebuie deblocat pentru a primi mesaje noi.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numărul din clipboard-ul tău nu pare a fi un număr de siguranță corect pentru această conversație.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nu a putut găsi nici un număr de siguranță în clipboard-ul tău. L-ai copiat corect?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Fiecare pereche de utilizatori Signal partajează un număr de siguranță distinct. Verifică din nou dacă %@ afișează numărul *tău* de siguranță.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Folosești o versiune veche de Signal. Trebuie să actualizezi aplicația înainte de a realiza verificarea.";
@@ -527,7 +548,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Dacă dorești să verifici securitatea criptării integrale cu %@, compară numerele de deasupra cu numerele de pe dispozitivul lor.\n\nAlternativ, poți scana codul de pe telefonul lor sau îi poți ruga să scaneze codul tău.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Verifică Numărul de Siguranță";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continuă";
@@ -632,10 +653,10 @@
 "RETRY_BUTTON_TEXT" = "Reîncearcă";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Numărul nostru Signal de Siguranță:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Numărul tău de siguranță pentru %@ s-a schimbat. S-ar putea să dorești să-l verifici.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Scanează codul";
@@ -686,7 +707,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansat";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Este nevoie de aprobarea ta înainte de a comunica cu cineva care are un nou număr de siguranță, situație comună când se reinstalează Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Cere aprobare la modificare";
@@ -758,7 +779,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Afișează noul număr de siguranță";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u zi";
@@ -776,10 +797,10 @@
 "SMS_INVITE_BODY" = "Te invit să instalezi Signal! Uite link-ul:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numărul tău de siguranță pentru %@ a fost verificat. Poți fi sigur că comunicarea este privată.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Numărul de Siguranță a fost verificat!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Nu am putut recupera o listă actuala de contacte de la server. Te rog încearcă din nou mai târziu.";
@@ -851,7 +872,7 @@
 "VERIFICATION_HEADER" = "Verifică";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "Verifică Numărul de Siguranță";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Finalizează configurarea în Signal Desktop.";

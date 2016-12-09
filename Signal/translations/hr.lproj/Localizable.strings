@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Preuzimanje privitka";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Novi privitak na čekanju za preuzimanje.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal želi koristiti vaš mikrofon kako bi ispravno funkcionisao. Uvijek se možete vratiti na prijašnje postavke u aplikaciji Postavke >> Privatnost >> Mikrofon >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Povratni poziv";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, poslane i primljene poruke u ovom razgovoru će same nestajati nakon što budu viđene.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Odbaci";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetuj ovu sesiju.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Fotografija profila promijenjena!";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Napuštanje grupe nije uspjelo";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Naslov je sada '%@'.";
@@ -350,7 +371,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ovaj QR kôd nije validan, budite sigurni da skenirate QR kôd prikazan na uređaju koji želite uvezati.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Uvezivanje uređeaja nije uspjelo!";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Uvezivanje uređaja nije uspjelo!";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ovaj uređaj će biti u stanju prikazati vaše grupe i kontakte, čitati sve vaše poruke i slati poruke u vaše ime.";
@@ -395,7 +416,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Galerija";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Foto Galerija";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";

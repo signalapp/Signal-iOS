@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Anhang wird heruntergeladen";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Neuer Anhang zum Abruf bereit.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal benötigt Zugriff auf dein Mikrofon, um korrekt zu funktionieren. Du kannst die entsprechende Berechtigung über die iOS-Einstellungen wiederherstellen: Einstellungen >> Datenschutz >> Mikrofon >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Rückruf";
@@ -120,6 +129,12 @@
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Wenn aktiviert, werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Verwerfen";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Verschlüsselung neu starten";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar geändert.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Verlassen der Gruppe gescheitert";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
@@ -830,7 +851,7 @@
 "Upgrading Signal ..." = "Signal wird aktualisiert …";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Hochladen …";
+"UPLOADING_MESSAGE_TEXT" = "Wird hochgeladen …";
 
 /* button text during registration to make corrections to your submitted phone number */
 "VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Rufnummer ändern";

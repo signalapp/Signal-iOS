@@ -52,11 +52,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Descargando adjunto";
 
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nuevo adjunto listo para descarga.";
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceso al micrófono para funcionar adecuadamente. Puedes reestablecer el acceso en Ajustes >> Privacidad >> Micrófono >> Signal";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "Call";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Devolver llamada";
@@ -121,6 +130,12 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Al activar la opción, los mensajes en este chat desaparecerán tras cumplirse el tiempo seleccionado.";
 
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
@@ -134,7 +149,7 @@
 "EMAIL_INVITE_BODY" = "Hola:\n\nÚltimamente uso Signal para tener chats privados desde mi iPhone. Me gustaría que te lo instalases y así estar seguros que solo tú y yo podemos leer nuestros mensajes.\n\nSignal está disponible para iPhone y Android. Consíguelo aquí: %@\n\nSignal funciona como tu aplicación de mensajes de toda la vida. Podemos enviarnos fotos y videos, hacer llamadas y crear chats de grupo. Lo mejor es que nadie puede ver el contenido de nuestra conversación ¡ni siquiera los creadores de Signal!\n\nPuedes leer más sobre Open Whisper Systems (los creadores de Signal) aquí: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Cambiemos a Signal";
+"EMAIL_INVITE_SUBJECT" = "¿Usamos Signal para chatear de forma segura?";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Toca en el símbolo del lápiz para comenzar un chat.";
@@ -265,6 +280,9 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sesión.";
 
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Cambio de imagen de grupo.";
 
@@ -294,6 +312,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Fallo al abandonar grupo";
+
+/* Accessibilty label for group settings */
+"GROUP_SETTINGS_LABEL" = "Group settings";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Nuevo nombre del grupo: %@.";
@@ -509,7 +530,7 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Las cifras en el portapapeles no son las cifras de seguridad correctas para este chat.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal no ha encontrado las cifras d seguridad en el portapapeles. ¿Las has copiado correctamente?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal no ha encontrado las cifras de seguridad en el portapapeles. ¿Las has copiado correctamente?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Todas los chats entre usuarios de Signal tienen unas cifras de seguridad únicas. Vuelve a comprobar que %@ está mostrando las cifras de vuestro chat.";
@@ -623,7 +644,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Rechazar";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que deseas registrar ya está registrado en otro servidor. Dalo de baja del otro servidor y prueba de nuevo.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que deseas registrar ya está registrado en otro servidor. Dalo de baja del otro servidor e inténtalo nuevamente.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Renovar token para recibir notificaciones ";
@@ -632,7 +653,7 @@
 "RETRY_BUTTON_TEXT" = "Reintentar";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Cifras de seguridad de este chat:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Las cifras de seguridad de nuestro chat en Signal son:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Las cifras de seguridad del chat con %@ han cambiado. Por favor, compruébalo.";
@@ -653,7 +674,7 @@
 "SECURE_SESSION_RESET" = "Sesión segura reinicializada.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Enviar de nuevo";
+"SEND_AGAIN_BUTTON" = "Enviar nuevamente";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Enviar";
@@ -773,7 +794,7 @@
 "SINGLE_WEEK_TIME_AMOUNT" = "%u semana";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Pulsa en el enlace:";
+"SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Pulsa aquí:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Las cifras de seguridad del chat con %@ han sido comprobadas. Puedes estar seguro que vuestro chat es privado.";
@@ -842,7 +863,7 @@
 "VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Recibir llamada con código";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código de nuevo";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código nuevamente";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar código";
