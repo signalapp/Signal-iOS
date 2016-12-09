@@ -99,20 +99,25 @@ fileprivate extension CNContact {
     func formattedFullName(font: UIFont) -> NSAttributedString? {
         let keyToHighlight = ContactSortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
 
+        let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
+        let boldAttributes = [
+            NSFontAttributeName: UIFont(descriptor:boldDescriptor!, size: 0)
+        ]
+
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
             highlightedName.enumerateAttributes(in: NSMakeRange(0, highlightedName.length), options: [], using: { (attrs, range, stop) in
                 if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
-                    let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
-                    let boldAttributes = [
-                        NSFontAttributeName: UIFont(descriptor:boldDescriptor!, size: 0)
-                    ]
-                    
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }
             })
             return highlightedName
         }
+
+        if let emailAddress = (self.emailAddresses.first?.value as String?) {
+            return NSAttributedString(string: emailAddress, attributes: boldAttributes)
+        }
+
         return nil
     }
 }
