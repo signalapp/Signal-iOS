@@ -29,6 +29,8 @@
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
+		454B3B571DECCD3300805AFF /* ActionableNavbarTitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 454B3B561DECCD3300805AFF /* ActionableNavbarTitleView.xib */; };
+		454B3B591DECCF4000805AFF /* ActionableNavbarTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454B3B581DECCF4000805AFF /* ActionableNavbarTitleView.swift */; };
 		45514DE21DDFA183003EFF90 /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45514DE11DDFA183003EFF90 /* InviteFlow.swift */; };
 		45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */; };
 		45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */; };
@@ -573,6 +575,8 @@
 		453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesBubblesSizeCalculator.h; sourceTree = "<group>"; };
 		453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesBubblesSizeCalculator.m; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		454B3B561DECCD3300805AFF /* ActionableNavbarTitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActionableNavbarTitleView.xib; sourceTree = "<group>"; };
+		454B3B581DECCF4000805AFF /* ActionableNavbarTitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionableNavbarTitleView.swift; sourceTree = "<group>"; };
 		45514DE11DDFA183003EFF90 /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAvatarBuilder.h; sourceTree = "<group>"; };
 		45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAvatarBuilder.m; sourceTree = "<group>"; };
@@ -1876,6 +1880,8 @@
 				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
 				45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */,
 				45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */,
+				454B3B561DECCD3300805AFF /* ActionableNavbarTitleView.xib */,
+				454B3B581DECCF4000805AFF /* ActionableNavbarTitleView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -2653,6 +2659,7 @@
 				45C681C41D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
+				454B3B571DECCD3300805AFF /* ActionableNavbarTitleView.xib in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				AD41D7B51A6F6F0600241130 /* play_button.png in Resources */,
@@ -2961,6 +2968,7 @@
 				FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */,
 				E16E5BEE18AAC40200B7C403 /* EC25KeyAgreementParticipant.m in Sources */,
 				76EB057418170B33006006FC /* RecentCallManager.m in Sources */,
+				454B3B591DECCF4000805AFF /* ActionableNavbarTitleView.swift in Sources */,
 				76EB061C18170B33006006FC /* ArrayUtil.m in Sources */,
 				FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */,
 				76EB05C418170B33006006FC /* HandshakePacket.m in Sources */,
