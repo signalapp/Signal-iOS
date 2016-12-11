@@ -126,6 +126,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, strong) NSIndexPath *selectedPath;
 
 @property NSCache *messageAdapterCache;
 
@@ -332,6 +333,11 @@ typedef enum : NSUInteger {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(movieWasDismissed)
+                                                     name:MPMoviePlayerDidExitFullscreenNotification
                                                    object:nil];
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -1151,6 +1157,8 @@ typedef enum : NSUInteger {
 {
     id<OWSMessageData> messageItem = [self messageAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+    
+    self.selectedPath = indexPath;
 
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter: {
@@ -1384,6 +1392,13 @@ typedef enum : NSUInteger {
 
 - (void)moviePlayBackDidFinish:(id)sender {
     DDLogDebug(@"playback finished");
+}
+
+- (void)movieWasDismissed {
+    if (self.selectedPath) {
+        [self.collectionView scrollToItemAtIndexPath:self.selectedPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+    }
+    self.selectedPath = nil;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
