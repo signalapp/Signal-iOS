@@ -483,6 +483,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             };
 
             switch (statuscode) {
+                case 401: {
+                    DDLogWarn(@"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by registering elsewhere?", self.tag);
+                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure, NSLocalizedString(@"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED", @"Error message when attempting to send message"));
+                    return failureHandler(error);
+                }
                 case 404: {
                     [self unregisteredRecipient:recipient message:message thread:thread];
                     NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
