@@ -238,22 +238,38 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (NSData *)databasePassword
 {
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    NSString *dbPassword = [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount];
 
-    if (!dbPassword) {
-        dbPassword = [[Randomness generateRandomBytes:30] base64EncodedString];
-        NSError *error;
-        [SAMKeychain setPassword:dbPassword forService:keychainService account:keychainDBPassAccount error:&error];
-        if (error) {
-            // Sync log to ensure it logs before exiting
-            NSLog(@"Exiting because we failed to set new DB password. error: %@", error);
-            exit(1);
-        } else {
-            DDLogError(@"Succesfully set new DB password. First launch?");
+    NSError *keyFetchError;
+    NSString *dbPassword =
+        [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&keyFetchError];
+
+    if (keyFetchError) {
+        switch (keyFetchError.code) {
+            case errSecItemNotFound:
+                dbPassword = [self createAndSetNewDatabasePassword];
+                break;
+            default:
+                [NSException raise:@"Serious error when getting DB password from keychain."
+                            format:@"error: %@", keyFetchError];
+                break;
         }
     }
 
     return [dbPassword dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)createAndSetNewDatabasePassword
+{
+    NSString *newDBPassword = [[Randomness generateRandomBytes:30] base64EncodedString];
+    NSError *keySetError;
+    [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
+    if (keySetError) {
+        [NSException raise:@"Error when setting DB password." format:@"error: %@", keySetError];
+    } else {
+        DDLogError(@"Succesfully set new DB password. First launch?");
+    }
+
+    return newDBPassword;
 }
 
 #pragma mark convenience methods
