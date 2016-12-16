@@ -281,7 +281,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (!recipient) {
                 NSError *error;
                 // possibly returns nil.
-                recipient = [self.contactsUpdater synchronousLookup:contactThread.contactIdentifier error:&error];
+                recipient = [self.contactsUpdater synchronousLookup:recipientContactId error:&error];
 
                 if (error) {
                     if (error.code == NOTFOUND_ERROR) {
