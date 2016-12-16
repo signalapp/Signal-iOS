@@ -15,7 +15,7 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - AxolotlKit (0.8):
+  - AxolotlKit (0.8.1):
     - 25519 (~> 2.0.1)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.8)
@@ -115,6 +115,7 @@ PODS:
   - ZXingObjC/All (3.1.0)
 
 DEPENDENCIES:
+  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
   - FFCircularProgressView (~> 0.5)
   - JSQMessagesViewController
   - OpenSSL
@@ -125,12 +126,17 @@ DEPENDENCIES:
   - ZXingObjC
 
 EXTERNAL SOURCES:
+  AxolotlKit:
+    :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
+  AxolotlKit:
+    :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
+    :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
     :commit: edebd14d420177766bbda25543ee814ba9f65a6e
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
@@ -141,7 +147,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AxolotlKit: a33962f26943990e5d69d05b30470cea18caeed0
+  AxolotlKit: 240c7d761e4b1be9c6de78ebec498aaeedc978f4
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
@@ -163,6 +169,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: d45e2cfeea550d3add129851420c851c5592f5ed
+PODFILE CHECKSUM: 9abcc219c719f215b43ec11c84d397da4106eb06
 
 COCOAPODS: 1.0.1
