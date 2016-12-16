@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Fechar";
 
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Atender";
 
@@ -53,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Baixando anexo";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Escolha ou tire uma foto e envie-a em seguida";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Anexo";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Novo anexo na fila para recuperação.";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Para funcionar corretamente o Signal precisa acessar seu microfone. Você pode permitir o acesso ao microfone em Ajustes >> Privacidade >> Microfone >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Chamar";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Chamar de volta";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Se assim habilitadas, as mensagens enviadas e recebidas nesta conversa irão desaparecer após terem sido lidas.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Atualmente as mensagens expiram em %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Parâmetros das mensagens efêmeras";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "O Signal não pôde se conectar à Internet. Tente outra rede Wi-Fi ou utilize dados móveis.";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Erro no servidor. Por favor, tente novamente mais tarde.";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Ops!";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Falhas demais com esse contato. Tente novamente em breve.";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar esta sessão.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Terminar de criar grupo";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar trocado.";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Falha ao sair do grupo";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Configurações de grupo";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "O título agora é '%@'.";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Os números que você submeteu não batem com os que enviamos. Quer conferir?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Verificar Este Dispositivo";
+"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Rejeitar";

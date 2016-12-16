@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Zapri";
 
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Že imate račun Signal?";
+
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Sprejmi";
 
@@ -53,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Prenašam priponko";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Izberi ali naredi fotografijo in jo pošlji";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Priponka";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nova priponka je v vrsti za prenos.";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Za pravilno delovanje potrebuje Signal dostop do mikrofona. Dovoljenje za to lahko obnovite v aplikaciji Nastavitve >> Zasebnost >> Mikrofon >> Signal.";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Kliči";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Pokliči nazaj";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Sporočila, poslana ali prejeta v tem pogovoru, bodo izginila po tem, ko bodo prebrana.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Sporočila trenutno izginejo po %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Natavitve izginjajočih sporočil";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Prekini";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Aplikacija Signal nima dostopa do interneta. Poskusite znova iz drugega omrežja WiFi ali preko podatkovne povezave.";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Naprava ni več registrirana z vašo telefonsko številko. Za ponovno registracijo morate odstraniti in ponovno namestiti aplikacijo Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Napaka strežnika. Poskusite znova kasneje.";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Štala!";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Trenutno je lahko vaša telefonska številka aktivna le na eni aplikaciji Signal na mobilni napravi.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktivacija tega %@ bo onemogočila aplikacijo Signal na vseh drugih napravah povezanih so to številko.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Preveč napak pri tem stiku. Poskusite znova kasneje.";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Ponastavi tekočo sejo.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Končaj z ustvarjanjem skupine";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar zamenjan.";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Odjava iz skupine ni uspela";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Skupinske nastavitve";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Nov naslov je %@'.";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Števila, ki ste jih vnesli, niso identična poslanim. Bi jih želeli še enkrat preveriti?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Potrdite to napravo";
+"REGISTRATION_VERIFY_DEVICE" = "Aktiviraj napravo";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Zavrni";

@@ -8,7 +8,6 @@
 
 #import "RegistrationViewController.h"
 
-
 #import "CodeVerificationViewController.h"
 #import "Environment.h"
 #import "LocalizableText.h"
@@ -21,8 +20,6 @@
 static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
-
-@property CGFloat sendCodeButtonOriginalY;
 
 @end
 
@@ -44,6 +41,8 @@ static NSString *const kCodeSentSegue = @"codeSent";
                         forState:UIControlStateNormal];
     [_phoneNumberButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
     [_sendCodeButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
+    [_existingUserButton setTitle:NSLocalizedString(@"ALREADY_HAVE_ACCOUNT_BUTTON", @"registration button text")
+                         forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -73,6 +72,25 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 
 #pragma mark - Actions
+
+- (IBAction)didTapExistingUserButton:(id)sender
+{
+    DDLogInfo(@"called %s", __PRETTY_FUNCTION__);
+
+    NSString *alertTitleFormat = NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_TITLE",
+        @"during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\"");
+    NSString *alertTitle = [NSString stringWithFormat:alertTitleFormat, [UIDevice currentDevice].localizedModel];
+    NSString *alertBody = NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_BODY", @"during registration");
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                             message:alertBody
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *cancelAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:cancelAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 
 - (IBAction)sendCodeAction:(id)sender {
     NSString *phoneNumber =
@@ -210,20 +228,19 @@ static NSString *const kCodeSentSegue = @"codeSent";
     }
 }
 
-#pragma mark iPhone 4S - Specific Code
+#pragma mark iPhone 5s or shorter
 
-- (void)adjustScreenSizes {
+- (void)adjustScreenSizes
+{
     CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
-    CGFloat blueHeaderHeight;
 
-    if (screenHeight < 667) {
+    if (screenHeight < 568) { // iphone 4s
         self.signalLogo.hidden = YES;
-        blueHeaderHeight       = screenHeight - 408;
-    } else {
-        blueHeaderHeight = screenHeight - 420;
+        _headerHeightConstraint.constant = 20;
+    } else if (screenHeight < 667) { // iphone 5
+        self.signalLogo.hidden = YES;
+        _headerHeightConstraint.constant = 120;
     }
-
-    _headerHeightConstraint.constant = blueHeaderHeight;
 }
 
 @end

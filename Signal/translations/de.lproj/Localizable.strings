@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Beenden";
 
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Signal-Konto bereits vorhanden?";
+
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Annehmen";
 
@@ -53,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Anhang wird heruntergeladen";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Bild auswählen oder aufnehmen und dann versenden";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Anhang";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Neuer Anhang zum Abruf bereit.";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal benötigt Zugriff auf dein Mikrofon, um korrekt zu funktionieren. Du kannst die entsprechende Berechtigung über die iOS-Einstellungen wiederherstellen: Einstellungen >> Datenschutz >> Mikrofon >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Anrufen";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Rückruf";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Wenn aktiviert, werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Derzeit verschwinden Nachrichten nach %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Einstellungen für verschwindende Nachrichten";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Verwerfen";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche ein anderes WLAN-Netzwerk oder verwende die mobile Datenverbindung.";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Dieses Gerät ist für deine Rufnummer nicht mehr registriert. Du musst Signal entfernen und erneut installieren.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfehler. Bitte versuche es später erneut.";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Mist!";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Derzeit kann Signal je Rufnummer nur auf einem Mobilgerät aktiv sein.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Die Aktivierung dieses %@ wird Signal auf jedem anderen mit dieser Rufnummer verknüpften Gerät deaktivieren.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte in Kürze erneut versuchen.";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Verschlüsselung neu starten";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Gruppenerstellung abschließen";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar geändert.";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Verlassen der Gruppe gescheitert";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Gruppeneinstellungen";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Der von dir übermittelte Bestätigungscode stimmt nicht mit dem von uns gesendeten überein. Bitte nochmals überprüfen.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Dieses Gerät bestätigen";
+"REGISTRATION_VERIFY_DEVICE" = "Dieses Gerät aktivieren";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Ablehnen";
