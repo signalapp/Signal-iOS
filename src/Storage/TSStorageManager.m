@@ -18,6 +18,10 @@
 
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
 
+NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessible = @"TSStorageManagerExceptionNameDatabasePasswordInaccessible";
+NSString *const TSStorageManagerExceptionNameDatabasePasswordUnwritable = @"TSStorageManagerExceptionNameDatabasePasswordUnwritable";
+NSString *const TSStorageManagerExceptionNameNoDatabase = @"TSStorageManagerExceptionNameNoDatabase";
+
 static const NSString *const databaseName = @"Signal.sqlite";
 static NSString *keychainService          = @"TSKeyChainService";
 static NSString *keychainDBPassAccount    = @"TSDatabasePass";
@@ -99,6 +103,10 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
                                        serializer:NULL
                                      deserializer:[[self class] logOnFailureDeserializer]
                                           options:options];
+    if (!_database) {
+        DDLogError(@"%@ Failed to initialize database.", self.tag);
+        [NSException raise:TSStorageManagerExceptionNameNoDatabase format:@"Failed to initialize database."];
+    }
     _dbConnection = self.newDatabaseConnection;
 
     return self;
@@ -249,8 +257,9 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
                 dbPassword = [self createAndSetNewDatabasePassword];
                 break;
             default:
-                [NSException raise:@"Serious error when getting DB password from keychain."
-                            format:@"error: %@", keyFetchError];
+                DDLogError(@"%@ Getting DB password from keychain failed with error: %@", self.tag, keyFetchError);
+                [NSException raise:TSStorageManagerExceptionNameDatabasePasswordInaccessible
+                            format:@"Getting DB password from keychain failed with error: %@", keyFetchError];
                 break;
         }
     }
@@ -264,7 +273,9 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     NSError *keySetError;
     [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
     if (keySetError) {
-        [NSException raise:@"Error when setting DB password." format:@"error: %@", keySetError];
+        DDLogError(@"%@ Setting DB password failed with error: %@", self.tag, keySetError);
+        [NSException raise:TSStorageManagerExceptionNameDatabasePasswordUnwritable
+                    format:@"Setting DB password failed with error: %@", keySetError];
     } else {
         DDLogError(@"Succesfully set new DB password. First launch?");
     }
