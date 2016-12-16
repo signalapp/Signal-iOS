@@ -5,7 +5,7 @@
 "AB_PERMISSION_MISSING_BODY" = "Signal necesita acceder a tus contactos. No guardamos tus contactos en nuestros servidores.";
 
 /* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "¡Perdón!";
+"AB_PERMISSION_MISSING_TITLE" = "¡Lo siento!";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Aceptar nuevas cifras de seguridad";
@@ -18,6 +18,9 @@
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Cerrar";
+
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Responder";
@@ -47,16 +50,16 @@
 "ATTACHMENT" = "Adjunto";
 
 /* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar el adjunto, toca para reintentar.";
+"ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar el adjunto, pulsa para reintentar.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Descargando adjunto";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Elige o toma una foto y envíala";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Adjunto";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nuevo adjunto listo para descarga.";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceso al micrófono para funcionar adecuadamente. Puedes reestablecer el acceso en Ajustes >> Privacidad >> Micrófono >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Llamada";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Devolver llamada";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Al activar la opción, los mensajes en este chat desaparecerán tras cumplirse el tiempo seleccionado.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Los mensajes caducarán tras %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Ajustes de mensajes con caducidad";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
@@ -152,7 +155,7 @@
 "EMAIL_INVITE_SUBJECT" = "¿Usamos Signal para chatear de forma segura?";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Toca en el símbolo del lápiz para comenzar un chat.";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Pulsa en el símbolo del lápiz para comenzar un chat.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "¡Escribe tu primer mensaje con Signal!";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba a conectarte desde otra red WiFi o usa la red de datos de tu operador.";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Fallo en el servidor. Por favor, inténtalo más tarde.";
 
@@ -245,7 +251,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del contacto no es válida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje cifrado con clave desincronizada. Toca para reiniciar la sesión segura.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje cifrado con clave desincronizada. Pulsa para reiniciar la sesión segura.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Mensaje recibido no compatible con esta versión.";
@@ -260,10 +266,16 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ocurrió un fallo desconocido.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Toca para comprobar.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Pulsa para comprobar.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "¡Recórcholis!";
+
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
@@ -272,7 +284,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Tienes que aceptar las nuevas cifras de seguridad para poder enviar.";
 
 /* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Fallo al enviar. Toca para reintentar.";
+"FAILED_SENDING_TEXT" = "Fallo al enviar. Pulsa para reintentar.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "¡Fallo al comprobar las cifras de seguridad!";
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sesión.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Grupo creado con éxito";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Cambio de imagen de grupo.";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Fallo al abandonar grupo";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Ajustes del grupo";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Nuevo nombre del grupo: %@.";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Los números con los que has respondido no concuerdan con los que hemos enviado. ¿Lo vuelves a intentar?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Comprobar";
+"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Rechazar";

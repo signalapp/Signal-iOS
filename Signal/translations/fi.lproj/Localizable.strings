@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Sulje";
 
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Vastaa";
 
@@ -53,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Liitettä ladataan";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Valitse tai ota kuva ja lähetä se";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Liitetiedosto";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Uusi liite laitettu jonoon hakemista varten.";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal tarvitsee lupaa käyttää laitteesi mikrofonia, jotta puhelujen soittaminen olisi mahdollista. Voit säätää tätä käyttöoikeutta avaamalla laitteesi Asetukset >> Tietosuoja >> Mikrofoni >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Soita";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Soita takaisin";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Kun tämä on päällä, lähetetyt ja vastaanotetut viestit katoavat tästä keskustelusta sen jälkeen, kun ne on nähty.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Viestien katoamisaika on tällä hetkellä %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Katoavien viestien asetukset";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Selvä";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ei saanut yhteyttä internetiin. Yritä uudelleen toisesta WiFi-verkosta tai kokeile mobiiliyhteyttä.";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Palvelinvirhe. Ytitä myöhemmin uudelleen.";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Harmi!";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Viestien lähetys tälle yhteystiedolle epäonnistui liian monta kertaa. Yritä myöhemmin uudelleen.";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Päätä ryhmän luonti";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Kuvake päivitetty.";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Ryhmästä poistuminen epäonnistui";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Ryhmän asetukset";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Otsikko on nyt '%@'.";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Syöttämäsi numerot eivät vastaa lähettämäämme koodia. Haluatko tarkistaa vielä uudelleen?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Vahvista tämä laite";
+"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Hylkää";

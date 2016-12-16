@@ -14,10 +14,13 @@
 "ACTION_REQUIRED_TITLE" = "操作を必要とします";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "連絡先へのアクセスが必要ですが、アクセスが制限されているため、Signalは終了します。一時的に制限を解除してSignalが連絡先にアクセスできるようにするには、「設定」>「一般」>「機能制限」>「連絡先」>「変更を許可」で設定を行ってください。";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "連絡先へのアクセスが必要ですが，アクセスが制限されているため，Signalは終了します。一時的に制限を解除してSignalが連絡先にアクセスできるようにするには，「設定」>「一般」>「機能制限」>「連絡先」>「変更を許可」で設定を行ってください。";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "閉じる";
+
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "応答";
@@ -53,19 +56,19 @@
 "ATTACHMENT_DOWNLOADING" = "添付ファイルをダウンロード中";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "画像を選ぶか写真を撮って送信する";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "添付ファイル";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "添付ファイルが取得予定に追加されました。";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signalを使うにはマイクへのアクセスが必要です。アクセスを許可するには、「設定」>「プライバシー」>「マイク」>「Signal」で設定してください。";
+"AUDIO_PERMISSION_MESSAGE" = "Signalを使うにはマイクへのアクセスが必要です。アクセスを許可するには，「設定」>「プライバシー」>「マイク」>「Signal」で設定してください。";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "電話";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "オンにすると，この会話内で送受信されたメッセージは閲覧して一定時間経つと消えます。";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "メッセージは%@後に消えます";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "メッセージが消える時間の設定";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "やめる";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "インターネットに接続できませんでした。Wi-Fiのネットワークを変えるか，モバイルデータ通信を使ってみてください。";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "サーバーにエラーが発生しました。少し待って再試行してください。";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "エラー！";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "この連絡先との連絡に失敗しました。しばらくしてから再度試してください。";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "このセッションをリセットする";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "グループ作成を完了する";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "アイコンが変わりました";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "グループ離脱に失敗";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "グループ設定";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
@@ -464,7 +476,7 @@
 "NETWORK_STATUS_OFFLINE" = "オフ";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_TEXT" = "ネットワークへの接続状況は、受信箱上部のバーを見て確認できます。";
+"NETWORK_STATUS_TEXT" = "ネットワークへの接続状況は，受信箱上部のバーを見て確認できます。";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "グループのアイコン画像を設定";
@@ -482,7 +494,7 @@
 "NOTIFICATION_SEND_FAILED" = "%@へのメッセージ送信に失敗しました";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Appleのプッシュ通信仕様の既知のバグのため、メッセージのプレビューが表示されるのはメッセージの取得が送信後30秒以内に行われたときのみとなります。この結果Appアイコンのバッジが不正確になる場合があります。\n";
+"NOTIFICATIONS_FOOTER_WARNING" = "Appleのプッシュ通信仕様の既知のバグのため，メッセージのプレビューが表示されるのはメッセージの取得が送信後30秒以内に行われたときのみとなります。この結果Appアイコンのバッジが不正確になる場合があります。\n";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "なし";
@@ -572,7 +584,7 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Signalを使ってプライベートな会話を楽しんでいる方に評価アンケートをお願いしています。１分もかかりませんし、他のユーザーのプライバシー確保の手助けになりますので、ご協力をお願いします。";
+"RATING_MSG" = "Signalを使ってプライベートな会話を楽しんでいる方に評価アンケートをお願いしています。１分もかかりませんし，他のユーザーのプライバシー確保の手助けになりますので、ご協力をお願いします。";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Signalを評価する";
@@ -626,7 +638,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "電話番号";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "メッセージが送られて来ていますので、登録してください。";
+"REGISTRATION_RESTRICTED_MESSAGE" = "メッセージが送られて来ていますので，登録してください。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "自分の電話番号";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "提出していただいた番号がこちらから送った番号とは異なります。確認をよろしくお願いします。";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "このデバイスの認証を行う";
+"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "拒否";
@@ -707,7 +719,7 @@
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新しい安全番号を持った人（例えばSignalを再インストールした人）と通信する前にはあなたの承認が必要です。";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新規の安全番号を持つ人（例えばSignalを再インストールした人）と通信する前にはあなたに承認を求めます。";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "変更の承認が必要";
@@ -722,7 +734,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "アカウントを削除";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "過去の通信記録（メッセージ・添付ファイル・通話履歴など）がすべて削除されますが、よろしいですか？削除すると元には戻せません。";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "過去の通信記録（メッセージ・添付ファイル・通話履歴など）がすべて削除されますが，よろしいですか？削除すると元には戻せません。";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "はい";
