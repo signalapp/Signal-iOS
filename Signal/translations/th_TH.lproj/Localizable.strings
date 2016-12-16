@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "ปิด";
 
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
 
@@ -53,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "กำลังดาวน์โหลดไฟล์แนบ";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "เลือกหรือถ่ายภาพแล้วส่ง";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "ไฟล์แนบ";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "ไฟล์แนบถูกจัดคิวสำหรับดึงข้อมูล";
@@ -65,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal ต้องการเข้าถึงไมโครโฟนของคุณเพื่อให้ทำงานได้ถูกต้อง คุณสามารถเรียกคืนสิทธิการเข้าถึงได้ในแอป การตั้งค่า >> ความเป็นส่วนตัว >> ไมโครโฟน >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "โทร";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
@@ -131,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "เมื่อเปิดใช้งาน ข้อความที่ส่งและรับในการสนทนานี้จะหายไปหลังจากเห็นแล้ว";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "ปัจจุบันข้อความจะหายไปหลังจาก %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "ตั้งค่าข้อความหายตัว";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "ยกเลิก";
@@ -146,7 +149,7 @@
 "EDIT_ITEM_SAVE_ACTION" = "บันทึก";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "เฮ้\n\nเมื่อเร็ว ๆ นี้ฉันได้ใช้ Signal เพื่อเก็บรักษาความเป็นส่วนตัวในการสนทนาบน iPhone ของฉัน ฉันอยากให้คุณติดตั้งด้วย เพื่อให้เราสามารถมั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงโทรของเรา\n\nSignal ใช้งานได้บน iPhone และ Android รับเลยที่นี่: %@\n\nSignal ทำงานเหมือนกับแอปข้อความที่มีอยู่ของคุณ เราสามารถส่งรูปภาพและวิดีโอ โทรออก และเริ่มแชทกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครอื่นสามารถเห็นสิ่งเหล่านี้ ไม่แม้แต่ผู้คนที่สร้าง Signal!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้คนที่สร้าง Signal ได้ที่นี่: %@";
+"EMAIL_INVITE_BODY" = "เฮ้\n\nเมื่อเร็ว ๆ นี้ฉันได้ใช้ Signal เพื่อเก็บรักษาการสนทนาบน iPhone ของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งด้วย เพื่อให้เราสามารถมั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงโทรของเรา\n\nSignal ใช้งานได้บน iPhone และ Android รับเลยที่นี่: %@\n\nSignal ทำงานเหมือนกับแอปข้อความที่มีอยู่ของคุณ เราสามารถส่งรูปภาพและวิดีโอ โทรออก และเริ่มแชทกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครอื่นสามารถเห็นสิ่งเหล่านี้ ไม่แม้แต่ผู้คนที่สร้าง Signal!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้คนที่สร้าง Signal ได้ที่นี่: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
@@ -167,7 +170,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในรายชื่อของคุณมี Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญชวนใครสักคนล่ะ?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "เคล็ดลับ: เพิ่มการสนทนาเป็นเตือนความจำ!";
@@ -232,6 +235,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือใช้ข้อมูลมือถือ";
 
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ข้อผิดพลาดเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง";
 
@@ -265,6 +271,12 @@
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "แย่จัง!";
 
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "เกิดความล้มเหลวมากเกินไปกับรายชื่อนี้ โปรดลองอีกครั้งในเร็ว ๆ นี้";
 
@@ -281,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "รีเซ็ตวาระนี้";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "เสร็จสิ้นการสร้างกลุ่ม";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "เปลี่ยนภาพประจำตัวแล้ว";
@@ -314,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "ไม่สามารถออกจากกลุ่ม";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "ตั้งค่ากลุ่ม";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "หัวข้อตอนนี้เป็น '%@'";
@@ -350,10 +362,10 @@
 "INCOMING_CALL_FROM" = "สายโทรเข้าจาก %@";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "เชิญชวนเพื่อนมาใช้ Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "เชิญเพื่อนมาใช้ Signal";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "เชิญชวนเพื่อน";
+"INVITE_FRIENDS_PICKER_TITLE" = "เชิญเพื่อน";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "ข้อความจะหายไปหลังจาก %@";
@@ -638,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้ง?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "ตรวจสอบอุปกรณ์นี้";
+"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";
@@ -683,16 +695,16 @@
 "SEND_INVITE_FAILURE" = "การส่งคำเชิญล้มเหลว โปรดลองอีกครั้งในภายหลัง";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "คุณได้เชิญชวนเพื่อนของคุณให้มาใช้ Signal!";
+"SEND_INVITE_SUCCESS" = "คุณได้เชิญเพื่อนของคุณให้มาใช้ Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "ส่ง SMS ไปยัง: ";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "เชิญชวนเพื่อนผ่านทาง SMS ที่ไม่ปลอดภัย?";
+"SEND_SMS_CONFIRM_TITLE" = "เชิญเพื่อนผ่านทาง SMS ที่ไม่ปลอดภัย?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "คุณต้องการเชิญชวนหมายเลขเหล่านี้มายัง Signal หรือไม่:";
+"SEND_SMS_INVITE_TITLE" = "คุณต้องการเชิญหมายเลขดังต่อไปนี้มาใช้ Signal หรือไม่:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
@@ -737,7 +749,7 @@
 "SETTINGS_INFORMATION_HEADER" = "ข้อมูล";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "เชิญชวนเพื่อนของคุณ";
+"SETTINGS_INVITE_TITLE" = "เชิญเพื่อนของคุณ";
 
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "คุณสามารถเข้าถึงฉันโดยใช้ Signal จาก @WhisperSystems รับเลยตอนนี้";
@@ -794,7 +806,7 @@
 "SINGLE_WEEK_TIME_AMOUNT" = "%u สัปดาห์";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "ฉันกำลังเชิญชวนให้คุณติดตั้ง Signal! นี่คือลิงก์:";
+"SMS_INVITE_BODY" = "ฉันกำลังเชิญคุณให้ติดตั้ง Signal! นี่คือลิงก์:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "ตัวเลขความปลอดภัยของคุณกับ %@ ได้รับการตรวจสอบแล้ว คุณสามารถมั่นใจได้ว่าการสื่อสารของคุณเป็นส่วนตัว";

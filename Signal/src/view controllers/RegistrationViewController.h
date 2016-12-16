@@ -22,6 +22,7 @@
 @property (nonatomic, strong) IBOutlet UILabel *titleLabel;
 // Button
 @property (nonatomic, strong) IBOutlet UIButton *sendCodeButton;
+@property (nonatomic, strong) IBOutlet UIButton *existingUserButton;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *spinnerView;
 @property (nonatomic) IBOutlet UIImageView *signalLogo;
