@@ -251,18 +251,14 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     return YES;
 }
 
-- (void)adjustScreenSizes {
+- (void)adjustScreenSizes
+{
     CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
-    CGFloat blueHeaderHeight;
 
-    if (screenHeight < 667) {
+    if (screenHeight < 667) { // iphone 5
         self.signalLogo.hidden = YES;
-        blueHeaderHeight       = screenHeight - 400;
-    } else {
-        blueHeaderHeight = screenHeight - 410;
+        _headerConstraint.constant = 120;
     }
-
-    _headerConstraint.constant = blueHeaderHeight;
 }
 
 #pragma mark - Logging
