@@ -126,7 +126,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, strong) NSIndexPath *selectedPath;
 
 @property NSCache *messageAdapterCache;
 
@@ -334,11 +333,6 @@ typedef enum : NSUInteger {
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(movieWasDismissed)
-                                                     name:MPMoviePlayerDidExitFullscreenNotification
-                                                   object:nil];
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                      name:UIContentSizeCategoryDidChangeNotification
@@ -390,7 +384,7 @@ typedef enum : NSUInteger {
     [self setNavigationTitle];
 
     NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    if (numberOfMessages > 0) {
+    if (numberOfMessages > 0 && self.automaticallyScrollsToMostRecentMessage) {
         NSIndexPath *lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages - 1 inSection:0];
         [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath
                                     atScrollPosition:UICollectionViewScrollPositionBottom
@@ -1157,8 +1151,6 @@ typedef enum : NSUInteger {
 {
     id<OWSMessageData> messageItem = [self messageAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    
-    self.selectedPath = indexPath;
 
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter: {
@@ -1246,19 +1238,15 @@ typedef enum : NSUInteger {
                         if ([messageMedia isVideo]) {
                             if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
                                 [self dismissKeyBoard];
+                                self.automaticallyScrollsToMostRecentMessage = NO;
+                                
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
-
-                                [[NSNotificationCenter defaultCenter]
-                                    addObserver:self
-                                       selector:@selector(moviePlayBackDidFinish:)
-                                           name:MPMoviePlayerPlaybackDidFinishNotification
-                                         object:_videoPlayer];
 
                                 _videoPlayer.controlStyle   = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview:_videoPlayer.view];
-                                [_videoPlayer setFullscreen:YES animated:YES];
+                                [_videoPlayer setFullscreen:YES animated:NO];
                             }
                         } else if ([messageMedia isAudio]) {
                             if (messageMedia.isAudioPlaying) {
@@ -1392,13 +1380,6 @@ typedef enum : NSUInteger {
 
 - (void)moviePlayBackDidFinish:(id)sender {
     DDLogDebug(@"playback finished");
-}
-
-- (void)movieWasDismissed {
-    if (self.selectedPath) {
-        [self.collectionView scrollToItemAtIndexPath:self.selectedPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
-    }
-    self.selectedPath = nil;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
@@ -2310,6 +2291,10 @@ typedef enum : NSUInteger {
 - (NSString *)tag
 {
     return self.class.tag;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    self.automaticallyScrollsToMostRecentMessage = YES;
 }
 
 @end
