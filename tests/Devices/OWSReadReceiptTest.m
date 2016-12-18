@@ -19,9 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Unfortunately this test will break every time you add, remove, or rename a property, but on the
     // plus side it has a chance of catching when you indadvertently remove our ephemeral properties
     // from our Mantle storage blacklist.
-    NSArray<NSString *> *expected = @[ @"senderId", @"uniqueId", @"timestamp" ];
+    NSSet<NSString *> *expected = [NSSet setWithArray:@[ @"senderId", @"uniqueId", @"timestamp" ]];
+    NSSet<NSString *> *actual = [NSSet setWithArray:[readReceipt.dictionaryValue allKeys]];
 
-    XCTAssertEqualObjects(expected, [readReceipt.dictionaryValue allKeys]);
+    XCTAssertEqualObjects(expected, actual);
 }
 
 @end

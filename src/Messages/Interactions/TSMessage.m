@@ -134,7 +134,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return self;
 }
 
-- (void)setexpiresInSeconds:(uint32_t)expiresInSeconds
+- (void)setExpiresInSeconds:(uint32_t)expiresInSeconds
 {
     _expiresInSeconds = expiresInSeconds;
     [self updateExpiresAt];

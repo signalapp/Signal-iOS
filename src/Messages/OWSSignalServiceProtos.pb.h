@@ -6,6 +6,18 @@
 
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosAttachmentPointerBuilder;
+@class OWSSignalServiceProtosCallMessage;
+@class OWSSignalServiceProtosCallMessageAnswer;
+@class OWSSignalServiceProtosCallMessageAnswerBuilder;
+@class OWSSignalServiceProtosCallMessageBuilder;
+@class OWSSignalServiceProtosCallMessageBusy;
+@class OWSSignalServiceProtosCallMessageBusyBuilder;
+@class OWSSignalServiceProtosCallMessageHangup;
+@class OWSSignalServiceProtosCallMessageHangupBuilder;
+@class OWSSignalServiceProtosCallMessageIceUpdate;
+@class OWSSignalServiceProtosCallMessageIceUpdateBuilder;
+@class OWSSignalServiceProtosCallMessageOffer;
+@class OWSSignalServiceProtosCallMessageOfferBuilder;
 @class OWSSignalServiceProtosContactDetails;
 @class OWSSignalServiceProtosContactDetailsAvatar;
 @class OWSSignalServiceProtosContactDetailsAvatarBuilder;
@@ -240,17 +252,22 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 #define Content_dataMessage @"dataMessage"
 #define Content_syncMessage @"syncMessage"
+#define Content_callMessage @"callMessage"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
+  BOOL hasCallMessage_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
+  OWSSignalServiceProtosCallMessage* callMessage;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
+- (BOOL) hasCallMessage;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
+@property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -300,6 +317,411 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) setSyncMessageBuilder:(OWSSignalServiceProtosSyncMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosContentBuilder*) mergeSyncMessage:(OWSSignalServiceProtosSyncMessage*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearSyncMessage;
+
+- (BOOL) hasCallMessage;
+- (OWSSignalServiceProtosCallMessage*) callMessage;
+- (OWSSignalServiceProtosContentBuilder*) setCallMessage:(OWSSignalServiceProtosCallMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) setCallMessageBuilder:(OWSSignalServiceProtosCallMessageBuilder*) builderForValue;
+- (OWSSignalServiceProtosContentBuilder*) mergeCallMessage:(OWSSignalServiceProtosCallMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) clearCallMessage;
+@end
+
+#define CallMessage_offer @"offer"
+#define CallMessage_answer @"answer"
+#define CallMessage_iceUpdate @"iceUpdate"
+#define CallMessage_hangup @"hangup"
+#define CallMessage_busy @"busy"
+@interface OWSSignalServiceProtosCallMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasOffer_:1;
+  BOOL hasAnswer_:1;
+  BOOL hasHangup_:1;
+  BOOL hasBusy_:1;
+  OWSSignalServiceProtosCallMessageOffer* offer;
+  OWSSignalServiceProtosCallMessageAnswer* answer;
+  OWSSignalServiceProtosCallMessageHangup* hangup;
+  OWSSignalServiceProtosCallMessageBusy* busy;
+  NSMutableArray * iceUpdateArray;
+}
+- (BOOL) hasOffer;
+- (BOOL) hasAnswer;
+- (BOOL) hasHangup;
+- (BOOL) hasBusy;
+@property (readonly, strong) OWSSignalServiceProtosCallMessageOffer* offer;
+@property (readonly, strong) OWSSignalServiceProtosCallMessageAnswer* answer;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosCallMessageIceUpdate*> * iceUpdate;
+@property (readonly, strong) OWSSignalServiceProtosCallMessageHangup* hangup;
+@property (readonly, strong) OWSSignalServiceProtosCallMessageBusy* busy;
+- (OWSSignalServiceProtosCallMessageIceUpdate*)iceUpdateAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessage*) prototype;
+- (OWSSignalServiceProtosCallMessageBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessage*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessage*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+#define Offer_id @"id"
+#define Offer_sessionDescription @"sessionDescription"
+@interface OWSSignalServiceProtosCallMessageOffer : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasId_:1;
+  BOOL hasSessionDescription_:1;
+  UInt64 id;
+  NSString* sessionDescription;
+}
+- (BOOL) hasId;
+- (BOOL) hasSessionDescription;
+@property (readonly) UInt64 id;
+@property (readonly, strong) NSString* sessionDescription;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageOfferBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageOfferBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageOffer*) prototype;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosCallMessageOfferBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessageOffer* resultOffer;
+}
+
+- (OWSSignalServiceProtosCallMessageOffer*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessageOffer*) build;
+- (OWSSignalServiceProtosCallMessageOffer*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageOffer*) other;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearId;
+
+- (BOOL) hasSessionDescription;
+- (NSString*) sessionDescription;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setSessionDescription:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearSessionDescription;
+@end
+
+#define Answer_id @"id"
+#define Answer_sessionDescription @"sessionDescription"
+@interface OWSSignalServiceProtosCallMessageAnswer : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasId_:1;
+  BOOL hasSessionDescription_:1;
+  UInt64 id;
+  NSString* sessionDescription;
+}
+- (BOOL) hasId;
+- (BOOL) hasSessionDescription;
+@property (readonly) UInt64 id;
+@property (readonly, strong) NSString* sessionDescription;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageAnswerBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageAnswerBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageAnswer*) prototype;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosCallMessageAnswerBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessageAnswer* resultAnswer;
+}
+
+- (OWSSignalServiceProtosCallMessageAnswer*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessageAnswer*) build;
+- (OWSSignalServiceProtosCallMessageAnswer*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageAnswer*) other;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearId;
+
+- (BOOL) hasSessionDescription;
+- (NSString*) sessionDescription;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setSessionDescription:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearSessionDescription;
+@end
+
+#define IceUpdate_id @"id"
+#define IceUpdate_sdpMid @"sdpMid"
+#define IceUpdate_sdpMLineIndex @"sdpMlineIndex"
+#define IceUpdate_sdp @"sdp"
+@interface OWSSignalServiceProtosCallMessageIceUpdate : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasId_:1;
+  BOOL hasSdpMid_:1;
+  BOOL hasSdp_:1;
+  BOOL hasSdpMlineIndex_:1;
+  UInt64 id;
+  NSString* sdpMid;
+  NSString* sdp;
+  UInt32 sdpMlineIndex;
+}
+- (BOOL) hasId;
+- (BOOL) hasSdpMid;
+- (BOOL) hasSdpMlineIndex;
+- (BOOL) hasSdp;
+@property (readonly) UInt64 id;
+@property (readonly, strong) NSString* sdpMid;
+@property (readonly) UInt32 sdpMlineIndex;
+@property (readonly, strong) NSString* sdp;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageIceUpdate*) prototype;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosCallMessageIceUpdateBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessageIceUpdate* resultIceUpdate;
+}
+
+- (OWSSignalServiceProtosCallMessageIceUpdate*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessageIceUpdate*) build;
+- (OWSSignalServiceProtosCallMessageIceUpdate*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageIceUpdate*) other;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearId;
+
+- (BOOL) hasSdpMid;
+- (NSString*) sdpMid;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdpMid:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdpMid;
+
+- (BOOL) hasSdpMlineIndex;
+- (UInt32) sdpMlineIndex;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdpMlineIndex:(UInt32) value;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdpMlineIndex;
+
+- (BOOL) hasSdp;
+- (NSString*) sdp;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdp:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdp;
+@end
+
+#define Busy_id @"id"
+@interface OWSSignalServiceProtosCallMessageBusy : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasId_:1;
+  UInt64 id;
+}
+- (BOOL) hasId;
+@property (readonly) UInt64 id;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageBusyBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageBusyBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageBusy*) prototype;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosCallMessageBusyBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessageBusy* resultBusy;
+}
+
+- (OWSSignalServiceProtosCallMessageBusy*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessageBusy*) build;
+- (OWSSignalServiceProtosCallMessageBusy*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageBusy*) other;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clearId;
+@end
+
+#define Hangup_id @"id"
+@interface OWSSignalServiceProtosCallMessageHangup : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasId_:1;
+  UInt64 id;
+}
+- (BOOL) hasId;
+@property (readonly) UInt64 id;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageHangupBuilder*) builder;
++ (OWSSignalServiceProtosCallMessageHangupBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageHangup*) prototype;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosCallMessageHangupBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessageHangup* resultHangup;
+}
+
+- (OWSSignalServiceProtosCallMessageHangup*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessageHangup*) build;
+- (OWSSignalServiceProtosCallMessageHangup*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageHangup*) other;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clearId;
+@end
+
+@interface OWSSignalServiceProtosCallMessageBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosCallMessage* resultCallMessage;
+}
+
+- (OWSSignalServiceProtosCallMessage*) defaultInstance;
+
+- (OWSSignalServiceProtosCallMessageBuilder*) clear;
+- (OWSSignalServiceProtosCallMessageBuilder*) clone;
+
+- (OWSSignalServiceProtosCallMessage*) build;
+- (OWSSignalServiceProtosCallMessage*) buildPartial;
+
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessage*) other;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasOffer;
+- (OWSSignalServiceProtosCallMessageOffer*) offer;
+- (OWSSignalServiceProtosCallMessageBuilder*) setOffer:(OWSSignalServiceProtosCallMessageOffer*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) setOfferBuilder:(OWSSignalServiceProtosCallMessageOfferBuilder*) builderForValue;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeOffer:(OWSSignalServiceProtosCallMessageOffer*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) clearOffer;
+
+- (BOOL) hasAnswer;
+- (OWSSignalServiceProtosCallMessageAnswer*) answer;
+- (OWSSignalServiceProtosCallMessageBuilder*) setAnswer:(OWSSignalServiceProtosCallMessageAnswer*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) setAnswerBuilder:(OWSSignalServiceProtosCallMessageAnswerBuilder*) builderForValue;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeAnswer:(OWSSignalServiceProtosCallMessageAnswer*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) clearAnswer;
+
+- (NSMutableArray<OWSSignalServiceProtosCallMessageIceUpdate*> *)iceUpdate;
+- (OWSSignalServiceProtosCallMessageIceUpdate*)iceUpdateAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosCallMessageBuilder *)addIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate*)value;
+- (OWSSignalServiceProtosCallMessageBuilder *)setIceUpdateArray:(NSArray<OWSSignalServiceProtosCallMessageIceUpdate*> *)array;
+- (OWSSignalServiceProtosCallMessageBuilder *)clearIceUpdate;
+
+- (BOOL) hasHangup;
+- (OWSSignalServiceProtosCallMessageHangup*) hangup;
+- (OWSSignalServiceProtosCallMessageBuilder*) setHangup:(OWSSignalServiceProtosCallMessageHangup*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) setHangupBuilder:(OWSSignalServiceProtosCallMessageHangupBuilder*) builderForValue;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeHangup:(OWSSignalServiceProtosCallMessageHangup*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) clearHangup;
+
+- (BOOL) hasBusy;
+- (OWSSignalServiceProtosCallMessageBusy*) busy;
+- (OWSSignalServiceProtosCallMessageBuilder*) setBusy:(OWSSignalServiceProtosCallMessageBusy*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) setBusyBuilder:(OWSSignalServiceProtosCallMessageBusyBuilder*) builderForValue;
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeBusy:(OWSSignalServiceProtosCallMessageBusy*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) clearBusy;
 @end
 
 #define DataMessage_body @"body"

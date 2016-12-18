@@ -3,6 +3,8 @@
 
 #import "TSInteraction.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSContactThread;
 
 typedef enum {
@@ -15,9 +17,11 @@ typedef enum {
 
 @property (nonatomic, readonly) RPRecentCallType callType;
 
-- (instancetype)initWithTimestamp:(uint64_t)timeStamp
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread;
 
 @end
+
+NS_ASSUME_NONNULL_END

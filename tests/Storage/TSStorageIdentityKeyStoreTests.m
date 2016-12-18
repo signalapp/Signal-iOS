@@ -9,10 +9,12 @@
 #import <XCTest/XCTest.h>
 #import <25519/Curve25519.h>
 
+#import "OWSUnitTestEnvironment.h"
 #import "SecurityUtils.h"
 #import "TSPrivacyPreferences.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager.h"
+#import "TextSecureKitEnv.h"
 
 @interface TSStorageIdentityKeyStoreTests : XCTestCase
 
@@ -67,7 +69,7 @@
 }
 
 
-- (void)testChangedKeyWIthNonBlockingIdentityChanges
+- (void)testChangedKeyWithNonBlockingIdentityChanges
 {
     TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
     preferences.shouldBlockOnIdentityChange = NO;
@@ -82,6 +84,7 @@
 
     NSData *otherKey = [SecurityUtils generateRandomBytes:32];
 
+    [TextSecureKitEnv setSharedEnv:[OWSUnitTestEnvironment new]];
     XCTAssertTrue([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId]);
 }
 

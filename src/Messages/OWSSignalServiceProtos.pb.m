@@ -558,6 +558,7 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
 @interface OWSSignalServiceProtosContent ()
 @property (strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (strong) OWSSignalServiceProtosSyncMessage* syncMessage;
+@property (strong) OWSSignalServiceProtosCallMessage* callMessage;
 @end
 
 @implementation OWSSignalServiceProtosContent
@@ -576,10 +577,18 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
   hasSyncMessage_ = !!_value_;
 }
 @synthesize syncMessage;
+- (BOOL) hasCallMessage {
+  return !!hasCallMessage_;
+}
+- (void) setHasCallMessage:(BOOL) _value_ {
+  hasCallMessage_ = !!_value_;
+}
+@synthesize callMessage;
 - (instancetype) init {
   if ((self = [super init])) {
     self.dataMessage = [OWSSignalServiceProtosDataMessage defaultInstance];
     self.syncMessage = [OWSSignalServiceProtosSyncMessage defaultInstance];
+    self.callMessage = [OWSSignalServiceProtosCallMessage defaultInstance];
   }
   return self;
 }
@@ -605,6 +614,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (self.hasSyncMessage) {
     [output writeMessage:2 value:self.syncMessage];
   }
+  if (self.hasCallMessage) {
+    [output writeMessage:3 value:self.callMessage];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -619,6 +631,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasSyncMessage) {
     size_ += computeMessageSize(2, self.syncMessage);
+  }
+  if (self.hasCallMessage) {
+    size_ += computeMessageSize(3, self.callMessage);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -667,6 +682,12 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasCallMessage) {
+    [output appendFormat:@"%@%@ {\n", indent, @"callMessage"];
+    [self.callMessage writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -679,6 +700,11 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
    [self.syncMessage storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"syncMessage"];
+  }
+  if (self.hasCallMessage) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.callMessage storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"callMessage"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -695,6 +721,8 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
       (!self.hasDataMessage || [self.dataMessage isEqual:otherMessage.dataMessage]) &&
       self.hasSyncMessage == otherMessage.hasSyncMessage &&
       (!self.hasSyncMessage || [self.syncMessage isEqual:otherMessage.syncMessage]) &&
+      self.hasCallMessage == otherMessage.hasCallMessage &&
+      (!self.hasCallMessage || [self.callMessage isEqual:otherMessage.callMessage]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -704,6 +732,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasSyncMessage) {
     hashCode = hashCode * 31 + [self.syncMessage hash];
+  }
+  if (self.hasCallMessage) {
+    hashCode = hashCode * 31 + [self.callMessage hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -754,6 +785,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (other.hasSyncMessage) {
     [self mergeSyncMessage:other.syncMessage];
   }
+  if (other.hasCallMessage) {
+    [self mergeCallMessage:other.callMessage];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -791,6 +825,15 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setSyncMessage:[subBuilder buildPartial]];
+        break;
+      }
+      case 26: {
+        OWSSignalServiceProtosCallMessageBuilder* subBuilder = [OWSSignalServiceProtosCallMessage builder];
+        if (self.hasCallMessage) {
+          [subBuilder mergeFrom:self.callMessage];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setCallMessage:[subBuilder buildPartial]];
         break;
       }
     }
@@ -854,6 +897,1824 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 - (OWSSignalServiceProtosContentBuilder*) clearSyncMessage {
   resultContent.hasSyncMessage = NO;
   resultContent.syncMessage = [OWSSignalServiceProtosSyncMessage defaultInstance];
+  return self;
+}
+- (BOOL) hasCallMessage {
+  return resultContent.hasCallMessage;
+}
+- (OWSSignalServiceProtosCallMessage*) callMessage {
+  return resultContent.callMessage;
+}
+- (OWSSignalServiceProtosContentBuilder*) setCallMessage:(OWSSignalServiceProtosCallMessage*) value {
+  resultContent.hasCallMessage = YES;
+  resultContent.callMessage = value;
+  return self;
+}
+- (OWSSignalServiceProtosContentBuilder*) setCallMessageBuilder:(OWSSignalServiceProtosCallMessageBuilder*) builderForValue {
+  return [self setCallMessage:[builderForValue build]];
+}
+- (OWSSignalServiceProtosContentBuilder*) mergeCallMessage:(OWSSignalServiceProtosCallMessage*) value {
+  if (resultContent.hasCallMessage &&
+      resultContent.callMessage != [OWSSignalServiceProtosCallMessage defaultInstance]) {
+    resultContent.callMessage =
+      [[[OWSSignalServiceProtosCallMessage builderWithPrototype:resultContent.callMessage] mergeFrom:value] buildPartial];
+  } else {
+    resultContent.callMessage = value;
+  }
+  resultContent.hasCallMessage = YES;
+  return self;
+}
+- (OWSSignalServiceProtosContentBuilder*) clearCallMessage {
+  resultContent.hasCallMessage = NO;
+  resultContent.callMessage = [OWSSignalServiceProtosCallMessage defaultInstance];
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessage ()
+@property (strong) OWSSignalServiceProtosCallMessageOffer* offer;
+@property (strong) OWSSignalServiceProtosCallMessageAnswer* answer;
+@property (strong) NSMutableArray<OWSSignalServiceProtosCallMessageIceUpdate*> * iceUpdateArray;
+@property (strong) OWSSignalServiceProtosCallMessageHangup* hangup;
+@property (strong) OWSSignalServiceProtosCallMessageBusy* busy;
+@end
+
+@implementation OWSSignalServiceProtosCallMessage
+
+- (BOOL) hasOffer {
+  return !!hasOffer_;
+}
+- (void) setHasOffer:(BOOL) _value_ {
+  hasOffer_ = !!_value_;
+}
+@synthesize offer;
+- (BOOL) hasAnswer {
+  return !!hasAnswer_;
+}
+- (void) setHasAnswer:(BOOL) _value_ {
+  hasAnswer_ = !!_value_;
+}
+@synthesize answer;
+@synthesize iceUpdateArray;
+@dynamic iceUpdate;
+- (BOOL) hasHangup {
+  return !!hasHangup_;
+}
+- (void) setHasHangup:(BOOL) _value_ {
+  hasHangup_ = !!_value_;
+}
+@synthesize hangup;
+- (BOOL) hasBusy {
+  return !!hasBusy_;
+}
+- (void) setHasBusy:(BOOL) _value_ {
+  hasBusy_ = !!_value_;
+}
+@synthesize busy;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.offer = [OWSSignalServiceProtosCallMessageOffer defaultInstance];
+    self.answer = [OWSSignalServiceProtosCallMessageAnswer defaultInstance];
+    self.hangup = [OWSSignalServiceProtosCallMessageHangup defaultInstance];
+    self.busy = [OWSSignalServiceProtosCallMessageBusy defaultInstance];
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessageInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessage class]) {
+    defaultOWSSignalServiceProtosCallMessageInstance = [[OWSSignalServiceProtosCallMessage alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageInstance;
+}
+- (NSArray<OWSSignalServiceProtosCallMessageIceUpdate*> *)iceUpdate {
+  return iceUpdateArray;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdate*)iceUpdateAtIndex:(NSUInteger)index {
+  return [iceUpdateArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasOffer) {
+    [output writeMessage:1 value:self.offer];
+  }
+  if (self.hasAnswer) {
+    [output writeMessage:2 value:self.answer];
+  }
+  [self.iceUpdateArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosCallMessageIceUpdate *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:3 value:element];
+  }];
+  if (self.hasHangup) {
+    [output writeMessage:4 value:self.hangup];
+  }
+  if (self.hasBusy) {
+    [output writeMessage:5 value:self.busy];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasOffer) {
+    size_ += computeMessageSize(1, self.offer);
+  }
+  if (self.hasAnswer) {
+    size_ += computeMessageSize(2, self.answer);
+  }
+  [self.iceUpdateArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosCallMessageIceUpdate *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(3, element);
+  }];
+  if (self.hasHangup) {
+    size_ += computeMessageSize(4, self.hangup);
+  }
+  if (self.hasBusy) {
+    size_ += computeMessageSize(5, self.busy);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessage*)[[[OWSSignalServiceProtosCallMessage builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessage*) prototype {
+  return [[OWSSignalServiceProtosCallMessage builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessage builder];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessage builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasOffer) {
+    [output appendFormat:@"%@%@ {\n", indent, @"offer"];
+    [self.offer writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  if (self.hasAnswer) {
+    [output appendFormat:@"%@%@ {\n", indent, @"answer"];
+    [self.answer writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  [self.iceUpdateArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosCallMessageIceUpdate *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"iceUpdate"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  if (self.hasHangup) {
+    [output appendFormat:@"%@%@ {\n", indent, @"hangup"];
+    [self.hangup writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  if (self.hasBusy) {
+    [output appendFormat:@"%@%@ {\n", indent, @"busy"];
+    [self.busy writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasOffer) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.offer storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"offer"];
+  }
+  if (self.hasAnswer) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.answer storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"answer"];
+  }
+  for (OWSSignalServiceProtosCallMessageIceUpdate* element in self.iceUpdateArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"iceUpdate"];
+  }
+  if (self.hasHangup) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.hangup storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"hangup"];
+  }
+  if (self.hasBusy) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.busy storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"busy"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessage class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessage *otherMessage = other;
+  return
+      self.hasOffer == otherMessage.hasOffer &&
+      (!self.hasOffer || [self.offer isEqual:otherMessage.offer]) &&
+      self.hasAnswer == otherMessage.hasAnswer &&
+      (!self.hasAnswer || [self.answer isEqual:otherMessage.answer]) &&
+      [self.iceUpdateArray isEqualToArray:otherMessage.iceUpdateArray] &&
+      self.hasHangup == otherMessage.hasHangup &&
+      (!self.hasHangup || [self.hangup isEqual:otherMessage.hangup]) &&
+      self.hasBusy == otherMessage.hasBusy &&
+      (!self.hasBusy || [self.busy isEqual:otherMessage.busy]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasOffer) {
+    hashCode = hashCode * 31 + [self.offer hash];
+  }
+  if (self.hasAnswer) {
+    hashCode = hashCode * 31 + [self.answer hash];
+  }
+  [self.iceUpdateArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosCallMessageIceUpdate *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  if (self.hasHangup) {
+    hashCode = hashCode * 31 + [self.hangup hash];
+  }
+  if (self.hasBusy) {
+    hashCode = hashCode * 31 + [self.busy hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageOffer ()
+@property UInt64 id;
+@property (strong) NSString* sessionDescription;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageOffer
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (BOOL) hasSessionDescription {
+  return !!hasSessionDescription_;
+}
+- (void) setHasSessionDescription:(BOOL) _value_ {
+  hasSessionDescription_ = !!_value_;
+}
+@synthesize sessionDescription;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+    self.sessionDescription = @"";
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCallMessageOfferInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessageOffer class]) {
+    defaultOWSSignalServiceProtosCallMessageOfferInstance = [[OWSSignalServiceProtosCallMessageOffer alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageOfferInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageOfferInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  if (self.hasSessionDescription) {
+    [output writeString:2 value:self.sessionDescription];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  if (self.hasSessionDescription) {
+    size_ += computeStringSize(2, self.sessionDescription);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageOffer*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageOffer*)[[[OWSSignalServiceProtosCallMessageOffer builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageOfferBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageOfferBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageOfferBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageOffer*) prototype {
+  return [[OWSSignalServiceProtosCallMessageOffer builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessageOffer builder];
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessageOffer builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  if (self.hasSessionDescription) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sessionDescription", self.sessionDescription];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  if (self.hasSessionDescription) {
+    [dictionary setObject: self.sessionDescription forKey: @"sessionDescription"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessageOffer class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessageOffer *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasSessionDescription == otherMessage.hasSessionDescription &&
+      (!self.hasSessionDescription || [self.sessionDescription isEqual:otherMessage.sessionDescription]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  if (self.hasSessionDescription) {
+    hashCode = hashCode * 31 + [self.sessionDescription hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageOfferBuilder()
+@property (strong) OWSSignalServiceProtosCallMessageOffer* resultOffer;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageOfferBuilder
+@synthesize resultOffer;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultOffer = [[OWSSignalServiceProtosCallMessageOffer alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultOffer;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clear {
+  self.resultOffer = [[OWSSignalServiceProtosCallMessageOffer alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessageOffer builderWithPrototype:resultOffer];
+}
+- (OWSSignalServiceProtosCallMessageOffer*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessageOffer defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessageOffer*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessageOffer*) buildPartial {
+  OWSSignalServiceProtosCallMessageOffer* returnMe = resultOffer;
+  self.resultOffer = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageOffer*) other {
+  if (other == [OWSSignalServiceProtosCallMessageOffer defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  if (other.hasSessionDescription) {
+    [self setSessionDescription:other.sessionDescription];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+      case 18: {
+        [self setSessionDescription:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultOffer.hasId;
+}
+- (UInt64) id {
+  return resultOffer.id;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setId:(UInt64) value {
+  resultOffer.hasId = YES;
+  resultOffer.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearId {
+  resultOffer.hasId = NO;
+  resultOffer.id = 0L;
+  return self;
+}
+- (BOOL) hasSessionDescription {
+  return resultOffer.hasSessionDescription;
+}
+- (NSString*) sessionDescription {
+  return resultOffer.sessionDescription;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setSessionDescription:(NSString*) value {
+  resultOffer.hasSessionDescription = YES;
+  resultOffer.sessionDescription = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearSessionDescription {
+  resultOffer.hasSessionDescription = NO;
+  resultOffer.sessionDescription = @"";
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageAnswer ()
+@property UInt64 id;
+@property (strong) NSString* sessionDescription;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageAnswer
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (BOOL) hasSessionDescription {
+  return !!hasSessionDescription_;
+}
+- (void) setHasSessionDescription:(BOOL) _value_ {
+  hasSessionDescription_ = !!_value_;
+}
+@synthesize sessionDescription;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+    self.sessionDescription = @"";
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCallMessageAnswerInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessageAnswer class]) {
+    defaultOWSSignalServiceProtosCallMessageAnswerInstance = [[OWSSignalServiceProtosCallMessageAnswer alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageAnswerInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageAnswerInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  if (self.hasSessionDescription) {
+    [output writeString:2 value:self.sessionDescription];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  if (self.hasSessionDescription) {
+    size_ += computeStringSize(2, self.sessionDescription);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswer*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageAnswer*)[[[OWSSignalServiceProtosCallMessageAnswer builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageAnswerBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageAnswerBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageAnswerBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageAnswer*) prototype {
+  return [[OWSSignalServiceProtosCallMessageAnswer builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessageAnswer builder];
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessageAnswer builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  if (self.hasSessionDescription) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sessionDescription", self.sessionDescription];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  if (self.hasSessionDescription) {
+    [dictionary setObject: self.sessionDescription forKey: @"sessionDescription"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessageAnswer class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessageAnswer *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasSessionDescription == otherMessage.hasSessionDescription &&
+      (!self.hasSessionDescription || [self.sessionDescription isEqual:otherMessage.sessionDescription]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  if (self.hasSessionDescription) {
+    hashCode = hashCode * 31 + [self.sessionDescription hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageAnswerBuilder()
+@property (strong) OWSSignalServiceProtosCallMessageAnswer* resultAnswer;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageAnswerBuilder
+@synthesize resultAnswer;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultAnswer = [[OWSSignalServiceProtosCallMessageAnswer alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultAnswer;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clear {
+  self.resultAnswer = [[OWSSignalServiceProtosCallMessageAnswer alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessageAnswer builderWithPrototype:resultAnswer];
+}
+- (OWSSignalServiceProtosCallMessageAnswer*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessageAnswer defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessageAnswer*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessageAnswer*) buildPartial {
+  OWSSignalServiceProtosCallMessageAnswer* returnMe = resultAnswer;
+  self.resultAnswer = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageAnswer*) other {
+  if (other == [OWSSignalServiceProtosCallMessageAnswer defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  if (other.hasSessionDescription) {
+    [self setSessionDescription:other.sessionDescription];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+      case 18: {
+        [self setSessionDescription:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultAnswer.hasId;
+}
+- (UInt64) id {
+  return resultAnswer.id;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setId:(UInt64) value {
+  resultAnswer.hasId = YES;
+  resultAnswer.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearId {
+  resultAnswer.hasId = NO;
+  resultAnswer.id = 0L;
+  return self;
+}
+- (BOOL) hasSessionDescription {
+  return resultAnswer.hasSessionDescription;
+}
+- (NSString*) sessionDescription {
+  return resultAnswer.sessionDescription;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setSessionDescription:(NSString*) value {
+  resultAnswer.hasSessionDescription = YES;
+  resultAnswer.sessionDescription = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearSessionDescription {
+  resultAnswer.hasSessionDescription = NO;
+  resultAnswer.sessionDescription = @"";
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageIceUpdate ()
+@property UInt64 id;
+@property (strong) NSString* sdpMid;
+@property UInt32 sdpMlineIndex;
+@property (strong) NSString* sdp;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageIceUpdate
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (BOOL) hasSdpMid {
+  return !!hasSdpMid_;
+}
+- (void) setHasSdpMid:(BOOL) _value_ {
+  hasSdpMid_ = !!_value_;
+}
+@synthesize sdpMid;
+- (BOOL) hasSdpMlineIndex {
+  return !!hasSdpMlineIndex_;
+}
+- (void) setHasSdpMlineIndex:(BOOL) _value_ {
+  hasSdpMlineIndex_ = !!_value_;
+}
+@synthesize sdpMlineIndex;
+- (BOOL) hasSdp {
+  return !!hasSdp_;
+}
+- (void) setHasSdp:(BOOL) _value_ {
+  hasSdp_ = !!_value_;
+}
+@synthesize sdp;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+    self.sdpMid = @"";
+    self.sdpMlineIndex = 0;
+    self.sdp = @"";
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessageIceUpdate* defaultOWSSignalServiceProtosCallMessageIceUpdateInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessageIceUpdate class]) {
+    defaultOWSSignalServiceProtosCallMessageIceUpdateInstance = [[OWSSignalServiceProtosCallMessageIceUpdate alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageIceUpdateInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageIceUpdateInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  if (self.hasSdpMid) {
+    [output writeString:2 value:self.sdpMid];
+  }
+  if (self.hasSdpMlineIndex) {
+    [output writeUInt32:3 value:self.sdpMlineIndex];
+  }
+  if (self.hasSdp) {
+    [output writeString:4 value:self.sdp];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  if (self.hasSdpMid) {
+    size_ += computeStringSize(2, self.sdpMid);
+  }
+  if (self.hasSdpMlineIndex) {
+    size_ += computeUInt32Size(3, self.sdpMlineIndex);
+  }
+  if (self.hasSdp) {
+    size_ += computeStringSize(4, self.sdp);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdate*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageIceUpdate*)[[[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageIceUpdateBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageIceUpdate*) prototype {
+  return [[OWSSignalServiceProtosCallMessageIceUpdate builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessageIceUpdate builder];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessageIceUpdate builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  if (self.hasSdpMid) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sdpMid", self.sdpMid];
+  }
+  if (self.hasSdpMlineIndex) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sdpMlineIndex", [NSNumber numberWithInteger:self.sdpMlineIndex]];
+  }
+  if (self.hasSdp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sdp", self.sdp];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  if (self.hasSdpMid) {
+    [dictionary setObject: self.sdpMid forKey: @"sdpMid"];
+  }
+  if (self.hasSdpMlineIndex) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.sdpMlineIndex] forKey: @"sdpMlineIndex"];
+  }
+  if (self.hasSdp) {
+    [dictionary setObject: self.sdp forKey: @"sdp"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessageIceUpdate class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessageIceUpdate *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasSdpMid == otherMessage.hasSdpMid &&
+      (!self.hasSdpMid || [self.sdpMid isEqual:otherMessage.sdpMid]) &&
+      self.hasSdpMlineIndex == otherMessage.hasSdpMlineIndex &&
+      (!self.hasSdpMlineIndex || self.sdpMlineIndex == otherMessage.sdpMlineIndex) &&
+      self.hasSdp == otherMessage.hasSdp &&
+      (!self.hasSdp || [self.sdp isEqual:otherMessage.sdp]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  if (self.hasSdpMid) {
+    hashCode = hashCode * 31 + [self.sdpMid hash];
+  }
+  if (self.hasSdpMlineIndex) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.sdpMlineIndex] hash];
+  }
+  if (self.hasSdp) {
+    hashCode = hashCode * 31 + [self.sdp hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageIceUpdateBuilder()
+@property (strong) OWSSignalServiceProtosCallMessageIceUpdate* resultIceUpdate;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageIceUpdateBuilder
+@synthesize resultIceUpdate;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultIceUpdate = [[OWSSignalServiceProtosCallMessageIceUpdate alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultIceUpdate;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clear {
+  self.resultIceUpdate = [[OWSSignalServiceProtosCallMessageIceUpdate alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessageIceUpdate builderWithPrototype:resultIceUpdate];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdate*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessageIceUpdate defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdate*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdate*) buildPartial {
+  OWSSignalServiceProtosCallMessageIceUpdate* returnMe = resultIceUpdate;
+  self.resultIceUpdate = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageIceUpdate*) other {
+  if (other == [OWSSignalServiceProtosCallMessageIceUpdate defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  if (other.hasSdpMid) {
+    [self setSdpMid:other.sdpMid];
+  }
+  if (other.hasSdpMlineIndex) {
+    [self setSdpMlineIndex:other.sdpMlineIndex];
+  }
+  if (other.hasSdp) {
+    [self setSdp:other.sdp];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+      case 18: {
+        [self setSdpMid:[input readString]];
+        break;
+      }
+      case 24: {
+        [self setSdpMlineIndex:[input readUInt32]];
+        break;
+      }
+      case 34: {
+        [self setSdp:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultIceUpdate.hasId;
+}
+- (UInt64) id {
+  return resultIceUpdate.id;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setId:(UInt64) value {
+  resultIceUpdate.hasId = YES;
+  resultIceUpdate.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearId {
+  resultIceUpdate.hasId = NO;
+  resultIceUpdate.id = 0L;
+  return self;
+}
+- (BOOL) hasSdpMid {
+  return resultIceUpdate.hasSdpMid;
+}
+- (NSString*) sdpMid {
+  return resultIceUpdate.sdpMid;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdpMid:(NSString*) value {
+  resultIceUpdate.hasSdpMid = YES;
+  resultIceUpdate.sdpMid = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdpMid {
+  resultIceUpdate.hasSdpMid = NO;
+  resultIceUpdate.sdpMid = @"";
+  return self;
+}
+- (BOOL) hasSdpMlineIndex {
+  return resultIceUpdate.hasSdpMlineIndex;
+}
+- (UInt32) sdpMlineIndex {
+  return resultIceUpdate.sdpMlineIndex;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdpMlineIndex:(UInt32) value {
+  resultIceUpdate.hasSdpMlineIndex = YES;
+  resultIceUpdate.sdpMlineIndex = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdpMlineIndex {
+  resultIceUpdate.hasSdpMlineIndex = NO;
+  resultIceUpdate.sdpMlineIndex = 0;
+  return self;
+}
+- (BOOL) hasSdp {
+  return resultIceUpdate.hasSdp;
+}
+- (NSString*) sdp {
+  return resultIceUpdate.sdp;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) setSdp:(NSString*) value {
+  resultIceUpdate.hasSdp = YES;
+  resultIceUpdate.sdp = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdateBuilder*) clearSdp {
+  resultIceUpdate.hasSdp = NO;
+  resultIceUpdate.sdp = @"";
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageBusy ()
+@property UInt64 id;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageBusy
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessageBusy* defaultOWSSignalServiceProtosCallMessageBusyInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessageBusy class]) {
+    defaultOWSSignalServiceProtosCallMessageBusyInstance = [[OWSSignalServiceProtosCallMessageBusy alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageBusyInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageBusyInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageBusy*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageBusy*)[[[OWSSignalServiceProtosCallMessageBusy builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageBusyBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageBusyBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageBusyBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageBusy*) prototype {
+  return [[OWSSignalServiceProtosCallMessageBusy builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessageBusy builder];
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessageBusy builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessageBusy class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessageBusy *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageBusyBuilder()
+@property (strong) OWSSignalServiceProtosCallMessageBusy* resultBusy;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageBusyBuilder
+@synthesize resultBusy;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultBusy = [[OWSSignalServiceProtosCallMessageBusy alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultBusy;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clear {
+  self.resultBusy = [[OWSSignalServiceProtosCallMessageBusy alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessageBusy builderWithPrototype:resultBusy];
+}
+- (OWSSignalServiceProtosCallMessageBusy*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessageBusy defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessageBusy*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessageBusy*) buildPartial {
+  OWSSignalServiceProtosCallMessageBusy* returnMe = resultBusy;
+  self.resultBusy = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageBusy*) other {
+  if (other == [OWSSignalServiceProtosCallMessageBusy defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultBusy.hasId;
+}
+- (UInt64) id {
+  return resultBusy.id;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) setId:(UInt64) value {
+  resultBusy.hasId = YES;
+  resultBusy.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBusyBuilder*) clearId {
+  resultBusy.hasId = NO;
+  resultBusy.id = 0L;
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageHangup ()
+@property UInt64 id;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageHangup
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+  }
+  return self;
+}
+static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCallMessageHangupInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosCallMessageHangup class]) {
+    defaultOWSSignalServiceProtosCallMessageHangupInstance = [[OWSSignalServiceProtosCallMessageHangup alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageHangupInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosCallMessageHangupInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosCallMessageHangup*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosCallMessageHangup*)[[[OWSSignalServiceProtosCallMessageHangup builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosCallMessageHangupBuilder*) builder {
+  return [[OWSSignalServiceProtosCallMessageHangupBuilder alloc] init];
+}
++ (OWSSignalServiceProtosCallMessageHangupBuilder*) builderWithPrototype:(OWSSignalServiceProtosCallMessageHangup*) prototype {
+  return [[OWSSignalServiceProtosCallMessageHangup builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) builder {
+  return [OWSSignalServiceProtosCallMessageHangup builder];
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) toBuilder {
+  return [OWSSignalServiceProtosCallMessageHangup builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosCallMessageHangup class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosCallMessageHangup *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageHangupBuilder()
+@property (strong) OWSSignalServiceProtosCallMessageHangup* resultHangup;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageHangupBuilder
+@synthesize resultHangup;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultHangup = [[OWSSignalServiceProtosCallMessageHangup alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultHangup;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clear {
+  self.resultHangup = [[OWSSignalServiceProtosCallMessageHangup alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessageHangup builderWithPrototype:resultHangup];
+}
+- (OWSSignalServiceProtosCallMessageHangup*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessageHangup defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessageHangup*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessageHangup*) buildPartial {
+  OWSSignalServiceProtosCallMessageHangup* returnMe = resultHangup;
+  self.resultHangup = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessageHangup*) other {
+  if (other == [OWSSignalServiceProtosCallMessageHangup defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultHangup.hasId;
+}
+- (UInt64) id {
+  return resultHangup.id;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) setId:(UInt64) value {
+  resultHangup.hasId = YES;
+  resultHangup.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageHangupBuilder*) clearId {
+  resultHangup.hasId = NO;
+  resultHangup.id = 0L;
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosCallMessageBuilder()
+@property (strong) OWSSignalServiceProtosCallMessage* resultCallMessage;
+@end
+
+@implementation OWSSignalServiceProtosCallMessageBuilder
+@synthesize resultCallMessage;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultCallMessage = [[OWSSignalServiceProtosCallMessage alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultCallMessage;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clear {
+  self.resultCallMessage = [[OWSSignalServiceProtosCallMessage alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clone {
+  return [OWSSignalServiceProtosCallMessage builderWithPrototype:resultCallMessage];
+}
+- (OWSSignalServiceProtosCallMessage*) defaultInstance {
+  return [OWSSignalServiceProtosCallMessage defaultInstance];
+}
+- (OWSSignalServiceProtosCallMessage*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosCallMessage*) buildPartial {
+  OWSSignalServiceProtosCallMessage* returnMe = resultCallMessage;
+  self.resultCallMessage = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFrom:(OWSSignalServiceProtosCallMessage*) other {
+  if (other == [OWSSignalServiceProtosCallMessage defaultInstance]) {
+    return self;
+  }
+  if (other.hasOffer) {
+    [self mergeOffer:other.offer];
+  }
+  if (other.hasAnswer) {
+    [self mergeAnswer:other.answer];
+  }
+  if (other.iceUpdateArray.count > 0) {
+    if (resultCallMessage.iceUpdateArray == nil) {
+      resultCallMessage.iceUpdateArray = [[NSMutableArray alloc] initWithArray:other.iceUpdateArray];
+    } else {
+      [resultCallMessage.iceUpdateArray addObjectsFromArray:other.iceUpdateArray];
+    }
+  }
+  if (other.hasHangup) {
+    [self mergeHangup:other.hangup];
+  }
+  if (other.hasBusy) {
+    [self mergeBusy:other.busy];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        OWSSignalServiceProtosCallMessageOfferBuilder* subBuilder = [OWSSignalServiceProtosCallMessageOffer builder];
+        if (self.hasOffer) {
+          [subBuilder mergeFrom:self.offer];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setOffer:[subBuilder buildPartial]];
+        break;
+      }
+      case 18: {
+        OWSSignalServiceProtosCallMessageAnswerBuilder* subBuilder = [OWSSignalServiceProtosCallMessageAnswer builder];
+        if (self.hasAnswer) {
+          [subBuilder mergeFrom:self.answer];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setAnswer:[subBuilder buildPartial]];
+        break;
+      }
+      case 26: {
+        OWSSignalServiceProtosCallMessageIceUpdateBuilder* subBuilder = [OWSSignalServiceProtosCallMessageIceUpdate builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addIceUpdate:[subBuilder buildPartial]];
+        break;
+      }
+      case 34: {
+        OWSSignalServiceProtosCallMessageHangupBuilder* subBuilder = [OWSSignalServiceProtosCallMessageHangup builder];
+        if (self.hasHangup) {
+          [subBuilder mergeFrom:self.hangup];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setHangup:[subBuilder buildPartial]];
+        break;
+      }
+      case 42: {
+        OWSSignalServiceProtosCallMessageBusyBuilder* subBuilder = [OWSSignalServiceProtosCallMessageBusy builder];
+        if (self.hasBusy) {
+          [subBuilder mergeFrom:self.busy];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setBusy:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasOffer {
+  return resultCallMessage.hasOffer;
+}
+- (OWSSignalServiceProtosCallMessageOffer*) offer {
+  return resultCallMessage.offer;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setOffer:(OWSSignalServiceProtosCallMessageOffer*) value {
+  resultCallMessage.hasOffer = YES;
+  resultCallMessage.offer = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setOfferBuilder:(OWSSignalServiceProtosCallMessageOfferBuilder*) builderForValue {
+  return [self setOffer:[builderForValue build]];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeOffer:(OWSSignalServiceProtosCallMessageOffer*) value {
+  if (resultCallMessage.hasOffer &&
+      resultCallMessage.offer != [OWSSignalServiceProtosCallMessageOffer defaultInstance]) {
+    resultCallMessage.offer =
+      [[[OWSSignalServiceProtosCallMessageOffer builderWithPrototype:resultCallMessage.offer] mergeFrom:value] buildPartial];
+  } else {
+    resultCallMessage.offer = value;
+  }
+  resultCallMessage.hasOffer = YES;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clearOffer {
+  resultCallMessage.hasOffer = NO;
+  resultCallMessage.offer = [OWSSignalServiceProtosCallMessageOffer defaultInstance];
+  return self;
+}
+- (BOOL) hasAnswer {
+  return resultCallMessage.hasAnswer;
+}
+- (OWSSignalServiceProtosCallMessageAnswer*) answer {
+  return resultCallMessage.answer;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setAnswer:(OWSSignalServiceProtosCallMessageAnswer*) value {
+  resultCallMessage.hasAnswer = YES;
+  resultCallMessage.answer = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setAnswerBuilder:(OWSSignalServiceProtosCallMessageAnswerBuilder*) builderForValue {
+  return [self setAnswer:[builderForValue build]];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeAnswer:(OWSSignalServiceProtosCallMessageAnswer*) value {
+  if (resultCallMessage.hasAnswer &&
+      resultCallMessage.answer != [OWSSignalServiceProtosCallMessageAnswer defaultInstance]) {
+    resultCallMessage.answer =
+      [[[OWSSignalServiceProtosCallMessageAnswer builderWithPrototype:resultCallMessage.answer] mergeFrom:value] buildPartial];
+  } else {
+    resultCallMessage.answer = value;
+  }
+  resultCallMessage.hasAnswer = YES;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clearAnswer {
+  resultCallMessage.hasAnswer = NO;
+  resultCallMessage.answer = [OWSSignalServiceProtosCallMessageAnswer defaultInstance];
+  return self;
+}
+- (NSMutableArray<OWSSignalServiceProtosCallMessageIceUpdate*> *)iceUpdate {
+  return resultCallMessage.iceUpdateArray;
+}
+- (OWSSignalServiceProtosCallMessageIceUpdate*)iceUpdateAtIndex:(NSUInteger)index {
+  return [resultCallMessage iceUpdateAtIndex:index];
+}
+- (OWSSignalServiceProtosCallMessageBuilder *)addIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate*)value {
+  if (resultCallMessage.iceUpdateArray == nil) {
+    resultCallMessage.iceUpdateArray = [[NSMutableArray alloc]init];
+  }
+  [resultCallMessage.iceUpdateArray addObject:value];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder *)setIceUpdateArray:(NSArray<OWSSignalServiceProtosCallMessageIceUpdate*> *)array {
+  resultCallMessage.iceUpdateArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder *)clearIceUpdate {
+  resultCallMessage.iceUpdateArray = nil;
+  return self;
+}
+- (BOOL) hasHangup {
+  return resultCallMessage.hasHangup;
+}
+- (OWSSignalServiceProtosCallMessageHangup*) hangup {
+  return resultCallMessage.hangup;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setHangup:(OWSSignalServiceProtosCallMessageHangup*) value {
+  resultCallMessage.hasHangup = YES;
+  resultCallMessage.hangup = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setHangupBuilder:(OWSSignalServiceProtosCallMessageHangupBuilder*) builderForValue {
+  return [self setHangup:[builderForValue build]];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeHangup:(OWSSignalServiceProtosCallMessageHangup*) value {
+  if (resultCallMessage.hasHangup &&
+      resultCallMessage.hangup != [OWSSignalServiceProtosCallMessageHangup defaultInstance]) {
+    resultCallMessage.hangup =
+      [[[OWSSignalServiceProtosCallMessageHangup builderWithPrototype:resultCallMessage.hangup] mergeFrom:value] buildPartial];
+  } else {
+    resultCallMessage.hangup = value;
+  }
+  resultCallMessage.hasHangup = YES;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clearHangup {
+  resultCallMessage.hasHangup = NO;
+  resultCallMessage.hangup = [OWSSignalServiceProtosCallMessageHangup defaultInstance];
+  return self;
+}
+- (BOOL) hasBusy {
+  return resultCallMessage.hasBusy;
+}
+- (OWSSignalServiceProtosCallMessageBusy*) busy {
+  return resultCallMessage.busy;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setBusy:(OWSSignalServiceProtosCallMessageBusy*) value {
+  resultCallMessage.hasBusy = YES;
+  resultCallMessage.busy = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setBusyBuilder:(OWSSignalServiceProtosCallMessageBusyBuilder*) builderForValue {
+  return [self setBusy:[builderForValue build]];
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) mergeBusy:(OWSSignalServiceProtosCallMessageBusy*) value {
+  if (resultCallMessage.hasBusy &&
+      resultCallMessage.busy != [OWSSignalServiceProtosCallMessageBusy defaultInstance]) {
+    resultCallMessage.busy =
+      [[[OWSSignalServiceProtosCallMessageBusy builderWithPrototype:resultCallMessage.busy] mergeFrom:value] buildPartial];
+  } else {
+    resultCallMessage.busy = value;
+  }
+  resultCallMessage.hasBusy = YES;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clearBusy {
+  resultCallMessage.hasBusy = NO;
+  resultCallMessage.busy = [OWSSignalServiceProtosCallMessageBusy defaultInstance];
   return self;
 }
 @end

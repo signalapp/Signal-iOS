@@ -19,10 +19,14 @@ static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 
 @interface TSAccountManager : NSObject
 
+#pragma mark - Initializers
+
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager;
 
 + (instancetype)sharedInstance;
+
+@property (nonatomic, strong, readonly) TSNetworkManager *networkManager;
 
 /**
  *  Returns if a user is registered or not

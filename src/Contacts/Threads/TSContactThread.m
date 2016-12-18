@@ -2,7 +2,9 @@
 //  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import "TSContactThread.h"
+#import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
+#import "NotificationsProtocol.h"
 #import "TSStorageManager+identityKeyStore.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseConnection.h>

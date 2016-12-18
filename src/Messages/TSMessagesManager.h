@@ -15,12 +15,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSDisappearingMessagesJob;
 @class OWSMessageSender;
 @protocol ContactsManagerProtocol;
+@protocol OWSCallMessageHandler;
 
 @interface TSMessagesManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
+                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
                          messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;

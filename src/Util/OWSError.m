@@ -32,4 +32,10 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
             @"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT", @"Error message when attempting to send message"));
 }
 
+NSError *OWSErrorMakeAssertionError()
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
+        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+}
+
 NS_ASSUME_NONNULL_END

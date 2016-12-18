@@ -28,6 +28,8 @@
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSNetworkManager : NSObject
 
 + (id)sharedManager;
@@ -37,3 +39,5 @@
             failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure NS_SWIFT_NAME(makeRequest(_:success:failure:));
 
 @end
+
+NS_ASSUME_NONNULL_END

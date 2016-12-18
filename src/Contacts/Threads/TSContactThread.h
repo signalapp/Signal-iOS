@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSContactThread : TSThread
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId;
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;

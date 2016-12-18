@@ -6,6 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "Cryptography.h"
+#import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
 #import "OWSFakeNetworkManager.h"
@@ -73,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [[TSMessagesManager alloc] initWithNetworkManager:[OWSFakeNetworkManager new]
                                               storageManager:[TSStorageManager sharedManager]
+                                          callMessageHandler:[OWSFakeCallMessageHandler new]
                                              contactsManager:[OWSFakeContactsManager new]
                                              contactsUpdater:[OWSFakeContactsUpdater new]
                                                messageSender:messageSender];
