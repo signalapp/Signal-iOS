@@ -1243,10 +1243,11 @@ typedef enum : NSUInteger {
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
                                 
-                                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                         selector:@selector(moviePlayBackDidFinish:)
-                                                                             name:MPMoviePlayerPlaybackDidFinishNotification
-                                                                           object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter]
+                                    addObserver:self
+                                       selector:@selector(moviePlayBackDidFinish:)
+                                           name:MPMoviePlayerPlaybackDidFinishNotification
+                                         object:_videoPlayer];
 
                                 _videoPlayer.controlStyle   = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
