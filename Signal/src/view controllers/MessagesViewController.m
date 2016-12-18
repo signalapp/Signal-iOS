@@ -1246,7 +1246,7 @@ typedef enum : NSUInteger {
                                 _videoPlayer.controlStyle   = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview:_videoPlayer.view];
-                                [_videoPlayer setFullscreen:YES animated:NO];
+                                [_videoPlayer setFullscreen:YES animated:YES];
                             }
                         } else if ([messageMedia isAudio]) {
                             if (messageMedia.isAudioPlaying) {
