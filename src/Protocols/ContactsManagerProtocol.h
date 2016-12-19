@@ -9,7 +9,6 @@
 
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
 - (NSArray<Contact *> * _Nonnull)signalContacts;
-+ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString;
 
 #if TARGET_OS_IPHONE
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)phoneNumber;

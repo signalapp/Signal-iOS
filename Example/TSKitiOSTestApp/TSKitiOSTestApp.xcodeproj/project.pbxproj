@@ -47,6 +47,7 @@
 		B6273DE11C13A2E500738558 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6273DE01C13A2E500738558 /* Assets.xcassets */; };
 		B6273DE41C13A2E500738558 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6273DE21C13A2E500738558 /* LaunchScreen.storyboard */; };
 		D2AECE731DE8C3360068CE15 /* ContactSortingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AECE721DE8C3360068CE15 /* ContactSortingTest.m */; };
+		E95668321E0964F9002418B1 /* PhoneNumberUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		C0DC1A83C39CBC09FB2405A3 /* libPods-TSKitiOSTestAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TSKitiOSTestAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AECE721DE8C3360068CE15 /* ContactSortingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactSortingTest.m; path = ../../../tests/Contacts/ContactSortingTest.m; sourceTree = "<group>"; };
 		D3737F7A041D7147015C02C2 /* Pods-TSKitiOSTestAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestAppTests/Pods-TSKitiOSTestAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtilTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +194,7 @@
 		45458B721CC342B600A02153 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */,
 				45458B731CC342B600A02153 /* CryptographyTests.m */,
 				45458B741CC342B600A02153 /* MessagePaddingTests.m */,
 			);
@@ -569,6 +572,7 @@
 				4516E3EA1DD1542300DC4206 /* TSContactThreadTest.m in Sources */,
 				45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */,
 				45046FE01D95A6130015EFF2 /* TSMessagesManagerTest.m in Sources */,
+				E95668321E0964F9002418B1 /* PhoneNumberUtilTest.m in Sources */,
 				45458B7C1CC342B600A02153 /* MessagePaddingTests.m in Sources */,
 				45A856AC1D220BFF0056CD4D /* TSAttributesTest.m in Sources */,
 				45731A6C1DA87AA1007E22AA /* TSOutgoingMessageTest.m in Sources */,
