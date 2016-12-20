@@ -15,9 +15,13 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "RPServerRequestsManager.h"
+#import "Signal-Swift.h"
+#import "TSMessagesManager.h"
+#import "TSAccountManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSSignalService.h>
 
 #define pushManagerDomain @"org.whispersystems.pushmanager"
 
@@ -31,6 +35,7 @@
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
 
 @end
 
@@ -72,6 +77,18 @@
                                                       contactsManager:contactsManager
                                                       contactsUpdater:contactsUpdater];
 
+    TSMessagesManager *messagesManager = [[TSMessagesManager alloc] initWithNetworkManager:networkManager
+                                                                            storageManager:storageManager
+                                                                           contactsManager:contactsManager
+                                                                           contactsUpdater:contactsUpdater
+                                                                             messageSender:_messageSender];
+
+    OWSSignalService *signalService = [OWSSignalService new];
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessagesManager:messagesManager
+                                                                 messageSender:_messageSender
+                                                                networkManager:networkManager
+                                                                 signalService:signalService];
+
     _missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
                                                               message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
                                                              delegate:nil
@@ -86,6 +103,8 @@
 #pragma mark Manage Incoming Push
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     if ([self isRedPhonePush:userInfo]) {
         ResponderSessionDescriptor *call;
         if (![self.notificationTracker shouldProcessNotification:userInfo]) {
@@ -139,9 +158,7 @@
             }
         }
     } else {
-        if (![self applicationIsActive]) {
-            [TSSocketManager becomeActiveFromBackgroundExpectMessage:YES];
-        }
+        [self.messageFetcherJob runAsync];
     }
 }
 
@@ -164,6 +181,8 @@
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     if ([self isRedPhonePush:userInfo]) {
         [self application:application didReceiveRemoteNotification:userInfo];
     }
@@ -174,6 +193,8 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
     if (threadId && [TSThread fetchObjectWithUniqueID:threadId]) {
         [Environment messageThreadId:threadId];
@@ -184,6 +205,8 @@
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
              completionHandler:(void (^)())completionHandler {
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     [self application:application
         handleActionWithIdentifier:identifier
               forLocalNotification:notification
@@ -197,6 +220,8 @@
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     if ([identifier isEqualToString:Signal_Message_Reply_Identifier]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
@@ -285,6 +310,9 @@
 - (void)pushRegistry:(PKPushRegistry *)registry
     didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
                               forType:(NSString *)type {
+
+    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+
     [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
 }
 
