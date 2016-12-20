@@ -8,14 +8,14 @@
 
 #import "SubProtocol.pb.h"
 
-#import "Cryptography.h"
-#import "OWSSignalService.h"
-#import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+
+#import "OWSWebsocketSecurityPolicy.h"
+#import "Cryptography.h"
 
 #define kWebSocketHeartBeat 30
 #define kWebSocketReconnectTry 5
@@ -27,9 +27,6 @@ NSString *const SocketClosedNotification     = @"SocketClosedNotification";
 NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @interface TSSocketManager ()
-
-@property (nonatomic, readonly, strong) OWSSignalService *signalService;
-
 @property (nonatomic, retain) NSTimer *pingTimer;
 @property (nonatomic, retain) NSTimer *reconnectTimer;
 
@@ -50,18 +47,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @implementation TSSocketManager
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
-{
+- (instancetype)init {
     self = [super init];
 
-    if (!self) {
-        return self;
+    if (self) {
+        self.websocket = nil;
+        [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
     }
-
-    _websocket = nil;
-    _signalService = [[OWSSignalService alloc] initWithStorageManager:storageManager];
-    [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
-
 
     return self;
 }
@@ -70,57 +62,49 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     static TSSocketManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initWithStorageManager:[TSStorageManager sharedManager]];
-        sharedMyManager.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-        sharedMyManager.didConnectBg = NO;
-        sharedMyManager.shouldDownloadMessage = NO;
-        sharedMyManager.didRetreiveMessageBg = NO;
+      sharedMyManager                        = [[self alloc] init];
+      sharedMyManager.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
+      sharedMyManager.didConnectBg           = NO;
+      sharedMyManager.shouldDownloadMessage  = NO;
+      sharedMyManager.didRetreiveMessageBg   = NO;
     });
     return sharedMyManager;
 }
 
 #pragma mark - Manage Socket
 
-+ (void)becomeActive
-{
-    [[self sharedManager] becomeActive];
-}
++ (void)becomeActive {
+    TSSocketManager *sharedInstance = [self sharedManager];
+    SRWebSocket *socket             = [sharedInstance websocket];
 
-- (void)becomeActive
-{
-    if (self.signalService.isCensored) {
-        DDLogWarn(@"%@ Refusing to start websocket in `becomeActive`.", self.tag);
-        return;
-    }
-
-    SRWebSocket *socket = self.websocket;
     if (socket) {
         switch ([socket readyState]) {
             case SR_OPEN:
                 DDLogVerbose(@"WebSocket already open on connection request");
-                self.status = kSocketStatusOpen;
+                sharedInstance.status = kSocketStatusOpen;
                 return;
             case SR_CONNECTING:
                 DDLogVerbose(@"WebSocket is already connecting");
-                self.status = kSocketStatusConnecting;
+                sharedInstance.status = kSocketStatusConnecting;
                 return;
             default:
                 [socket close];
-                self.status = kSocketStatusClosed;
+                sharedInstance.status = kSocketStatusClosed;
                 socket.delegate       = nil;
                 socket                = nil;
                 break;
         }
     }
 
-    NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
+    NSString *webSocketConnect =
+        [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
     NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
 
-    socket = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
-    socket.delegate = self;
+    socket          = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
+    socket.delegate = [self sharedManager];
 
-    [self setWebsocket:socket];
+    [[self sharedManager] setWebsocket:socket];
     [socket open];
 }
 
@@ -376,18 +360,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 + (void)sendNotification {
     [[self sharedManager] notifyStatusChange];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

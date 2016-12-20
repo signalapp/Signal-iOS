@@ -34,6 +34,6 @@
 
 - (void)makeRequest:(TSRequest *)request
             success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure NS_SWIFT_NAME(makeRequest(_:success:failure:));
+            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 
 @end
