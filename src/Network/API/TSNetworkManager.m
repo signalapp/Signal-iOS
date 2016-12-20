@@ -6,22 +6,19 @@
 //  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
 //
 
-#import <AFNetworking/AFNetworking.h>
-
-#import "OWSHTTPSecurityPolicy.h"
-
-#import "NSURLSessionDataTask+StatusCode.h"
-#import "TSAccountManager.h"
 #import "TSNetworkManager.h"
+#import "NSURLSessionDataTask+StatusCode.h"
+#import "OWSSignalService.h"
+#import "TSAccountManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "TSVerifyCodeRequest.h"
+#import <AFNetworking/AFNetworking.h>
 
 #define TSNetworkManagerDomain @"org.whispersystems.signal.networkManager"
 
 @interface TSNetworkManager ()
 
-@property AFHTTPSessionManager *operationManager;
-
+@property (nonatomic, readonly, strong) OWSSignalService *signalService;
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 @end
@@ -34,30 +31,21 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     static TSNetworkManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initWithDefaultOperationManager];
+        OWSSignalService *signalService = [[OWSSignalService alloc] init];
+        sharedMyManager = [[self alloc] initWithSignalService:signalService];
     });
     return sharedMyManager;
 }
 
-- (instancetype)initWithDefaultOperationManager
-{
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
-    AFHTTPSessionManager *operationManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
-    operationManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
 
-    return [self initWithOperationManager:operationManager];
-}
-
-- (instancetype)initWithOperationManager:(AFHTTPSessionManager *)operationManager
+- (instancetype)initWithSignalService:(OWSSignalService *)signalService
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _operationManager = operationManager;
+    _signalService = signalService;
 
     return self;
 }
@@ -73,48 +61,44 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     void (^failure)(NSURLSessionDataTask *task, NSError *error) =
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
-    self.operationManager.requestSerializer  = [AFJSONRequestSerializer serializer];
-    self.operationManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    AFHTTPSessionManager *sessionManager = self.signalService.HTTPSessionManager;
 
     if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
         // We plant the Authorization parameter ourselves, no need to double add.
-        [self.operationManager.requestSerializer
+        [sessionManager.requestSerializer
             setAuthorizationHeaderFieldWithUsername:((TSVerifyCodeRequest *)request).numberToValidate
                                            password:[request.parameters objectForKey:@"AuthKey"]];
         [request.parameters removeObjectForKey:@"AuthKey"];
-        [self.operationManager PUT:[textSecureServerURL stringByAppendingString:request.URL.absoluteString]
-                        parameters:request.parameters
-                           success:success
-                           failure:failure];
+        [sessionManager PUT:request.URL.absoluteString parameters:request.parameters success:success failure:failure];
     } else {
         if (![request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
-            [self.operationManager.requestSerializer
+            [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
                                                password:[TSStorageManager serverAuthToken]];
         }
 
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
-            [self.operationManager GET:[textSecureServerURL stringByAppendingString:request.URL.absoluteString]
-                            parameters:request.parameters
-                              progress:nil
-                               success:success
-                               failure:failure];
+            [sessionManager GET:request.URL.absoluteString
+                     parameters:request.parameters
+                       progress:nil
+                        success:success
+                        failure:failure];
         } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
-            [self.operationManager POST:[textSecureServerURL stringByAppendingString:request.URL.absoluteString]
-                             parameters:request.parameters
-                               progress:nil
-                                success:success
-                                failure:failure];
+            [sessionManager POST:request.URL.absoluteString
+                      parameters:request.parameters
+                        progress:nil
+                         success:success
+                         failure:failure];
         } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
-            [self.operationManager PUT:[textSecureServerURL stringByAppendingString:request.URL.absoluteString]
-                            parameters:request.parameters
-                               success:success
-                               failure:failure];
+            [sessionManager PUT:request.URL.absoluteString
+                     parameters:request.parameters
+                        success:success
+                        failure:failure];
         } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
-            [self.operationManager DELETE:[textSecureServerURL stringByAppendingString:request.URL.absoluteString]
-                               parameters:request.parameters
-                                  success:success
-                                  failure:failure];
+            [sessionManager DELETE:request.URL.absoluteString
+                        parameters:request.parameters
+                           success:success
+                           failure:failure];
         } else {
             DDLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
         }
@@ -242,6 +226,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     return [NSError errorWithDomain:TSNetworkManagerDomain code:code userInfo:dict];
 }
+
+#pragma mark - Logging
 
 + (NSString *)tag
 {

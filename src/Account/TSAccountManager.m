@@ -139,6 +139,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    TSAccountManager *manager = [self sharedInstance];
+    manager.phoneNumberAwaitingVerification = phoneNumber;
+    
     [[TSNetworkManager sharedManager]
         makeRequest:[[TSRequestVerificationCodeRequest alloc]
                         initWithPhoneNumber:phoneNumber
@@ -148,8 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
                 self.tag,
                 phoneNumber,
                 isSMS ? @"SMS" : @"Voice");
-            TSAccountManager *manager = [self sharedInstance];
-            manager.phoneNumberAwaitingVerification = phoneNumber;
             successBlock();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SignalServiceKit"
-  s.version          = "0.8.1"
+  s.version          = "0.9.0"
   s.summary          = "An Objective-C library for communicating with the Signal messaging service."
 
   s.description      = <<-DESC
@@ -27,7 +27,8 @@ An Objective-C library for communicating with the Signal messaging service.
   s.requires_arc = true
   s.source_files = 'src/**/*.{h,m,mm}'
 
-  s.resource = 'src/Security/PinningCertificate/textsecure.cer'
+  s.resources = ['src/Security/PinningCertificate/textsecure.cer',
+                 'src/Security/PinningCertificate/GIAG2.crt']
   s.prefix_header_file = 'src/TSPrefix.h'
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
 

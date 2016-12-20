@@ -8,14 +8,14 @@
 
 #import "SubProtocol.pb.h"
 
+#import "Cryptography.h"
+#import "OWSSignalService.h"
+#import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
-
-#import "OWSWebsocketSecurityPolicy.h"
-#import "Cryptography.h"
 
 #define kWebSocketHeartBeat 30
 #define kWebSocketReconnectTry 5
@@ -27,6 +27,9 @@ NSString *const SocketClosedNotification     = @"SocketClosedNotification";
 NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @interface TSSocketManager ()
+
+@property (nonatomic, readonly, strong) OWSSignalService *signalService;
+
 @property (nonatomic, retain) NSTimer *pingTimer;
 @property (nonatomic, retain) NSTimer *reconnectTimer;
 
@@ -47,13 +50,17 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @implementation TSSocketManager
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
 
-    if (self) {
-        self.websocket = nil;
-        [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
+    if (!self) {
+        return self;
     }
+
+    _signalService = [OWSSignalService new];
+    _websocket = nil;
+    [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
     return self;
 }
@@ -73,38 +80,46 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 #pragma mark - Manage Socket
 
-+ (void)becomeActive {
-    TSSocketManager *sharedInstance = [self sharedManager];
-    SRWebSocket *socket             = [sharedInstance websocket];
++ (void)becomeActive
+{
+    [[self sharedManager] becomeActive];
+}
 
+- (void)becomeActive
+{
+    if (self.signalService.isCensored) {
+        DDLogWarn(@"%@ Refusing to start websocket in `becomeActive`.", self.tag);
+        return;
+    }
+
+    SRWebSocket *socket = self.websocket;
     if (socket) {
         switch ([socket readyState]) {
             case SR_OPEN:
                 DDLogVerbose(@"WebSocket already open on connection request");
-                sharedInstance.status = kSocketStatusOpen;
+                self.status = kSocketStatusOpen;
                 return;
             case SR_CONNECTING:
                 DDLogVerbose(@"WebSocket is already connecting");
-                sharedInstance.status = kSocketStatusConnecting;
+                self.status = kSocketStatusConnecting;
                 return;
             default:
                 [socket close];
-                sharedInstance.status = kSocketStatusClosed;
+                self.status = kSocketStatusClosed;
                 socket.delegate       = nil;
                 socket                = nil;
                 break;
         }
     }
 
-    NSString *webSocketConnect =
-        [textSecureWebSocketAPI stringByAppendingString:[[self sharedManager] webSocketAuthenticationString]];
+    NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
     NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
 
-    socket          = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
-    socket.delegate = [self sharedManager];
+    socket = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
+    socket.delegate = self;
 
-    [[self sharedManager] setWebsocket:socket];
+    [self setWebsocket:socket];
     [socket open];
 }
 
@@ -360,6 +375,18 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 + (void)sendNotification {
     [[self sharedManager] notifyStatusChange];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
