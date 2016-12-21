@@ -16,9 +16,6 @@ class MessageFetcherJob: NSObject {
     let messageSender: MessageSender
     let signalService: OWSSignalService
 
-//    var fallbackTransport = false
-    // ENABLED FOR DEBUG. DO NOT COMMIT!
-    var fallbackTransport = true
     var runPromises = [Double: Promise<Void>]()
 
     init(messagesManager: TSMessagesManager, messageSender: MessageSender, networkManager: TSNetworkManager, signalService: OWSSignalService) {
