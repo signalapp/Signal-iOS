@@ -3593,6 +3593,7 @@
 					"\"$(SRCROOT)/libtomcrypt/headers\"",
 					"\"$(SRCROOT)/spandsp/spandsp/spandsp\"",
 					"\"$(SRCROOT)/Libraries\"/**",
+					"\"$(TARGET_TEMP_DIR)/../$(PROJECT_NAME).build/DerivedSources\"",
 				);
 				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -3650,6 +3651,7 @@
 					"\"$(SRCROOT)/libtomcrypt/headers\"",
 					"\"$(SRCROOT)/spandsp/spandsp/spandsp\"",
 					"\"$(SRCROOT)/Libraries\"/**",
+					"\"$(TARGET_TEMP_DIR)/../$(PROJECT_NAME).build/DerivedSources\"",
 				);
 				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

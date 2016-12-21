@@ -3,9 +3,7 @@
 //
 #import <Foundation/Foundation.h>
 
-#import "Cryptography.h"
 #import "Environment.h"
-#import "NSData+Base64.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "OWSLogger.h"
@@ -17,6 +15,8 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
