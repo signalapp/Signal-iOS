@@ -275,7 +275,7 @@
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "U ovom trenutku Signal može biti aktivan samo na jednom mobilnom uređaju po telefonskom broju.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktiviranje ovog %@ će onemogućiti Signal na bilo kojem drugom uređaju koji je trenutno povezan sa ovim telefonskim brojem.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktiviranje ovog %@a će onemogućiti Signal na bilo kojem drugom uređaju koji je trenutno povezan sa ovim telefonskim brojem.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha sa ovim kontaktom. Pokušajte malo kasnije.";
@@ -644,7 +644,7 @@
 "REGISTRATION_TITLE_LABEL" = "Vaš telefonski broj";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikacija nije uspjela";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Provjera nije uspjela";
 
 /* Alert body, during registration */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Brojevi koje ste unijeli ne poklapaju se sa onima koje smo vam poslali. Može li ponovna provjera?";
@@ -737,7 +737,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Da li ste sigurni da želite izbrisati svu povijest (poruke, privitke, povijest poziva...) ? \nOva akcija ne može biti poništena.";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Siguran sam.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Siguran sam";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Pomoć";
@@ -881,10 +881,10 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdi verifikacijski kôd";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Verifikuj";
+"VERIFICATION_HEADER" = "Verifikacija";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verifikuj sigurnosni broj";
+"VERIFY_PRIVACY" = "Verifikacija sigurnosnog broja";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";

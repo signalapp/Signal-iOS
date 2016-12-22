@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "ปิด";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "มีบัญชี Signal อยู่แล้ว?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
@@ -236,7 +236,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือใช้ข้อมูลมือถือ";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "อุปกรณ์ของคุณไม่ได้ลงทะเบียนสำหรับหมายเลขโทรศัพท์ของคุณอีกต่อไป คุณต้องเอาออกและติดตั้ง Signal ใหม่";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ข้อผิดพลาดเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง";
@@ -272,10 +272,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "แย่จัง!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "ในขณะนี้ Signal สามารถทำงานได้บนหนึ่งอุปกรณ์มือถือต่อหมายเลขโทรศัพท์เท่านั้น";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "การเปิดใช้งาน %@ นี้จะปิดใช้งาน Signal บนอุปกรณ์อื่น ๆ ที่เชื่อมโยงกับหมายเลขโทรศัพท์นี้ในปัจจุบัน";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "เกิดความล้มเหลวมากเกินไปกับรายชื่อนี้ โปรดลองอีกครั้งในเร็ว ๆ นี้";
@@ -650,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้ง?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "เปิดใช้งานอุปกรณ์นี้";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";

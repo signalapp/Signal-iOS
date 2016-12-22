@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Lukk";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Har du allerede en konto hos Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
@@ -236,7 +236,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal klarte ikke å koble seg til internett. Forsøk et annet trådløst nettverk, eller bruk mobildata.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke lenger registrert til telefonnummeret. Do må slette Signal og installere appen på nytt.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
@@ -272,10 +272,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "Å nei!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Signal kan bare være aktiv på en mobil enhet om gangen.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktivering av denne %@ vil deaktivere Signal på andre enheter knyttet til dette telefonnummeret.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "For mange feil med denne kontakten. Vennligst prøv igjen om kort tid.";
@@ -650,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Tallene du ga oss samsvarer ikke med hva vi sendte. Lyst til å dobbeltsjekke ?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Aktiver denne enheten";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Avvis";

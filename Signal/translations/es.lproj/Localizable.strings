@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Cerrar";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Ya tienes una cuenta de Signal?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Ya tienes tu número registrado en Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Responder";
@@ -272,10 +272,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "¡Recórcholis!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Un número de teléfono solo se puede registrar con Signal en un único dispositivo móvil. ";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Tu número de teléfono solo se puede registrar con Signal en un único dispositivo móvil. ";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Al activar este %@ se desactivarán todos los dispositivos enlazados con este número de teléfono.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Al activar este %@ se desactivarán todos los dispositivos registrados bajo este número de teléfono.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
