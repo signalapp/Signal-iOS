@@ -434,7 +434,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSingalServiceRateLimited,
                 NSLocalizedString(@"FAILED_SENDING_BECAUSE_RATE_LIMIT",
                     @"action sheet header when re-sending message which failed because of too many attempts"));
             return failureHandler(error);
