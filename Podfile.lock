@@ -43,7 +43,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
-  - SignalServiceKit (0.8.1):
+  - SignalServiceKit (0.9.0):
     - '25519'
     - AFNetworking
     - AxolotlKit
@@ -121,7 +121,7 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/check-for-keychain-errors`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/censorship-circumvention`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -129,7 +129,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :branch: mkirk/check-for-keychain-errors
+    :branch: mkirk/censorship-circumvention
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -139,7 +139,7 @@ CHECKOUT OPTIONS:
     :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 5ccbd4ca6dcb97032af3641b6689866e2265510f
+    :commit: 78515377b14f1055c4a87548a7899650b753ce52
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -162,7 +162,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
-  SignalServiceKit: 60f92ec89fbbf3196bd786b88f065c0214db9ca8
+  SignalServiceKit: 59a79a51b89b963ba94db30cc99ed5212da0bb9f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
@@ -170,6 +170,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 52f34af46d045b2c4c012e12a04d06b69f0dae56
+PODFILE CHECKSUM: e09325f010ba0ef1fd0bfa07f665e7be73c43ee0
 
 COCOAPODS: 1.0.1

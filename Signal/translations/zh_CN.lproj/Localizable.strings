@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "很抱歉！";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "接收新的安全码";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "需要采取行动";
@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "关闭";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "已经用Signal账户了吗？";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "接听";
@@ -56,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "正在下载附件";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "选择或者新拍摄图片并发送";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "附件";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "新附件正在等待下载。";
@@ -68,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal需要访问您的麦克风以正常工作。您可以在 设置 >> 隐私 >> 麦克风 >> Signal 中恢复该权限";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "打电话";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "回拨";
@@ -107,7 +107,7 @@
 "CONVERSATION_SETTINGS" = "聊天设置";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "重置session后可以收到来自 %@的消息, 但是无法恢复已经被破坏的消息.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
@@ -134,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "如果设置了该选项，该群聊里面发送和接收的消息将在阅读后消失。";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "当前消息会在 %@ 之后消失";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "消失中消息设置";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "清除";
@@ -149,10 +149,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "保存";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hey,\n\n最近我在使用Signal以保持iPhone上的对话私密. 我希望你也能装上, 这样我们可以有信心只有我和你可以看到我们发的消息或者听到我们打的电话.\n\nSignal可以在iPhone和Android上使用. 可以在以下的链接下载: %@\n\nSignal像你用过的聊天软件一样工作. 我们可以发照片或者视频, 打电话, 也可以群聊. 最好的地方在于, 没任何其它人可以看到这些内容, 即使是做出Signal软件的人!\n\n你可以在以下的链接了解更多关于制作Signal的Open Whisper Systems: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "切换到Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "点击编辑按钮。";
@@ -167,10 +167,10 @@
 "EMPTY_ARCHIVE_TITLE" = "请整理您的收件箱。";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "暂时没有联系人使用Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "提示：请开始一个新的对话！";
@@ -233,16 +233,16 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal无法联网. 请尝试使用其它网络或者使用移动数据.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "你的设备已经不再注册你的电话. 你必须卸载并重装Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候再试。";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Recipient is no longer a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "收件人已经不再是Signal用户.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一个重复的消息。";
@@ -260,40 +260,40 @@
 "ERROR_MESSAGE_NO_SESSION" = "没有对方可用的会话。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "安全码已经改变.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "发生了一个未知的错误。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全码已经改变. 点击验证.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "悲剧了！";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "目前Signal一个号码只能同时在一台移动设备上使用.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "激活当前设备 %@ 会使得和此电话关联的其它设备无法使用.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "当前联系人失败太多次. 请稍候再试.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "在你能够发消息之前你必须接受新的安全码.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "发邮件失败了。再按一下。";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "验证安全码失败!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "重置会话。";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "头像更变成功。";
@@ -326,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "无法退出组群";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "组群设置";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "群组名称已改为 '%@'。";
@@ -362,10 +362,10 @@
 "INCOMING_CALL_FROM" = "来自 %@ 的来电";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用Signal";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "邀请朋友";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "消息在 %@ 后消失。";
@@ -380,7 +380,7 @@
 "LEAVE_GROUP_ACTION" = "离开群聊";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "QR码无效, 请确保你扫描的设备上的QR码是你想要连接的.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "绑定设备失败";
@@ -425,10 +425,10 @@
 "ME_STRING" = "我";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "相机";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "相册";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新信息";
@@ -440,7 +440,7 @@
 "MISSED_CALL" = "未接来电";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "你以前拒绝了Signal访问你的相机. 更新系统设置以进行下一步操作.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal需要访问您的摄像头";
@@ -479,7 +479,7 @@
 "NETWORK_STATUS_TEXT" = "您可以通过收件箱上方的彩条来判断网络连接状态。";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "设置组群照片";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "新群组";
@@ -536,16 +536,16 @@
 "PHONE_NEEDS_UNLOCK" = "在您的iPhone解锁后才能收到新信息。";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "剪贴板中的数字不是当前会话的正确的安全码.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal无法在剪贴板中找到安全码. 你正确的复制了吗?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "每一组Signal用户共享一个不同的安全码. 重复检查 %@ 显示你的安全码.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "您的版本过低。升级后才可以继续校验。";
@@ -560,7 +560,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "如需确认你和 %@ 的端对端加密安全性，请在双方设备上面比较上述数字。\n\n或者可以通过扫描上述二维码进行验证。";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "验证安全码";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "继续";
@@ -572,7 +572,7 @@
 "PUSH_MANAGER_REPLY" = "回复";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
+"PUSH_REGISTER_SUCCESS" = "成功重新注册了推送.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "推送通知";
@@ -617,7 +617,7 @@
 "REGISTERED_NUMBER_TEXT" = "已注册号码";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Failed to re-register for push notifications.";
+"REGISTRATION_BODY" = "重新注册推送失败.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国家编码";
@@ -629,7 +629,7 @@
 "REGISTRATION_ERROR" = "注册错误";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "在验证发给你的验证码之前，我们无法激活你的帐户.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "不支持这个电话号码格式，请联系支持。";
@@ -647,10 +647,10 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "验证失败";
 
 /* Alert body, during registration */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "你提交的数字和我们发给你的数字不匹配. 想要再次检查?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "激活当前设备";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "拒绝";
@@ -665,16 +665,16 @@
 "RETRY_BUTTON_TEXT" = "重试";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "我们的Signal安全码:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "你的安全码 %@ 被改变了. 你可以想要验证它.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "扫描二维码";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+"SCAN_CODE_INSTRUCTIONS" = "在你联系人设备上扫描QR码";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜索姓名或号码";
@@ -692,10 +692,10 @@
 "SEND_BUTTON_TITLE" = "发送";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "发送邀请失败, 请稍候再试.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "你已经邀请了你的朋友使用Signal!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "发送短信到：";
@@ -719,10 +719,10 @@
 "SETTINGS_ADVANCED_TITLE" = "高级";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "在和有新安全码的用户通讯之前需要你的批准, 通常实在重装Signal之后.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "请求批准更改";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清空历史记录";
@@ -764,7 +764,7 @@
 "SETTINGS_PRIVACY_TITLE" = "隐私";
 
 /* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Safety Numbers Approval";
+"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "允许使用安全码";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "开启屏幕锁定功能";
@@ -791,7 +791,7 @@
 "SHARE_ACTION_TWEET" = "推特";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "显示新安全码";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u 天";
@@ -809,10 +809,10 @@
 "SMS_INVITE_BODY" = "请你下载Signal加密通讯软件！链接：";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你的安全码 %@ 已经验证. 你可以对你的通讯是私密的有信心.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "安全码已验证!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "无法从服务器获取最新联系人列表。请稍后重试。";
@@ -884,7 +884,7 @@
 "VERIFICATION_HEADER" = "验证";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "验证安全码";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal桌面版设置成功。";

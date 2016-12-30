@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Stäng";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Har du redan ett konto för Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Svara";
@@ -56,7 +56,7 @@
 "ATTACHMENT_DOWNLOADING" = "Laddar ner bifogad fil";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Välj eller ta ny bild och för att sen skicka";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bifogad fil";
@@ -104,7 +104,7 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Inget telefonnummer tillgängligt.";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Konversations-inställningar";
+"CONVERSATION_SETTINGS" = "Konversationsinställningar";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte att återställa meddelanden som redan är korrupta.";
@@ -236,7 +236,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte nå ut på internet. Försök igen från ett annat trådlöst nätverk eller använd mobildata.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Din enhet är inte längre registrerad till ditt telefonnummer. Du behöver ta bort och ominstallera Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Försök igen senare.";
@@ -272,10 +272,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "Attans!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Signal kan i dagsläget bara vara aktiv på en mobil enhet per telefonnummer.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktiverar du denna %@ så kommer SIgnal avaktiveras på andra enheter som associeras med det här telefonnumret.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Får för många fel med den här kontakten. Försök igen senare.";
@@ -293,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nollställ sessionen.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Slutför skapa grupp";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar ändrad.";
@@ -575,7 +575,7 @@
 "PUSH_REGISTER_SUCCESS" = "Lyckades med omregistrering för push-notiser.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push-notiser";
+"PUSH_REGISTER_TITLE" = "Pushnotiser";
 
 /* No comment provided by engineer. */
 "PUSH_SETTINGS_MESSAGE" = "Signal behöver kunna visa notiser med ljud när någon ringer dig. Ändra detta i appen Inställningar >> Notiser >> Signal.";
@@ -617,7 +617,7 @@
 "REGISTERED_NUMBER_TEXT" = "Registrerat nummer";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Kunde in omregistrera för push-notiser.";
+"REGISTRATION_BODY" = "Kunde in omregistrera för pushnotiser.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskod";
@@ -650,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Numren du skrev stämmer inte med de vi skickade. Kan du dubbelkolla?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Aktivera den här enheten";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Avvisa";
@@ -659,7 +659,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonnumret som du försöker registrera finns redan på en annan server, avregistrera dig därifrån och försök igen.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Omregistrera för push-notiser";
+"REREGISTER_FOR_PUSH" = "Omregistrera för pushnotiser";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Försök igen";

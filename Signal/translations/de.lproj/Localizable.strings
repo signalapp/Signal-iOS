@@ -275,7 +275,7 @@
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "Derzeit kann Signal je Rufnummer nur auf einem Mobilgerät aktiv sein.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Die Aktivierung dieses %@ wird Signal auf jedem anderen mit dieser Rufnummer verknüpften Gerät deaktivieren.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Die Aktivierung dieses %@s wird Signal auf jedem anderen mit dieser Rufnummer verknüpften Gerät deaktivieren.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte in Kürze erneut versuchen.";
