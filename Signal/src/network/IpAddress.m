@@ -80,6 +80,16 @@
     return a;
 }
 
+- (bool)isIpv4
+{
+    return isIpv4;
+}
+
+- (bool)isIpv6
+{
+    return isIpv6;
+}
+
 -(IpEndPoint*) withPort:(in_port_t)port {
     return [IpEndPoint ipEndPointAtAddress:self onPort:port];
 }

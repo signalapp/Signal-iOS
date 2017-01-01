@@ -1,6 +1,7 @@
 #import "Constraints.h"
 #import "ThreadManager.h"
 #import "UdpSocket.h"
+#import "IPAddress.h"
 
 @implementation UdpSocket
 
@@ -131,8 +132,14 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
 }
 
 -(void) setupLocalEndPoint {
-    IpEndPoint* specifiedLocalEndPoint = [IpEndPoint ipEndPointAtUnspecifiedAddressOnPort:specifiedLocalPort];
-    
+    IpEndPoint *specifiedLocalEndPoint;
+    if (self.isRemoteEndPointKnown) {
+        specifiedLocalEndPoint = [specifiedRemoteEndPoint correspondingLocalEndpointWithPort:specifiedLocalPort];
+    } else {
+        DDLogWarn(@"%@ no remote end point. This is only used in unit tests.", self.tag);
+        specifiedLocalEndPoint = [IpEndPoint ipv4EndPointAtUnspecifiedAddressOnPort:specifiedLocalPort];
+    }
+
     CFSocketError setAddressResult = CFSocketSetAddress(socket, (__bridge CFDataRef)[specifiedLocalEndPoint sockaddrData]);
     checkOperationDescribe(setAddressResult == kCFSocketSuccess,
                            ([NSString stringWithFormat:@"CFSocketSetAddress failed with error code: %ld", setAddressResult]));
@@ -165,9 +172,16 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
     
     @try {
         CFSocketContext socketContext = { 0, (__bridge void *)self, CFRetain, CFRelease, CFCopyDescription };
-        
+
+        SInt32 protocolFamily;
+        if (self.isRemoteEndPointKnown) {
+            protocolFamily = specifiedRemoteEndPoint.address.isIpv4 ? PF_INET : PF_INET6;
+        } else {
+            DDLogWarn(@"Uknown remote endpoint. This is only used in testing.");
+            protocolFamily = PF_INET;
+        }
         socket = CFSocketCreate(kCFAllocatorDefault,
-                                PF_INET,
+                                protocolFamily,
                                 SOCK_DGRAM,
                                 IPPROTO_UDP,
                                 kCFSocketDataCallBack,
@@ -192,6 +206,18 @@ void onReceivedData(CFSocketRef socket, CFSocketCallBackType type, CFDataRef add
         [handler handleError:ex relatedInfo:nil causedTermination:true];
         CFSocketInvalidate(socket);
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

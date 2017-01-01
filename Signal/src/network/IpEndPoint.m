@@ -14,7 +14,8 @@
     return p;
 }
 
-+(IpEndPoint*) ipEndPointAtUnspecifiedAddressOnPort:(in_port_t)port {
++ (IpEndPoint *)ipv4EndPointAtUnspecifiedAddressOnPort:(in_port_t)port
+{
     struct sockaddr_in s;
     memset(&s, 0, sizeof(struct sockaddr_in));
     s.sin_len = sizeof(struct sockaddr_in);
@@ -23,6 +24,20 @@
     
     IpEndPoint* a = [IpEndPoint new];
     a->address = [IpAddress ipv4AddressFromString:@"0.0.0.0"];
+    a->port = port;
+    return a;
+}
+
++ (IpEndPoint *)ipv6EndPointAtUnspecifiedAddressOnPort:(in_port_t)port
+{
+    struct sockaddr_in6 address;
+    bzero(&address, sizeof(address));
+    address.sin6_len = sizeof(address);
+    address.sin6_family = AF_INET6;
+    address.sin6_port = htons(port);
+
+    IpEndPoint *a = [IpEndPoint new];
+    a->address = [IpAddress ipv6AddressFromString:@"0:0:0:0:0:0:0:0"];
     a->port = port;
     return a;
 }
@@ -59,6 +74,17 @@
     return [[IpAddress ipv6AddressFromSockaddr:s] withPort:ntohs(s.sin6_port)];
 }
 
+- (IpEndPoint *)correspondingLocalEndpointWithPort:(in_port_t)specifiedLocalPort
+{
+    if (self.address.isIpv4) {
+        DDLogDebug(@"%@ Connecting via IPv4", self.tag);
+        return [IpEndPoint ipv4EndPointAtUnspecifiedAddressOnPort:specifiedLocalPort];
+    } else {
+        DDLogDebug(@"%@ Connecting via IPv6", self.tag);
+        return [IpEndPoint ipv6EndPointAtUnspecifiedAddressOnPort:specifiedLocalPort];
+    }
+}
+
 -(IpAddress*) address {
     return address;
 }
@@ -90,6 +116,18 @@
 
 -(TOCFuture*) asyncResolveToSpecificEndPointsUnlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     return [TOCFuture futureWithResult:@[self]];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
