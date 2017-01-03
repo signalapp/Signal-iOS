@@ -239,7 +239,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                [TSSocketManager becomeActiveFromForeground];
                                                [[Environment getCurrent].contactsManager verifyABPermission];
                                            }];
-
+    
+    if ([TSAccountManager isRegistered]) {
+        [[PushManager sharedManager] applicationDidBecomeActive];
+    }
+    
     [self removeScreenProtection];
 }
 

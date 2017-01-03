@@ -85,6 +85,7 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
           forLocalNotification:(UILocalNotification *)notification
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler;
+- (void)applicationDidBecomeActive;
 
 @end
 

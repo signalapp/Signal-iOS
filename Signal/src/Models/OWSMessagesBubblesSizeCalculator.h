@@ -3,6 +3,7 @@
 #import <JSQMessagesViewController/JSQMessagesBubblesSizeCalculator.h>
 
 NS_SWIFT_NAME(MessagesBubblesSizeCalculator)
+
 @interface OWSMessagesBubblesSizeCalculator : JSQMessagesBubblesSizeCalculator
 
 - (CGSize)messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
