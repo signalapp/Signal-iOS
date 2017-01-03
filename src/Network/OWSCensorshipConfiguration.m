@@ -50,7 +50,7 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
              // Oman
              @"+968": @"google.com.om",
              // UAE
-             @"+971": @"google.com.ae",
+             @"+971": @"google.ae",
              // Iran
              //
              // There does not appear to be a specific Google domain for Iran.
