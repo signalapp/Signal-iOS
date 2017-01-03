@@ -24,10 +24,18 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
 - (NSArray<NSString *> *)censoredCountryCodes
 {
     // Reports of censorship in:
-    // Egypt
-    // UAE
-    return @[@"+20",
-             @"+971"];
+    return @[
+             // Egypt
+             @"+20",
+             // Cuba
+             @"+53",
+             // Oman
+             @"+968",
+             // UAE
+             @"+971",
+             // Iran
+             @"+98",
+             ];
 }
 
 - (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber
