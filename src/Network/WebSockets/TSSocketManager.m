@@ -92,6 +92,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         return;
     }
 
+    // Try to reuse the existing socket (if any) if it is in a valid state.
     SRWebSocket *socket = self.websocket;
     if (socket) {
         switch ([socket readyState]) {
@@ -104,14 +105,16 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                 self.status = kSocketStatusConnecting;
                 return;
             default:
-                [socket close];
-                self.status = kSocketStatusClosed;
-                socket.delegate       = nil;
-                socket                = nil;
                 break;
         }
     }
 
+    // Discard the old socket which is already closed or is closing.
+    [socket close];
+    self.status = kSocketStatusClosed;
+    socket.delegate = nil;
+
+    // Create a new web socket.
     NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
     NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];

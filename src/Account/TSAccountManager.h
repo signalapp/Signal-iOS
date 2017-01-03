@@ -34,7 +34,7 @@ static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 - (void)ifRegistered:(BOOL)isRegistered runAsync:(void (^)())block;
 
 /**
- *  Returns registered number
+ *  Returns current phone number for this device, which may not yet have been registered.
  *
  *  @return E164 formatted phone number
  */

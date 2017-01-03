@@ -18,7 +18,6 @@
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAccountManager ()
@@ -139,6 +138,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // The country code of TSAccountManager.phoneNumberAwaitingVerification is used to
+    // determine whether or not to use domain fronting, so it needs to be set _before_
+    // we make our verification code request.
     TSAccountManager *manager = [self sharedInstance];
     manager.phoneNumberAwaitingVerification = phoneNumber;
     
