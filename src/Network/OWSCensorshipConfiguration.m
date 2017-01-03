@@ -6,14 +6,29 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSCensorshipConfigurationFrontingHost = @"https://google.com";
 NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-meek.appspot.com";
 
 @implementation OWSCensorshipConfiguration
 
-- (NSString *)frontingHost
+- (NSString *)frontingHost:(NSString *)e164PhonNumber
 {
-    return OWSCensorshipConfigurationFrontingHost;
+    OWSAssert(e164PhonNumber.length > 0);
+    
+    NSString *domain = nil;
+    for (NSString *countryCode in self.censoredCountryCodes.allKeys) {
+        if ([e164PhonNumber hasPrefix:countryCode]) {
+            domain = self.censoredCountryCodes[countryCode];
+        }
+    }
+    
+    // Fronting should only be used for countries specified in censoredCountryCodes,
+    // all of which have a domain specified.
+    OWSAssert(domain);
+    if (!domain) {
+        domain = @"google.com";
+    }
+    
+    return [@"https://" stringByAppendingString:domain];
 }
 
 - (NSString *)reflectorHost
@@ -21,26 +36,31 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
     return OWSCensorshipConfigurationReflectorHost;
 }
 
-- (NSArray<NSString *> *)censoredCountryCodes
+- (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
 {
-    // Reports of censorship in:
-    return @[
+    // Domain fronting should be used for the following countries.
+    //
+    // For each country, we should the appropriate google domain,
+    // per:  https://en.wikipedia.org/wiki/List_of_Google_domains
+    return @{
              // Egypt
-             @"+20",
+             @"+20": @"google.com.eg",
              // Cuba
-             @"+53",
+             @"+53": @"google.com.cu",
              // Oman
-             @"+968",
+             @"+968": @"google.com.om",
              // UAE
-             @"+971",
+             @"+971": @"google.com.ae",
              // Iran
-             @"+98",
-             ];
+             //
+             // There does not appear to be a specific Google domain for Iran.
+             @"+98": @"google.com",
+             };
 }
 
 - (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber
 {
-    for (NSString *countryCode in self.censoredCountryCodes) {
+    for (NSString *countryCode in self.censoredCountryCodes.allKeys) {
         if ([e164PhonNumber hasPrefix:countryCode]) {
             return YES;
         }

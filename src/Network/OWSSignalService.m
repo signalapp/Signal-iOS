@@ -69,8 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AFHTTPSessionManager *)reflectorHTTPSessionManager
 {
+    NSString *localNumber = [TSAccountManager localNumber];
+    OWSAssert(localNumber.length > 0);
+
     // Target fronting domain
-    NSURL *baseURL = [[NSURL alloc] initWithString:self.censorshipConfiguration.frontingHost];
+    NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];

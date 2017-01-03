@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSCensorshipConfiguration : NSObject
 
-- (NSString *)frontingHost;
+- (NSString *)frontingHost:(NSString *)e164PhonNumber;
 - (NSString *)reflectorHost;
 - (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber;
 

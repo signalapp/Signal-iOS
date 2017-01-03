@@ -10,7 +10,6 @@
 #import <CommonCrypto/CommonHMAC.h>
 
 #import "Cryptography.h"
-
 #import "NSData+Base64.h"
 
 #define HMAC256_KEY_LENGTH 32
