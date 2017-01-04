@@ -3,7 +3,6 @@
 
 #import "OWSCensorshipConfiguration.h"
 #import "TSStorageManager.h"
-#import "Asserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
