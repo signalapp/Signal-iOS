@@ -8,7 +8,6 @@
 #import "OWSHTTPSecurityPolicy.h"
 #import "TSConstants.h"
 #import "TSAccountManager.h"
-#import "Asserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
