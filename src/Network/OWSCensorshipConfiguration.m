@@ -3,6 +3,7 @@
 
 #import "OWSCensorshipConfiguration.h"
 #import "TSStorageManager.h"
+#import "Asserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
     OWSAssert(e164PhonNumber.length > 0);
     
     NSString *domain = nil;
-    for (NSString *countryCode in self.censoredCountryCodes.allKeys) {
+    for (NSString *countryCode in self.censoredCountryCodes) {
         if ([e164PhonNumber hasPrefix:countryCode]) {
             domain = self.censoredCountryCodes[countryCode];
         }
@@ -38,10 +39,17 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
 
 - (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
 {
-    // Domain fronting should be used for the following countries.
+    // The set of countries for which domain fronting should be used.
     //
-    // For each country, we should the appropriate google domain,
+    // For each country, we should add the appropriate google domain,
     // per:  https://en.wikipedia.org/wiki/List_of_Google_domains
+    //
+    // If we ever use any non-google domains for domain fronting,
+    // remember to:
+    //
+    // a) Add the appropriate pinning certificate(s) in
+    //    SignalServiceKit.podspec.
+    // b) Update reflectorHost accordingly.
     return @{
              // Egypt
              @"+20": @"google.com.eg",
@@ -60,7 +68,7 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
 
 - (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber
 {
-    for (NSString *countryCode in self.censoredCountryCodes.allKeys) {
+    for (NSString *countryCode in self.censoredCountryCodes) {
         if ([e164PhonNumber hasPrefix:countryCode]) {
             return YES;
         }
