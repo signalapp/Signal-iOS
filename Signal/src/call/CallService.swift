@@ -466,6 +466,9 @@ fileprivate let timeoutSeconds = 60
         terminateCall()
     }
 
+    /**
+     * Answer call by call `localId`, used by notification actions which can't serialize a call object.
+     */
     public func handleAnswerCall(localId: UUID) {
         // TODO #function is called from objc, how to access swift defiend dispatch queue (OS_dispatch_queue)
         //assertOnSignalingQueue()
@@ -529,6 +532,10 @@ fileprivate let timeoutSeconds = 60
         handleConnectedCall(call)
     }
 
+    /**
+     * Called by initiator when recipient answers the call.
+     * Called by recipient upon answering the call.
+     */
     func handleConnectedCall(_ call: SignalCall) {
         Logger.debug("\(TAG) in \(#function)")
         assertOnSignalingQueue()
@@ -827,7 +834,7 @@ fileprivate let timeoutSeconds = 60
                 self.handleIceConnected()
             case .failed:
                 Logger.warn("\(self.TAG) RTCIceConnection failed.")
-                guard let thread = self.thread else {
+                guard self.thread != nil else {
                     Logger.error("\(self.TAG) refusing to hangup for failed IceConnection because there is no current thread")
                     return
                 }
