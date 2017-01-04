@@ -80,8 +80,11 @@ class PeerConnectionClient: NSObject, SignalCallAudioManager {
     // MARK: Video
 
     fileprivate func createVideoSender() {
+        Logger.debug("\(TAG) in \(#function)")
+        assert(self.videoSender == nil, "\(#function) should only be called once.")
+
         guard !Platform.isSimulator else {
-            Logger.warn("\(TAG) Refusing to create local video track on simulator.")
+            Logger.warn("\(TAG) Refusing to create local video track on simulator which has no capture device.")
             return
         }
 
@@ -119,6 +122,9 @@ class PeerConnectionClient: NSObject, SignalCallAudioManager {
     // MARK: Audio
 
     fileprivate func createAudioSender() {
+        Logger.debug("\(TAG) in \(#function)")
+        assert(self.audioSender == nil, "\(#function) should only be called once.")
+
         let audioSource = factory.audioSource(with: self.audioConstraints)
 
         let audioTrack = factory.audioTrack(with: audioSource, trackId: Identifiers.audioTrack.rawValue)
