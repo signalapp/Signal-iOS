@@ -1,12 +1,14 @@
 // Created by Michael Kirk on 12/20/16.
 // Copyright © 2016 Open Whisper Systems. All rights reserved.
 
+#import <AFNetworking/AFHTTPSessionManager.h>
+
 #import "OWSSignalService.h"
 #import "OWSCensorshipConfiguration.h"
 #import "OWSHTTPSecurityPolicy.h"
 #import "TSConstants.h"
 #import "TSAccountManager.h"
-#import <AFNetworking/AFHTTPSessionManager.h>
+#import "Asserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -69,8 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AFHTTPSessionManager *)reflectorHTTPSessionManager
 {
+    NSString *localNumber = [TSAccountManager localNumber];
+    OWSAssert(localNumber.length > 0);
+
     // Target fronting domain
-    NSURL *baseURL = [[NSURL alloc] initWithString:self.censorshipConfiguration.frontingHost];
+    NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];

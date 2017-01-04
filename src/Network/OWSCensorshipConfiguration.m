@@ -3,17 +3,33 @@
 
 #import "OWSCensorshipConfiguration.h"
 #import "TSStorageManager.h"
+#import "Asserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSCensorshipConfigurationFrontingHost = @"https://google.com";
 NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-meek.appspot.com";
 
 @implementation OWSCensorshipConfiguration
 
-- (NSString *)frontingHost
+- (NSString *)frontingHost:(NSString *)e164PhonNumber
 {
-    return OWSCensorshipConfigurationFrontingHost;
+    OWSAssert(e164PhonNumber.length > 0);
+    
+    NSString *domain = nil;
+    for (NSString *countryCode in self.censoredCountryCodes) {
+        if ([e164PhonNumber hasPrefix:countryCode]) {
+            domain = self.censoredCountryCodes[countryCode];
+        }
+    }
+    
+    // Fronting should only be used for countries specified in censoredCountryCodes,
+    // all of which have a domain specified.
+    OWSAssert(domain);
+    if (!domain) {
+        domain = @"google.com";
+    }
+    
+    return [@"https://" stringByAppendingString:domain];
 }
 
 - (NSString *)reflectorHost
@@ -21,13 +37,33 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
     return OWSCensorshipConfigurationReflectorHost;
 }
 
-- (NSArray<NSString *> *)censoredCountryCodes
+- (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
 {
-    // Reports of censorship in:
-    // Egypt
-    // UAE
-    return @[@"+20",
-             @"+971"];
+    // The set of countries for which domain fronting should be used.
+    //
+    // For each country, we should add the appropriate google domain,
+    // per:  https://en.wikipedia.org/wiki/List_of_Google_domains
+    //
+    // If we ever use any non-google domains for domain fronting,
+    // remember to:
+    //
+    // a) Add the appropriate pinning certificate(s) in
+    //    SignalServiceKit.podspec.
+    // b) Update reflectorHost accordingly.
+    return @{
+             // Egypt
+             @"+20": @"google.com.eg",
+             // Cuba
+             @"+53": @"google.com.cu",
+             // Oman
+             @"+968": @"google.com.om",
+             // UAE
+             @"+971": @"google.ae",
+             // Iran
+             //
+             // There does not appear to be a specific Google domain for Iran.
+             @"+98": @"google.com",
+             };
 }
 
 - (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber
