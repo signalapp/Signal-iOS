@@ -1,32 +1,55 @@
-OpenSSL-Universal
+OpenSSL-Frameworks
 =======
+OpenSSL CocoaPod which vends pre-built frameworks for iOS and OSX.
 
-OpenSSL CocoaPod for iOS and OSX. Complete solution to OpenSSL on iOS and OSX. Package came with precompiled libraries, and include script to build newer version if necessary.
+### Notice
 
-Current version contains binaries build with SDK iOS 8.0 (target 5.1.1), and SDK OSX 10.9 (target 10.8) for all supported architectures.
+This is merely a wrapper which builds off of work done by others. The original comes from 
+[https://github.com/krzyzanowskim/OpenSSL](https://github.com/krzyzanowskim/OpenSSL) and 
+includes work done by [@jcavar](https://github.com/jcavar/OpenSSL) to build proper
+frameworks. I have repackaged that work as a non-registered CocoaPod such that OpenSSL can
+be used by projects requiring frameworks.
 
-**Architectures**
+Please see the Reference section below for more details.
 
-- iOS with architectures: armv7, armv7s, arm64 + simulator (i386, x86_64)
-- OSX with architectures: i386, x86_64
+### Installing
 
-**Why?**
+As a non-registered pod, you'll need to refer to the pod via git:
 
-[Apple says](https://developer.apple.com/library/mac/documentation/security/Conceptual/cryptoservices/GeneralPurposeCrypto/GeneralPurposeCrypto.html):
-"Although OpenSSL is commonly used in the open source community, OpenSSL does not provide a stable API from version to version. For this reason, although OS X provides OpenSSL libraries, the OpenSSL libraries in OS X are deprecated, and OpenSSL has never been provided as part of iOS."
+	pod 'OpenSSL-Frameworks', :git => 'https://github.com/levigroker/OpenSSL.git'
 
-**Installation**
+Please note this will pull in the latest version from this repository each time a
+`pod update` or `pod install` is performed on your project.
 
-````
-pod 'OpenSSL-Universal'
-````
+### Building
 
-Or always latest version
+While the repository does contain the pre-built frameworks, if you want to re-build them:
 
-````
-pod 'OpenSSL-Universal', :git => 'https://github.com/krzyzanowskim/OpenSSL.git', :branch => :master
-````
+#### iOS
+1. Open in Xcode: OpenSSL/OpenSSL-iOS/OpenSSL-iOS.xcodeproj
+2. build
+3. Result is located: OpenSSL/OpenSSL-iOS/bin/openssl.framework
 
-**Authors**
+#### macOS
+1. Open in Xcode: OpenSSL/OpenSSL-macOS/OpenSSL-macOS.xcodeproj
+2. build
+3. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
 
-[Marcin Krzyżanowski](https://twitter.com/krzyzanowskim)
+### Reference
+[https://github.com/krzyzanowskim/OpenSSL/issues/9](https://github.com/krzyzanowskim/OpenSSL/issues/9)  
+[https://github.com/krzyzanowskim/OpenSSL/pull/27](https://github.com/krzyzanowskim/OpenSSL/pull/27)  
+[https://github.com/jcavar/OpenSSL](https://github.com/jcavar/OpenSSL)  
+[https://pewpewthespells.com/blog/convert_static_to_dynamic.html](https://pewpewthespells.com/blog/convert_static_to_dynamic.html)  
+
+### Licence
+This work is licensed under the OpenSSL (OpenSSL/SSLeay) License.
+Please see the included [LICENSE.txt](https://github.com/levigroker/OpenSSL/blob/master/LICENSE.txt) for complete details.
+
+### About
+A professional iOS engineer by day, my name is Levi Brown. Authoring a blog
+[grokin.gs](http://grokin.gs), I am reachable via:
+
+Twitter [@levigroker](https://twitter.com/levigroker)  
+Email [levigroker@gmail.com](mailto:levigroker@gmail.com)  
+
+Your constructive comments and feedback are always welcome.
