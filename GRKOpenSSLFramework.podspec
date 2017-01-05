@@ -8,9 +8,9 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/levigroker/OpenSSL.git", :tag => "#{s.version}" }
   s.authors       =  {'Levi Brown' => 'levigroker@gmail.com'}
   
-  s.ios.deployment_target = '6.0'
+  s.ios.deployment_target = '9.0'
   s.ios.vendored_frameworks = 'OpenSSL-iOS/bin/openssl.framework'
 
-  s.osx.deployment_target = '10.8'
+  s.osx.deployment_target = '10.10'
   s.osx.vendored_frameworks = 'OpenSSL-macOS/bin/openssl.framework'
 end
