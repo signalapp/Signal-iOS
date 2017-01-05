@@ -1,4 +1,4 @@
-OpenSSL-Frameworks
+GRKOpenSSLFramework
 =======
 OpenSSL CocoaPod which vends pre-built frameworks for iOS and OSX.
 
@@ -7,19 +7,16 @@ OpenSSL CocoaPod which vends pre-built frameworks for iOS and OSX.
 This is merely a wrapper which builds off of work done by others. The original comes from 
 [https://github.com/krzyzanowskim/OpenSSL](https://github.com/krzyzanowskim/OpenSSL) and 
 includes work done by [@jcavar](https://github.com/jcavar/OpenSSL) to build proper
-frameworks. I have repackaged that work as a non-registered CocoaPod such that OpenSSL can
-be used by projects requiring frameworks.
+frameworks. I have repackaged that work as a CocoaPod such that OpenSSL can be used by
+macOS and iOS projects requiring frameworks.
 
 Please see the Reference section below for more details.
 
 ### Installing
 
-As a non-registered pod, you'll need to refer to the pod via git:
+Simply add `GRKOpenSSLFramework` to your podfile:
 
-	pod 'OpenSSL-Frameworks', :git => 'https://github.com/levigroker/OpenSSL.git'
-
-Please note this will pull in the latest version from this repository each time a
-`pod update` or `pod install` is performed on your project.
+	pod 'GRKOpenSSLFramework'
 
 ### Building
 
