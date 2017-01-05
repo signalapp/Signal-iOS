@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		Yj4zQfQT27xjavSEqehWXnOXvmw=
+		gVV4txtbSXxFbVwmKIy1h0ANAa4=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -862,11 +862,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Yj4zQfQT27xjavSEqehWXnOXvmw=
+			gVV4txtbSXxFbVwmKIy1h0ANAa4=
 			</data>
 			<key>hash2</key>
 			<data>
-			kcdZS9qk5jJ8bODwUZG34vQxi8sK/whbnXEgNeWQPrM=
+			4Yi2gvibPOSnNWkwsXTgj4Kk24V91nLPCk60REhDg7w=
 			</data>
 		</dict>
 	</dict>
@@ -887,6 +887,11 @@
 			<true/>
 			<key>weight</key>
 			<real>1100</real>
+		</dict>
+		<key>^Resources/Base\.lproj/</key>
+		<dict>
+			<key>weight</key>
+			<real>1010</real>
 		</dict>
 		<key>^version.plist$</key>
 		<true/>
@@ -946,6 +951,11 @@
 			<true/>
 			<key>weight</key>
 			<real>1100</real>
+		</dict>
+		<key>^Resources/Base\.lproj/</key>
+		<dict>
+			<key>weight</key>
+			<real>1010</real>
 		</dict>
 		<key>^[^/]+$</key>
 		<dict>
