@@ -6,12 +6,19 @@ import UIKit
 import CallKit
 import AVFoundation
 
+/**
+ * Connects requests for CallKit actions (CXActions) with their corresponding consequences in CallService
+ *
+ * TODO: Code cleanup: The responsibilities largely overlap with the CallKitCallUIAdapter. Maybe they should be merged.
+ */
 @available(iOS 10.0, *)
-final class CallKitProviderDelegate: NSObject, CXProviderDelegate {
+final class CallKitProviderDelegate: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     let TAG = "[CallKitProviderDelegate]"
-    let callManager: CallKitCallManager
-    let callService: CallService
+
+    private let callManager: CallKitCallManager
+    private let callService: CallService
+    internal let notificationsAdapter: CallNotificationsAdapter
     private let provider: CXProvider
 
     // FIXME - I might be thinking about this the wrong way.
@@ -21,16 +28,6 @@ final class CallKitProviderDelegate: NSObject, CXProviderDelegate {
     // the PeerConnectionClient instance, which is one per call (NOT a singleton).
     // It seems like a mess to reconcile this difference in cardinality. But... here we are.
     var audioManager: SignalCallAudioManager?
-
-    init(callManager: CallKitCallManager, callService: CallService) {
-        self.callService = callService
-        self.callManager = callManager
-        provider = CXProvider(configuration: type(of: self).providerConfiguration)
-
-        super.init()
-
-        provider.setDelegate(self, queue: nil)
-    }
 
     /// The app's provider configuration, representing its CallKit capabilities
     static var providerConfiguration: CXProviderConfiguration {
@@ -52,8 +49,28 @@ final class CallKitProviderDelegate: NSObject, CXProviderDelegate {
         return providerConfiguration
     }
 
-    /// Use CXProvider to report the incoming call to the system
-    func reportIncomingCall(_ call: SignalCall, completion: ((NSError?) -> Void)? = nil) {
+    init(callService: CallService,  notificationsAdapter: CallNotificationsAdapter) {
+        self.callManager = CallKitCallManager()
+        self.callService = callService
+        self.notificationsAdapter = notificationsAdapter
+        self.provider = CXProvider(configuration: type(of: self).providerConfiguration)
+
+        super.init()
+
+        self.provider.setDelegate(self, queue: nil)
+    }
+
+    // MARK: CallUIAdaptee
+
+    internal func startOutgoingCall(_ call: SignalCall) {
+        // Add the new outgoing call to the app's list of calls.
+        // So we can find it in the provider delegate callbacks.
+        callManager.addCall(call)
+        callManager.startCall(call)
+    }
+
+    // TODO CodeCleanup: remove unused audiomanager
+    internal func reportIncomingCall(_ call: SignalCall, callerName: String, audioManager: SignalCallAudioManager) {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
@@ -65,12 +82,25 @@ final class CallKitProviderDelegate: NSObject, CXProviderDelegate {
              Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
              since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
              */
-            if error == nil {
-                self.callManager.addCall(call)
+            guard error == nil else {
+                Logger.error("\(self.TAG) failed to report new incoming call")
+                return
             }
 
-            completion?(error as? NSError)
+            self.callManager.addCall(call)
         }
+    }
+
+    internal func answerCall(_ call: SignalCall) {
+        showCall(call)
+    }
+
+    internal func declineCall(_ call: SignalCall) {
+        callManager.end(call: call)
+    }
+
+    internal func endCall(_ call: SignalCall) {
+        callManager.end(call: call)
     }
 
     // MARK: CXProviderDelegate
