@@ -101,8 +101,6 @@
 		45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */; };
 		45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */; };
 		45F659831E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */; };
-		45FBC5C01DF8575700E9B410 /* CallKitProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5951DF8575700E9B410 /* CallKitProviderDelegate.swift */; };
-		45FBC5C11DF8575700E9B410 /* CallKitProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5951DF8575700E9B410 /* CallKitProviderDelegate.swift */; };
 		45FBC5C81DF8575700E9B410 /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */; };
 		45FBC5C91DF8575700E9B410 /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */; };
 		45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
@@ -686,7 +684,6 @@
 		45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
 		45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
-		45FBC5951DF8575700E9B410 /* CallKitProviderDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitProviderDelegate.swift; sourceTree = "<group>"; };
 		45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
 		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
@@ -1409,7 +1406,6 @@
 		45FBC57A1DF8575700E9B410 /* CallKit */ = {
 			isa = PBXGroup;
 			children = (
-				45FBC5951DF8575700E9B410 /* CallKitProviderDelegate.swift */,
 				45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */,
 				45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */,
 			);
@@ -3029,7 +3025,6 @@
 				B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */,
 				4509E79C1DD6545B0025A59F /* CallViewController.swift in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
-				45FBC5C01DF8575700E9B410 /* CallKitProviderDelegate.swift in Sources */,
 				76EB060A18170B33006006FC /* SignalUtil.m in Sources */,
 				E197B61718BBEC1A00F073E5 /* AnonymousAudioCallbackHandler.m in Sources */,
 				76EB05BC18170B33006006FC /* ConfirmAckPacket.m in Sources */,
@@ -3316,7 +3311,6 @@
 				B660F7581C29988E00687D6E /* RPAccountManager.m in Sources */,
 				B660F7591C29988E00687D6E /* CallController.m in Sources */,
 				B660F75A1C29988E00687D6E /* CallFailedServerMessage.m in Sources */,
-				45FBC5C11DF8575700E9B410 /* CallKitProviderDelegate.swift in Sources */,
 				B660F75B1C29988E00687D6E /* CallProgress.m in Sources */,
 				B660F75C1C29988E00687D6E /* CallState.m in Sources */,
 				B660F75D1C29988E00687D6E /* CallTermination.m in Sources */,
