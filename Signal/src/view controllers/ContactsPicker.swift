@@ -94,6 +94,8 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
             controller.dimsBackgroundDuringPresentation = false
             controller.searchBar.sizeToFit()
             controller.searchBar.delegate = self
+            // Centering field (shifting to the right by half the section index width)
+            controller.searchBar.searchFieldBackgroundPositionAdjustment = UIOffsetMake(7.5,0.0)
             controller.hidesNavigationBarDuringPresentation = false
 
             self.tableView.tableHeaderView = controller.searchBar
