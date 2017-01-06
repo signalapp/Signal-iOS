@@ -162,6 +162,10 @@
     }
 }
 
+- (void)applicationDidBecomeActive {
+    [self.messageFetcherJob runAsync];
+}
+
 - (UILocalNotification *)closeVOIPBackgroundTask {
     [[UIApplication sharedApplication] endBackgroundTask:_callBackgroundTask];
     _callBackgroundTask = UIBackgroundTaskInvalid;
