@@ -28,7 +28,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         }
     }
 
-    public func reportIncomingCall(_ call: SignalCall, callerName: String, audioManager: SignalCallAudioManager) {
+    public func reportIncomingCall(_ call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         // present Call View controller

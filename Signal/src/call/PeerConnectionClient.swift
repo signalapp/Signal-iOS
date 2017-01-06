@@ -15,7 +15,7 @@ let kVideoTrackType = kRTCMediaStreamTrackKindVideo
  * including audio, video, and some signaling - though the bulk of the signaling is *establishing* the connection, 
  * meaning we can't use the connection to transmit yet.
  */
-class PeerConnectionClient: NSObject, SignalCallAudioManager {
+class PeerConnectionClient: NSObject {
 
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {

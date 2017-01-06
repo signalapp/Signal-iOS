@@ -470,17 +470,12 @@ fileprivate let timeoutSeconds = 60
             return
         }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current peerConnectionClient."))
-            return
-        }
-
         switch call.state {
         case .dialing:
             call.state = .remoteRinging
         case .answering:
             call.state = .localRinging
-            self.callUIAdapter.reportIncomingCall(call, thread: thread, audioManager: peerConnectionClient)
+            self.callUIAdapter.reportIncomingCall(call, thread: thread)
             // cancel connection timeout
             self.fulfillCallConnectedPromise?()
         case .remoteRinging:
