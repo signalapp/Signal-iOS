@@ -307,25 +307,26 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // TODO Something like...
     // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
     // thread = blah
-    // [callservice handleoutgoingCAll:thread]
+    // [callUIAdapter startCall:thread]
     //
-    // See Speakerbox Example for intent / NSUserActivity handling.
+    // Here's the Speakerbox Example for intent / NSUserActivity handling:
+    //
+    //    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+    //        guard let handle = userActivity.startCallHandle else {
+    //            print("Could not determine start call handle from user activity: \(userActivity)")
+    //            return false
+    //        }
+    //
+    //        guard let video = userActivity.video else {
+    //            print("Could not determine video from user activity: \(userActivity)")
+    //            return false
+    //        }
+    //
+    //        callManager.startCall(handle: handle, video: video)
+    //        return true
+    //    }
     return NO;
 }
-//func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-//    guard let handle = userActivity.startCallHandle else {
-//        print("Could not determine start call handle from user activity: \(userActivity)")
-//        return false
-//    }
-//
-//    guard let video = userActivity.video else {
-//        print("Could not determine video from user activity: \(userActivity)")
-//        return false
-//    }
-//
-//    callManager.startCall(handle: handle, video: video)
-//    return true
-//}
 
 
 /**

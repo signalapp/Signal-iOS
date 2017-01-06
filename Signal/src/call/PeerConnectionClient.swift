@@ -8,6 +8,13 @@ import WebRTC
 let kAudioTrackType = kRTCMediaStreamTrackKindAudio
 let kVideoTrackType = kRTCMediaStreamTrackKindVideo
 
+/**
+ * `PeerConnectionClient` is our interface to WebRTC.
+ *
+ * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data 
+ * including audio, video, and some signaling - though the bulk of the signaling is *establishing* the connection, 
+ * meaning we can't use the connection to transmit yet.
+ */
 class PeerConnectionClient: NSObject, SignalCallAudioManager {
 
     let TAG = "[PeerConnectionClient]"
@@ -28,7 +35,6 @@ class PeerConnectionClient: NSObject, SignalCallAudioManager {
 
     // DataChannel
 
-    // peerConnection expects to be the final owner of dataChannel. Otherwise, a crash when peerConnection deallocs
     // `dataChannel` is public because on incoming calls, we don't explicitly create the channel, rather `CallService`
     // assigns it when the channel is discovered due to the caller having created it.
     public var dataChannel: RTCDataChannel?

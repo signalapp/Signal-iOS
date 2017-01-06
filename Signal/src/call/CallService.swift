@@ -6,39 +6,62 @@ import PromiseKit
 import WebRTC
 
 /**
- * ## Call Setup (Signaling) Flow
+ * `CallService` manages the state of a WebRTC backed Signal Call (as opposed to the legacy "RedPhone Call").
  *
- * ## Key
- * - SS: Message sent via Signal Service
- * - DC: Message sent via WebRTC Data Channel
+ * It serves as connection from the `CallUIAdapater` to the `PeerConnectionClient`.
+ *
+ *
+ * ## Signaling
+ *
+ * Signaling refers to the setup and tear down of the connection. Before the connection is established, this must happen
+ * out of band (using Signal Service), but once the connection is established it's possible to publish updates 
+ * (like hangup) via the established channel.
+ *
+ * Following is a high level process of the exchange of messages that must take place for this to happen.
+ *
+ * ### Key
+ *
+ * --[SOMETHING]--> represents a message of type "Something" sent from the caller to the callee
+ * <--[SOMETHING]-- represents a message of type "Something" sent from the callee to the caller
+ * SS: Message sent via Signal Service
+ * DC: Message sent via WebRTC Data Channel
+ *
+ * ### Message Exchange / State Flow Overview
  *
  * |          Caller            |          Callee         |
  * +----------------------------+-------------------------+
- * handleOutgoingCall --[SS.CallOffer]-->
- * and start storing ICE updates
+ * Start outgoing call: `handleOutgoingCall`
+                        --[SS.CallOffer]-->
+ * and start generating and storing ICE updates.
+ * (As ICE candites are generated: `handleLocalAddedIceCandidate`)
  *
- *                                      Received call offer
+ *                                      Received call offer: `handleReceivedOffer`
  *                                         Send call answer
  *                     <--[SS.CallAnswer]--
- *                    Start sending ICE updates immediately
- *                     <--[SS.ICEUpdates]--
+ *                          Start generating ICE updates and send them as
+ *                          they are generated: `handleLocalAddedIceCandidate`
+ *                     <--[SS.ICEUpdate]-- (sent multiple times)
  *
- * Received CallAnswer,
+ * Received CallAnswer: `handleReceivedAnswer`
  * so send any stored ice updates
  *                     --[SS.ICEUpdates]-->
  *
  *     Once compatible ICE updates have been exchanged...
- *                       (ICE Connected)
+ *                both parties: `handleIceConnected`
  *
  * Show remote ringing UI
  *                          Connect to offered Data Channel
  *                                    Show incoming call UI.
  *
- *                                             Answers Call
+ *                                   If callee answers Call
  *                                   send connected message
  *                   <--[DC.ConnectedMesage]--
  * Received connected message
  * Show Call is connected.
+ *
+ * Hang up (this could equally be sent by the Callee)
+ *                      --[DC.Hangup]-->
+ *                      --[SS.Hangup]-->
  */
 
 enum CallError: Error {
@@ -74,11 +97,22 @@ fileprivate let timeoutSeconds = 60
     // MARK: Ivars
 
     var peerConnectionClient: PeerConnectionClient?
-    // TODO move thread into SignalCall? Or refactor messageSender to take SignalRecipient
+    // TODO code cleanup: move thread into SignalCall? Or refactor messageSender to take SignalRecipient identifier.
     var thread: TSContactThread?
     var call: SignalCall?
+
+    /**
+     * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
+     * Because this happens via Signal Service it's possible the callee user has not accepted any change in the caller's 
+     * identity. In which case *each* ICE update would cause an "identity change" warning on the callee's device. Since
+     * this could be several messages, the caller stores all ICE updates until receiving positive confirmation that the 
+     * callee has received a message from us. This positive confirmation comes in the form of the callees `CallAnswer` 
+     * message.
+     */
     var sendIceUpdatesImmediately = true
     var pendingIceUpdateMessages = [OWSCallIceUpdateMessage]()
+
+    // ensure the incoming call promise isn't dealloc'd prematurely
     var incomingCallPromise: Promise<Void>?
 
     // Used to coordinate promises across delegate methods
@@ -204,17 +238,9 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
-    private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
-        Logger.debug("\(TAG) \(#function) for call: \(call) thread: \(thread)")
-        assertOnSignalingQueue()
-
-        let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
-        _ = sendMessage(callMessage)
-
-        handleMissedCall(call, thread: thread)
-    }
-
+    /**
+     * User didn't answer incoming call
+     */
     public func handleMissedCall(_ call: SignalCall, thread: TSContactThread) {
         // Insert missed call record
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
@@ -226,6 +252,23 @@ fileprivate let timeoutSeconds = 60
         self.callUIAdapter.reportMissedCall(call)
     }
 
+    /**
+     * Received a call while already in another call.
+     */
+    private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
+        Logger.debug("\(TAG) \(#function) for call: \(call) thread: \(thread)")
+        assertOnSignalingQueue()
+
+        let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
+        let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
+        _ = messageSender.sendCallMessage(callMessage)
+
+        handleMissedCall(call, thread: thread)
+    }
+
+    /**
+     * The callee was already in another call.
+     */
     public func handleRemoteBusy(thread: TSContactThread) {
         Logger.debug("\(TAG) \(#function) for thread: \(thread)")
         assertOnSignalingQueue()
@@ -237,11 +280,6 @@ fileprivate let timeoutSeconds = 60
 
         call.state = .remoteBusy
         terminateCall()
-    }
-
-    private func isBusy() -> Bool {
-        // TODO CallManager adapter?
-        return false
     }
 
     /**
@@ -319,6 +357,9 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * Initiate a call to recipient by recipientId
+     */
     public func handleCallBack(recipientId: String) {
         // TODO #function is called from objc, how to access swift defiend dispatch queue (OS_dispatch_queue)
         //assertOnSignalingQueue()
@@ -336,6 +377,9 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * Remote client (could be caller or callee) sent us a connectivity update
+     */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         assertOnSignalingQueue()
         Logger.debug("\(TAG) called \(#function)")
@@ -368,6 +412,10 @@ fileprivate let timeoutSeconds = 60
         peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
     }
 
+    /**
+     * Local client (could be caller or callee) generated some connectivity information that we should send to the 
+     * remote client.
+     */
     private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate) {
         assertOnSignalingQueue()
 
@@ -401,6 +449,12 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * The clients can now communicate via WebRTC.
+     *
+     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote 
+     * client.
+     */
     private func handleIceConnected() {
         assertOnSignalingQueue()
 
@@ -427,6 +481,7 @@ fileprivate let timeoutSeconds = 60
         case .answering:
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: thread, audioManager: peerConnectionClient)
+            // cancel connection timeout
             self.fulfillCallConnectedPromise?()
         case .remoteRinging:
             Logger.info("\(TAG) call alreading ringing. Ignoring \(#function)")
@@ -435,6 +490,9 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * The remote client (caller or callee) ended the call.
+     */
     public func handleRemoteHangup(thread: TSContactThread) {
         Logger.debug("\(TAG) in \(#function)")
         assertOnSignalingQueue()
@@ -467,7 +525,9 @@ fileprivate let timeoutSeconds = 60
     }
 
     /**
-     * Answer call by call `localId`, used by notification actions which can't serialize a call object.
+     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     *
+     * Used by notification actions which can't serialize a call object.
      */
     public func handleAnswerCall(localId: UUID) {
         // TODO #function is called from objc, how to access swift defiend dispatch queue (OS_dispatch_queue)
@@ -490,6 +550,9 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     */
     public func handleAnswerCall(_ call: SignalCall) {
         assertOnSignalingQueue()
 
@@ -533,8 +596,8 @@ fileprivate let timeoutSeconds = 60
     }
 
     /**
-     * Called by initiator when recipient answers the call.
-     * Called by recipient upon answering the call.
+     * For outgoing call, when the callee has chosen to accept the call.
+     * For incoming call, when the local user has chosen to accept the call.
      */
     func handleConnectedCall(_ call: SignalCall) {
         Logger.debug("\(TAG) in \(#function)")
@@ -552,6 +615,13 @@ fileprivate let timeoutSeconds = 60
         peerConnectionClient.setVideoEnabled(enabled: call.hasVideo)
     }
 
+    /**
+     * Local user chose to decline the call vs. answering it.
+     *
+     * The call is referred to by call `localId`, which is included in Notification actions.
+     *
+     * Incoming call only.
+     */
     public func handleDeclineCall(localId: UUID) {
         // #function is called from objc, how to access swift defiend dispatch queue (OS_dispatch_queue)
         //assertOnSignalingQueue()
@@ -573,6 +643,11 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     * Local user chose to decline the call vs. answering it.
+     *
+     * Incoming call only.
+     */
     public func handleDeclineCall(_ call: SignalCall) {
         assertOnSignalingQueue()
 
@@ -582,6 +657,11 @@ fileprivate let timeoutSeconds = 60
         handleLocalHungupCall(call)
     }
 
+    /**
+     * Local user chose to end the call.
+     *
+     * Can be used for Incoming and Outgoing calls.
+     */
     func handleLocalHungupCall(_ call: SignalCall) {
         assertOnSignalingQueue()
 
@@ -631,6 +711,11 @@ fileprivate let timeoutSeconds = 60
         terminateCall()
     }
 
+    /**
+     * Local user toggled to mute audio.
+     *
+     * Can be used for Incoming and Outgoing calls.
+     */
     func handleToggledMute(isMuted: Bool) {
         assertOnSignalingQueue()
 
@@ -641,6 +726,16 @@ fileprivate let timeoutSeconds = 60
         peerConnectionClient.setAudioEnabled(enabled: !isMuted)
     }
 
+    /**
+     * Local client received a message on the WebRTC data channel. 
+     *
+     * The WebRTC data channel is a faster signaling channel than out of band Signal Service messages. Once it's 
+     * established we use it to communicate further signaling information. The one sort-of exception is that with 
+     * hangup messages we redundantly send a Signal Service hangup message, which is more reliable, and since the hangup 
+     * action is idemptotent, there's no harm done.
+     *
+     * Used by both Incoming and Outgoing calls.
+     */
     private func handleDataChannelMessage(_ message: OWSWebRTCProtosData) {
         assertOnSignalingQueue()
 
@@ -691,6 +786,10 @@ fileprivate let timeoutSeconds = 60
 
     // MARK: Helpers
 
+    /**
+     * Ensure that all `SignalCall` and `CallService` state is synchronized by only mutating signaling state in 
+     * handleXXX methods, and putting those methods on the signaling queue.
+     */
     private func assertOnSignalingQueue() {
         if #available(iOS 10.0, *) {
             dispatchPrecondition(condition: .onQueue(type(of: self).signalingQueue))
@@ -699,8 +798,10 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    /**
+     *
+     */
     private func getIceServers() -> Promise<[RTCIceServer]> {
-
         return firstly {
             return accountManager.getTurnServerInfo()
         }.then(on: CallService.signalingQueue) { turnServerInfo -> [RTCIceServer] in
@@ -708,7 +809,9 @@ fileprivate let timeoutSeconds = 60
 
             return turnServerInfo.urls.map { url in
                 if url.hasPrefix("turn") {
-                    // only pass credentials for "turn:" servers.
+                    // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
+                    // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
+                    // e.g. we use a public fallback STUN server.
                     return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
                 } else {
                     return RTCIceServer(urlStrings: [url])
