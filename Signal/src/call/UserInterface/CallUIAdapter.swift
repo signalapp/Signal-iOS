@@ -6,6 +6,8 @@ import PromiseKit
 import CallKit
 
 protocol CallUIAdaptee {
+    var notificationsAdapter: CallNotificationsAdapter { get }
+
     func startOutgoingCall(_ call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, callerName: String, audioManager: SignalCallAudioManager)
     func reportMissedCall(_ call: SignalCall, callerName: String)
@@ -14,10 +16,15 @@ protocol CallUIAdaptee {
     func endCall(_ call: SignalCall)
 }
 
+// Shared default implementations
 extension CallUIAdaptee {
-    public func showCall(_ call: SignalCall) {
+    internal func showCall(_ call: SignalCall) {
         let callNotificationName = CallService.callServiceActiveCallNotificationName()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
+    }
+
+    internal func reportMissedCall(_ call: SignalCall, callerName: String) {
+        notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 }
 
@@ -34,14 +41,14 @@ class CallUIAdapter {
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         self.contactsManager = contactsManager
         if Platform.isSimulator {
-            // Callkit doesn't seem entirely supported in simulator.
+            // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
             // So we use the non-call kit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 10.0, *) {
             Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
-            adaptee = CallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            adaptee = CallKitProviderDelegate(callService: callService, notificationsAdapter: notificationsAdapter)
         } else {
             Logger.info("\(TAG) choosing non-callkit adaptee for older iOS")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)

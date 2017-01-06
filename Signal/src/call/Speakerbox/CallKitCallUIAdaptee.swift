@@ -3,6 +3,10 @@
 
 import Foundation
 
+/**
+ * CallKit backed implementation of UI Activity related to Signal Calls
+ * TODO: Code Cleanup: It might be more straight forward to roll this into the CallKitProviderDelegate.
+ */
 @available(iOS 10.0, *)
 class CallKitCallUIAdaptee: CallUIAdaptee {
 
@@ -13,15 +17,15 @@ class CallKitCallUIAdaptee: CallUIAdaptee {
 
     init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
         self.callManager = CallKitCallManager()
-        self.providerDelegate = CallKitProviderDelegate(callManager: callManager, callService: callService)
+        self.providerDelegate = CallKitProviderDelegate(callService: callService, notificationsAdapter: notificationsAdapter)
         self.notificationsAdapter = notificationsAdapter
     }
 
     public func startOutgoingCall(_ call: SignalCall) {
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
-        self.callManager.addCall(call)
-        providerDelegate.callManager.startCall(call)
+//        self.callManager.addCall(call)
+//        providerDelegate.callManager.startCall(call)
     }
 
     public func reportIncomingCall(_ call: SignalCall, callerName: String, audioManager: SignalCallAudioManager) {
@@ -29,15 +33,15 @@ class CallKitCallUIAdaptee: CallUIAdaptee {
         // Crux is, the peerconnectionclient is what controls the audio channel.
         // But a peerconnectionclient is per call.
         // While this providerDelegate is an app singleton.
-        providerDelegate.audioManager = audioManager
-
-        providerDelegate.reportIncomingCall(call) { error in
-            if error == nil {
-                Logger.debug("\(self.TAG) successfully reported incoming call.")
-            } else {
-                Logger.error("\(self.TAG) providerDelegate.reportIncomingCall failed with error: \(error)")
-            }
-        }
+//        providerDelegate.audioManager = audioManager
+//
+//        providerDelegate.reportIncomingCall(call) { error in
+//            if error == nil {
+//                Logger.debug("\(self.TAG) successfully reported incoming call.")
+//            } else {
+//                Logger.error("\(self.TAG) providerDelegate.reportIncomingCall failed with error: \(error)")
+//            }
+//        }
     }
 
     public func reportMissedCall(_ call: SignalCall, callerName: String) {
