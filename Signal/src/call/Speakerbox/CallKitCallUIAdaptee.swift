@@ -22,14 +22,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     internal let notificationsAdapter: CallNotificationsAdapter
     private let provider: CXProvider
 
-    // FIXME - I might be thinking about this the wrong way.
-    // It seems like the provider delegate wants to stop/start the audio recording
-    // process, but the ProviderDelegate is an app singleton
-    // and the audio recording process is currently controlled (I think) by
-    // the PeerConnectionClient instance, which is one per call (NOT a singleton).
-    // It seems like a mess to reconcile this difference in cardinality. But... here we are.
-    var audioManager: SignalCallAudioManager?
-
     /// The app's provider configuration, representing its CallKit capabilities
     static var providerConfiguration: CXProviderConfiguration {
         let localizedName = NSLocalizedString("APPLICATION_NAME", comment: "Name of application")
@@ -70,8 +62,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.startCall(call)
     }
 
-    // TODO CodeCleanup: remove unused audiomanager
-    internal func reportIncomingCall(_ call: SignalCall, callerName: String, audioManager: SignalCallAudioManager) {
+    internal func reportIncomingCall(_ call: SignalCall, callerName: String) {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
@@ -109,7 +100,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func providerDidReset(_ provider: CXProvider) {
         Logger.debug("\(TAG) in \(#function)")
 
-        stopAudio()
+        // TODO
+        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
+        // session when adding an audiotrack
+//        stopAudio()
 
         /*
          End any ongoing calls if the provider resets, and remove them from the app's list of calls,
@@ -132,7 +126,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
          Configure the audio session, but do not start call audio here, since it must be done once
          the audio session has been activated by the system after having its priority elevated.
          */
-        configureAudioSession()
+        // TODO
+        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
+        // session when adding an audiotrack
+        //configureAudioSession()
 
         // TODO does this work when `action.handle.value` is not in e164 format, e.g. if called via intent?
         guard let call = callManager.callWithLocalId(action.callUUID) else {
@@ -247,7 +244,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         Logger.debug("\(TAG) Received \(#function)")
 
-        startAudio()
+        // TODO 
+        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
+        // session when adding an audiotrack
+        // startAudio()
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
@@ -257,34 +257,5 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
          Restart any non-call related audio now that the app's audio session has been
          de-activated after having its priority restored to normal.
          */
-    }
-
-    // MARK: - Audio
-
-    func startAudio() {
-        guard let audioManager = self.audioManager else {
-            Logger.error("\(TAG) audioManager was unexpectedly nil while tryign to start audio")
-            return
-        }
-        
-        audioManager.startAudio()
-    }
-    
-    func stopAudio() {
-        guard let audioManager = self.audioManager else {
-            Logger.error("\(TAG) audioManager was unexpectedly nil while tryign to stop audio")
-            return
-        }
-        
-        audioManager.stopAudio()
-    }
-    
-    func configureAudioSession() {
-        guard let audioManager = self.audioManager else {
-            Logger.error("\(TAG) audioManager was unexpectedly nil while trying to: \(#function)")
-            return
-        }
-        
-        audioManager.configureAudioSession()
     }
 }
