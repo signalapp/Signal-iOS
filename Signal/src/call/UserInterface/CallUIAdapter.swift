@@ -48,42 +48,42 @@ class CallUIAdapter {
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 10.0, *) {
             Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
-            adaptee = CallKitProviderDelegate(callService: callService, notificationsAdapter: notificationsAdapter)
+            adaptee = CallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else {
             Logger.info("\(TAG) choosing non-callkit adaptee for older iOS")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         }
     }
 
-    public func reportIncomingCall(_ call: SignalCall, thread: TSContactThread, audioManager: SignalCallAudioManager) {
+    internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread, audioManager: SignalCallAudioManager) {
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName, audioManager: audioManager)
     }
 
-    public func reportMissedCall(_ call: SignalCall) {
+    internal func reportMissedCall(_ call: SignalCall) {
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
-    public func startOutgoingCall(handle: String) -> SignalCall {
+    internal func startOutgoingCall(handle: String) -> SignalCall {
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
         adaptee.startOutgoingCall(call)
         return call
     }
 
-    public func answerCall(_ call: SignalCall) {
+    internal func answerCall(_ call: SignalCall) {
         adaptee.answerCall(call)
     }
 
-    public func declineCall(_ call: SignalCall) {
+    internal func declineCall(_ call: SignalCall) {
         adaptee.declineCall(call)
     }
 
-    public func endCall(_ call: SignalCall) {
+    internal func endCall(_ call: SignalCall) {
         adaptee.endCall(call)
     }
 
-    public func showCall(_ call: SignalCall) {
+    internal func showCall(_ call: SignalCall) {
         adaptee.showCall(call)
     }
 }
