@@ -178,7 +178,7 @@ fileprivate let timeoutSeconds = 60
             return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then(on: CallService.signalingQueue) {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
-                return self.sendMessage(callMessage)
+                return self.messageSender.sendCallMessage(callMessage)
             }
         }.catch(on: CallService.signalingQueue) { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
@@ -215,7 +215,7 @@ fileprivate let timeoutSeconds = 60
 
         if pendingIceUpdateMessages.count > 0 {
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            _ = sendMessage(callMessage).catch { error in
+            _ = messageSender.sendCallMessage(callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
             }
         }
@@ -329,7 +329,7 @@ fileprivate let timeoutSeconds = 60
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
-            return self.sendMessage(callAnswerMessage)
+            return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then(on: CallService.signalingQueue) {
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
@@ -438,7 +438,7 @@ fileprivate let timeoutSeconds = 60
 
         if self.sendIceUpdatesImmediately {
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessage: iceUpdateMessage)
-            _ = sendMessage(callMessage)
+            _ = self.messageSender.sendCallMessage(callMessage)
         } else {
             // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
             // e.g. if the client has blocked our message due to an identity change, we'd otherwise
@@ -702,7 +702,7 @@ fileprivate let timeoutSeconds = 60
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
-        _  = sendMessage(callMessage).then(on: CallService.signalingQueue) {
+        _  = self.messageSender.sendCallMessage(callMessage).then(on: CallService.signalingQueue) {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
         }.catch(on: CallService.signalingQueue) { error in
             Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
@@ -817,12 +817,6 @@ fileprivate let timeoutSeconds = 60
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [CallService.fallbackIceServer]
-        }
-    }
-
-    private func sendMessage(_ message: OWSOutgoingCallMessage) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.messageSender.send(message, success: fulfill, failure: reject)
         }
     }
 
@@ -1034,6 +1028,17 @@ fileprivate extension RTCIceConnectionState {
             return "closed"
         case .count:
             return "count"
+        }
+    }
+}
+
+fileprivate extension MessageSender {
+    /**
+     * Wrap message sending in a Promise for easier callback chaining.
+     */
+    fileprivate func sendCallMessage(_ message: OWSOutgoingCallMessage) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            self.send(message, success: fulfill, failure: reject)
         }
     }
 }
