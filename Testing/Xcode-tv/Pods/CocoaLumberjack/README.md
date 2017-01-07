@@ -23,7 +23,7 @@ pod 'CocoaLumberjack/Swift'
 use_frameworks!
 ```
 Note: `Swift` is a subspec which will include all the Obj-C code plus the Swift one, so this is sufficient. 
-For more details about how to use Swift with Lumberjack, see [this converation](https://github.com/CocoaLumberjack/CocoaLumberjack/issues/405).
+For more details about how to use Swift with Lumberjack, see [this conversation](https://github.com/CocoaLumberjack/CocoaLumberjack/issues/405).
 
 ##### Swift Usage
 
@@ -57,7 +57,7 @@ platform :ios, '7.0'
 pod 'CocoaLumberjack'
 ```
 
-##### Objc-C usage
+##### Obj-C usage
 If you're using Lumberjack as a framework, you can `@import CocoaLumberjack`.
 
 Otherwise, `#import <CocoaLumberjack/CocoaLumberjack.h>`
@@ -173,13 +173,14 @@ Configure your logging however you want. Change log levels per file (perfect for
 
 ### Requirements 
 The current version of Lumberjack requires:
-- Xcode 7.1 or later
+- Xcode 7.3 or later
 - iOS 5 or later
 - OS X 10.7 or later
 - WatchOS 2 or later
 - TVOS 9 or later
 
 #### Backwards compability
+- for Xcode 7.2 and 7.1, use the 2.2.0 version
 - for Xcode 7.0 or earlier, use the 2.1.0 version
 - for Xcode 6 or earlier, use the 2.0.x version
 - for OS X < 10.7 support, use the 1.6.0 version

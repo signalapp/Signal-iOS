@@ -1,0 +1,25 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+workspace 'YapDatabaseTesting'
+project 'YapDatabaseTesting.xcodeproj'
+
+
+target :'YapDatabaseTesting' do
+
+	platform :ios, '9.0'
+
+	pod "YapDatabase", path: '../../'
+end
+	
+abstract_target 'watchOS' do
+	
+	pod "YapDatabase", path: '../../'
+
+	target :'YapDatabaseTesting WatchKit App' do
+		platform :watchos, '2.0'
+	end
+	
+	target :'YapDatabaseTesting WatchKit Extension' do
+		platform :watchos, '2.0'
+	end
+end

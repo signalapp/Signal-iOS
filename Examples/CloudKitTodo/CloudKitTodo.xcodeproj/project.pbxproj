@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8CDE399427C371AE35373288 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 951E571D3B3D45328846F778 /* libPods.a */; };
+		51EE553F951BF40945032BD5 /* libPods-CloudKitTodo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */; };
 		DC6071471A33F3FF00207DE9 /* TodoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6071461A33F3FF00207DE9 /* TodoCell.m */; };
 		DC60714A1A33FC3900207DE9 /* checkmark-off.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071481A33FC3900207DE9 /* checkmark-off.png */; };
 		DC60714B1A33FC3900207DE9 /* checkmark-on.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071491A33FC3900207DE9 /* checkmark-on.png */; };
@@ -28,9 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6E0153BF132BA4F8966C9CD2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		951E571D3B3D45328846F778 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C845CFA8C6F6A2549AFE15A6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		703B5BE0F88E9B9E927805E5 /* Pods-CloudKitTodo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CloudKitTodo.release.xcconfig"; path = "Pods/Target Support Files/Pods-CloudKitTodo/Pods-CloudKitTodo.release.xcconfig"; sourceTree = "<group>"; };
+		ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CloudKitTodo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC6071451A33F3FF00207DE9 /* TodoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoCell.h; sourceTree = "<group>"; };
 		DC6071461A33F3FF00207DE9 /* TodoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoCell.m; sourceTree = "<group>"; };
 		DC6071481A33FC3900207DE9 /* checkmark-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-off.png"; sourceTree = "<group>"; };
@@ -60,6 +59,7 @@
 		DCDE787E1A302B29001D8FCE /* MyTodo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTodo.h; sourceTree = "<group>"; };
 		DCDE787F1A302B29001D8FCE /* MyTodo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTodo.m; sourceTree = "<group>"; };
 		DCDE78821A302B46001D8FCE /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		F32EDD3AE8334674ADF30C82 /* Pods-CloudKitTodo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CloudKitTodo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CloudKitTodo/Pods-CloudKitTodo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,18 +69,18 @@
 			files = (
 				DC9A34D61BB5CA650067AD13 /* CloudKit.framework in Frameworks */,
 				DCDE78831A302B46001D8FCE /* libsqlite3.dylib in Frameworks */,
-				8CDE399427C371AE35373288 /* libPods.a in Frameworks */,
+				51EE553F951BF40945032BD5 /* libPods-CloudKitTodo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D2BF4D4DBA4EA550594C4DBD /* Pods */ = {
+		2BCD426F1D5F7D0B429BB734 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6E0153BF132BA4F8966C9CD2 /* Pods.debug.xcconfig */,
-				C845CFA8C6F6A2549AFE15A6 /* Pods.release.xcconfig */,
+				F32EDD3AE8334674ADF30C82 /* Pods-CloudKitTodo.debug.xcconfig */,
+				703B5BE0F88E9B9E927805E5 /* Pods-CloudKitTodo.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -91,7 +91,7 @@
 				DCDE771D1A3023E9001D8FCE /* CloudKitTodo */,
 				DCDE776B1A3028EA001D8FCE /* Frameworks */,
 				DCDE771C1A3023E9001D8FCE /* Products */,
-				D2BF4D4DBA4EA550594C4DBD /* Pods */,
+				2BCD426F1D5F7D0B429BB734 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,7 +131,7 @@
 			children = (
 				DC9A34D51BB5CA650067AD13 /* CloudKit.framework */,
 				DCDE78821A302B46001D8FCE /* libsqlite3.dylib */,
-				951E571D3B3D45328846F778 /* libPods.a */,
+				ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -185,12 +185,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DCDE773E1A3023E9001D8FCE /* Build configuration list for PBXNativeTarget "CloudKitTodo" */;
 			buildPhases = (
-				7C5D6A671893FBAFAEEBB03F /* Check Pods Manifest.lock */,
+				4D70F164321A80912E0E0351 /* [CP] Check Pods Manifest.lock */,
 				DCDE77171A3023E9001D8FCE /* Sources */,
 				DCDE77181A3023E9001D8FCE /* Frameworks */,
 				DCDE77191A3023E9001D8FCE /* Resources */,
-				10A81DCC251B340246D9B543 /* Copy Pods Resources */,
-				777776C8F221C74F50F99DE8 /* Embed Pods Frameworks */,
+				A7E36A79EF95353C65F5D2B6 /* [CP] Embed Pods Frameworks */,
+				ED83D0453CE4BE42D9A22D78 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -258,49 +258,49 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		10A81DCC251B340246D9B543 /* Copy Pods Resources */ = {
+		4D70F164321A80912E0E0351 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		777776C8F221C74F50F99DE8 /* Embed Pods Frameworks */ = {
+		A7E36A79EF95353C65F5D2B6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CloudKitTodo/Pods-CloudKitTodo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7C5D6A671893FBAFAEEBB03F /* Check Pods Manifest.lock */ = {
+		ED83D0453CE4BE42D9A22D78 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CloudKitTodo/Pods-CloudKitTodo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -426,7 +426,7 @@
 		};
 		DCDE773F1A3023E9001D8FCE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6E0153BF132BA4F8966C9CD2 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = F32EDD3AE8334674ADF30C82 /* Pods-CloudKitTodo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CloudKitTodo/CloudKitTodo.entitlements;
@@ -451,7 +451,7 @@
 		};
 		DCDE77401A3023E9001D8FCE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C845CFA8C6F6A2549AFE15A6 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 703B5BE0F88E9B9E927805E5 /* Pods-CloudKitTodo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CloudKitTodo/CloudKitTodo.entitlements;

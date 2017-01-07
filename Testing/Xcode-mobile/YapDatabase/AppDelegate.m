@@ -2,7 +2,7 @@
 #import "ViewController.h"
 
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseAutoView.h>
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import "YapDatabaseLogging.h"
@@ -474,9 +474,9 @@ static const NSUInteger STR_LENGTH = 2000;
 		return [obj1 compare:obj2];
 	}];
 
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting];
 	
 	if ([database registerExtension:databaseView withName:@"main"])
 		NSLog(@"Registered mainView");
@@ -503,9 +503,9 @@ static const NSUInteger STR_LENGTH = 2000;
 		return [obj1 compare:obj2];
 	}];
 
-	YapDatabaseView *databaseView =
-	  [[YapDatabaseView alloc] initWithGrouping:grouping
-	                                    sorting:sorting];
+	YapDatabaseAutoView *databaseView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:grouping
+	                                        sorting:sorting];
 	
 	if ([database registerExtension:databaseView withName:@"on-the-fly"])
 		NSLog(@"Registered onTheFlyView");

@@ -38,7 +38,7 @@
 - (void)demoChangedProperties
 {
 	if (car.isImmutable) {
-		car = [car copy]; // make immutable copy
+		car = [car copy]; // make mutable copy
 	}
 	
 	[car clearChangedProperties];

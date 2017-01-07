@@ -1664,7 +1664,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	});
 }
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 
 - (YapDatabaseConnectionFlushMemoryFlags)defaultAutoFlushMemoryFlags
 {

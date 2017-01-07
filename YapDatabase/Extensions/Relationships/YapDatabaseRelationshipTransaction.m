@@ -1477,7 +1477,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 			[self lookupEdgeSourceRowid:edge isDeleted:NULL];
 		}
 		
-		// No need to attempt destinationRowid lookup on edges with destinationFilePath
+		// No need to attempt destinationRowid lookup on edges with destinationFileURL
 	}
 	
 	return changes;
@@ -1788,7 +1788,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 			}
 		}
 		
-		// No need to attempt destinationRowid lookup on edges with destinationFilePath
+		// No need to attempt destinationRowid lookup on edges with destinationFileURL
 	}
 	
 	return changes;
@@ -2881,7 +2881,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * Helper method for executing the sqlite statement to delete all protocol edges from the database.
  *
  * This means all edges that were created via the YapDatabaseRelationshipNode protocol.
- * So every edge in the database where the 'manual' column in set to zero.
+ * So every edge in the database where the 'manual' column is set to zero.
 **/
 - (void)removeAllProtocolEdges
 {
@@ -2910,7 +2910,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 /**
  * This method is called from didRemoveAllObjectsInAllCollections.
  * 
- * It first finds all referenced destinationFilePaths, and add them to our filesToDelete set.
+ * It first finds all referenced destinationFileURLs, and add them to our filesToDelete set.
  * Then it removes all edges, both protocol & manual edges.
 **/
 - (void)removeAllEdges
@@ -5036,14 +5036,14 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * You can specify any combination of the following:
  *
  * - name only
- * - destinationFilePath
- * - name + destinationFilePath
+ * - destinationFileURL
+ * - name + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
  * 
  * IMPORTANT:
  * This internal method does NOT prep the edge for the public (e.g. srcKey/dstKey/dstFileURL may be nil).
@@ -5641,8 +5641,8 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param sourceCollection (optional)
  *   The edge.sourceCollection to match.
  * 
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
@@ -6036,14 +6036,14 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * You can specify any combination of the following:
  *
  * - name only
- * - destinationFilePath
- * - name + destinationFilePath
+ * - destinationFileURL
+ * - name + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
 **/
 - (void)enumerateEdgesWithName:(NSString *)name
             destinationFileURL:(NSURL *)dstFileURL
@@ -6129,8 +6129,8 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param sourceCollection (optional)
  *   The edge.sourceCollection to match.
  * 
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.
@@ -6425,14 +6425,14 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * You can specify any combination of the following:
  *
  * - name only
- * - destinationFilePath
- * - name + destinationFilePath
+ * - destinationFileURL
+ * - name + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
 **/
 - (NSUInteger)edgeCountWithName:(NSString *)name
              destinationFileURL:(NSURL *)dstFileURL
@@ -6605,10 +6605,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  *
  * - name only
  * - sourceKey & sourceCollection only
- * - destinationFilePath
+ * - destinationFileURL
  * - name + sourceKey & sourceCollection
- * - name + destinationFilePath
- * - name + sourceKey & sourceCollection + destinationFilePath
+ * - name + destinationFileURL
+ * - name + sourceKey & sourceCollection + destinationFileURL
  *
  * @param name (optional)
  *   The name of the edge (case sensitive).
@@ -6619,8 +6619,8 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param sourceCollection (optional)
  *   The edge.sourceCollection to match.
  * 
- * @param destinationFilePath (optional)
- *   The edge.destinationFilePath to match.
+ * @param destinationFileURL (optional)
+ *   The edge.destinationFileURL to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
  * then the sourceCollection is treated as the empty string, just like the rest of the YapDatabase framework.

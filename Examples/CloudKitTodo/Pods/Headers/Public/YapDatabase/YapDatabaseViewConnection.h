@@ -1,1 +1,1 @@
-../../../../../../YapDatabase/Extensions/Views/YapDatabaseViewConnection.h
+../../../../../../YapDatabase/Extensions/View/YapDatabaseViewConnection.h

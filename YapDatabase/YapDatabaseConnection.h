@@ -606,7 +606,7 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseConnectionFlushMemoryFlags) {
 **/
 - (void)flushMemoryWithFlags:(YapDatabaseConnectionFlushMemoryFlags)flags;
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS || TARGET_OS_TV
 /**
  * When a UIApplicationDidReceiveMemoryWarningNotification is received,
  * the code automatically invokes flushMemoryWithFlags and passes the set flags.

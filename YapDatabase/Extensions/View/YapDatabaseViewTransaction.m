@@ -3674,7 +3674,7 @@
 		return NO;
 	}
 	
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 	NSUInteger section = indexPath.section;
 	NSUInteger row = indexPath.row;
 #else
@@ -3779,7 +3779,7 @@
 		return nil;
 	}
 	
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 	NSUInteger section = indexPath.section;
 	NSUInteger row = indexPath.row;
 #else
@@ -3846,7 +3846,7 @@
 		return nil;
 	}
 	
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 	NSUInteger section = indexPath.section;
 	NSUInteger row = indexPath.row;
 #else

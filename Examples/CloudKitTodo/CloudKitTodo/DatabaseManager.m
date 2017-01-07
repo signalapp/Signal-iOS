@@ -253,10 +253,10 @@ DatabaseManager *MyDatabaseManager;
 		return NSOrderedSame;
 	}];
 	
-	YapDatabaseView *orderView =
-	  [[YapDatabaseView alloc] initWithGrouping:orderGrouping
-	                                    sorting:orderSorting
-	                                 versionTag:@"sortedByCreationDate"];
+	YapDatabaseAutoView *orderView =
+	  [[YapDatabaseAutoView alloc] initWithGrouping:orderGrouping
+	                                        sorting:orderSorting
+	                                     versionTag:@"sortedByCreationDate"];
 	
 	[database asyncRegisterExtension:orderView withName:Ext_View_Order completionBlock:^(BOOL ready) {
 		if (!ready) {

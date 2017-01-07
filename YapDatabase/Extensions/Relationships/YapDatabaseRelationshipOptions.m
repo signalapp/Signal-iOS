@@ -272,7 +272,7 @@ static NSString *const kPlistKey_PathComponents = @"pathComponents";
 		
 		if (filePath)
 		{
-		#if TARGET_OS_IPHONE
+		#if TARGET_OS_IOS || TARGET_OS_TV
 			
 			NSArray *pathComponents = [filePath pathComponents];
 			

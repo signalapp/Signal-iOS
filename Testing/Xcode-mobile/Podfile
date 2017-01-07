@@ -1,4 +1,10 @@
-xcodeproj 'YapDatabaseTesting.xcodeproj'
+project 'YapDatabaseTesting.xcodeproj'
 platform :ios, '8.1'
 
-pod "YapDatabase", path: '../../'
+target 'YapDatabase' do
+	pod "YapDatabase", path: '../../'
+end
+
+target 'YapDatabaseTests' do
+	pod "YapDatabase", path: '../../'
+end

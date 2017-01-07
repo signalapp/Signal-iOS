@@ -174,7 +174,7 @@
 		  [YapDatabaseRelationshipEdge edgeWithName:@"child"
 		                                  sourceKey:rowD
 		                                 collection:nil
-								destinationFilePath:filePathD
+		                        destinationFilePath:filePathD
 		                            nodeDeleteRules:YDB_DeleteDestinationIfSourceDeleted];
 		
 		[[transaction ext:extName] addEdge:edgeAB];

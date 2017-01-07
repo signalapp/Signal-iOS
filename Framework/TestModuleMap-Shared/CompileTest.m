@@ -14,9 +14,13 @@
 @import YapDatabase.YapDatabaseFullTextSearch;
 @import YapDatabase.YapDatabaseSearchResultsView;
 @import YapDatabase.YapDatabaseHooks;
-@import YapDatabase.YapDatabaseCloudKit;
 @import YapDatabase.YapDatabaseRTreeIndex;
 @import YapDatabase.YapDatabaseConnectionProxy;
+@import YapDatabase.YapDatabaseActionManager;
+#if !TARGET_OS_WATCH
+@import YapDatabase.YapDatabaseCloudKit;
+#endif
+
 
 @implementation CompileTest
 
@@ -41,9 +45,12 @@
 	YapDatabaseFullTextSearch *fullTextSearch;
 	YapDatabaseSearchResultsView *searchResultsView;
 	YapDatabaseHooks *hooks;
-	YapDatabaseCloudKit *cloudKit;
 	YapDatabaseRTreeIndex *rTreeIndex;
 	YapDatabaseConnectionProxy *connectionProxy;
+	YapDatabaseActionManager *actionManager;
+#if !TARGET_OS_WATCH
+	YapDatabaseCloudKit *cloudKit;
+#endif
 	
 #pragma clang diagnostic pop
 }

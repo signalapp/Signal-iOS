@@ -3,7 +3,7 @@
 #import "YapDatabaseViewMappingsPrivate.h"
 #import "YapDatabaseLogging.h"
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
 #endif
 
@@ -178,7 +178,7 @@
 	}
 	else
 	{
-	  #if TARGET_OS_IPHONE
+	  #if TARGET_OS_IOS
 		return [NSIndexPath indexPathForRow:originalIndex inSection:originalSection];
 	  #else
 		NSUInteger indexes[] = {originalSection, originalIndex};
@@ -193,7 +193,7 @@
 		return nil; // <-- You should be using indexPath
 	}
 	else {
-	#if TARGET_OS_IPHONE
+	#if TARGET_OS_IOS
 		return [NSIndexPath indexPathForRow:finalIndex inSection:finalSection];
 	#else
 		NSUInteger indexes[] = {finalSection, finalIndex};
