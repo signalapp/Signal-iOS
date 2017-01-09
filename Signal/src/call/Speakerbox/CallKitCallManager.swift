@@ -5,8 +5,12 @@ import UIKit
 import CallKit
 
 /**
- * Based on SpeakerboxCallManager, from the Apple CallKit Example app. Though, it's responsibilities are mostly mirrored (and delegated from) CallKitCallUIAdaptee.
- * TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
+ * Requests actions from CallKit
+ *
+ * @Discussion:
+ *   Based on SpeakerboxCallManager, from the Apple CallKit Example app. Though, it's responsibilities are mostly 
+ *   mirrored (and delegated from) CallKitCallUIAdaptee.
+ *   TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
  */
 @available(iOS 10.0, *)
 final class CallKitCallManager: NSObject {
@@ -48,6 +52,14 @@ final class CallKitCallManager: NSObject {
         let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
+
+        requestTransaction(transaction)
+    }
+
+    func answer(call: SignalCall) {
+        let answerCallAction = CXAnswerCallAction(call: call.localId)
+        let transaction = CXTransaction()
+        transaction.addAction(answerCallAction)
 
         requestTransaction(transaction)
     }

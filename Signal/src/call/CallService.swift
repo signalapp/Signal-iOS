@@ -578,8 +578,6 @@ fileprivate let timeoutSeconds = 60
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncoming, in: thread)
         callRecord.save()
 
-        callUIAdapter.answerCall(call)
-
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
         if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
             Logger.debug("\(TAG) sendDataChannelMessage returned true")

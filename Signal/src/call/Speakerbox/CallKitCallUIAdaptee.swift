@@ -7,10 +7,10 @@ import CallKit
 import AVFoundation
 
 /**
- * Connects user interface to the CallService usin CallKit.
+ * Connects user interface to the CallService using CallKit.
  *
- * User interface is mapped to CXCall action requests, and if the CXProvider accepts them,
- * their corresponding consequences are requested via the CallService
+ * User interface is routed to the CallManager which requests CXCallActions, and if the CXProvider accepts them,
+ * their corresponding consequences are implmented in the CXProviderDelegate methods, e.g. using the CallService
  */
 @available(iOS 10.0, *)
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
@@ -84,7 +84,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     internal func answerCall(_ call: SignalCall) {
-        showCall(call)
+        callManager.answer(call: call)
     }
 
     internal func declineCall(_ call: SignalCall) {
@@ -144,9 +144,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         CallService.signalingQueue.async {
             self.callService.handleOutgoingCall(call).then {
                 action.fulfill()
-                }.catch { error in
-                    self.callManager.removeCall(call)
-                    action.fail()
+            }.catch { error in
+                self.callManager.removeCall(call)
+                action.fail()
             }
         }
 
@@ -182,13 +182,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //        // Trigger the call to be answered via the underlying network service.
         //        call.answerSpeakerboxCall()
 
-        // Synchronous to ensure work is done before call is displayed as "answered"
-        CallService.signalingQueue.sync {
+        CallService.signalingQueue.async {
             self.callService.handleAnswerCall(call)
+            self.showCall(call)
+            action.fulfill()
         }
-
-        // Signal to the system that the action has been successfully performed.
-        action.fulfill()
     }
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {

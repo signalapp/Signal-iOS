@@ -48,7 +48,9 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     internal func answerCall(_ call: SignalCall) {
-        // NO-OP
+        CallService.signalingQueue.async {
+            self.callService.handleAnswerCall(call)
+        }
     }
 
     internal func declineCall(_ call: SignalCall) {

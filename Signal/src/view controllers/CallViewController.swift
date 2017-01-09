@@ -135,7 +135,7 @@ class CallViewController: UIViewController, CallDelegate {
     let TAG = "[CallViewController]"
 
     // Dependencies
-    let callService: CallService
+    
     let callUIAdapter: CallUIAdapter
     let contactsManager: OWSContactsManager
     let audioService: CallAudioService
@@ -165,7 +165,7 @@ class CallViewController: UIViewController, CallDelegate {
 
     required init?(coder aDecoder: NSCoder) {
         contactsManager = Environment.getCurrent().contactsManager
-        callService = Environment.getCurrent().callService
+        let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
         audioService = CallAudioService()
         super.init(coder: aDecoder)
@@ -173,7 +173,7 @@ class CallViewController: UIViewController, CallDelegate {
 
     required init() {
         contactsManager = Environment.getCurrent().contactsManager
-        callService = Environment.getCurrent().callService
+        let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
         audioService = CallAudioService()
         super.init(nibName: nil, bundle: nil)
@@ -286,7 +286,7 @@ class CallViewController: UIViewController, CallDelegate {
         if let call = self.call {
             callUIAdapter.toggleMute(call: call, isMuted: muteButton.isSelected)
         } else {
-            Logger.warn("\(TAG) hung up, but call was unexpectedly nil")
+            Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
         }
     }
 
@@ -308,9 +308,7 @@ class CallViewController: UIViewController, CallDelegate {
             return
         }
 
-        CallService.signalingQueue.async {
-            self.callService.handleAnswerCall(call)
-        }
+        callUIAdapter.answerCall(call)
     }
 
     /**
@@ -338,7 +336,6 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        Logger.debug("\(TAG) in \(#function)")
         DispatchQueue.main.async {
             self.muteButton.isSelected = call.isMuted
         }
