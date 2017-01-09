@@ -95,6 +95,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.end(call: call)
     }
 
+    internal func toggleMute(call: SignalCall, isMuted: Bool) {
+        callManager.toggleMute(call: call, isMuted: isMuted)
+    }
+
     // MARK: CXProviderDelegate
 
     func providerDidReset(_ provider: CXProvider) {
@@ -187,7 +191,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
     }
 
-    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+    public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         Logger.debug("\(TAG) Received \(#function) CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
@@ -212,13 +216,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.removeCall(call)
     }
 
-    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+    public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
         Logger.debug("\(TAG) Received \(#function) CXSetHeldCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
             return
         }
-        Logger.warn("TODO, set held call: \(call)")
+        Logger.warn("TODO, unimplemented set held call: \(call)")
 
         // TODO FIXME
         //        // Update the SpeakerboxCall's underlying hold state.
@@ -233,6 +237,28 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        Logger.debug("\(TAG) Received \(#function) CXSetMutedCallAction")
+        guard callManager.callWithLocalId(action.callUUID) != nil else {
+            Logger.error("\(TAG) Failing CXSetMutedCallAction for unknown call: \(action.callUUID)")
+            action.fail()
+            return
+        }
+
+        CallService.signalingQueue.async {
+            self.callService.handleToggledMute(isMuted: action.isMuted)
+            action.fulfill()
+        }
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
+        Logger.warn("\(TAG) unimplemented \(#function) for CXSetGroupCallAction")
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
+        Logger.warn("\(TAG) unimplemented \(#function) for CXPlayDTMFCallAction")
     }
 
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {

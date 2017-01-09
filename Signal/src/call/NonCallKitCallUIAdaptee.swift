@@ -18,7 +18,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         self.notificationsAdapter = notificationsAdapter
     }
 
-    public func startOutgoingCall(_ call: SignalCall) {
+    internal func startOutgoingCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
             _ = self.callService.handleOutgoingCall(call).then {
                 Logger.debug("\(self.TAG) handleOutgoingCall succeeded")
@@ -28,7 +28,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         }
     }
 
-    public func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    internal func reportIncomingCall(_ call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         // present Call View controller
@@ -43,23 +43,30 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         }
     }
 
-    public func reportMissedCall(_ call: SignalCall, callerName: String) {
+    internal func reportMissedCall(_ call: SignalCall, callerName: String) {
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
-    public func answerCall(_ call: SignalCall) {
+    internal func answerCall(_ call: SignalCall) {
         // NO-OP
     }
 
-    public func declineCall(_ call: SignalCall) {
+    internal func declineCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
             self.callService.handleDeclineCall(call)
         }
     }
 
-    public func endCall(_ call: SignalCall) {
+    internal func endCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
             self.callService.handleLocalHungupCall(call)
         }
     }
+
+    internal func toggleMute(call: SignalCall, isMuted: Bool) {
+        CallService.signalingQueue.async {
+            self.callService.handleToggledMute(isMuted: isMuted)
+        }
+    }
+
 }

@@ -718,6 +718,13 @@ fileprivate let timeoutSeconds = 60
             handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
+
+        guard let call = self.call else {
+            handleFailedCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            return
+        }
+
+        call.isMuted = isMuted
         peerConnectionClient.setAudioEnabled(enabled: !isMuted)
     }
 

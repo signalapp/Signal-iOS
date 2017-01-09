@@ -14,6 +14,7 @@ protocol CallUIAdaptee {
     func answerCall(_ call: SignalCall)
     func declineCall(_ call: SignalCall)
     func endCall(_ call: SignalCall)
+    func toggleMute(call: SignalCall, isMuted: Bool)
 }
 
 // Shared default implementations
@@ -85,5 +86,9 @@ class CallUIAdapter {
 
     internal func showCall(_ call: SignalCall) {
         adaptee.showCall(call)
+    }
+
+    internal func toggleMute(call: SignalCall, isMuted: Bool) {
+        adaptee.toggleMute(call: call, isMuted: isMuted)
     }
 }

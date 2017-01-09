@@ -126,7 +126,7 @@ import PromiseKit
 }
 
 @objc(OWSCallViewController)
-class CallViewController: UIViewController {
+class CallViewController: UIViewController, CallDelegate {
 
     enum CallDirection {
         case unspecified, outgoing, incoming
@@ -201,8 +201,8 @@ class CallViewController: UIViewController {
             // No-op, since call service is already set up at this point, the result of which was presenting this viewController.
         }
 
-        call.stateDidChange = callStateDidChange
-        callStateDidChange(call.state)
+        call.delegate = self
+        stateDidChange(call: call, state: call.state)
     }
 
     // objc accessible way to set our swift enum.
@@ -266,13 +266,6 @@ class CallViewController: UIViewController {
 
     // MARK: - Actions
 
-    func callStateDidChange(_ newState: CallState) {
-        DispatchQueue.main.async {
-            self.updateCallUI(callState: newState)
-        }
-        self.audioService.handleState(newState)
-    }
-
     /**
      * Ends a connected call. Do not confuse with `didPressDeclineCall`.
      */
@@ -290,8 +283,10 @@ class CallViewController: UIViewController {
     @IBAction func didPressMute(sender muteButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
-        CallService.signalingQueue.async {
-            self.callService.handleToggledMute(isMuted: muteButton.isSelected)
+        if let call = self.call {
+            callUIAdapter.toggleMute(call: call, isMuted: muteButton.isSelected)
+        } else {
+            Logger.warn("\(TAG) hung up, but call was unexpectedly nil")
         }
     }
 
@@ -331,5 +326,21 @@ class CallViewController: UIViewController {
         }
 
         self.dismiss(animated: true)
+    }
+
+    // MARK: - Call Delegate
+
+    internal func stateDidChange(call: SignalCall, state: CallState) {
+        DispatchQueue.main.async {
+            self.updateCallUI(callState: state)
+        }
+        self.audioService.handleState(state)
+    }
+
+    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        Logger.debug("\(TAG) in \(#function)")
+        DispatchQueue.main.async {
+            self.muteButton.isSelected = call.isMuted
+        }
     }
 }
