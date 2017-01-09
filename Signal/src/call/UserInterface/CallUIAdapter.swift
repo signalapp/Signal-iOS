@@ -44,7 +44,7 @@ class CallUIAdapter {
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
-            // So we use the non-call kit call UI.
+            // So we use the non-CallKit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 10.0, *) {

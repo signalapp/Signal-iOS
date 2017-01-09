@@ -5,6 +5,7 @@ import Foundation
 import WebRTC
 import PromiseKit
 
+// TODO move this somewhere else.
 @objc class CallAudioService: NSObject {
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?

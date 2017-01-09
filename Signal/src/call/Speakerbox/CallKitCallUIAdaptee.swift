@@ -55,14 +55,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    internal func startOutgoingCall(_ call: SignalCall) {
+    func startOutgoingCall(_ call: SignalCall) {
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
         callManager.addCall(call)
         callManager.startCall(call)
     }
 
-    internal func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: SignalCall, callerName: String) {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
@@ -83,19 +83,19 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
-    internal func answerCall(_ call: SignalCall) {
+    func answerCall(_ call: SignalCall) {
         callManager.answer(call: call)
     }
 
-    internal func declineCall(_ call: SignalCall) {
+    func declineCall(_ call: SignalCall) {
         callManager.end(call: call)
     }
 
-    internal func endCall(_ call: SignalCall) {
+    func endCall(_ call: SignalCall) {
         callManager.end(call: call)
     }
 
-    internal func toggleMute(call: SignalCall, isMuted: Bool) {
+    func toggleMute(call: SignalCall, isMuted: Bool) {
         callManager.toggleMute(call: call, isMuted: isMuted)
     }
 
