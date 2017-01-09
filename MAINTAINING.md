@@ -25,6 +25,23 @@ Once you have your build environment set up and the WebRTC source downloaded:
     # Put it in our frameworks search path
     mv src/webrtc/ios_libs_out/WebRTC.framework ../Signal-iOS/Carthage/Builds
 
+    # The specific set of commands that worked for me were somewhat different.
+	# 1. Install depot tools
+	cd <somewhere>
+	export PATH=<somewhere>/depot_tools:"$PATH"
+	# 2. Fetch webrtc source
+	cd <somewhere>
+	mkdir webrtc
+	cd webrtc
+	fetch --nohooks webrtc_ios
+	gclient sync
+	# 3. Build webrtc
+	# NOTE: build_ios_libs.sh only worked for me from inside "src"
+	cd src
+	webrtc/build/ios/build_ios_libs.sh
+	# NOTE: It's Carthage/Build/iOS, not Carthage/Builds
+	mv out_ios_libs/WebRTC.framework ../../Signal-iOS/Carthage/Build/iOS/
+
 ## Translations
 
 Read more about translations in [TRANSLATIONS.md](signal/translations/TRANSLATIONS.md)
