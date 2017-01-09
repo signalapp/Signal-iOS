@@ -16,7 +16,7 @@ enum CallState: String {
     case remoteBusy // terminal
 }
 
-protocol CallDelegate {
+protocol CallDelegate: class {
     func stateDidChange(call: SignalCall, state: CallState)
     func muteDidChange(call: SignalCall, isMuted: Bool)
 }
@@ -28,7 +28,7 @@ protocol CallDelegate {
 
     let TAG = "[SignalCall]"
 
-    var delegate: CallDelegate?
+    weak var delegate: CallDelegate?
     let remotePhoneNumber: String
 
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
