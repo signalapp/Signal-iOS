@@ -19,6 +19,7 @@ NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"Notification
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
+NSString *const PropertyListPreferencesKeyOpenLinksWith = @"OpenLinksWith";
 
 @implementation PropertyListPreferences
 
@@ -158,6 +159,22 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
                                             forKey:PropertyListPreferencesKeyLastRunSignalVersion];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+- (void)setOpenLinksWith:(NSNumber *)browser
+{
+    [self setValueForKey:PropertyListPreferencesKeyOpenLinksWith toValue:browser];
+}
+
+- (NSUInteger)getOpenLinksWith
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyOpenLinksWith];
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        [self setValueForKey:PropertyListPreferencesKeyOpenLinksWith toValue:[NSNumber numberWithInteger:0]];
+        return 0;
+    }
 }
 
 #pragma mark Notification Preferences

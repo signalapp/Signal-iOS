@@ -81,6 +81,12 @@
 		45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */; };
 		45F2B1981D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
+		6636D9001E2311FA00EF5F16 /* WebBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6636D8FF1E2311FA00EF5F16 /* WebBrowser.swift */; };
+		6636D9031E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 6636D9021E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.m */; };
+		6636D9051E234B0F00EF5F16 /* WebBrowsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6636D9041E234B0F00EF5F16 /* WebBrowsers.swift */; };
+		663A13511E0C8567006FFFF8 /* MessageTextViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 663A13501E0C8567006FFFF8 /* MessageTextViewDelegate.m */; };
+		663A135B1E0CEDB7006FFFF8 /* OpenInChromeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 663A135A1E0CEDB7006FFFF8 /* OpenInChromeController.m */; };
+		663A13631E0CFC72006FFFF8 /* OpenLinksWithTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A13621E0CFC72006FFFF8 /* OpenLinksWithTableViewController.swift */; };
 		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
@@ -644,6 +650,15 @@
 		45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSOutgoingMessageCollectionViewCell.xib; sourceTree = "<group>"; };
 		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
 		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
+		6636D8FF1E2311FA00EF5F16 /* WebBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebBrowser.swift; sourceTree = "<group>"; };
+		6636D9011E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenInThirdPartyBrowserControllerObjC.h; sourceTree = "<group>"; };
+		6636D9021E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenInThirdPartyBrowserControllerObjC.m; sourceTree = "<group>"; };
+		6636D9041E234B0F00EF5F16 /* WebBrowsers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebBrowsers.swift; sourceTree = "<group>"; };
+		663A134F1E0C8567006FFFF8 /* MessageTextViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageTextViewDelegate.h; sourceTree = "<group>"; };
+		663A13501E0C8567006FFFF8 /* MessageTextViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageTextViewDelegate.m; sourceTree = "<group>"; };
+		663A13591E0CEDB7006FFFF8 /* OpenInChromeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenInChromeController.h; sourceTree = "<group>"; };
+		663A135A1E0CEDB7006FFFF8 /* OpenInChromeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenInChromeController.m; sourceTree = "<group>"; };
+		663A13621E0CFC72006FFFF8 /* OpenLinksWithTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenLinksWithTableViewController.swift; sourceTree = "<group>"; };
 		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -1254,6 +1269,8 @@
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				45CD81EE1DC030E7004C9430 /* AccountManager.swift */,
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
+				6636D8FF1E2311FA00EF5F16 /* WebBrowser.swift */,
+				6636D9041E234B0F00EF5F16 /* WebBrowsers.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1885,6 +1902,8 @@
 				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
 				45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */,
 				45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */,
+				663A134F1E0C8567006FFFF8 /* MessageTextViewDelegate.h */,
+				663A13501E0C8567006FFFF8 /* MessageTextViewDelegate.m */,
 			);
 			name = Views;
 			path = views;
@@ -2417,6 +2436,7 @@
 				458E38331D66873D0094BD24 /* OWSLinkDeviceViewController.m */,
 				45EB32CD1D7465C900735B2E /* OWSLinkedDevicesTableViewController.h */,
 				45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */,
+				663A13621E0CFC72006FFFF8 /* OpenLinksWithTableViewController.swift */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -2424,6 +2444,10 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				6636D9011E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.h */,
+				6636D9021E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.m */,
+				663A13591E0CEDB7006FFFF8 /* OpenInChromeController.h */,
+				663A135A1E0CEDB7006FFFF8 /* OpenInChromeController.m */,
 				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
@@ -2729,7 +2753,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		3465F381B1856CC06933B3A8 /* [CP] Copy Pods Resources */ = {
@@ -2804,7 +2828,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
@@ -2904,6 +2928,7 @@
 				E197B61918BBEC1A00F073E5 /* RemoteIOBufferListWrapper.m in Sources */,
 				76EB05A618170B33006006FC /* RtpPacket.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
+				6636D9031E2318F900EF5F16 /* OpenInThirdPartyBrowserControllerObjC.m in Sources */,
 				45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */,
 				45C681B71D305A580050903A /* OWSCall.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
@@ -2988,6 +3013,7 @@
 				E16E5BF018AAC40200B7C403 /* EvpKeyAgreement.m in Sources */,
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				B65EDA1219E1BE6400AAA7CB /* RPAPICall.m in Sources */,
+				663A135B1E0CEDB7006FFFF8 /* OpenInChromeController.m in Sources */,
 				453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */,
 				76EB05DC18170B33006006FC /* StreamPair.m in Sources */,
 				76EB064618170B33006006FC /* TimeUtil.m in Sources */,
@@ -3031,11 +3057,14 @@
 				B63761E319E1F487005735D1 /* AFHTTPSessionManager+SignalMethods.m in Sources */,
 				76EB05CC18170B33006006FC /* ShortAuthenticationStringGenerator.m in Sources */,
 				E16E5BEF18AAC40200B7C403 /* EC25KeyAgreementProtocol.m in Sources */,
+				663A13511E0C8567006FFFF8 /* MessageTextViewDelegate.m in Sources */,
 				45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */,
+				663A13631E0CFC72006FFFF8 /* OpenLinksWithTableViewController.swift in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
+				6636D9001E2311FA00EF5F16 /* WebBrowser.swift in Sources */,
 				45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */,
 				76EB060818170B33006006FC /* ResponderSessionDescriptor.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
@@ -3048,6 +3077,7 @@
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
 				76EB05E218170B33006006FC /* SecureEndPoint.m in Sources */,
+				6636D9051E234B0F00EF5F16 /* WebBrowsers.swift in Sources */,
 				76EB05DE18170B33006006FC /* Certificate.m in Sources */,
 				76EB05B818170B33006006FC /* NegotiationFailed.m in Sources */,
 				76EB05D818170B33006006FC /* LowLatencyCandidate.m in Sources */,

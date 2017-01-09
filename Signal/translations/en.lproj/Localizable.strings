@@ -721,6 +721,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Advanced";
 
+/* Settings for selecting web browser to use for opening links */
+"SETTINGS_OPEN_LINKS_WITH" = "Open Links With";
+
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 

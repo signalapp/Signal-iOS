@@ -3,11 +3,14 @@
 
 #import "JSQMessagesCollectionViewCell+OWS.h"
 #import "OWSExpirableMessageView.h"
+#import "MessageTextViewDelegate.h"
 #import <JSQMessagesViewController/JSQMessagesCollectionViewCellOutgoing.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingMessageCollectionViewCell : JSQMessagesCollectionViewCellOutgoing <OWSExpirableMessageView>
+
+@property (nonatomic, strong) MessageTextViewDelegate *textViewDelegate;
 
 @end
 

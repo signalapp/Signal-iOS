@@ -53,6 +53,9 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
 
+- (NSUInteger)getOpenLinksWith;
+- (void)setOpenLinksWith:(NSNumber *)browser;
+
 #pragma mark - Block on Identity Change
 
 - (BOOL)shouldBlockOnIdentityChange;

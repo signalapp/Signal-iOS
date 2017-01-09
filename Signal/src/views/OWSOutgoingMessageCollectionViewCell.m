@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super awakeFromNib];
     self.expirationTimerViewWidthConstraint.constant = 0.0;
+    self.textViewDelegate = [[MessageTextViewDelegate alloc] init];
+    self.textView.delegate = self.textViewDelegate;
 }
 
 - (void)prepareForReuse

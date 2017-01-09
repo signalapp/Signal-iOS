@@ -18,6 +18,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *notificationsLabel;
 @property (strong, nonatomic) IBOutlet UILabel *linkedDevicesLabel;
 @property (strong, nonatomic) IBOutlet UILabel *advancedLabel;
+@property (strong, nonatomic) IBOutlet UILabel *openLinksWithLabel;
+@property (strong, nonatomic) IBOutlet UILabel *openLinksWithDetail;
 @property (strong, nonatomic) IBOutlet UILabel *aboutLabel;
 @property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
 @property (strong, nonatomic) IBOutlet UIButton *destroyAccountButton;

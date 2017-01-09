@@ -36,14 +36,15 @@
 #define kNotificationRow 2
 #define kLinkedDevices 3 // we don't actually use this, instead we segue via Interface Builder
 #define kAdvancedRow 4
-#define kAboutRow 5
+#define kOpenLinksWith 5 // we don't actually use this, instead we segue via Interface Builder
+#define kAboutRow 6
 
 #define kNetworkRow 0
 #define kUnregisterRow 0
 
 typedef enum {
     kRegisteredRows = 1,
-    kGeneralRows = 6,
+    kGeneralRows = 7,
     kNetworkStatusRows = 1,
     kUnregisterRows = 1,
 } kRowsForSection;
@@ -106,6 +107,12 @@ typedef enum {
     self.networkStatusHeader.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
     self.privacyLabel.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
     self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
+    self.openLinksWithLabel.text = NSLocalizedString(@"SETTINGS_OPEN_LINKS_WITH", @"");
+    
+    WebBrowser *selectedBrowser = [[WebBrowsers all] objectAtIndex:[Environment.preferences getOpenLinksWith]];
+    self.openLinksWithDetail.text = [selectedBrowser isInstalled] ? selectedBrowser.label :
+        [WebBrowsers safari].label;
+    
     self.aboutLabel.text = NSLocalizedString(@"SETTINGS_ABOUT", @"");
     self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
     self.linkedDevicesLabel.text
@@ -268,6 +275,15 @@ typedef enum {
                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
                                              otherButtonTitles:nil];
         [info show];
+    }
+}
+
+- (IBAction)unwindFromOpenLinksWith:(UIStoryboardSegue *)segue
+{
+    if ([segue.identifier isEqualToString:@"unwindFromOpenLinksWith"]) {
+        OpenLinksWithTableViewController *controller =
+            (OpenLinksWithTableViewController *) segue.sourceViewController;
+        self.openLinksWithDetail.text = [controller getSelectedBrowser].label;
     }
 }
 
