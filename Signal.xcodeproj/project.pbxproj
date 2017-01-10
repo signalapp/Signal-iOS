@@ -47,6 +47,12 @@
 		45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */; };
 		45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */; };
 		456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
+		456F6E201E2411A000FD2210 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4574A5D51DD6704700C6B692 /* CallService.swift */; };
+		456F6E211E2411B400FD2210 /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
+		456F6E221E24132D00FD2210 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
+		456F6E231E24133500FD2210 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
+		456F6E241E24133E00FD2210 /* CallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */; };
+		456F6E251E24216100FD2210 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
 		4574A5D61DD6704700C6B692 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4574A5D51DD6704700C6B692 /* CallService.swift */; };
 		45794E861E00620000066731 /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
@@ -3213,6 +3219,7 @@
 				B660F7021C29988E00687D6E /* AudioPacker.m in Sources */,
 				B660F7031C29988E00687D6E /* AudioSocket.m in Sources */,
 				B660F7041C29988E00687D6E /* CallAudioManager.m in Sources */,
+				456F6E241E24133E00FD2210 /* CallKitCallUIAdaptee.swift in Sources */,
 				B660F7051C29988E00687D6E /* EncodedAudioFrame.m in Sources */,
 				B660F7061C29988E00687D6E /* EncodedAudioPacket.m in Sources */,
 				B660F7071C29988E00687D6E /* AudioProcessor.m in Sources */,
@@ -3221,6 +3228,7 @@
 				B660F7091C29988E00687D6E /* DesiredBufferDepthController.m in Sources */,
 				B660F70A1C29988E00687D6E /* DropoutTracker.m in Sources */,
 				B660F70B1C29988E00687D6E /* JitterQueue.m in Sources */,
+				456F6E251E24216100FD2210 /* DataChannelMessage.swift in Sources */,
 				452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				B660F70C1C29988E00687D6E /* StretchFactorController.m in Sources */,
 				B660F70D1C29988E00687D6E /* AnonymousAudioCallbackHandler.m in Sources */,
@@ -3289,6 +3297,7 @@
 				B660F7441C29988E00687D6E /* DhPacketSharedSecretHashes.m in Sources */,
 				B660F7451C29988E00687D6E /* HandshakePacket.m in Sources */,
 				B660F7461C29988E00687D6E /* HelloAckPacket.m in Sources */,
+				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
 				B660F7471C29988E00687D6E /* HelloPacket.m in Sources */,
 				B660F7481C29988E00687D6E /* RecipientUnavailable.m in Sources */,
 				45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
@@ -3372,9 +3381,11 @@
 				B660F78B1C29988E00687D6E /* Zid.m in Sources */,
 				B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */,
 				B660F6C31C29868000687D6E /* EC25AgreerTest.m in Sources */,
+				456F6E211E2411B400FD2210 /* CallUIAdapter.swift in Sources */,
 				B660F6B91C29868000687D6E /* SpeexCodecTest.m in Sources */,
 				B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */,
 				B660F6BD1C29868000687D6E /* HttpRequestResponseTest.m in Sources */,
+				456F6E221E24132D00FD2210 /* PeerConnectionClient.swift in Sources */,
 				B660F6B71C29868000687D6E /* AudioStretcherTest.m in Sources */,
 				B660F6DE1C29868000687D6E /* PriorityQueueTest.m in Sources */,
 				B660F6BE1C29868000687D6E /* IpAddressTest.m in Sources */,
@@ -3405,6 +3416,7 @@
 				B660F6C21C29868000687D6E /* SequenceCounterTest.m in Sources */,
 				B660F6D51C29868000687D6E /* TestUtil.m in Sources */,
 				B660F6B81C29868000687D6E /* JitterQueueTest.m in Sources */,
+				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				B660F6CE1C29868000687D6E /* PhoneNumberTest.m in Sources */,

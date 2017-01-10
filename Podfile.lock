@@ -121,7 +121,7 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `../SignalServiceKit`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `feature/webrtc`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -129,7 +129,8 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :path: "../SignalServiceKit"
+    :branch: feature/webrtc
+    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -137,6 +138,9 @@ CHECKOUT OPTIONS:
   AxolotlKit:
     :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
+  SignalServiceKit:
+    :commit: 5f3e576a134d32a2a935d75a7bf16482fdf64605
+    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
     :git: https://github.com/facebook/SocketRocket.git
@@ -166,6 +170,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 05b247199157a4742765e0ea45fe671dbf48b58e
+PODFILE CHECKSUM: 3d71d56082e8894734e786f5c6a2e86316914e21
 
 COCOAPODS: 1.0.1
