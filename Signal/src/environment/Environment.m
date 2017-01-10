@@ -215,7 +215,7 @@ static Environment *environment = nil;
 }
 
 + (void)resetAppData {
-    [[TSStorageManager sharedManager] wipeSignalStorage];
+    [[TSStorageManager sharedManager] resetSignalStorage];
     [Environment.preferences clear];
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
