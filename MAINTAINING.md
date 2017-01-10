@@ -19,18 +19,14 @@ https://webrtc.org/native-code/ios/
 
 Once you have your build environment set up and the WebRTC source downloaded:
 
-    cd webrtc
-    # build a fat framework
-    src/webrtc/build/ios/build_ios_libs.sh
-    # Put it in our frameworks search path
-    mv src/webrtc/ios_libs_out/WebRTC.framework ../Signal-iOS/Carthage/Builds
-
     # The specific set of commands that worked for me were somewhat different.
 	# 1. Install depot tools
 	cd <somewhere>
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	cd depot_tools
 	export PATH=<somewhere>/depot_tools:"$PATH"
 	# 2. Fetch webrtc source
-	cd <somewhere>
+	cd <somewhere else>
 	mkdir webrtc
 	cd webrtc
 	fetch --nohooks webrtc_ios
