@@ -13,6 +13,7 @@ protocol CallUIAdaptee {
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(_ call: SignalCall)
     func declineCall(_ call: SignalCall)
+    func recipientAcceptedCall(_ call: SignalCall)
     func endCall(_ call: SignalCall)
     func toggleMute(call: SignalCall, isMuted: Bool)
 }
@@ -78,6 +79,10 @@ class CallUIAdapter {
 
     internal func declineCall(_ call: SignalCall) {
         adaptee.declineCall(call)
+    }
+
+    internal func recipientAcceptedCall(_ call: SignalCall) {
+        adaptee.recipientAcceptedCall(call)
     }
 
     internal func endCall(_ call: SignalCall) {

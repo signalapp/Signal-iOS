@@ -99,6 +99,9 @@
 		45E1F3A51DEF20A100852CF1 /* NoSignalContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */; };
 		45E2E9201E153B3D00457AA0 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
 		45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */; };
+		45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
+		45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
+		45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */; };
 		45F2B1941D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45F2B1931D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m */; };
 		45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */; };
 		45F2B1981D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */; };
@@ -690,6 +693,9 @@
 		45E2E91F1E153B3D00457AA0 /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = UserInterface/Strings.swift; sourceTree = "<group>"; };
 		45EB32CD1D7465C900735B2E /* OWSLinkedDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkedDevicesTableViewController.h; sourceTree = "<group>"; };
 		45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkedDevicesTableViewController.m; sourceTree = "<group>"; };
+		45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioSession.swift; sourceTree = "<group>"; };
+		45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallAudioSessionTest.swift; path = test/call/CallAudioSessionTest.swift; sourceTree = "<group>"; };
+		45F170B31E2F0A6A003FC1F2 /* RTCAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCAudioSession.h; sourceTree = "<group>"; };
 		45F2B1921D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingMessageCollectionViewCell.h; sourceTree = "<group>"; };
 		45F2B1931D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingMessageCollectionViewCell.m; sourceTree = "<group>"; };
 		45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSIncomingMessageCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -1405,6 +1411,24 @@
 			name = Jobs;
 			sourceTree = "<group>";
 		};
+		45F170B01E2F0A35003FC1F2 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				45F170B11E2F0A6A003FC1F2 /* WebRTC */,
+			);
+			name = Libraries;
+			path = Signal;
+			sourceTree = "<group>";
+		};
+		45F170B11E2F0A6A003FC1F2 /* WebRTC */ = {
+			isa = PBXGroup;
+			children = (
+				45F170B31E2F0A6A003FC1F2 /* RTCAudioSession.h */,
+			);
+			name = WebRTC;
+			path = Libraries/WebRTC;
+			sourceTree = SOURCE_ROOT;
+		};
 		45F659741E1BDA4300444429 /* Redphone */ = {
 			isa = PBXGroup;
 			children = (
@@ -1510,6 +1534,7 @@
 				45FBC5D01DF8592E00E9B410 /* SignalCall.swift */,
 				458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */,
 				4574A5D51DD6704700C6B692 /* CallService.swift */,
+				45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */,
 			);
 			path = call;
 			sourceTree = "<group>";
@@ -2362,6 +2387,7 @@
 			isa = PBXGroup;
 			children = (
 				D221A093169C9E5E00537ABF /* Signal */,
+				45F170B01E2F0A35003FC1F2 /* Libraries */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
 				70B8009E190C529C0042E3F0 /* spandsp.xcodeproj */,
@@ -2426,6 +2452,7 @@
 				B660F66C1C29867F00687D6E /* test */,
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
+				45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -2689,6 +2716,7 @@
 					D221A0A9169C9E5F00537ABF = {
 						DevelopmentTeam = U68MSDN6DR;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 						TestTargetID = D221A088169C9E5E00537ABF;
 					};
 				};
@@ -2902,6 +2930,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -3100,6 +3129,7 @@
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
 				453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */,
+				45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,
 				B68EF9BB1C0B1EBD009C3DCD /* FLAnimatedImageView.m in Sources */,
 				A5E9D4BB1A65FAD800E4481C /* TSVideoAttachmentAdapter.m in Sources */,
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
@@ -3241,6 +3271,7 @@
 				452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				B660F70C1C29988E00687D6E /* StretchFactorController.m in Sources */,
 				B660F70D1C29988E00687D6E /* AnonymousAudioCallbackHandler.m in Sources */,
+				45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,
 				B660F70E1C29988E00687D6E /* RemoteIOAudio.m in Sources */,
 				B660F70F1C29988E00687D6E /* RemoteIOBufferListWrapper.m in Sources */,
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
@@ -3307,6 +3338,7 @@
 				B660F7441C29988E00687D6E /* DhPacketSharedSecretHashes.m in Sources */,
 				B660F7451C29988E00687D6E /* HandshakePacket.m in Sources */,
 				B660F7461C29988E00687D6E /* HelloAckPacket.m in Sources */,
+				45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */,
 				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
 				B660F7471C29988E00687D6E /* HelloPacket.m in Sources */,
 				B660F7481C29988E00687D6E /* RecipientUnavailable.m in Sources */,
@@ -3756,6 +3788,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3814,6 +3847,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3854,7 +3888,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.whispersystems.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "c15eac58-5aa7-4660-b874-b9f7ed3dab70";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;

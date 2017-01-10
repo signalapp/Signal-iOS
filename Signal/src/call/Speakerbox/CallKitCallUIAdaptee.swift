@@ -91,6 +91,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.end(call: call)
     }
 
+    func recipientAcceptedCall(_ call: SignalCall) {
+        // no - op
+    }
+
     func endCall(_ call: SignalCall) {
         callManager.end(call: call)
     }
@@ -125,15 +129,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
         Logger.debug("\(TAG) in \(#function) CXStartCallAction")
-
-        /*
-         Configure the audio session, but do not start call audio here, since it must be done once
-         the audio session has been activated by the system after having its priority elevated.
-         */
-        // TODO
-        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
-        // session when adding an audiotrack
-        //configureAudioSession()
 
         // TODO does this work when `action.handle.value` is not in e164 format, e.g. if called via intent?
         guard let call = callManager.callWithLocalId(action.callUUID) else {
@@ -228,9 +223,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //
         //        // Stop or start audio in response to holding or unholding the call.
         //        if call.isOnHold {
-        //            stopAudio()
+        //            // stopAudio() <-- SpeakerBox
+        //            PeerConnectionClient.stopAudioSession()
         //        } else {
-        //            startAudio()
+        //            // startAudio() <-- SpeakerBox
+        //            PeerConnectionClient.startAudioSession()
         //        }
 
         // Signal to the system that the action has been successfully performed.
@@ -268,10 +265,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         Logger.debug("\(TAG) Received \(#function)")
 
-        // TODO 
-        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
-        // session when adding an audiotrack
-        // startAudio()
+        // Start recording
+        PeerConnectionClient.startAudioSession()
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {

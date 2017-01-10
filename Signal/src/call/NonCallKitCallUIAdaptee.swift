@@ -49,6 +49,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
     func answerCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
+            PeerConnectionClient.startAudioSession()
             self.callService.handleAnswerCall(call)
         }
     }
@@ -57,6 +58,10 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         CallService.signalingQueue.async {
             self.callService.handleDeclineCall(call)
         }
+    }
+
+    func recipientAcceptedCall(_ call: SignalCall) {
+        PeerConnectionClient.startAudioSession()
     }
 
     func endCall(_ call: SignalCall) {

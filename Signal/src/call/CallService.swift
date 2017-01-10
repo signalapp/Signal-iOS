@@ -10,14 +10,15 @@ import WebRTC
  *
  * It serves as connection from the `CallUIAdapater` to the `PeerConnectionClient`.
  *
- *
  * ## Signaling
  *
  * Signaling refers to the setup and tear down of the connection. Before the connection is established, this must happen
  * out of band (using Signal Service), but once the connection is established it's possible to publish updates 
  * (like hangup) via the established channel.
  *
- * Following is a high level process of the exchange of messages that must take place for this to happen.
+ * Signaling state is synchronized on the `signalingQueue` and only mutated in the handleXXX family of methods.
+ *
+ * Following is a high level process of the exchange of messages that takes place during call signaling.
  *
  * ### Key
  *
@@ -30,20 +31,22 @@ import WebRTC
  *
  * |          Caller            |          Callee         |
  * +----------------------------+-------------------------+
- * Start outgoing call: `handleOutgoingCall`
+ * Start outgoing call: `handleOutgoingCall`...
                         --[SS.CallOffer]-->
- * and start generating and storing ICE updates.
- * (As ICE candites are generated: `handleLocalAddedIceCandidate`)
+ * ...and start generating ICE updates.
+ * As ICE candidates are generated, `handleLocalAddedIceCandidate` is called.
+ * and we *store* the ICE updates for later.
  *
  *                                      Received call offer: `handleReceivedOffer`
  *                                         Send call answer
  *                     <--[SS.CallAnswer]--
- *                          Start generating ICE updates and send them as
- *                          they are generated: `handleLocalAddedIceCandidate`
+ *                          Start generating ICE updates.
+ *                          As they are generated `handleLocalAddedIceCandidate` is called
+                            which immediately sends the ICE updates to the Caller.
  *                     <--[SS.ICEUpdate]-- (sent multiple times)
  *
  * Received CallAnswer: `handleReceivedAnswer`
- * so send any stored ice updates
+ * So send any stored ice updates (and send future ones immediately)
  *                     --[SS.ICEUpdates]-->
  *
  *     Once compatible ICE updates have been exchanged...
@@ -755,6 +758,7 @@ fileprivate let timeoutSeconds = 60
                 return
             }
 
+            callUIAdapter.recipientAcceptedCall(call)
             handleConnectedCall(call)
 
         } else if message.hasHangup() {
@@ -885,6 +889,7 @@ fileprivate let timeoutSeconds = 60
         assertOnSignalingQueue()
         Logger.debug("\(TAG) in \(#function)")
 
+        PeerConnectionClient.stopAudioSession()
         peerConnectionClient?.delegate = nil
         peerConnectionClient?.terminate()
 

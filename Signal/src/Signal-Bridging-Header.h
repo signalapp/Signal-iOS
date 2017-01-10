@@ -52,3 +52,4 @@
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <SignalServiceKit/TSThread.h>
+#import <WebRTC/RTCAudioSession.h>

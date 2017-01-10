@@ -61,27 +61,12 @@ import PromiseKit
         Logger.debug("\(TAG) \(#function)")
         audioManager.setAudioEnabled(true)
         audioManager.handleInboundRing()
-        do {
-            // Respect silent switch.
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategorySoloAmbient)
-            Logger.debug("\(TAG) set audio category to SoloAmbient")
-        } catch {
-            Logger.error("\(TAG) failed to change audio category to soloAmbient in \(#function)")
-        }
-
         vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(vibrate), userInfo: nil, repeats: true)
     }
 
     private func handleConnected() {
         Logger.debug("\(TAG) \(#function)")
         stopRinging()
-        do {
-            // Start recording
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord)
-            Logger.debug("\(TAG) set audio category to PlayAndRecord")
-        } catch {
-            Logger.error("\(TAG) failed to change audio category to soloAmbient in \(#function)")
-        }
     }
 
     private func handleLocalFailure() {
