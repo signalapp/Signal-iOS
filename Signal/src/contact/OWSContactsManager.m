@@ -38,7 +38,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 }
 
 - (void)doAfterEnvironmentInitSetup {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         self.contactStore = [[CNContactStore alloc] init];
         [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
                                     completionHandler:^(BOOL granted, NSError *_Nullable error) {

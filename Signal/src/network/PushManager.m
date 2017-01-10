@@ -394,7 +394,7 @@
 }
 
 - (BOOL)supportsVOIPPush {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_8_2_0)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
         return YES;
     } else {
         return NO;
@@ -449,7 +449,7 @@
     action_reply.title                            = NSLocalizedString(@"PUSH_MANAGER_REPLY", @"");
     action_reply.destructive                      = NO;
     action_reply.authenticationRequired           = NO; // Since YES is broken in iOS 9 GM
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         action_reply.behavior       = UIUserNotificationActionBehaviorTextInput;
         action_reply.activationMode = UIUserNotificationActivationModeBackground;
     } else {
