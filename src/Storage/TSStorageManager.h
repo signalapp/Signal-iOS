@@ -24,7 +24,7 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (void)setupDatabase;
 - (void)deleteThreadsAndMessages;
 - (BOOL)databasePasswordAccessible;
-- (void)wipeSignalStorage;
+- (void)resetSignalStorage;
 
 - (YapDatabase *)database;
 - (YapDatabaseConnection *)newDatabaseConnection;
