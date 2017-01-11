@@ -10,6 +10,6 @@
 
 @interface TSUpdateAttributesRequest : TSRequest
 
-- (instancetype)initWithUpdatedAttributesWithVoice;
+- (instancetype)initWithUpdatedAttributes:(BOOL)isWebRTCEnabled;
 
 @end

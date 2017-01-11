@@ -13,7 +13,8 @@
 - (TSRequest *)initWithVerificationCode:(NSString *)verificationCode
                               forNumber:(NSString *)phoneNumber
                            signalingKey:(NSString *)signalingKey
-                                authKey:(NSString *)authKey;
+                                authKey:(NSString *)authKey
+                        isWebRTCEnabled:(BOOL)isWebRTCEnabled;
 
 @property (nonatomic, readonly) NSString *numberToValidate;
 
