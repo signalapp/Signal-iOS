@@ -817,6 +817,11 @@ fileprivate let timeoutSeconds = 60
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [CallService.fallbackIceServer]
+        }.recover { error -> [RTCIceServer] in
+            Logger.error("\(self.TAG) fetching ICE servers failed with error: \(error)")
+            Logger.warn("\(self.TAG) using fallback ICE Servers")
+
+            return [CallService.fallbackIceServer]
         }
     }
 
