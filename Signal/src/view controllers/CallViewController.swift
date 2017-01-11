@@ -169,7 +169,7 @@ class CallViewController: UIViewController {
     var hangUpButton: UIButton!
     var muteButton: UIButton!
     var speakerPhoneButton: UIButton!
-    // Which call states does this apply to?
+    // TODO: Which call states does this apply to?
     var textMessageButton: UIButton!
     var videoButton: UIButton!
 
@@ -247,56 +247,59 @@ class CallViewController: UIViewController {
         self.view.addSubview(contactAvatarView)
 
         // Ongoing call controls
+        let buttonSize = ScaleFromIPhone5To7Plus(70, 90)
         textMessageButton = createButton(imageName:"logoSignal",
                                          action:#selector(didPressTextMessage),
-                                         buttonSize:smallButtonSize())
+                                         buttonSize:buttonSize)
         muteButton = createButton(imageName:"mute-inactive",
                                   action:#selector(didPressMute),
-                                  buttonSize:smallButtonSize())
+                                  buttonSize:buttonSize)
         speakerPhoneButton = createButton(imageName:"speaker-inactive",
                                           action:#selector(didPressSpeakerphone),
-                                          buttonSize:smallButtonSize())
+                                          buttonSize:buttonSize)
         videoButton = createButton(imageName:"video-active",
                                    action:#selector(didPressVideo),
-                                   buttonSize:smallButtonSize())
+                                   buttonSize:buttonSize)
         hangUpButton = createButton(imageName:"endcall",
                                     action:#selector(didPressHangup),
-                                    buttonSize:largeButtonSize())
+                                    buttonSize:buttonSize)
 
+        // A container for 3 rows of ongoing call controls.
         ongoingCallView = UIView()
         self.view.addSubview(ongoingCallView)
-
-        let ongoingCallRow1 = rowWithSubviews(subviews:[textMessageButton, videoButton])
-        let ongoingCallRow2 = rowWithSubviews(subviews:[muteButton, speakerPhoneButton,])
-        let ongoingCallRow3 = rowWithSubviews(subviews:[hangUpButton])
-        ongoingCallRow1.autoSetDimension(.height, toSize:smallButtonSize())
-        ongoingCallRow2.autoSetDimension(.height, toSize:smallButtonSize())
-        ongoingCallRow3.autoSetDimension(.height, toSize:largeButtonSize())
-        ongoingCallView.addSubview(ongoingCallRow1)
-        ongoingCallView.addSubview(ongoingCallRow2)
-        ongoingCallView.addSubview(ongoingCallRow3)
-
+        let ongoingCallRows = [
+            rowWithSubviews(subviews:[textMessageButton, videoButton],
+                            fixedHeight:buttonSize),
+            rowWithSubviews(subviews:[muteButton, speakerPhoneButton,],
+                            fixedHeight:buttonSize),
+            rowWithSubviews(subviews:[hangUpButton],
+                            fixedHeight:buttonSize),
+            ]
         let ongoingCallRowSpacing = ScaleFromIPhone5To7Plus(20, 25)
-        ongoingCallRow2.autoPinEdge(.top, to:.bottom, of:ongoingCallRow1, withOffset:ongoingCallRowSpacing)
-        ongoingCallRow3.autoPinEdge(.top, to:.bottom, of:ongoingCallRow2, withOffset:ongoingCallRowSpacing)
-        ongoingCallRow1.autoPinWidthToSuperview()
-        ongoingCallRow2.autoPinWidthToSuperview()
-        ongoingCallRow3.autoPinWidthToSuperview()
+        var lastRow : UIView?
+        for row in ongoingCallRows {
+            ongoingCallView.addSubview(row)
+            row.autoPinWidthToSuperview()
+            if lastRow != nil {
+                row.autoPinEdge(.top, to:.bottom, of:lastRow!, withOffset:ongoingCallRowSpacing)
+            }
+            lastRow = row
+        }
 
         ongoingCallView.setContentHuggingVerticalHigh()
-        ongoingCallView.subviews.first!.autoPinEdge(toSuperviewEdge:.top)
-        ongoingCallView.subviews.last!.autoPinEdge(toSuperviewEdge:.bottom)
+        ongoingCallRows.first!.autoPinEdge(toSuperviewEdge:.top)
+        ongoingCallRows.last!.autoPinEdge(toSuperviewEdge:.bottom)
 
         // Incoming call controls
         acceptIncomingButton = createButton(imageName:"call",
                                             action:#selector(didPressAnswerCall),
-                                            buttonSize:largeButtonSize())
+                                            buttonSize:buttonSize)
         declineIncomingButton = createButton(imageName:"endcall",
                                              action:#selector(didPressDeclineCall),
-                                             buttonSize:largeButtonSize())
+                                             buttonSize:buttonSize)
 
-        incomingCallControlsRow = rowWithSubviews(subviews:[acceptIncomingButton, declineIncomingButton])
-        incomingCallControlsRow.autoSetDimension(.height, toSize:largeButtonSize())
+        incomingCallControlsRow = rowWithSubviews(subviews:[acceptIncomingButton, declineIncomingButton],
+                                                  fixedHeight:buttonSize)
         self.view.addSubview(incomingCallControlsRow)
     }
 
@@ -312,20 +315,13 @@ class CallViewController: UIViewController {
         return button
     }
 
-    func smallButtonSize() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(70, 90)
-    }
-
-    func largeButtonSize() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(70, 90)
-    }
-
     // Creates a row view that evenly spaces its subviews horizontally.
     // If there is only a single subview, it is centered.
-    func rowWithSubviews(subviews : Array<UIButton>) -> UIView {
+    func rowWithSubviews(subviews : Array<UIButton>, fixedHeight : CGFloat) -> UIView {
         let row = UIView()
         row.setContentHuggingVerticalHigh()
-
+        row.autoSetDimension(.height, toSize:fixedHeight)
+        
         if subviews.count > 1 {
             var lastSubview : UIView?
             var lastSpacer : UIView?
@@ -489,6 +485,7 @@ class CallViewController: UIViewController {
     }
 
     func incomingCallControls() -> [UIView] {
+        // TODO: Should this include textMessageButton?
         return [ acceptIncomingButton, declineIncomingButton, ]
     }
 
