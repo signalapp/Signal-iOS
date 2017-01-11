@@ -56,6 +56,9 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
 
+- (BOOL)isWebRTCEnabled;
+- (void)setIsWebRTCEnabled:(BOOL)flag;
+
 #pragma mark - Block on Identity Change
 
 - (BOOL)shouldBlockOnIdentityChange;

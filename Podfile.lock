@@ -32,7 +32,7 @@ PODS:
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.9.1)
+  - libPhoneNumber-iOS (0.9.2)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -123,7 +123,7 @@ DEPENDENCIES:
   - PastelogKit (~> 1.3)
   - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `feature/webrtc`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `feature/webrtcSetting`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :branch: feature/webrtc
+    :branch: feature/webrtcSetting
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -141,7 +141,7 @@ CHECKOUT OPTIONS:
     :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 5f3e576a134d32a2a935d75a7bf16482fdf64605
+    :commit: d548d045e3888f532037c7fec7627b44c0ffd938
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -156,7 +156,7 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: 81ad1e6bfcf46e668636333269afbfe60399a55b
+  libPhoneNumber-iOS: a8bffdec18c37728360f6771fe021302f1e0b497
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
@@ -173,6 +173,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 6e9ae23065923999ef15e564be4cfef4b12b54e4
+PODFILE CHECKSUM: 4ef7cc1ace5580c5888c0fe5f05e39b6c98ee4b6
 
 COCOAPODS: 1.0.1

@@ -23,11 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSArray *sectionsArray;
 
-@property (strong, nonatomic) UITableViewCell *enableLogCell;
-@property (strong, nonatomic) UITableViewCell *submitLogCell;
-@property (strong, nonatomic) UITableViewCell *registerPushCell;
+@property (nonatomic) UITableViewCell *enableWebRTCCell;
+@property (nonatomic) UITableViewCell *enableLogCell;
+@property (nonatomic) UITableViewCell *submitLogCell;
+@property (nonatomic) UITableViewCell *registerPushCell;
 
-@property (strong, nonatomic) UISwitch *enableLogSwitch;
+@property (nonatomic) UISwitch *enableWebRTCSwitch;
+@property (nonatomic) UISwitch *enableLogSwitch;
 
 @end
 
@@ -52,18 +54,27 @@ NS_ASSUME_NONNULL_BEGIN
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-
+    
+    // WebRTC
+    self.enableWebRTCCell                        = [[UITableViewCell alloc] init];
+    self.enableWebRTCCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC", @"");
+    self.enableWebRTCCell.userInteractionEnabled = YES;
+    self.enableWebRTCSwitch = [UISwitch new];
+    [self.enableWebRTCSwitch setOn:[Environment.preferences isWebRTCEnabled]];
+    [self.enableWebRTCSwitch addTarget:self
+                                action:@selector(didToggleEnableWebRTCSwitch:)
+                      forControlEvents:UIControlEventTouchUpInside];
+    self.enableWebRTCCell.accessoryView = self.enableWebRTCSwitch;
+    
     // Enable Log
     self.enableLogCell                        = [[UITableViewCell alloc] init];
     self.enableLogCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
     self.enableLogCell.userInteractionEnabled = YES;
-
     self.enableLogSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
     [self.enableLogSwitch setOn:[Environment.preferences loggingIsEnabled]];
     [self.enableLogSwitch addTarget:self
-                             action:@selector(didToggleSwitch:)
+                             action:@selector(didToggleEnableLogSwitch:)
                    forControlEvents:UIControlEventTouchUpInside];
-
     self.enableLogCell.accessoryView = self.enableLogSwitch;
 
     // Send Log
@@ -83,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return self.enableLogSwitch.isOn ? 2 : 1;
+            return 1 + (self.enableLogSwitch.isOn ? 2 : 1);
         case 1:
             return 1;
         default:
@@ -100,8 +111,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (indexPath.section == 0) {
         switch (indexPath.row) {
             case 0:
-                return self.enableLogCell;
+                return self.enableWebRTCCell;
             case 1:
+                return self.enableLogCell;
+            case 2:
                 return self.enableLogSwitch.isOn ? self.submitLogCell : self.registerPushCell;
         }
     } else {
@@ -139,14 +152,57 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Actions
 
-- (void)didToggleSwitch:(UISwitch *)sender {
+- (void)didToggleEnableWebRTCSwitch:(UISwitch *)sender {
+    static long long enableWebRTCRequestCounter = 0;
+    long long enableWebRTCRequestId = ++enableWebRTCRequestCounter;
+
+    __weak AdvancedSettingsTableViewController *weakSelf = self;
+    BOOL isWebRTCEnabled = sender.isOn;
+    TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributes:isWebRTCEnabled];
+    [[TSNetworkManager sharedManager] makeRequest:request
+                                          success:^(NSURLSessionDataTask *task, id responseObject) {
+                                              
+                                              // Use the request id to ignore obsolete requests, e.g. if the
+                                              // user repeatedly changes the setting faster than the requests
+                                              // can complete.
+                                              if (enableWebRTCRequestCounter != enableWebRTCRequestId) {
+                                                  return;
+                                              }
+                                              
+                                              // Only update the local setting if the request succeeds;
+                                              // otherwise local and service state will fall out of sync
+                                              // with every network failure.
+                                              [Environment.preferences setIsWebRTCEnabled:isWebRTCEnabled];
+                                          }
+                                          failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                              DDLogError(@"Updating attributes failed with error: %@", error.description);
+                                              
+                                              AdvancedSettingsTableViewController *strongSelf = weakSelf;
+                                              // Use the request id to ignore obsolete requests, e.g. if the
+                                              // user repeatedly changes the setting faster than the requests
+                                              // can complete.
+                                              if (!strongSelf ||
+                                                  enableWebRTCRequestCounter != enableWebRTCRequestId) {
+                                                  return;
+                                              }
+                                              
+                                              // Restore switch to previous state.
+                                              [strongSelf.enableLogSwitch setOn:!isWebRTCEnabled];
+                                              
+                                              // Alert.
+                                              SignalAlertView(NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE", nil),
+                                                              NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE", nil));
+                                          }];
+}
+
+- (void)didToggleEnableLogSwitch:(UISwitch *)sender {
     if (!sender.isOn) {
         [[DebugLogger sharedLogger] wipeLogs];
         [[DebugLogger sharedLogger] disableFileLogging];
     } else {
         [[DebugLogger sharedLogger] enableFileLogging];
     }
-
+    
     [Environment.preferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
 }

@@ -43,8 +43,8 @@
 
 typedef enum {
     kRegisteredRows = 1,
-    kGeneralRows = 6,
     kNetworkStatusRows = 1,
+    kGeneralRows = 6,
     kUnregisterRows = 1,
 } kRowsForSection;
 

@@ -718,6 +718,13 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "About";
 
+/* This setting is used to switch between new-style WebRTC calling and old-style "RedPhone" calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable WebRTC Calling";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style "RedPhone" calling. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Enable Debug Log";
 

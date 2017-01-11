@@ -53,7 +53,9 @@ class AccountManager : NSObject {
 
     private func registerForTextSecure(verificationCode: String) -> Promise<Void> {
         return Promise { fulfill, reject in
+            let isWebRTCEnabled = Environment.preferences().isWebRTCEnabled();
             self.textSecureAccountManager.verifyAccount(withCode:verificationCode,
+                                                        isWebRTCEnabled:isWebRTCEnabled,
                                                         success:fulfill,
                                                         failure:reject)
         }

@@ -19,6 +19,7 @@ NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"Notification
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
+NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
 
 @implementation PropertyListPreferences
 
@@ -84,6 +85,13 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     return preference ? [preference boolValue] : YES;
 }
 
+- (BOOL)isWebRTCEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyWebRTCEnabled];
+    // Currently default to NO.
+    return preference ? [preference boolValue] : NO;
+}
+
 - (BOOL)getHasSentAMessage
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasSentAMessage];
@@ -123,6 +131,11 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 - (void)setScreenSecurity:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];
+}
+
+- (void)setIsWebRTCEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyWebRTCEnabled toValue:@(flag)];
 }
 
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled
