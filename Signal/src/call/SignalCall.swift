@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
@@ -46,7 +47,7 @@ enum CallState: String {
     }
 
     class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> SignalCall {
-        return SignalCall(localId: localId, signalingId: UInt64.ows_random(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
+        return SignalCall(localId: localId, signalingId: newCallSignalingId(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
     }
 
     class func incomingCall(localId: UUID, remotePhoneNumber: String, signalingId: UInt64) -> SignalCall {
@@ -58,6 +59,9 @@ enum CallState: String {
         return lhs.localId == rhs.localId
     }
 
+    static func newCallSignalingId() -> UInt64 {
+        return UInt64.ows_random();
+    }
 }
 
 fileprivate extension UInt64 {

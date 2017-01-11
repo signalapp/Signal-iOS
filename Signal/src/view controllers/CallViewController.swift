@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 11/10/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import WebRTC
@@ -147,19 +148,36 @@ class CallViewController: UIViewController {
     var thread: TSContactThread!
     var call: SignalCall!
 
-    @IBOutlet weak var contactNameLabel: UILabel!
-    @IBOutlet weak var contactAvatarView: AvatarImageView!
-    @IBOutlet weak var callStatusLabel: UILabel!
+    // MARK: Layout
 
-    // MARK: Outgoing or Accepted Call Controls
+    var hasConstraints = false
 
-    @IBOutlet weak var callControls: UIView!
-    @IBOutlet weak var muteButton: UIButton!
-    @IBOutlet weak var speakerPhoneButton: UIButton!
+    // MARK: Background
+
+    var blurView: UIVisualEffectView!
+
+    // MARK: Contact Views
+
+    var contactNameLabel: UILabel!
+    var contactAvatarView: AvatarImageView!
+    var callStatusLabel: UILabel!
+
+    // MARK: Ongoing Call Controls
+
+    var ongoingCallView: UIView!
+
+    var hangUpButton: UIButton!
+    var muteButton: UIButton!
+    var speakerPhoneButton: UIButton!
+    // Which call states does this apply to?
+    var textMessageButton: UIButton!
+    var videoButton: UIButton!
 
     // MARK: Incoming Call Controls
 
-    @IBOutlet weak var incomingCallControls: UIView!
+    var incomingCallControlsRow: UIView!
+    var acceptIncomingButton: UIButton!
+    var declineIncomingButton: UIButton!
 
     // MARK: Initializers
 
@@ -180,12 +198,15 @@ class CallViewController: UIViewController {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
 
         guard let thread = self.thread else {
             Logger.error("\(TAG) tried to show call call without specifying thread.")
             showCallFailed(error: OWSErrorMakeAssertionError())
             return
         }
+
+        createViews()
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
         contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager)
@@ -203,6 +224,195 @@ class CallViewController: UIViewController {
 
         call.stateDidChange = callStateDidChange
         callStateDidChange(call.state)
+    }
+
+    func createViews() {
+        // Dark blurred background.
+        let blurEffect = UIBlurEffect(style: .dark)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        self.view.addSubview(blurView)
+
+        // Contact views
+        contactNameLabel = UILabel()
+        contactNameLabel.font = UIFont.ows_lightFont(withSize:ScaleFromIPhone5To7Plus(32, 40))
+        contactNameLabel.textColor = UIColor.white
+        self.view.addSubview(contactNameLabel)
+
+        callStatusLabel = UILabel()
+        callStatusLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(19, 25))
+        callStatusLabel.textColor = UIColor.white
+        self.view.addSubview(callStatusLabel)
+
+        contactAvatarView = AvatarImageView()
+        self.view.addSubview(contactAvatarView)
+
+        // Ongoing call controls
+        textMessageButton = createButton(imageName:"logoSignal",
+                                         action:#selector(didPressTextMessage),
+                                         buttonSize:smallButtonSize())
+        muteButton = createButton(imageName:"mute-inactive",
+                                  action:#selector(didPressMute),
+                                  buttonSize:smallButtonSize())
+        speakerPhoneButton = createButton(imageName:"speaker-inactive",
+                                          action:#selector(didPressSpeakerphone),
+                                          buttonSize:smallButtonSize())
+        videoButton = createButton(imageName:"video-active",
+                                   action:#selector(didPressVideo),
+                                   buttonSize:smallButtonSize())
+        hangUpButton = createButton(imageName:"endcall",
+                                    action:#selector(didPressHangup),
+                                    buttonSize:largeButtonSize())
+
+        ongoingCallView = UIView()
+        self.view.addSubview(ongoingCallView)
+
+        let ongoingCallRow1 = rowWithSubviews(subviews:[textMessageButton, videoButton])
+        let ongoingCallRow2 = rowWithSubviews(subviews:[muteButton, speakerPhoneButton,])
+        let ongoingCallRow3 = rowWithSubviews(subviews:[hangUpButton])
+        ongoingCallRow1.autoSetDimension(.height, toSize:smallButtonSize())
+        ongoingCallRow2.autoSetDimension(.height, toSize:smallButtonSize())
+        ongoingCallRow3.autoSetDimension(.height, toSize:largeButtonSize())
+        ongoingCallView.addSubview(ongoingCallRow1)
+        ongoingCallView.addSubview(ongoingCallRow2)
+        ongoingCallView.addSubview(ongoingCallRow3)
+
+        let ongoingCallRowSpacing = ScaleFromIPhone5To7Plus(20, 25)
+        ongoingCallRow2.autoPinEdge(.top, to:.bottom, of:ongoingCallRow1, withOffset:ongoingCallRowSpacing)
+        ongoingCallRow3.autoPinEdge(.top, to:.bottom, of:ongoingCallRow2, withOffset:ongoingCallRowSpacing)
+        ongoingCallRow1.autoPinWidthToSuperview()
+        ongoingCallRow2.autoPinWidthToSuperview()
+        ongoingCallRow3.autoPinWidthToSuperview()
+
+        ongoingCallView.setContentHuggingVerticalHigh()
+        ongoingCallView.subviews.first!.autoPinEdge(toSuperviewEdge:.top)
+        ongoingCallView.subviews.last!.autoPinEdge(toSuperviewEdge:.bottom)
+
+        // Incoming call controls
+        acceptIncomingButton = createButton(imageName:"call",
+                                            action:#selector(didPressAnswerCall),
+                                            buttonSize:largeButtonSize())
+        declineIncomingButton = createButton(imageName:"endcall",
+                                             action:#selector(didPressDeclineCall),
+                                             buttonSize:largeButtonSize())
+
+        incomingCallControlsRow = rowWithSubviews(subviews:[acceptIncomingButton, declineIncomingButton])
+        incomingCallControlsRow.autoSetDimension(.height, toSize:largeButtonSize())
+        self.view.addSubview(incomingCallControlsRow)
+    }
+
+    func createButton(imageName : String!, action : Selector!, buttonSize : CGFloat!) -> UIButton {
+        let image = UIImage(named:imageName)
+        Logger.error("button \(imageName) \(NSStringFromCGSize(image!.size))")
+        Logger.flush()
+        let button = UIButton()
+        button.setImage(image, for:.normal)
+        button.addTarget(self, action:action, for:.touchUpInside)
+        button.autoSetDimension(.width, toSize:buttonSize)
+        button.autoSetDimension(.height, toSize:buttonSize)
+        return button
+    }
+
+    func smallButtonSize() -> CGFloat {
+        return ScaleFromIPhone5To7Plus(70, 90)
+    }
+
+    func largeButtonSize() -> CGFloat {
+        return ScaleFromIPhone5To7Plus(70, 90)
+    }
+
+    // Creates a row view that evenly spaces its subviews horizontally.
+    // If there is only a single subview, it is centered.
+    func rowWithSubviews(subviews : Array<UIButton>) -> UIView {
+        let row = UIView()
+        row.setContentHuggingVerticalHigh()
+
+        if subviews.count > 1 {
+            var lastSubview : UIView?
+            var lastSpacer : UIView?
+            for subview in subviews {
+                row.addSubview(subview)
+                subview.setContentHuggingHorizontalHigh()
+                subview.autoVCenterInSuperview()
+
+                if lastSubview != nil {
+                    let spacer = UIView()
+                    spacer.isHidden = true
+                    row.addSubview(spacer)
+                    spacer.autoPinEdge(.left, to:.right, of:lastSubview!)
+                    spacer.autoPinEdge(.right, to:.left, of:subview)
+                    spacer.setContentHuggingHorizontalLow()
+                    spacer.autoVCenterInSuperview()
+                    if lastSpacer != nil {
+                        spacer.autoMatch(_:.width, to:.width, of:lastSpacer!)
+                    }
+                    lastSpacer = spacer
+                }
+
+                lastSubview = subview
+            }
+            subviews.first!.autoPinEdge(toSuperviewEdge:.left)
+            subviews.last!.autoPinEdge(toSuperviewEdge:.right)
+
+            Logger.error("row \(subviews.count) -> \(row.subviews.count)")
+
+        } else if subviews.count == 1 {
+            let subview = subviews.first!
+            row.addSubview(subview)
+            subview.autoCenterInSuperview()
+        }
+
+        return row
+    }
+
+    override func updateViewConstraints() {
+        if (!hasConstraints) {
+            // We only want to create our constraints once.
+            //
+            // Note that constraints are also created elsewhere.
+            // This only creates the constraints for the top-level contents of the view.
+            hasConstraints = true
+
+            let topMargin = CGFloat(40)
+            let contactHMargin = CGFloat(30)
+            let contactVSpacing = CGFloat(3)
+            let ongoingHMargin = ScaleFromIPhone5To7Plus(60, 90)
+            let incomingHMargin = ScaleFromIPhone5To7Plus(60, 90)
+            let ongoingBottomMargin = ScaleFromIPhone5To7Plus(30, 50)
+            let incomingBottomMargin = CGFloat(50)
+            let avatarVSpacing = ScaleFromIPhone5To7Plus(25, 50)
+
+            // Dark blurred background.
+            blurView.autoPinEdgesToSuperviewEdges()
+
+            contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
+            contactNameLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
+            contactNameLabel.setContentHuggingVerticalHigh()
+
+            callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
+            callStatusLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
+            callStatusLabel.setContentHuggingVerticalHigh()
+
+            contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarVSpacing)
+            contactAvatarView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarVSpacing)
+            contactAvatarView.autoHCenterInSuperview()
+            // Stretch that avatar to fill the available space.
+            contactAvatarView.setContentHuggingLow()
+            contactAvatarView.setCompressionResistanceLow()
+            // Preserve square aspect ratio of contact avatar.
+            contactAvatarView.autoMatch(.width, to:.height, of:contactAvatarView)
+
+            // Ongoing call controls
+            ongoingCallView.autoPinEdge(toSuperviewEdge:.bottom, withInset:ongoingBottomMargin)
+            ongoingCallView.autoPinWidthToSuperview(withMargin:ongoingHMargin)
+            ongoingCallView.setContentHuggingVerticalHigh()
+
+            // Incoming call controls
+            incomingCallControlsRow.autoPinEdge(toSuperviewEdge:.bottom, withInset:incomingBottomMargin)
+            incomingCallControlsRow.autoPinWidthToSuperview(withMargin:incomingHMargin)
+            incomingCallControlsRow.setContentHuggingVerticalHigh()
+        }
+
+        super.updateViewConstraints()
     }
 
     // objc accessible way to set our swift enum.
@@ -246,8 +456,18 @@ class CallViewController: UIViewController {
         self.callStatusLabel.text = textForState
 
         // Show Incoming vs. (Outgoing || Accepted) call controls
-        callControls.isHidden = callState == .localRinging
-        incomingCallControls.isHidden = callState != .localRinging
+        let isRinging = callState == .localRinging
+        for subview in allControls() {
+            if isRinging {
+                // Show incoming controls
+                let isIncomingCallControl = incomingCallControls().contains(subview)
+                subview.isHidden = !isIncomingCallControl
+            } else {
+                // Show ongoing controls
+                let isOngoingCallControl = ongoingCallControls().contains(subview)
+                subview.isHidden = !isOngoingCallControl
+            }
+        }
 
         // Dismiss Handling
         switch callState {
@@ -264,6 +484,18 @@ class CallViewController: UIViewController {
         }
     }
 
+    func allControls() -> [UIView] {
+        return incomingCallControls() + ongoingCallControls()
+    }
+
+    func incomingCallControls() -> [UIView] {
+        return [ acceptIncomingButton, declineIncomingButton, ]
+    }
+
+    func ongoingCallControls() -> [UIView] {
+        return [ muteButton, speakerPhoneButton, textMessageButton, hangUpButton, videoButton, ]
+    }
+
     // MARK: - Actions
 
     func callStateDidChange(_ newState: CallState) {
@@ -276,7 +508,7 @@ class CallViewController: UIViewController {
     /**
      * Ends a connected call. Do not confuse with `didPressDeclineCall`.
      */
-    @IBAction func didPressHangup(sender: UIButton) {
+    func didPressHangup(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         if let call = self.call {
             callUIAdapter.endCall(call)
@@ -287,7 +519,7 @@ class CallViewController: UIViewController {
         self.dismiss(animated: true)
     }
 
-    @IBAction func didPressMute(sender muteButton: UIButton) {
+    func didPressMute(sender muteButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
         CallService.signalingQueue.async {
@@ -295,13 +527,17 @@ class CallViewController: UIViewController {
         }
     }
 
-    @IBAction func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
+    func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         speakerphoneButton.isSelected = !speakerphoneButton.isSelected
         audioService.isSpeakerphoneEnabled = speakerphoneButton.isSelected
     }
 
-    @IBAction func didPressAnswerCall(sender: UIButton) {
+    func didPressTextMessage(sender speakerphoneButton: UIButton) {
+        Logger.info("\(TAG) called \(#function)")
+    }
+
+    func didPressAnswerCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         guard let call = self.call else {
@@ -318,10 +554,14 @@ class CallViewController: UIViewController {
         }
     }
 
+    func didPressVideo(sender: UIButton) {
+        Logger.info("\(TAG) called \(#function)")
+    }
+
     /**
      * Denies an incoming not-yet-connected call, Do not confuse with `didPressHangup`.
      */
-    @IBAction func didPressDeclineCall(sender: UIButton) {
+    func didPressDeclineCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         if let call = self.call {
