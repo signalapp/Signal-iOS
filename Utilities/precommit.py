@@ -135,4 +135,4 @@ if __name__ == "__main__":
             process_if_appropriate(filepath)
 
     print 'git clang-format...'
-    subprocess.check_output(['git', 'clang-format']).strip()
+    print commands.getoutput('git clang-format')
