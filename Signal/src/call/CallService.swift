@@ -75,7 +75,7 @@ enum CallError: Error {
 // FIXME TODO do we need to timeout?
 fileprivate let timeoutSeconds = 60
 
-@objc class CallService: NSObject, PeerConnectionClientDelegate, RTCDataChannelDelegate {
+@objc class CallService: NSObject, PeerConnectionClientDelegate {
 
     // MARK: - Properties
 
@@ -168,10 +168,12 @@ fileprivate let timeoutSeconds = 60
         return getIceServers().then(on: CallService.signalingQueue) { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
-            self.peerConnectionClient = peerConnectionClient
 
-            // When calling, it's our responsibility to create the DataChannel. Receivers will not have to do this explicitly.
-            self.peerConnectionClient!.createSignalingDataChannel(delegate: self)
+            // When placing an outgoing call, it's our responsibility to create the DataChannel. Recipient will not have
+            // to do this explicitly.
+            peerConnectionClient.createSignalingDataChannel()
+
+            self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
         }.then(on: CallService.signalingQueue) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
@@ -788,7 +790,7 @@ fileprivate let timeoutSeconds = 60
     /**
      * The connection has been established. The clients can now communicate.
      */
-    internal func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
         CallService.signalingQueue.async {
             self.handleIceConnected()
         }
@@ -797,7 +799,7 @@ fileprivate let timeoutSeconds = 60
     /**
      * The connection failed to establish. The clients will not be able to communicate.
      */
-    internal func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
         CallService.signalingQueue.async {
             self.handleFailedCall(error: CallError.disconnected)
         }
@@ -808,9 +810,18 @@ fileprivate let timeoutSeconds = 60
      * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client
      * out of band, as part of establishing a connection over WebRTC.
      */
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         CallService.signalingQueue.async {
             self.handleLocalAddedIceCandidate(iceCandidate)
+        }
+    }
+
+    /**
+     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+        CallService.signalingQueue.async {
+            self.handleDataChannelMessage(dataChannelMessage)
         }
     }
 
@@ -882,34 +893,6 @@ fileprivate let timeoutSeconds = 60
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
         pendingIceUpdateMessages = []
-    }
-
-    // MARK: - RTCDataChannelDelegate
-    // TODO move `RTCDataChannelDelegate` stuff into peerConnectionClient and add a method to peerConnectionClientDelegate `receiveDataChannelMssage(_ message:OWSWebRTCProtos)
-
-    /** The data channel state changed. */
-    public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        Logger.debug("\(TAG) dataChannelDidChangeState: \(dataChannel)")
-    }
-
-    /** The data channel successfully received a data buffer. */
-    public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
-        Logger.debug("\(TAG) dataChannel didReceiveMessageWith buffer:\(buffer)")
-
-        guard let dataChannelMessage = OWSWebRTCProtosData.parse(from:buffer.data) else {
-            // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
-            Logger.error("\(TAG) failed to parse dataProto")
-            return
-        }
-
-        CallService.signalingQueue.async {
-            self.handleDataChannelMessage(dataChannelMessage)
-        }
-    }
-
-    /** The data channel's |bufferedAmount| changed. */
-    public func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
-        Logger.debug("\(TAG) didChangeBufferedAmount: \(amount)")
     }
 }
 

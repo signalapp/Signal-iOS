@@ -29,6 +29,11 @@ protocol PeerConnectionClientDelegate: class {
      * out of band, as part of establishing a connection over WebRTC.
      */
     func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate)
+
+    /**
+     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData)
 }
 
 /**
@@ -37,7 +42,7 @@ protocol PeerConnectionClientDelegate: class {
  * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data 
  * including audio, video, and some post-connected signaling (hangup, add video)
  */
-class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate {
+class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {
@@ -102,10 +107,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate {
 
     // MARK: - Media Streams
 
-    public func createSignalingDataChannel(delegate: RTCDataChannelDelegate) {
+    public func createSignalingDataChannel() {
         let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
                                                      configuration: RTCDataChannelConfiguration())
-        dataChannel.delegate = delegate
+        dataChannel.delegate = self
 
         self.dataChannel = dataChannel
     }
@@ -293,7 +298,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate {
         peerConnection.close()
     }
 
-    // MARK: Data Channel
+    // MARK: - Data Channel
 
     func sendDataChannelMessage(data: Data) -> Bool {
         guard let dataChannel = self.dataChannel else {
@@ -303,6 +308,31 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate {
 
         let buffer = RTCDataBuffer(data: data, isBinary: false)
         return dataChannel.sendData(buffer)
+    }
+
+    // MARK: RTCDataChannelDelegate
+
+    /** The data channel state changed. */
+    public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
+        Logger.debug("\(TAG) dataChannelDidChangeState: \(dataChannel)")
+    }
+
+    /** The data channel successfully received a data buffer. */
+    public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
+        Logger.debug("\(TAG) dataChannel didReceiveMessageWith buffer:\(buffer)")
+
+        guard let dataChannelMessage = OWSWebRTCProtosData.parse(from:buffer.data) else {
+            // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
+            Logger.error("\(TAG) failed to parse dataProto")
+            return
+        }
+
+        delegate.peerConnectionClient(self, received: dataChannelMessage)
+    }
+
+    /** The data channel's |bufferedAmount| changed. */
+    public func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
+        Logger.debug("\(TAG) didChangeBufferedAmount: \(amount)")
     }
 
     // MARK: - RTCPeerConnectionDelegate

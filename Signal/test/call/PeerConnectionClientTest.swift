@@ -15,6 +15,7 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
 
     var connectionState: ConnectionState?
     var localIceCandidates = [RTCIceCandidate]()
+    var dataChannelMessages = [OWSWebRTCProtosData]()
 
     internal func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
         connectionState = .connected
@@ -27,6 +28,10 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
     internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         localIceCandidates.append(iceCandidate)
     }
+
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+        dataChannelMessages.append(dataChannelMessage)
+    }
 }
 
 class PeerConnectionClientTest: XCTestCase {
@@ -34,6 +39,7 @@ class PeerConnectionClientTest: XCTestCase {
     var client: PeerConnectionClient!
     var clientDelegate: FakePeerConnectionClientDelegate!
     var peerConnection: RTCPeerConnection!
+    var dataChannel: RTCDataChannel!
 
     override func setUp() {
         super.setUp()
@@ -42,6 +48,8 @@ class PeerConnectionClientTest: XCTestCase {
         clientDelegate = FakePeerConnectionClientDelegate()
         client = PeerConnectionClient(iceServers: iceServers, delegate: clientDelegate)
         peerConnection = client.peerConnection
+        client.createSignalingDataChannel()
+        dataChannel = client.dataChannel!
     }
 
     override func tearDown() {
@@ -77,4 +85,19 @@ class PeerConnectionClientTest: XCTestCase {
         XCTAssertEqual(3, clientDelegate.localIceCandidates.count)
     }
 
+    func testDataChannelMessage() {
+        XCTAssertEqual(0, clientDelegate.dataChannelMessages.count)
+
+        let hangup = DataChannelMessage.forHangup(callId: 123)
+        let hangupBuffer = RTCDataBuffer(data: hangup.asData(), isBinary: false)
+        client.dataChannel(dataChannel, didReceiveMessageWith: hangupBuffer)
+
+        XCTAssertEqual(1, clientDelegate.dataChannelMessages.count)
+
+        let dataChannelMessageProto = clientDelegate.dataChannelMessages[0]
+        XCTAssert(dataChannelMessageProto.hasHangup())
+
+        let hangupProto = dataChannelMessageProto.hangup!
+        XCTAssertEqual(123, hangupProto.id)
+    }
 }
