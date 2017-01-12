@@ -12,6 +12,7 @@ target 'Signal' do
     pod 'SCWaveformView',             '~> 1.0'
     pod 'ZXingObjC'
     pod 'JSQMessagesViewController'
+    pod 'PureLayout'
     target 'SignalTests' do
         inherit! :search_paths
     end
