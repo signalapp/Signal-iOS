@@ -251,7 +251,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Empfängerschlüssel ist ungültig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Empfangenen Nachricht fehlerhaft verschlüsselt. Antippen, um die Verschlüsselung neu zu starten.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Empfangene Nachricht fehlerhaft verschlüsselt. Antippen, um die Verschlüsselung neu zu starten.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Mit dieser Signal-Version inkompatible Nachricht erhalten.";

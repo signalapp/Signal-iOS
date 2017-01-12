@@ -33,7 +33,10 @@ public enum SubtitleCellValue{
 }
 
 @available(iOS 9.0, *)
-open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate {
+open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+
+    @IBOutlet var tableView: UITableView!
+    @IBOutlet var searchBar: UISearchBar!
 
     // MARK: - Properties
 
@@ -42,7 +45,6 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
     let contactsManager: OWSContactsManager
     let collation = UILocalizedIndexedCollation.current()
     let contactStore = CNContactStore()
-    lazy var resultSearchController = UISearchController()
 
     // Data Source State
     lazy var sections = [[CNContact]]()
@@ -66,8 +68,9 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
         super.viewDidLoad()
         title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
 
-        // Don't obscure table header (search bar) with table index
-        tableView.sectionIndexBackgroundColor = UIColor.clear
+        searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
+        // Prevent content form going under the navigation bar
+        self.edgesForExtendedLayout = []
 
         // Auto size cells for dynamic type
         tableView.estimatedRowHeight = 60.0
@@ -78,27 +81,13 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
         registerContactCell()
         initializeBarButtons()
         reloadContacts()
-        initializeSearchBar()
+        updateSearchResults(searchText: "")
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
 
     func didChangePreferredContentSize() {
         self.tableView.reloadData()
-    }
-
-    func initializeSearchBar() {
-        self.resultSearchController = ( {
-            let controller = UISearchController(searchResultsController: nil)
-            controller.searchResultsUpdater = self
-            controller.dimsBackgroundDuringPresentation = false
-            controller.searchBar.sizeToFit()
-            controller.searchBar.delegate = self
-            controller.hidesNavigationBarDuringPresentation = false
-
-            self.tableView.tableHeaderView = controller.searchBar
-            return controller
-        })()
     }
     
     func initializeBarButtons() {
@@ -117,9 +106,9 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
 
     // MARK: - Initializers
 
-    override init(style: UITableViewStyle) {
+    init() {
         contactsManager = Environment.getCurrent().contactsManager
-        super.init(style: style)
+        super.init(nibName: nil, bundle: nil)
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -132,13 +121,13 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
     }
     
     convenience public init(delegate: ContactsPickerDelegate?, multiSelection : Bool) {
-        self.init(style: .plain)
+        self.init()
         multiSelectEnabled = multiSelection
         contactsPickerDelegate = delegate
     }
 
     convenience public init(delegate: ContactsPickerDelegate?, multiSelection : Bool, subtitleCellType: SubtitleCellValue) {
-        self.init(style: .plain)
+        self.init()
         multiSelectEnabled = multiSelection
         contactsPickerDelegate = delegate
         subtitleCellValue = subtitleCellType
@@ -192,7 +181,6 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
                         contacts.append(contact)
                     }
                     self.sections = collatedContacts(contacts)
-                    self.tableView.reloadData()
                 } catch let error as NSError {
                     Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
                 }
@@ -213,22 +201,22 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
     
     // MARK: - Table View DataSource
     
-    override open func numberOfSections(in tableView: UITableView) -> Int {
+    open func numberOfSections(in tableView: UITableView) -> Int {
         return self.collation.sectionTitles.count
     }
     
-    override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let dataSource = resultSearchController.isActive ? filteredSections : sections
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let dataSource = filteredSections
 
         return dataSource[section].count
     }
 
     // MARK: - Table View Delegates
 
-    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as! ContactCell
 
-        let dataSource = resultSearchController.isActive ? filteredSections : sections
+        let dataSource = filteredSections
         let cnContact = dataSource[indexPath.section][indexPath.row]
         let contact = Contact(contact: cnContact)
 
@@ -247,7 +235,7 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
         return cell
     }
 
-    override open func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    open func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let deselectedContact = cell.contact!
 
@@ -256,7 +244,7 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
         }
     }
 
-    override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
 
@@ -269,23 +257,22 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
 
         if !multiSelectEnabled {
             //Single selection code
-            resultSearchController.isActive = false
             self.dismiss(animated: true) {
                 self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact)
             }
         }
     }
     
-    override open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+    open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         return collation.section(forSectionIndexTitle: index)
     }
     
-    override  open func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+    open func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return collation.sectionIndexTitles
     }
 
-    override open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let dataSource = resultSearchController.isActive ? filteredSections : sections
+    open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let dataSource = filteredSections
 
         if dataSource[section].count > 0 {
             return collation.sectionTitles[section]
@@ -307,33 +294,25 @@ open class ContactsPicker: UITableViewController, UISearchResultsUpdating, UISea
     }
     
     // MARK: - Search Actions
+    open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        updateSearchResults(searchText: searchText)
+    }
     
-    open func updateSearchResults(for searchController: UISearchController) {
-        if let searchText = resultSearchController.searchBar.text , searchController.isActive {
-            
-            let predicate: NSPredicate
-            if searchText.characters.count == 0 {
-                filteredSections = sections
-            } else {
-                do {
-                    predicate = CNContact.predicateForContacts(matchingName: searchText)
-                    let filteredContacts = try contactStore.unifiedContacts(matching: predicate, keysToFetch: allowedContactKeys)
+    open func updateSearchResults(searchText: String) {
+        let predicate: NSPredicate
+        if searchText.characters.count == 0 {
+            filteredSections = sections
+        } else {
+            do {
+                predicate = CNContact.predicateForContacts(matchingName: searchText)
+                let filteredContacts = try contactStore.unifiedContacts(matching: predicate,keysToFetch: allowedContactKeys)
                     filteredSections = collatedContacts(filteredContacts)
-                } catch let error as NSError {
-                    Logger.error("\(self.TAG) updating search results failed with error: \(error)")
-                }
+            } catch let error as NSError {
+                Logger.error("\(self.TAG) updating search results failed with error: \(error)")
             }
-
-            self.tableView.reloadData()
         }
+        self.tableView.reloadData()
     }
-    
-    open func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-    }
-    
 }
 
 @available(iOS 9.0, *)

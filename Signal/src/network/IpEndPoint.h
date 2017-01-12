@@ -21,11 +21,14 @@
 +(IpEndPoint*) ipEndPointAtAddress:(IpAddress*)address
                             onPort:(in_port_t)port;
 
-+(IpEndPoint*) ipEndPointAtUnspecifiedAddressOnPort:(in_port_t)port;
++ (IpEndPoint *)ipv4EndPointAtUnspecifiedAddressOnPort:(in_port_t)port;
++ (IpEndPoint *)ipv6EndPointAtUnspecifiedAddressOnPort:(in_port_t)port;
 
 +(IpEndPoint*) ipEndPointFromSockaddrData:(NSData*)sockaddrData;
 +(IpEndPoint*) ipv4EndPointFromSockaddrData:(NSData*)sockaddrData;
 +(IpEndPoint*) ipv6EndPointFromSockaddrData:(NSData*)sockaddrData;
+
+- (IpEndPoint *)correspondingLocalEndpointWithPort:(in_port_t)specifiedLocalPort;
 
 -(in_port_t) port;
 -(IpAddress*) address;

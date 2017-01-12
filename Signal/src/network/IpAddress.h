@@ -27,6 +27,9 @@
 +(IpAddress*) ipv4AddressFromSockaddr:(struct sockaddr_in)sockaddr;
 +(IpAddress*) ipv6AddressFromSockaddr:(struct sockaddr_in6)sockaddr;
 
+@property (nonatomic, readonly) bool isIpv4;
+@property (nonatomic, readonly) bool isIpv6;
+
 -(IpEndPoint*) withPort:(in_port_t)port;
 -(NSData*) sockaddrData;
 -(NSData*) sockaddrDataWithPort:(in_port_t)port;
