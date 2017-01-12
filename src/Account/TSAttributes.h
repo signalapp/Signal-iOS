@@ -10,9 +10,10 @@
 
 @interface TSAttributes : NSObject
 
-+ (NSDictionary *)attributesFromStorageWithVoiceSupport;
++ (NSDictionary *)attributesFromStorage:(BOOL)isWebRTCEnabled;
 
 + (NSDictionary *)attributesWithSignalingKey:(NSString *)signalingKey
-                             serverAuthToken:(NSString *)authToken;
+                             serverAuthToken:(NSString *)authToken
+                             isWebRTCEnabled:(BOOL)isWebRTCEnabled;
 
 @end
