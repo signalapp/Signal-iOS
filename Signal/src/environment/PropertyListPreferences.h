@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -55,6 +59,9 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
+
+- (BOOL)isWebRTCEnabled;
+- (void)setIsWebRTCEnabled:(BOOL)flag;
 
 #pragma mark - Block on Identity Change
 
