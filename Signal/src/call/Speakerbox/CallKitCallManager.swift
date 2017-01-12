@@ -98,7 +98,6 @@ final class CallKitCallManager: NSObject {
     }
 }
 
-
 fileprivate extension Array {
 
     mutating func removeFirst(where predicate: (Element) throws -> Bool) rethrows {
@@ -108,5 +107,4 @@ fileprivate extension Array {
 
         remove(at: index)
     }
-    
 }

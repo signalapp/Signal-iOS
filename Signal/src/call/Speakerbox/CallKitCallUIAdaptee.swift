@@ -42,7 +42,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService,  notificationsAdapter: CallNotificationsAdapter) {
+    init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
         self.callManager = CallKitCallManager()
         self.callService = callService
         self.notificationsAdapter = notificationsAdapter
