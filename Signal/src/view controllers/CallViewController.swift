@@ -271,10 +271,10 @@ class CallViewController: UIViewController, CallDelegate {
         let ongoingCallRows = [
             rowWithSubviews(subviews:[textMessageButton, videoButton],
                             fixedHeight:buttonSize),
-            rowWithSubviews(subviews:[muteButton, speakerPhoneButton, ],
+            rowWithSubviews(subviews:[muteButton, speakerPhoneButton ],
                             fixedHeight:buttonSize),
             rowWithSubviews(subviews:[hangUpButton],
-                            fixedHeight:buttonSize),
+                            fixedHeight:buttonSize)
             ]
         let ongoingCallRowSpacing = ScaleFromIPhone5To7Plus(20, 25)
         var lastRow: UIView?
@@ -318,7 +318,7 @@ class CallViewController: UIViewController, CallDelegate {
 
     // Creates a row view that evenly spaces its subviews horizontally.
     // If there is only a single subview, it is centered.
-    func rowWithSubviews(subviews: Array<UIButton>, fixedHeight: CGFloat) -> UIView {
+    func rowWithSubviews(subviews: [UIButton], fixedHeight: CGFloat) -> UIView {
         let row = UIView()
         row.setContentHuggingVerticalHigh()
         row.autoSetDimension(.height, toSize:fixedHeight)
@@ -362,7 +362,7 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     override func updateViewConstraints() {
-        if (!hasConstraints) {
+        if !hasConstraints {
             // We only want to create our constraints once.
             //
             // Note that constraints are also created elsewhere.
@@ -487,11 +487,11 @@ class CallViewController: UIViewController, CallDelegate {
 
     func incomingCallControls() -> [UIView] {
         // TODO: Should this include textMessageButton?
-        return [ acceptIncomingButton, declineIncomingButton, ]
+        return [ acceptIncomingButton, declineIncomingButton ]
     }
 
     func ongoingCallControls() -> [UIView] {
-        return [ muteButton, speakerPhoneButton, textMessageButton, hangUpButton, videoButton, ]
+        return [ muteButton, speakerPhoneButton, textMessageButton, hangUpButton, videoButton ]
     }
 
     // MARK: - Actions

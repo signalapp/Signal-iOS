@@ -516,8 +516,8 @@
 		E197B62418BBF5BB00F073E5 /* SoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62318BBF5BB00F073E5 /* SoundPlayer.m */; };
 		E197B62718BBF63B00F073E5 /* SoundBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = E197B62618BBF63B00F073E5 /* SoundBoard.m */; };
 		E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CD329518BCFF9900B1A496 /* SoundInstance.m */; };
-		E94066151DFC5B7B00B15392 /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = E94066141DFC5B7B00B15392 /* ContactsPicker.xib */; };
 		E32B0699162419B7046BC643 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */; };
+		E94066151DFC5B7B00B15392 /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = E94066141DFC5B7B00B15392 /* ContactsPicker.xib */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */; };
 		FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */; };
 		FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC31962C1A06A2190094C78E /* FingerprintViewController.m */; };
