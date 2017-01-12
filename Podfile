@@ -4,7 +4,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
     pod 'AxolotlKit', git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
-    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: 'feature/webrtc'
+    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: 'mkirk/webrtc'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL'
     pod 'PastelogKit',                '~> 1.3'
