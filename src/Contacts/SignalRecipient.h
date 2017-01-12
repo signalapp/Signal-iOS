@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
                                        relay:(nullable NSString *)relay
-                               supportsVoice:(BOOL)voiceCapable;
+                               supportsVoice:(BOOL)voiceCapable
+                              supportsWebRTC:(BOOL)supportsWebRTC;
 
 + (instancetype)selfRecipient;
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
@@ -23,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *relay;
 @property (nonatomic, retain) NSMutableOrderedSet *devices;
 @property BOOL supportsVoice;
+// This property indicates support for both WebRTC audio and video calls.
+@property BOOL supportsWebRTC;
 
 @end
 

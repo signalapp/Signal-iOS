@@ -32,7 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
     if (!recipient) {
-        recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay supportsVoice:YES];
+        recipient =
+            [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId
+                                                            relay:relay
+                                                    supportsVoice:YES
+                                                   // Default to NO; ContactsUpdater will try to update this property.
+                                                   supportsWebRTC:NO];
 
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
             success:^(NSSet<NSString *> *matchedIds) {
