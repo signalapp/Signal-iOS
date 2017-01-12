@@ -578,8 +578,6 @@ fileprivate let timeoutSeconds = 60
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncoming, in: thread)
         callRecord.save()
 
-        callUIAdapter.answerCall(call)
-
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
         if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
             Logger.debug("\(TAG) sendDataChannelMessage returned true")
@@ -718,6 +716,13 @@ fileprivate let timeoutSeconds = 60
             handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
+
+        guard let call = self.call else {
+            handleFailedCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            return
+        }
+
+        call.isMuted = isMuted
         peerConnectionClient.setAudioEnabled(enabled: !isMuted)
     }
 

@@ -14,6 +14,7 @@ protocol CallUIAdaptee {
     func answerCall(_ call: SignalCall)
     func declineCall(_ call: SignalCall)
     func endCall(_ call: SignalCall)
+    func toggleMute(call: SignalCall, isMuted: Bool)
 }
 
 // Shared default implementations
@@ -43,7 +44,7 @@ class CallUIAdapter {
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
-            // So we use the non-call kit call UI.
+            // So we use the non-CallKit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 10.0, *) {
@@ -85,5 +86,9 @@ class CallUIAdapter {
 
     internal func showCall(_ call: SignalCall) {
         adaptee.showCall(call)
+    }
+
+    internal func toggleMute(call: SignalCall, isMuted: Bool) {
+        adaptee.toggleMute(call: call, isMuted: isMuted)
     }
 }

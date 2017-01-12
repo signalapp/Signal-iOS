@@ -16,6 +16,11 @@ enum CallState: String {
     case remoteBusy // terminal
 }
 
+protocol CallDelegate: class {
+    func stateDidChange(call: SignalCall, state: CallState)
+    func muteDidChange(call: SignalCall, isMuted: Bool)
+}
+
 /**
  * Data model for a WebRTC backed voice/video call.
  */
@@ -23,20 +28,29 @@ enum CallState: String {
 
     let TAG = "[SignalCall]"
 
+    weak var delegate: CallDelegate?
+    let remotePhoneNumber: String
+
+    // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
+    let signalingId: UInt64
+
+    // Distinguishes between calls locally, e.g. in CallKit
+    let localId: UUID
+    var hasVideo = false
     var state: CallState {
         didSet {
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(state)")
-            stateDidChange?(state)
+            delegate?.stateDidChange(call: self, state: state)
+        }
+    }
+    var isMuted = false {
+        didSet {
+            Logger.debug("\(TAG) muted changed: \(oldValue) -> \(isMuted)")
+            delegate?.muteDidChange(call: self, isMuted: isMuted)
         }
     }
 
-    let signalingId: UInt64
-    let remotePhoneNumber: String
-    let localId: UUID
-    var hasVideo = false
     var error: CallError?
-
-    var stateDidChange: ((_ newState: CallState) -> Void)?
 
     init(localId: UUID, signalingId: UInt64, state: CallState, remotePhoneNumber: String) {
         self.localId = localId

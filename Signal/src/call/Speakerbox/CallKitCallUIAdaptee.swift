@@ -7,10 +7,10 @@ import CallKit
 import AVFoundation
 
 /**
- * Connects user interface to the CallService usin CallKit.
+ * Connects user interface to the CallService using CallKit.
  *
- * User interface is mapped to CXCall action requests, and if the CXProvider accepts them,
- * their corresponding consequences are requested via the CallService
+ * User interface is routed to the CallManager which requests CXCallActions, and if the CXProvider accepts them,
+ * their corresponding consequences are implmented in the CXProviderDelegate methods, e.g. using the CallService
  */
 @available(iOS 10.0, *)
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
@@ -55,14 +55,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    internal func startOutgoingCall(_ call: SignalCall) {
+    func startOutgoingCall(_ call: SignalCall) {
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
         callManager.addCall(call)
         callManager.startCall(call)
     }
 
-    internal func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: SignalCall, callerName: String) {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
@@ -83,16 +83,20 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
-    internal func answerCall(_ call: SignalCall) {
-        showCall(call)
+    func answerCall(_ call: SignalCall) {
+        callManager.answer(call: call)
     }
 
-    internal func declineCall(_ call: SignalCall) {
+    func declineCall(_ call: SignalCall) {
         callManager.end(call: call)
     }
 
-    internal func endCall(_ call: SignalCall) {
+    func endCall(_ call: SignalCall) {
         callManager.end(call: call)
+    }
+
+    func toggleMute(call: SignalCall, isMuted: Bool) {
+        callManager.toggleMute(call: call, isMuted: isMuted)
     }
 
     // MARK: CXProviderDelegate
@@ -140,9 +144,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         CallService.signalingQueue.async {
             self.callService.handleOutgoingCall(call).then {
                 action.fulfill()
-                }.catch { error in
-                    self.callManager.removeCall(call)
-                    action.fail()
+            }.catch { error in
+                self.callManager.removeCall(call)
+                action.fail()
             }
         }
 
@@ -178,16 +182,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //        // Trigger the call to be answered via the underlying network service.
         //        call.answerSpeakerboxCall()
 
-        // Synchronous to ensure work is done before call is displayed as "answered"
-        CallService.signalingQueue.sync {
+        CallService.signalingQueue.async {
             self.callService.handleAnswerCall(call)
+            self.showCall(call)
+            action.fulfill()
         }
-
-        // Signal to the system that the action has been successfully performed.
-        action.fulfill()
     }
 
-    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+    public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         Logger.debug("\(TAG) Received \(#function) CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
@@ -212,13 +214,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.removeCall(call)
     }
 
-    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+    public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
         Logger.debug("\(TAG) Received \(#function) CXSetHeldCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
             return
         }
-        Logger.warn("TODO, set held call: \(call)")
+        Logger.warn("TODO, unimplemented set held call: \(call)")
 
         // TODO FIXME
         //        // Update the SpeakerboxCall's underlying hold state.
@@ -233,6 +235,28 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        Logger.debug("\(TAG) Received \(#function) CXSetMutedCallAction")
+        guard callManager.callWithLocalId(action.callUUID) != nil else {
+            Logger.error("\(TAG) Failing CXSetMutedCallAction for unknown call: \(action.callUUID)")
+            action.fail()
+            return
+        }
+
+        CallService.signalingQueue.async {
+            self.callService.handleToggledMute(isMuted: action.isMuted)
+            action.fulfill()
+        }
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
+        Logger.warn("\(TAG) unimplemented \(#function) for CXSetGroupCallAction")
+    }
+
+    public func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
+        Logger.warn("\(TAG) unimplemented \(#function) for CXPlayDTMFCallAction")
     }
 
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {

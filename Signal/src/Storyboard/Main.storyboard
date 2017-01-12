@@ -347,6 +347,8 @@
                         <outlet property="contactAvatarView" destination="id3-xi-PFz" id="CUV-hJ-Qcp"/>
                         <outlet property="contactNameLabel" destination="UbL-8Z-oK1" id="h9V-l9-JVF"/>
                         <outlet property="incomingCallControls" destination="5E5-dq-23I" id="fWz-1n-pjI"/>
+                        <outlet property="muteButton" destination="NES-Ce-PcK" id="Eku-Tx-cMN"/>
+                        <outlet property="speakerPhoneButton" destination="Bb2-w8-mPU" id="GYN-Z6-i5I"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5mi-rT-gg5" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -5,12 +5,17 @@ import UIKit
 import CallKit
 
 /**
- * Based on SpeakerboxCallManager, from the Apple CallKit Example app. Though, it's responsibilities are mostly mirrored (and delegated from) CallUIAdapter?
- * TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
+ * Requests actions from CallKit
+ *
+ * @Discussion:
+ *   Based on SpeakerboxCallManager, from the Apple CallKit Example app. Though, it's responsibilities are mostly 
+ *   mirrored (and delegated from) CallKitCallUIAdaptee.
+ *   TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
  */
 @available(iOS 10.0, *)
 final class CallKitCallManager: NSObject {
 
+    let TAG = "[CallKitCallManager]"
     let callController = CXCallController()
 
     // MARK: Actions
@@ -43,12 +48,28 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
+    func toggleMute(call: SignalCall, isMuted: Bool) {
+        let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
+        let transaction = CXTransaction()
+        transaction.addAction(muteCallAction)
+
+        requestTransaction(transaction)
+    }
+
+    func answer(call: SignalCall) {
+        let answerCallAction = CXAnswerCallAction(call: call.localId)
+        let transaction = CXTransaction()
+        transaction.addAction(answerCallAction)
+
+        requestTransaction(transaction)
+    }
+
     private func requestTransaction(_ transaction: CXTransaction) {
         callController.request(transaction) { error in
             if let error = error {
-                print("Error requesting transaction: \(error)")
+                Logger.error("\(self.TAG) Error requesting transaction: \(error)")
             } else {
-                print("Requested transaction successfully")
+                Logger.debug("\(self.TAG) Requested transaction successfully")
             }
         }
     }
