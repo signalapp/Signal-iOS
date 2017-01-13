@@ -269,24 +269,24 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     func buttonSize() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(70, 90)
+        return ScaleFromIPhone5To7Plus(84, 108)
     }
 
     func createOngoingCallControls() {
 
-        ongoingTextMessageButton = createButton(imageName:"logoSignal",
+        ongoingTextMessageButton = createButton(imageName:"message-active-wide",
                                                 action:#selector(didPressTextMessage),
                                                 buttonSize:buttonSize())
-        muteButton = createButton(imageName:"mute-inactive",
+        muteButton = createButton(imageName:"mute-active-wide",
                                   action:#selector(didPressMute),
                                   buttonSize:buttonSize())
-        speakerPhoneButton = createButton(imageName:"speaker-inactive",
+        speakerPhoneButton = createButton(imageName:"speaker-active-wide",
                                           action:#selector(didPressSpeakerphone),
                                           buttonSize:buttonSize())
-        videoButton = createButton(imageName:"video-active",
+        videoButton = createButton(imageName:"video-active-wide",
                                    action:#selector(didPressVideo),
                                    buttonSize:buttonSize())
-        hangUpButton = createButton(imageName:"endcall",
+        hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup),
                                     buttonSize:buttonSize())
 
@@ -299,13 +299,13 @@ class CallViewController: UIViewController, CallDelegate {
 
     func createIncomingCallControls() {
 
-        incomingTextMessageButton = createButton(imageName:"logoSignal",
+        incomingTextMessageButton = createButton(imageName:"message-active-wide",
                                                  action:#selector(didPressTextMessage),
                                                  buttonSize:buttonSize())
-        acceptIncomingButton = createButton(imageName:"call",
+        acceptIncomingButton = createButton(imageName:"call-active-wide",
                                             action:#selector(didPressAnswerCall),
                                             buttonSize:buttonSize())
-        declineIncomingButton = createButton(imageName:"endcall",
+        declineIncomingButton = createButton(imageName:"hangup-active-wide",
                                              action:#selector(didPressDeclineCall),
                                              buttonSize:buttonSize())
 
@@ -323,7 +323,7 @@ class CallViewController: UIViewController, CallDelegate {
             rows.append(rowWithSubviews(subviews:controlGroup,
                                         fixedHeight:buttonSize()))
         }
-        let rowspacing = ScaleFromIPhone5To7Plus(20, 25)
+        let rowspacing = ScaleFromIPhone5To7Plus(6, 7)
         var prevRow: UIView?
         for row in rows {
             containerView.addSubview(row)
@@ -405,11 +405,14 @@ class CallViewController: UIViewController, CallDelegate {
             let topMargin = CGFloat(40)
             let contactHMargin = CGFloat(30)
             let contactVSpacing = CGFloat(3)
-            let ongoingHMargin = ScaleFromIPhone5To7Plus(60, 90)
-            let incomingHMargin = ScaleFromIPhone5To7Plus(60, 90)
-            let ongoingBottomMargin = ScaleFromIPhone5To7Plus(30, 50)
-            let incomingBottomMargin = CGFloat(50)
-            let avatarVSpacing = ScaleFromIPhone5To7Plus(25, 50)
+            let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
+            let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
+            let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
+            let incomingBottomMargin = CGFloat(41)
+            let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
+            // The buttons have built-in 10% margins, so to appear centered
+            // the avatar's bottom spacing should be a bit less.
+            let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
 
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
@@ -422,8 +425,8 @@ class CallViewController: UIViewController, CallDelegate {
             callStatusLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
 
-            contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarVSpacing)
-            contactAvatarView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarVSpacing)
+            contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
+            contactAvatarView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarBottomSpacing)
             contactAvatarView.autoHCenterInSuperview()
             // Stretch that avatar to fill the available space.
             contactAvatarView.setContentHuggingLow()
