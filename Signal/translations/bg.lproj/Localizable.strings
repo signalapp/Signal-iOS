@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Затвори";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Вече имате Signal акаунт?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Отговор";
@@ -56,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Прикаченият файл се сваля";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Избери или направи снимка и я изпрати";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Прикачен файл";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Нов прикачен файл за извличане.";
@@ -68,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Сигнал се нуждае от достъп до микрофона ви за да работи коректно. Можете да възстановите правата на телефона си от менюто Settings >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Повикване";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Обратно Повикване";
@@ -134,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Когато е активирано, изпратените и получени съобщения в този разговор ще изчезват след като са прочетени.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Съобщения изчезват след %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Настройки на Изчезващи Съобщения";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Отказ";
@@ -149,7 +149,7 @@
 "EDIT_ITEM_SAVE_ACTION" = "Запази";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Здравей,\n\nНапоследък използвам приложението Signal за сигурен чат. Инсталирай си го и ти ако желаеш, и ще можем да си пишем сигурно, както и да си говорим чрез него.\n\nSignal е налично за iPhone и Android. Свали го от тук: %@\n\nSignal работи като другите програми за чат. Може да си изпращаме снимки и видео, да водим разговори, или да правим групов чат. Най хубавото е, че приложението е сигурно и никой не може да види това което си писал, или изпращал. Дори и тези които са създали Signal!\n\nМоже да прочетеш по-вече за Open Whisper Systems, хората които са създали Signal, тук: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Нека преминем на Signal";
@@ -236,7 +236,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal не успя да се свърже с интернет. Моля, опитайте от друга WiFi мрежа или чрез използване на мобилни данни.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Вашето устройство вече не е регистрирано към този номер. Трябва да изтриете и преинсталирате Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Грешка в сървъра. Моля, опитайте отново по-късно.";
@@ -272,10 +272,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "О не!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "За сега Signal може да бъде активен само на едно мобилно устройство с телефонен номер.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Активирайки това %@ Signal ще се деактивира на всяко друго устройство което е асоциирано с този телефонен номер.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Твърде много провали с този контакт. Моля, опитайте отново след малко.";
@@ -293,7 +293,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Нулирай сесията.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Създай групата";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Снимката е променена.";
@@ -326,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Неуспех при напускане на групата";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Настройки на Група";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Името сега е '%@'.";
@@ -440,7 +440,7 @@
 "MISSED_CALL" = "Пропуснато обаждане";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Преди това сте забранили на Signal достъпа до вашата камера. Променете системните си настройки за да продължите.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal се нуждае от достъп до камерата ви.";
@@ -497,7 +497,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Поради известни грешки в изкачащите съобщения на Apple, превю на съобщения ще се показват само ако съобщението е получено в рамките на 30 секунди след като е било изпратено. В резултат на това броят съобщения на баджа на приложението може да е неточен.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Няма име или съобщение";
+"NOTIFICATIONS_NONE" = "Без име или съобщение";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SECTION_BACKGROUND" = "Известявания";
@@ -536,16 +536,16 @@
 "PHONE_NEEDS_UNLOCK" = "Вашият iPhone трябва да се отключи да получавате нови съобщения.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Това не приличат на номерата ви за сигурност с %@. Сигурни ли сте, че това е правилният контакт?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Номера който сте копирали не изглежда коректен за този разговор.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не намери копиран номер за сигурност. Копирахте ли го коректно?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Всеки чифт потребители на Signal споделя различен номер за сигурност. Проверете дали %@ показва * твоя * различен номер за сигурност.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Вие ползвате стара версия на Signal. Трябва да обновите приложението преди верифициране.";
@@ -650,7 +650,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Номерата които сте въвели не съответстват на това, което ние изпратихме. Искате ли да проверите отново?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Активирай Устройството";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Отхвърли";
@@ -668,7 +668,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Нашите Signal Номера за Безопасност\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Номера за безопасност с %@ се променени. Докоснете, за да потвърдите.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Сканирай Код";
@@ -710,7 +710,7 @@
 "SETTINGS_ABOUT" = "Относно";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Разреши Регистриране на Грешки";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Вкл. Регистриране на Грешки";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Изпрати Регистрирани Грешки";
@@ -722,7 +722,7 @@
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Изисква вашето одобрение, преди да общувате с някой, който има нов номер за безопасност, често се случва от преинсталиране на приложението.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Изисква Одобрение или Промяна";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Вкл. Одобрение при Промяна";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Изчисти Регистъра с История";
@@ -767,7 +767,7 @@
 "SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Одобрение на Номерата за Безопасност";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Активиране на екранна за сигурност";
+"SETTINGS_SCREEN_SECURITY" = "Вкл. Екранна Сигурност";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Забранява превю на Signal да се показва при превключване на приложения.";
