@@ -338,10 +338,10 @@ class CallViewController: UIViewController, CallDelegate {
         let image = UIImage(named:imageName)
         let button = UIButton()
         button.setImage(image, for:.normal)
-        button.imageEdgeInsets = UIEdgeInsetsMake(buttonInset(),
-                                                  buttonInset(),
-                                                  buttonInset(),
-                                                  buttonInset())
+        button.imageEdgeInsets = UIEdgeInsets(top: buttonInset(),
+                                              left: buttonInset(),
+                                              bottom: buttonInset(),
+                                              right: buttonInset())
         button.addTarget(self, action:action, for:.touchUpInside)
         button.autoSetDimension(.width, toSize:buttonSize())
         button.autoSetDimension(.height, toSize:buttonSize())
@@ -486,19 +486,12 @@ class CallViewController: UIViewController, CallDelegate {
 
         self.callStatusLabel.text = textForState
 
-        // Show Incoming vs. (Outgoing || Accepted) call controls
+        // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
-        for subview in allControls {
-            if isRinging {
-                // Show incoming controls
-                let isIncomingCallControl = incomingCallControls.contains(subview)
-                subview.isHidden = !isIncomingCallControl
-            } else {
-                // Show ongoing controls
-                let isOngoingCallControl = ongoingCallControls.contains(subview)
-                subview.isHidden = !isOngoingCallControl
-            }
-        }
+        incomingCallView.isHidden = !isRinging
+        incomingCallView.isUserInteractionEnabled = isRinging
+        ongoingCallView.isHidden = isRinging
+        ongoingCallView.isUserInteractionEnabled = !isRinging
 
         // Dismiss Handling
         switch callState {
@@ -549,6 +542,8 @@ class CallViewController: UIViewController, CallDelegate {
 
     func didPressTextMessage(sender speakerphoneButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
+
+        self.dismiss(animated: true)
     }
 
     func didPressAnswerCall(sender: UIButton) {
@@ -568,6 +563,8 @@ class CallViewController: UIViewController, CallDelegate {
 
     func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
+
+        // TODO:
     }
 
     /**
