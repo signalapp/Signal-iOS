@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSContactThread.h"
 #import "ContactsManagerProtocol.h"
@@ -32,12 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
     if (!recipient) {
+        // If no recipient record exists for that contactId, create an empty record
+        // for immediate use, then ask ContactsUpdater to try to update it async.
         recipient =
             [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId
                                                             relay:relay
                                                     supportsVoice:YES
                                                    // Default to NO; ContactsUpdater will try to update this property.
                                                    supportsWebRTC:NO];
+        [recipient saveWithTransaction:transaction];
 
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
             success:^(NSSet<NSString *> *matchedIds) {
@@ -45,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
             failure:^(NSError *error) {
                 DDLogWarn(@"Failed to lookup contact with error:%@", error);
             }];
-        [recipient saveWithTransaction:transaction];
     }
 
     return [self getOrCreateThreadWithContactId:contactId transaction:transaction];
