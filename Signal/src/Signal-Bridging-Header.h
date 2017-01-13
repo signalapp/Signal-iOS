@@ -1,6 +1,7 @@
 //
-//  Use this file to import your target's public headers that you would like to expose to Swift.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
+
 #import <Foundation/Foundation.h>
 
 #import "AppAudioManager.h"
@@ -13,11 +14,14 @@
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PhoneNumber.h"
 #import "PropertyListPreferences.h"
+#import "PureLayout.h"
 #import "PushManager.h"
 #import "RPAccountManager.h"
 #import "TSSocketManager.h"
+#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import "UIView+OWS.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+Base64.h>
