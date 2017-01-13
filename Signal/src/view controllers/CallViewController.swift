@@ -181,6 +181,20 @@ class CallViewController: UIViewController, CallDelegate {
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
 
+    // MARK: Control Groups
+
+    var allControls: [UIView] {
+        return incomingCallControls + ongoingCallControls
+    }
+
+    var incomingCallControls: [UIView] {
+        return [ incomingTextMessageButton, acceptIncomingButton, declineIncomingButton ]
+    }
+
+    var ongoingCallControls: [UIView] {
+        return [ muteButton, speakerPhoneButton, ongoingTextMessageButton, hangUpButton, videoButton ]
+    }
+
     // MARK: Initializers
 
     required init?(coder aDecoder: NSCoder) {
@@ -279,7 +293,7 @@ class CallViewController: UIViewController, CallDelegate {
         ongoingCallView = createContainerForCallControls(controlGroups : [
             [ongoingTextMessageButton, videoButton],
             [muteButton, speakerPhoneButton ],
-            [hangUpButton ],
+            [hangUpButton ]
             ])
     }
 
@@ -297,7 +311,7 @@ class CallViewController: UIViewController, CallDelegate {
 
         incomingCallView = createContainerForCallControls(controlGroups : [
             [incomingTextMessageButton],
-            [acceptIncomingButton, declineIncomingButton ],
+            [acceptIncomingButton, declineIncomingButton ]
             ])
     }
 
@@ -310,14 +324,14 @@ class CallViewController: UIViewController, CallDelegate {
                                         fixedHeight:buttonSize()))
         }
         let rowspacing = ScaleFromIPhone5To7Plus(20, 25)
-        var lastRow: UIView?
+        var prevRow: UIView?
         for row in rows {
             containerView.addSubview(row)
             row.autoPinWidthToSuperview()
-            if lastRow != nil {
-                row.autoPinEdge(.top, to:.bottom, of:lastRow!, withOffset:rowspacing)
+            if prevRow != nil {
+                row.autoPinEdge(.top, to:.bottom, of:prevRow!, withOffset:rowspacing)
             }
-            lastRow = row
+            prevRow = row
         }
 
         containerView.setContentHuggingVerticalHigh()
@@ -326,10 +340,8 @@ class CallViewController: UIViewController, CallDelegate {
         return containerView
     }
 
-    func createButton(imageName: String!, action: Selector!, buttonSize: CGFloat!) -> UIButton {
+    func createButton(imageName: String, action: Selector, buttonSize: CGFloat) -> UIButton {
         let image = UIImage(named:imageName)
-        Logger.error("button \(imageName) \(NSStringFromCGSize(image!.size))")
-        Logger.flush()
         let button = UIButton()
         button.setImage(image, for:.normal)
         button.addTarget(self, action:action, for:.touchUpInside)
@@ -338,14 +350,15 @@ class CallViewController: UIViewController, CallDelegate {
         return button
     }
 
-    // Creates a row view that evenly spaces its subviews horizontally.
-    // If there is only a single subview, it is centered.
+    // Creates a row containing a given set of subviews.
     func rowWithSubviews(subviews: [UIView], fixedHeight: CGFloat) -> UIView {
         let row = UIView()
         row.setContentHuggingVerticalHigh()
         row.autoSetDimension(.height, toSize:fixedHeight)
 
         if subviews.count > 1 {
+            // If there's more than one subview in the row,
+            // space them evenly within the row.
             var lastSubview: UIView?
             var lastSpacer: UIView?
             for subview in subviews {
@@ -362,7 +375,7 @@ class CallViewController: UIViewController, CallDelegate {
                     spacer.setContentHuggingHorizontalLow()
                     spacer.autoVCenterInSuperview()
                     if lastSpacer != nil {
-                        spacer.autoMatch(_:.width, to:.width, of:lastSpacer!)
+                        spacer.autoMatch(.width, to:.width, of:lastSpacer!)
                     }
                     lastSpacer = spacer
                 }
@@ -371,10 +384,8 @@ class CallViewController: UIViewController, CallDelegate {
             }
             subviews.first!.autoPinEdge(toSuperviewEdge:.left)
             subviews.last!.autoPinEdge(toSuperviewEdge:.right)
-
-            Logger.error("row \(subviews.count) -> \(row.subviews.count)")
-
         } else if subviews.count == 1 {
+            // If there's only one subview in this row, center it.
             let subview = subviews.first!
             row.addSubview(subview)
             subview.autoCenterInSuperview()
@@ -476,14 +487,14 @@ class CallViewController: UIViewController, CallDelegate {
 
         // Show Incoming vs. (Outgoing || Accepted) call controls
         let isRinging = callState == .localRinging
-        for subview in allControls() {
+        for subview in allControls {
             if isRinging {
                 // Show incoming controls
-                let isIncomingCallControl = incomingCallControls().contains(subview)
+                let isIncomingCallControl = incomingCallControls.contains(subview)
                 subview.isHidden = !isIncomingCallControl
             } else {
                 // Show ongoing controls
-                let isOngoingCallControl = ongoingCallControls().contains(subview)
+                let isOngoingCallControl = ongoingCallControls.contains(subview)
                 subview.isHidden = !isOngoingCallControl
             }
         }
@@ -501,18 +512,6 @@ class CallViewController: UIViewController, CallDelegate {
 
         default: break
         }
-    }
-
-    func allControls() -> [UIView] {
-        return incomingCallControls() + ongoingCallControls()
-    }
-
-    func incomingCallControls() -> [UIView] {
-        return [ incomingTextMessageButton, acceptIncomingButton, declineIncomingButton ]
-    }
-
-    func ongoingCallControls() -> [UIView] {
-        return [ muteButton, speakerPhoneButton, ongoingTextMessageButton, hangUpButton, videoButton ]
     }
 
     // MARK: - Actions
