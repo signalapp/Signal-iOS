@@ -147,25 +147,18 @@ NS_ASSUME_NONNULL_BEGIN
                   SignalRecipient *recipient =
                       [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
                   if (!recipient) {
-                      recipient =
-                          [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil supportsVoice:NO];
+                      recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier
+                                                                                  relay:nil
+                                                                          supportsVoice:NO
+                                                                         supportsWebRTC:NO];
                   }
 
                   NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
 
-                  NSString *relay = [attributes objectForKey:@"relay"];
-                  if (relay) {
-                      recipient.relay = relay;
-                  } else {
-                      recipient.relay = nil;
-                  }
-
-                  BOOL supportsVoice = [[attributes objectForKey:@"voice"] boolValue];
-                  if (supportsVoice) {
-                      recipient.supportsVoice = YES;
-                  } else {
-                      recipient.supportsVoice = NO;
-                  }
+                  recipient.relay = attributes[@"relay"];
+                  recipient.supportsVoice = [attributes[@"voice"] boolValue];
+                  // The key for the "supports WebRTC audio/video" property is "video".
+                  recipient.supportsWebRTC = [attributes[@"video"] boolValue];
 
                   [recipient saveWithTransaction:transaction];
               }
