@@ -41,6 +41,16 @@ protocol CallDelegate: class {
     var state: CallState {
         didSet {
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(state)")
+
+            // Update connectedDate
+            if state == .connected {
+                if connectedDate == nil {
+                    connectedDate = NSDate()
+                }
+            } else {
+                connectedDate = nil
+            }
+
             delegate?.stateDidChange(call: self, state: state)
         }
     }
@@ -50,6 +60,7 @@ protocol CallDelegate: class {
             delegate?.muteDidChange(call: self, isMuted: isMuted)
         }
     }
+    var connectedDate: NSDate?
 
     var error: CallError?
 
@@ -75,6 +86,11 @@ protocol CallDelegate: class {
 
     static func newCallSignalingId() -> UInt64 {
         return UInt64.ows_random()
+    }
+
+    // This method should only be called when the call state is "connected".
+    func connectionDuration() -> TimeInterval {
+        return -connectedDate!.timeIntervalSinceNow
     }
 }
 
