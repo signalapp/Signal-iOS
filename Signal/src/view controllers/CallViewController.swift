@@ -173,14 +173,13 @@ class CallViewController: UIViewController, CallDelegate {
     var hangUpButton: UIButton!
     var muteButton: UIButton!
     var speakerPhoneButton: UIButton!
-    var ongoingTextMessageButton: UIButton!
+    var textMessageButton: UIButton!
     var videoButton: UIButton!
 
     // MARK: Incoming Call Controls
 
     var incomingCallView: UIView!
 
-    var incomingTextMessageButton: UIButton!
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
 
@@ -191,11 +190,11 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     var incomingCallControls: [UIView] {
-        return [ incomingTextMessageButton, acceptIncomingButton, declineIncomingButton ]
+        return [ acceptIncomingButton, declineIncomingButton ]
     }
 
     var ongoingCallControls: [UIView] {
-        return [ muteButton, speakerPhoneButton, ongoingTextMessageButton, hangUpButton, videoButton ]
+        return [ muteButton, speakerPhoneButton, textMessageButton, hangUpButton, videoButton ]
     }
 
     // MARK: Initializers
@@ -275,26 +274,25 @@ class CallViewController: UIViewController, CallDelegate {
         return ScaleFromIPhone5To7Plus(84, 108)
     }
 
+    func buttonInset() -> CGFloat {
+        return ScaleFromIPhone5To7Plus(7, 9)
+    }
+
     func createOngoingCallControls() {
 
-        ongoingTextMessageButton = createButton(imageName:"message-active-wide",
-                                                action:#selector(didPressTextMessage),
-                                                buttonSize:buttonSize())
+        textMessageButton = createButton(imageName:"message-active-wide",
+                                                action:#selector(didPressTextMessage))
         muteButton = createButton(imageName:"mute-active-wide",
-                                  action:#selector(didPressMute),
-                                  buttonSize:buttonSize())
+                                  action:#selector(didPressMute))
         speakerPhoneButton = createButton(imageName:"speaker-active-wide",
-                                          action:#selector(didPressSpeakerphone),
-                                          buttonSize:buttonSize())
+                                          action:#selector(didPressSpeakerphone))
         videoButton = createButton(imageName:"video-active-wide",
-                                   action:#selector(didPressVideo),
-                                   buttonSize:buttonSize())
+                                   action:#selector(didPressVideo))
         hangUpButton = createButton(imageName:"hangup-active-wide",
-                                    action:#selector(didPressHangup),
-                                    buttonSize:buttonSize())
+                                    action:#selector(didPressHangup))
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
-            [ongoingTextMessageButton, videoButton],
+            [textMessageButton, videoButton],
             [muteButton, speakerPhoneButton ],
             [hangUpButton ]
             ])
@@ -302,18 +300,12 @@ class CallViewController: UIViewController, CallDelegate {
 
     func createIncomingCallControls() {
 
-        incomingTextMessageButton = createButton(imageName:"message-active-wide",
-                                                 action:#selector(didPressTextMessage),
-                                                 buttonSize:buttonSize())
         acceptIncomingButton = createButton(imageName:"call-active-wide",
-                                            action:#selector(didPressAnswerCall),
-                                            buttonSize:buttonSize())
+                                            action:#selector(didPressAnswerCall))
         declineIncomingButton = createButton(imageName:"hangup-active-wide",
-                                             action:#selector(didPressDeclineCall),
-                                             buttonSize:buttonSize())
+                                             action:#selector(didPressDeclineCall))
 
         incomingCallView = createContainerForCallControls(controlGroups : [
-            [incomingTextMessageButton],
             [acceptIncomingButton, declineIncomingButton ]
             ])
     }
@@ -323,8 +315,7 @@ class CallViewController: UIViewController, CallDelegate {
         self.view.addSubview(containerView)
         var rows: [UIView] = []
         for controlGroup in controlGroups {
-            rows.append(rowWithSubviews(subviews:controlGroup,
-                                        fixedHeight:buttonSize()))
+            rows.append(rowWithSubviews(subviews:controlGroup))
         }
         let rowspacing = ScaleFromIPhone5To7Plus(6, 7)
         var prevRow: UIView?
@@ -343,21 +334,25 @@ class CallViewController: UIViewController, CallDelegate {
         return containerView
     }
 
-    func createButton(imageName: String, action: Selector, buttonSize: CGFloat) -> UIButton {
+    func createButton(imageName: String, action: Selector) -> UIButton {
         let image = UIImage(named:imageName)
         let button = UIButton()
         button.setImage(image, for:.normal)
+        button.imageEdgeInsets = UIEdgeInsetsMake(buttonInset(),
+                                                  buttonInset(),
+                                                  buttonInset(),
+                                                  buttonInset())
         button.addTarget(self, action:action, for:.touchUpInside)
-        button.autoSetDimension(.width, toSize:buttonSize)
-        button.autoSetDimension(.height, toSize:buttonSize)
+        button.autoSetDimension(.width, toSize:buttonSize())
+        button.autoSetDimension(.height, toSize:buttonSize())
         return button
     }
 
     // Creates a row containing a given set of subviews.
-    func rowWithSubviews(subviews: [UIView], fixedHeight: CGFloat) -> UIView {
+    func rowWithSubviews(subviews: [UIView]) -> UIView {
         let row = UIView()
         row.setContentHuggingVerticalHigh()
-        row.autoSetDimension(.height, toSize:fixedHeight)
+        row.autoSetDimension(.height, toSize:buttonSize())
 
         if subviews.count > 1 {
             // If there's more than one subview in the row,
