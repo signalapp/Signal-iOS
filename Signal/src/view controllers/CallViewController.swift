@@ -127,6 +127,9 @@ import PromiseKit
     }
 }
 
+// TODO: Add category so that button handlers can be defined where button is created.
+// TODO: Add logic to button handlers.
+// TODO: Ensure buttons enabled & disabled as necessary.
 @objc(OWSCallViewController)
 class CallViewController: UIViewController, CallDelegate {
 
