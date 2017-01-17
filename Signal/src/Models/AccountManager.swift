@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/25/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
@@ -8,13 +9,13 @@ import PromiseKit
  * Signal is actually two services - textSecure for messages and red phone (for calls). 
  * AccountManager delegates to both.
  */
-class AccountManager : NSObject {
+class AccountManager: NSObject {
     let TAG = "[AccountManager]"
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
     let redPhoneAccountManager: RPAccountManager
 
-    required init(textSecureAccountManager:TSAccountManager, redPhoneAccountManager:RPAccountManager) {
+    required init(textSecureAccountManager: TSAccountManager, redPhoneAccountManager: RPAccountManager) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.redPhoneAccountManager = redPhoneAccountManager
@@ -23,7 +24,7 @@ class AccountManager : NSObject {
     // MARK: registration
 
     @objc func register(verificationCode: String) -> AnyPromise {
-        return AnyPromise(register(verificationCode: verificationCode));
+        return AnyPromise(register(verificationCode: verificationCode))
     }
 
     func register(verificationCode: String) -> Promise<Void> {
@@ -38,7 +39,7 @@ class AccountManager : NSObject {
                 fulfill()
             }
         }.then {
-            Logger.debug("\(self.TAG) verification code looks well formed.");
+            Logger.debug("\(self.TAG) verification code looks well formed.")
             return self.registerForTextSecure(verificationCode: verificationCode)
         }.then {
             Logger.debug("\(self.TAG) successfully registered for TextSecure")
@@ -53,7 +54,9 @@ class AccountManager : NSObject {
 
     private func registerForTextSecure(verificationCode: String) -> Promise<Void> {
         return Promise { fulfill, reject in
+            let isWebRTCEnabled = Environment.preferences().isWebRTCEnabled()
             self.textSecureAccountManager.verifyAccount(withCode:verificationCode,
+                                                        isWebRTCEnabled:isWebRTCEnabled,
                                                         success:fulfill,
                                                         failure:reject)
         }
@@ -87,8 +90,8 @@ class AccountManager : NSObject {
         }.then {
             Logger.info("\(self.TAG) Successfully updated red phone push tokens.")
             // TODO code cleanup - convert to `return Promise(value: nil)` and test
-            return Promise { fulfill, reject in
-                fulfill();
+            return Promise { fulfill, _ in
+                fulfill()
             }
         }
     }

@@ -73,7 +73,7 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call back";
 
 /* Activity Sheet label */
@@ -223,13 +223,13 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "You Made Another Call.";
 
-/* No comment provided by engineer. */
+/* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Missed the Call.";
 
-/* No comment provided by engineer. */
+/* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
@@ -361,10 +361,10 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Incoming call";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Incoming call from %@";
 
 /* Text for button at the top of the contact picker */
@@ -445,7 +445,8 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutes";
 
-/* No comment provided by engineer. */
+/* notification body
+   notification title */
 "MISSED_CALL" = "Missed call";
 
 /* Alert body */
@@ -454,7 +455,8 @@
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* No comment provided by engineer. */
+/* notification body
+   notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Missed call from %@.";
 
 /* No comment provided by engineer. */
@@ -726,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Advanced";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable WebRTC Calling";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
