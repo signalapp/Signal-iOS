@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
@@ -45,7 +49,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 #pragma mark Detect updates - perform migrations
 
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
+}
+
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationWillEnterForeground.", self.tag);
+    
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
@@ -232,6 +242,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationDidBecomeActive.", self.tag);
+
     if (getenv("runningTests_dontStartApp")) {
         return;
     }
@@ -253,6 +265,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationWillResignActive.", self.tag);
+    
     UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
     bgTask                                    = [application beginBackgroundTaskWithExpirationHandler:^{
 
@@ -261,10 +275,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if ([TSAccountManager isRegistered]) {
           dispatch_sync(dispatch_get_main_queue(), ^{
-            [self protectScreen];
-            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [self protectScreen];
+              [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [TSSocketManager resignActivity];
           });
-          [TSSocketManager resignActivity];
       }
 
       [application endBackgroundTask:bgTask];
@@ -363,6 +377,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
+
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {

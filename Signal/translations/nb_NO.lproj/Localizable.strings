@@ -236,7 +236,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal klarte ikke å koble seg til internett. Forsøk et annet trådløst nettverk, eller bruk mobildata.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke lenger registrert til telefonnummeret. Do må slette Signal og installere appen på nytt.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enheten er ikke lenger registrert til telefonnummeret. Du må slette Signal og installere appen på nytt.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
@@ -326,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Utmelding av gruppe mislyktes";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Gruppe innstillinger";
+"GROUP_SETTINGS_LABEL" = "Gruppeinnstillinger";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Tittelen er nå '%@'.";

@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Cerrar";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Ya tienes tu número registrado en Signal?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Ya has registrado tu número en Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Responder";
