@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
@@ -256,10 +260,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if ([TSAccountManager isRegistered]) {
           dispatch_sync(dispatch_get_main_queue(), ^{
-            [self protectScreen];
-            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [self protectScreen];
+              [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [TSSocketManager resignActivity];
           });
-          [TSSocketManager resignActivity];
       }
 
       [application endBackgroundTask:bgTask];
