@@ -10,6 +10,7 @@ NSString *const PropertyListPreferencesSignalDatabaseCollection = @"SignalPrefer
 
 NSString *const PropertyListPreferencesKeyCallStreamDESBufferLevel = @"CallStreamDesiredBufferLevel";
 NSString *const PropertyListPreferencesKeyScreenSecurity = @"Screen Security Key";
+NSString *const PropertyListPreferencesKeyTouchID = @"TouchID Key";
 NSString *const PropertyListPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
 NSString *const PropertyListPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const PropertyListPreferencesKeyHasSentAMessage = @"User has sent a message";
@@ -84,6 +85,15 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     return preference ? [preference boolValue] : YES;
 }
 
+- (BOOL)touchIDIsEnabled 
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyTouchID];
+    if ([preference isKindOfClass: NSNumber.class]) {
+        return preference.boolValue;
+    }
+    return NO;
+}
+
 - (BOOL)getHasSentAMessage
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasSentAMessage];
@@ -123,6 +133,11 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 - (void)setScreenSecurity:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];
+}
+
+- (void)setTouchIDEnabled:(BOOL)enabled 
+{
+    [self setValueForKey:PropertyListPreferencesKeyTouchID toValue:@(enabled)];
 }
 
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled

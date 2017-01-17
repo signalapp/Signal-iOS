@@ -38,6 +38,9 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 - (BOOL)screenSecurityIsEnabled;
 - (void)setScreenSecurity:(BOOL)flag;
 
+- (BOOL)touchIDIsEnabled;
+- (void)setTouchIDEnabled:(BOOL)enabled;
+
 - (NotificationType)notificationPreviewType;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
