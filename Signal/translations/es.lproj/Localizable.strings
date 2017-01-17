@@ -364,6 +364,9 @@
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitar contactos";
 
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Buscar";
+
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Invitar contactos";
 
@@ -659,7 +662,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que deseas registrar ya está registrado en otro servidor. Dalo de baja del otro servidor e inténtalo nuevamente.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Renovar token para recibir notificaciones ";
+"REREGISTER_FOR_PUSH" = "Renovar token de notificaciones ";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Reintentar";
