@@ -152,19 +152,18 @@ class CallViewController: UIViewController, CallDelegate {
     var thread: TSContactThread!
     var call: SignalCall!
 
-    // MARK: Layout
+    // MARK: Views
 
     var hasConstraints = false
-
-    // MARK: Background
-
     var blurView: UIVisualEffectView!
+    var dateFormatter: DateFormatter?
 
     // MARK: Contact Views
 
     var contactNameLabel: UILabel!
     var contactAvatarView: AvatarImageView!
     var callStatusLabel: UILabel!
+    var callDurationTimer: Timer?
 
     // MARK: Ongoing Call Controls
 
@@ -213,6 +212,21 @@ class CallViewController: UIViewController, CallDelegate {
         callUIAdapter = callService.callUIAdapter
         audioService = CallAudioService()
         super.init(nibName: nil, bundle: nil)
+    }
+
+    // MARK: View Lifecycle
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        callDurationTimer?.invalidate()
+        callDurationTimer = nil
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateCallUI(callState: call.state)
     }
 
     override func viewDidLoad() {
@@ -472,7 +486,30 @@ class CallViewController: UIViewController, CallDelegate {
         case .answering:
             return NSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
-            return NSLocalizedString("IN_CALL_TALKING", comment: "Call setup status label")
+            if let call = self.call {
+                let callDuration = call.connectionDuration()
+                let callDurationDate = Date(timeIntervalSinceReferenceDate:callDuration)
+                if dateFormatter == nil {
+                    dateFormatter = DateFormatter()
+                    dateFormatter!.dateFormat = "HH:mm:ss"
+                    dateFormatter!.timeZone = TimeZone(identifier:"UTC")!
+                }
+                var formattedDate = dateFormatter!.string(from: callDurationDate)
+                if formattedDate.hasPrefix("00:") {
+                    // Don't show the "hours" portion of the date format unless the 
+                    // call duration is at least 1 hour.
+                    formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 3))
+                } else {
+                    // If showing the "hours" portion of the date format, strip any leading
+                    // zeroes.
+                    if formattedDate.hasPrefix("0") {
+                        formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 1))
+                    }
+                }
+                return formattedDate
+            } else {
+                return NSLocalizedString("IN_CALL_TALKING", comment: "Call setup status label")
+            }
         case .remoteBusy:
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
@@ -506,6 +543,24 @@ class CallViewController: UIViewController, CallDelegate {
 
         default: break
         }
+
+        if callState == .connected {
+            if callDurationTimer == nil {
+                let kDurationUpdateFrequencySeconds = 1 / 20.0
+                callDurationTimer = Timer.scheduledTimer(timeInterval: kDurationUpdateFrequencySeconds,
+                                                         target:self,
+                                                         selector:#selector(updateCallDuration),
+                                                         userInfo:nil,
+                                                         repeats:true)
+            }
+        } else {
+            callDurationTimer?.invalidate()
+            callDurationTimer = nil
+        }
+    }
+
+    func updateCallDuration(timer: Timer?) {
+        updateCallUI(callState: call.state)
     }
 
     // MARK: - Actions
