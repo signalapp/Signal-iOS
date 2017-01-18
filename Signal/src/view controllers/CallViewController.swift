@@ -11,6 +11,11 @@ import PromiseKit
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?
     private let audioManager = AppAudioManager.sharedInstance()
+    private let soundPlayer = JSQSystemSoundPlayer.shared()!
+
+    enum SoundFilenames: String {
+        case incomingRing = "r"
+    }
 
     // Mark: Vibration config
     private let vibrateRepeatDuration = 1.6
@@ -59,9 +64,9 @@ import PromiseKit
 
     private func handleLocalRinging() {
         Logger.debug("\(TAG) \(#function)")
-        audioManager.setAudioEnabled(true)
-        audioManager.handleInboundRing()
-        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(vibrate), userInfo: nil, repeats: true)
+
+        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(ringVibration), userInfo: nil, repeats: true)
+        soundPlayer.playSound(withFilename: SoundFilenames.incomingRing.rawValue, fileExtension: kJSQSystemSoundTypeCAF)
     }
 
     private func handleConnected() {
@@ -96,18 +101,18 @@ import PromiseKit
     // MARK: Helpers
 
     private func stopRinging() {
-        // Disables external speaker used for ringing, unless user enables speakerphone.
-        audioManager.setDefaultAudioProfile()
-        audioManager.cancelAllAudio()
-
         vibrateTimer?.invalidate()
         vibrateTimer = nil
+
+        soundPlayer.stopSound(withFilename: SoundFilenames.incomingRing.rawValue)
     }
 
-    public func vibrate() {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    public func ringVibration() {
+        // Since a call notification is more urgent than a message notifaction, we
+        // vibrate twice, like a pulse, to differentiate from a normal notification vibration.
+        soundPlayer.playVibrateSound()
         DispatchQueue.default.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            self.soundPlayer.playVibrateSound()
         }
     }
 }
