@@ -22,7 +22,9 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         self.notificationsAdapter = notificationsAdapter
     }
 
-    func startOutgoingCall(_ call: SignalCall) {
+    func startOutgoingCall(handle: String) -> SignalCall {
+        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+
         CallService.signalingQueue.async {
             _ = self.callService.handleOutgoingCall(call).then {
                 Logger.debug("\(self.TAG) handleOutgoingCall succeeded")
@@ -30,6 +32,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
                 Logger.error("\(self.TAG) handleOutgoingCall failed with error: \(error)")
             }
         }
+
+        return call
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
@@ -51,15 +55,57 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
+    func answerCall(localId: UUID) {
+        CallService.signalingQueue.async {
+            guard let call = self.callService.call else {
+                assertionFailure("\(self.TAG) in \(#function) No current call.")
+                return
+            }
+
+            guard call.localId == localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
+            self.answerCall(call)
+        }
+    }
+
     func answerCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
+            guard call.localId == self.callService.call?.localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
             PeerConnectionClient.startAudioSession()
             self.callService.handleAnswerCall(call)
         }
     }
 
+    func declineCall(localId: UUID) {
+        CallService.signalingQueue.async {
+            guard let call = self.callService.call else {
+                assertionFailure("\(self.TAG) in \(#function) No current call.")
+                return
+            }
+
+            guard call.localId == localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
+            self.declineCall(call)
+        }
+    }
+
     func declineCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
+            guard call.localId == self.callService.call?.localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
             self.callService.handleDeclineCall(call)
         }
     }
@@ -70,18 +116,33 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
     func endCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
+            guard call.localId == self.callService.call?.localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
             self.callService.handleLocalHungupCall(call)
         }
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         CallService.signalingQueue.async {
+            guard call.localId == self.callService.call?.localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
             self.callService.setIsMuted(isMuted: isMuted)
         }
     }
 
     func setHasVideo(call: SignalCall, hasVideo: Bool) {
         CallService.signalingQueue.async {
+            guard call.localId == self.callService.call?.localId else {
+                assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+                return
+            }
+
             self.callService.setHasVideo(hasVideo: hasVideo)
         }
     }

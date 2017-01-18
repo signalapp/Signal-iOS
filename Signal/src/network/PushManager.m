@@ -36,7 +36,7 @@
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
-@property (nonatomic, readonly, strong) CallService *callService;
+@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
 
 @end
 
@@ -76,7 +76,7 @@
     }
 
     _contactsManager = contactsManager;
-    _callService = callService;
+    _callUIAdapter = callService.callUIAdapter;
 
     // DEPRECATED Redphone uses notification tracker.
     _notificationTracker = notificationTracker;
@@ -298,7 +298,8 @@
             return;
         }
 
-        [self.callService handleAnswerCallWithLocalId:localId];
+
+        [self.callUIAdapter answerCallWithLocalId:localId];
     } else if ([identifier isEqualToString:PushManagerActionsDeclineCall]) {
         DDLogInfo(@"%@ received decline call action", self.tag);
 
@@ -314,7 +315,7 @@
             return;
         }
 
-        [self.callService handleDeclineCallWithLocalId:localId];
+        [self.callUIAdapter declineCallWithLocalId:localId];
     } else if ([identifier isEqualToString:PushManagerActionsCallBack]) {
         DDLogInfo(@"%@ received call back action", self.tag);
 
@@ -324,7 +325,7 @@
             return;
         }
 
-        [self.callService handleCallBackWithRecipientId:recipientId];
+        [self.callUIAdapter callBackWithRecipientId:recipientId];
     } else {
         DDLogDebug(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
 
