@@ -1,14 +1,16 @@
-//  Created by Michael Kirk on 11/11/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
 import WebRTC
 
 /**
- * `CallService` manages the state of a WebRTC backed Signal Call (as opposed to the legacy "RedPhone Call").
+ * `CallService` is a global singleton that manages the state of WebRTC-backed Signal Calls
+ * (as opposed to legacy "RedPhone Calls").
  *
- * It serves as connection from the `CallUIAdapater` to the `PeerConnectionClient`.
+ * It serves as a connection between the `CallUIAdapter` and the `PeerConnectionClient`.
  *
  * ## Signaling
  *
@@ -119,7 +121,7 @@ fileprivate let timeoutSeconds = 60
     var incomingCallPromise: Promise<Void>?
 
     // Used to coordinate promises across delegate methods
-    var fulfillCallConnectedPromise: (()->())?
+    var fulfillCallConnectedPromise: (() -> Void)?
 
     required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
@@ -608,7 +610,7 @@ fileprivate let timeoutSeconds = 60
         call.state = .connected
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
-        peerConnectionClient.setAudioEnabled(enabled: true)
+        peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
         peerConnectionClient.setVideoEnabled(enabled: call.hasVideo)
     }
 
@@ -713,7 +715,7 @@ fileprivate let timeoutSeconds = 60
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func handleToggledMute(isMuted: Bool) {
+    func setIsMuted(isMuted: Bool) {
         assertOnSignalingQueue()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -728,6 +730,34 @@ fileprivate let timeoutSeconds = 60
 
         call.isMuted = isMuted
         peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+    }
+
+    /**
+     * Local user toggled video.
+     *
+     * Can be used for Incoming and Outgoing calls.
+     */
+    func setHasVideo(hasVideo: Bool) {
+        assertOnSignalingQueue()
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            return
+        }
+
+        guard let call = self.call else {
+            handleFailedCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            return
+        }
+
+        call.hasVideo = hasVideo
+        peerConnectionClient.setVideoEnabled(enabled: hasVideo)
+    }
+
+    func handleCallKitStartVideo() {
+        CallService.signalingQueue.async {
+            self.setHasVideo(hasVideo:true)
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/13/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import UIKit
 import CallKit
@@ -48,7 +49,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func toggleMute(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: SignalCall, isMuted: Bool) {
         let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
