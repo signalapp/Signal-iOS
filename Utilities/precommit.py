@@ -44,7 +44,10 @@ def process(filepath):
         env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
         lint_output = subprocess.check_output(['swiftlint', 'autocorrect', '--use-script-input-files'], env=env_copy)
         print lint_output
-        lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
+        try:
+            lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
+        except subprocess.pCalledProcessError, e:
+            lint_output = e.output
         print lint_output
     
     with open(filepath, 'rt') as f:
