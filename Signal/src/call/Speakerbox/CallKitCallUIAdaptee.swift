@@ -23,7 +23,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     internal let notificationsAdapter: CallNotificationsAdapter
     private let provider: CXProvider
 
-    /// The app's provider configuration, representing its CallKit capabilities
+    // CallKit handles incoming ringer stop/start for us. Yay!
+    let hasManualRinger = false
+
+    // The app's provider configuration, representing its CallKit capabilities
     static var providerConfiguration: CXProviderConfiguration {
         let localizedName = NSLocalizedString("APPLICATION_NAME", comment: "Name of application")
         let providerConfiguration = CXProviderConfiguration(localizedName: localizedName)

@@ -8,12 +8,13 @@ import Foundation
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?
     private let soundPlayer = JSQSystemSoundPlayer.shared()!
+    private let handleRinging: Bool
 
     enum SoundFilenames: String {
         case incomingRing = "r"
     }
 
-    // Mark: Vibration config
+    // MARK: Vibration config
     private let vibrateRepeatDuration = 1.6
 
     // Our ring buzz is a pair of vibrations.
@@ -25,6 +26,14 @@ import Foundation
             handleUpdatedSpeakerphone()
         }
     }
+
+    // MARK: - Initializers
+
+    init(handleRinging: Bool) {
+        self.handleRinging = handleRinging
+    }
+
+    // MARK: - Service action handlers
 
     public func handleState(_ state: CallState) {
         switch state {
@@ -59,13 +68,8 @@ import Foundation
     }
 
     private func handleLocalRinging() {
-        Logger.debug("\(TAG) \(#function)")
-
-        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(ringVibration), userInfo: nil, repeats: true)
-
-        // Stop other sounds and play ringer through external speaker
-        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
-        soundPlayer.playSound(withFilename: SoundFilenames.incomingRing.rawValue, fileExtension: kJSQSystemSoundTypeCAF)
+        Logger.debug("\(TAG) in \(#function)")
+        startRinging()
     }
 
     private func handleConnected() {
@@ -104,13 +108,36 @@ import Foundation
         }
     }
 
-    // MARK: Helpers
+    // MARK: - Ringing
+
+    private func startRinging() {
+        guard handleRinging else {
+            Logger.debug("\(TAG) ignoring \(#function) since CallKit handles it's own ringing state")
+            return
+        }
+
+        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(ringVibration), userInfo: nil, repeats: true)
+
+        // Stop other sounds and play ringer through external speaker
+        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
+
+        soundPlayer.playSound(withFilename: SoundFilenames.incomingRing.rawValue, fileExtension: kJSQSystemSoundTypeCAF)
+    }
 
     private func stopRinging() {
+        guard handleRinging else {
+            Logger.debug("\(TAG) ignoring \(#function) since CallKit handles it's own ringing state")
+            return
+        }
+        Logger.debug("\(TAG) in \(#function)")
+
+        // Stop vibrating
         vibrateTimer?.invalidate()
         vibrateTimer = nil
+
         soundPlayer.stopSound(withFilename: SoundFilenames.incomingRing.rawValue)
-        // Stop playing out of speaker
+
+        // Stop solo audio, revert to default.
         setAudioSession(category: AVAudioSessionCategoryAmbient)
     }
 
@@ -123,6 +150,8 @@ import Foundation
             self.soundPlayer.playVibrateSound()
         }
     }
+
+    // MARK: - AVAudioSession Mgmt
 
     private func setAudioSession(category: String, options: AVAudioSessionCategoryOptions) {
         do {

@@ -8,6 +8,7 @@ import CallKit
 
 protocol CallUIAdaptee {
     var notificationsAdapter: CallNotificationsAdapter { get }
+    var hasManualRinger: Bool { get }
 
     func startOutgoingCall(_ call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, callerName: String)
@@ -101,5 +102,10 @@ class CallUIAdapter {
 
     internal func setHasVideo(call: SignalCall, hasVideo: Bool) {
         adaptee.setHasVideo(call: call, hasVideo: hasVideo)
+    }
+
+    // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.
+    internal var hasManualRinger: Bool {
+        return adaptee.hasManualRinger
     }
 }

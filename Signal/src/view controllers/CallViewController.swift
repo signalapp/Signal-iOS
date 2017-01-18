@@ -81,7 +81,7 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService()
+        audioService = CallAudioService(handleRinging: callUIAdapter.hasManualRinger)
         super.init(coder: aDecoder)
     }
 
@@ -89,7 +89,7 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService()
+        audioService = CallAudioService(handleRinging: callUIAdapter.hasManualRinger)
         super.init(nibName: nil, bundle: nil)
     }
 
