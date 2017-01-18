@@ -9,13 +9,40 @@ let kAudioTrackType = kRTCMediaStreamTrackKindAudio
 let kVideoTrackType = kRTCMediaStreamTrackKindVideo
 
 /**
+ * The PeerConnectionClient notifies it's delegate (the CallService) of key events in the call signaling life cycle
+ */
+protocol PeerConnectionClientDelegate: class {
+
+    /**
+     * The connection has been established. The clients can now communicate.
+     */
+    func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient)
+
+    /**
+     * The connection failed to establish. The clients will not be able to communicate.
+     */
+    func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient)
+
+    /**
+     * During the Signaling process each client generates IceCandidates locally, which contain information about how to 
+     * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client 
+     * out of band, as part of establishing a connection over WebRTC.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate)
+
+    /**
+     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData)
+}
+
+/**
  * `PeerConnectionClient` is our interface to WebRTC.
  *
  * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data 
- * including audio, video, and some signaling - though the bulk of the signaling is *establishing* the connection, 
- * meaning we can't use the connection to transmit yet.
+ * including audio, video, and some post-connected signaling (hangup, add video)
  */
-class PeerConnectionClient: NSObject {
+class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {
@@ -25,9 +52,12 @@ class PeerConnectionClient: NSObject {
              dataChannelSignaling = "signaling"
     }
 
+    // Delegate is notified of key events in the call lifecycle.
+    public weak var delegate: PeerConnectionClientDelegate!
+
     // Connection
 
-    private let peerConnection: RTCPeerConnection
+    internal var peerConnection: RTCPeerConnection!
     private let iceServers: [RTCIceServer]
     private let connectionConstraints: RTCMediaConstraints
     private let configuration: RTCConfiguration
@@ -51,8 +81,9 @@ class PeerConnectionClient: NSObject {
     private var videoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
-    init(iceServers: [RTCIceServer], peerConnectionDelegate: RTCPeerConnectionDelegate) {
+    init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate) {
         self.iceServers = iceServers
+        self.delegate = delegate
 
         configuration = RTCConfiguration()
         configuration.iceServers = iceServers
@@ -61,24 +92,25 @@ class PeerConnectionClient: NSObject {
 
         let connectionConstraintsDict = ["DtlsSrtpKeyAgreement": "true"]
         connectionConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: connectionConstraintsDict)
-        peerConnection = factory.peerConnection(with: configuration,
-                                                constraints: connectionConstraints,
-                                                delegate: peerConnectionDelegate)
 
         audioConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints:nil)
         cameraConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
+
         super.init()
 
+        peerConnection = factory.peerConnection(with: configuration,
+                                                constraints: connectionConstraints,
+                                                delegate: self)
         createAudioSender()
         createVideoSender()
     }
 
     // MARK: - Media Streams
 
-    public func createSignalingDataChannel(delegate: RTCDataChannelDelegate) {
+    public func createSignalingDataChannel() {
         let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
                                                      configuration: RTCDataChannelConfiguration())
-        dataChannel.delegate = delegate
+        dataChannel.delegate = self
 
         self.dataChannel = dataChannel
     }
@@ -255,16 +287,18 @@ class PeerConnectionClient: NSObject {
         // audioTrack is a strong property because we need access to it to mute/unmute, but I was seeing it 
         // become nil when it was only a weak property. So we retain it and manually nil the reference here, because
         // we are likely to crash if we retain any peer connection properties when the peerconnection is released
+        Logger.debug("\(TAG) in \(#function)")
         audioTrack = nil
         videoTrack = nil
         dataChannel = nil
         audioSender = nil
         videoSender = nil
 
+        peerConnection.delegate = nil
         peerConnection.close()
     }
 
-    // MARK: Data Channel
+    // MARK: - Data Channel
 
     func sendDataChannelMessage(data: Data) -> Bool {
         guard let dataChannel = self.dataChannel else {
@@ -274,6 +308,92 @@ class PeerConnectionClient: NSObject {
 
         let buffer = RTCDataBuffer(data: data, isBinary: false)
         return dataChannel.sendData(buffer)
+    }
+
+    // MARK: RTCDataChannelDelegate
+
+    /** The data channel state changed. */
+    public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
+        Logger.debug("\(TAG) dataChannelDidChangeState: \(dataChannel)")
+    }
+
+    /** The data channel successfully received a data buffer. */
+    public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
+        Logger.debug("\(TAG) dataChannel didReceiveMessageWith buffer:\(buffer)")
+
+        guard let dataChannelMessage = OWSWebRTCProtosData.parse(from:buffer.data) else {
+            // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
+            Logger.error("\(TAG) failed to parse dataProto")
+            return
+        }
+
+        delegate.peerConnectionClient(self, received: dataChannelMessage)
+    }
+
+    /** The data channel's |bufferedAmount| changed. */
+    public func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
+        Logger.debug("\(TAG) didChangeBufferedAmount: \(amount)")
+    }
+
+    // MARK: - RTCPeerConnectionDelegate
+
+    /** Called when the SignalingState changed. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
+        Logger.debug("\(TAG) didChange signalingState:\(stateChanged.debugDescription)")
+    }
+
+    /** Called when media is received on a new stream from remote peer. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+        Logger.debug("\(TAG) didAdd stream:\(stream)")
+    }
+
+    /** Called when a remote peer closes a stream. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
+        Logger.debug("\(TAG) didRemove Stream:\(stream)")
+    }
+
+    /** Called when negotiation is needed, for example ICE has restarted. */
+    public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
+        Logger.debug("\(TAG) shouldNegotiate")
+    }
+
+    /** Called any time the IceConnectionState changes. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+        Logger.debug("\(TAG) didChange IceConnectionState:\(newState.debugDescription)")
+        switch newState {
+        case .connected, .completed:
+            self.delegate.peerConnectionClientIceConnected(self)
+        case .failed:
+            Logger.warn("\(self.TAG) RTCIceConnection failed.")
+            self.delegate.peerConnectionClientIceFailed(self)
+        default:
+            Logger.debug("\(self.TAG) ignoring change IceConnectionState:\(newState.debugDescription)")
+        }
+    }
+
+    /** Called any time the IceGatheringState changes. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
+        Logger.debug("\(TAG) didChange IceGatheringState:\(newState.debugDescription)")
+    }
+
+    /** New ice candidate has been found. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
+        Logger.debug("\(TAG) didGenerate IceCandidate:\(candidate.sdp)")
+        self.delegate.peerConnectionClient(self, addedLocalIceCandidate: candidate)
+    }
+
+    /** Called when a group of local Ice candidates have been removed. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
+        Logger.debug("\(TAG) didRemove IceCandidates:\(candidates)")
+    }
+
+    /** New data channel has been opened. */
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
+        Logger.debug("\(TAG) didOpen dataChannel:\(dataChannel)")
+        CallService.signalingQueue.async {
+            Logger.debug("\(self.TAG) set dataChannel")
+            self.dataChannel = dataChannel
+        }
     }
 }
 
@@ -302,5 +422,62 @@ class HardenedRTCSessionDescription {
         description = description.replacingOccurrences(of: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", with: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
+    }
+}
+
+// Mark: Pretty Print Objc enums.
+
+fileprivate extension RTCSignalingState {
+    var debugDescription: String {
+        switch self {
+        case .stable:
+            return "stable"
+        case .haveLocalOffer:
+            return "haveLocalOffer"
+        case .haveLocalPrAnswer:
+            return "haveLocalPrAnswer"
+        case .haveRemoteOffer:
+            return "haveRemoteOffer"
+        case .haveRemotePrAnswer:
+            return "haveRemotePrAnswer"
+        case .closed:
+            return "closed"
+        }
+    }
+}
+
+fileprivate extension RTCIceGatheringState {
+    var debugDescription: String {
+        switch self {
+        case .new:
+            return "new"
+        case .gathering:
+            return "gathering"
+        case .complete:
+            return "complete"
+        }
+    }
+}
+
+fileprivate extension RTCIceConnectionState {
+    var debugDescription: String {
+        switch self {
+        case .new:
+            return "new"
+        case .checking:
+            return "checking"
+        case .connected:
+            return "connected"
+        case .completed:
+            return "completed"
+        case .failed:
+            return "failed"
+        case .disconnected:
+            return "disconnected"
+        case .closed:
+            return "closed"
+        case .count:
+            return "count"
+        }
     }
 }

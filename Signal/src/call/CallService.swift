@@ -75,7 +75,7 @@ enum CallError: Error {
 // FIXME TODO do we need to timeout?
 fileprivate let timeoutSeconds = 60
 
-@objc class CallService: NSObject, RTCDataChannelDelegate, RTCPeerConnectionDelegate {
+@objc class CallService: NSObject, PeerConnectionClientDelegate {
 
     // MARK: - Properties
 
@@ -167,11 +167,13 @@ fileprivate let timeoutSeconds = 60
 
         return getIceServers().then(on: CallService.signalingQueue) { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, peerConnectionDelegate: self)
-            self.peerConnectionClient = peerConnectionClient
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
 
-            // When calling, it's our responsibility to create the DataChannel. Receivers will not have to do this explicitly.
-            self.peerConnectionClient!.createSignalingDataChannel(delegate: self)
+            // When placing an outgoing call, it's our responsibility to create the DataChannel. Recipient will not have
+            // to do this explicitly.
+            peerConnectionClient.createSignalingDataChannel()
+
+            self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
         }.then(on: CallService.signalingQueue) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
@@ -315,7 +317,7 @@ fileprivate let timeoutSeconds = 60
         }.then(on: CallService.signalingQueue) { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, peerConnectionDelegate: self)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -323,7 +325,6 @@ fileprivate let timeoutSeconds = 60
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then(on: CallService.signalingQueue) { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
-            // TODO? WebRtcCallService.this.lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
             Logger.debug("\(self.TAG) set the remote description")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
@@ -784,6 +785,46 @@ fileprivate let timeoutSeconds = 60
         }
     }
 
+    // MARK: - PeerConnectionClientDelegate
+
+    /**
+     * The connection has been established. The clients can now communicate.
+     */
+    func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
+        CallService.signalingQueue.async {
+            self.handleIceConnected()
+        }
+    }
+
+    /**
+     * The connection failed to establish. The clients will not be able to communicate.
+     */
+    func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
+        CallService.signalingQueue.async {
+            self.handleFailedCall(error: CallError.disconnected)
+        }
+    }
+
+    /**
+     * During the Signaling process each client generates IceCandidates locally, which contain information about how to
+     * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client
+     * out of band, as part of establishing a connection over WebRTC.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
+        CallService.signalingQueue.async {
+            self.handleLocalAddedIceCandidate(iceCandidate)
+        }
+    }
+
+    /**
+     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+        CallService.signalingQueue.async {
+            self.handleDataChannelMessage(dataChannelMessage)
+        }
+    }
+
     // MARK: Helpers
 
     /**
@@ -799,7 +840,8 @@ fileprivate let timeoutSeconds = 60
     }
 
     /**
-     *
+     * RTCIceServers are used when attempting to establish an optimal connection to the other party. SignalService supplies
+     * a list of servers, plus we have fallback servers hardcoded in the app.
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
         return firstly {
@@ -817,6 +859,11 @@ fileprivate let timeoutSeconds = 60
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [CallService.fallbackIceServer]
+        }.recover { error -> [RTCIceServer] in
+            Logger.error("\(self.TAG) fetching ICE servers failed with error: \(error)")
+            Logger.warn("\(self.TAG) using fallback ICE Servers")
+
+            return [CallService.fallbackIceServer]
         }
     }
 
@@ -831,204 +878,22 @@ fileprivate let timeoutSeconds = 60
         terminateCall()
     }
 
+    /**
+     * Clean up any existing call state and get ready to receive a new call.
+     */
     private func terminateCall() {
         assertOnSignalingQueue()
+        Logger.debug("\(TAG) in \(#function)")
 
-//        lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
-//        NotificationBarManager.setCallEnded(this);
-//
-//        incomingRinger.stop();
-//        outgoingRinger.stop();
-//        outgoingRinger.playDisconnected();
-//
-//        if (peerConnection != null) {
-//            peerConnection.dispose();
-//            peerConnection = null;
-//        }
-//
-//        if (eglBase != null && localRenderer != null && remoteRenderer != null) {
-//            localRenderer.release();
-//            remoteRenderer.release();
-//            eglBase.release();
-//        }
-//
-//        shutdownAudio();
-//
-//        this.callState         = CallState.STATE_IDLE;
-//        this.recipient         = null;
-//        this.callId            = null;
-//        this.audioEnabled      = false;
-//        this.videoEnabled      = false;
-//        this.pendingIceUpdates = null;
-//        lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
-
+        peerConnectionClient?.delegate = nil
         peerConnectionClient?.terminate()
+
         peerConnectionClient = nil
         call = nil
         thread = nil
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
         pendingIceUpdateMessages = []
-    }
-
-    // MARK: - RTCDataChannelDelegate
-
-    /** The data channel state changed. */
-    public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        Logger.debug("\(TAG) dataChannelDidChangeState: \(dataChannel)")
-        // SignalingQueue.dispatch.async {}
-    }
-
-    /** The data channel successfully received a data buffer. */
-    public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
-        Logger.debug("\(TAG) dataChannel didReceiveMessageWith buffer:\(buffer)")
-
-        guard let dataChannelMessage = OWSWebRTCProtosData.parse(from:buffer.data) else {
-            // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
-            Logger.error("\(TAG) failed to parse dataProto")
-            return
-        }
-
-        CallService.signalingQueue.async {
-            self.handleDataChannelMessage(dataChannelMessage)
-        }
-    }
-
-    /** The data channel's |bufferedAmount| changed. */
-    public func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
-        Logger.debug("\(TAG) didChangeBufferedAmount: \(amount)")
-    }
-
-    // MARK: - RTCPeerConnectionDelegate
-
-    /** Called when the SignalingState changed. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-        Logger.debug("\(TAG) didChange signalingState:\(stateChanged.debugDescription)")
-    }
-
-    /** Called when media is received on a new stream from remote peer. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        Logger.debug("\(TAG) didAdd stream:\(stream)")
-    }
-
-    /** Called when a remote peer closes a stream. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        Logger.debug("\(TAG) didRemove Stream:\(stream)")
-    }
-
-    /** Called when negotiation is needed, for example ICE has restarted. */
-    public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        Logger.debug("\(TAG) shouldNegotiate")
-    }
-
-    /** Called any time the IceConnectionState changes. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
-        Logger.debug("\(TAG) didChange IceConnectionState:\(newState.debugDescription)")
-
-        CallService.signalingQueue.async {
-            switch newState {
-            case .connected, .completed:
-                self.handleIceConnected()
-            case .failed:
-                Logger.warn("\(self.TAG) RTCIceConnection failed.")
-                guard self.thread != nil else {
-                    Logger.error("\(self.TAG) refusing to hangup for failed IceConnection because there is no current thread")
-                    return
-                }
-                self.handleFailedCall(error: CallError.disconnected)
-            default:
-                Logger.debug("\(self.TAG) ignoring change IceConnectionState:\(newState.debugDescription)")
-            }
-        }
-    }
-
-    /** Called any time the IceGatheringState changes. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        Logger.debug("\(TAG) didChange IceGatheringState:\(newState.debugDescription)")
-    }
-
-    /** New ice candidate has been found. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        Logger.debug("\(TAG) didGenerate IceCandidate:\(candidate.sdp)")
-        CallService.signalingQueue.async {
-            self.handleLocalAddedIceCandidate(candidate)
-        }
-    }
-
-    /** Called when a group of local Ice candidates have been removed. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        Logger.debug("\(TAG) didRemove IceCandidates:\(candidates)")
-    }
-
-    /** New data channel has been opened. */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        Logger.debug("\(TAG) didOpen dataChannel:\(dataChannel)")
-        CallService.signalingQueue.async {
-            guard let peerConnectionClient = self.peerConnectionClient else {
-                Logger.error("\(self.TAG) surprised to find nil peerConnectionClient in \(#function)")
-                return
-            }
-
-            Logger.debug("\(self.TAG) set dataChannel")
-            peerConnectionClient.dataChannel = dataChannel
-        }
-    }
-}
-
-// Mark: Pretty Print Objc enums.
-
-fileprivate extension RTCSignalingState {
-    var debugDescription: String {
-        switch self {
-        case .stable:
-            return "stable"
-        case .haveLocalOffer:
-            return "haveLocalOffer"
-        case .haveLocalPrAnswer:
-            return "haveLocalPrAnswer"
-        case .haveRemoteOffer:
-            return "haveRemoteOffer"
-        case .haveRemotePrAnswer:
-            return "haveRemotePrAnswer"
-        case .closed:
-            return "closed"
-        }
-    }
-}
-
-fileprivate extension RTCIceGatheringState {
-    var debugDescription: String {
-        switch self {
-        case .new:
-            return "new"
-        case .gathering:
-            return "gathering"
-        case .complete:
-            return "complete"
-        }
-    }
-}
-
-fileprivate extension RTCIceConnectionState {
-    var debugDescription: String {
-        switch self {
-        case .new:
-            return "new"
-        case .checking:
-            return "checking"
-        case .connected:
-            return "connected"
-        case .completed:
-            return "completed"
-        case .failed:
-            return "failed"
-        case .disconnected:
-            return "disconnected"
-        case .closed:
-            return "closed"
-        case .count:
-            return "count"
-        }
     }
 }
 
