@@ -19,7 +19,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     let TAG = "[CallKitCallUIAdaptee]"
 
     private let callManager: CallKitCallManager
-    private let callService: CallService
+    internal let callService: CallService
     internal let notificationsAdapter: CallNotificationsAdapter
     private let provider: CXProvider
 
@@ -61,11 +61,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    func startOutgoingCall(_ call: SignalCall) {
+    func startOutgoingCall(handle: String) -> SignalCall {
+        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
         callManager.addCall(call)
         callManager.startCall(call)
+
+        return call
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
@@ -93,8 +97,16 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    func answerCall(localId: UUID) {
+        assertionFailure("CallKit should answer calls via system call screen, not via notifications.")
+    }
+
     func answerCall(_ call: SignalCall) {
         callManager.answer(call: call)
+    }
+
+    func declineCall(localId: UUID) {
+        assertionFailure("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func declineCall(_ call: SignalCall) {
