@@ -885,6 +885,7 @@ fileprivate let timeoutSeconds = 60
         assertOnSignalingQueue()
         Logger.debug("\(TAG) in \(#function)")
 
+        peerConnectionClient?.delegate = nil
         peerConnectionClient?.terminate()
 
         peerConnectionClient = nil

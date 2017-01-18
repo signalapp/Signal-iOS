@@ -53,7 +53,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     // Delegate is notified of key events in the call lifecycle.
-    private weak var delegate: PeerConnectionClientDelegate!
+    public weak var delegate: PeerConnectionClientDelegate!
 
     // Connection
 
