@@ -476,6 +476,8 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     func localizedTextForCallState(_ callState: CallState) -> String {
+        assert(Thread.isMainThread)
+
         switch callState {
         case .idle, .remoteHangup, .localHangup:
             return NSLocalizedString("IN_CALL_TERMINATED", comment: "Call setup status label")
@@ -517,11 +519,14 @@ class CallViewController: UIViewController, CallDelegate {
         }
     }
 
-    func updateCallUI(callState: CallState) {
-        let textForState = localizedTextForCallState(callState)
-        Logger.info("\(TAG) new call status: \(callState) aka \"\(textForState)\"")
+    func updateCallStatusLabel(callState: CallState) {
+        assert(Thread.isMainThread)
+        self.callStatusLabel.text = localizedTextForCallState(callState)
+    }
 
-        self.callStatusLabel.text = textForState
+    func updateCallUI(callState: CallState) {
+        assert(Thread.isMainThread)
+        updateCallStatusLabel(callState: callState)
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
@@ -533,7 +538,7 @@ class CallViewController: UIViewController, CallDelegate {
         // Dismiss Handling
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
-            Logger.debug("\(TAG) dismissing after delay because new state is \(textForState)")
+            Logger.debug("\(TAG) dismissing after delay because new state is \(callState)")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.dismiss(animated: true)
             }
@@ -560,7 +565,7 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     func updateCallDuration(timer: Timer?) {
-        updateCallUI(callState: call.state)
+        updateCallStatusLabel(callState: call.state)
     }
 
     // MARK: - Actions
