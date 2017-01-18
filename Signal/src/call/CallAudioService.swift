@@ -7,7 +7,6 @@ import Foundation
 @objc class CallAudioService: NSObject {
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?
-    private let audioManager = AppAudioManager.sharedInstance()
     private let soundPlayer = JSQSystemSoundPlayer.shared()!
 
     enum SoundFilenames: String {
@@ -98,16 +97,11 @@ import Foundation
     }
 
     private func handleUpdatedSpeakerphone() {
-        // TODO
-//        let category = AVAudioSession.sharedInstance().getCategory()
-//        if isSpeakerphoneEnabled {
-//            AVAudioSession.sharedInstance().setCategory(category, option: AVAudioSessionCategoryOptionDefaultToSpeaker)
-//        } else {
-        // Will this disable speaker?
-//            AVAudioSession.sharedInstance().setCategory(category)
-//        }
-
-        audioManager.toggleSpeakerPhone(isEnabled: isSpeakerphoneEnabled)
+        if isSpeakerphoneEnabled {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
+        } else {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
+        }
     }
 
     // MARK: Helpers
