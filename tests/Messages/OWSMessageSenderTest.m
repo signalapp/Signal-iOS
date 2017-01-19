@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "Cryptography.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -443,9 +444,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *groupIdData = [Cryptography generateRandomBytes:32];
     SignalRecipient *successfulRecipient =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil supportsVoice:YES];
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id"
+                                                        relay:nil
+                                                supportsVoice:YES
+                                               supportsWebRTC:YES];
     SignalRecipient *successfulRecipient2 =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil supportsVoice:YES];
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2"
+                                                        relay:nil
+                                                supportsVoice:YES
+                                               supportsWebRTC:YES];
 
     TSGroupModel *groupModel = [[TSGroupModel alloc]
         initWithTitle:@"group title"
@@ -476,8 +483,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testGetRecipients
 {
-    SignalRecipient *recipient =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil supportsVoice:YES];
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id"
+                                                                                 relay:nil
+                                                                         supportsVoice:YES
+                                                                        supportsWebRTC:YES];
     [recipient save];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
