@@ -129,7 +129,10 @@ import Foundation
             return
         }
 
-        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(ringVibration), userInfo: nil, repeats: true)
+        vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] timer in
+            self?.ringVibration()
+        }
+        vibrateTimer?.fire()
 
         // Stop other sounds and play ringer through external speaker
         setAudioSession(category: AVAudioSessionCategorySoloAmbient)
