@@ -10,7 +10,7 @@ import PromiseKit
 // TODO: Add logic to button handlers.
 // TODO: Ensure buttons enabled & disabled as necessary.
 @objc(OWSCallViewController)
-class CallViewController: UIViewController, CallDelegate {
+class CallViewController: UIViewController, CallObserver {
 
     enum CallDirection {
         case unspecified, outgoing, incoming
@@ -22,7 +22,6 @@ class CallViewController: UIViewController, CallDelegate {
 
     let callUIAdapter: CallUIAdapter
     let contactsManager: OWSContactsManager
-    let audioService: CallAudioService
 
     // MARK: Properties
 
@@ -81,7 +80,6 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService(handleRinging: callUIAdapter.hasManualRinger)
         super.init(coder: aDecoder)
     }
 
@@ -89,7 +87,6 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService(handleRinging: callUIAdapter.hasManualRinger)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -133,8 +130,8 @@ class CallViewController: UIViewController, CallDelegate {
             // No-op, since call service is already set up at this point, the result of which was presenting this viewController.
         }
 
-        call.delegate = self
-        stateDidChange(call: call, state: call.state)
+        // Subscribe for future call updates
+        call.addObserverAndSyncState(observer: self)
     }
 
     func createViews() {
@@ -488,7 +485,11 @@ class CallViewController: UIViewController, CallDelegate {
     func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         speakerphoneButton.isSelected = !speakerphoneButton.isSelected
-        audioService.isSpeakerphoneEnabled = speakerphoneButton.isSelected
+        if let call = self.call {
+            callUIAdapter.toggleSpeakerphone(call: call, isEnabled: speakerphoneButton.isSelected)
+        } else {
+            Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
+        }
     }
 
     func didPressTextMessage(sender speakerphoneButton: UIButton) {
@@ -537,14 +538,13 @@ class CallViewController: UIViewController, CallDelegate {
         self.dismiss(animated: true)
     }
 
-    // MARK: - CallDelegate
+    // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         DispatchQueue.main.async {
             Logger.info("\(self.TAG) new call status: \(state)")
             self.updateCallUI(callState: state)
         }
-        self.audioService.handleState(state)
     }
 
     internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
@@ -554,6 +554,12 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        DispatchQueue.main.async {
+            self.updateCallUI(callState: call.state)
+        }
+    }
+
+    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         DispatchQueue.main.async {
             self.updateCallUI(callState: call.state)
         }

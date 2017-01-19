@@ -42,6 +42,7 @@ class CallUIAdapter {
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
+    private let audioService: CallAudioService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         self.contactsManager = contactsManager
@@ -58,9 +59,13 @@ class CallUIAdapter {
             Logger.info("\(TAG) choosing non-callkit adaptee for older iOS")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         }
+
+        audioService = CallAudioService(handleRinging: adaptee.hasManualRinger)
     }
 
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
+        call.addObserverAndSyncState(observer: audioService)
+
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName)
     }
@@ -72,6 +77,8 @@ class CallUIAdapter {
 
     internal func startOutgoingCall(handle: String) -> SignalCall {
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        call.addObserverAndSyncState(observer: audioService)
+
         adaptee.startOutgoingCall(call)
         return call
     }
@@ -97,11 +104,19 @@ class CallUIAdapter {
     }
 
     internal func setIsMuted(call: SignalCall, isMuted: Bool) {
+        // With CallKit, muting is handled by a CXAction, so it must go through the adaptee
         adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
     internal func setHasVideo(call: SignalCall, hasVideo: Bool) {
         adaptee.setHasVideo(call: call, hasVideo: hasVideo)
+    }
+
+    internal func toggleSpeakerphone(call: SignalCall, isEnabled: Bool) {
+        // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the 
+        // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's 
+        // assigned property.
+        call.isSpeakerphoneEnabled = isEnabled
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.

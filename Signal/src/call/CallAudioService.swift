@@ -4,7 +4,8 @@
 
 import Foundation
 
-@objc class CallAudioService: NSObject {
+@objc class CallAudioService: NSObject, CallObserver {
+
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?
     private let soundPlayer = JSQSystemSoundPlayer.shared()!
@@ -21,21 +22,41 @@ import Foundation
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    public var isSpeakerphoneEnabled = false {
-        didSet {
-            handleUpdatedSpeakerphone()
-        }
-    }
-
     // MARK: - Initializers
 
     init(handleRinging: Bool) {
         self.handleRinging = handleRinging
     }
 
+    // MARK: - CallObserver
+
+    internal func stateDidChange(call: SignalCall, state: CallState) {
+        DispatchQueue.main.async {
+            self.handleState(state)
+        }
+    }
+
+    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        Logger.verbose("\(TAG) in \(#function) is no-op")
+    }
+
+    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+        if isEnabled {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
+        } else {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
+        }
+    }
+
+    internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
+        // no-op
+    }
+
     // MARK: - Service action handlers
 
     public func handleState(_ state: CallState) {
+        Logger.verbose("\(TAG) in \(#function) new state: \(state)")
+
         switch state {
         case .idle: handleIdle()
         case .dialing: handleDialing()
@@ -100,14 +121,6 @@ import Foundation
         stopRinging()
     }
 
-    private func handleUpdatedSpeakerphone() {
-        if isSpeakerphoneEnabled {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
-        } else {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
-        }
-    }
-
     // MARK: - Ringing
 
     private func startRinging() {
@@ -151,7 +164,7 @@ import Foundation
         }
     }
 
-    // MARK: - AVAudioSession Mgmt
+    // MARK: - AVAudioSession Helpers
 
     private func setAudioSession(category: String, options: AVAudioSessionCategoryOptions) {
         do {
