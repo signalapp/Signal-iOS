@@ -5,6 +5,7 @@
 #import "SubProtocol.pb.h"
 
 #import "Cryptography.h"
+#import "OWSDispatch.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"
@@ -218,17 +219,21 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     [self keepAliveBackground];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
-        NSData *decryptedPayload =
-            [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
+        // SessionCipher state is mutated in a couple places, during decryption, in handleReceivedEnvelope.
+        // To ensure consistent state, that decryption mutation must occur on the same queue as encryption.
+        dispatch_async([OWSDispatch sessionCipher], ^{
+            NSData *decryptedPayload =
+                [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
 
-        if (!decryptedPayload) {
-            DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
-            return;
-        }
+            if (!decryptedPayload) {
+                DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
+                return;
+            }
 
-        OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
+            OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
-        [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope];
+            [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope];
+        });
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
     }
