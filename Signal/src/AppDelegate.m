@@ -21,9 +21,11 @@
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import <AxolotlKit/SessionCipher.h>
 #import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -165,6 +167,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)setupTSKitEnv {
+    // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
+    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionCipher]];
+
     [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
     [[TSStorageManager sharedManager] setupDatabase];
     [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
