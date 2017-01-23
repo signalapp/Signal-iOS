@@ -27,6 +27,7 @@
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/AppVersion.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 NSString *const AppDelegateStoryboardRegistration = @"Registration";
@@ -62,6 +63,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
     }];
+    
+    BOOL loggingIsEnabled;
+    
+#ifdef DEBUG
+    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
+    // the phone directory being looked up during tests.
+    loggingIsEnabled = TRUE;
+    [DebugLogger.sharedLogger enableTTYLogging];
+#elif RELEASE
+    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+#endif
+    
+    if (loggingIsEnabled) {
+        [DebugLogger.sharedLogger enableFileLogging];
+    }
+
+    [AppVersion instance];
 
     // Setting up environment
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
@@ -78,21 +96,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
     [Environment.getCurrent initCallListener];
 
-    BOOL loggingIsEnabled;
-
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    loggingIsEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
-#endif
     [self verifyBackgroundBeforeKeysAvailableLaunch];
-
-    if (loggingIsEnabled) {
-        [DebugLogger.sharedLogger enableFileLogging];
-    }
 
     [self setupTSKitEnv];
 
