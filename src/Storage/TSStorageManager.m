@@ -23,6 +23,7 @@
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
 
 NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessible = @"TSStorageManagerExceptionNameDatabasePasswordInaccessible";
+NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded = @"TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded";
 NSString *const TSStorageManagerExceptionNameDatabasePasswordUnwritable = @"TSStorageManagerExceptionNameDatabasePasswordUnwritable";
 NSString *const TSStorageManagerExceptionNameNoDatabase = @"TSStorageManagerExceptionNameNoDatabase";
 
@@ -287,6 +288,17 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     return NO;
 }
 
+- (void)backgroundedAppDatabasePasswordInaccessibleWithError:(NSError *)error
+{
+    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
+
+    // Presumably this happened in response to a push notification. It's possible that the keychain is corrupted
+    // but it could also just be that the user hasn't yet unlocked their device since our password is
+    // kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+    [NSException raise:TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded
+                format:@"Unable to access database password. No unlock since device restart? Error: %@", error];
+}
+
 - (NSData *)databasePassword
 {
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
@@ -296,7 +308,14 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&keyFetchError];
 
     if (keyFetchError) {
-        // Either this is a new install so there's no existing password to retrieve
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+            // TODO: Rather than crash here, we should detect the situation earlier
+            // and exit gracefully - (in the app delegate?). See the `
+            // This is a last ditch effort to avoid blowing away the user's database.
+            [self backgroundedAppDatabasePasswordInaccessibleWithError:keyFetchError];
+        }
+
+        // At this point, either this is a new install so there's no existing password to retrieve
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
 
