@@ -46,7 +46,7 @@ def process(filepath):
         print lint_output
         try:
             lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
-        except subprocess.pCalledProcessError, e:
+        except subprocess.CalledProcessError, e:
             lint_output = e.output
         print lint_output
     
