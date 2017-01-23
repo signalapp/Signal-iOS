@@ -287,7 +287,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     return NO;
 }
 
-- (void)backgroundedAppDatabasePasswordInaccessibleWithError:(NSError *)error
+- (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
 {
     OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
 
@@ -295,7 +295,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     // but it could also just be that the user hasn't yet unlocked their device since our password is
     // kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
     [NSException raise:TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded
-                format:@"Unable to access database password. No unlock since device restart? Error: %@", error];
+                format:@"%@", errorDescription];
 }
 
 - (NSData *)databasePassword
@@ -307,11 +307,16 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&keyFetchError];
 
     if (keyFetchError) {
+        UIApplicationState applicationState = [UIApplication sharedApplication].applicationState;
+        NSString *errorDescription = [NSString stringWithFormat:@"Database password inaccessible. No unlock since device restart? Error: %@ ApplicationState: %d", keyFetchError, (int)applicationState];
+        DDLogError(@"%@ %@", self.tag, errorDescription);
+        [DDLog flushLog];
+
         if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
             // TODO: Rather than crash here, we should detect the situation earlier
             // and exit gracefully - (in the app delegate?). See the `
             // This is a last ditch effort to avoid blowing away the user's database.
-            [self backgroundedAppDatabasePasswordInaccessibleWithError:keyFetchError];
+            [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:errorDescription];
         }
 
         // At this point, either this is a new install so there's no existing password to retrieve
