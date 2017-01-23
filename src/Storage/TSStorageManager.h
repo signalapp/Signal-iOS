@@ -1,9 +1,5 @@
 //
-//  TSStorageManager.h
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageKeys.h"
@@ -21,9 +17,17 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 @interface TSStorageManager : NSObject
 
 + (instancetype)sharedManager;
+
+/**
+ * Returns NO if:
+ *
+ * - Keychain is locked because device has just been restarted.
+ * - Password could not be retrieved because of a keychain error.
+ */
++ (BOOL)isDatabasePasswordAccessible;
+
 - (void)setupDatabase;
 - (void)deleteThreadsAndMessages;
-- (BOOL)databasePasswordAccessible;
 - (void)resetSignalStorage;
 
 - (YapDatabase *)database;

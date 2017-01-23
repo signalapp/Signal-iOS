@@ -1,6 +1,4 @@
 //
-//  TSStorageManager.m
-//
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
@@ -23,7 +21,8 @@
 NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
 
 NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessible = @"TSStorageManagerExceptionNameDatabasePasswordInaccessible";
-NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded = @"TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded";
+NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded =
+    @"TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded";
 NSString *const TSStorageManagerExceptionNameDatabasePasswordUnwritable = @"TSStorageManagerExceptionNameDatabasePasswordUnwritable";
 NSString *const TSStorageManagerExceptionNameNoDatabase = @"TSStorageManagerExceptionNameNoDatabase";
 
@@ -271,7 +270,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     return databasePath;
 }
 
-- (BOOL)databasePasswordAccessible
++ (BOOL)isDatabasePasswordAccessible
 {
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     NSError *error;
