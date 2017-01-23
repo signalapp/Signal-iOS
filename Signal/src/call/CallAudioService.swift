@@ -55,6 +55,8 @@ import Foundation
     // MARK: - Service action handlers
 
     public func handleState(_ state: CallState) {
+        assert(Thread.isMainThread)
+
         Logger.verbose("\(TAG) in \(#function) new state: \(state)")
 
         switch state {
