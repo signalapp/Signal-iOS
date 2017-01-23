@@ -63,6 +63,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
     }];
 
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+
     // Setting up environment
     [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
 
@@ -88,7 +91,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 #elif RELEASE
     loggingIsEnabled = Environment.preferences.loggingIsEnabled;
 #endif
-    [self verifyBackgroundBeforeKeysAvailableLaunch];
 
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
@@ -378,29 +380,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 /**
- *  Signal requires an iPhone to be unlocked after reboot to be able to access keying material.
+ *  The user must unlock the device once after reboot before the database encryption key can be accessed.
  */
-- (void)verifyBackgroundBeforeKeysAvailableLaunch {
-    if ([self applicationIsActive]) {
+- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
+{
+    if (UIApplication.sharedApplication.applicationState != UIApplicationStateBackground) {
         return;
     }
 
-    if (![[TSStorageManager sharedManager] databasePasswordAccessible]) {
+    if ([TSStorageManager isDatabasePasswordAccessible]) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
         exit(0);
     }
-}
-
-- (BOOL)applicationIsActive {
-    UIApplication *app = [UIApplication sharedApplication];
-
-    if (app.applicationState == UIApplicationStateActive) {
-        return YES;
-    }
-
-    return NO;
 }
 
 #pragma mark - Logging
