@@ -386,7 +386,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if ([TSStorageManager isDatabasePasswordAccessible]) {
+    if (![TSStorageManager isDatabasePasswordAccessible]) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
         [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
