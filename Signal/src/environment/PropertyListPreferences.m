@@ -68,16 +68,6 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     [self setValueForKey:PropertyListPreferencesKeyCallStreamDESBufferLevel toValue:@(value)];
 }
 
-- (BOOL)loggingIsEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyEnableDebugLog];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
-}
-
 - (BOOL)screenSecurityIsEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyScreenSecurity];
@@ -130,9 +120,21 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     [self setValueForKey:PropertyListPreferencesKeyHasRegisteredVoipPush toValue:@(enabled)];
 }
 
+- (BOOL)loggingIsEnabled
+{
+    NSNumber *preference = [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyEnableDebugLog];
+
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        return YES;
+    }
+}
+
 - (void)setLoggingEnabled:(BOOL)flag
 {
-    [self setValueForKey:PropertyListPreferencesKeyEnableDebugLog toValue:@(flag)];
+    [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:PropertyListPreferencesKeyEnableDebugLog];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (nullable NSString *)lastRanVersion
