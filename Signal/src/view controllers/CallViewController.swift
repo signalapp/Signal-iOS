@@ -6,117 +6,11 @@ import Foundation
 import WebRTC
 import PromiseKit
 
-// TODO move this somewhere else.
-@objc class CallAudioService: NSObject {
-    private let TAG = "[CallAudioService]"
-    private var vibrateTimer: Timer?
-    private let audioManager = AppAudioManager.sharedInstance()
-
-    // Mark: Vibration config
-    private let vibrateRepeatDuration = 1.6
-
-    // Our ring buzz is a pair of vibrations.
-    // `pulseDuration` is the small pause between the two vibrations in the pair.
-    private let pulseDuration = 0.2
-
-    public var isSpeakerphoneEnabled = false {
-        didSet {
-            handleUpdatedSpeakerphone()
-        }
-    }
-
-    public func handleState(_ state: CallState) {
-        switch state {
-        case .idle: handleIdle()
-        case .dialing: handleDialing()
-        case .answering: handleAnswering()
-        case .remoteRinging: handleRemoteRinging()
-        case .localRinging: handleLocalRinging()
-        case .connected: handleConnected()
-        case .localFailure: handleLocalFailure()
-        case .localHangup: handleLocalHangup()
-        case .remoteHangup: handleRemoteHangup()
-        case .remoteBusy: handleBusy()
-        }
-    }
-
-    private func handleIdle() {
-        Logger.debug("\(TAG) \(#function)")
-    }
-
-    private func handleDialing() {
-        Logger.debug("\(TAG) \(#function)")
-    }
-
-    private func handleAnswering() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleRemoteRinging() {
-        Logger.debug("\(TAG) \(#function)")
-    }
-
-    private func handleLocalRinging() {
-        Logger.debug("\(TAG) \(#function)")
-        audioManager.setAudioEnabled(true)
-        audioManager.handleInboundRing()
-        vibrateTimer = Timer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, selector: #selector(vibrate), userInfo: nil, repeats: true)
-    }
-
-    private func handleConnected() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleLocalFailure() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleLocalHangup() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleRemoteHangup() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleBusy() {
-        Logger.debug("\(TAG) \(#function)")
-        stopRinging()
-    }
-
-    private func handleUpdatedSpeakerphone() {
-        audioManager.toggleSpeakerPhone(isEnabled: isSpeakerphoneEnabled)
-    }
-
-    // MARK: Helpers
-
-    private func stopRinging() {
-        // Disables external speaker used for ringing, unless user enables speakerphone.
-        audioManager.setDefaultAudioProfile()
-        audioManager.cancelAllAudio()
-
-        vibrateTimer?.invalidate()
-        vibrateTimer = nil
-    }
-
-    public func vibrate() {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-        DispatchQueue.default.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-        }
-    }
-}
-
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Add logic to button handlers.
 // TODO: Ensure buttons enabled & disabled as necessary.
 @objc(OWSCallViewController)
-class CallViewController: UIViewController, CallDelegate {
+class CallViewController: UIViewController, CallObserver {
 
     enum CallDirection {
         case unspecified, outgoing, incoming
@@ -128,7 +22,6 @@ class CallViewController: UIViewController, CallDelegate {
 
     let callUIAdapter: CallUIAdapter
     let contactsManager: OWSContactsManager
-    let audioService: CallAudioService
 
     // MARK: Properties
 
@@ -187,7 +80,6 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService()
         super.init(coder: aDecoder)
     }
 
@@ -195,7 +87,6 @@ class CallViewController: UIViewController, CallDelegate {
         contactsManager = Environment.getCurrent().contactsManager
         let callService = Environment.getCurrent().callService!
         callUIAdapter = callService.callUIAdapter
-        audioService = CallAudioService()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -239,8 +130,8 @@ class CallViewController: UIViewController, CallDelegate {
             // No-op, since call service is already set up at this point, the result of which was presenting this viewController.
         }
 
-        call.delegate = self
-        stateDidChange(call: call, state: call.state)
+        // Subscribe for future call updates
+        call.addObserverAndSyncState(observer: self)
     }
 
     func createViews() {
@@ -594,7 +485,11 @@ class CallViewController: UIViewController, CallDelegate {
     func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         speakerphoneButton.isSelected = !speakerphoneButton.isSelected
-        audioService.isSpeakerphoneEnabled = speakerphoneButton.isSelected
+        if let call = self.call {
+            callUIAdapter.toggleSpeakerphone(call: call, isEnabled: speakerphoneButton.isSelected)
+        } else {
+            Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
+        }
     }
 
     func didPressTextMessage(sender speakerphoneButton: UIButton) {
@@ -643,14 +538,13 @@ class CallViewController: UIViewController, CallDelegate {
         self.dismiss(animated: true)
     }
 
-    // MARK: - CallDelegate
+    // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         DispatchQueue.main.async {
             Logger.info("\(self.TAG) new call status: \(state)")
             self.updateCallUI(callState: state)
         }
-        self.audioService.handleState(state)
     }
 
     internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
@@ -660,6 +554,12 @@ class CallViewController: UIViewController, CallDelegate {
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        DispatchQueue.main.async {
+            self.updateCallUI(callState: call.state)
+        }
+    }
+
+    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         DispatchQueue.main.async {
             self.updateCallUI(callState: call.state)
         }

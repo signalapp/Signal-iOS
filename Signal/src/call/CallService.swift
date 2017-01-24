@@ -924,6 +924,7 @@ fileprivate let timeoutSeconds = 60
         peerConnectionClient?.terminate()
 
         peerConnectionClient = nil
+        call?.removeAllObservers()
         call = nil
         thread = nil
         incomingCallPromise = nil

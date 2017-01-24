@@ -17,10 +17,11 @@ enum CallState: String {
     case remoteBusy // terminal
 }
 
-protocol CallDelegate: class {
+protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
     func hasVideoDidChange(call: SignalCall, hasVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
+    func speakerphoneDidChange(call: SignalCall, isEnabled: Bool)
 }
 
 /**
@@ -30,7 +31,7 @@ protocol CallDelegate: class {
 
     let TAG = "[SignalCall]"
 
-    weak var delegate: CallDelegate?
+    var observers = [Weak<CallObserver>]()
     let remotePhoneNumber: String
 
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
@@ -38,12 +39,16 @@ protocol CallDelegate: class {
 
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
+    
     var hasVideo = false {
         didSet {
             Logger.debug("\(TAG) hasVideo changed: \(oldValue) -> \(hasVideo)")
-            delegate?.hasVideoDidChange(call: self, hasVideo: hasVideo)
+            for observer in observers {
+                observer.value?.hasVideoDidChange(call: self, hasVideo: hasVideo)
+            }
         }
     }
+
     var state: CallState {
         didSet {
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(state)")
@@ -56,19 +61,34 @@ protocol CallDelegate: class {
             } else {
                 connectedDate = nil
             }
-
-            delegate?.stateDidChange(call: self, state: state)
+            for observer in observers {
+                observer.value?.stateDidChange(call: self, state: state)
+            }
         }
     }
+
     var isMuted = false {
         didSet {
             Logger.debug("\(TAG) muted changed: \(oldValue) -> \(isMuted)")
-            delegate?.muteDidChange(call: self, isMuted: isMuted)
+            for observer in observers {
+                observer.value?.muteDidChange(call: self, isMuted: isMuted)
+            }
+        }
+    }
+
+    var isSpeakerphoneEnabled = false {
+        didSet {
+            Logger.debug("\(TAG) isSpeakerphoneEnabled changed: \(oldValue) -> \(isSpeakerphoneEnabled)")
+            for observer in observers {
+                observer.value?.speakerphoneDidChange(call: self, isEnabled: isSpeakerphoneEnabled)
+            }
         }
     }
     var connectedDate: NSDate?
 
     var error: CallError?
+
+    // MARK: Initializers and Factory Methods
 
     init(localId: UUID, signalingId: UInt64, state: CallState, remotePhoneNumber: String) {
         self.localId = localId
@@ -85,7 +105,27 @@ protocol CallDelegate: class {
         return SignalCall(localId: localId, signalingId: signalingId, state: .answering, remotePhoneNumber: remotePhoneNumber)
     }
 
+    // -
+
+    func addObserverAndSyncState(observer: CallObserver) {
+        observers.append(Weak(value: observer))
+
+        // Synchronize observer with current call state
+        observer.stateDidChange(call: self, state: self.state)
+    }
+
+    func removeObserver(_ observer: CallObserver) {
+        while let index = observers.index(where: { $0.value === observer }) {
+            observers.remove(at: index)
+        }
+    }
+
+    func removeAllObservers() {
+        observers = []
+    }
+
     // MARK: Equatable
+
     static func == (lhs: SignalCall, rhs: SignalCall) -> Bool {
         return lhs.localId == rhs.localId
     }
