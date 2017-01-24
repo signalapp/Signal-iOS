@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Signal protocol session state must be coordinated on a serial queue. This is sometimes used synchronously,
- * so it's recommended that you avoid dispatching sync *from* this queue to avoid deadlock.
+ * so never dispatching sync *from* this queue to avoid deadlock.
  */
 + (dispatch_queue_t)sessionCipher;
 
