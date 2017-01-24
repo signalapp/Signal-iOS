@@ -66,21 +66,6 @@
 
 @import Photos;
 
-@interface Contact (redphoneStubbing)
-
-@property (nonatomic, readonly) BOOL prefersRedphoneContact;
-
-@end
-
-@implementation Contact (redphoneStubbing)
-
-- (BOOL)prefersRedphoneContact
-{
-    return NO;
-}
-
-@end
-
 #define kYapDatabaseRangeLength 50
 #define kYapDatabaseRangeMaxLength 300
 #define kYapDatabaseRangeMinLength 20
@@ -641,32 +626,28 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (SignalRecipient *)signalRecipient {
-    __block SignalRecipient *recipient;
-    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      recipient = [SignalRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164
-                                                     withTransaction:transaction];
-    }];
-    return recipient;
-}
-
-- (BOOL)isTextSecureReachable {
-    return isGroupConversation || [self signalRecipient];
-}
-
 - (PhoneNumber *)phoneNumberForThread {
     NSString *contactId = [(TSContactThread *)self.thread contactIdentifier];
     return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
 }
 
 - (void)callAction {
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
     if ([self canCall]) {
         PhoneNumber *number = [self phoneNumberForThread];
         Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        if (contact.prefersRedphoneContact) {
-            [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-        } else {
+        SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:self.thread.contactIdentifier];
+
+        BOOL localWantsWebRTC = [Environment preferences].isWebRTCEnabled;
+        BOOL remoteWantsWebRTC = recipient.supportsWebRTC;
+        DDLogDebug(@"%@ localWantsWebRTC?: %@, remoteWantsWebRTC?: %@", self.tag, (localWantsWebRTC ? @"YES": @"NO"), (remoteWantsWebRTC ? @"YES" : @"NO"));
+        if (localWantsWebRTC && remoteWantsWebRTC) {
+            // Place WebRTC Call
             [self performSegueWithIdentifier:OWSMessagesViewControllerSegueInitiateCall sender:self];
+        } else {
+            // Place Redphone call if either local or remote party has not opted in to WebRTC calling.
+            [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
         }
     } else {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
