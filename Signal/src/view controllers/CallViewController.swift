@@ -647,8 +647,8 @@ class CallViewController: UIViewController, CallDelegate {
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         DispatchQueue.main.async {
+            Logger.info("\(self.TAG) new call status: \(state)")
             self.updateCallUI(callState: state)
-            Logger.info("\(self.TAG) new call status: \(call.state)")
         }
         self.audioService.handleState(state)
     }
