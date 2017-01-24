@@ -153,7 +153,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         CallService.signalingQueue.async {
             self.callService.handleOutgoingCall(call).then {
                 action.fulfill()
-            }.catch { _ in
+            }.catch { error in
+                Logger.error("\(self.TAG) error \(error) in \(#function)")
                 self.callManager.removeCall(call)
                 action.fail()
             }
