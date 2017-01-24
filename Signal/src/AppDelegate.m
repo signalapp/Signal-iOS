@@ -387,9 +387,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     if (![TSStorageManager isDatabasePasswordAccessible]) {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
         exit(0);
     }
