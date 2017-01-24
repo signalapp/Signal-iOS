@@ -45,8 +45,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @implementation AppDelegate
 
-#pragma mark Detect updates - perform migrations
-
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
 }
@@ -55,6 +53,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogWarn(@"%@ applicationWillEnterForeground.", self.tag);
     
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+    DDLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.tag);
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    DDLogWarn(@"%@ applicationWillTerminate.", self.tag);
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -93,6 +101,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
+
+    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
 
     [self setupTSKitEnv];
 
