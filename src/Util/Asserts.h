@@ -1,7 +1,5 @@
 //
-//  Asserts.h
-//
-//  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -21,9 +19,18 @@ NSLog(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X)); \
 NSAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X)); \
 }
 
+// OWSAssert() should be used in Obj-C and Swift methods.
+// OWSCAssert() should be used in free functions.
+#define OWSCAssert(X) \
+if (!(X)) { \
+NSLog(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X)); \
+NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X)); \
+}
+
 #else
 
 #define OWSAssert(X)
+#define OWSCAssert(X)
 
 #endif
 

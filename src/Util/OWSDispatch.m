@@ -40,4 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+void AssertIsOnMainThread() {
+    OWSCAssert([NSThread isMainThread]);
+}
+
 NS_ASSUME_NONNULL_END

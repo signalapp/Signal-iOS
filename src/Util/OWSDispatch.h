@@ -24,4 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+void AssertIsOnMainThread();
+
 NS_ASSUME_NONNULL_END
