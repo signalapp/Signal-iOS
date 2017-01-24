@@ -66,7 +66,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Initializing logger
+    BOOL loggingIsEnabled;
+#ifdef DEBUG
+    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
+    // the phone directory being looked up during tests.
+    loggingIsEnabled = TRUE;
+    [DebugLogger.sharedLogger enableTTYLogging];
+#elif RELEASE
+    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+#endif
+    if (loggingIsEnabled) {
+        [DebugLogger.sharedLogger enableFileLogging];
+    }
+
+    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
+
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+
+    // Initializing env logger
     CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
     }];
@@ -85,24 +103,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
     [Environment.getCurrent initCallListener];
-
-    BOOL loggingIsEnabled;
-
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    loggingIsEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
-#endif
-    [self verifyBackgroundBeforeKeysAvailableLaunch];
-
-    if (loggingIsEnabled) {
-        [DebugLogger.sharedLogger enableFileLogging];
-    }
-
-    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
 
     [self setupTSKitEnv];
 
@@ -388,29 +388,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 /**
- *  Signal requires an iPhone to be unlocked after reboot to be able to access keying material.
+ *  The user must unlock the device once after reboot before the database encryption key can be accessed.
  */
-- (void)verifyBackgroundBeforeKeysAvailableLaunch {
-    if ([self applicationIsActive]) {
+- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
+{
+    if (UIApplication.sharedApplication.applicationState != UIApplicationStateBackground) {
         return;
     }
 
-    if (![[TSStorageManager sharedManager] databasePasswordAccessible]) {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    if (![TSStorageManager isDatabasePasswordAccessible]) {
+        DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
         exit(0);
     }
-}
-
-- (BOOL)applicationIsActive {
-    UIApplication *app = [UIApplication sharedApplication];
-
-    if (app.applicationState == UIApplicationStateActive) {
-        return YES;
-    }
-
-    return NO;
 }
 
 #pragma mark - Logging
