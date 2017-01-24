@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import UIKit
@@ -99,8 +100,21 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.end(call: call)
     }
 
-    func toggleMute(call: SignalCall, isMuted: Bool) {
-        callManager.toggleMute(call: call, isMuted: isMuted)
+    func setIsMuted(call: SignalCall, isMuted: Bool) {
+        callManager.setIsMuted(call: call, isMuted: isMuted)
+    }
+
+    func setHasVideo(call: SignalCall, hasVideo: Bool) {
+        let update = CXCallUpdate()
+        update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        update.hasVideo = hasVideo
+
+        // Update the CallKit UI.
+        provider.reportCall(with: call.localId, updated: update)
+
+        CallService.signalingQueue.async {
+            self.callService.setHasVideo(hasVideo: hasVideo)
+        }
     }
 
     // MARK: CXProviderDelegate
@@ -140,6 +154,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             self.callService.handleOutgoingCall(call).then {
                 action.fulfill()
             }.catch { error in
+                Logger.error("\(self.TAG) error \(error) in \(#function)")
                 self.callManager.removeCall(call)
                 action.fail()
             }
@@ -243,7 +258,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         CallService.signalingQueue.async {
-            self.callService.handleToggledMute(isMuted: action.isMuted)
+            self.callService.setIsMuted(isMuted: action.isMuted)
             action.fulfill()
         }
     }

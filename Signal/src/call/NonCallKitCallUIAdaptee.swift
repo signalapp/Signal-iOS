@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 1/3/17.
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
@@ -70,10 +71,15 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         }
     }
 
-    func toggleMute(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: SignalCall, isMuted: Bool) {
         CallService.signalingQueue.async {
-            self.callService.handleToggledMute(isMuted: isMuted)
+            self.callService.setIsMuted(isMuted: isMuted)
         }
     }
 
+    func setHasVideo(call: SignalCall, hasVideo: Bool) {
+        CallService.signalingQueue.async {
+            self.callService.setHasVideo(hasVideo: hasVideo)
+        }
+    }
 }

@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/13/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
@@ -15,7 +16,8 @@ protocol CallUIAdaptee {
     func declineCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
     func endCall(_ call: SignalCall)
-    func toggleMute(call: SignalCall, isMuted: Bool)
+    func setIsMuted(call: SignalCall, isMuted: Bool)
+    func setHasVideo(call: SignalCall, hasVideo: Bool)
 }
 
 // Shared default implementations
@@ -93,7 +95,11 @@ class CallUIAdapter {
         adaptee.showCall(call)
     }
 
-    internal func toggleMute(call: SignalCall, isMuted: Bool) {
-        adaptee.toggleMute(call: call, isMuted: isMuted)
+    internal func setIsMuted(call: SignalCall, isMuted: Bool) {
+        adaptee.setIsMuted(call: call, isMuted: isMuted)
+    }
+
+    internal func setHasVideo(call: SignalCall, hasVideo: Bool) {
+        adaptee.setHasVideo(call: call, hasVideo: hasVideo)
     }
 }

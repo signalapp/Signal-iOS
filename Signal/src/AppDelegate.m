@@ -317,7 +317,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
  */
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-    DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.", self.tag, __PRETTY_FUNCTION__, userActivity);
+    if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+        [[Environment getCurrent].callService handleCallKitStartVideo];
+    } else {
+        DDLogWarn(
+            @"%@ called %s with userActivity: %@, but not yet supported.", self.tag, __PRETTY_FUNCTION__, userActivity);
+    }
+
     // TODO Something like...
     // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
     // thread = blah

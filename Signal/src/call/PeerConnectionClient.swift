@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 11/29/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
@@ -154,7 +155,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setVideoEnabled(enabled: Bool) {
         guard let videoTrack = self.videoTrack else {
             let action = enabled ? "enable" : "disable"
-            Logger.error("\(TAG)) trying to \(action) videoTack which doesn't exist")
+            Logger.error("\(TAG)) trying to \(action) videoTrack which doesn't exist")
             return
         }
 
@@ -198,7 +199,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     var defaultOfferConstraints: RTCMediaConstraints {
         let mandatoryConstraints = [
             "OfferToReceiveAudio": "true",
-            "OfferToReceiveVideo" : "true"
+            "OfferToReceiveVideo": "true"
         ]
         return RTCMediaConstraints(mandatoryConstraints:mandatoryConstraints, optionalConstraints:nil)
     }

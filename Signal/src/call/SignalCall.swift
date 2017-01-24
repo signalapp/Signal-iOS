@@ -19,6 +19,7 @@ enum CallState: String {
 
 protocol CallDelegate: class {
     func stateDidChange(call: SignalCall, state: CallState)
+    func hasVideoDidChange(call: SignalCall, hasVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
 }
 
@@ -37,7 +38,12 @@ protocol CallDelegate: class {
 
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
-    var hasVideo = false
+    var hasVideo = false {
+        didSet {
+            Logger.debug("\(TAG) hasVideo changed: \(oldValue) -> \(hasVideo)")
+            delegate?.hasVideoDidChange(call: self, hasVideo: hasVideo)
+        }
+    }
     var state: CallState {
         didSet {
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(state)")
