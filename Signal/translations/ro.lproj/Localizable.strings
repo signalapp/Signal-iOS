@@ -365,7 +365,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invită-ți prietenii la Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Căutare";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Invită prieteni";
