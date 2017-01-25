@@ -5,6 +5,7 @@
 #import "SubProtocol.pb.h"
 
 #import "Cryptography.h"
+#import "OWSDispatch.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"
@@ -218,6 +219,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     [self keepAliveBackground];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
+
         NSData *decryptedPayload =
             [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
 
@@ -229,6 +231,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
         [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope];
+
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
     }

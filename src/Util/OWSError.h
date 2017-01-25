@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +16,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeUntrustedIdentityKey = 25,
     OWSErrorCodeFailedToSendOutgoingMessage = 30,
     OWSErrorCodeFailedToDecryptMessage = 100,
+    OWSErrorCodeFailedToEncryptMessage = 110,
     OWSErrorCodeSignalServiceFailure = 1001,
     OWSErrorCodeSingalServiceRateLimited = 1010,
     OWSErrorCodeUserError = 2001,

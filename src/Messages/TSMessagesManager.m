@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 11/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSMessagesManager.h"
 #import "ContactsManagerProtocol.h"
@@ -13,6 +14,8 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSDispatch.h"
+#import "OWSError.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptsProcessor.h"
@@ -107,14 +110,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
+    OWSAssert([NSThread isMainThread]);
     @try {
         switch (envelope.type) {
-            case OWSSignalServiceProtosEnvelopeTypeCiphertext:
-                [self handleSecureMessage:envelope];
+            case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
+                [self handleSecureMessageAsync:envelope
+                                    completion:^(NSError *_Nullable error) {
+                                        DDLogDebug(@"%@ handled secure message.", self.tag);
+                                        if (error) {
+                                            DDLogError(
+                                                @"%@ handling secure message failed with error: %@", self.tag, error);
+                                        }
+                                    }];
                 break;
-            case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
-                [self handlePreKeyBundle:envelope];
+            }
+            case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
+                [self handlePreKeyBundleAsync:envelope
+                                   completion:^(NSError *_Nullable error) {
+                                       DDLogDebug(@"%@ handled pre-key bundle", self.tag);
+                                       if (error) {
+                                           DDLogError(
+                                               @"%@ handling pre-key bundle failed with error: %@", self.tag, error);
+                                       }
+                                   }];
                 break;
+            }
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
                 DDLogInfo(@"Received a delivery receipt");
                 [self handleDeliveryReceipt:envelope];
@@ -139,6 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleDeliveryReceipt:(OWSSignalServiceProtosEnvelope *)envelope
 {
+    OWSAssert([NSThread isMainThread]);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSInteraction *interaction =
             [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
@@ -151,8 +172,10 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)handleSecureMessage:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+- (void)handleSecureMessageAsync:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+                      completion:(void (^)(NSError *_Nullable error))completion
 {
+    OWSAssert([NSThread isMainThread]);
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = messageEnvelope.source;
@@ -174,28 +197,42 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        NSData *plaintextData;
-        @try {
-            WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
-            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                    preKeyStore:storageManager
-                                                              signedPreKeyStore:storageManager
-                                                               identityKeyStore:storageManager
-                                                                    recipientId:recipientId
-                                                                       deviceId:deviceId];
+        dispatch_async([OWSDispatch sessionCipher], ^{
+            NSData *plaintextData;
 
-            plaintextData = [[cipher decrypt:message] removePadding];
-        } @catch (NSException *exception) {
-            [self processException:exception envelope:messageEnvelope];
-            return;
-        }
+            @try {
+                WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
+                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+                                                                        preKeyStore:storageManager
+                                                                  signedPreKeyStore:storageManager
+                                                                   identityKeyStore:storageManager
+                                                                        recipientId:recipientId
+                                                                           deviceId:deviceId];
 
-        [self handleEnvelope:messageEnvelope plaintextData:plaintextData];
+                plaintextData = [[cipher decrypt:message] removePadding];
+            } @catch (NSException *exception) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self processException:exception envelope:messageEnvelope];
+                    NSString *errorDescription =
+                        [NSString stringWithFormat:@"Exception while decrypting: %@", exception.description];
+                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                    completion(error);
+                });
+                return;
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleEnvelope:messageEnvelope plaintextData:plaintextData];
+                completion(nil);
+            });
+        });
     }
 }
 
-- (void)handlePreKeyBundle:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
+- (void)handlePreKeyBundleAsync:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
+                     completion:(void (^)(NSError *_Nullable error))completion
 {
+    OWSAssert([NSThread isMainThread]);
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = preKeyEnvelope.source;
@@ -208,28 +245,38 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        NSData *plaintextData;
-        @try {
-            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
-            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                    preKeyStore:storageManager
-                                                              signedPreKeyStore:storageManager
-                                                               identityKeyStore:storageManager
-                                                                    recipientId:recipientId
-                                                                       deviceId:deviceId];
+        dispatch_async([OWSDispatch sessionCipher], ^{
+            NSData *plaintextData;
+            @try {
+                PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+                                                                        preKeyStore:storageManager
+                                                                  signedPreKeyStore:storageManager
+                                                                   identityKeyStore:storageManager
+                                                                        recipientId:recipientId
+                                                                           deviceId:deviceId];
 
-            plaintextData = [[cipher decrypt:message] removePadding];
-        } @catch (NSException *exception) {
-            [self processException:exception envelope:preKeyEnvelope];
-            return;
-        }
+                plaintextData = [[cipher decrypt:message] removePadding];
+            } @catch (NSException *exception) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self processException:exception envelope:preKeyEnvelope];
+                    NSString *errorDescription = [NSString stringWithFormat:@"Exception while decrypting PreKey Bundle: %@", exception.description];
+                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                    completion(error);
+                });
+                return;
+            }
 
-        [self handleEnvelope:preKeyEnvelope plaintextData:plaintextData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleEnvelope:preKeyEnvelope plaintextData:plaintextData];
+            });
+        });
     }
 }
 
 - (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
 {
+    OWSAssert([NSThread isMainThread]);
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         if (content.hasSyncMessage) {
@@ -253,6 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     if (dataMessage.hasGroup) {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -315,6 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedGroupAvatarUpdateWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                                         dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupIdData:dataMessage.group.id];
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
@@ -342,6 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedMediaWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                             dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     TSThread *thread = [self threadForEnvelope:envelope dataMessage:dataMessage];
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
@@ -372,6 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
+    OWSAssert([NSThread isMainThread]);
     if (syncMessage.hasSent) {
         DDLogInfo(@"%@ Received `sent` syncMessage, recording message transcript.", self.tag);
         OWSIncomingSentMessageTranscript *transcript =
@@ -442,6 +493,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleEndSessionMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)endSessionEnvelope
                                 dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:endSessionEnvelope.source transaction:transaction];
@@ -460,6 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                                            dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     TSThread *thread = [self threadForEnvelope:envelope dataMessage:dataMessage];
 
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
@@ -492,6 +545,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
+    OWSAssert([NSThread isMainThread]);
     [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
@@ -499,6 +553,7 @@ NS_ASSUME_NONNULL_BEGIN
                               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
+    OWSAssert([NSThread isMainThread]);
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
@@ -629,6 +684,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
+    OWSAssert([NSThread isMainThread]);
     DDLogError(@"%@ Got exception: %@ of type: %@", self.tag, exception.description, exception.name);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSErrorMessage *errorMessage;
