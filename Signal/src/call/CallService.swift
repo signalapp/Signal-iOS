@@ -364,26 +364,6 @@ fileprivate let timeoutSeconds = 60
     }
 
     /**
-     * Initiate a call to recipient by recipientId
-     */
-    public func handleCallBack(recipientId: String) {
-        // TODO #function is called from objc, how to access swift defiend dispatch queue (OS_dispatch_queue)
-        //assertOnSignalingQueue()
-
-        guard self.call == nil else {
-            Logger.error("\(TAG) unexpectedly found an existing call when trying to call back: \(recipientId)")
-            return
-        }
-
-        // Because we may not be on signalingQueue (because this method is called from Objc which doesn't have
-        // access to signalingQueue (that I can find). FIXME?
-        type(of: self).signalingQueue.async {
-            let call = self.callUIAdapter.startOutgoingCall(handle: recipientId)
-            self.callUIAdapter.showCall(call)
-        }
-    }
-
-    /**
      * Remote client (could be caller or callee) sent us a connectivity update
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
