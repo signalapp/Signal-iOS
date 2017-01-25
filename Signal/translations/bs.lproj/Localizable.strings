@@ -364,6 +364,9 @@
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozovite prijatelje na Signal";
 
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Pretraga";
+
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Pošalji pozivnicu prijateljima";
 

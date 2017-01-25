@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Fechar";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Já tem uma conta Signal?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Já possui uma conta Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Atender";
@@ -363,6 +363,9 @@
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convidar amigos para o Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Convidar Amigos";

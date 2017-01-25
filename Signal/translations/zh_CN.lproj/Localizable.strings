@@ -364,6 +364,9 @@
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用Signal";
 
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "邀请朋友";
 

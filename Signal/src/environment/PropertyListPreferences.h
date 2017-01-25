@@ -20,6 +20,10 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
     TSImageQualityLow = 4
 };
 
+// Used when migrating logging to NSUserDefaults.
+extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
+extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
+
 @interface PropertyListPreferences : NSObject
 
 #pragma mark - Helpers

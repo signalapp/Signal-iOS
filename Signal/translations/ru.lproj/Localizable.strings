@@ -364,6 +364,9 @@
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Пригласите друзей в Signal";
 
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Поиск";
+
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Пригласить друзей";
 
