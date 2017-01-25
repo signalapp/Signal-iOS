@@ -668,7 +668,7 @@
 "RETRY_BUTTON_TEXT" = "Zkusit znovu";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Naše bezpečnostní číslo Signalu:";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Naše bezpečnostní číslo Signalu:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaše bezpečnostní číslo s %@ se změnilo. Možná ho chcete ověřit.";

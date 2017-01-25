@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Désolé !";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accepter le nouveau numéro de sécurité";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Action requise";
@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Fermer";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Vous avez déjà un compte Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Répondre";
@@ -56,10 +56,10 @@
 "ATTACHMENT_DOWNLOADING" = "Pièce jointe en téléchargement";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Choisissez ou prenez une photo puis envoyez-la";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Pièce jointe";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nouvelle pièce jointe prête à télécharger.";
@@ -68,7 +68,7 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal doit avoir accès au micro pour fonctionner correctement. Vous pouvez réinitialiser les droits d'accès dans Réglages >> Confidentialité >> Micro >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Appel";
 
 /* No comment provided by engineer. */
 "CALLBACK_BUTTON_TITLE" = "Appeler en retour";
@@ -107,7 +107,7 @@
 "CONVERSATION_SETTINGS" = "Paramètres de cette conversation";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "La réinitialisation de votre session vous permettra de recevoir des messages futurs de %@ , mais elle ne récupérera pas les messages déjà corrompus.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l'indicatif pays";
@@ -134,10 +134,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Les messages envoyés et reçus de cette conversation disparaîtront après avoir été lu. ";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Paramètres des messages disparus";
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorer";
@@ -149,10 +149,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "Sauvegarder";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hey\n\nDernièrement, j'ai utilisé Signal pour garder les conversations sur mon iPhone privé. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seul vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est disponible pour iPhones et Android. Téléchargez ici: %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, faire des appels et commencer des discussions de groupe. La meilleure partie est, personne d'autre ne peut voir tout cela, pas même les gens qui font Signal!\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici: %@ ";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Passons à Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Appuyez sur le bouton composer.";
@@ -167,10 +167,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Nettoyer vos conversations.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Aucun de vos contacts n'a Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Pourquoi ne pas inviter quelqu'un?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Astuce: ajouter une conversation en tant que rappel!";
@@ -233,16 +233,16 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec de l'envoi du message.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal n'a pas pu se connecter à Internet. Essayez un autre réseau WiFi ou utilisez des données mobiles.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Votre appareil n'est plus enregistré pour votre numéro de téléphone. Vous devez supprimer et réinstaller Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez réessayer plus tard.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Recipient is no longer a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le destinataire n'est plus un utilisateur Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d'un message en double.";
@@ -251,7 +251,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clé du destinataire est invalide.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Le message reçu était désynchronisé. Appuyez dessus pour réinitialiser votre session sécurisée.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Réception d'un message incompatible avec cette version.";
@@ -260,40 +260,40 @@
 "ERROR_MESSAGE_NO_SESSION" = "Pas de session disponible pour ce contact.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Numéro de sécurité modifié.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inattendue s'est produite.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numéro de sécurité modifié. Appuyez pour vérifier.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Oups!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "À ce moment, Signal ne peut être actif que sur un appareil mobile par numéro de téléphone.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "L'activation de ce %@ désactive Signal sur tout autre périphérique actuellement associé à ce numéro de téléphone.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop de défaillances avec ce contact. Veuillez réessayer prochainement.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vous devez accepter le nouveau numéro de sécurité avant de pouvoir envoyer.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Échec de l'envoi. Taper ici pour réessayer.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Impossible de vérifier le numéro de sécurité!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Réinitialiser cette session.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Terminer la création du groupe";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar modifié.";
@@ -326,7 +326,7 @@
 "GROUP_REMOVING_FAILED" = "Echec de la sortie du groupe";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Paramètres de groupe";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Le sujet est maintenant '%@'.";
@@ -365,10 +365,10 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des Amis à Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Chercher";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Inviter des amis";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Vos messages disparaîtront après %@. ";
@@ -383,10 +383,10 @@
 "LEAVE_GROUP_ACTION" = "Quitter ce groupe";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n'est pas valide, assurez-vous que vous numérisez le code QR affiché sur l'appareil que vous souhaitez lier.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Linking Device Failed";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de la liaison du périphérique";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupe et contacts, ainsi que lire et envoyer des messages en votre nom.";
@@ -428,10 +428,10 @@
 "ME_STRING" = "Moi";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Caméra";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Galerie de photos";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nouveau message";
@@ -443,7 +443,7 @@
 "MISSED_CALL" = "Appel manqué";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous avez refusé de laisser Signal accéder à votre caméra. Mettez à jour vos paramètres système pour continuer.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d'accéder à votre appareil photo.";
@@ -482,7 +482,7 @@
 "NETWORK_STATUS_TEXT" = "Vous pouvez vérifier l'état de votre connexion en regardant la barre au-dessus de la boîte de réception.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Définir la photo de groupe";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
@@ -539,16 +539,16 @@
 "PHONE_NEEDS_UNLOCK" = "Votre téléphone doit être déverrouillé pour recevoir de nouveaux messages.";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Cela ne ressemble pas à votre numéro de sécurité avec %@. Avez-vous vérifier le bon contact?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le numéro dans votre presse-papiers ne ressemble pas au numéro de sécurité correct pour cette conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le signal n'a pas pu trouver de numéro de sécurité dans votre presse-papiers. Avez-vous copié correctement?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Chaque paire d'utilisateurs de Signal partage un numéro de sécurité distinct. Vérifiez que %@ affiche * votre * numéro de sécurité distinct.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Vous utilisez une vielle version de Signal. Vous devez la mettre à jour avant de vérifier vos clés. ";
@@ -563,7 +563,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous désirez vérifier votre connexion chiffrée avec %@, compare les chiffres ci-dessus avec ceux sur l'appareil de votre contact.\n\nVous pouvez aussi scanner le code sur leur appareil, et vice-versa.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Vérifier le numéro de sécurité";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Procéder";
@@ -575,7 +575,7 @@
 "PUSH_MANAGER_REPLY" = "Répondre";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
+"PUSH_REGISTER_SUCCESS" = "Enregistrement réussi pour les notifications push.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Notifications push";
@@ -617,10 +617,10 @@
 "REGISTER_RATE_LIMITING_BODY" = "Le serveur limite en ce moment les inscriptions, veuillez réessayer plus tard.";
 
 /* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "Registered Number";
+"REGISTERED_NUMBER_TEXT" = "Numéro enregistré";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Failed to re-register for push notifications.";
+"REGISTRATION_BODY" = "Impossible de se réenregistrer pour les notifications push.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Code pays";
@@ -632,7 +632,7 @@
 "REGISTRATION_ERROR" = "Erreur d'enregistrement";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n'avez pas vérifié le code que nous vous avons envoyé.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ce format de numéro de téléphone n'est pas supporté. Contactez le support.";
@@ -647,13 +647,13 @@
 "REGISTRATION_TITLE_LABEL" = "Votre numéro de téléphone";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Échec de la vérification";
 
 /* Alert body, during registration */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Les numéros que vous avez soumis ne correspondent pas à ce que vous avez envoyé. Voulez-vous vérifier?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Activer cet appareil";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Rejeter";
@@ -668,16 +668,16 @@
 "RETRY_BUTTON_TEXT" = "Réessayer";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Notre numéro de sécurité Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Votre numéro de sécurité avec %@ a changé. Vous pouvez le vérifier.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
 "SCAN_CODE_ACTION" = "Scannez le code";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+"SCAN_CODE_INSTRUCTIONS" = "Numérisez le code QR sur l'appareil de votre contact.";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Recherche par nom ou numéro";
@@ -722,10 +722,10 @@
 "SETTINGS_ADVANCED_TITLE" = "Avancé";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Nécessite votre approbation avant de communiquer avec quelqu'un qui a un nouveau numéro de sécurité, généralement à partir d'une réinstallation de Signal.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Exiger l'approbation d'un changement";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Effacer les logs de l'historique";
@@ -755,7 +755,7 @@
 "SETTINGS_INVITE_TITLE" = "Inviter Vos Amis";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Vous pouvez me joindre en utilisant Signal par @WhisperSystems, obtenez-le maintenant.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Réglages";
@@ -767,7 +767,7 @@
 "SETTINGS_PRIVACY_TITLE" = "Vie privée";
 
 /* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Safety Numbers Approval";
+"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Approbation des numéros de sécurité";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Activer l'écran de sécurité";
@@ -785,7 +785,7 @@
 "SETTINGS_VERSION" = "Version";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "Courrier électronique";
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "Message";
@@ -794,7 +794,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Afficher le nouveau numéro de sécurité";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u jour";
@@ -812,10 +812,10 @@
 "SMS_INVITE_BODY" = "Je vous invite à installer Signal ! Voici le lien :";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ a été vérifié. Vous pouvez être sûr que votre communication est privée.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Numéro de sécurité vérifié!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Nous n'avons pas pu récupérer la dernière liste de contacts depuis le serveur. Veuillez réessayer plus tard.";
@@ -863,7 +863,7 @@
 "UPDATE_BUTTON_TITLE" = "Mettre à jour";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal ...";
+"Upgrading Signal ..." = "Mise à niveau de Signal ...";
 
 /* message footer while attachment is uploading */
 "UPLOADING_MESSAGE_TEXT" = "En cours de chargement...";
@@ -887,7 +887,7 @@
 "VERIFICATION_HEADER" = "Vérifier";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "Vérifier le numéro de sécurité";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complétez la configuration sur Signal Desktop";

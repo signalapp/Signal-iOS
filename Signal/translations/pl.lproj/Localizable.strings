@@ -74,7 +74,7 @@
 "CALLBACK_BUTTON_TITLE" = "Oddzwoń";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Porównaj ze schowkiem";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "To spowoduje zrestartowanie aplikacji poprzez usunięcie Twoich wiadomości oraz wyrejestruje Ciebie z serwera. Aplikacja zamknie się po usunięciu danych.";
@@ -86,7 +86,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Czy na pewno chcesz wyjść?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Połącz nowe urządzenie";
@@ -368,7 +368,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Zaproś znajomych";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
@@ -428,16 +428,16 @@
 "ME_STRING" = "Ja";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Aparat";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Biblioteka zdjęć";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nowa wiadomość";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u minutes";
+"MINUTES_TIME_AMOUNT" = "%u minut";
 
 /* No comment provided by engineer. */
 "MISSED_CALL" = "Nieodebrane połączenie";
@@ -524,7 +524,7 @@
 "OK" = "Ok";
 
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
+"OPEN_SETTINGS_BUTTON" = "Ustawienia";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
@@ -866,7 +866,7 @@
 "Upgrading Signal ..." = "Upgrading Signal ...";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploading...";
+"UPLOADING_MESSAGE_TEXT" = "Wysyłanie...";
 
 /* button text during registration to make corrections to your submitted phone number */
 "VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Zmień numer";
