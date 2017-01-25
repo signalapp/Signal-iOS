@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageSender.h"
 #import "ContactsUpdater.h"
@@ -628,11 +629,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // DEPRECATED - Remove after all clients have been upgraded.
             BOOL isLegacyMessage = ![message isKindOfClass:[OWSOutgoingSyncMessage class]];
 
-            NSDictionary *messageDict = [self encryptedMessageWithPlaintext:plainText
-                                                                toRecipient:recipient.uniqueId
-                                                                   deviceId:deviceNumber
-                                                              keyingStorage:[TSStorageManager sharedManager]
-                                                                     legacy:isLegacyMessage];
+            __block NSDictionary *messageDict;
+            // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
+            // operations.
+            dispatch_sync([OWSDispatch sessionCipher], ^{
+                messageDict = [self encryptedMessageWithPlaintext:plainText
+                                                      toRecipient:recipient.uniqueId
+                                                         deviceId:deviceNumber
+                                                    keyingStorage:[TSStorageManager sharedManager]
+                                                           legacy:isLegacyMessage];
+            });
+
             if (messageDict) {
                 [messagesArray addObject:messageDict];
             } else {
@@ -724,11 +731,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
 
-    // Mutating session state is not thread safe.
-    id<CipherMessage> encryptedMessage;
-    @synchronized (self) {
-        encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
-    }
+    id<CipherMessage> encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
+
+
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
 
