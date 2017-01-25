@@ -114,7 +114,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         PeerConnectionClient.startAudioSession()
     }
 
-    func endCall(_ call: SignalCall) {
+    func localHangupCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
@@ -123,6 +123,14 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
             self.callService.handleLocalHungupCall(call)
         }
+    }
+
+    internal func remoteDidHangupCall(_ call: SignalCall) {
+        Logger.debug("\(TAG) in \(#function) is no-op")
+    }
+
+    internal func failCall(_ call: SignalCall, error: CallError) {
+        Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {

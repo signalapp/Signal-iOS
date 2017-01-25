@@ -371,6 +371,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         case .failed:
             Logger.warn("\(self.TAG) RTCIceConnection failed.")
             self.delegate.peerConnectionClientIceFailed(self)
+        case .disconnected:
+            Logger.warn("\(self.TAG) RTCIceConnection disconnected.")           
         default:
             Logger.debug("\(self.TAG) ignoring change IceConnectionState:\(newState.debugDescription)")
         }

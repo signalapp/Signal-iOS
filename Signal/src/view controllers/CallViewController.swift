@@ -464,7 +464,7 @@ class CallViewController: UIViewController, CallObserver {
     func didPressHangup(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         if let call = self.call {
-            callUIAdapter.endCall(call)
+            callUIAdapter.localHangupCall(call)
         } else {
             Logger.warn("\(TAG) hung up, but call was unexpectedly nil")
         }
