@@ -166,6 +166,15 @@ protocol CallServiceObserver: class {
             fireDidUpdateVideoTracks()
         }
     }
+    var isRemoteVideoEnabled = false {
+        didSet {
+            assertOnSignalingQueue()
+
+            Logger.info("\(self.TAG) \(#function)")
+
+            fireDidUpdateVideoTracks()
+        }
+    }
 
     required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
@@ -834,6 +843,8 @@ protocol CallServiceObserver: class {
         } else if message.hasVideoStreamingStatus() {
             Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel")
 
+            self.isRemoteVideoEnabled = message.videoStreamingStatus.enabled()
+
             // TODO: translate from java
             //   Intent intent = new Intent(this, WebRtcCallService.class);
             //   intent.setAction(ACTION_REMOTE_VIDEO_MUTE);
@@ -977,6 +988,7 @@ protocol CallServiceObserver: class {
         peerConnectionClient = nil
         localVideoTrack = nil
         remoteVideoTrack = nil
+        isRemoteVideoEnabled = false
         call?.removeAllObservers()
         call = nil
         thread = nil
@@ -1031,9 +1043,26 @@ protocol CallServiceObserver: class {
         // It's only safe to access the class properties on the signaling queue, so
         // we dispatch there...
         CallService.signalingQueue.async {
-            Logger.info("\(self.TAG) \(#function): \(self.shouldHaveLocalVideoTrack())")
+            guard let call = self.call else {
+                return
+            }
+            guard let peerConnectionClient = self.peerConnectionClient else {
+                return
+            }
 
-            self.peerConnectionClient?.setLocalVideoEnabled(enabled: self.shouldHaveLocalVideoTrack())
+            let shouldHaveLocalVideoTrack = self.shouldHaveLocalVideoTrack()
+
+            Logger.info("\(self.TAG) \(#function): \(shouldHaveLocalVideoTrack)")
+
+            self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
+
+            let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled:shouldHaveLocalVideoTrack)
+            if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
+                Logger.debug("\(self.TAG) sendDataChannelMessage returned true")
+            } else {
+                Logger.warn("\(self.TAG) sendDataChannelMessage returned false")
+            }
+
         }
     }
 
@@ -1051,7 +1080,7 @@ protocol CallServiceObserver: class {
         // we dispatch there...
         CallService.signalingQueue.async {
             let localVideoTrack = self.localVideoTrack
-            let remoteVideoTrack = self.remoteVideoTrack
+            let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
             // Then dispatch back to the main thread.
             DispatchQueue.main.async {
                 observer.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
@@ -1080,7 +1109,7 @@ protocol CallServiceObserver: class {
         assertOnSignalingQueue()
 
         let localVideoTrack = self.localVideoTrack
-        let remoteVideoTrack = self.remoteVideoTrack
+        let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
 
         DispatchQueue.main.async { [weak self] in
             if let strongSelf = self {

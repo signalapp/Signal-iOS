@@ -76,9 +76,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // DataChannel
 
-    // `dataChannel` is public because on incoming calls, we don't explicitly create the channel, rather `CallService`
-    // assigns it when the channel is discovered due to the caller having created it.
-    public var dataChannel: RTCDataChannel?
+    private var dataChannel: RTCDataChannel?
 
     // Audio
 
@@ -127,6 +125,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                      configuration: RTCDataChannelConfiguration())
         dataChannel.delegate = self
 
+        assert(self.dataChannel == nil)
         self.dataChannel = dataChannel
     }
 
@@ -435,7 +434,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         Logger.debug("\(TAG) didOpen dataChannel:\(dataChannel)")
         CallService.signalingQueue.async {
             Logger.debug("\(self.TAG) set dataChannel")
+            assert(self.dataChannel == nil)
             self.dataChannel = dataChannel
+            dataChannel.delegate = self
         }
     }
 

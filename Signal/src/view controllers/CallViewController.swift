@@ -65,7 +65,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
     var remoteVideoSize: CGSize! = CGSize.zero
-    var videoViewConstraints: [NSLayoutConstraint] = []
+    var remoteVideoConstraints: [NSLayoutConstraint] = []
+    var localVideoConstraints: [NSLayoutConstraint] = []
 
     // MARK: Control Groups
 
@@ -343,7 +344,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
 
-            // TODO: Prevent overlap of localVideoView and contact views.
             localVideoView.autoPinEdge(toSuperviewEdge:.right, withInset:videoPreviewHMargin)
             localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
@@ -351,11 +351,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
-            contactNameLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
+            contactNameLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
 
             callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
-            callStatusLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
+            callStatusLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
 
             contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
@@ -378,13 +378,14 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             incomingCallView.setContentHuggingVerticalHigh()
         }
 
-        updateVideoViewLayout()
+        updateRemoteVideoLayout()
+        updateLocalVideoLayout()
 
         super.updateViewConstraints()
     }
 
-    internal func updateVideoViewLayout() {
-        NSLayoutConstraint.deactivate(self.videoViewConstraints)
+    internal func updateRemoteVideoLayout() {
+        NSLayoutConstraint.deactivate(self.remoteVideoConstraints)
 
         var constraints: [NSLayoutConstraint] = []
 
@@ -419,7 +420,26 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             remoteVideoView.isHidden = true
         }
 
-        self.videoViewConstraints = constraints
+        self.remoteVideoConstraints = constraints
+    }
+
+    internal func updateLocalVideoLayout() {
+
+        NSLayoutConstraint.deactivate(self.localVideoConstraints)
+
+        var constraints: [NSLayoutConstraint] = []
+
+        if localVideoView.isHidden {
+            let contactHMargin = CGFloat(30)
+            constraints.append(contactNameLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
+            constraints.append(callStatusLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
+        } else {
+            let spacing = CGFloat(10)
+            constraints.append(contactNameLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
+            constraints.append(callStatusLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
+        }
+
+        self.localVideoConstraints = constraints
     }
 
     func traverseViewHierarchy(view: UIView!, visitor: (UIView) -> Void) {
@@ -669,7 +689,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
         localVideoView.isHidden = isHidden
 
-        updateVideoViewLayout()
+        updateLocalVideoLayout()
     }
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
@@ -684,9 +704,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
 
-        // TODO: We need to figure out how to observe start/stop of remote video.
+        if remoteVideoTrack == nil {
+            remoteVideoSize = CGSize.zero
+        }
 
-        updateVideoViewLayout()
+        updateRemoteVideoLayout()
     }
 
     // MARK: - CallServiceObserver
@@ -711,6 +733,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         Logger.info("\(TAG) \(#function): \(size)")
 
         remoteVideoSize = size
-        updateVideoViewLayout()
+        updateRemoteVideoLayout()
     }
 }
