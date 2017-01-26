@@ -674,7 +674,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
-        guard self.localVideoTrack == localVideoTrack else {
+        guard self.localVideoTrack != localVideoTrack else {
             return
         }
 
@@ -694,7 +694,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
-        guard self.remoteVideoTrack == remoteVideoTrack else {
+        guard self.remoteVideoTrack != remoteVideoTrack else {
             return
         }
 
