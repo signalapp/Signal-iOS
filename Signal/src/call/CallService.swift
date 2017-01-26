@@ -844,13 +844,6 @@ protocol CallServiceObserver: class {
             Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel")
 
             self.isRemoteVideoEnabled = message.videoStreamingStatus.enabled()
-
-            // TODO: translate from java
-            //   Intent intent = new Intent(this, WebRtcCallService.class);
-            //   intent.setAction(ACTION_REMOTE_VIDEO_MUTE);
-            //   intent.putExtra(EXTRA_CALL_ID, dataMessage.getVideoStreamingStatus().getId());
-            //   intent.putExtra(EXTRA_MUTE, !dataMessage.getVideoStreamingStatus().getEnabled());
-            //   startService(intent);
         }
     }
 
