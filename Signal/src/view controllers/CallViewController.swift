@@ -654,7 +654,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
-        if self.localVideoTrack == localVideoTrack {
+        guard self.localVideoTrack == localVideoTrack else {
             return
         }
 
@@ -667,14 +667,14 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         localVideoView.captureSession = source?.captureSession
         let isHidden = source == nil
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
-        localVideoView.isHidden = source == nil
+        localVideoView.isHidden = isHidden
 
         updateVideoViewLayout()
     }
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
-        if self.remoteVideoTrack == remoteVideoTrack {
+        guard self.remoteVideoTrack == remoteVideoTrack else {
             return
         }
 
