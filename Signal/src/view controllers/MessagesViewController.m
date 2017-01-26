@@ -51,6 +51,7 @@
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -626,32 +627,62 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (PhoneNumber *)phoneNumberForThread {
-    NSString *contactId = [(TSContactThread *)self.thread contactIdentifier];
-    return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-}
-
 - (void)callAction {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
 
-    if ([self canCall]) {
-        PhoneNumber *number = [self phoneNumberForThread];
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:self.thread.contactIdentifier];
-
-        BOOL localWantsWebRTC = [Environment preferences].isWebRTCEnabled;
-        BOOL remoteWantsWebRTC = recipient.supportsWebRTC;
-        DDLogDebug(@"%@ localWantsWebRTC?: %@, remoteWantsWebRTC?: %@", self.tag, (localWantsWebRTC ? @"YES": @"NO"), (remoteWantsWebRTC ? @"YES" : @"NO"));
-        if (localWantsWebRTC && remoteWantsWebRTC) {
-            // Place WebRTC Call
-            [self performSegueWithIdentifier:OWSMessagesViewControllerSegueInitiateCall sender:self];
-        } else {
-            // Place Redphone call if either local or remote party has not opted in to WebRTC calling.
-            [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-        }
-    } else {
+    if (![self canCall]) {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
+        return;
     }
+
+    // Since users can toggle this setting, which is only communicated during contact sync, it's easy to imagine the
+    // preference getting stale. Especially as users are toggling the feature to test calls. So here, we opt for a
+    // blocking network request *every* time we place a call to make sure we've got up to date preferences.
+    //
+    // e.g. The following would suffice if we weren't worried about stale preferences.
+    // SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:self.thread.contactIdentifier];
+    BOOL localWantsWebRTC = [Environment preferences].isWebRTCEnabled;
+
+    if (!localWantsWebRTC) {
+        [self placeRedphoneCall];
+        return;
+    }
+
+    [self.contactsUpdater lookupIdentifier:self.thread.contactIdentifier
+        success:^(SignalRecipient *_Nonnull recipient) {
+            BOOL remoteWantsWebRTC = recipient.supportsWebRTC;
+            DDLogDebug(@"%@ localWantsWebRTC?: %@, remoteWantsWebRTC?: %@",
+                self.tag,
+                (localWantsWebRTC ? @"YES" : @"NO"),
+                (remoteWantsWebRTC ? @"YES" : @"NO"));
+            if (localWantsWebRTC && remoteWantsWebRTC) {
+                [self placeWebRTCCall];
+            } else {
+                [self placeRedphoneCall];
+            }
+        }
+        failure:^(NSError *_Nonnull error) {
+            DDLogWarn(@"%@ looking up call recipient: %@ failed with error: %@", self.tag, self.thread, error);
+            SignalAlertView(NSLocalizedString(@"UNABLE_TO_PLACE_CALL", @"Alert Title"), error.localizedDescription);
+        }];
+}
+
+- (void)placeRedphoneCall
+{
+    DDLogInfo(@"%@ Placing redphone call to: %@", self.tag, self.thread);
+    PhoneNumber *number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:self.thread.contactIdentifier];
+    Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
+
+    OWSAssert(number != nil);
+    OWSAssert(contact != nil);
+
+    [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
+}
+
+- (void)placeWebRTCCall
+{
+    DDLogInfo(@"%@ Placing WebRTC call to: %@", self.tag, self.thread);
+    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueInitiateCall sender:self];
 }
 
 - (BOOL)canCall {
