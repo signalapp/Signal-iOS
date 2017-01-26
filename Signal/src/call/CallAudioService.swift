@@ -1,5 +1,5 @@
 //
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,16 +31,17 @@ import Foundation
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
-        DispatchQueue.main.async {
-            self.handleState(state)
-        }
+        AssertIsOnMainThread()
+        self.handleState(state)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) in \(#function) is no-op")
     }
 
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+        AssertIsOnMainThread()
         if isEnabled {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
         } else {
@@ -49,6 +50,7 @@ import Foundation
     }
 
     internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
+        AssertIsOnMainThread()
         // no-op
     }
 
@@ -131,7 +133,7 @@ import Foundation
             return
         }
 
-        vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] timer in
+        vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] _ in
             self?.ringVibration()
         }
         vibrateTimer?.fire()

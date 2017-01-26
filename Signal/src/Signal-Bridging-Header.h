@@ -5,11 +5,13 @@
 #import <Foundation/Foundation.h>
 
 #import "AppAudioManager.h"
+#import "Asserts.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "OWSDispatch.h"
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PhoneNumber.h"
@@ -54,3 +56,5 @@
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <SignalServiceKit/TSThread.h>
 #import <WebRTC/RTCAudioSession.h>
+#import <WebRTC/RTCCameraPreviewView.h>
+#import <WebRTC/RTCEAGLVideoView.h>

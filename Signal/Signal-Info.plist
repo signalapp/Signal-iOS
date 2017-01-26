@@ -72,7 +72,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Signal needs to use Apple Music to play media attachments.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Signal will let you take a photo to send to your contacts. You can review it before sending.</string>
+	<string>Signal uses your camera to take photos and for video calls.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSMicrophoneUsageDescription</key>
