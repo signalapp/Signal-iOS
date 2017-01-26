@@ -72,6 +72,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return call
     }
 
+    // Called from CallService after call has ended to clean up any remaining CallKit call state.
+    func failCall(_ call: SignalCall, error: CallError) {
+        provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+        self.callManager.removeCall(call)
+    }
+
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
@@ -110,15 +116,20 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     func declineCall(_ call: SignalCall) {
-        callManager.end(call: call)
+        callManager.localHangup(call: call)
     }
 
     func recipientAcceptedCall(_ call: SignalCall) {
         // no - op
+        // TODO provider update call connected?
     }
 
-    func endCall(_ call: SignalCall) {
-        callManager.end(call: call)
+    func localHangupCall(_ call: SignalCall) {
+        callManager.localHangup(call: call)
+    }
+
+    func remoteDidHangupCall(_ call: SignalCall) {
+        provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {

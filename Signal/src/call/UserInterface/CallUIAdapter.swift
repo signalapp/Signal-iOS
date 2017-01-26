@@ -19,7 +19,9 @@ protocol CallUIAdaptee {
     func declineCall(localId: UUID)
     func declineCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
-    func endCall(_ call: SignalCall)
+    func localHangupCall(_ call: SignalCall)
+    func remoteDidHangupCall(_ call: SignalCall)
+    func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasVideo(call: SignalCall, hasVideo: Bool)
     func callBack(recipientId: String)
@@ -122,8 +124,16 @@ extension CallUIAdaptee {
         adaptee.recipientAcceptedCall(call)
     }
 
-    internal func endCall(_ call: SignalCall) {
-        adaptee.endCall(call)
+    internal func remoteDidHangupCall(_ call: SignalCall) {
+        adaptee.remoteDidHangupCall(call)
+    }
+
+    internal func localHangupCall(_ call: SignalCall) {
+        adaptee.localHangupCall(call)
+    }
+
+    internal func failCall(_ call: SignalCall, error: CallError) {
+        adaptee.failCall(call, error: error)
     }
 
     internal func showCall(_ call: SignalCall) {

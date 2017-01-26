@@ -33,7 +33,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func end(call: SignalCall) {
+    func localHangup(call: SignalCall) {
         let endCallAction = CXEndCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)

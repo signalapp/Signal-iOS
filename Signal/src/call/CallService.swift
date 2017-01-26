@@ -499,7 +499,7 @@ fileprivate let timeoutSeconds = 60
 
         call.state = .remoteHangup
         // Notify UI
-        callUIAdapter.endCall(call)
+        callUIAdapter.remoteDidHangupCall(call)
 
         // self.call is nil'd in `terminateCall`, so it's important we update it's state *before* calling `terminateCall`
         terminateCall()
@@ -885,9 +885,14 @@ fileprivate let timeoutSeconds = 60
         assertOnSignalingQueue()
         Logger.error("\(TAG) call failed with error: \(error)")
 
-        // It's essential to set call.state before terminateCall, because terminateCall nils self.call
-        call?.error = error
-        call?.state = .localFailure
+        if let call = self.call {
+            // It's essential to set call.state before terminateCall, because terminateCall nils self.call
+            call.error = error
+            call.state = .localFailure
+            callUIAdapter.failCall(call, error: error)
+        } else {
+            assertionFailure("\(TAG) in \(#function) but there was no call to fail.")
+        }
 
         terminateCall()
     }
