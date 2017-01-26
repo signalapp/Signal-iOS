@@ -193,13 +193,7 @@ protocol CallObserver: class {
     // MARK: Equatable
 
     static func == (lhs: SignalCall, rhs: SignalCall) -> Bool {
-        objc_sync_enter(self)
-
-        let result = lhs.localId == rhs.localId
-
-        objc_sync_exit(self)
-
-        return result
+        return lhs.localId == rhs.localId
     }
 
     static func newCallSignalingId() -> UInt64 {
