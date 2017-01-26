@@ -155,6 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak AdvancedSettingsTableViewController *weakSelf = self;
     BOOL isWebRTCEnabled = sender.isOn;
+    DDLogInfo(@"%@ User set WebRTC calling to: %@", self.tag, (isWebRTCEnabled ? @"ON" : @"OFF"));
     TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributes:isWebRTCEnabled];
     [[TSNetworkManager sharedManager] makeRequest:request
                                           success:^(NSURLSessionDataTask *task, id responseObject) {
