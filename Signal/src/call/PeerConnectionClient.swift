@@ -35,6 +35,16 @@ protocol PeerConnectionClientDelegate: class {
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
     func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData)
+
+    /**
+     * Fired whenever the local video track become active or inactive.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?)
+
+    /**
+     * Fired whenever the remote video track become active or inactive.
+     */
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?)
 }
 
 /**
@@ -80,7 +90,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // Video
 
     private var videoSender: RTCRtpSender?
-    private var videoTrack: RTCVideoTrack?
+    private var localVideoTrack: RTCVideoTrack?
+    private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate) {
@@ -91,7 +102,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         configuration.iceServers = iceServers
         configuration.bundlePolicy = .maxBundle
         configuration.rtcpMuxPolicy = .require
-
 
         let connectionConstraintsDict = ["DtlsSrtpKeyAgreement": "true"]
         connectionConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: connectionConstraintsDict)
@@ -131,35 +141,45 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             return
         }
 
+        // TODO: What are the best values to use here?
+        let mediaConstraintsDictionary = [
+            kRTCMediaConstraintsMinWidth: "240",
+            kRTCMediaConstraintsMinHeight: "320",
+            kRTCMediaConstraintsMaxWidth: "240",
+            kRTCMediaConstraintsMaxHeight: "320"
+        ]
+        let cameraConstraints = RTCMediaConstraints(mandatoryConstraints:nil,
+                                                    optionalConstraints:mediaConstraintsDictionary)
+
+        // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
-        let videoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
-        self.videoTrack = videoTrack
+        videoSource.useBackCamera = false
+        let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
+        self.localVideoTrack = localVideoTrack
 
         // Disable by default until call is connected.
         // FIXME - do we require mic permissions at this point?
         // if so maybe it would be better to not even add the track until the call is connected
         // instead of creating it and disabling it.
-        videoTrack.isEnabled = false
-
-        // Occasionally seeing this crash on the next line, after a *second* call:
-//         -[__NSCFNumber length]: unrecognized selector sent to instance 0x1562c610
-        // Seems like either videoKind or videoStreamId (both of which are Strings) is being GC'd prematurely. 
-        // Not sure why, but assigned the value to local vars above in hopes of avoiding it.
-//        let videoKind = kRTCMediaStreamTrackKindVideo
+        localVideoTrack.isEnabled = false
 
         let videoSender = peerConnection.sender(withKind: kVideoTrackType, streamId: Identifiers.mediaStream.rawValue)
-        videoSender.track = videoTrack
+        videoSender.track = localVideoTrack
         self.videoSender = videoSender
     }
 
-    public func setVideoEnabled(enabled: Bool) {
-        guard let videoTrack = self.videoTrack else {
+    public func setLocalVideoEnabled(enabled: Bool) {
+        guard let localVideoTrack = self.localVideoTrack else {
             let action = enabled ? "enable" : "disable"
             Logger.error("\(TAG)) trying to \(action) videoTrack which doesn't exist")
             return
         }
 
-        videoTrack.isEnabled = enabled
+        localVideoTrack.isEnabled = enabled
+
+        if let delegate = delegate {
+            delegate.peerConnectionClient(self, didUpdateLocal: enabled ? localVideoTrack : nil)
+        }
     }
 
     // MARK: Audio
@@ -294,7 +314,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         // we are likely to crash if we retain any peer connection properties when the peerconnection is released
         Logger.debug("\(TAG) in \(#function)")
         audioTrack = nil
-        videoTrack = nil
+        localVideoTrack = nil
+        remoteVideoTrack = nil
         dataChannel = nil
         audioSender = nil
         videoSender = nil
@@ -332,7 +353,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             return
         }
 
-        delegate.peerConnectionClient(self, received: dataChannelMessage)
+        if let delegate = delegate {
+            delegate.peerConnectionClient(self, received: dataChannelMessage)
+        }
     }
 
     /** The data channel's |bufferedAmount| changed. */
@@ -349,7 +372,14 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when media is received on a new stream from remote peer. */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        Logger.debug("\(TAG) didAdd stream:\(stream)")
+        Logger.debug("\(TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
+
+        if stream.videoTracks.count > 0 {
+            remoteVideoTrack = stream.videoTracks[0]
+            if let delegate = delegate {
+                delegate.peerConnectionClient(self, didUpdateRemote: remoteVideoTrack)
+            }
+        }
     }
 
     /** Called when a remote peer closes a stream. */
@@ -367,10 +397,14 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         Logger.debug("\(TAG) didChange IceConnectionState:\(newState.debugDescription)")
         switch newState {
         case .connected, .completed:
-            self.delegate.peerConnectionClientIceConnected(self)
+            if let delegate = delegate {
+                delegate.peerConnectionClientIceConnected(self)
+            }
         case .failed:
             Logger.warn("\(self.TAG) RTCIceConnection failed.")
-            self.delegate.peerConnectionClientIceFailed(self)
+            if let delegate = delegate {
+                delegate.peerConnectionClientIceFailed(self)
+            }
         case .disconnected:
             Logger.warn("\(self.TAG) RTCIceConnection disconnected.")           
         default:
@@ -386,7 +420,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     /** New ice candidate has been found. */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         Logger.debug("\(TAG) didGenerate IceCandidate:\(candidate.sdp)")
-        self.delegate.peerConnectionClient(self, addedLocalIceCandidate: candidate)
+        if let delegate = delegate {
+            delegate.peerConnectionClient(self, addedLocalIceCandidate: candidate)
+        }
     }
 
     /** Called when a group of local Ice candidates have been removed. */

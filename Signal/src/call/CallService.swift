@@ -80,11 +80,24 @@ enum CallError: Error {
 // FIXME TODO do we need to timeout?
 fileprivate let timeoutSeconds = 60
 
-@objc class CallService: NSObject, PeerConnectionClientDelegate {
+// All Observer methods will be invoked from the main thread.
+protocol CallServiceObserver: class {
+    /**
+     * Fired whenever the local or remote video track become active or inactive.
+     */
+    func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+                              remoteVideoTrack: RTCVideoTrack?)
+}
+
+// This class' state should only be accessed on the signaling queue, _except_
+// the observer-related state which only be accessed on the main thread.
+@objc class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
 
     // MARK: - Properties
 
     let TAG = "[CallService]"
+
+    var observers = [Weak<CallServiceObserver>]()
 
     // MARK: Dependencies
 
@@ -104,7 +117,18 @@ fileprivate let timeoutSeconds = 60
     var peerConnectionClient: PeerConnectionClient?
     // TODO code cleanup: move thread into SignalCall? Or refactor messageSender to take SignalRecipient identifier.
     var thread: TSContactThread?
-    var call: SignalCall?
+    var call: SignalCall? {
+        didSet {
+            assertOnSignalingQueue()
+
+            oldValue?.removeObserver(self)
+            call?.addObserverAndSyncState(observer: self)
+
+            DispatchQueue.main.async { [weak self] in
+                self?.updateIsVideoEnabled()
+            }
+        }
+    }
 
     /**
      * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
@@ -122,6 +146,26 @@ fileprivate let timeoutSeconds = 60
 
     // Used to coordinate promises across delegate methods
     var fulfillCallConnectedPromise: (() -> Void)?
+
+    weak var localVideoTrack: RTCVideoTrack? {
+        didSet {
+            assertOnSignalingQueue()
+
+            Logger.info("\(self.TAG) \(#function)")
+
+            fireDidUpdateVideoTracks()
+        }
+    }
+
+    weak var remoteVideoTrack: RTCVideoTrack? {
+        didSet {
+            assertOnSignalingQueue()
+
+            Logger.info("\(self.TAG) \(#function)")
+
+            fireDidUpdateVideoTracks()
+        }
+    }
 
     required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
@@ -591,7 +635,7 @@ fileprivate let timeoutSeconds = 60
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
         peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
-        peerConnectionClient.setVideoEnabled(enabled: call.hasVideo)
+        peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
     /**
@@ -731,7 +775,7 @@ fileprivate let timeoutSeconds = 60
         }
 
         call.hasVideo = hasVideo
-        peerConnectionClient.setVideoEnabled(enabled: hasVideo)
+        peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
     func handleCallKitStartVideo() {
@@ -804,7 +848,7 @@ fileprivate let timeoutSeconds = 60
     /**
      * The connection has been established. The clients can now communicate.
      */
-    func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
+    internal func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
         CallService.signalingQueue.async {
             self.handleIceConnected()
         }
@@ -813,7 +857,7 @@ fileprivate let timeoutSeconds = 60
     /**
      * The connection failed to establish. The clients will not be able to communicate.
      */
-    func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
+    internal func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
         CallService.signalingQueue.async {
             self.handleFailedCall(error: CallError.disconnected)
         }
@@ -824,7 +868,7 @@ fileprivate let timeoutSeconds = 60
      * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client
      * out of band, as part of establishing a connection over WebRTC.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         CallService.signalingQueue.async {
             self.handleLocalAddedIceCandidate(iceCandidate)
         }
@@ -833,9 +877,27 @@ fileprivate let timeoutSeconds = 60
     /**
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
         CallService.signalingQueue.async {
             self.handleDataChannelMessage(dataChannelMessage)
+        }
+    }
+
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
+        CallService.signalingQueue.async { [weak self] in
+            if let strongSelf = self {
+                strongSelf.localVideoTrack = videoTrack
+                strongSelf.fireDidUpdateVideoTracks()
+            }
+        }
+    }
+
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
+        CallService.signalingQueue.async { [weak self] in
+            if let strongSelf = self {
+                strongSelf.remoteVideoTrack = videoTrack
+                strongSelf.fireDidUpdateVideoTracks()
+            }
         }
     }
 
@@ -844,6 +906,9 @@ fileprivate let timeoutSeconds = 60
     /**
      * Ensure that all `SignalCall` and `CallService` state is synchronized by only mutating signaling state in 
      * handleXXX methods, and putting those methods on the signaling queue.
+     *
+     * TODO: We might want to move this queue and method to OWSDispatch so that we can assert this in
+     *       other classes like SignalCall as well.
      */
     private func assertOnSignalingQueue() {
         if #available(iOS 10.0, *) {
@@ -902,6 +967,7 @@ fileprivate let timeoutSeconds = 60
      */
     private func terminateCall() {
         assertOnSignalingQueue()
+
         Logger.debug("\(TAG) in \(#function)")
 
         PeerConnectionClient.stopAudioSession()
@@ -909,12 +975,121 @@ fileprivate let timeoutSeconds = 60
         peerConnectionClient?.terminate()
 
         peerConnectionClient = nil
+        localVideoTrack = nil
+        remoteVideoTrack = nil
         call?.removeAllObservers()
         call = nil
         thread = nil
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
         pendingIceUpdateMessages = []
+
+        fireDidUpdateVideoTracks()
+    }
+
+    // MARK: - CallObserver
+
+    internal func stateDidChange(call: SignalCall, state: CallState) {
+        AssertIsOnMainThread()
+        Logger.info("\(self.TAG) \(#function): \(state)")
+        self.updateIsVideoEnabled()
+    }
+
+    internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
+        AssertIsOnMainThread()
+        Logger.info("\(self.TAG) \(#function): \(hasVideo)")
+        self.updateIsVideoEnabled()
+    }
+
+    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+        // Do nothing
+    }
+
+    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+        AssertIsOnMainThread()
+        // Do nothing
+    }
+
+    // MARK: - Video
+
+    private func shouldHaveLocalVideoTrack() -> Bool {
+        assertOnSignalingQueue()
+
+        // The iOS simulator doesn't provide any sort of camera capture
+        // support or emulation (http://goo.gl/rHAnC1) so don't bother
+        // trying to open a local stream.
+        return (!Platform.isSimulator &&
+            call != nil &&
+            call!.state == .connected &&
+            call!.hasVideo)
+    }
+
+    private func updateIsVideoEnabled() {
+        AssertIsOnMainThread()
+
+        // It's only safe to access the class properties on the signaling queue, so
+        // we dispatch there...
+        CallService.signalingQueue.async {
+            Logger.info("\(self.TAG) \(#function): \(self.shouldHaveLocalVideoTrack())")
+
+            self.peerConnectionClient?.setLocalVideoEnabled(enabled: self.shouldHaveLocalVideoTrack())
+        }
+    }
+
+    // MARK: - Observers
+
+    // The observer-related methods should be invoked on the main thread.
+    func addObserverAndSyncState(observer: CallServiceObserver) {
+        AssertIsOnMainThread()
+
+        observers.append(Weak(value: observer))
+
+        // Synchronize observer with current call state
+
+        // It's only safe to access the video track properties on the signaling queue, so
+        // we dispatch there...
+        CallService.signalingQueue.async {
+            let localVideoTrack = self.localVideoTrack
+            let remoteVideoTrack = self.remoteVideoTrack
+            // Then dispatch back to the main thread.
+            DispatchQueue.main.async {
+                observer.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+                                              remoteVideoTrack:remoteVideoTrack)
+            }
+        }
+    }
+
+    // The observer-related methods should be invoked on the main thread.
+    func removeObserver(_ observer: CallServiceObserver) {
+        AssertIsOnMainThread()
+
+        while let index = observers.index(where: { $0.value === observer }) {
+            observers.remove(at: index)
+        }
+    }
+
+    // The observer-related methods should be invoked on the main thread.
+    func removeAllObservers() {
+        AssertIsOnMainThread()
+
+        observers = []
+    }
+
+    func fireDidUpdateVideoTracks() {
+        assertOnSignalingQueue()
+
+        let localVideoTrack = self.localVideoTrack
+        let remoteVideoTrack = self.remoteVideoTrack
+
+        DispatchQueue.main.async { [weak self] in
+            if let strongSelf = self {
+                for observer in strongSelf.observers {
+                    observer.value?.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+                                                         remoteVideoTrack:remoteVideoTrack)
+                }
+            }
+        }
     }
 }
 

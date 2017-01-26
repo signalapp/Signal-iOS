@@ -7,10 +7,9 @@ import WebRTC
 import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
-// TODO: Add logic to button handlers.
 // TODO: Ensure buttons enabled & disabled as necessary.
 @objc(OWSCallViewController)
-class CallViewController: UIViewController, CallObserver {
+class CallViewController: UIViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
 
     enum CallDirection {
         case unspecified, outgoing, incoming
@@ -25,7 +24,6 @@ class CallViewController: UIViewController, CallObserver {
 
     // MARK: Properties
 
-    var peerConnectionClient: PeerConnectionClient?
     var callDirection: CallDirection = .unspecified
     var thread: TSContactThread!
     var call: SignalCall!
@@ -59,6 +57,15 @@ class CallViewController: UIViewController, CallObserver {
 
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
+
+    // MARK: Video Views
+
+    var remoteVideoView: RTCEAGLVideoView!
+    var localVideoView: RTCCameraPreviewView!
+    weak var localVideoTrack: RTCVideoTrack?
+    weak var remoteVideoTrack: RTCVideoTrack?
+    var remoteVideoSize: CGSize! = CGSize.zero
+    var videoViewConstraints: [NSLayoutConstraint] = []
 
     // MARK: Control Groups
 
@@ -132,7 +139,11 @@ class CallViewController: UIViewController, CallObserver {
 
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
+
+        Environment.getCurrent().callService.addObserverAndSyncState(observer:self)
     }
+
+    // MARK: - Create Views
 
     func createViews() {
         // Dark blurred background.
@@ -140,9 +151,22 @@ class CallViewController: UIViewController, CallObserver {
         blurView = UIVisualEffectView(effect: blurEffect)
         self.view.addSubview(blurView)
 
+        // Create the video views first, as they are under the other views.
+        createVideoViews()
+
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
+    }
+
+    func createVideoViews() {
+        remoteVideoView = RTCEAGLVideoView()
+        remoteVideoView.delegate = self
+        localVideoView = RTCCameraPreviewView()
+        remoteVideoView.isHidden = true
+        localVideoView.isHidden = true
+        self.view.addSubview(remoteVideoView)
+        self.view.addSubview(localVideoView)
     }
 
     func createContactViews() {
@@ -291,6 +315,8 @@ class CallViewController: UIViewController, CallObserver {
         return row
     }
 
+    // MARK: - Layout
+
     override func updateViewConstraints() {
         if !hasConstraints {
             // We only want to create our constraints once.
@@ -310,9 +336,19 @@ class CallViewController: UIViewController, CallObserver {
             // The buttons have built-in 10% margins, so to appear centered
             // the avatar's bottom spacing should be a bit less.
             let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
+            // Layout of the local video view is a bit unusual because 
+            // although the view is square, it will be used
+            let videoPreviewHMargin = CGFloat(0)
 
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
+
+            // TODO: Prevent overlap of localVideoView and contact views.
+            localVideoView.autoPinEdge(toSuperviewEdge:.right, withInset:videoPreviewHMargin)
+            localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
+            let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
+            localVideoView.autoSetDimension(.width, toSize:localVideoSize)
+            localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             contactNameLabel.autoPinWidthToSuperview(withMargin:contactHMargin)
@@ -342,8 +378,59 @@ class CallViewController: UIViewController, CallObserver {
             incomingCallView.setContentHuggingVerticalHigh()
         }
 
+        updateVideoViewLayout()
+
         super.updateViewConstraints()
     }
+
+    internal func updateVideoViewLayout() {
+        NSLayoutConstraint.deactivate(self.videoViewConstraints)
+
+        var constraints: [NSLayoutConstraint] = []
+
+        // We fill the screen with the remote video. The remote video's
+        // aspect ratio may not (and in fact will very rarely) match the 
+        // aspect ratio of the current device, so parts of the remote
+        // video will be hidden offscreen.  
+        //
+        // It's better to trim the remote video than to adopt a letterboxed
+        // layout.
+        if remoteVideoSize.width > 0 && remoteVideoSize.height > 0 &&
+            self.view.bounds.size.width > 0 && self.view.bounds.size.height > 0 {
+
+            var remoteVideoWidth = self.view.bounds.size.width
+            var remoteVideoHeight = self.view.bounds.size.height
+            if remoteVideoSize.width / self.view.bounds.size.width > remoteVideoSize.height / self.view.bounds.size.height {
+                remoteVideoWidth = round(self.view.bounds.size.height * remoteVideoSize.width / remoteVideoSize.height)
+            } else {
+                remoteVideoHeight = round(self.view.bounds.size.width * remoteVideoSize.height / remoteVideoSize.width)
+            }
+            constraints.append(remoteVideoView.autoSetDimension(.width, toSize:remoteVideoWidth))
+            constraints.append(remoteVideoView.autoSetDimension(.height, toSize:remoteVideoHeight))
+            constraints += remoteVideoView.autoCenterInSuperview()
+
+            remoteVideoView.frame = CGRect(origin:CGPoint.zero,
+                                           size:CGSize(width:remoteVideoWidth,
+                                                       height:remoteVideoHeight))
+
+            remoteVideoView.isHidden = false
+        } else {
+            constraints += remoteVideoView.autoPinEdgesToSuperviewEdges()
+            remoteVideoView.isHidden = true
+        }
+
+        self.videoViewConstraints = constraints
+    }
+
+    func traverseViewHierarchy(view: UIView!, visitor: (UIView) -> Void) {
+        visitor(view)
+
+        for subview in view.subviews {
+            traverseViewHierarchy(view:subview, visitor:visitor)
+        }
+    }
+
+    // MARK: - Methods
 
     // objc accessible way to set our swift enum.
     func setOutgoingCallDirection() {
@@ -359,6 +446,8 @@ class CallViewController: UIViewController, CallObserver {
         // TODO Show something in UI.
         Logger.error("\(TAG) call failed with error: \(error)")
     }
+
+    // MARK: - View State
 
     func localizedTextForCallState(_ callState: CallState) -> String {
         assert(Thread.isMainThread)
@@ -541,27 +630,87 @@ class CallViewController: UIViewController, CallObserver {
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
-        DispatchQueue.main.async {
-            Logger.info("\(self.TAG) new call status: \(state)")
-            self.updateCallUI(callState: state)
-        }
+        AssertIsOnMainThread()
+        Logger.info("\(self.TAG) new call status: \(state)")
+        self.updateCallUI(callState: state)
     }
 
     internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
-        DispatchQueue.main.async {
-            self.updateCallUI(callState: call.state)
-        }
+        AssertIsOnMainThread()
+        self.updateCallUI(callState: call.state)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        DispatchQueue.main.async {
-            self.updateCallUI(callState: call.state)
-        }
+        AssertIsOnMainThread()
+        self.updateCallUI(callState: call.state)
     }
 
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
-        DispatchQueue.main.async {
-            self.updateCallUI(callState: call.state)
+        AssertIsOnMainThread()
+        self.updateCallUI(callState: call.state)
+    }
+
+    // MARK: - Video
+
+    internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
+        AssertIsOnMainThread()
+        guard self.localVideoTrack == localVideoTrack else {
+            return
         }
+
+        self.localVideoTrack = localVideoTrack
+
+        var source: RTCAVFoundationVideoSource?
+        if localVideoTrack?.source is RTCAVFoundationVideoSource {
+            source = localVideoTrack?.source as! RTCAVFoundationVideoSource
+        }
+        localVideoView.captureSession = source?.captureSession
+        let isHidden = source == nil
+        Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
+        localVideoView.isHidden = isHidden
+
+        updateVideoViewLayout()
+    }
+
+    internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
+        AssertIsOnMainThread()
+        guard self.remoteVideoTrack == remoteVideoTrack else {
+            return
+        }
+
+        self.remoteVideoTrack?.remove(remoteVideoView)
+        self.remoteVideoTrack = nil
+        remoteVideoView.renderFrame(nil)
+        self.remoteVideoTrack = remoteVideoTrack
+        self.remoteVideoTrack?.add(remoteVideoView)
+
+        // TODO: We need to figure out how to observe start/stop of remote video.
+
+        updateVideoViewLayout()
+    }
+
+    // MARK: - CallServiceObserver
+
+    internal func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+                                       remoteVideoTrack: RTCVideoTrack?) {
+        AssertIsOnMainThread()
+
+        updateLocalVideoTrack(localVideoTrack:localVideoTrack)
+        updateRemoteVideoTrack(remoteVideoTrack:remoteVideoTrack)
+    }
+
+    // MARK: - RTCEAGLVideoViewDelegate
+
+    internal func videoView(_ videoView: RTCEAGLVideoView, didChangeVideoSize size: CGSize) {
+        AssertIsOnMainThread()
+
+        if videoView != remoteVideoView {
+            return
+        }
+
+        Logger.info("\(TAG) \(#function): \(size)")
+
+        remoteVideoSize = size
+        updateVideoViewLayout()
     }
 }

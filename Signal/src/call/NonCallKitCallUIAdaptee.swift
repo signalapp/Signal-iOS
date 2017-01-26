@@ -116,7 +116,9 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
     func localHangupCall(_ call: SignalCall) {
         CallService.signalingQueue.async {
-            guard call.localId == self.callService.call?.localId else {
+            // If both parties hang up at the same moment,
+            // call might already be nil.
+            guard self.callService.call == nil || call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
                 return
             }
