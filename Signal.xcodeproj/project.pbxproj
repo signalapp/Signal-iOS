@@ -46,6 +46,8 @@
 		45666F761D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F751D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m */; };
 		45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */; };
 		45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */; };
+		456AC8341E3A775E00A3C7FC /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
+		456AC8351E3A776300A3C7FC /* WeakTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170CB1E310E22003FC1F2 /* WeakTimer.swift */; };
 		456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
 		456F6E201E2411A000FD2210 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4574A5D51DD6704700C6B692 /* CallService.swift */; };
 		456F6E211E2411B400FD2210 /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
@@ -3329,6 +3331,7 @@
 				45F659831E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				B660F72D1C29988E00687D6E /* HttpResponse.m in Sources */,
 				B660F72E1C29988E00687D6E /* HttpManager.m in Sources */,
+				456AC8351E3A776300A3C7FC /* WeakTimer.swift in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				B660F72F1C29988E00687D6E /* HttpSocket.m in Sources */,
 				452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */,
@@ -3409,6 +3412,7 @@
 				B660F76B1C29988E00687D6E /* LoggingUtil.m in Sources */,
 				B660F76C1C29988E00687D6E /* AnonymousConditionLogger.m in Sources */,
 				45DF5DF31DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
+				456AC8341E3A775E00A3C7FC /* Weak.swift in Sources */,
 				B660F76D1C29988E00687D6E /* AnonymousOccurrenceLogger.m in Sources */,
 				B660F76E1C29988E00687D6E /* AnonymousValueLogger.m in Sources */,
 				B660F76F1C29988E00687D6E /* DiscardingLog.m in Sources */,
