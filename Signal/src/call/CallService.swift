@@ -424,7 +424,7 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) called \(#function)")
 
         guard self.thread != nil else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. TODO: Signaling messages out of order?"))
+            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?"))
             return
         }
 
@@ -960,7 +960,9 @@ protocol CallServiceObserver: class {
             call.state = .localFailure
             callUIAdapter.failCall(call, error: error)
         } else {
-            assertionFailure("\(TAG) in \(#function) but there was no call to fail.")
+            // This can happen when we receive an out of band signaling message (e.g. IceUpdate)
+            // after the call has ended
+            Logger.debug("\(TAG) in \(#function) but there was no call to fail.")
         }
 
         terminateCall()

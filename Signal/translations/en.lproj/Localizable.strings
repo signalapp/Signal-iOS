@@ -543,9 +543,6 @@
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Outgoing call";
 
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Your iPhone needs to be unlocked to receive new messages.";
-
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
@@ -842,6 +839,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Delete";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Unarchive";
