@@ -47,10 +47,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     var hangUpButton: UIButton!
     var speakerPhoneButton: UIButton!
-    var audioMuteButton: UIButton!
-    var audioVideoButton: UIButton!
-    var videoMuteButton: UIButton!
-    var videoVideoButton: UIButton!
+    var audioModeMuteButton: UIButton!
+    var audioModeVideoButton: UIButton!
+    var videoModeMuteButton: UIButton!
+    var videoModeVideoButton: UIButton!
     // TODO: Later, we'll re-enable the text message button
     //       so users can send and read messages during a 
     //       call.
@@ -192,32 +192,32 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                                           action:#selector(didPressSpeakerphone))
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
-        audioMuteButton = createButton(imageName:"mute-unselected-wide",
+        audioModeMuteButton = createButton(imageName:"mute-unselected-wide",
                                        action:#selector(didPressMute))
-        videoMuteButton = createButton(imageName:"mute-unselected-wide",
+        videoModeMuteButton = createButton(imageName:"mute-unselected-wide",
                                        action:#selector(didPressMute))
-        audioVideoButton = createButton(imageName:"video-inactive-wide",
+        audioModeVideoButton = createButton(imageName:"video-inactive-wide",
                                         action:#selector(didPressVideo))
-        videoVideoButton = createButton(imageName:"video-inactive-wide",
+        videoModeVideoButton = createButton(imageName:"video-inactive-wide",
                                         action:#selector(didPressVideo))
 
         let muteSelectedImage = UIImage(named:"mute-selected-wide")
         assert(muteSelectedImage != nil)
-        audioMuteButton.setImage(muteSelectedImage, for:.selected)
-        videoMuteButton.setImage(muteSelectedImage, for:.selected)
+        audioModeMuteButton.setImage(muteSelectedImage, for:.selected)
+        videoModeMuteButton.setImage(muteSelectedImage, for:.selected)
 
         let videoSelectedImage = UIImage(named:"video-active-wide")
         assert(videoSelectedImage != nil)
-        audioVideoButton.setImage(videoSelectedImage, for:.selected)
-        videoVideoButton.setImage(videoSelectedImage, for:.selected)
+        audioModeVideoButton.setImage(videoSelectedImage, for:.selected)
+        videoModeVideoButton.setImage(videoSelectedImage, for:.selected)
 
         let speakerPhoneSelectedImage = UIImage(named:"speaker-active-wide")
         assert(speakerPhoneSelectedImage != nil)
         speakerPhoneButton.setImage(speakerPhoneSelectedImage, for:.selected)
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
-            [audioMuteButton, speakerPhoneButton, audioVideoButton ],
-            [videoMuteButton, hangUpButton, videoVideoButton ]
+            [audioModeMuteButton, speakerPhoneButton, audioModeVideoButton ],
+            [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
             ])
     }
 
@@ -516,10 +516,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         assert(Thread.isMainThread)
         updateCallStatusLabel(callState: callState)
 
-        audioMuteButton.isSelected = call.isMuted
-        videoMuteButton.isSelected = call.isMuted
-        audioVideoButton.isSelected = call.hasLocalVideo
-        videoVideoButton.isSelected = call.hasLocalVideo
+        audioModeMuteButton.isSelected = call.isMuted
+        videoModeMuteButton.isSelected = call.isMuted
+        audioModeVideoButton.isSelected = call.hasLocalVideo
+        videoModeVideoButton.isSelected = call.hasLocalVideo
         speakerPhoneButton.isSelected = call.isSpeakerphoneEnabled
 
         // Show Incoming vs. Ongoing call controls
@@ -532,10 +532,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         // Rework control state if remote video is available.
         contactAvatarView.isHidden = !remoteVideoView.isHidden
         speakerPhoneButton.isHidden = !remoteVideoView.isHidden
-        audioMuteButton.isHidden = !remoteVideoView.isHidden
-        videoMuteButton.isHidden = remoteVideoView.isHidden
-        audioVideoButton.isHidden = !remoteVideoView.isHidden
-        videoVideoButton.isHidden = remoteVideoView.isHidden
+        audioModeMuteButton.isHidden = !remoteVideoView.isHidden
+        videoModeMuteButton.isHidden = remoteVideoView.isHidden
+        audioModeVideoButton.isHidden = !remoteVideoView.isHidden
+        videoModeVideoButton.isHidden = remoteVideoView.isHidden
 
         // Dismiss Handling
         switch callState {
@@ -630,8 +630,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         let hasLocalVideo = !sender.isSelected
-        audioVideoButton.isSelected = hasLocalVideo
-        videoVideoButton.isSelected = hasLocalVideo
+        audioModeVideoButton.isSelected = hasLocalVideo
+        videoModeVideoButton.isSelected = hasLocalVideo
         if let call = self.call {
             callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
         } else {
