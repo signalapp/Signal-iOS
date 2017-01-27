@@ -6,8 +6,15 @@ import Foundation
 import PromiseKit
 import WebRTC
 
+// HACK - Seeing crazy SEGFAULTs on iOS9 when accessing these objc externs.
+// iOS10 seems unaffected. Reproducible for ~1 in 3 calls.
+// Binding them to a file constant seems to work around the problem.
 let kAudioTrackType = kRTCMediaStreamTrackKindAudio
 let kVideoTrackType = kRTCMediaStreamTrackKindVideo
+let kMediaConstraintsMinWidth = kRTCMediaConstraintsMinWidth
+let kMediaConstraintsMaxWidth = kRTCMediaConstraintsMaxWidth
+let kMediaConstraintsMinHeight = kRTCMediaConstraintsMinHeight
+let kMediaConstraintsMaxHeight = kRTCMediaConstraintsMaxHeight
 
 /**
  * The PeerConnectionClient notifies it's delegate (the CallService) of key events in the call signaling life cycle
@@ -142,10 +149,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         // TODO: What are the best values to use here?
         let mediaConstraintsDictionary = [
-            kRTCMediaConstraintsMinWidth: "240",
-            kRTCMediaConstraintsMinHeight: "320",
-            kRTCMediaConstraintsMaxWidth: "240",
-            kRTCMediaConstraintsMaxHeight: "320"
+            kMediaConstraintsMinWidth: "240",
+            kMediaConstraintsMinHeight: "320",
+            kMediaConstraintsMaxWidth: "240",
+            kMediaConstraintsMaxHeight: "320"
         ]
         let cameraConstraints = RTCMediaConstraints(mandatoryConstraints:nil,
                                                     optionalConstraints:mediaConstraintsDictionary)
