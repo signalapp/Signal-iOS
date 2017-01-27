@@ -444,14 +444,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.localVideoConstraints = constraints
     }
 
-    func traverseViewHierarchy(view: UIView!, visitor: (UIView) -> Void) {
-        visitor(view)
-
-        for subview in view.subviews {
-            traverseViewHierarchy(view:subview, visitor:visitor)
-        }
-    }
-
     // MARK: - Methods
 
     // objc accessible way to set our swift enum.
@@ -537,7 +529,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         ongoingCallView.isHidden = isRinging
         ongoingCallView.isUserInteractionEnabled = !isRinging
 
-        // Hide the contact avatar and speakerphone button if remote video is available.
+        // Rework control state if remote video is available.
         contactAvatarView.isHidden = !remoteVideoView.isHidden
         speakerPhoneButton.isHidden = !remoteVideoView.isHidden
         audioMuteButton.isHidden = !remoteVideoView.isHidden
