@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
                                          relay:(nullable NSString *)relay
 {
+    OWSAssert(contactId);
     SignalRecipient *recipient =
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
@@ -43,8 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                    supportsWebRTC:NO];
         [recipient saveWithTransaction:transaction];
 
+        // Update recipient with Server record async.
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
-            success:^(NSSet<NSString *> *matchedIds) {
+            success:^(SignalRecipient *recipient) {
             }
             failure:^(NSError *error) {
                 DDLogWarn(@"Failed to lookup contact with error:%@", error);

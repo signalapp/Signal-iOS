@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This asynchronously updates the SignalRecipient for a given contactId.
 - (void)lookupIdentifier:(NSString *)identifier
-                 success:(void (^)(NSSet<NSString *> *matchedIds))success
+                 success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure;
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts

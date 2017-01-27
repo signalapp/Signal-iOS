@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 21/11/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "ContactsUpdater.h"
 
@@ -35,12 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     // retained until our error parameter can take ownership.
     __block NSError *retainedError;
     [self lookupIdentifier:identifier
-        success:^(NSSet<NSString *> *matchedIds) {
-            if (matchedIds.count == 1) {
-                recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier];
-            } else {
-                retainedError = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
-            }
+        success:^(SignalRecipient *fetchedRecipient) {
+            recipient = fetchedRecipient;
             dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *lookupError) {
@@ -53,17 +50,28 @@ NS_ASSUME_NONNULL_BEGIN
     return recipient;
 }
 
-
 - (void)lookupIdentifier:(NSString *)identifier
-                 success:(void (^)(NSSet<NSString *> *matchedIds))success
+                 success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure
 {
+    // This should never happen according to nullability annotations... but IIRC it does. =/
     if (!identifier) {
+        OWSAssert(NO);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
 
-    [self contactIntersectionWithSet:[NSSet setWithObject:identifier] success:success failure:failure];
+    [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
+                             success:^(NSSet<NSString *> *_Nonnull matchedIds) {
+                                 if (matchedIds.count == 1) {
+                                     success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                 } else {
+                                     failure([NSError errorWithDomain:@"contactsmanager.notfound"
+                                                                 code:NOTFOUND_ERROR
+                                                             userInfo:nil]);
+                                 }
+                             }
+                             failure:failure];
 }
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
