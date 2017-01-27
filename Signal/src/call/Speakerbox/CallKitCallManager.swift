@@ -25,7 +25,7 @@ final class CallKitCallManager: NSObject {
         let handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
-        startCallAction.isVideo = call.hasVideo
+        startCallAction.isVideo = call.hasLocalVideo
 
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)

@@ -770,7 +770,7 @@ protocol CallServiceObserver: class {
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func setHasVideo(hasVideo: Bool) {
+    func setHasLocalVideo(hasLocalVideo: Bool) {
         assertOnSignalingQueue()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -783,13 +783,13 @@ protocol CallServiceObserver: class {
             return
         }
 
-        call.hasVideo = hasVideo
+        call.hasLocalVideo = hasLocalVideo
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
     func handleCallKitStartVideo() {
         CallService.signalingQueue.async {
-            self.setHasVideo(hasVideo:true)
+            self.setHasLocalVideo(hasLocalVideo:true)
         }
     }
 
@@ -1000,9 +1000,9 @@ protocol CallServiceObserver: class {
         self.updateIsVideoEnabled()
     }
 
-    internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
+    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
-        Logger.info("\(self.TAG) \(#function): \(hasVideo)")
+        Logger.info("\(self.TAG) \(#function): \(hasLocalVideo)")
         self.updateIsVideoEnabled()
     }
 
@@ -1027,7 +1027,7 @@ protocol CallServiceObserver: class {
         return (!Platform.isSimulator &&
             call != nil &&
             call!.state == .connected &&
-            call!.hasVideo)
+            call!.hasLocalVideo)
     }
 
     private func updateIsVideoEnabled() {

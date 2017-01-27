@@ -42,16 +42,23 @@ import Foundation
 
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         AssertIsOnMainThread()
-        if isEnabled {
+
+        ensureIsEnabled(call: call)
+    }
+
+    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+        AssertIsOnMainThread()
+
+        ensureIsEnabled(call: call)
+    }
+
+    private func ensureIsEnabled(call: SignalCall) {
+        // Auto-enable speakerphone when local video is enabled.
+        if call.isSpeakerphoneEnabled || call.hasLocalVideo {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
         }
-    }
-
-    internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
-        AssertIsOnMainThread()
-        // no-op
     }
 
     // MARK: - Service action handlers

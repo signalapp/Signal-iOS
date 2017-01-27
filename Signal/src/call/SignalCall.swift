@@ -20,7 +20,7 @@ enum CallState: String {
 // All Observer methods will be invoked from the main thread.
 protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
-    func hasVideoDidChange(call: SignalCall, hasVideo: Bool)
+    func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func speakerphoneDidChange(call: SignalCall, isEnabled: Bool)
 }
@@ -43,20 +43,20 @@ protocol CallObserver: class {
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
 
-    var hasVideo = false {
+    var hasLocalVideo = false {
         didSet {
             // This should only occur on the signaling queue.
             objc_sync_enter(self)
 
             let observers = self.observers
             let call = self
-            let hasVideo = self.hasVideo
+            let hasLocalVideo = self.hasLocalVideo
 
             objc_sync_exit(self)
 
             DispatchQueue.main.async {
                 for observer in observers {
-                    observer.value?.hasVideoDidChange(call: call, hasVideo: hasVideo)
+                    observer.value?.hasLocalVideoDidChange(call: call, hasLocalVideo: hasLocalVideo)
                 }
             }
         }
