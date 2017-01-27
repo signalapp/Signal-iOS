@@ -8,6 +8,7 @@
 #import "Asserts.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
+#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
