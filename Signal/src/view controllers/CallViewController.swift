@@ -193,32 +193,30 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
         audioModeMuteButton = createButton(imageName:"mute-unselected-wide",
-                                       action:#selector(didPressMute))
-        videoModeMuteButton = createButton(imageName:"mute-unselected-wide",
-                                       action:#selector(didPressMute))
+                                           action:#selector(didPressMute))
+        videoModeMuteButton = createButton(imageName:"video-mute-unselected",
+                                           action:#selector(didPressMute))
         audioModeVideoButton = createButton(imageName:"video-inactive-wide",
-                                        action:#selector(didPressVideo))
-        videoModeVideoButton = createButton(imageName:"video-inactive-wide",
-                                        action:#selector(didPressVideo))
+                                            action:#selector(didPressVideo))
+        videoModeVideoButton = createButton(imageName:"video-video-unselected",
+                                            action:#selector(didPressVideo))
 
-        let muteSelectedImage = UIImage(named:"mute-selected-wide")
-        assert(muteSelectedImage != nil)
-        audioModeMuteButton.setImage(muteSelectedImage, for:.selected)
-        videoModeMuteButton.setImage(muteSelectedImage, for:.selected)
-
-        let videoSelectedImage = UIImage(named:"video-active-wide")
-        assert(videoSelectedImage != nil)
-        audioModeVideoButton.setImage(videoSelectedImage, for:.selected)
-        videoModeVideoButton.setImage(videoSelectedImage, for:.selected)
-
-        let speakerPhoneSelectedImage = UIImage(named:"speaker-active-wide")
-        assert(speakerPhoneSelectedImage != nil)
-        speakerPhoneButton.setImage(speakerPhoneSelectedImage, for:.selected)
+        setButtonSelectedImage(button: audioModeMuteButton, imageName: "mute-selected-wide")
+        setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
+        setButtonSelectedImage(button: audioModeVideoButton, imageName: "video-active-wide")
+        setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
+        setButtonSelectedImage(button: speakerPhoneButton, imageName: "speaker-active-wide")
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
             [audioModeMuteButton, speakerPhoneButton, audioModeVideoButton ],
             [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
             ])
+    }
+
+    func setButtonSelectedImage(button: UIButton, imageName: String) {
+        let image = UIImage(named:imageName)
+        assert(image != nil)
+        button.setImage(image, for:.selected)
     }
 
     func createIncomingCallControls() {
