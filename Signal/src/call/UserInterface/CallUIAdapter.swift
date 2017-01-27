@@ -23,7 +23,7 @@ protocol CallUIAdaptee {
     func remoteDidHangupCall(_ call: SignalCall)
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
-    func setHasVideo(call: SignalCall, hasVideo: Bool)
+    func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
     func callBack(recipientId: String)
 }
 
@@ -145,15 +145,17 @@ extension CallUIAdaptee {
         adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
-    internal func setHasVideo(call: SignalCall, hasVideo: Bool) {
-        adaptee.setHasVideo(call: call, hasVideo: hasVideo)
+    internal func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
+        adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
-    internal func toggleSpeakerphone(call: SignalCall, isEnabled: Bool) {
+    internal func setIsSpeakerphoneEnabled(call: SignalCall, isEnabled: Bool) {
         // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the 
         // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's 
         // assigned property.
-        call.isSpeakerphoneEnabled = isEnabled
+        CallService.signalingQueue.async {
+            call.isSpeakerphoneEnabled = isEnabled
+        }
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.

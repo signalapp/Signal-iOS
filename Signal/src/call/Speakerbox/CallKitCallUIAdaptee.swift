@@ -34,7 +34,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         providerConfiguration.supportsVideo = true
 
         providerConfiguration.maximumCallGroups = 1
-        
+
         providerConfiguration.maximumCallsPerCallGroup = 1
 
         providerConfiguration.supportedHandleTypes = [.phoneNumber]
@@ -82,12 +82,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
-        update.hasVideo = call.hasVideo
+        update.hasVideo = call.hasLocalVideo
         update.supportsHolding = false
         update.supportsGrouping = false
         update.supportsUngrouping = false
         update.supportsDTMF = false
-        
+
         // Report the incoming call to the system
         provider.reportNewIncomingCall(with: call.localId, update: update) { error in
             /*
@@ -136,16 +136,16 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.setIsMuted(call: call, isMuted: isMuted)
     }
 
-    func setHasVideo(call: SignalCall, hasVideo: Bool) {
+    func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
-        update.hasVideo = hasVideo
+        update.hasVideo = hasLocalVideo
 
         // Update the CallKit UI.
         provider.reportCall(with: call.localId, updated: update)
 
         CallService.signalingQueue.async {
-            self.callService.setHasVideo(hasVideo: hasVideo)
+            self.callService.setHasLocalVideo(hasLocalVideo: hasLocalVideo)
         }
     }
 

@@ -146,14 +146,14 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         }
     }
 
-    func setHasVideo(call: SignalCall, hasVideo: Bool) {
+    func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
                 return
             }
 
-            self.callService.setHasVideo(hasVideo: hasVideo)
+            self.callService.setHasLocalVideo(hasLocalVideo: hasLocalVideo)
         }
     }
 }

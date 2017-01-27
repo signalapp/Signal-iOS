@@ -46,10 +46,15 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var ongoingCallView: UIView!
 
     var hangUpButton: UIButton!
-    var muteButton: UIButton!
     var speakerPhoneButton: UIButton!
-    var textMessageButton: UIButton!
-    var videoButton: UIButton!
+    var audioModeMuteButton: UIButton!
+    var audioModeVideoButton: UIButton!
+    var videoModeMuteButton: UIButton!
+    var videoModeVideoButton: UIButton!
+    // TODO: Later, we'll re-enable the text message button
+    //       so users can send and read messages during a 
+    //       call.
+//    var textMessageButton: UIButton!
 
     // MARK: Incoming Call Controls
 
@@ -67,20 +72,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var remoteVideoSize: CGSize! = CGSize.zero
     var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
-
-    // MARK: Control Groups
-
-    var allControls: [UIView] {
-        return incomingCallControls + ongoingCallControls
-    }
-
-    var incomingCallControls: [UIView] {
-        return [ acceptIncomingButton, declineIncomingButton ]
-    }
-
-    var ongoingCallControls: [UIView] {
-        return [ muteButton, speakerPhoneButton, textMessageButton, hangUpButton, videoButton ]
-    }
 
     // MARK: Initializers
 
@@ -195,29 +186,38 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     func createOngoingCallControls() {
 
-        textMessageButton = createButton(imageName:"message-active-wide",
-                                                action:#selector(didPressTextMessage))
-        muteButton = createButton(imageName:"mute-unselected-wide",
-                                  action:#selector(didPressMute))
-        speakerPhoneButton = createButton(imageName:"speaker-active-wide",
+//        textMessageButton = createButton(imageName:"message-active-wide",
+//                                                action:#selector(didPressTextMessage))
+        speakerPhoneButton = createButton(imageName:"speaker-inactive-wide",
                                           action:#selector(didPressSpeakerphone))
-        videoButton = createButton(imageName:"video-inactive-wide",
-                                   action:#selector(didPressVideo))
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
+        audioModeMuteButton = createButton(imageName:"mute-unselected-wide",
+                                       action:#selector(didPressMute))
+        videoModeMuteButton = createButton(imageName:"mute-unselected-wide",
+                                       action:#selector(didPressMute))
+        audioModeVideoButton = createButton(imageName:"video-inactive-wide",
+                                        action:#selector(didPressVideo))
+        videoModeVideoButton = createButton(imageName:"video-inactive-wide",
+                                        action:#selector(didPressVideo))
 
         let muteSelectedImage = UIImage(named:"mute-selected-wide")
         assert(muteSelectedImage != nil)
-        muteButton.setImage(muteSelectedImage, for:.selected)
+        audioModeMuteButton.setImage(muteSelectedImage, for:.selected)
+        videoModeMuteButton.setImage(muteSelectedImage, for:.selected)
 
         let videoSelectedImage = UIImage(named:"video-active-wide")
         assert(videoSelectedImage != nil)
-        videoButton.setImage(videoSelectedImage, for:.selected)
+        audioModeVideoButton.setImage(videoSelectedImage, for:.selected)
+        videoModeVideoButton.setImage(videoSelectedImage, for:.selected)
+
+        let speakerPhoneSelectedImage = UIImage(named:"speaker-active-wide")
+        assert(speakerPhoneSelectedImage != nil)
+        speakerPhoneButton.setImage(speakerPhoneSelectedImage, for:.selected)
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
-            [textMessageButton, videoButton],
-            [muteButton, speakerPhoneButton ],
-            [hangUpButton ]
+            [audioModeMuteButton, speakerPhoneButton, audioModeVideoButton ],
+            [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
             ])
     }
 
@@ -244,7 +244,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         var prevRow: UIView?
         for row in rows {
             containerView.addSubview(row)
-            row.autoPinWidthToSuperview()
+            row.autoHCenterInSuperview()
             if prevRow != nil {
                 row.autoPinEdge(.top, to:.bottom, of:prevRow!, withOffset:rowspacing)
             }
@@ -310,7 +310,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // If there's only one subview in this row, center it.
             let subview = subviews.first!
             row.addSubview(subview)
-            subview.autoCenterInSuperview()
+            subview.autoVCenterInSuperview()
+            subview.autoPinWidthToSuperview()
         }
 
         return row
@@ -421,6 +422,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         self.remoteVideoConstraints = constraints
+        updateCallUI(callState: call.state)
     }
 
     internal func updateLocalVideoLayout() {
@@ -440,14 +442,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         self.localVideoConstraints = constraints
-    }
-
-    func traverseViewHierarchy(view: UIView!, visitor: (UIView) -> Void) {
-        visitor(view)
-
-        for subview in view.subviews {
-            traverseViewHierarchy(view:subview, visitor:visitor)
-        }
     }
 
     // MARK: - Methods
@@ -522,8 +516,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         assert(Thread.isMainThread)
         updateCallStatusLabel(callState: callState)
 
-        videoButton.isSelected = call.hasVideo
-        muteButton.isSelected = call.isMuted
+        audioModeMuteButton.isSelected = call.isMuted
+        videoModeMuteButton.isSelected = call.isMuted
+        audioModeVideoButton.isSelected = call.hasLocalVideo
+        videoModeVideoButton.isSelected = call.hasLocalVideo
+        speakerPhoneButton.isSelected = call.isSpeakerphoneEnabled
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
@@ -531,6 +528,14 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         incomingCallView.isUserInteractionEnabled = isRinging
         ongoingCallView.isHidden = isRinging
         ongoingCallView.isUserInteractionEnabled = !isRinging
+
+        // Rework control state if remote video is available.
+        contactAvatarView.isHidden = !remoteVideoView.isHidden
+        speakerPhoneButton.isHidden = !remoteVideoView.isHidden
+        audioModeMuteButton.isHidden = !remoteVideoView.isHidden
+        videoModeMuteButton.isHidden = remoteVideoView.isHidden
+        audioModeVideoButton.isHidden = !remoteVideoView.isHidden
+        videoModeVideoButton.isHidden = remoteVideoView.isHidden
 
         // Dismiss Handling
         switch callState {
@@ -595,7 +600,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         Logger.info("\(TAG) called \(#function)")
         speakerphoneButton.isSelected = !speakerphoneButton.isSelected
         if let call = self.call {
-            callUIAdapter.toggleSpeakerphone(call: call, isEnabled: speakerphoneButton.isSelected)
+            callUIAdapter.setIsSpeakerphoneEnabled(call: call, isEnabled: speakerphoneButton.isSelected)
         } else {
             Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
         }
@@ -624,9 +629,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
-        videoButton.isSelected = !videoButton.isSelected
+        let hasLocalVideo = !sender.isSelected
+        audioModeVideoButton.isSelected = hasLocalVideo
+        videoModeVideoButton.isSelected = hasLocalVideo
         if let call = self.call {
-            callUIAdapter.setHasVideo(call: call, hasVideo: videoButton.isSelected)
+            callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
         } else {
             Logger.warn("\(TAG) pressed video, but call was unexpectedly nil")
         }
@@ -655,7 +662,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.updateCallUI(callState: state)
     }
 
-    internal func hasVideoDidChange(call: SignalCall, hasVideo: Bool) {
+    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }
