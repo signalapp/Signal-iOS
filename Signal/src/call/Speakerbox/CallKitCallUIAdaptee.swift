@@ -91,10 +91,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         update.hasVideo = call.hasLocalVideo
-        update.supportsHolding = false
-        update.supportsGrouping = false
-        update.supportsUngrouping = false
-        update.supportsDTMF = false
+        disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
         provider.reportNewIncomingCall(with: call.localId, update: update) { error in
@@ -139,6 +136,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
 
         self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
+
+        let update = CXCallUpdate()
+        disableUnsupportedFeatures(callUpdate: update)
+
+        provider.reportCall(with: call.localId, updated: update)
     }
 
     func localHangupCall(_ call: SignalCall) {
@@ -357,5 +359,20 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
          Restart any non-call related audio now that the app's audio session has been
          de-activated after having its priority restored to normal.
          */
+    }
+
+    // MARK: - Util
+
+    private func disableUnsupportedFeatures(callUpdate: CXCallUpdate) {
+        // Call Holding is failing to restart audio when "swapping" calls on the CallKit screen
+        // until user returns to in-app call screen.
+        callUpdate.supportsHolding = false
+
+        // Not yet supported
+        callUpdate.supportsGrouping = false
+        callUpdate.supportsUngrouping = false
+
+        // Is there any reason to support this?
+        callUpdate.supportsDTMF = false
     }
 }
