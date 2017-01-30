@@ -183,6 +183,33 @@ protocol CallServiceObserver: class {
         super.init()
 
         self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(didEnterBackground),
+                                               name:NSNotification.Name.UIApplicationDidEnterBackground,
+                                               object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(didBecomeActive),
+                                               name:NSNotification.Name.UIApplicationDidBecomeActive,
+                                               object:nil)
+}
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func didEnterBackground() {
+        AssertIsOnMainThread()
+        Logger.info("\(self.TAG) \(#function)")
+
+        self.updateIsVideoEnabled()
+    }
+
+    func didBecomeActive() {
+        AssertIsOnMainThread()
+        Logger.info("\(self.TAG) \(#function)")
+
+        self.updateIsVideoEnabled()
     }
 
     // MARK: - Class Methods
@@ -1069,6 +1096,7 @@ protocol CallServiceObserver: class {
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
         // trying to open a local stream.
         return (!Platform.isSimulator &&
+            UIApplication.shared.applicationState != .background &&
             call != nil &&
             call!.state == .connected &&
             call!.hasLocalVideo)
