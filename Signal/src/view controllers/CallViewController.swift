@@ -73,7 +73,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
-    var areRemoteVideoControlsHidden = false {
+    var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI(callState: call.state)
         }
@@ -164,7 +164,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     func didTouchRootView(sender: UIGestureRecognizer) {
         if !remoteVideoView.isHidden {
-            areRemoteVideoControlsHidden = !areRemoteVideoControlsHidden
+            shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
     }
 
@@ -560,7 +560,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         // Also hide other controls if user has tapped to hide them.
-        if areRemoteVideoControlsHidden && !remoteVideoView.isHidden {
+        if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
             ongoingCallView.isHidden = true
@@ -742,7 +742,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         remoteVideoView.renderFrame(nil)
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
-        areRemoteVideoControlsHidden = false
+        shouldRemoteVideoControlsBeHidden = false
 
         if remoteVideoTrack == nil {
             remoteVideoSize = CGSize.zero
