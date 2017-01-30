@@ -285,20 +285,19 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             action.fail()
             return
         }
-        Logger.warn("TODO, unimplemented set held call: \(call)")
 
-        // TODO FIXME
-        //        // Update the SpeakerboxCall's underlying hold state.
-        //        call.isOnHold = action.isOnHold
-        //
-        //        // Stop or start audio in response to holding or unholding the call.
-        //        if call.isOnHold {
-        //            // stopAudio() <-- SpeakerBox
-        //            PeerConnectionClient.stopAudioSession()
-        //        } else {
-        //            // startAudio() <-- SpeakerBox
-        //            PeerConnectionClient.startAudioSession()
-        //        }
+        // Update the SignalCall's underlying hold state.
+        call.isOnHold = action.isOnHold
+
+        // Stop or start audio in response to holding or unholding the call.
+        if call.isOnHold {
+            // stopAudio() <-- SpeakerBox
+            PeerConnectionClient.stopAudioSession()
+        } else {
+            // startAudio() <-- SpeakerBox
+            // This is redundant with what happens in `provider(_:didActivate:)`
+            //PeerConnectionClient.startAudioSession()
+        }
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()

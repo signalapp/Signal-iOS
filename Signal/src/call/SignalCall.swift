@@ -133,6 +133,8 @@ protocol CallObserver: class {
         }
     }
 
+    var isOnHold = false
+
     var connectedDate: NSDate?
 
     var error: CallError?
