@@ -795,13 +795,13 @@ protocol CallServiceObserver: class {
             break
         }
 
-        // We don't need to worry about the user granting or remotinv this permission
+        // We don't need to worry about the user granting or remoting this permission
         // during a call while the app is in the background, because changing this
         // permission kills the app.
         if authStatus != .authorized {
             DispatchQueue.main.async {
-                let title = NSLocalizedString("CAMERA_PERMISSION_MISSING_TITLE", comment: "Alert title when camera is not authorized")
-                let message = NSLocalizedString("CAMERA_PERMISSION_MISSING_BODY", comment: "Alert body when camera is not authorized")
+                let title = NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized")
+                let message = NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized")
                 let okButton = NSLocalizedString("OK", comment:"")
 
                 let alert = UIAlertView(title:title, message:message, delegate:nil, cancelButtonTitle:okButton)
@@ -1155,11 +1155,15 @@ protocol CallServiceObserver: class {
                                                          remoteVideoTrack:remoteVideoTrack)
                 }
             }
-        }
 
-        // Prevent screen from dimming during video call.
-        let hasLocalOrRemoteVideo = localVideoTrack != nil || remoteVideoTrack != nil
-        UIApplication.shared.isIdleTimerDisabled = hasLocalOrRemoteVideo
+            // Prevent screen from dimming during video call.
+            //
+            // fireDidUpdateVideoTracks() is called by the video track setters,
+            // which are cleared when the call ends. That ensures that this timer
+            // will be re-enabled.
+            let hasLocalOrRemoteVideo = localVideoTrack != nil || remoteVideoTrack != nil
+            UIApplication.shared.isIdleTimerDisabled = hasLocalOrRemoteVideo
+        }
     }
 }
 

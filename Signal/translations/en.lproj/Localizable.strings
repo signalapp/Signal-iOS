@@ -76,12 +76,6 @@
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call back";
 
-/* Alert body when camera is not authorized */
-"CAMERA_PERMISSION_MISSING_BODY" = "Signal requires access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
-
-/* Alert title when camera is not authorized */
-"CAMERA_PERMISSION_MISSING_TITLE" = "Error";
-
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
 
@@ -455,10 +449,12 @@
    notification title */
 "MISSED_CALL" = "Missed call";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
 /* notification body
